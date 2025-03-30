@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from argparse import ArgumentParser
@@ -163,7 +162,7 @@ def Kapowarr() -> int:
     return rc
 
 
-if __name__ == "__main__":
+def main() -> None:
     if environ.get("KAPOWARR_RUN_MAIN") == "1":
 
         parser = ArgumentParser(
