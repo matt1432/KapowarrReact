@@ -12,7 +12,7 @@
 			"type": "debugpy",
 			"request": "launch",
 			"python": "/bin/python3",
-			"program": "${workspaceFolder}/Kapowarr.py",
+			"program": "${workspaceFolder}/src/Kapowarr.py",
 			"justMyCode": true
 		}
 	]
