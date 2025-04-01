@@ -4,7 +4,7 @@ from dataclasses import _MISSING_TYPE, asdict, dataclass, field
 from importlib.metadata import version
 from json import dump, load
 from logging import INFO
-from os import urandom
+from os import urandom, environ
 from os.path import abspath, isdir, join, sep
 from typing import Any, Dict, Mapping
 
@@ -32,10 +32,10 @@ class SettingsValues:
     api_key: str = ''
 
     host: str = '0.0.0.0'
-    port: int = 5656
+    port: int = int(environ.get('KAPOWARR_DEFAULT_PORT') or '5656')
     url_base: str = ''
     backup_host: str = '0.0.0.0'
-    backup_port: int = 5656
+    backup_port: int = int(environ.get('KAPOWARR_DEFAULT_PORT') or '5656')
     backup_url_base: str = ''
 
     rename_downloaded_files: bool = True
