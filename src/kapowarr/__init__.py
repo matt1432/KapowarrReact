@@ -10,7 +10,7 @@ from sys import argv
 from typing import NoReturn, Union
 
 from backend.base.definitions import Constants, RestartVersion
-from backend.base.helpers import check_python_version, get_python_exe
+from backend.base.helpers import check_python_version
 from backend.base.logging import LOGGER, setup_logging
 from backend.features.download_queue import DownloadHandler
 from backend.features.tasks import TaskHandler
@@ -132,9 +132,8 @@ def _run_sub_process(
         "KAPOWARR_RESTART_VERSION": str(restart_version.value)
     }
 
-    comm = [get_python_exe(), "-u", __file__] + argv[1:]
     proc = Popen(
-        comm,
+        argv,
         env=env
     )
     proc._sigint_wait_secs = Constants.SUB_PROCESS_TIMEOUT # type: ignore
