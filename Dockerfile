@@ -1,15 +1,15 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.8-slim-buster
+FROM python:3.13-slim-bookworm
 STOPSIGNAL SIGTERM
 
 WORKDIR /app
 
-COPY requirements.txt requirements.txt
-RUN pip3 install --no-cache-dir -r requirements.txt
+COPY . .
+RUN pip install .
+RUN pip install Kapowarr
 
-COPY src .
 
 EXPOSE 5656
 
-CMD [ "python3", "/app/Kapowarr.py" ]
+CMD [ "/usr/local/bin/kapowarr" ]
