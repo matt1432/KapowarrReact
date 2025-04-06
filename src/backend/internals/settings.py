@@ -54,10 +54,12 @@ class SettingsValues:
     volume_padding: int = 2
     issue_padding: int = 3
 
+    data_folder: str = folder_path()
+    download_folder: str = folder_path('temp_downloads')
+
     service_preference: CommaList = field(default_factory=lambda: CommaList(
         (s.value for s in GCDownloadSource._member_map_.values())
     ))
-    download_folder: str = folder_path('temp_downloads')
     concurrent_direct_downloads: int = 1
     failing_torrent_timeout: int = 0
     seeding_handling: SeedingHandling = SeedingHandling.COPY

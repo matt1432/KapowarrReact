@@ -23,6 +23,8 @@ from backend.internals.settings import Settings
 def _main(
     restart_version: RestartVersion,
     db_folder: Union[str, None] = None,
+    download_folder: Union[str, None] = None,
+    log_folder: Union[str, None] = None,
     port: Union[int, None] = None,
     url_base: Union[str, None] = None,
 ) -> NoReturn:
@@ -36,6 +38,23 @@ def _main(
         `None` for the default location.
             Defaults to None.
 
+        download_folder (Union[str, None], optional): The folder in which the
+        downloaded files from Kapowarr will be stored. Give `None` for the
+        default location.
+            Defaults to None.
+
+        log_folder (Union[str, None], optional): The folder in which the logs from
+        Kapowarr will be stored. Give `None` for the default location.
+            Defaults to None.
+
+        port (Union[int, None], optional): The port on which the server will be
+        listening on.
+            Defaults to None.
+
+        url_base (Union[str, None], optional): The URL base on which the server will
+        be listening on.
+            Defaults to None.
+
     Raises:
         ValueError: Value of `db_folder` exists but is not a folder.
 
@@ -44,7 +63,7 @@ def _main(
         Exit code 131 or higher means to restart with possibly special reasons.
     """
     set_start_method('spawn')
-    setup_logging()
+    setup_logging(log_folder=log_folder)
     LOGGER.info('Starting up Kapowarr')
 
     if not check_python_version():
@@ -66,6 +85,9 @@ def _main(
 
         if url_base:
             s.__setitem__('url_base', url_base, True)
+
+        if download_folder:
+            s.__setitem__('download_folder', download_folder, True)
 
         settings = Settings().get_settings()
         flaresolverr = FlareSolverr()
@@ -183,6 +205,16 @@ def main() -> None:
             help="The folder in which the database will be stored or in which a database is for Kapowarr to use"
         )
         parser.add_argument(
+            '-D', '--DownloadFolder',
+            type=str,
+            help="The folder in which the downloaded files from Kapowarr will be stored"
+        )
+        parser.add_argument(
+            '-l', '--LogFolder',
+            type=str,
+            help="The folder in which the logs from Kapowarr will be stored"
+        )
+        parser.add_argument(
             '-p', '--Port',
             type=int,
             help="The port on which the server will be listening on"
@@ -203,6 +235,8 @@ def main() -> None:
             _main(
                 restart_version=rv,
                 db_folder=args.DatabaseFolder,
+                download_folder=args.DownloadFolder,
+                log_folder=args.LogFolder,
                 port=args.Port,
                 url_base=args.UrlBase,
             )
