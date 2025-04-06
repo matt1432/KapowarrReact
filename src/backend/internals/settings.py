@@ -32,10 +32,10 @@ class SettingsValues:
     api_key: str = ''
 
     host: str = '0.0.0.0'
-    port: int = int(environ.get('KAPOWARR_DEFAULT_PORT') or '5656')
+    port: int = 5656
     url_base: str = ''
     backup_host: str = '0.0.0.0'
-    backup_port: int = int(environ.get('KAPOWARR_DEFAULT_PORT') or '5656')
+    backup_port: int = 5656
     backup_url_base: str = ''
 
     rename_downloaded_files: bool = True

@@ -22,7 +22,8 @@ from backend.internals.settings import Settings
 
 def _main(
     restart_version: RestartVersion,
-    db_folder: Union[str, None] = None
+    db_folder: Union[str, None] = None,
+    port: Union[int, None] = None,
 ) -> NoReturn:
     """The main function of the Kapowarr sub-process
 
@@ -55,6 +56,12 @@ def _main(
     with SERVER.app.app_context():
         handle_restart_version(restart_version)
         setup_db()
+
+        s = Settings()
+
+        if port:
+            s.__setitem__('port', port)
+            s.__setitem__('backup_port', port)
 
         settings = Settings().get_settings()
         flaresolverr = FlareSolverr()
@@ -171,8 +178,12 @@ def main() -> None:
             type=str,
             help="The folder in which the database will be stored or in which a database is for Kapowarr to use"
         )
+        parser.add_argument(
+            '-p', '--Port',
+            type=int,
+            help="The port on which the server will be listening on"
+        )
         args = parser.parse_args()
-        db_folder = args.DatabaseFolder
 
         rv = RestartVersion(int(environ.get(
             "KAPOWARR_RESTART_VERSION",
@@ -182,7 +193,8 @@ def main() -> None:
         try:
             _main(
                 restart_version=rv,
-                db_folder=db_folder
+                db_folder=args.DatabaseFolder,
+                port=args.Port,
             )
 
         except ValueError as e:
