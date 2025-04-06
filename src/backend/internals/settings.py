@@ -463,7 +463,4 @@ def update_manifest(url_base: str) -> None:
         manifest['start_url'] = url_base + '/'
         manifest['icons'][0]['src'] = f'{url_base}/static/img/favicon.svg'
 
-    with open(filename, 'w') as f:
-        dump(manifest, f, indent=4)
-
     return
