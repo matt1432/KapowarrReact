@@ -519,7 +519,7 @@ function loadConvertPreference(api_key) {
 	.then(json => {
 		const pref = [
 			'source',
-			...json.result.format_preference,
+			...json.result.format_preference.value,
 			'no conversion'
 		].join(' - ');
 		el.innerHTML = pref;

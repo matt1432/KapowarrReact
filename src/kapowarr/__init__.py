@@ -60,8 +60,8 @@ def _main(
         s = Settings()
 
         if port:
-            s.__setitem__('port', port)
-            s.__setitem__('backup_port', port)
+            s.__setitem__('port', port, True)
+            s.__setitem__('backup_port', port, True)
 
         settings = Settings().get_settings()
         flaresolverr = FlareSolverr()

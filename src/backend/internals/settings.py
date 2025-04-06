@@ -23,6 +23,9 @@ from backend.internals.db import commit, get_db
 from backend.internals.db_migration import get_latest_db_version
 
 
+locked = []
+
+
 @dataclass(frozen=True)
 class SettingsValues:
     database_version: int = get_latest_db_version()
@@ -66,9 +69,12 @@ class SettingsValues:
 
     flaresolverr_base_url: str = ''
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, Dict[str, Any]]:
         return {
-            k: v if not isinstance(v, BaseEnum) else v.value
+            k: {
+                'value': v if not isinstance(v, BaseEnum) else v.value,
+                'locked': locked.__contains__(k),
+            }
             for k, v in self.__dict__.items()
             if not k.startswith('backup_')
         }
@@ -228,20 +234,23 @@ class Settings(metaclass=Singleton):
 
         return
 
-    def __setitem__(self, __name: str, __value: Any) -> None:
+    def __setitem__(self, __name: str, __value: Any, __lock: bool = False) -> None:
         """Change the value of a setting.
 
         Args:
             __name (str): The key of the setting.
             __value (Any): The new value.
+            __lock (bool): If the value is set from the command line and cannot be changed at runtime
 
         Raises:
-            InvalidSettingKey: Key is not allowed or unknown.
+            InvalidSettingKey: Keydocument.querySelector('#bind-address-input') is not allowed or unknown.
             InvalidSettingValue: Value of the key is not allowed.
             InvalidSettingModification: Key can not be modified this way.
             FolderNotFound: Folder not found.
         """
         self.update({__name: __value})
+        if __lock:
+            locked.append(__name)
         return
 
     def reset(self, key: str) -> None:

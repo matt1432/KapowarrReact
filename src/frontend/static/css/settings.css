@@ -64,6 +64,16 @@
 	font-family: "Ubuntu Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+.settings-container table tr:has(select:disabled) *,
+.settings-container table tr:has(input:disabled) * {
+    color: var(--border-color);
+}
+
+.settings-container table tr select:disabled,
+.settings-container table tr input:disabled {
+    cursor: not-allowed;
+}
+
 .settings-container table input[type="checkbox"] {
 	width: 1.15rem;
 	aspect-ratio: 1/1;
