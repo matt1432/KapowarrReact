@@ -24,6 +24,7 @@ def _main(
     restart_version: RestartVersion,
     db_folder: Union[str, None] = None,
     port: Union[int, None] = None,
+    url_base: Union[str, None] = None,
 ) -> NoReturn:
     """The main function of the Kapowarr sub-process
 
@@ -62,6 +63,9 @@ def _main(
         if port:
             s.__setitem__('port', port, True)
             s.__setitem__('backup_port', port, True)
+
+        if url_base:
+            s.__setitem__('url_base', url_base, True)
 
         settings = Settings().get_settings()
         flaresolverr = FlareSolverr()
@@ -183,6 +187,11 @@ def main() -> None:
             type=int,
             help="The port on which the server will be listening on"
         )
+        parser.add_argument(
+            '-u', '--UrlBase',
+            type=str,
+            help="The URL base on which the server will be listening on"
+        )
         args = parser.parse_args()
 
         rv = RestartVersion(int(environ.get(
@@ -195,6 +204,7 @@ def main() -> None:
                 restart_version=rv,
                 db_folder=args.DatabaseFolder,
                 port=args.Port,
+                url_base=args.UrlBase,
             )
 
         except ValueError as e:
