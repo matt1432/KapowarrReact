@@ -443,16 +443,19 @@ def api_restart():
 @auth
 def api_settings():
     settings = Settings()
+    if request.method == 'GET':
+        result = settings.get_settings().to_dict()
+        return return_api(result)
 
-    if request.method == 'PUT':
+    elif request.method == 'PUT':
         data = request.get_json()
         settings.update(data)
+        return return_api(settings.get_settings().to_dict())
 
     elif request.method == 'DELETE':
         key = extract_key(request, 'key')
         settings.reset(key)
-
-    return return_api(settings.get_settings().to_dict())
+        return return_api(settings.get_settings().to_dict())
 
 
 @api.route('/settings/api_key', methods=['POST'])

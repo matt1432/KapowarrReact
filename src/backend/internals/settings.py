@@ -245,7 +245,7 @@ class Settings(metaclass=Singleton):
             __lock (bool): If the value is set from the command line and cannot be changed at runtime
 
         Raises:
-            InvalidSettingKey: Keydocument.querySelector('#bind-address-input') is not allowed or unknown.
+            InvalidSettingKey: Key is not allowed or unknown.
             InvalidSettingValue: Value of the key is not allowed.
             InvalidSettingModification: Key can not be modified this way.
             FolderNotFound: Folder not found.
