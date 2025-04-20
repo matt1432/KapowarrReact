@@ -4,7 +4,7 @@ import logging
 import logging.config
 from logging.handlers import RotatingFileHandler
 from typing import Any, Union
-from os.path import join
+from os.path import exists, isdir, join
 
 from backend.base.definitions import Constants
 
@@ -111,6 +111,10 @@ def setup_logging(
         from backend.base.files import folder_path
         LOGGING_CONFIG["handlers"]["file"]["filename"] = folder_path(Constants.LOGGER_FILENAME)
     else:
+        if not exists(log_folder):
+            raise ValueError('Logging location does not exist')
+        if not isdir(log_folder):
+            raise ValueError('Logging location is not a folder')
         LOGGING_CONFIG["handlers"]["file"]["filename"] = join(log_folder, Constants.LOGGER_FILENAME)
 
     LOGGING_CONFIG["handlers"]["file"]["do_rollover"] = do_rollover
