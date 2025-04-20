@@ -46,11 +46,11 @@ def check_python_version() -> bool:
     """Check if the python version that is used is a minimum version.
 
     Returns:
-        bool: Whether or not the python version is version 3.8 or above or not.
+        bool: Whether or not the python version is version 3.11 or above or not.
     """
-    if not (version_info.major == 3 and version_info.minor >= 8):
+    if not (version_info.major == 3 and version_info.minor >= 11):
         LOGGER.critical(
-            'The minimum python version required is python3.8 '
+            'The minimum python version required is python3.11 '
             '(currently '
             + str(version_info.major) + '.' + str(version_info.minor) + '.' + str(version_info.micro) + # noqa
             ').'

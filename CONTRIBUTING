@@ -49,7 +49,7 @@ python3 -m unittest discover -s ./tests -p '*.py'
 
 There are a few conditions that should always be met:
 
-1. Kapowarr should support Python version 3.8 and higher.
+1. Kapowarr should support Python version 3.11 and higher.
 2. Kapowarr should be compatible with Linux, MacOS, Windows and the Docker container.
 3. The tests should all pass.
 
