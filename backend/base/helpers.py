@@ -846,7 +846,7 @@ class PortablePool(Pool):
                 None
             ),
             initializer=_ContextKeeper,
-            initargs=(LOGGER.root.level, dirname(DBConnection.file))
+            initargs=(LOGGER.root.level, dirname(DBConnection.file), dirname(get_log_filepath()))
         )
         return
 
