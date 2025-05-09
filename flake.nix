@@ -11,7 +11,6 @@
       type = "github";
       owner = "matt1432";
       repo = "LibgenComics";
-      ref = "v0.0.1";
 
       inputs = {
         nixpkgs.follows = "nixpkgs";
@@ -131,7 +130,6 @@
                 --replace-fail "with open(filename, 'w') as f:" "" \
                 --replace-fail "dump(manifest, f, indent=4)" ""
 
-            # TODO: makes sure this works
             substituteInPlace ./backend/implementations/converters.py \
                 --replace-fail \
                     "exe = folder_path('backend', 'lib', Constants.RAR_EXECUTABLES[platform])" \

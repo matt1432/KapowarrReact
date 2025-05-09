@@ -11,16 +11,15 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1746813809,
-        "narHash": "sha256-dzVhUcv07Ic03sMdRwvTQ/FfXdbcmPwsMrhKNeIjRiA=",
+        "lastModified": 1746825679,
+        "narHash": "sha256-GQPHVbegJIyIPsJSaUAu1iqpzAB62BoDidLvXozRZA8=",
         "owner": "matt1432",
         "repo": "LibgenComics",
-        "rev": "5304762035d526b4925093824d496b5a5450c9c1",
+        "rev": "1cff790e63baed494936b6ef0ea5a8dc9f75d76e",
         "type": "github"
       },
       "original": {
         "owner": "matt1432",
-        "ref": "v0.0.1",
         "repo": "LibgenComics",
         "type": "github"
       }

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from asyncio import gather, run
+from libgencomics import LibgenSearch
 from typing import Dict, List, Tuple, Union
 
 from backend.base.definitions import (MatchedSearchResultData,
@@ -13,6 +14,7 @@ from backend.base.logging import LOGGER
 from backend.implementations.getcomics import search_getcomics
 from backend.implementations.matching import check_search_result_match
 from backend.implementations.volumes import Volume
+from backend.internals.settings import Settings
 
 
 def _rank_search_result(
@@ -139,6 +141,36 @@ class SearchGetComics(SearchSource):
         return await search_getcomics(session, self.query)
 
 
+class SearchLibgenPlus:
+    def __init__(self, comicvine_id: int, issue_number: int | None):
+        self.comicvine_id = comicvine_id
+        self.issue_number = issue_number
+
+    def search(self) -> List[SearchResultData]:
+        results: List[SearchResultData] = []
+
+        file_results = LibgenSearch().search_comicvine_id(
+            Settings().sv.comicvine_api_key,
+            self.comicvine_id,
+            str(self.issue_number) if self.issue_number is not None else None,
+        )
+
+        for file_result in file_results:
+            results.append(SearchResultData({
+                "series": file_result.issue.series.title,
+                "year": file_result.issue.year,
+                "volume_number": None,
+                "special_version": None,
+                "issue_number": self.issue_number,
+                "annual": False,
+                "link": file_result.download_link,
+                "display_title": file_result.filename,
+                "source": "Libgen+",
+            }))
+
+        return results
+
+
 async def search_multiple_queries(*queries: str) -> List[SearchResultData]:
     """Do a manual search for multiple queries asynchronously.
 
@@ -236,7 +268,10 @@ def manual_search(
             )
             for format in formats
         )))
-        if not search_results:
+
+        libgen_results = SearchLibgenPlus(volume_data.comicvine_id, issue_number).search()
+
+        if not search_results and not libgen_results:
             continue
 
         results: List[MatchedSearchResultData] = [
@@ -247,7 +282,7 @@ def manual_search(
                     number_to_year, calculated_issue_number
                 )
             }
-            for result in search_results
+            for result in [*search_results, *libgen_results]
         ]
 
         # Sort results; put best result at top

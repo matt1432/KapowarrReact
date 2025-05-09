@@ -26,6 +26,7 @@ from backend.features.post_processing import (PostProcessor,
                                               PostProcessorTorrentsCopy)
 from backend.implementations.blocklist import add_to_blocklist
 from backend.implementations.download_clients import (BaseDirectDownload,
+                                                      DirectDownload,
                                                       MegaDownload,
                                                       TorrentDownload)
 from backend.implementations.external_clients import ExternalClients
@@ -352,6 +353,8 @@ class DownloadHandler(metaclass=Singleton):
         """
         if link.startswith(Constants.GC_SITE_URL):
             return 'gc'
+        if link.startswith("https://libgen.gl/get.php?md5="):
+            return 'lg'
         return None
 
     def link_in_queue(self, link: str) -> bool:
@@ -409,6 +412,20 @@ class DownloadHandler(metaclass=Singleton):
 
         link_type = self.__determine_link_type(link)
         downloads: List[Download] = []
+
+        if link_type == 'lg':
+            downloads.append(DirectDownload(
+                link,
+                volume_id,
+                None,
+                DownloadSource.LIBGENPLUS,
+                "Libgen+",
+                None,
+                None,
+                None,
+                force_match,
+            ))
+
         if link_type == 'gc':
             gcp = GetComicsPage(link)
 

@@ -309,6 +309,7 @@ class DownloadSource(BaseEnum):
     PIXELDRAIN = 'Pixeldrain'
     GETCOMICS = 'GetComics'
     GETCOMICS_TORRENT = 'GetComics (torrent)'
+    LIBGENPLUS = 'Libgen+'
 
 
 class MonitorScheme(BaseEnum):
