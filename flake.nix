@@ -7,6 +7,18 @@
       ref = "nixos-unstable";
     };
 
+    libgencomics = {
+      type = "github";
+      owner = "matt1432";
+      repo = "LibgenComics";
+      ref = "v0.0.1";
+
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+      };
+    };
+
     systems = {
       type = "github";
       owner = "nix-systems";
@@ -18,19 +30,25 @@
     self,
     systems,
     nixpkgs,
+    libgencomics,
     ...
   }: let
     perSystem = attrs:
       nixpkgs.lib.genAttrs (import systems) (system:
         attrs (import nixpkgs {
           inherit system;
-          overlays = [self.overlays.default];
+          overlays = [
+            libgencomics.overlays.default
+            self.overlays.default
+          ];
           config.allowUnfreePredicate = pkg: builtins.elem pkg.pname ["rar"];
         }));
   in {
     overlays.default = final: prev: let
       pyPkgs = final.python3Packages.override {
         overrides = pyFinal: pyPrev: {
+          inherit (final.python3Packages) libgencomics beautifulsoup4 requests idna;
+
           bencoding = pyFinal.callPackage ({
             # nix build inputs
             buildPythonPackage,
@@ -46,30 +64,6 @@
               src = fetchPypi {
                 inherit pname version;
                 hash = "sha256-Q8zjHUhj4p1rxhFVHU6fJlK+KZXp1eFbRtg4PxgNREA=";
-              };
-            }) {};
-
-          typing-extensions = pyFinal.callPackage ({
-            # nix build inputs
-            buildPythonPackage,
-            fetchPypi,
-            # deps
-            flit-core,
-            ...
-          }: let
-            pname = "typing_extensions";
-            version = "4.12.2";
-          in
-            buildPythonPackage {
-              inherit pname version;
-              format = "pyproject";
-
-              build-system = [flit-core];
-              dependencies = [flit-core];
-
-              src = fetchPypi {
-                inherit pname version;
-                hash = "sha256-Gn6tVcflWd1N7ohW46iLQSJav+HOjfV7fBORX+Eh/7g=";
               };
             }) {};
         };
@@ -90,6 +84,7 @@
         cryptography,
         flask,
         flask-socketio,
+        libgencomics,
         requests,
         typing-extensions, # from overrides
         waitress,
@@ -112,6 +107,7 @@
           aiohttp
           flask-socketio
           websocket-client
+          libgencomics
         ];
 
         pythonInterpreter = python.withPackages (ps: dependencies);

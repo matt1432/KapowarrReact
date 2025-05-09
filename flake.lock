@@ -1,12 +1,37 @@
 {
   "nodes": {
+    "libgencomics": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "systems": [
+          "systems"
+        ],
+        "treefmt-nix": "treefmt-nix"
+      },
+      "locked": {
+        "lastModified": 1746813809,
+        "narHash": "sha256-dzVhUcv07Ic03sMdRwvTQ/FfXdbcmPwsMrhKNeIjRiA=",
+        "owner": "matt1432",
+        "repo": "LibgenComics",
+        "rev": "5304762035d526b4925093824d496b5a5450c9c1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "matt1432",
+        "ref": "v0.0.1",
+        "repo": "LibgenComics",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1745526057,
-        "narHash": "sha256-ITSpPDwvLBZBnPRS2bUcHY3gZSwis/uTe255QgMtTLA=",
+        "lastModified": 1746663147,
+        "narHash": "sha256-Ua0drDHawlzNqJnclTJGf87dBmaO/tn7iZ+TCkTRpRc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f771eb401a46846c1aebd20552521b233dd7e18b",
+        "rev": "dda3dcd3fe03e991015e9a74b22d35950f264a54",
         "type": "github"
       },
       "original": {
@@ -18,6 +43,7 @@
     },
     "root": {
       "inputs": {
+        "libgencomics": "libgencomics",
         "nixpkgs": "nixpkgs",
         "systems": "systems"
       }
@@ -34,6 +60,27 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default-linux",
+        "type": "github"
+      }
+    },
+    "treefmt-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "libgencomics",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1746216483,
+        "narHash": "sha256-4h3s1L/kKqt3gMDcVfN8/4v2jqHrgLIe4qok4ApH5x4=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "29ec5026372e0dec56f890e50dbe4f45930320fd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
         "type": "github"
       }
     }
