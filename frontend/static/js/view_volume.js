@@ -345,8 +345,18 @@ function showManualSearch(api_key, issue_id=null) {
 			title.href = result.link;
 			title.innerText = result.display_title;
 
+			let filesize = result.filesize;
+			if (filesize) {
+				const sizeMb = filesize * Math.pow(10, -6);
+				filesize = `${sizeMb.toFixed(2)} MB`;
+			}
+			else {
+				filesize = "";
+			}
+
+			entry.querySelector('.size-column').innerText = filesize;
+
 			entry.querySelector('.issue-column').innerText = result.issue_number ?? "";
-			entry.querySelector('.size-column').innerText = result.filesize ?? "";
 			entry.querySelector('.pages-column').innerText = result.pages ?? "";
 			entry.querySelector('.releaser-column').innerText = result.releaser ?? "";
 			entry.querySelector('.scan-type-column').innerText = result.scan_type ?? "";
