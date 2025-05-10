@@ -345,6 +345,13 @@ function showManualSearch(api_key, issue_id=null) {
 			title.href = result.link;
 			title.innerText = result.display_title;
 
+			entry.querySelector('.issue-column').innerText = result.issue_number ?? "";
+			entry.querySelector('.size-column').innerText = result.filesize ?? "";
+			entry.querySelector('.pages-column').innerText = result.pages ?? "";
+			entry.querySelector('.releaser-column').innerText = result.releaser ?? "";
+			entry.querySelector('.scan-type-column').innerText = result.scan_type ?? "";
+			entry.querySelector('.resolution-column').innerText = result.resolution ?? "";
+			entry.querySelector('.dpi-column').innerText = result.dpi ?? "";
 			entry.querySelector('.source-column').innerText = result.source;
 
 			const download_button = entry.querySelector('.search-action-column :nth-child(1)');

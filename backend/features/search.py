@@ -161,11 +161,17 @@ class SearchLibgenPlus:
                 "year": file_result.issue.year,
                 "volume_number": None,
                 "special_version": None,
-                "issue_number": self.issue_number,
+                "issue_number": file_result.issue.number or "",
                 "annual": False,
                 "link": file_result.download_link,
                 "display_title": file_result.filename,
                 "source": "Libgen+",
+                "filesize": file_result.filesize or 0,
+                "pages": file_result.pages or 0,
+                "releaser": file_result.releaser or "",
+                "scan_type": file_result.scan_type or "",
+                "resolution": file_result.resolution or "",
+                "dpi": file_result.dpi or "",
             }))
 
         return results

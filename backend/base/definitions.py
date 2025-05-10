@@ -372,6 +372,12 @@ class SearchResultData(FilenameData):
     link: str
     display_title: str
     source: str
+    filesize: int
+    pages: int
+    releaser: str
+    scan_type: str
+    resolution: str
+    dpi: str
 
 
 class SearchResultMatchData(TypedDict):
