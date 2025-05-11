@@ -327,7 +327,11 @@ def setup_db() -> None:
         CREATE TABLE IF NOT EXISTS files(
             id INTEGER PRIMARY KEY,
             filepath TEXT UNIQUE NOT NULL,
-            size INTEGER
+            size INTEGER,
+            releaser VARCHAR(255),
+            scan_type VARCHAR(255),
+            resolution VARCHAR(255),
+            dpi VARCHAR(255)
         );
         CREATE TABLE IF NOT EXISTS issues_files(
             file_id INTEGER NOT NULL,

@@ -75,7 +75,7 @@ def add_to_history(download: Download) -> None:
 
 def add_file_to_database(download: Download) -> None:
     "Register files in database and match to a volume/issue"
-    scan_files(download.volume_id, filepath_filter=download.files)
+    scan_files(download.volume_id, download=download, filepath_filter=download.files)
     return
 
 
@@ -228,7 +228,8 @@ def convert_file(download: Download) -> None:
     download.files += mass_convert(
         download.volume_id,
         download.issue_id,
-        filepath_filter=download.files
+        filepath_filter=download.files,
+        download=download
     )
     return
 

@@ -17,7 +17,7 @@ from backend.base.custom_exceptions import (DownloadLimitReached,
 from backend.base.definitions import (BlocklistReason, Constants,
                                       Download, DownloadSource,
                                       DownloadState, ExternalDownload,
-                                      FailReason, SeedingHandling)
+                                      FailReason, SeedingHandling, SearchResultData)
 from backend.base.files import create_folder, delete_file_folder
 from backend.base.helpers import CommaList, Singleton, get_subclasses
 from backend.base.logging import LOGGER
@@ -374,7 +374,7 @@ class DownloadHandler(metaclass=Singleton):
 
     async def add(
         self,
-        link: str,
+        result: Union[SearchResultData, str],
         volume_id: int,
         issue_id: Union[int, None] = None,
         force_match: bool = False
@@ -400,6 +400,8 @@ class DownloadHandler(metaclass=Singleton):
             Queue entries that were added from the link and reason for failing
             if no entries were added.
         """
+        link = result if isinstance(result, str) else result["link"]
+
         LOGGER.info(
             'Adding download for ' +
             f'volume {volume_id}{f" issue {issue_id}" if issue_id else ""}: ' +
@@ -423,6 +425,10 @@ class DownloadHandler(metaclass=Singleton):
                 None,
                 None,
                 None,
+                result["releaser"] if not isinstance(result, str) and "releaser" in result else None,
+                result["scan_type"] if not isinstance(result, str) and "scan_type" in result else None,
+                result["resolution"] if not isinstance(result, str) and "resolution" in result else None,
+                result["dpi"] if not isinstance(result, str) and "dpi" in result else None,
                 force_match,
             ))
 

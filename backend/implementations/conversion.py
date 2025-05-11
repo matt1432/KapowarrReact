@@ -10,7 +10,7 @@ from os.path import splitext
 from typing import Dict, List, Set, Type, Union
 from zipfile import ZipFile
 
-from backend.base.definitions import FileConstants, FileConverter
+from backend.base.definitions import Download, FileConstants, FileConverter
 from backend.base.helpers import PortablePool, filtered_iter, get_subclasses
 from backend.base.logging import LOGGER
 from backend.implementations.converters import run_rar
@@ -190,7 +190,8 @@ def mass_convert(
     volume_id: int,
     issue_id: Union[int, None] = None,
     filepath_filter: List[str] = [],
-    update_websocket: bool = False
+    update_websocket: bool = False,
+    download: Union[Download, None] = None,
 ) -> List[str]:
     """Convert files for a volume or issue.
 
@@ -209,7 +210,7 @@ def mass_convert(
             Defaults to False.
 
     Returns:
-        List[str]: The new filenames, only of files that have been be converted.
+        List[str]: The new filenames, only of files that have been converted.
     """
     settings = Settings().get_settings()
     volume = Volume(volume_id)
@@ -279,6 +280,6 @@ def mass_convert(
                     planned_conversions
                 ))
 
-    scan_files(volume_id)
+    scan_files(volume_id, download=download)
 
     return result

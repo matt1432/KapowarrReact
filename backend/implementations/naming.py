@@ -719,6 +719,9 @@ def preview_mass_rename(
 
         LOGGER.debug(f'Renaming: original filename: {file}')
 
+        # TODO: add extra info to renaming
+        # file_data: GeneralFileData = FilesDB.fetch(filepath=file)[0]
+
         issues = FilesDB.issues_covered(file)
         if len(issues) > 1:
             gen_filename_body = generate_issue_name(

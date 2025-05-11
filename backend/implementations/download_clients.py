@@ -155,6 +155,22 @@ class BaseDirectDownload(Download):
     def download_folder(self) -> str:
         return self._download_folder
 
+    @property
+    def releaser(self) -> Union[str, None]:
+        return self._releaser
+
+    @property
+    def scan_type(self) -> Union[str, None]:
+        return self._scan_type
+
+    @property
+    def resolution(self) -> Union[str, None]:
+        return self._resolution
+
+    @property
+    def dpi(self) -> Union[str, None]:
+        return self._dpi
+
     def __init__(
         self,
         download_link: str,
@@ -168,6 +184,11 @@ class BaseDirectDownload(Download):
         web_link: Union[str, None],
         web_title: Union[str, None],
         web_sub_title: Union[str, None],
+
+        releaser: Union[str, None] = None,
+        scan_type: Union[str, None] = None,
+        resolution: Union[str, None] = None,
+        dpi: Union[str, None] = None,
 
         forced_match: bool = False
     ) -> None:
@@ -196,6 +217,11 @@ class BaseDirectDownload(Download):
         self._speed = 0.0
         self._download_thread = None
         self._download_folder = settings.download_folder
+
+        self._releaser = releaser
+        self._scan_type = scan_type
+        self._resolution = resolution
+        self._dpi = dpi
 
         self._ssn = Session()
 

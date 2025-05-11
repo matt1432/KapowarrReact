@@ -191,6 +191,7 @@ class ZIPtoFOLDER(FileConverter):
         )
 
         if resulting_files:
+            # FIXME: this deletes all the extra info
             scan_files(volume_id, filepath_filter=resulting_files)
             resulting_files = mass_rename(
                 volume_id,
@@ -354,6 +355,7 @@ class RARtoFOLDER(FileConverter):
         )
 
         if resulting_files:
+            # FIXME: this deletes all the extra info
             scan_files(volume_id, filepath_filter=resulting_files)
             resulting_files = mass_rename(
                 volume_id,

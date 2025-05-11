@@ -1204,3 +1204,29 @@ class MigrateAddMonitorNewIssuesToVolumes(DBMigrator):
                 monitor_new_issues BOOL NOT NULL DEFAULT 1;
         """)
         return
+
+
+class MigrateAddFileInfo(DBMigrator):
+    start_version = 38
+
+    def run(self) -> None:
+        # V38 -> V39
+
+        from backend.internals.db import get_db
+
+        get_db().executescript("""
+            BEGIN TRANSACTION;
+            PRAGMA defer_foreign_keys = ON;
+
+            ALTER TABLE files ADD COLUMN
+                releaser VARCHAR(255);
+            ALTER TABLE files ADD COLUMN
+                scan_type VARCHAR(255);
+            ALTER TABLE files ADD COLUMN
+                resolution VARCHAR(255);
+            ALTER TABLE files ADD COLUMN
+                dpi VARCHAR(255);
+
+            COMMIT;
+        """)
+        return

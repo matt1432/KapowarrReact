@@ -446,6 +446,10 @@ class FileData(TypedDict):
     id: int
     filepath: str
     size: int
+    releaser: str
+    scan_type: str
+    resolution: str
+    dpi: str
 
 
 class GeneralFileData(FileData):
@@ -949,6 +953,26 @@ class Download(ABC):
     def download_folder(self) -> str:
         ...
 
+    @property
+    @abstractmethod
+    def releaser(self) -> Union[str, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def scan_type(self) -> Union[str, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def resolution(self) -> Union[str, None]:
+        ...
+
+    @property
+    @abstractmethod
+    def dpi(self) -> Union[str, None]:
+        ...
+
     @abstractmethod
     def __init__(
         self,
@@ -963,6 +987,11 @@ class Download(ABC):
         web_link: Union[str, None],
         web_title: Union[str, None],
         web_sub_title: Union[str, None],
+
+        releaser: Union[str, None] = None,
+        scan_type: Union[str, None] = None,
+        resolution: Union[str, None] = None,
+        dpi: Union[str, None] = None,
 
         forced_match: bool = False
     ) -> None:

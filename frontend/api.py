@@ -33,7 +33,7 @@ from backend.base.definitions import (BlocklistReason, BlocklistReasonID,
                                       CredentialData, CredentialSource,
                                       DownloadSource, LibraryFilters,
                                       LibrarySorting, MonitorScheme,
-                                      SpecialVersion, VolumeData)
+                                      SpecialVersion, VolumeData, SearchResultData)
 from backend.base.files import delete_empty_parent_folders, delete_file_folder
 from backend.base.logging import LOGGER, get_log_filepath
 from backend.features.download_queue import (DownloadHandler,
@@ -128,6 +128,16 @@ def extract_key(request, key: str, check_existence: bool = True) -> Any:
     Returns:
         Any: The formatted value of the key.
     """
+
+    if key == 'result':
+        try:
+            return SearchResultData({
+                key: request.values.get(key)
+                for key in SearchResultData.__annotations__.keys()
+            })
+        except (ValueError, TypeError):
+            raise InvalidKeyValue(key, value)
+
     value: Any = request.values.get(key)
     if check_existence and value is None:
         raise KeyNotFound(key)
@@ -838,9 +848,9 @@ def api_volume_manual_search(id: int):
 @auth
 def api_volume_download(id: int):
     library.get_volume(id)
-    link: str = extract_key(request, 'link')
+    result_key: SearchResultData = extract_key(request, 'result')
     force_match: bool = extract_key(request, 'force_match')
-    result = run(DownloadHandler().add(link, id, force_match=force_match))
+    result = run(DownloadHandler().add(result_key, id, force_match=force_match))
     return return_api(
         {
             'result': (result or (None,))[0],
@@ -867,10 +877,10 @@ def api_issue_manual_search(id: int):
 @auth
 def api_issue_download(id: int):
     volume_id = library.get_issue(id).get_data().volume_id
-    link = extract_key(request, 'link')
+    result_key: SearchResultData = extract_key(request, 'result')
     force_match: bool = extract_key(request, 'force_match')
     result = run(DownloadHandler().add(
-        link, volume_id, id, force_match=force_match
+        result_key, volume_id, id, force_match=force_match
     ))
     return return_api(
         {
