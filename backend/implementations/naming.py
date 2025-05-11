@@ -36,6 +36,7 @@ from backend.internals.settings import Settings
 
 remove_year_in_image_regex = compile(r'(?:19|20)\d{2}')
 
+# TODO: make Unknown value not show up in file names (also don't show surrounding chars)
 
 # =====================
 # region Name generation
@@ -95,7 +96,8 @@ def _get_volume_naming_keys(
 
 def _get_issue_naming_keys(
     volume: Union[int, VolumeData],
-    issue: Union[int, IssueData]
+    issue: Union[int, IssueData],
+    file_data: Union[GeneralFileData, None] = None,
 ) -> IssueNamingKeys:
     """Generate the values of the naming keys for an issue.
 
@@ -131,7 +133,11 @@ def _get_issue_naming_keys(
             or None
         ),
         issue_release_date=issue_data.date,
-        issue_release_year=extract_year_from_date(issue_data.date)
+        issue_release_year=extract_year_from_date(issue_data.date),
+        releaser=file_data["releaser"] if file_data is not None and "releaser" in file_data else None,
+        scan_type=file_data["scan_type"] if file_data is not None and "scan_type" in file_data else None,
+        resolution=file_data["resolution"] if file_data is not None and "resolution" in file_data else None,
+        dpi=file_data["dpi"] if file_data is not None and "dpi" in file_data else None,
     )
 
 
@@ -183,7 +189,8 @@ def generate_volume_folder_path(
 def generate_issue_name(
     volume_id: int,
     special_version: SpecialVersion,
-    calculated_issue_number: Union[float, Tuple[float, float], None]
+    calculated_issue_number: Union[float, Tuple[float, float], None],
+    file_data: Union[GeneralFileData, None] = None,
 ) -> str:
     """Generate an issue file name based on the format string for the issue
     type.
@@ -218,7 +225,7 @@ def generate_issue_name(
         issue = Issue.from_volume_and_calc_number(
             volume_id, create_range(calculated_issue_number)[0] # type: ignore
         )
-        formatting_data = _get_issue_naming_keys(volume_id, issue.id)
+        formatting_data = _get_issue_naming_keys(volume_id, issue.id, file_data=file_data)
         format = sv.file_naming_vai
 
     elif special_version != SpecialVersion.NORMAL:
@@ -236,7 +243,7 @@ def generate_issue_name(
             volume_id,
             create_range(calculated_issue_number)[0] # type: ignore
         )
-        formatting_data = _get_issue_naming_keys(volume_id, issue.id)
+        formatting_data = _get_issue_naming_keys(volume_id, issue.id, file_data=file_data)
 
         if formatting_data.issue_title is None:
             format = sv.file_naming_empty
@@ -719,8 +726,7 @@ def preview_mass_rename(
 
         LOGGER.debug(f'Renaming: original filename: {file}')
 
-        # TODO: add extra info to renaming
-        # file_data: GeneralFileData = FilesDB.fetch(filepath=file)[0]
+        file_data: GeneralFileData = FilesDB.fetch(filepath=file)[0]
 
         issues = FilesDB.issues_covered(file)
         if len(issues) > 1:
@@ -728,6 +734,7 @@ def preview_mass_rename(
                 volume_id,
                 volume_data.special_version,
                 (issues[0], issues[-1]),
+                file_data=file_data,
             )
 
         elif issues:
@@ -735,6 +742,7 @@ def preview_mass_rename(
                 volume_id,
                 volume_data.special_version,
                 issues[0],
+                file_data=file_data,
             )
 
             if basename(file.lower()) in FileConstants.METADATA_FILES:
@@ -745,7 +753,8 @@ def preview_mass_rename(
             gen_filename_body = generate_issue_name(
                 volume_id,
                 SpecialVersion.COVER,
-                calculated_issue_number=None
+                calculated_issue_number=None,
+                file_data=file_data,
             )
 
         else:

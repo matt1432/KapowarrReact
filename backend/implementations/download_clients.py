@@ -258,7 +258,13 @@ class BaseDirectDownload(Download):
                 self._filename_body = generate_issue_name(
                     volume_id,
                     volume.get_data().special_version,
-                    covered_issues
+                    covered_issues,
+                    {
+                        "releaser": releaser,
+                        "scan_type": scan_type,
+                        "resolution": resolution,
+                        "dpi": dpi,
+                    }
                 )
 
         except IssueNotFound as e:

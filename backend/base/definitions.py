@@ -511,6 +511,10 @@ class IssueNamingKeys(SVNamingKeys):
     issue_title: Union[str, None]
     issue_release_date: Union[str, None]
     issue_release_year: Union[int, None]
+    releaser: Union[int, None]
+    scan_type: Union[int, None]
+    resolution: Union[int, None]
+    dpi: Union[int, None]
 
 
 @dataclass
