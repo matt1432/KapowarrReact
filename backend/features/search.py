@@ -141,6 +141,7 @@ class SearchGetComics(SearchSource):
         return await search_getcomics(session, self.query)
 
 
+# TODO: add libgen search with series URL
 class SearchLibgenPlus:
     def __init__(self, comicvine_id: int, issue_number: int | None):
         self.comicvine_id = comicvine_id
@@ -280,6 +281,7 @@ def manual_search(
         if not search_results and not libgen_results:
             continue
 
+        # TODO: allow disabling specific sources
         results: List[MatchedSearchResultData] = [
             {
                 **result,
