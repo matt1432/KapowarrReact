@@ -66,6 +66,9 @@ class SettingsValues:
 
     flaresolverr_base_url: str = ''
 
+    enable_getcomics: bool = True
+    enable_libgen: bool = True
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             k: v if not isinstance(v, BaseEnum) else v.value

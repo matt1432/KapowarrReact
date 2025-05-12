@@ -143,8 +143,9 @@ class SearchGetComics(SearchSource):
 
 # TODO: add libgen search with series URL
 class SearchLibgenPlus:
-    def __init__(self, comicvine_id: int, issue_number: int | None):
+    def __init__(self, comicvine_id: int, volume_number: int, issue_number: int | None):
         self.comicvine_id = comicvine_id
+        self.volume_number = volume_number
         self.issue_number = issue_number
 
     def search(self) -> List[SearchResultData]:
@@ -160,7 +161,7 @@ class SearchLibgenPlus:
             results.append(SearchResultData({
                 "series": file_result.issue.series.title,
                 "year": file_result.issue.year,
-                "volume_number": None,
+                "volume_number": self.volume_number,
                 "special_version": None,
                 "issue_number": file_result.issue.number or "",
                 "annual": False,
@@ -268,20 +269,23 @@ def manual_search(
             )
 
         search_title = title.replace(':', '')
-        search_results = run(search_multiple_queries(*(
-            format.format(
-                title=search_title, volume_number=volume_data.volume_number,
-                year=volume_data.year, issue_number=issue_number
-            )
-            for format in formats
-        )))
+        search_results = []
+        if Settings().sv.enable_getcomics:
+            search_results = run(search_multiple_queries(*(
+                format.format(
+                    title=search_title, volume_number=volume_data.volume_number,
+                    year=volume_data.year, issue_number=issue_number
+                )
+                for format in formats
+            )))
 
-        libgen_results = SearchLibgenPlus(volume_data.comicvine_id, issue_number).search()
+        libgen_results = []
+        if Settings().sv.enable_libgen:
+            libgen_results = SearchLibgenPlus(volume_data.comicvine_id, volume_data.volume_number, issue_number).search()
 
         if not search_results and not libgen_results:
             continue
 
-        # TODO: allow disabling specific sources
         results: List[MatchedSearchResultData] = [
             {
                 **result,

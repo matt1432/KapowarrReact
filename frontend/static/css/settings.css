@@ -236,7 +236,7 @@
 	justify-content: flex-start;
 }
 
-#builtin-window .window-content > :where(h2, p),
+#builtin-window .window-content > :where(h2, p, #gc-title, #lg-title),
 #builtin-window .window-content form {
 	display: none;
 	width: 100%;
@@ -258,12 +258,24 @@
 	display: block;
 }
 
-#builtin-window[data-tag="getcomics"] .window-content :where(#gc-title, #gc-desc) {
+#builtin-window[data-tag="getcomics"] .window-content :where(#gc-desc) {
 	display: block;
 }
 
-#builtin-window[data-tag="libgen"] .window-content :where(#lg-title, #lg-desc) {
+#builtin-window[data-tag="getcomics"] .window-content :where(#gc-title) {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#builtin-window[data-tag="libgen"] .window-content :where(#lg-desc) {
 	display: block;
+}
+
+#builtin-window[data-tag="libgen"] .window-content :where(#lg-title) {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 #builtin-window #cred-container tbody td:last-child {

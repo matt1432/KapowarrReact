@@ -359,16 +359,40 @@ function addCredential() {
 	});
 };
 
+const toggles = {
+    getcomics: document.querySelector('#gc-toggle'),
+    libgen: document.querySelector('#lg-toggle'),
+};
+
+function fillSettings(api_key) {
+	fetchAPI('/settings', api_key)
+	.then(json => {
+		toggles.getcomics.checked = json.result.enable_getcomics;
+		toggles.libgen.checked = json.result.enable_libgen;
+	});
+};
+
 // code run on load
 
 usingApiKey()
 .then(api_key => {
+	fillSettings(api_key);
 	fillCredentials(api_key);
 	loadTorrentClients(api_key);
 	document.querySelector('#delete-torrent-edit').onclick = e => deleteTorrent(api_key);
 	document.querySelector('#test-torrent-edit').onclick = e => testEditTorrent(api_key);
 	document.querySelector('#test-torrent-add').onclick = e => testAddTorrent(api_key);
 	document.querySelector('#add-torrent-client').onclick = e => loadTorrentList(api_key);
+
+    toggles.getcomics.onchange = () => {
+        const data = {'enable_getcomics': toggles.getcomics.checked};
+        sendAPI('PUT', '/settings', api_key, {}, data);
+    };
+
+    toggles.libgen.onchange = () => {
+        const data = {'enable_libgen': toggles.libgen.checked};
+        sendAPI('PUT', '/settings', api_key, {}, data);
+    };
 });
 
 document.querySelector('#edit-torrent-form').action = 'javascript:saveEditTorrent()';
