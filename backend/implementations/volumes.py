@@ -1196,9 +1196,9 @@ def determine_special_version(volume_id: int) -> SpecialVersion:
 
 def scan_files(
     volume_id: int,
-    download: Union[Download, None] = None,
     filepath_filter: List[str] = [],
-    del_unmatched_files: bool = True
+    del_unmatched_files: bool = True,
+    download: Union[Download, None] = None,
 ) -> None:
     """Scan inside the volume folder for files and map them to issues.
 
