@@ -141,20 +141,20 @@ class SearchGetComics(SearchSource):
         return await search_getcomics(session, self.query)
 
 
-# TODO: add libgen search with series URL
 class SearchLibgenPlus:
     def __init__(self, comicvine_id: int, volume_number: int, issue_number: int | None):
         self.comicvine_id = comicvine_id
         self.volume_number = volume_number
         self.issue_number = issue_number
 
-    def search(self) -> List[SearchResultData]:
+    def search(self, libgen_url: Union[str, None] = None) -> List[SearchResultData]:
         results: List[SearchResultData] = []
 
         file_results = LibgenSearch().search_comicvine_id(
             Settings().sv.comicvine_api_key,
             self.comicvine_id,
             str(self.issue_number) if self.issue_number is not None else None,
+            libgen_url,
         )
 
         for file_result in file_results:
@@ -209,7 +209,8 @@ async def search_multiple_queries(*queries: str) -> List[SearchResultData]:
 
 def manual_search(
     volume_id: int,
-    issue_id: Union[int, None] = None
+    issue_id: Union[int, None] = None,
+    libgen_url: Union[str, None] = None,
 ) -> List[MatchedSearchResultData]:
     """Do a manual search for a volume or issue.
 
@@ -281,7 +282,11 @@ def manual_search(
 
         libgen_results = []
         if Settings().sv.enable_libgen:
-            libgen_results = SearchLibgenPlus(volume_data.comicvine_id, volume_data.volume_number, issue_number).search()
+            libgen_results = SearchLibgenPlus(
+                volume_data.comicvine_id,
+                volume_data.volume_number,
+                issue_number,
+            ).search(libgen_url)
 
         if not search_results and not libgen_results:
             continue

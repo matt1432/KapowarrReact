@@ -309,8 +309,10 @@ function showManualSearch(api_key, issue_id=null) {
 	const message = document.querySelector('#searching-message');
 	const table = document.querySelector('#search-result-table');
 	const tbody = table.querySelector('tbody');
+    const libgenInput = document.querySelector('#libgen-input');
+    const libgenContainer = libgenInput.parentNode;
 
-	hide([table], [message]);
+	hide([table, libgenContainer], [message]);
 
 	// Show window
 	showWindow('manual-search-window');
@@ -322,7 +324,8 @@ function showManualSearch(api_key, issue_id=null) {
 			: `/volumes/${volume_id}/manualsearch`;
 
 	fetchAPI(url, api_key)
-	.then(json => {
+	.then(jsonObj => {
+        const setupTable = (json) => {
 		json.result.forEach(result => {
 			const entry = ViewEls.pre_build.manual_search.cloneNode(true);
 			tbody.appendChild(entry);
@@ -391,6 +394,28 @@ function showManualSearch(api_key, issue_id=null) {
 		});
 
 		hide([message], [table]);
+        };
+
+        if (jsonObj.result.fail_reason === 'Libgen series could not be found. Try again with a link to it if it exists.') {
+            libgenInput.addEventListener("keypress", (event) => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+	                hide([libgenContainer], [message]);
+
+                    sendAPI('POST', url, api_key, {url: libgenInput.value})
+                    .then(response => response.json())
+                    .then(jsonObj2 => {
+                        tbody.innerHTML = '';
+                        setupTable(jsonObj2);
+                        hide([], [table]);
+                    });
+                }
+            });
+            hide([message, table], [libgenContainer]);
+        }
+        else {
+            setupTable(jsonObj);
+        }
 	});
 };
 

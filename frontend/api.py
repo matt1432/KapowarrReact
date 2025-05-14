@@ -7,6 +7,7 @@ from os.path import dirname, exists
 from typing import Any, Dict, List, Tuple, Type, Union
 
 from flask import Blueprint, request, send_file
+from libgencomics import LibgenSeriesNotFoundException
 
 from backend.base.custom_exceptions import (BlocklistEntryNotFound,
                                             ClientDownloading,
@@ -834,12 +835,25 @@ def api_convert_issue(id: int):
 # =====================
 
 
-@api.route('/volumes/<int:id>/manualsearch', methods=['GET'])
+@api.route('/volumes/<int:id>/manualsearch', methods=['GET', 'POST'])
 @error_handler
 @auth
 def api_volume_manual_search(id: int):
     library.get_volume(id)
-    result = manual_search(id)
+
+    if request.method == 'POST':
+        result = manual_search(id, None, extract_key(request, 'url'))
+        return return_api(result)
+
+    try:
+        result = manual_search(id)
+    except LibgenSeriesNotFoundException:
+        return return_api(
+            {
+                'result': None,
+                'fail_reason': 'Libgen series could not be found. Try again with a link to it if it exists.',
+            },
+        )
     return return_api(result)
 
 
@@ -860,15 +874,28 @@ def api_volume_download(id: int):
     )
 
 
-@api.route('/issues/<int:id>/manualsearch', methods=['GET'])
+@api.route('/issues/<int:id>/manualsearch', methods=['GET', 'POST'])
 @error_handler
 @auth
 def api_issue_manual_search(id: int):
     volume_id = library.get_issue(id).get_data().volume_id
-    result = manual_search(
-        volume_id,
-        id
-    )
+
+    if request.method == 'POST':
+        result = manual_search(volume_id, id, extract_key(request, 'url'))
+        return return_api(result)
+
+    try:
+        result = manual_search(
+            volume_id,
+            id
+        )
+    except LibgenSeriesNotFoundException:
+        return return_api(
+            {
+                'result': None,
+                'fail_reason': 'Libgen series could not be found. Try again with a link to it if it exists.',
+            },
+        )
     return return_api(result)
 
 
