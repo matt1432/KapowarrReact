@@ -131,13 +131,13 @@
           postPatch = ''
             # Disable PWA for now
             substituteInPlace ./src/backend/internals/settings.py \
-                --replace-fail "with open(filename, 'w') as f:" "" \
-                --replace-fail "dump(manifest, f, indent=4)" ""
+                --replace-fail 'with open(filename, "w") as f:' "" \
+                --replace-fail 'dump(manifest, f, indent=4)' ""
 
             substituteInPlace ./src/backend/implementations/converters.py \
                 --replace-fail \
-                    "exe = folder_path('backend', 'lib', Constants.RAR_EXECUTABLES[platform])" \
-                    "exe = '${getExe rar}'"
+                    'exe = folder_path("backend", "lib", Constants.RAR_EXECUTABLES[platform])' \
+                    'exe = "${getExe rar}"'
           '';
 
           meta = {
