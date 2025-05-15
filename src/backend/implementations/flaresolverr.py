@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
-
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Mapping, Tuple, Union
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any
 
 from requests import RequestException
 
@@ -15,14 +14,14 @@ if TYPE_CHECKING:
 
 
 class FlareSolverr(metaclass=Singleton):
-    cookie_mapping: Dict[str, Dict[str, str]] = {}
-    ua_mapping: Dict[str, str] = {}
+    cookie_mapping: dict[str, dict[str, str]] = {}
+    ua_mapping: dict[str, str] = {}
 
     def __init__(self) -> None:
         self.api_base = Constants.FS_API_BASE
 
-        self.session_id: Union[str, None] = None
-        self.base_url: Union[str, None] = None
+        self.session_id: str | None = None
+        self.base_url: str | None = None
 
         return
 
@@ -81,7 +80,7 @@ class FlareSolverr(metaclass=Singleton):
         """
         return bool(self.session_id and self.base_url)
 
-    def get_ua_cookies(self, url: str) -> Tuple[str, Dict[str, str]]:
+    def get_ua_cookies(self, url: str) -> tuple[str, dict[str, str]]:
         """Get the user agent and cookies for a certain URL. The UA and cookies
         can be cleared by CF, so use them to avoid challenges. In case the URL
         is not CF protected, or hasn't explicitly been cleared yet, then the
@@ -101,7 +100,7 @@ class FlareSolverr(metaclass=Singleton):
 
     def handle_cf_block(
         self, url: str, headers: Mapping[str, str]
-    ) -> Union[None, Dict[str, Any]]:
+    ) -> None | dict[str, Any]:
         """Let FS handle a URL to aquire cleared cookies and UA. These become
         available using `get_ua_cookies()` after this method completes.
 
@@ -142,7 +141,7 @@ class FlareSolverr(metaclass=Singleton):
 
     async def handle_cf_block_async(
         self, session: AsyncSession, url: str, headers: Mapping[str, str]
-    ) -> Union[None, Dict[str, Any]]:
+    ) -> None | dict[str, Any]:
         """Let FS handle a URL to aquire cleared cookies and UA. These become
         available using `get_ua_cookies()` after this method completes.
 

@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
-
 from asyncio import run
 from glob import glob
 from itertools import chain
 from os.path import abspath, basename, dirname, isfile, splitext
-from typing import Any, Dict, List, Union
+from typing import Any
 
 from backend.base.custom_exceptions import InvalidKeyValue, VolumeAlreadyAdded
 from backend.base.definitions import (
@@ -34,11 +32,11 @@ from backend.internals.db_models import FilesDB
 
 
 def propose_library_import(
-    folder_filter: Union[str, None] = None,
+    folder_filter: str | None = None,
     limit: int = 20,
     limit_parent_folder: bool = False,
     only_english: bool = True,
-) -> List[dict]:
+) -> list[dict]:
     """Get list of unimported files
     and their suggestion for a matching volume on CV.
 
@@ -121,8 +119,8 @@ def propose_library_import(
 
     # Find a match for the files on CV
     cv = ComicVine()
-    result: List[Dict[str, Any]] = []
-    uf: List[FilenameData] = list(unimported_files.keys())
+    result: list[dict[str, Any]] = []
+    uf: list[FilenameData] = list(unimported_files.keys())
     uf.sort(
         key=lambda f: (
             f["series"],
@@ -150,7 +148,7 @@ def propose_library_import(
     return result
 
 
-def import_library(matches: List[CVFileMapping], rename_files: bool = False) -> None:
+def import_library(matches: list[CVFileMapping], rename_files: bool = False) -> None:
     """Add volume to library and import linked files.
 
     Args:
@@ -161,7 +159,7 @@ def import_library(matches: List[CVFileMapping], rename_files: bool = False) -> 
     """
     LOGGER.info("Starting library import")
 
-    cvid_to_filepath: Dict[int, List[str]] = {}
+    cvid_to_filepath: dict[int, list[str]] = {}
     for m in matches:
         cvid_to_filepath.setdefault(m["id"], []).append(m["filepath"])
     LOGGER.debug(f"id_to_filepath: {cvid_to_filepath}")

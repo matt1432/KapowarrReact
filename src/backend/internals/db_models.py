@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
-
 """
 Interacting with the database
 """
 
+from collections.abc import Iterable
 from os import stat
-from typing import Iterable, List, Union
 
 from backend.base.custom_exceptions import FileNotFound
 from backend.base.definitions import Download, FileData, GeneralFileData
@@ -20,11 +18,11 @@ class FilesDB:
     @staticmethod
     def fetch(
         *,
-        volume_id: Union[int, None] = None,
-        issue_id: Union[int, None] = None,
-        file_id: Union[int, None] = None,
-        filepath: Union[str, None] = None,
-    ) -> List[FileData]:
+        volume_id: int | None = None,
+        issue_id: int | None = None,
+        file_id: int | None = None,
+        filepath: str | None = None,
+    ) -> list[FileData]:
         cursor = get_db()
         if volume_id:
             cursor.execute(
@@ -84,7 +82,7 @@ class FilesDB:
                 ORDER BY filepath;
                 """)
 
-        result: List[FileData] = cursor.fetchalldict()  # type: ignore
+        result: list[FileData] = cursor.fetchalldict()  # type: ignore
 
         if (file_id or filepath) and not result:
             raise FileNotFound
@@ -92,7 +90,7 @@ class FilesDB:
         return result
 
     @staticmethod
-    def volume_of_file(filepath: str) -> Union[int, None]:
+    def volume_of_file(filepath: str) -> int | None:
         volume_id = (
             get_db()
             .execute(
@@ -137,7 +135,7 @@ class FilesDB:
         return volume_id[0]
 
     @staticmethod
-    def issues_covered(filepath: str) -> List[float]:
+    def issues_covered(filepath: str) -> list[float]:
         return first_of_column(
             get_db().execute(
                 """
@@ -159,7 +157,7 @@ class FilesDB:
     @staticmethod
     def add_file(
         filepath: str,
-        download: Union[Download, None] = None,
+        download: Download | None = None,
     ) -> int:
         cursor = get_db()
 
@@ -255,8 +253,8 @@ class FilesDB:
 
 class GeneralFilesDB:
     @staticmethod
-    def fetch(volume_id: int) -> List[GeneralFileData]:
-        result: List[GeneralFileData] = (
+    def fetch(volume_id: int) -> list[GeneralFileData]:
+        result: list[GeneralFileData] = (
             get_db()
             .execute(
                 """

@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-
 from os.path import abspath, isdir, samefile
 from shutil import disk_usage
 from sqlite3 import IntegrityError
-from typing import Dict, List, Union
 
 from backend.base.custom_exceptions import (
     FolderNotFound,
@@ -24,7 +21,7 @@ from backend.internals.settings import Settings
 
 
 class RootFolders(metaclass=Singleton):
-    cache: Dict[int, RootFolder] = {}
+    cache: dict[int, RootFolder] = {}
 
     def __init__(self) -> None:
         if not self.cache:
@@ -59,7 +56,7 @@ class RootFolders(metaclass=Singleton):
 
         return
 
-    def get_all(self) -> List[RootFolder]:
+    def get_all(self) -> list[RootFolder]:
         """Get all rootfolders.
 
         Returns:
@@ -101,7 +98,7 @@ class RootFolders(metaclass=Singleton):
         return
 
     def add(
-        self, folder: str, _exclude_folder_from_check: Union[str, None] = None
+        self, folder: str, _exclude_folder_from_check: str | None = None
     ) -> RootFolder:
         """Add a rootfolder.
 
@@ -190,7 +187,7 @@ class RootFolders(metaclass=Singleton):
         new_id = self.add(new_folder, _exclude_folder_from_check=current_folder).id
 
         cursor = get_db()
-        volume_ids: List[int] = first_of_column(
+        volume_ids: list[int] = first_of_column(
             cursor.execute(
                 "SELECT id FROM volumes WHERE root_folder = ?;", (root_folder_id,)
             )

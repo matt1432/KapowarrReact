@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
-
+from collections.abc import Mapping
 from dataclasses import _MISSING_TYPE, asdict, dataclass, field
 from importlib.metadata import version
 from json import dump, load
 from logging import INFO
 from os import urandom
 from os.path import abspath, isdir, join, sep
-from typing import Any, Dict, Mapping
+from typing import Any
 
 from backend.base.custom_exceptions import (
     FolderNotFound,
@@ -72,7 +71,7 @@ class SettingsValues:
 
     service_preference: CommaList = field(
         default_factory=lambda: CommaList(
-            (s.value for s in GCDownloadSource._member_map_.values())
+            s.value for s in GCDownloadSource._member_map_.values()
         )
     )
     download_folder: str = folder_path("temp_downloads")
@@ -90,7 +89,7 @@ class SettingsValues:
     enable_getcomics: bool = True
     enable_libgen: bool = True
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             k: v if not isinstance(v, BaseEnum) else v.value
             for k, v in self.__dict__.items()
@@ -440,7 +439,7 @@ def update_manifest(url_base: str) -> None:
     """
     filename = folder_path("frontend", "static", "json", "pwa_manifest.json")
 
-    with open(filename, "r") as f:
+    with open(filename) as f:
         manifest = load(f)
         manifest["start_url"] = url_base + "/"
         manifest["icons"][0]["src"] = f"{url_base}/static/img/favicon.svg"

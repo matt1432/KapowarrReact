@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-
-from typing import Any, Dict, List, Tuple
-
-from typing_extensions import assert_never
+from typing import Any, assert_never
 
 from backend.base.custom_exceptions import (
     ClientNotWorking,
@@ -15,14 +11,14 @@ from backend.internals.db import get_db
 
 
 class Credentials:
-    auth_tokens: Dict[CredentialSource, Dict[str, Tuple[Any, int]]] = {}
+    auth_tokens: dict[CredentialSource, dict[str, tuple[Any, int]]] = {}
     """
     Store auth tokens as to avoid logging in while already having a cleared
     token. Maps from credential source to user identifier (something like user
     ID, email or username) to a tuple of the token and it's expiration time.
     """
 
-    def get_all(self) -> List[CredentialData]:
+    def get_all(self) -> list[CredentialData]:
         """Get all credentials.
 
         Returns:
@@ -79,7 +75,7 @@ class Credentials:
             **{**dict(result), "source": CredentialSource(result["source"])}
         )
 
-    def get_from_source(self, source: CredentialSource) -> List[CredentialData]:
+    def get_from_source(self, source: CredentialSource) -> list[CredentialData]:
         """Get credentials for the given source.
 
         Args:

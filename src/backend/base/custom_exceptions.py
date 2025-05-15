@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
-
 """
 All custom exceptions are defined here
 
 Note: Not all CE's inherit from CustomException.
 """
 
-from typing import Any, Union
+from typing import Any
 
 from backend.base.definitions import (
     BlocklistReason,
@@ -379,7 +377,7 @@ class ClientNotWorking(Exception):
 class ExternalClientNotWorking(Exception):
     """External client is not working"""
 
-    def __init__(self, description: Union[str, None] = None) -> None:
+    def __init__(self, description: str | None = None) -> None:
         self.desc = description
         super().__init__(self.desc)
         LOGGER.warning(

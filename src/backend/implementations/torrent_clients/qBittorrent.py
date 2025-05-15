@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-
 from re import IGNORECASE, compile
 from time import time
-from typing import Any, Dict, List, Union
+from typing import Any
 
 from requests.exceptions import RequestException
 
@@ -42,15 +40,15 @@ class qBittorrent(BaseExternalClient):
     def __init__(self, client_id: int) -> None:
         super().__init__(client_id)
 
-        self.ssn: Union[Session, None] = None
-        self.torrent_hashes: Dict[str, Union[int, None]] = {}
+        self.ssn: Session | None = None
+        self.torrent_hashes: dict[str, int | None] = {}
         self.settings = Settings()
         return
 
     @staticmethod
     def _login(
-        base_url: str, username: Union[str, None], password: Union[str, None]
-    ) -> Union[Session, str]:
+        base_url: str, username: str | None, password: str | None
+    ) -> Session | str:
         ssn = Session()
         if username and password:
             params = {"username": username, "password": password}
@@ -85,7 +83,7 @@ class qBittorrent(BaseExternalClient):
         return ssn
 
     def add_download(
-        self, download_link: str, target_folder: str, download_name: Union[str, None]
+        self, download_link: str, target_folder: str, download_name: str | None
     ) -> str:
         if download_name is not None:
             download_link = filename_magnet_link.sub(download_name, download_link)
@@ -107,14 +105,14 @@ class qBittorrent(BaseExternalClient):
         self.torrent_hashes[t_hash] = None
         return t_hash
 
-    def get_download(self, download_id: str) -> Union[dict, None]:
+    def get_download(self, download_id: str) -> dict | None:
         if not self.ssn:
             result = self._login(self.base_url, self.username, self.password)
             if isinstance(result, str):
                 raise ExternalClientNotWorking(result)
             self.ssn = result
 
-        r: List[Dict[str, Any]] = self.ssn.get(
+        r: list[dict[str, Any]] = self.ssn.get(
             f"{self.base_url}/api/v2/torrents/info", params={"hashes": download_id}
         ).json()
         if not r:
@@ -165,10 +163,10 @@ class qBittorrent(BaseExternalClient):
     @staticmethod
     def test(
         base_url: str,
-        username: Union[str, None] = None,
-        password: Union[str, None] = None,
-        api_token: Union[str, None] = None,
-    ) -> Union[str, None]:
+        username: str | None = None,
+        password: str | None = None,
+        api_token: str | None = None,
+    ) -> str | None:
         result = qBittorrent._login(base_url, username, password)
 
         if isinstance(result, str):

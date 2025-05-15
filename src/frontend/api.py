@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
-
 from asyncio import run
 from datetime import datetime
 from io import BytesIO, StringIO
 from os.path import dirname, exists
-from typing import Any, Dict, List, Tuple, Type, Union
+from typing import Any
 
 from flask import Blueprint, request, send_file
 from libgencomics import LibgenSeriesNotFoundException
@@ -47,9 +45,9 @@ from backend.base.definitions import (
     LibraryFilters,
     LibrarySorting,
     MonitorScheme,
+    SearchResultData,
     SpecialVersion,
     VolumeData,
-    SearchResultData,
 )
 from backend.base.files import delete_empty_parent_folders, delete_file_folder
 from backend.base.logging import LOGGER, get_log_filepath
@@ -98,8 +96,8 @@ library = Library()
 
 
 def return_api(
-    result: Any, error: Union[str, None] = None, code: int = 200
-) -> Tuple[Dict[str, Any], int]:
+    result: Any, error: str | None = None, code: int = 200
+) -> tuple[dict[str, Any], int]:
     return {"error": error, "result": result}, code
 
 
@@ -358,7 +356,7 @@ def api_logs():
         lf = file + ext
         if not exists(lf):
             continue
-        with open(lf, "r") as f:
+        with open(lf) as f:
             sio.writelines(f)
 
     return send_file(
@@ -383,7 +381,7 @@ def api_tasks():
         if not isinstance(data, dict):
             raise InvalidKeyValue(value=data)
 
-        task: Union[Type[Task], None] = task_library.get(data.get("cmd", ""))
+        task: type[Task] | None = task_library.get(data.get("cmd", ""))
         if not task:
             raise TaskNotFound
 
@@ -559,7 +557,7 @@ def api_rootfolder_id(id: int):
         return return_api(root_folder)
 
     elif request.method == "PUT":
-        folder: Union[str, None] = request.get_json().get("folder")
+        folder: str | None = request.get_json().get("folder")
         if not folder:
             raise KeyNotFound("folder")
         root_folders[id] = folder
@@ -621,7 +619,7 @@ def api_volumes_search():
         return return_api(search_results)
 
     elif request.method == "POST":
-        data: Dict[str, Any] = request.get_json()
+        data: dict[str, Any] = request.get_json()
         for key in ("comicvine_id", "title", "year", "volume_number", "publisher"):
             if key not in data:
                 raise KeyNotFound(key)
@@ -738,7 +736,7 @@ def api_volume(id: int):
         return return_api(volume_info)
 
     elif request.method == "PUT":
-        edit_info: Dict[str, Any] = request.get_json()
+        edit_info: dict[str, Any] = request.get_json()
 
         if "root_folder" in edit_info:
             volume.change_root_folder(edit_info["root_folder"])
@@ -962,7 +960,7 @@ def api_delete_download(download_id: int):
         return return_api({})
 
     elif request.method == "DELETE":
-        data: Dict[str, Any] = request.get_json(silent=True) or {}
+        data: dict[str, Any] = request.get_json(silent=True) or {}
         blocklist = data.get("blocklist", False)
         if not isinstance(blocklist, bool):
             raise InvalidKeyValue("blocklist", blocklist)
@@ -1237,8 +1235,8 @@ def api_mass_editor():
         raise KeyNotFound("volume_ids")
 
     action: str = data["action"]
-    volume_ids: Union[List[int], Any] = data["volume_ids"]
-    args: Dict[str, Any] = data.get("args", {})
+    volume_ids: list[int] | Any = data["volume_ids"]
+    args: dict[str, Any] = data.get("args", {})
 
     if not (
         isinstance(volume_ids, list) and all(isinstance(v, int) for v in volume_ids)

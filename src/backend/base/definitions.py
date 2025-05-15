@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 Definitions of basic types, abstract classes, enums, etc.
 """
@@ -7,20 +5,15 @@ Definitions of basic types, abstract classes, enums, etc.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from enum import Enum
 from threading import Event, Thread
 from typing import (
     TYPE_CHECKING,
     Any,
-    Dict,
-    List,
-    Mapping,
-    Sequence,
-    Tuple,
     TypedDict,
     TypeVar,
-    Union,
 )
 
 if TYPE_CHECKING:
@@ -241,7 +234,7 @@ class SpecialVersion(BaseEnum):
     "Normal volume, so not a special version"
 
 
-short_sv_mapping: Dict[SpecialVersion, str] = dict(
+short_sv_mapping: dict[SpecialVersion, str] = dict(
     (
         (SpecialVersion.HARD_COVER, "HC"),
         (SpecialVersion.ONE_SHOT, "OS"),
@@ -249,7 +242,7 @@ short_sv_mapping: Dict[SpecialVersion, str] = dict(
         (SpecialVersion.COVER, "Cover"),
     )
 )
-full_sv_mapping: Dict[SpecialVersion, str] = dict(
+full_sv_mapping: dict[SpecialVersion, str] = dict(
     (
         (SpecialVersion.HARD_COVER, "Hard-Cover"),
         (SpecialVersion.ONE_SHOT, "One-Shot"),
@@ -322,7 +315,7 @@ class GCDownloadSource(BaseEnum):
     GETCOMICS_TORRENT = "GetComics (torrent)"
 
 
-download_source_versions: Dict[GCDownloadSource, Tuple[str, ...]] = dict(
+download_source_versions: dict[GCDownloadSource, tuple[str, ...]] = dict(
     (
         (GCDownloadSource.MEGA, ("mega", "mega link")),
         (GCDownloadSource.MEDIAFIRE, ("mediafire", "mediafire link")),
@@ -392,7 +385,7 @@ class DownloadType(BaseEnum):
     TORRENT = 2
 
 
-query_formats: Dict[str, Tuple[str, ...]] = {
+query_formats: dict[str, tuple[str, ...]] = {
     "TPB": (
         "{title} Vol. {volume_number} ({year}) TPB",
         "{title} ({year}) TPB",
@@ -422,10 +415,10 @@ Volume Special Version to query formats used when searching
 # region TypedDicts
 class FilenameData(TypedDict):
     series: str
-    year: Union[int, None]
-    volume_number: Union[int, Tuple[int, int], None]
-    special_version: Union[str, None]
-    issue_number: Union[float, Tuple[float, float], None]
+    year: int | None
+    volume_number: int | tuple[int, int] | None
+    special_version: str | None
+    issue_number: float | tuple[float, float] | None
     annual: bool
 
 
@@ -443,28 +436,28 @@ class SearchResultData(FilenameData):
 
 class SearchResultMatchData(TypedDict):
     match: bool
-    match_issue: Union[str, None]
+    match_issue: str | None
 
 
 class MatchedSearchResultData(SearchResultMatchData, SearchResultData, total=False):
-    _issue_number: Union[float, Tuple[float, float]]
+    _issue_number: float | tuple[float, float]
 
 
 class VolumeMetadata(TypedDict):
     comicvine_id: int
     title: str
-    year: Union[int, None]
+    year: int | None
     volume_number: int
     cover_link: str
-    cover: Union[bytes, None]
+    cover: bytes | None
     description: str
     site_url: str
-    aliases: List[str]
-    publisher: Union[str, None]
+    aliases: list[str]
+    publisher: str | None
     issue_count: int
     translated: bool
-    already_added: Union[int, None]
-    issues: Union[List[IssueMetadata], None]
+    already_added: int | None
+    issues: list[IssueMetadata] | None
 
 
 class IssueMetadata(TypedDict):
@@ -472,8 +465,8 @@ class IssueMetadata(TypedDict):
     volume_id: int
     issue_number: str
     calculated_issue_number: float
-    title: Union[str, None]
-    date: Union[str, None]
+    title: str | None
+    date: str | None
     description: str
 
 
@@ -485,12 +478,12 @@ class CVFileMapping(TypedDict):
 class DownloadGroup(TypedDict):
     web_sub_title: str
     info: FilenameData
-    links: Dict[GCDownloadSource, List[str]]
+    links: dict[GCDownloadSource, list[str]]
 
 
 class ClientTestResult(TypedDict):
     success: bool
-    description: Union[None, str]
+    description: None | str
 
 
 class SizeData(TypedDict):
@@ -517,20 +510,20 @@ class GeneralFileData(FileData):
 @dataclass
 class BlocklistEntry:
     id: int
-    volume_id: Union[int, None]
-    issue_id: Union[int, None]
+    volume_id: int | None
+    issue_id: int | None
 
-    web_link: Union[str, None]
-    web_title: Union[str, None]
-    web_sub_title: Union[str, None]
+    web_link: str | None
+    web_title: str | None
+    web_sub_title: str | None
 
-    download_link: Union[str, None]
-    source: Union[str, None]
+    download_link: str | None
+    source: str | None
 
     reason: BlocklistReason
     added_at: int
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         result = asdict(self)
         result["reason"] = self.reason.value
         return result
@@ -542,7 +535,7 @@ class RootFolder:
     folder: str
     size: SizeData
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -552,26 +545,26 @@ class BaseNamingKeys:
     clean_series_name: str
     volume_number: str
     comicvine_id: int
-    year: Union[int, None]
-    publisher: Union[str, None]
+    year: int | None
+    publisher: str | None
 
 
 @dataclass
 class SVNamingKeys(BaseNamingKeys):
-    special_version: Union[str, None]
+    special_version: str | None
 
 
 @dataclass
 class IssueNamingKeys(SVNamingKeys):
     issue_comicvine_id: int
-    issue_number: Union[str, None]
-    issue_title: Union[str, None]
-    issue_release_date: Union[str, None]
-    issue_release_year: Union[int, None]
-    releaser: Union[int, None]
-    scan_type: Union[int, None]
-    resolution: Union[int, None]
-    dpi: Union[int, None]
+    issue_number: str | None
+    issue_title: str | None
+    issue_release_date: str | None
+    issue_release_year: int | None
+    releaser: int | None
+    scan_type: int | None
+    resolution: int | None
+    dpi: int | None
 
 
 @dataclass
@@ -581,13 +574,13 @@ class IssueData:
     comicvine_id: int
     issue_number: str
     calculated_issue_number: float
-    title: Union[str, None]
-    date: Union[str, None]
-    description: Union[str, None]
+    title: str | None
+    date: str | None
+    description: str | None
     monitored: bool
-    files: List[FileData]
+    files: list[FileData]
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -596,7 +589,7 @@ class VolumeData:
     id: int
     comicvine_id: int
     title: str
-    alt_title: Union[str, None]
+    alt_title: str | None
     year: int
     publisher: str
     volume_number: int
@@ -616,12 +609,12 @@ class VolumeData:
 class CredentialData:
     id: int
     source: CredentialSource
-    username: Union[str, None]
-    email: Union[str, None]
-    password: Union[str, None]
-    api_key: Union[str, None]
+    username: str | None
+    email: str | None
+    password: str | None
+    api_key: str | None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if isinstance(self.username, str):
             self.username = self.username.strip() or None
         if isinstance(self.email, str):
@@ -632,7 +625,7 @@ class CredentialData:
             self.api_key = self.api_key.strip() or None
         return
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         result = asdict(self)
         result["source"] = self.source.value
         return result
@@ -650,7 +643,7 @@ class MassEditorAction(ABC):
     identifier: str
     "The string used in the API to refer to the action."
 
-    def __init__(self, volume_ids: List[int]) -> None:
+    def __init__(self, volume_ids: list[int]) -> None:
         """Ready a mass editor action.
 
         Args:
@@ -671,7 +664,7 @@ class FileConverter(ABC):
 
     @staticmethod
     @abstractmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         """Convert a file from source_format to target_format.
 
         Args:
@@ -694,7 +687,7 @@ class SearchSource(ABC):
         return
 
     @abstractmethod
-    async def search(self, session: AsyncSession) -> List[SearchResultData]:
+    async def search(self, session: AsyncSession) -> list[SearchResultData]:
         """Search for the query.
 
         Args:
@@ -731,15 +724,15 @@ class ExternalDownloadClient(ABC):
 
     @property
     @abstractmethod
-    def username(self) -> Union[str, None]: ...
+    def username(self) -> str | None: ...
 
     @property
     @abstractmethod
-    def password(self) -> Union[str, None]: ...
+    def password(self) -> str | None: ...
 
     @property
     @abstractmethod
-    def api_token(self) -> Union[str, None]: ...
+    def api_token(self) -> str | None: ...
 
     @abstractmethod
     def __init__(self, client_id: int) -> None:
@@ -751,7 +744,7 @@ class ExternalDownloadClient(ABC):
         ...
 
     @abstractmethod
-    def get_client_data(self) -> Dict[str, Any]:
+    def get_client_data(self) -> dict[str, Any]:
         """Get info about the client.
 
         Returns:
@@ -788,7 +781,7 @@ class ExternalDownloadClient(ABC):
 
     @abstractmethod
     def add_download(
-        self, download_link: str, target_folder: str, download_name: Union[str, None]
+        self, download_link: str, target_folder: str, download_name: str | None
     ) -> str:
         """Add a download to the client.
 
@@ -807,7 +800,7 @@ class ExternalDownloadClient(ABC):
         ...
 
     @abstractmethod
-    def get_download(self, download_id: str) -> Union[dict, None]:
+    def get_download(self, download_id: str) -> dict | None:
         """Get the information/status of a download.
 
         Args:
@@ -840,10 +833,10 @@ class ExternalDownloadClient(ABC):
     @abstractmethod
     def test(
         base_url: str,
-        username: Union[str, None],
-        password: Union[str, None],
-        api_token: Union[str, None],
-    ) -> Union[str, None]:
+        username: str | None,
+        password: str | None,
+        api_token: str | None,
+    ) -> str | None:
         """Check if a download client is working.
 
         Args:
@@ -879,27 +872,27 @@ class Download(ABC):
 
     @property
     @abstractmethod
-    def issue_id(self) -> Union[int, None]: ...
+    def issue_id(self) -> int | None: ...
 
     @property
     @abstractmethod
-    def covered_issues(self) -> Union[float, Tuple[float, float], None]: ...
+    def covered_issues(self) -> float | tuple[float, float] | None: ...
 
     @property
     @abstractmethod
-    def web_link(self) -> Union[str, None]:
+    def web_link(self) -> str | None:
         """Link to webpage for download"""
         ...
 
     @property
     @abstractmethod
-    def web_title(self) -> Union[str, None]:
+    def web_title(self) -> str | None:
         """Title of webpage (or release) for download"""
         ...
 
     @property
     @abstractmethod
-    def web_sub_title(self) -> Union[str, None]:
+    def web_sub_title(self) -> str | None:
         """
         Title of sub-section that download falls under (e.g. GC group name)
         """
@@ -934,13 +927,13 @@ class Download(ABC):
 
     @property
     @abstractmethod
-    def files(self) -> List[str]:
+    def files(self) -> list[str]:
         """List of folders/files that were 'produced' by this download"""
         ...
 
     @files.setter
     @abstractmethod
-    def files(self, value: List[str]) -> None: ...
+    def files(self, value: list[str]) -> None: ...
 
     @property
     @abstractmethod
@@ -979,7 +972,7 @@ class Download(ABC):
 
     @property
     @abstractmethod
-    def download_thread(self) -> Union[Thread, None]: ...
+    def download_thread(self) -> Thread | None: ...
 
     @download_thread.setter
     @abstractmethod
@@ -991,35 +984,35 @@ class Download(ABC):
 
     @property
     @abstractmethod
-    def releaser(self) -> Union[str, None]: ...
+    def releaser(self) -> str | None: ...
 
     @property
     @abstractmethod
-    def scan_type(self) -> Union[str, None]: ...
+    def scan_type(self) -> str | None: ...
 
     @property
     @abstractmethod
-    def resolution(self) -> Union[str, None]: ...
+    def resolution(self) -> str | None: ...
 
     @property
     @abstractmethod
-    def dpi(self) -> Union[str, None]: ...
+    def dpi(self) -> str | None: ...
 
     @abstractmethod
     def __init__(
         self,
         download_link: str,
         volume_id: int,
-        covered_issues: Union[float, Tuple[float, float], None],
+        covered_issues: float | tuple[float, float] | None,
         source_type: DownloadSource,
         source_name: str,
-        web_link: Union[str, None],
-        web_title: Union[str, None],
-        web_sub_title: Union[str, None],
-        releaser: Union[str, None] = None,
-        scan_type: Union[str, None] = None,
-        resolution: Union[str, None] = None,
-        dpi: Union[str, None] = None,
+        web_link: str | None,
+        web_title: str | None,
+        web_sub_title: str | None,
+        releaser: str | None = None,
+        scan_type: str | None = None,
+        resolution: str | None = None,
+        dpi: str | None = None,
         forced_match: bool = False,
     ) -> None:
         """Create the download instance.
@@ -1080,7 +1073,7 @@ class Download(ABC):
         ...
 
     @abstractmethod
-    def todict(self) -> Dict[str, Any]:
+    def todict(self) -> dict[str, Any]:
         """Get a dict representing the download.
 
         Returns:
@@ -1100,7 +1093,7 @@ class ExternalDownload(Download):
 
     @property
     @abstractmethod
-    def external_id(self) -> Union[str, None]:
+    def external_id(self) -> str | None:
         """The ID/hash of the download in the external client."""
         ...
 
@@ -1115,14 +1108,14 @@ class ExternalDownload(Download):
         self,
         download_link: str,
         volume_id: int,
-        covered_issues: Union[float, Tuple[float, float], None],
+        covered_issues: float | tuple[float, float] | None,
         source_type: DownloadSource,
         source_name: str,
-        web_link: Union[str, None],
-        web_title: Union[str, None],
-        web_sub_title: Union[str, None],
+        web_link: str | None,
+        web_title: str | None,
+        web_sub_title: str | None,
         forced_match: bool = False,
-        external_client: Union[ExternalDownloadClient, None] = None,
+        external_client: ExternalDownloadClient | None = None,
     ) -> None:
         """Create the download instance.
 

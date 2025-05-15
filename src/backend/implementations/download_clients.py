@@ -1,18 +1,17 @@
-# -*- coding: utf-8 -*-
-
 """
 All download implementations.
 """
 
 from __future__ import annotations
 
+import builtins
 from base64 import b64encode
 from json import loads
 from os.path import basename, join, sep, splitext
 from re import IGNORECASE, compile
 from threading import Event, Thread
 from time import perf_counter
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Type, Union, final
+from typing import TYPE_CHECKING, Any, final
 from urllib.parse import unquote_plus
 
 from bs4 import BeautifulSoup, Tag
@@ -82,23 +81,23 @@ class BaseDirectDownload(Download):
         return self._volume_id
 
     @property
-    def issue_id(self) -> Union[int, None]:
+    def issue_id(self) -> int | None:
         return self._issue_id
 
     @property
-    def covered_issues(self) -> Union[float, Tuple[float, float], None]:
+    def covered_issues(self) -> float | tuple[float, float] | None:
         return self._covered_issues
 
     @property
-    def web_link(self) -> Union[str, None]:
+    def web_link(self) -> str | None:
         return self._web_link
 
     @property
-    def web_title(self) -> Union[str, None]:
+    def web_title(self) -> str | None:
         return self._web_title
 
     @property
-    def web_sub_title(self) -> Union[str, None]:
+    def web_sub_title(self) -> str | None:
         return self._web_sub_title
 
     @property
@@ -118,11 +117,11 @@ class BaseDirectDownload(Download):
         return self._source_name
 
     @property
-    def files(self) -> List[str]:
+    def files(self) -> list[str]:
         return self._files
 
     @files.setter
-    def files(self, value: List[str]) -> None:
+    def files(self, value: list[str]) -> None:
         self._files = value
         return
 
@@ -156,7 +155,7 @@ class BaseDirectDownload(Download):
         return self._speed
 
     @property
-    def download_thread(self) -> Union[Thread, None]:
+    def download_thread(self) -> Thread | None:
         return self._download_thread
 
     @download_thread.setter
@@ -169,35 +168,35 @@ class BaseDirectDownload(Download):
         return self._download_folder
 
     @property
-    def releaser(self) -> Union[str, None]:
+    def releaser(self) -> str | None:
         return self._releaser
 
     @property
-    def scan_type(self) -> Union[str, None]:
+    def scan_type(self) -> str | None:
         return self._scan_type
 
     @property
-    def resolution(self) -> Union[str, None]:
+    def resolution(self) -> str | None:
         return self._resolution
 
     @property
-    def dpi(self) -> Union[str, None]:
+    def dpi(self) -> str | None:
         return self._dpi
 
     def __init__(
         self,
         download_link: str,
         volume_id: int,
-        covered_issues: Union[float, Tuple[float, float], None],
+        covered_issues: float | tuple[float, float] | None,
         source_type: DownloadSource,
         source_name: str,
-        web_link: Union[str, None],
-        web_title: Union[str, None],
-        web_sub_title: Union[str, None],
-        releaser: Union[str, None] = None,
-        scan_type: Union[str, None] = None,
-        resolution: Union[str, None] = None,
-        dpi: Union[str, None] = None,
+        web_link: str | None,
+        web_title: str | None,
+        web_sub_title: str | None,
+        releaser: str | None = None,
+        scan_type: str | None = None,
+        resolution: str | None = None,
+        dpi: str | None = None,
         forced_match: bool = False,
     ) -> None:
         LOGGER.debug("Creating download: %s", download_link)
@@ -289,7 +288,7 @@ class BaseDirectDownload(Download):
     def _fetch_pure_link(self) -> Response:
         return self._ssn.get(self.pure_link, stream=True)
 
-    def _extract_default_filename_body(self, response: Union[Response, None]) -> str:
+    def _extract_default_filename_body(self, response: Response | None) -> str:
         if response and response.headers.get("Content-Disposition"):
             file_result = file_name_regex.search(
                 response.headers["Content-Disposition"]
@@ -299,7 +298,7 @@ class BaseDirectDownload(Download):
 
         return splitext(unquote_plus(self.pure_link.split("/")[-1].split("?")[0]))[0]
 
-    def _extract_extension(self, response: Union[Response, None]) -> str:
+    def _extract_extension(self, response: Response | None) -> str:
         if not response:
             return ""
 
@@ -316,7 +315,7 @@ class BaseDirectDownload(Download):
             return "." + match[0]
         return ""
 
-    def _build_filename(self, response: Union[Response, None]) -> str:
+    def _build_filename(self, response: Response | None) -> str:
         extension = self._extract_extension(response)
         return join(
             self._download_folder, "_".join(self._filename_body.split(sep)) + extension
@@ -368,7 +367,7 @@ class BaseDirectDownload(Download):
             self.__r.raw._fp.fp.raw._sock.shutdown(2)  # SHUT_RDWR
         return
 
-    def todict(self) -> Dict[str, Any]:
+    def todict(self) -> dict[str, Any]:
         return {
             "id": self._id,
             "volume_id": self._volume_id,
@@ -569,7 +568,7 @@ class MegaDownload(BaseDirectDownload):
     "For downloading a file via Mega"
 
     type = "mega"
-    _mega_class: Type[MegaABC] = Mega
+    _mega_class: builtins.type[MegaABC] = Mega
 
     @property
     def size(self) -> int:
@@ -603,12 +602,12 @@ class MegaDownload(BaseDirectDownload):
         self,
         download_link: str,
         volume_id: int,
-        covered_issues: Union[float, Tuple[float, float], None],
+        covered_issues: float | tuple[float, float] | None,
         source_type: DownloadSource,
         source_name: str,
-        web_link: Union[str, None],
-        web_title: Union[str, None],
-        web_sub_title: Union[str, None],
+        web_link: str | None,
+        web_title: str | None,
+        web_sub_title: str | None,
         forced_match: bool = False,
     ) -> None:
         LOGGER.debug("Creating mega download: %s", download_link)
@@ -659,10 +658,10 @@ class MegaDownload(BaseDirectDownload):
         self._files = [self._build_filename(response=None)]
         return
 
-    def _extract_default_filename_body(self, response: Union[Response, None]) -> str:
+    def _extract_default_filename_body(self, response: Response | None) -> str:
         return splitext(self._mega.mega_filename)[0]
 
-    def _extract_extension(self, response: Union[Response, None]) -> str:
+    def _extract_extension(self, response: Response | None) -> str:
         return splitext(self._mega.mega_filename)[1]
 
     def run(self) -> None:
@@ -705,7 +704,7 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         return
 
     @property
-    def external_id(self) -> Union[str, None]:
+    def external_id(self) -> str | None:
         return self._external_id
 
     @property
@@ -716,14 +715,14 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         self,
         download_link: str,
         volume_id: int,
-        covered_issues: Union[float, Tuple[float, float], None],
+        covered_issues: float | tuple[float, float] | None,
         source_type: DownloadSource,
         source_name: str,
-        web_link: Union[str, None],
-        web_title: Union[str, None],
-        web_sub_title: Union[str, None],
+        web_link: str | None,
+        web_title: str | None,
+        web_sub_title: str | None,
         forced_match: bool = False,
-        external_client: Union[ExternalDownloadClient, None] = None,
+        external_client: ExternalDownloadClient | None = None,
     ) -> None:
         LOGGER.debug("Creating download: %s", download_link)
 
@@ -748,8 +747,8 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         self._download_folder = settings.download_folder
         self._sleep_event = Event()
 
-        self._original_files: List[str] = []
-        self._external_id: Union[str, None] = None
+        self._original_files: list[str] = []
+        self._external_id: str | None = None
         if external_client:
             self._external_client = external_client
         else:
@@ -841,7 +840,7 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         self._sleep_event.set()
         return
 
-    def todict(self) -> Dict[str, Any]:
+    def todict(self) -> dict[str, Any]:
         return {
             **super().todict(),
             "client": self.external_client.id if self._external_client else None,

@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
-
 """
 Setting up, running and shutting down the API and web-ui
 """
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable, Mapping
 from os import urandom
 from threading import Thread, Timer, current_thread
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, Union
+from typing import TYPE_CHECKING, Any
 
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO
@@ -161,7 +160,7 @@ class Server(metaclass=Singleton):
 
     def __create_waitress_server(
         self, host: str, port: int
-    ) -> Union[MultiSocketServer, BaseWSGIServer]:
+    ) -> MultiSocketServer | BaseWSGIServer:
         """From the `Flask` instance created in `self.create_app()`, create
         a waitress server instance.
 
@@ -317,7 +316,7 @@ class WebSocket(SocketIO, metaclass=Singleton):
         return
 
     def update_task_status(
-        self, task: Union[Task, None] = None, message: Union[str, None] = None
+        self, task: Task | None = None, message: str | None = None
     ) -> None:
         """Send a message with the new task queue status. Supply either
         the task or the message.
@@ -379,8 +378,8 @@ class WebSocket(SocketIO, metaclass=Singleton):
 
 def setup_process(
     log_level: int,
-    db_folder: Union[str, None],
-    log_folder: Union[str, None],
+    db_folder: str | None,
+    log_folder: str | None,
 ) -> Callable[[], AppContext]:
     setup_logging(log_folder=log_folder, do_rollover=False)
     set_log_level(log_level)

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 Background tasks and their handling
 """
@@ -9,7 +7,6 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from threading import Thread, Timer
 from time import sleep, time
-from typing import Dict, List, Tuple, Type, Union
 
 from flask import Flask
 
@@ -38,17 +35,17 @@ class Task(ABC):
 
     @property
     @abstractmethod
-    def volume_id(self) -> Union[int, None]: ...
+    def volume_id(self) -> int | None: ...
 
     @property
     @abstractmethod
-    def issue_id(self) -> Union[int, None]: ...
+    def issue_id(self) -> int | None: ...
 
     @abstractmethod
     def __init__(self, **kwargs) -> None: ...
 
     @abstractmethod
-    def run(self) -> Union[None, List[Tuple[str, int, Union[int, None]]]]:
+    def run(self) -> None | list[tuple[str, int, int | None]]:
         """Run the task
 
         Returns:
@@ -93,7 +90,7 @@ class AutoSearchIssue(Task):
         self._issue_id = issue_id
         return
 
-    def run(self) -> List[Tuple[str, int, Union[int, None]]]:
+    def run(self) -> list[tuple[str, int, int | None]]:
         volume_title = Volume(self._volume_id).vd.title
         issue_number = Issue(self._issue_id).get_data().issue_number
         self.message = f"Searching for {volume_title} #{issue_number}"
@@ -126,7 +123,7 @@ class MassRenameIssue(Task):
         return self._issue_id
 
     def __init__(
-        self, volume_id: int, issue_id: int, filepath_filter: List[str] = []
+        self, volume_id: int, issue_id: int, filepath_filter: list[str] = []
     ) -> None:
         """Create the task
 
@@ -176,7 +173,7 @@ class MassConvertIssue(Task):
         return self._issue_id
 
     def __init__(
-        self, volume_id: int, issue_id: int, filepath_filter: List[str] = []
+        self, volume_id: int, issue_id: int, filepath_filter: list[str] = []
     ) -> None:
         """Create the task
 
@@ -239,7 +236,7 @@ class AutoSearchVolume(Task):
         self._volume_id = volume_id
         return
 
-    def run(self) -> List[Tuple[str, int, Union[int, None]]]:
+    def run(self) -> list[tuple[str, int, int | None]]:
         volume_title = Volume(self._volume_id).vd.title
         self.message = f"Searching for {volume_title}"
         WebSocket().update_task_status(self)
@@ -307,7 +304,7 @@ class MassRenameVolume(Task):
     def issue_id(self) -> None:
         return None
 
-    def __init__(self, volume_id: int, filepath_filter: List[str] = []) -> None:
+    def __init__(self, volume_id: int, filepath_filter: list[str] = []) -> None:
         """Create the task
 
         Args:
@@ -349,7 +346,7 @@ class MassConvertVolume(Task):
     def issue_id(self) -> None:
         return None
 
-    def __init__(self, volume_id: int, filepath_filter: List[str] = []) -> None:
+    def __init__(self, volume_id: int, filepath_filter: list[str] = []) -> None:
         """Create the task
 
         Args:
@@ -438,10 +435,10 @@ class SearchAll(Task):
     def __init__(self) -> None:
         return
 
-    def run(self) -> List[Tuple[str, int, Union[int, None]]]:
+    def run(self) -> list[tuple[str, int, int | None]]:
         cursor = get_db(force_new=True)
         cursor.execute("SELECT id, title FROM volumes WHERE monitored = 1;")
-        downloads: List[Tuple[str, int, Union[int, None]]] = []
+        downloads: list[tuple[str, int, int | None]] = []
         ws = WebSocket()
         for volume_id, volume_title in cursor:
             if self.stop:
@@ -460,14 +457,14 @@ class SearchAll(Task):
 # =====================
 # Maps action attr to class for all tasks
 # Only works for classes that directly inherit from Task
-task_library: Dict[str, Type[Task]] = {c.action: c for c in get_subclasses(Task)}
+task_library: dict[str, type[Task]] = {c.action: c for c in get_subclasses(Task)}
 
 
 class TaskHandler(metaclass=Singleton):
     "Note: Singleton"
 
-    queue: List[dict] = []
-    task_interval_waiter: Union[Timer, None] = None
+    queue: list[dict] = []
+    task_interval_waiter: Timer | None = None
 
     def __init__(self) -> None:
         """Setup the handler"""
@@ -570,7 +567,7 @@ class TaskHandler(metaclass=Singleton):
             t
             for t in TaskHandler.queue
             if (
-                isinstance(t["task"], (UpdateAll, SearchAll))
+                isinstance(t["task"], UpdateAll | SearchAll)
                 or t["task"].volume_id == volume_id
             )
         )
@@ -655,7 +652,7 @@ class TaskHandler(metaclass=Singleton):
             "issue_id": task["task"].issue_id,
         }
 
-    def get_all(self) -> List[dict]:
+    def get_all(self) -> list[dict]:
         """Get all tasks in the queue
 
         Returns:
@@ -708,7 +705,7 @@ class TaskHandler(metaclass=Singleton):
         return
 
 
-def get_task_history(offset: int = 0) -> List[dict]:
+def get_task_history(offset: int = 0) -> list[dict]:
     """Get the task history in blocks of 50.
 
     Args:
@@ -745,7 +742,7 @@ def delete_task_history() -> None:
     return
 
 
-def get_task_planning() -> List[dict]:
+def get_task_planning() -> list[dict]:
     """Get the planning of each interval task (interval, next run and last run)
 
     Returns:

@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-
 from time import time
-from typing import List, Union
 
 from backend.base.custom_exceptions import BlocklistEntryNotFound
 from backend.base.definitions import (
@@ -16,7 +13,7 @@ from backend.internals.db import get_db
 
 
 # region Get
-def get_blocklist(offset: int = 0) -> List[BlocklistEntry]:
+def get_blocklist(offset: int = 0) -> list[BlocklistEntry]:
     """Get the blocklist entries in blocks of 50.
 
     Args:
@@ -99,7 +96,7 @@ def get_blocklist_entry(id: int) -> BlocklistEntry:
 
 
 # region Contains and Add
-def blocklist_contains(link: str) -> Union[int, None]:
+def blocklist_contains(link: str) -> int | None:
     """Check if a link is in the blocklist.
 
     Args:
@@ -127,13 +124,13 @@ def blocklist_contains(link: str) -> Union[int, None]:
 
 
 def add_to_blocklist(
-    web_link: Union[str, None],
-    web_title: Union[str, None],
-    web_sub_title: Union[str, None],
-    download_link: Union[str, None],
-    source: Union[DownloadSource, GCDownloadSource, None],
+    web_link: str | None,
+    web_title: str | None,
+    web_sub_title: str | None,
+    download_link: str | None,
+    source: DownloadSource | GCDownloadSource | None,
     volume_id: int,
-    issue_id: Union[int, None],
+    issue_id: int | None,
     reason: BlocklistReason,
 ) -> BlocklistEntry:
     """Add a link to the blocklist.

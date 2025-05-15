@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from argparse import ArgumentParser
 from atexit import register
 from multiprocessing import set_start_method
@@ -7,7 +5,7 @@ from os import environ, name
 from signal import SIGINT, SIGTERM, signal
 from subprocess import Popen
 from sys import argv
-from typing import NoReturn, Union
+from typing import NoReturn
 
 from backend.base.definitions import Constants, RestartVersion
 from backend.base.helpers import check_python_version
@@ -22,8 +20,8 @@ from backend.internals.settings import Settings
 
 def _main(
     restart_version: RestartVersion,
-    db_folder: Union[str, None] = None,
-    log_folder: Union[str, None] = None,
+    db_folder: str | None = None,
+    log_folder: str | None = None,
 ) -> NoReturn:
     """The main function of the Kapowarr sub-process
 

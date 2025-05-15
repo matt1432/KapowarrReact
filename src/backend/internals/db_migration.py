@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-
 from asyncio import run
-from typing import Dict, List, Type
 
 from backend.base.definitions import DBMigrator
 from backend.base.helpers import get_subclasses
@@ -9,7 +6,7 @@ from backend.base.logging import LOGGER
 
 
 class VersionMappingContainer:
-    version_map: Dict[int, Type[DBMigrator]] = {}
+    version_map: dict[int, type[DBMigrator]] = {}
 
 
 def _load_version_map() -> None:
@@ -418,7 +415,7 @@ class MigrateFolderConversionToOwnSetting(DBMigrator):
         from backend.internals.db import get_db
 
         cursor = get_db()
-        format_preference: List[str] = (
+        format_preference: list[str] = (
             cursor.execute("""
             SELECT value
             FROM config
@@ -676,10 +673,8 @@ class MigrateServicePreferenceToEnumValues(DBMigrator):
         }
 
         new_service_preference = CommaList(
-            (
-                source_string_to_enum[service.lower()]
-                for service in Settings().sv.service_preference
-            )
+            source_string_to_enum[service.lower()]
+            for service in Settings().sv.service_preference
         )
 
         get_db().execute(

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 Contains all the converters for converting from one format to another
 """
@@ -11,7 +9,7 @@ from os.path import basename, dirname, getmtime, join, splitext
 from shutil import make_archive
 from subprocess import run
 from sys import platform
-from typing import TYPE_CHECKING, List, final
+from typing import TYPE_CHECKING, final
 from zipfile import ZipFile
 
 from backend.base.definitions import (
@@ -40,7 +38,7 @@ if TYPE_CHECKING:
     from subprocess import CompletedProcess
 
 
-def run_rar(args: List[str]) -> CompletedProcess[str]:
+def run_rar(args: list[str]) -> CompletedProcess[str]:
     """Run rar executable. Platform is taken care of inside function.
 
     Args:
@@ -56,7 +54,7 @@ def run_rar(args: List[str]) -> CompletedProcess[str]:
     return run([exe, *args], capture_output=True, text=True)
 
 
-def extract_files_from_folder(source_folder: str, volume_id: int) -> List[str]:
+def extract_files_from_folder(source_folder: str, volume_id: int) -> list[str]:
     """Move files out of folder in to volume folder,
     but only if they match to the volume. Otherwise they are deleted,
     together with the original folder.
@@ -113,7 +111,7 @@ class ZIPtoCBZ(FileConverter):
     target_format = "cbz"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         target = splitext(file)[0] + ".cbz"
         rename_file(file, target)
         return [target]
@@ -125,7 +123,7 @@ class ZIPtoRAR(FileConverter):
     target_format = "rar"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         volume_id = FilesDB.volume_of_file(file)
         if not volume_id:
             # File not matched to volume
@@ -160,7 +158,7 @@ class ZIPtoCBR(FileConverter):
     target_format = "cbr"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         rar_file = ZIPtoRAR.convert(file)[0]
         cbr_file = RARtoCBR.convert(rar_file)
         return cbr_file
@@ -172,7 +170,7 @@ class ZIPtoFOLDER(FileConverter):
     target_format = "folder"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         volume_id = FilesDB.volume_of_file(file)
         if not volume_id:
             # File not matched to volume
@@ -206,7 +204,7 @@ class CBZtoZIP(FileConverter):
     target_format = "zip"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         target = splitext(file)[0] + ".zip"
         rename_file(file, target)
         return [target]
@@ -218,7 +216,7 @@ class CBZtoRAR(FileConverter):
     target_format = "rar"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         return ZIPtoRAR.convert(file)
 
 
@@ -228,7 +226,7 @@ class CBZtoCBR(FileConverter):
     target_format = "cbr"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         rar_file = ZIPtoRAR.convert(file)[0]
         cbr_file = RARtoCBR.convert(rar_file)
         return cbr_file
@@ -240,7 +238,7 @@ class CBZtoFOLDER(FileConverter):
     target_format = "folder"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         return ZIPtoFOLDER.convert(file)
 
 
@@ -253,7 +251,7 @@ class RARtoCBR(FileConverter):
     target_format = "cbr"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         target = splitext(file)[0] + ".cbr"
         rename_file(file, target)
         return [target]
@@ -265,7 +263,7 @@ class RARtoZIP(FileConverter):
     target_format = "zip"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         volume_id = FilesDB.volume_of_file(file)
         if not volume_id:
             # File not matched to volume
@@ -306,7 +304,7 @@ class RARtoCBZ(FileConverter):
     target_format = "cbz"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         zip_file = RARtoZIP.convert(file)[0]
         cbz_file = ZIPtoCBZ.convert(zip_file)
         return cbz_file
@@ -318,7 +316,7 @@ class RARtoFOLDER(FileConverter):
     target_format = "folder"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         volume_id = FilesDB.volume_of_file(file)
         if not volume_id:
             # File not matched to volume
@@ -359,7 +357,7 @@ class CBRtoRAR(FileConverter):
     target_format = "rar"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         target = splitext(file)[0] + ".rar"
         rename_file(file, target)
         return [target]
@@ -371,7 +369,7 @@ class CBRtoZIP(FileConverter):
     target_format = "zip"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         return RARtoZIP.convert(file)
 
 
@@ -381,7 +379,7 @@ class CBRtoCBZ(FileConverter):
     target_format = "cbz"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         zip_file = RARtoZIP.convert(file)[0]
         cbz_file = ZIPtoCBZ.convert(zip_file)
         return cbz_file
@@ -393,5 +391,5 @@ class CBRtoFOLDER(FileConverter):
     target_format = "folder"
 
     @staticmethod
-    def convert(file: str) -> List[str]:
+    def convert(file: str) -> list[str]:
         return RARtoFOLDER.convert(file)

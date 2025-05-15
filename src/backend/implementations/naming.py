@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 The (re)naming of folders and media
 """
@@ -9,7 +7,6 @@ from __future__ import annotations
 from os.path import abspath, basename, isdir, isfile, join, splitext
 from re import compile, findall
 from sys import platform
-from typing import Dict, List, Tuple, Type, Union
 
 from backend.base.custom_exceptions import InvalidSettingValue
 from backend.base.definitions import (
@@ -54,7 +51,7 @@ remove_year_in_image_regex = compile(r"(?:19|20)\d{2}")
 # region Name generation
 # =====================
 def _get_volume_naming_keys(
-    volume: Union[int, VolumeData], _special_version: Union[SpecialVersion, None] = None
+    volume: int | VolumeData, _special_version: SpecialVersion | None = None
 ) -> SVNamingKeys:
     """Generate the values of the naming keys for a volume.
 
@@ -102,9 +99,9 @@ def _get_volume_naming_keys(
 
 
 def _get_issue_naming_keys(
-    volume: Union[int, VolumeData],
-    issue: Union[int, IssueData],
-    file_data: Union[GeneralFileData, None] = None,
+    volume: int | VolumeData,
+    issue: int | IssueData,
+    file_data: GeneralFileData | None = None,
 ) -> IssueNamingKeys:
     """Generate the values of the naming keys for an issue.
 
@@ -147,12 +144,12 @@ def _get_issue_naming_keys(
     )
 
 
-def get_placeholders(format: str) -> List[str]:
+def get_placeholders(format: str) -> list[str]:
     return findall(r"\{([^}]*)\}", format)
 
 
 def get_corresponding_formatted_naming_keys(
-    placeholders: List[str], formatting_data: dict[str, str]
+    placeholders: list[str], formatting_data: dict[str, str]
 ) -> dict[str, str]:
     sorted_formatting_data = sorted(
         formatting_data.items(), key=lambda item: len(item[0])
@@ -176,7 +173,7 @@ def format_filename(format: str, formatted_data: dict[str, str]) -> str:
     return filename
 
 
-def generate_volume_folder_name(volume: Union[int, VolumeData]) -> str:
+def generate_volume_folder_name(volume: int | VolumeData) -> str:
     """Generate a volume folder name based on the format string.
 
     Args:
@@ -199,7 +196,7 @@ def generate_volume_folder_name(volume: Union[int, VolumeData]) -> str:
     return save_name
 
 
-def generate_volume_folder_path(root_folder: str, volume: Union[int, str]) -> str:
+def generate_volume_folder_path(root_folder: str, volume: int | str) -> str:
     """Generate an absolute path to a volume folder.
 
     Args:
@@ -221,8 +218,8 @@ def generate_volume_folder_path(root_folder: str, volume: Union[int, str]) -> st
 def generate_issue_name(
     volume_id: int,
     special_version: SpecialVersion,
-    calculated_issue_number: Union[float, Tuple[float, float], None],
-    file_data: Union[GeneralFileData, None] = None,
+    calculated_issue_number: float | tuple[float, float] | None,
+    file_data: GeneralFileData | None = None,
 ) -> str:
     """Generate an issue file name based on the format string for the issue
     type.
@@ -366,7 +363,7 @@ def generate_image_name(filename: str) -> str:
 # =====================
 # region Checking formats
 # =====================
-NAMING_MAPPING: Dict[str, Type[BaseNamingKeys]] = {
+NAMING_MAPPING: dict[str, type[BaseNamingKeys]] = {
     "volume_folder_naming": BaseNamingKeys,
     "file_naming": IssueNamingKeys,
     "file_naming_empty": IssueNamingKeys,
@@ -410,11 +407,11 @@ def check_format(format: str, type: str) -> bool:
 
 
 def check_mock_filename(
-    volume_folder_naming: Union[str, None],
-    file_naming: Union[str, None],
-    file_naming_empty: Union[str, None],
-    file_naming_special_version: Union[str, None],
-    file_naming_vai: Union[str, None],
+    volume_folder_naming: str | None,
+    file_naming: str | None,
+    file_naming_empty: str | None,
+    file_naming_special_version: str | None,
+    file_naming_vai: str | None,
 ) -> None:
     """Check if the supplied naming formats are supported by Kapowarr. This is
     checked by creating a filename using the format, and seeing if it matches
@@ -623,7 +620,7 @@ def check_mock_filename(
             name = format_filename(filepath, formatted)
             save_name = make_filename_safe(name)
 
-            number_to_year: Dict[float, Union[int, None]] = {
+            number_to_year: dict[float, int | None] = {
                 i.calculated_issue_number: extract_year_from_date(i.date)
                 for i in issue_mock
             }
@@ -655,8 +652,8 @@ def check_mock_filename(
 # region Renaming
 # =====================
 def same_name_indexing(
-    volume_folder: str, planned_renames: Dict[str, str]
-) -> Dict[str, str]:
+    volume_folder: str, planned_renames: dict[str, str]
+) -> dict[str, str]:
     """Add a number at the end the filenames if the suggested filename already
     exists.
 
@@ -688,9 +685,9 @@ def same_name_indexing(
 
 def preview_mass_rename(
     volume_id: int,
-    issue_id: Union[int, None] = None,
-    filepath_filter: Union[List[str], None] = None,
-) -> Tuple[Dict[str, str], Union[str, None]]:
+    issue_id: int | None = None,
+    filepath_filter: list[str] | None = None,
+) -> tuple[dict[str, str], str | None]:
     """Determine what the new filenames would be, if they aren't already
     following the format.
 
@@ -803,10 +800,10 @@ def preview_mass_rename(
 
 def mass_rename(
     volume_id: int,
-    issue_id: Union[int, None] = None,
-    filepath_filter: Union[List[str], None] = None,
+    issue_id: int | None = None,
+    filepath_filter: list[str] | None = None,
     update_websocket: bool = False,
-) -> List[str]:
+) -> list[str]:
     """Rename files so that they follow the naming formats.
 
     Args:

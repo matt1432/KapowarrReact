@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
-
 """
 Setting up the database and handling connections
 """
 
 from __future__ import annotations
 
+from collections.abc import Generator, Iterable
 from os.path import dirname, exists, isdir, join
 from sqlite3 import (
     PARSE_DECLTYPES,
@@ -18,7 +17,7 @@ from sqlite3 import (
 )
 from threading import current_thread
 from time import time
-from typing import Any, Dict, Generator, Iterable, List, Union
+from typing import Any
 
 from flask import g
 
@@ -29,13 +28,13 @@ from backend.internals.db_migration import migrate_db
 
 
 class KapowarrCursor(Cursor):
-    row_factory: Union[type[Row], None]  # type: ignore
+    row_factory: type[Row] | None  # type: ignore
 
     @property
     def lastrowid(self) -> int:
         return super().lastrowid or 1
 
-    def fetchonedict(self) -> Union[dict, None]:
+    def fetchonedict(self) -> dict | None:
         """Same as `fetchone` but convert the Row object to a dict.
 
         Returns:
@@ -46,7 +45,7 @@ class KapowarrCursor(Cursor):
             return r
         return dict(r)
 
-    def fetchmanydict(self, size: Union[int, None] = 1) -> List[dict]:
+    def fetchmanydict(self, size: int | None = 1) -> list[dict]:
         """Same as `fetchmany` but convert the Row object to a dict.
 
         Args:
@@ -58,7 +57,7 @@ class KapowarrCursor(Cursor):
         """
         return [dict(e) for e in self.fetchmany(size)]
 
-    def fetchalldict(self) -> List[dict]:
+    def fetchalldict(self) -> list[dict]:
         """Same as `fetchall` but convert the Row object to a dict.
 
         Returns:
@@ -66,7 +65,7 @@ class KapowarrCursor(Cursor):
         """
         return [dict(e) for e in self]
 
-    def exists(self) -> Union[Any, None]:
+    def exists(self) -> Any | None:
         """Return the first column of the first row, or `None` if not found.
 
         Returns:
@@ -80,7 +79,7 @@ class KapowarrCursor(Cursor):
 
 
 class DBConnectionManager(type):
-    instances: Dict[int, DBConnection] = {}
+    instances: dict[int, DBConnection] = {}
 
     def __call__(cls, *args: Any, **kwargs: Any) -> DBConnection:
         thread_id = current_thread().native_id or -1
@@ -146,7 +145,7 @@ class DBConnection(Connection, metaclass=DBConnectionManager):
         return f"<{self.__class__.__name__}; {current_thread().name}; {id(self)}>"
 
 
-def set_db_location(db_folder: Union[str, None]) -> None:
+def set_db_location(db_folder: str | None) -> None:
     """Setup database location. Create folder for database and set location for
     `db.DBConnection` and `db.TempDBConnection`.
 
@@ -218,7 +217,7 @@ def iter_commit(iterable: Iterable[T]) -> Generator[T, Any, Any]:
     return
 
 
-def close_db(e: Union[None, BaseException] = None):
+def close_db(e: None | BaseException = None):
     """Close database cursor, commit database and close database.
 
     Args:

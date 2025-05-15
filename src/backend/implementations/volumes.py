@@ -1,17 +1,14 @@
-# -*- coding: utf-8 -*-
-
 from __future__ import annotations
 
 from asyncio import run
+from collections.abc import Mapping
 from datetime import datetime, timedelta
 from functools import lru_cache
 from io import BytesIO
 from os.path import exists, isdir, relpath
 from re import IGNORECASE, compile
 from time import time
-from typing import TYPE_CHECKING, Any, Dict, List, Mapping, Set, Tuple, Union
-
-from typing_extensions import assert_never
+from typing import TYPE_CHECKING, Any, assert_never
 
 from backend.base.custom_exceptions import (
     InvalidKeyValue,
@@ -127,7 +124,7 @@ class Issue:
         Returns:
             Issue: The issue instance.
         """
-        issue_id: Union[int, None] = (
+        issue_id: int | None = (
             get_db()
             .execute(
                 """
@@ -174,7 +171,7 @@ class Issue:
 
         return IssueData(**data, files=self.get_files())
 
-    def get_files(self) -> List[FileData]:
+    def get_files(self) -> list[FileData]:
         """Get all files linked to the issue.
 
         Returns:
@@ -374,7 +371,7 @@ class Volume:
         )
         return BytesIO(cover)
 
-    def get_ending_year(self) -> Union[int, None]:
+    def get_ending_year(self) -> int | None:
         """Get the year of the last issue that has a release date.
 
         Returns:
@@ -400,7 +397,7 @@ class Volume:
     def get_issue(self, issue_id: int) -> Issue:
         return Issue(issue_id)
 
-    def get_issues(self, _skip_files: bool = False) -> List[IssueData]:
+    def get_issues(self, _skip_files: bool = False) -> list[IssueData]:
         """Get list of issues that are in the volume.
 
         Args:
@@ -426,7 +423,7 @@ class Volume:
             (self.id,),
         ).fetchalldict()
 
-        file_mapping: Dict[int, List[FileData]] = {}
+        file_mapping: dict[int, list[FileData]] = {}
         if not _skip_files:
             cursor.execute(
                 """
@@ -455,9 +452,9 @@ class Volume:
 
     def get_issues_in_range(
         self,
-        calculated_issue_number_start: Union[float, int],
-        calculated_issue_number_end: Union[float, int],
-    ) -> List[IssueData]:
+        calculated_issue_number_start: float | int,
+        calculated_issue_number_end: float | int,
+    ) -> list[IssueData]:
         """Return a list of issues that are between two calculated issue numbers.
         Files of the issues are not fetched.
 
@@ -483,7 +480,7 @@ class Volume:
             )
         ]
 
-    def get_open_issues(self) -> List[Tuple[int, float]]:
+    def get_open_issues(self) -> list[tuple[int, float]]:
         """Get the issues that are not matched to a file and are monitored.
 
         Returns:
@@ -508,7 +505,7 @@ class Volume:
             .fetchall()
         )
 
-    def get_all_files(self) -> List[FileData]:
+    def get_all_files(self) -> list[FileData]:
         """Get the files and general files matched to the volume.
 
         Returns:
@@ -518,7 +515,7 @@ class Volume:
         result.extend(GeneralFilesDB.fetch(self.id))
         return result
 
-    def get_general_files(self) -> List[GeneralFileData]:
+    def get_general_files(self) -> list[GeneralFileData]:
         """Get the general files linked to the volume.
 
         Returns:
@@ -656,7 +653,7 @@ class Volume:
 
         return
 
-    def change_volume_folder(self, new_volume_folder: Union[str, None]) -> None:
+    def change_volume_folder(self, new_volume_folder: str | None) -> None:
         """Change the volume folder of the volume.
 
         Args:
@@ -762,8 +759,8 @@ class Library:
     def get_public_volumes(
         self,
         sort: LibrarySorting = LibrarySorting.TITLE,
-        filter: Union[LibraryFilters, int, None] = None,
-    ) -> List[dict]:
+        filter: LibraryFilters | int | None = None,
+    ) -> list[dict]:
         """Get all volumes in the library
 
         Args:
@@ -830,8 +827,8 @@ class Library:
         self,
         query: str,
         sort: LibrarySorting = LibrarySorting.TITLE,
-        filter: Union[LibraryFilters, None] = None,
-    ) -> List[dict]:
+        filter: LibraryFilters | None = None,
+    ) -> list[dict]:
         """Search in the library with a query.
 
         Args:
@@ -864,7 +861,7 @@ class Library:
 
         return volumes
 
-    def get_stats(self) -> Dict[str, int]:
+    def get_stats(self) -> dict[str, int]:
         result = (
             get_db()
             .execute("""
@@ -888,7 +885,7 @@ class Library:
         )
         return result
 
-    def get_volumes(self) -> List[int]:
+    def get_volumes(self) -> list[int]:
         """Get a list of the ID's of all the volumes.
 
         Returns:
@@ -949,8 +946,8 @@ class Library:
         monitored: bool,
         monitor_scheme: MonitorScheme = MonitorScheme.ALL,
         monitor_new_issues: bool = True,
-        volume_folder: Union[str, None] = None,
-        special_version: Union[SpecialVersion, None] = None,
+        volume_folder: str | None = None,
+        special_version: SpecialVersion | None = None,
         auto_search: bool = False,
     ) -> int:
         """Add a volume to the library.
@@ -1184,9 +1181,9 @@ def determine_special_version(volume_id: int) -> SpecialVersion:
 
 def scan_files(
     volume_id: int,
-    filepath_filter: List[str] = [],
+    filepath_filter: list[str] = [],
     del_unmatched_files: bool = True,
-    download: Union[Download, None] = None,
+    download: Download | None = None,
 ) -> None:
     """Scan inside the volume folder for files and map them to issues.
 
@@ -1210,15 +1207,15 @@ def scan_files(
         (gf["id"], gf["file_type"]) for gf in volume.get_general_files()
     )
     volume_files = {f["filepath"]: f["id"] for f in volume.get_all_files()}
-    number_to_year: Dict[float, Union[int, None]] = {
+    number_to_year: dict[float, int | None] = {
         i.calculated_issue_number: extract_year_from_date(i.date) for i in volume_issues
     }
 
     if not isdir(volume_data.folder):
         create_folder(volume_data.folder)
 
-    bindings: List[Tuple[int, int]] = []
-    general_bindings: List[Tuple[int, str]] = []
+    bindings: list[tuple[int, int]] = []
+    general_bindings: list[tuple[int, str]] = []
     folder_contents = list_files(folder=volume_data.folder, ext=SCANNABLE_EXTENSIONS)
     for file in filtered_iter(folder_contents, set(filepath_filter)):
         file_data = extract_filename_data(file)
@@ -1289,7 +1286,7 @@ def scan_files(
 
     # Delete bindings that aren't in new bindings
     if not filepath_filter:
-        current_bindings: List[Tuple[int, int]] = [
+        current_bindings: list[tuple[int, int]] = [
             tuple(b)
             for b in cursor.execute(
                 """
@@ -1341,7 +1338,7 @@ def scan_files(
 
 
 def refresh_and_scan(
-    volume_id: Union[int, None] = None,
+    volume_id: int | None = None,
     update_websocket: bool = False,
     allow_skipping: bool = False,
 ) -> None:
@@ -1393,7 +1390,7 @@ def refresh_and_scan(
                 (one_day_ago,),
             )
         )
-    cv_to_id: Dict[int, int]
+    cv_to_id: dict[int, int]
     if not cv_to_id:
         return
 
@@ -1435,7 +1432,7 @@ def refresh_and_scan(
 
     # Update issues
     issue_datas = run(cv.fetch_issues(tuple(v["comicvine_id"] for v in volume_datas)))
-    monitor_issues_volume_ids: Set[int] = {
+    monitor_issues_volume_ids: set[int] = {
         v[0]
         for v in cursor.execute("SELECT id FROM volumes WHERE monitor_new_issues = 1;")
     }
@@ -1481,7 +1478,7 @@ def refresh_and_scan(
     commit()
 
     # Delete issues from DB that aren't found in CV response
-    volume_issues_fetched: Dict[int, Set[int]] = {}
+    volume_issues_fetched: dict[int, set[int]] = {}
     for isd in issue_datas:
         (
             volume_issues_fetched.setdefault(isd["volume_id"], set()).add(

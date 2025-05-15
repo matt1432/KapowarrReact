@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-
 """
 Extracting data from filenames or search results and generalising it.
 """
 
 from os.path import basename, dirname, splitext
 from re import IGNORECASE, compile
-from typing import Tuple, Union
 
 from backend.base.definitions import (
     CONTENT_EXTENSIONS,
@@ -17,6 +14,8 @@ from backend.base.definitions import (
 )
 from backend.base.helpers import (
     fix_year as fix_broken_year,
+)
+from backend.base.helpers import (
     normalize_number,
     normalize_string,
 )
@@ -123,7 +122,7 @@ page_regex_2 = compile(r"(\d+)")
 # autopep8: on
 
 
-def _calc_float_issue_number(issue_number: str) -> Union[float, None]:
+def _calc_float_issue_number(issue_number: str) -> float | None:
     """Convert an issue number from string to representive float.
 
     Args:
@@ -173,7 +172,7 @@ def _calc_float_issue_number(issue_number: str) -> Union[float, None]:
     return
 
 
-def process_issue_number(issue_number: str) -> Union[float, Tuple[float, float], None]:
+def process_issue_number(issue_number: str) -> float | tuple[float, float] | None:
     """Convert an issue number or issue range to a (tuple of) float.
 
     Args:
@@ -217,8 +216,8 @@ def process_issue_number(issue_number: str) -> Union[float, Tuple[float, float],
 
 
 def process_volume_number(
-    volume_number: Union[str, None],
-) -> Union[int, Tuple[int, int], None]:
+    volume_number: str | None,
+) -> int | tuple[int, int] | None:
     """Convert a volume number or volume range to a (tuple of) int.
 
     Args:

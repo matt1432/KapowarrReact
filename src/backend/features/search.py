@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-
 from asyncio import gather, run
+
 from libgencomics import LibgenSearch
-from typing import Dict, List, Tuple, Union
 
 from backend.base.definitions import (
     MatchedSearchResultData,
@@ -29,9 +27,9 @@ def _rank_search_result(
     result: MatchedSearchResultData,
     title: str,
     volume_number: int,
-    year: Tuple[Union[int, None], Union[int, None]] = (None, None),
-    calculated_issue_number: Union[float, None] = None,
-) -> List[int]:
+    year: tuple[int | None, int | None] = (None, None),
+    calculated_issue_number: float | None = None,
+) -> list[int]:
     """Give a search result a rank, based on which you can sort.
 
     Args:
@@ -133,7 +131,7 @@ def _rank_search_result(
 
 
 class SearchGetComics(SearchSource):
-    async def search(self, session: AsyncSession) -> List[SearchResultData]:
+    async def search(self, session: AsyncSession) -> list[SearchResultData]:
         return await search_getcomics(session, self.query)
 
 
@@ -143,8 +141,8 @@ class SearchLibgenPlus:
         self.volume_number = volume_number
         self.issue_number = issue_number
 
-    def search(self, libgen_url: Union[str, None] = None) -> List[SearchResultData]:
-        results: List[SearchResultData] = []
+    def search(self, libgen_url: str | None = None) -> list[SearchResultData]:
+        results: list[SearchResultData] = []
 
         file_results = LibgenSearch().search_comicvine_id(
             Settings().sv.comicvine_api_key,
@@ -179,7 +177,7 @@ class SearchLibgenPlus:
         return results
 
 
-async def search_multiple_queries(*queries: str) -> List[SearchResultData]:
+async def search_multiple_queries(*queries: str) -> list[SearchResultData]:
     """Do a manual search for multiple queries asynchronously.
 
     Returns:
@@ -194,7 +192,7 @@ async def search_multiple_queries(*queries: str) -> List[SearchResultData]:
         ]
         responses = await gather(*searches)
 
-    search_results: List[SearchResultData] = []
+    search_results: list[SearchResultData] = []
     processed_links = set()
     for response in responses:
         for result in response:
@@ -209,9 +207,9 @@ async def search_multiple_queries(*queries: str) -> List[SearchResultData]:
 
 def manual_search(
     volume_id: int,
-    issue_id: Union[int, None] = None,
-    libgen_url: Union[str, None] = None,
-) -> List[MatchedSearchResultData]:
+    issue_id: int | None = None,
+    libgen_url: str | None = None,
+) -> list[MatchedSearchResultData]:
     """Do a manual search for a volume or issue.
 
     Args:
@@ -226,11 +224,11 @@ def manual_search(
     volume = Volume(volume_id)
     volume_data = volume.get_data()
     volume_issues = volume.get_issues()
-    number_to_year: Dict[float, Union[int, None]] = {
+    number_to_year: dict[float, int | None] = {
         i.calculated_issue_number: extract_year_from_date(i.date) for i in volume_issues
     }
-    issue_number: Union[str, None] = None
-    calculated_issue_number: Union[float, None] = None
+    issue_number: str | None = None
+    calculated_issue_number: float | None = None
 
     if issue_id and volume_data.special_version in (
         SpecialVersion.NORMAL,
@@ -294,7 +292,7 @@ def manual_search(
         if not search_results and not libgen_results:
             continue
 
-        results: List[MatchedSearchResultData] = [
+        results: list[MatchedSearchResultData] = [
             {
                 **result,
                 **check_search_result_match(
@@ -329,8 +327,8 @@ def manual_search(
 
 
 def auto_search(
-    volume_id: int, issue_id: Union[int, None] = None
-) -> List[MatchedSearchResultData]:
+    volume_id: int, issue_id: int | None = None
+) -> list[MatchedSearchResultData]:
     """Search for a volume or issue and automatically choose a result.
 
     Args:
@@ -351,7 +349,7 @@ def auto_search(
         f"issue {issue_id}" if issue_id else "",
     )
 
-    searchable_issues: List[Tuple[int, float]] = []
+    searchable_issues: list[tuple[int, float]] = []
     if not volume_data.monitored:
         # Volume is unmonitored so don't auto search
         pass
@@ -388,7 +386,7 @@ def auto_search(
 
     # We're searching for a volume, so we might download multiple search results.
     # Find a combination of search results that download the most issues.
-    chosen_downloads: List[MatchedSearchResultData] = []
+    chosen_downloads: list[MatchedSearchResultData] = []
     searchable_issue_numbers = {i[1] for i in searchable_issues}
     for result in search_results:
         # Determine what issues the result covers

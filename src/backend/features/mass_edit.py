@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from typing import List
-
 from backend.base.custom_exceptions import (
     InvalidKeyValue,
     KeyNotFound,
@@ -147,7 +143,7 @@ class MassEditorMonitoringScheme(MassEditorAction):
         return
 
 
-def run_mass_editor_action(action: str, volume_ids: List[int], **kwargs) -> None:
+def run_mass_editor_action(action: str, volume_ids: list[int], **kwargs) -> None:
     """Run a mass editor action.
 
     Args:

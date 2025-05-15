@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 Getting downloads from a GC page
 """
@@ -8,7 +6,6 @@ from asyncio import gather
 from functools import reduce
 from hashlib import sha1
 from re import IGNORECASE, compile
-from typing import List, Tuple, Type, Union
 
 from aiohttp import ClientError
 from bencoding import bencode
@@ -81,7 +78,7 @@ def _get_max_page(soup: BeautifulSoup) -> int:
     return int(page_links[-1].get_text(strip=True).replace(",", "").replace(".", ""))
 
 
-def _get_articles(soup: BeautifulSoup) -> List[Tuple[str, str]]:
+def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str]]:
     """From a GC search result page, extract article (single search result)
     data.
 
@@ -92,7 +89,7 @@ def _get_articles(soup: BeautifulSoup) -> List[Tuple[str, str]]:
         List[Tuple[str, str]]: The data of the articles. First string of the
         tuple is the link, second string is the title.
     """
-    result: List[Tuple[str, str]] = []
+    result: list[tuple[str, str]] = []
     for article in soup.find_all("article", {"class": "post"}):
         link = create_range(article.find("a")["href"] or "")[0]
         title = article.find("h1", {"class": "post-title"}).get_text(strip=True)
@@ -101,7 +98,7 @@ def _get_articles(soup: BeautifulSoup) -> List[Tuple[str, str]]:
     return result
 
 
-def _get_title(soup: BeautifulSoup) -> Union[str, None]:
+def _get_title(soup: BeautifulSoup) -> str | None:
     """From a GC article, extract the title of the article.
 
     Args:
@@ -118,7 +115,7 @@ def _get_title(soup: BeautifulSoup) -> Union[str, None]:
 
 def __check_download_link(
     link_text: str, link: str, torrent_client_available: bool
-) -> Union[GCDownloadSource, None]:
+) -> GCDownloadSource | None:
     """Check if download link is supported and allowed.
 
     Args:
@@ -161,7 +158,7 @@ def __link_filter_1(e: Tag) -> bool:
 
 def __extract_button_links(
     body: Tag, torrent_client_available: bool
-) -> List[DownloadGroup]:
+) -> list[DownloadGroup]:
     """Extract download groups that are a list of big buttons.
 
     Args:
@@ -171,7 +168,7 @@ def __extract_button_links(
     Returns:
         List[DownloadGroup]: The download groups.
     """
-    download_groups: List[DownloadGroup] = []
+    download_groups: list[DownloadGroup] = []
     for group in body.find_all(__link_filter_1):
         group: Tag
         if not group.next_sibling:
@@ -208,7 +205,7 @@ def __extract_button_links(
                 break
 
             elif e.name == "div" and "aio-button-center" in (e.attrs.get("class", [])):
-                group_link: Union[Tag, None] = e.find("a")  # type: ignore
+                group_link: Tag | None = e.find("a")  # type: ignore
                 if not group_link:
                     continue
                 link_title = group_link.text.strip().lower()
@@ -242,7 +239,7 @@ def __link_filter_2(e: Tag) -> bool:
 
 def __extract_list_links(
     body: Tag, torrent_client_available: bool
-) -> List[DownloadGroup]:
+) -> list[DownloadGroup]:
     """Extract download groups that are in an unsorted list.
 
     Args:
@@ -252,7 +249,7 @@ def __extract_list_links(
     Returns:
         List[DownloadGroup]: The download groups.
     """
-    download_groups: List[DownloadGroup] = []
+    download_groups: list[DownloadGroup] = []
     for group in body.find_all(__link_filter_2):
         # Process data about group
         title: str = group.get_text("\x00").partition("\x00")[0]
@@ -291,7 +288,7 @@ def __extract_list_links(
     return download_groups
 
 
-def _get_download_groups(soup: BeautifulSoup) -> List[DownloadGroup]:
+def _get_download_groups(soup: BeautifulSoup) -> list[DownloadGroup]:
     """From a GC article, extract the download groups.
 
     Args:
@@ -304,7 +301,7 @@ def _get_download_groups(soup: BeautifulSoup) -> List[DownloadGroup]:
 
     torrent_client_available = bool(ExternalClients.get_clients())
 
-    body: Union[Tag, None] = soup.find("section", {"class": "post-contents"})  # type: ignore
+    body: Tag | None = soup.find("section", {"class": "post-contents"})  # type: ignore
     if not body:
         return []
 
@@ -326,7 +323,7 @@ def _get_download_groups(soup: BeautifulSoup) -> List[DownloadGroup]:
 
 
 # region Group Handling
-def __sort_link_paths(p: List[DownloadGroup]) -> Tuple[float, int]:
+def __sort_link_paths(p: list[DownloadGroup]) -> tuple[float, int]:
     """Sort the link paths. SV's are sorted highest, then from largest range to
     least, then from least downloads to most for equal range.
 
@@ -349,8 +346,8 @@ def __sort_link_paths(p: List[DownloadGroup]) -> Tuple[float, int]:
 
 
 def _create_link_paths(
-    download_groups: List[DownloadGroup], volume_id: int, force_match: bool = False
-) -> List[List[DownloadGroup]]:
+    download_groups: list[DownloadGroup], volume_id: int, force_match: bool = False
+) -> list[list[DownloadGroup]]:
     """
     Based on the download groups, find different "paths" to download
     the most amount of content without overlapping. E.g. on the same page, there
@@ -381,7 +378,7 @@ def _create_link_paths(
     ending_year = volume.get_ending_year()
     volume_issues = volume.get_issues()
 
-    link_paths: List[List[DownloadGroup]] = []
+    link_paths: list[list[DownloadGroup]] = []
     if force_match:
         link_paths.append([])
 
@@ -452,7 +449,7 @@ def _create_link_paths(
 
 async def __purify_link(
     source: GCDownloadSource, link: str
-) -> Tuple[str, Type[Download]]:
+) -> tuple[str, type[Download]]:
     """Extract the link that directly leads to the download from the link
     in the GC article.
 
@@ -539,11 +536,11 @@ async def __purify_link(
 async def __purify_download_group(
     group: DownloadGroup,
     volume_id: int,
-    issue_id: Union[int, None],
+    issue_id: int | None,
     web_link: str,
-    web_title: Union[str, None],
+    web_title: str | None,
     forced_match: bool = False,
-) -> Tuple[Union[Download, None], bool]:
+) -> tuple[Download | None, bool]:
     """Turn a download group into a working link and client for the link.
 
     Args:
@@ -630,13 +627,13 @@ async def __purify_download_group(
 
 
 async def _test_paths(
-    link_paths: List[List[DownloadGroup]],
+    link_paths: list[list[DownloadGroup]],
     web_link: str,
-    web_title: Union[str, None],
+    web_title: str | None,
     volume_id: int,
-    issue_id: Union[int, None] = None,
+    issue_id: int | None = None,
     forced_match: bool = False,
-) -> List[Download]:
+) -> list[Download]:
     """Test the links of the paths and determine, based on which links work,
     which path to go for.
 
@@ -668,8 +665,8 @@ async def _test_paths(
     Returns:
         List[Download]: A list of downloads.
     """
-    downloads: Tuple[Union[Download, None]] = tuple()
-    limit_reached: Tuple[bool] = tuple()
+    downloads: tuple[Download | None] = tuple()
+    limit_reached: tuple[bool] = tuple()
     for path in link_paths:
         downloads, limit_reached = zip(
             *(
@@ -703,7 +700,7 @@ async def _test_paths(
 
 
 # region Searching
-async def search_getcomics(session: AsyncSession, query: str) -> List[SearchResultData]:
+async def search_getcomics(session: AsyncSession, query: str) -> list[SearchResultData]:
     """Give the search results from GC for the query.
 
     Args:
@@ -734,7 +731,7 @@ async def search_getcomics(session: AsyncSession, query: str) -> List[SearchResu
     other_soups = [BeautifulSoup(html, "html.parser") for html in other_htmls]
 
     # Process the search results on each page
-    formatted_results: List[SearchResultData] = [
+    formatted_results: list[SearchResultData] = [
         {
             **extract_filename_data(
                 article[1], assume_volume_number=False, fix_year=True
@@ -759,8 +756,8 @@ class GetComicsPage:
             link (str): The link to the article.
         """
         self.link = link
-        self.title: Union[str, None] = None
-        self.download_groups: List[DownloadGroup] = []
+        self.title: str | None = None
+        self.download_groups: list[DownloadGroup] = []
         return
 
     async def load_data(self) -> None:
@@ -790,9 +787,9 @@ class GetComicsPage:
     async def create_downloads(
         self,
         volume_id: int,
-        issue_id: Union[int, None] = None,
+        issue_id: int | None = None,
         force_match: bool = False,
-    ) -> List[Download]:
+    ) -> list[Download]:
         """Create downloads from the links on the page for a certain volume
         (and issue if given).
 

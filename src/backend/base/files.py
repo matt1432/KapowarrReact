@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
-
 """
 Handling folders, files and filenames.
 """
 
 from collections import deque
+from collections.abc import Iterable, Sequence
 from os import listdir, makedirs, remove, scandir
 from os.path import (
     abspath,
@@ -21,7 +20,6 @@ from os.path import (
 )
 from re import compile
 from shutil import copy2, copytree, move, rmtree
-from typing import Deque, Dict, Iterable, List, Sequence, Set
 
 from backend.base.definitions import CharConstants, Constants
 from backend.base.helpers import check_filter, force_suffix
@@ -123,7 +121,7 @@ def make_filename_safe(unsafe_filename: str) -> str:
     return safe_filename
 
 
-def list_files(folder: str, ext: Iterable[str] = []) -> List[str]:
+def list_files(folder: str, ext: Iterable[str] = []) -> list[str]:
     """List all files in a folder recursively with absolute paths. Hidden files
     (files starting with `.`) are ignored.
 
@@ -137,9 +135,9 @@ def list_files(folder: str, ext: Iterable[str] = []) -> List[str]:
     Returns:
         List[str]: The paths of the files in the folder.
     """
-    files: Deque[str] = deque()
+    files: deque[str] = deque()
 
-    def _list_files(folder: str, ext: Set[str] = set()):
+    def _list_files(folder: str, ext: set[str] = set()):
         """Internal function to add all files in a folder to the files list.
 
         Args:
@@ -165,7 +163,7 @@ def list_files(folder: str, ext: Iterable[str] = []) -> List[str]:
 
 def propose_basefolder_change(
     files: Iterable[str], current_base_folder: str, desired_base_folder: str
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     Propose new filenames with a different base folder for a list of files.
     E.g. /current/base/folder/file.ext -> /desired_base_folder/file.ext
@@ -365,12 +363,12 @@ def delete_empty_child_folders(base_folder: str) -> None:
     if isfile(base_folder):
         base_folder = dirname(base_folder)
 
-    resulting_folders: List[str] = []
+    resulting_folders: list[str] = []
 
     def _decf(
-        folder: str, resulting_folders: List[str], _first_call: bool = True
+        folder: str, resulting_folders: list[str], _first_call: bool = True
     ) -> bool:
-        folders: List[str] = []
+        folders: list[str] = []
         contains_files: bool = False
 
         for f in scandir(folder):

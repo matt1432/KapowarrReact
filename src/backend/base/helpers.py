@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 General "helper" functions and classes
 """
@@ -8,6 +6,15 @@ from __future__ import annotations
 
 from asyncio import sleep
 from collections import deque
+from collections.abc import (
+    Callable,
+    Collection,
+    Generator,
+    Iterable,
+    Iterator,
+    Mapping,
+    Sequence,
+)
 from multiprocessing.pool import Pool
 from os import cpu_count, sep
 from os.path import dirname
@@ -15,17 +22,6 @@ from sys import version_info
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
-    Collection,
-    Dict,
-    Generator,
-    Iterable,
-    Iterator,
-    List,
-    Mapping,
-    Sequence,
-    Tuple,
-    Union,
 )
 from urllib.parse import unquote
 
@@ -79,7 +75,7 @@ def get_subclasses(
     include_self: bool = False,
     recursive: bool = True,
     only_leafs: bool = False,
-) -> List[type]:
+) -> list[type]:
     """Get subclasses of the given classes.
 
     Args:
@@ -94,13 +90,13 @@ def get_subclasses(
     Returns:
         List[type]: The subclasses.
     """
-    result: List[type] = []
+    result: list[type] = []
     if include_self:
         result.extend(classes)
 
     if not recursive:
         result.extend(
-            (subclass for current in classes for subclass in current.__subclasses__())
+            subclass for current in classes for subclass in current.__subclasses__()
         )
         return result
 
@@ -132,7 +128,7 @@ def batched(l_val: Sequence[T], n: int) -> Generator[Sequence[T], Any, Any]:
         yield l_val[ndx : ndx + n]
 
 
-def reversed_tuples(i: Iterable[Tuple[T, U]]) -> Generator[Tuple[U, T], Any, Any]:
+def reversed_tuples(i: Iterable[tuple[T, U]]) -> Generator[tuple[U, T], Any, Any]:
     """Yield sub-tuples in reversed order.
 
     Args:
@@ -145,7 +141,7 @@ def reversed_tuples(i: Iterable[Tuple[T, U]]) -> Generator[Tuple[U, T], Any, Any
         yield entry_2, entry_1
 
 
-def get_first_of_range(n: Union[T, Tuple[T, ...], List[T]]) -> T:
+def get_first_of_range(n: T | tuple[T, ...] | list[T]) -> T:
     """Get the first element from a variable that could potentially be a range,
     but could also be a single value. In the case of a single value, the value
     is returned.
@@ -156,13 +152,13 @@ def get_first_of_range(n: Union[T, Tuple[T, ...], List[T]]) -> T:
     Returns:
         T: The first element or single value.
     """
-    if isinstance(n, (Tuple, List)):
+    if isinstance(n, tuple | list):
         return n[0]
     else:
         return n
 
 
-def create_range(n: Union[T, Tuple[T, ...], List[T]]) -> Sequence[T]:
+def create_range(n: T | tuple[T, ...] | list[T]) -> Sequence[T]:
     """Create range if input isn't already.
 
     Args:
@@ -171,7 +167,7 @@ def create_range(n: Union[T, Tuple[T, ...], List[T]]) -> Sequence[T]:
     Returns:
         Sequence[T]: The range.
     """
-    if isinstance(n, (Tuple, List)):
+    if isinstance(n, tuple | list):
         return n
     else:
         return (n, n)
@@ -268,7 +264,7 @@ def normalize_number(s: str) -> str:
     return s.replace(",", ".").replace("?", "0").rstrip(".").strip().lower()
 
 
-def normalize_year(s: str) -> Union[int, None]:
+def normalize_year(s: str) -> int | None:
     """Turn user-entered years (in string form) into an int if possible.
     Handles unknown numbers, trailing chars, surrounding whitespace,
     etc.
@@ -317,7 +313,7 @@ def normalize_base_url(base_url: str) -> str:
     return result
 
 
-def extract_year_from_date(date: Union[str, None], default: T = None) -> Union[int, T]:
+def extract_year_from_date(date: str | None, default: T = None) -> int | T:
     """Get the year from a date in the format YYYY-MM-DD
 
     Args:
@@ -337,7 +333,7 @@ def extract_year_from_date(date: Union[str, None], default: T = None) -> Union[i
         return default
 
 
-def to_number_cv_id(ids: Iterable[Union[str, int]]) -> List[int]:
+def to_number_cv_id(ids: Iterable[str | int]) -> list[int]:
     """Convert CV ID's into numbers.
 
     Args:
@@ -350,7 +346,7 @@ def to_number_cv_id(ids: Iterable[Union[str, int]]) -> List[int]:
     Returns:
         List[int]: The converted CV ID's, in format `NNNN`
     """
-    result: List[int] = []
+    result: list[int] = []
     for i in ids:
         if isinstance(i, int):
             result.append(i)
@@ -371,7 +367,7 @@ def to_number_cv_id(ids: Iterable[Union[str, int]]) -> List[int]:
     return result
 
 
-def to_string_cv_id(ids: Iterable[Union[str, int]]) -> List[str]:
+def to_string_cv_id(ids: Iterable[str | int]) -> list[str]:
     """Convert CV ID's into short strings.
 
     Args:
@@ -387,7 +383,7 @@ def to_string_cv_id(ids: Iterable[Union[str, int]]) -> List[str]:
     return [str(i) for i in to_number_cv_id(ids)]
 
 
-def to_full_string_cv_id(ids: Iterable[Union[str, int]]) -> List[str]:
+def to_full_string_cv_id(ids: Iterable[str | int]) -> list[str]:
     """Convert CV ID's into long strings.
 
     Args:
@@ -404,8 +400,8 @@ def to_full_string_cv_id(ids: Iterable[Union[str, int]]) -> List[str]:
 
 
 def check_overlapping_issues(
-    issues_1: Union[float, Tuple[float, float]],
-    issues_2: Union[float, Tuple[float, float]],
+    issues_1: float | tuple[float, float],
+    issues_2: float | tuple[float, float],
 ) -> bool:
     """Check if two issues overlap. Both can be single issues or ranges.
 
@@ -416,13 +412,13 @@ def check_overlapping_issues(
     Returns:
         bool: Whether or not they overlap.
     """
-    if isinstance(issues_1, (float, int)):
-        if isinstance(issues_2, (float, int)):
+    if isinstance(issues_1, float | int):
+        if isinstance(issues_2, float | int):
             return issues_1 == issues_2
         else:
             return issues_2[0] <= issues_1 <= issues_2[1]
     else:
-        if isinstance(issues_2, (float, int)):
+        if isinstance(issues_2, float | int):
             return issues_1[0] <= issues_2 <= issues_1[1]
         else:
             return (
@@ -431,7 +427,7 @@ def check_overlapping_issues(
             )
 
 
-def first_of_column(columns: Iterable[Sequence[T]]) -> List[T]:
+def first_of_column(columns: Iterable[Sequence[T]]) -> list[T]:
     """Get the first element of each sub-array.
 
     Args:
@@ -463,7 +459,7 @@ def fix_year(year: int) -> int:
     return int(year_str[0] + year_str[2] + year_str[1] + year_str[3])
 
 
-def get_torrent_info(torrent: bytes) -> Dict[bytes, Any]:
+def get_torrent_info(torrent: bytes) -> dict[bytes, Any]:
     """Get the info from the contents of a torrent file.
 
     Args:
@@ -493,7 +489,7 @@ class CommaList(list):
     Using str() will convert it back to a string with comma seperated values.
     """
 
-    def __init__(self, value: Union[str, Iterable]):
+    def __init__(self, value: str | Iterable):
         if not isinstance(value, str):
             super().__init__(value)
             return
@@ -547,7 +543,7 @@ class DictKeyedDict(dict):
     def values(self) -> Iterator[Any]:  # type: ignore
         return (v[1] for v in super().values())
 
-    def items(self) -> Iterator[Tuple[Any, Any]]:  # type: ignore
+    def items(self) -> Iterator[tuple[Any, Any]]:  # type: ignore
         return zip(self.keys(), self.values())
 
 
@@ -582,7 +578,7 @@ class Session(RSession):
         url: str,
         params=None,
         data=None,
-        headers: Union[Dict[str, str], None] = None,
+        headers: dict[str, str] | None = None,
         cookies=None,
         files=None,
         auth=None,
@@ -714,11 +710,11 @@ class AsyncSession(ClientSession):
 
         raise ClientError
 
-    async def __aenter__(self) -> "AsyncSession":
+    async def __aenter__(self) -> AsyncSession:
         return self
 
     async def get_text(
-        self, url: str, params: Dict[str, Any] = {}, headers: Dict[str, Any] = {}
+        self, url: str, params: dict[str, Any] = {}, headers: dict[str, Any] = {}
     ) -> str:
         """Fetch a page and return the body.
 
@@ -736,7 +732,7 @@ class AsyncSession(ClientSession):
             return await response.text()
 
     async def get_content(
-        self, url: str, params: Dict[str, Any] = {}, headers: Dict[str, Any] = {}
+        self, url: str, params: dict[str, Any] = {}, headers: dict[str, Any] = {}
     ) -> bytes:
         """Fetch a page and return the content in bytes.
 
@@ -757,9 +753,9 @@ class AsyncSession(ClientSession):
 class _ContextKeeper(metaclass=Singleton):
     def __init__(
         self,
-        log_level: Union[int, None] = None,
-        db_folder: Union[str, None] = None,
-        log_folder: Union[str, None] = None,
+        log_level: int | None = None,
+        db_folder: str | None = None,
+        log_folder: str | None = None,
     ) -> None:
         if not log_level:
             return
@@ -788,7 +784,7 @@ def pool_starmap_func(func, *args):
 
 
 class PortablePool(Pool):
-    def __init__(self, max_processes: Union[int, None] = None) -> None:
+    def __init__(self, max_processes: int | None = None) -> None:
         """Create a multiprocessing pool that can run on all OS'es and has
         access to the app context.
 
@@ -833,8 +829,8 @@ class PortablePool(Pool):
         self,
         func: Callable[[T], U],
         iterable: Iterable[T],
-        chunksize: Union[int, None] = None,
-    ) -> List[U]:
+        chunksize: int | None = None,
+    ) -> list[U]:
         new_iterable = ((func, i) for i in iterable)
         new_func = pool_map_func
         return super().map(new_func, new_iterable, chunksize)
@@ -843,7 +839,7 @@ class PortablePool(Pool):
         self,
         func: Callable[[T], U],
         iterable: Iterable[T],
-        chunksize: Union[int, None] = 1,
+        chunksize: int | None = 1,
     ) -> IMapIterator[U]:
         new_iterable = ((func, i) for i in iterable)
         new_func = pool_map_func
@@ -853,7 +849,7 @@ class PortablePool(Pool):
         self,
         func: Callable[[T], U],
         iterable: Iterable[T],
-        chunksize: Union[int, None] = 1,
+        chunksize: int | None = 1,
     ) -> IMapIterator[U]:
         new_iterable = ((func, i) for i in iterable)
         new_func = pool_map_func
@@ -872,8 +868,8 @@ class PortablePool(Pool):
         self,
         func: Callable[..., U],
         iterable: Iterable[Iterable[T]],
-        chunksize: Union[int, None] = None,
-    ) -> List[U]:
+        chunksize: int | None = None,
+    ) -> list[U]:
         new_iterable = ((func, *i) for i in iterable)
         new_func = pool_starmap_func
         return super().starmap(new_func, new_iterable, chunksize)
@@ -882,7 +878,7 @@ class PortablePool(Pool):
         self,
         func: Callable[..., U],
         iterable: Iterable[Iterable[T]],
-        chunksize: Union[int, None] = 1,
+        chunksize: int | None = 1,
     ) -> IMapIterator[U]:
         "A combination of starmap and imap_unordered."
         new_iterable = ((func, i) for i in iterable)

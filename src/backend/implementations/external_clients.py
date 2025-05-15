@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
-
+from collections.abc import Mapping
 from sqlite3 import IntegrityError
-from typing import Any, Dict, List, Mapping, Type, Union
+from typing import Any
 
 from backend.base.custom_exceptions import (
     ClientDownloading,
@@ -38,15 +37,15 @@ class BaseExternalClient(ExternalDownloadClient):
         return self._base_url
 
     @property
-    def username(self) -> Union[str, None]:
+    def username(self) -> str | None:
         return self._username
 
     @property
-    def password(self) -> Union[str, None]:
+    def password(self) -> str | None:
         return self._password
 
     @property
-    def api_token(self) -> Union[str, None]:
+    def api_token(self) -> str | None:
         return self._api_token
 
     def __init__(self, client_id: int) -> None:
@@ -75,7 +74,7 @@ class BaseExternalClient(ExternalDownloadClient):
         self._api_token = data["api_token"]
         return
 
-    def get_client_data(self) -> Dict[str, Any]:
+    def get_client_data(self) -> dict[str, Any]:
         return {
             "id": self._id,
             "download_type": self.download_type.value,
@@ -169,7 +168,7 @@ class BaseExternalClient(ExternalDownloadClient):
 # =====================
 class ExternalClients:
     @staticmethod
-    def get_client_types() -> Dict[str, Type[ExternalDownloadClient]]:
+    def get_client_types() -> dict[str, type[ExternalDownloadClient]]:
         """Get a mapping of the client type strings to their class.
 
         Returns:
@@ -183,9 +182,9 @@ class ExternalClients:
     def test(
         client_type: str,
         base_url: str,
-        username: Union[str, None],
-        password: Union[str, None],
-        api_token: Union[str, None],
+        username: str | None,
+        password: str | None,
+        api_token: str | None,
     ) -> ClientTestResult:
         """Test if an external client is supported, working and available.
 
@@ -229,9 +228,9 @@ class ExternalClients:
         client_type: str,
         title: str,
         base_url: str,
-        username: Union[str, None],
-        password: Union[str, None],
-        api_token: Union[str, None],
+        username: str | None,
+        password: str | None,
+        api_token: str | None,
     ) -> ExternalDownloadClient:
         """Add an external client.
 
@@ -318,7 +317,7 @@ class ExternalClients:
         return ExternalClients.get_client(client_id)
 
     @staticmethod
-    def get_clients() -> List[Dict[str, Any]]:
+    def get_clients() -> list[dict[str, Any]]:
         """Get a list of all external clients.
 
         Returns:

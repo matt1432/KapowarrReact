@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 The post-download processing (a.k.a. post-processing or PP) of downloads.
 """

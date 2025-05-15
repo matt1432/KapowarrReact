@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 All matching is done here. Can be between file and database,
 file and CV result, issue/volume and GC result, etc.
@@ -7,8 +5,9 @@ file and CV result, issue/volume and GC result, etc.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from re import compile
-from typing import TYPE_CHECKING, List, Mapping, Tuple, Union
+from typing import TYPE_CHECKING
 
 from backend.base.definitions import IssueData, SpecialVersion
 from backend.base.helpers import create_range
@@ -51,9 +50,9 @@ def _match_title(title1: str, title2: str, allow_contains: bool = False) -> bool
 
 
 def _match_year(
-    reference_year: Union[int, None],
-    check_year: Union[int, None],
-    end_year: Union[int, None] = None,
+    reference_year: int | None,
+    check_year: int | None,
+    end_year: int | None = None,
     conservative: bool = False,
 ) -> bool:
     """Check if two years match, with one year of 'wiggle room'.
@@ -85,8 +84,8 @@ def _match_year(
 
 def _match_volume_number(
     volume_data: VolumeData,
-    volume_issues: List[IssueData],
-    check_number: Union[None, int, Tuple[int, int]],
+    volume_issues: list[IssueData],
+    check_number: None | int | tuple[int, int],
     conservative: bool = False,
 ) -> bool:
     """Check if the volume number matches the one of the volume or it's year.
@@ -139,9 +138,9 @@ def _match_volume_number(
 
 
 def _match_special_version(
-    reference_version: Union[SpecialVersion, str, None],
-    check_version: Union[SpecialVersion, str, None],
-    issue_number: Union[Tuple[float, float], float, None] = None,
+    reference_version: SpecialVersion | str | None,
+    check_version: SpecialVersion | str | None,
+    issue_number: tuple[float, float] | float | None = None,
 ) -> bool:
     """Check if Special Version's match. Takes into consideration that files
     have lacking state specificity.
@@ -192,8 +191,8 @@ def _match_special_version(
 def folder_extraction_filter(
     file_data: FilenameData,
     volume_data: VolumeData,
-    volume_issues: List[IssueData],
-    end_year: Union[int, None],
+    volume_issues: list[IssueData],
+    end_year: int | None,
 ) -> bool:
     """The filter applied to the files when extracting from a folder,
     which decides which file is relevant and which one isn't.
@@ -233,8 +232,8 @@ def folder_extraction_filter(
 def file_importing_filter(
     file_data: FilenameData,
     volume_data: VolumeData,
-    volume_issues: List[IssueData],
-    number_to_year: Mapping[float, Union[int, None]],
+    volume_issues: list[IssueData],
+    number_to_year: Mapping[float, int | None],
 ) -> bool:
     """Filter for matching files to volumes.
 
@@ -282,8 +281,8 @@ def file_importing_filter(
 def gc_group_filter(
     processed_desc: FilenameData,
     volume_data: VolumeData,
-    ending_year: Union[int, None],
-    volume_issues: List[IssueData],
+    ending_year: int | None,
+    volume_issues: list[IssueData],
 ) -> bool:
     """Filter for deciding if a GC download group is a match for the
     volume/issue.
@@ -333,9 +332,9 @@ def gc_group_filter(
 def check_search_result_match(
     result: SearchResultData,
     volume_data: VolumeData,
-    volume_issues: List[IssueData],
-    number_to_year: Mapping[float, Union[int, None]],
-    calculated_issue_number: Union[float, None] = None,
+    volume_issues: list[IssueData],
+    number_to_year: Mapping[float, int | None],
+    calculated_issue_number: float | None = None,
 ) -> SearchResultMatchData:
     """Filter for deciding if a search result is a match with what is searched
     for.

@@ -9,6 +9,7 @@
         "frontend"
         "kapowarr"
       ];
+      options = ["--explicit-package-bases"];
       extraPythonPackages = with pkgs; (kapowarr.dependencies
         ++ (with python3Packages; [
           types-beautifulsoup4

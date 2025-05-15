@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 Converting files to a different format
 """
@@ -7,7 +5,6 @@ Converting files to a different format
 from functools import lru_cache
 from itertools import chain
 from os.path import splitext
-from typing import Dict, List, Set, Type, Union
 from zipfile import ZipFile
 
 from backend.base.definitions import Download, FileConstants, FileConverter
@@ -56,7 +53,7 @@ def archive_contains_issues(archive_file: str) -> bool:
 class FileConversionHandler:
     @staticmethod
     @lru_cache(1)
-    def get_conversion_methods() -> Dict[str, Dict[str, Type[FileConverter]]]:
+    def get_conversion_methods() -> dict[str, dict[str, type[FileConverter]]]:
         """Get all converters.
 
         Returns:
@@ -70,7 +67,7 @@ class FileConversionHandler:
 
     @staticmethod
     @lru_cache(1)
-    def get_available_formats() -> Set[str]:
+    def get_available_formats() -> set[str]:
         """Get all available formats that can be converted to.
 
         Returns:
@@ -80,9 +77,7 @@ class FileConversionHandler:
             chain.from_iterable(FileConversionHandler.get_conversion_methods().values())
         )
 
-    def __init__(
-        self, file: str, format_preference: Union[List[str], None] = None
-    ) -> None:
+    def __init__(self, file: str, format_preference: list[str] | None = None) -> None:
         """Prepare file for conversion.
 
         Args:
@@ -115,7 +110,7 @@ class FileConversionHandler:
         return
 
 
-def convert_file(converter: FileConversionHandler) -> List[str]:
+def convert_file(converter: FileConversionHandler) -> list[str]:
     """Convert a file.
 
     Args:
@@ -133,9 +128,7 @@ def convert_file(converter: FileConversionHandler) -> List[str]:
     return converter.converter.convert(converter.file)
 
 
-def preview_mass_convert(
-    volume_id: int, issue_id: Union[int, None] = None
-) -> Dict[str, str]:
+def preview_mass_convert(volume_id: int, issue_id: int | None = None) -> dict[str, str]:
     """Get a list of suggested conversions for a volume or issue.
 
     Args:
@@ -154,13 +147,11 @@ def preview_mass_convert(
 
     result = {}
     for f in sorted(
-        (
-            f["filepath"]
-            for f in (
-                volume.get_all_files()
-                if not issue_id
-                else volume.get_issue(issue_id).get_files()
-            )
+        f["filepath"]
+        for f in (
+            volume.get_all_files()
+            if not issue_id
+            else volume.get_issue(issue_id).get_files()
         )
     ):
         converter = None
@@ -186,11 +177,11 @@ def preview_mass_convert(
 
 def mass_convert(
     volume_id: int,
-    issue_id: Union[int, None] = None,
-    filepath_filter: List[str] = [],
+    issue_id: int | None = None,
+    filepath_filter: list[str] = [],
     update_websocket: bool = False,
-    download: Union[Download, None] = None,
-) -> List[str]:
+    download: Download | None = None,
+) -> list[str]:
     """Convert files for a volume or issue.
 
     Args:
@@ -215,7 +206,7 @@ def mass_convert(
 
     extract_issue_ranges = settings.extract_issue_ranges
 
-    planned_conversions: List[FileConversionHandler] = []
+    planned_conversions: list[FileConversionHandler] = []
     for f in filtered_iter(
         (
             f["filepath"]

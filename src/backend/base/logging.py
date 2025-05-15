@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
-
 import logging
 import logging.config
 from logging.handlers import RotatingFileHandler
-from typing import Any, Union
 from os.path import exists, isdir, join
+from typing import Any
 
 from backend.base.definitions import Constants
 
@@ -145,7 +143,7 @@ def get_log_filepath() -> str:
     return LOGGING_CONFIG["handlers"]["file"]["filename"]
 
 
-def set_log_level(level: Union[int, str]) -> None:
+def set_log_level(level: int | str) -> None:
     """Change the logging level.
 
     Args:

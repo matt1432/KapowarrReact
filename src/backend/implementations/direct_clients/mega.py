@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
-
 from abc import ABC, abstractmethod
 from base64 import b64decode, b64encode
+from collections.abc import Callable, Generator, Sequence
 from hashlib import pbkdf2_hmac
 from json import JSONDecodeError, dumps, loads
 from random import randint
 from re import compile, search
 from time import perf_counter, time
-from typing import Any, Callable, Dict, Generator, List, Sequence, Tuple, Union
+from typing import Any
 from zipfile import ZipFile
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -76,7 +75,7 @@ class MegaCrypto:
         return bytes(result)
 
     @staticmethod
-    def bytes_to_a32(s: bytes) -> Tuple[int, ...]:
+    def bytes_to_a32(s: bytes) -> tuple[int, ...]:
         a = [0] * ((len(s) + 3) >> 2)
         for i in range(len(s)):
             a[i >> 2] |= s[i] << (24 - (i & 3) * 8)
@@ -87,7 +86,7 @@ class MegaCrypto:
         return MegaCrypto.base64_encode(MegaCrypto.a32_to_bytes(a))
 
     @staticmethod
-    def base64_to_a32(s: str) -> Tuple[int, ...]:
+    def base64_to_a32(s: str) -> tuple[int, ...]:
         return MegaCrypto.bytes_to_a32(MegaCrypto.base64_decode(s))
 
     @staticmethod
@@ -130,7 +129,7 @@ class MegaCrypto:
         return encryptor.update(data) + encryptor.finalize()
 
     @staticmethod
-    def decrypt_key(data: str, key: Sequence[int]) -> Tuple[int, ...]:
+    def decrypt_key(data: str, key: Sequence[int]) -> tuple[int, ...]:
         """
         Decrypt an encrypted key ('k' member of a node)
         """
@@ -148,7 +147,7 @@ class MegaCrypto:
     @staticmethod
     def get_cipher_key(
         key: Sequence[int],
-    ) -> Tuple[Tuple[int, int, int, int], Tuple[int, ...], Tuple[int, ...]]:
+    ) -> tuple[tuple[int, int, int, int], tuple[int, ...], tuple[int, ...]]:
         """
         Construct the cipher key from the given data.
         """
@@ -181,7 +180,7 @@ class MegaCrypto:
         return loads(search_result.group(0))
 
     @staticmethod
-    def get_chunks(size: int) -> Generator[Tuple[int, int], Any, None]:
+    def get_chunks(size: int) -> Generator[tuple[int, int], Any, None]:
         """
         Calculate chunks for a given encrypted file size.
         """
@@ -226,7 +225,7 @@ class MegaCrypto:
             self.hash = self.AES.update(hash)
             return
 
-        def digest(self) -> Tuple[int, int]:
+        def digest(self) -> tuple[int, int]:
             """
             Return the **binary** (non-printable) CBC-MAC of the message that
             has been authenticated so far.
@@ -236,9 +235,7 @@ class MegaCrypto:
 
 
 class MegaAPIClient:
-    def __init__(
-        self, sid: Union[str, None] = None, node_id: Union[str, None] = None
-    ) -> None:
+    def __init__(self, sid: str | None = None, node_id: str | None = None) -> None:
         """Prepare Mega client.
 
         Args:
@@ -253,8 +250,8 @@ class MegaAPIClient:
         self.node_id = node_id
         return
 
-    def api_request(self, **kwargs) -> Union[Dict[str, Any], int]:
-        get_params: Dict[str, Any] = {"id": self.id}
+    def api_request(self, **kwargs) -> dict[str, Any] | int:
+        get_params: dict[str, Any] = {"id": self.id}
 
         if self.sid:
             get_params["sid"] = self.sid
@@ -284,8 +281,8 @@ class MegaAccount:
     def __init__(
         self,
         client: MegaAPIClient,
-        username: Union[str, None] = None,
-        password: Union[str, None] = None,
+        username: str | None = None,
+        password: str | None = None,
     ) -> None:
         self.client = client
 
@@ -334,7 +331,7 @@ class MegaAccount:
         """
         Convert GCRYMPI_FMT_PGP bignum format to integer.
         """
-        return int("".join("{:02x}".format(s[2:][x]) for x in range(len(s[2:]))), 16)
+        return int("".join(f"{s[2:][x]:02x}" for x in range(len(s[2:]))), 16)
 
     def _login_user(self, user: str, password: str) -> str:
         LOGGER.debug("Logging into Mega with user account")
@@ -378,7 +375,7 @@ class MegaAccount:
         password_key = [MegaCrypto.random_key()] * 4
         session_self_challenge = [MegaCrypto.random_key()] * 4
 
-        res: Union[str, int] = self.client.api_request(
+        res: str | int = self.client.api_request(
             a=MegaCommands.ANONYMOUS_PRELOGIN.value,
             k=MegaCrypto.to_str(
                 MegaCrypto.a32_to_base64(
@@ -402,7 +399,7 @@ class MegaAccount:
         return self._process_login(user=res, user_hash=None, password_key=password_key)
 
     def _process_login(
-        self, user: str, user_hash: Union[str, None], password_key: Sequence[int]
+        self, user: str, user_hash: str | None, password_key: Sequence[int]
     ) -> str:
         if user_hash:
             res = self.client.api_request(
@@ -571,7 +568,7 @@ class Mega(MegaABC):
         return
 
     @staticmethod
-    def _parse_url(download_link: str) -> Tuple[str, str]:
+    def _parse_url(download_link: str) -> tuple[str, str]:
         regex_search = mega_url_regex.search(download_link)
         if not regex_search:
             raise LinkBroken(BlocklistReason.LINK_BROKEN)
@@ -670,7 +667,7 @@ class MegaFolder(MegaABC):
                 "The Mega Folder download link is not found, does not exist anymore or is broken"
             )
 
-        self.files: List[Dict[str, Any]] = []
+        self.files: list[dict[str, Any]] = []
         self.mega_filename = ""
         self.size = 0
         for node in res["f"]:
@@ -697,7 +694,7 @@ class MegaFolder(MegaABC):
         return
 
     @staticmethod
-    def _parse_url(folder_link: str) -> Tuple[str, str]:
+    def _parse_url(folder_link: str) -> tuple[str, str]:
         regex_search = mega_folder_regex.search(folder_link)
         if not regex_search:
             raise LinkBroken(BlocklistReason.LINK_BROKEN)

@@ -1,13 +1,10 @@
-# -*- coding: utf-8 -*-
-
 from __future__ import annotations
 
 from asyncio import gather, run
+from collections.abc import Iterable
 from os import listdir
 from os.path import basename, join
-from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Tuple, Type, Union
-
-from typing_extensions import assert_never
+from typing import TYPE_CHECKING, Any, assert_never
 
 from backend.base.custom_exceptions import (
     DownloadLimitReached,
@@ -26,8 +23,8 @@ from backend.base.definitions import (
     DownloadState,
     ExternalDownload,
     FailReason,
-    SeedingHandling,
     SearchResultData,
+    SeedingHandling,
 )
 from backend.base.files import create_folder, delete_file_folder
 from backend.base.helpers import CommaList, Singleton, get_subclasses
@@ -58,13 +55,13 @@ if TYPE_CHECKING:
 # =====================
 # Download handling
 # =====================
-download_type_to_class: Dict[str, Type[Download]] = {
+download_type_to_class: dict[str, type[Download]] = {
     c.type: c for c in get_subclasses(BaseDirectDownload)
 }
 
 
 class DownloadHandler(metaclass=Singleton):
-    queue: List[Download] = []
+    queue: list[Download] = []
 
     def __init__(self) -> None:
         """Setup the download handler"""
@@ -239,8 +236,8 @@ class DownloadHandler(metaclass=Singleton):
         return
 
     def __prepare_downloads_for_queue(
-        self, downloads: List[Download], forced_match: bool
-    ) -> List[Download]:
+        self, downloads: list[Download], forced_match: bool
+    ) -> list[Download]:
         """Get download instances ready to be put in the queue.
         Registers them in the db if not already. Creates the download thread.
         For torrents, it chooses the client and runs the download (status) thread.
@@ -322,7 +319,7 @@ class DownloadHandler(metaclass=Singleton):
         return downloads
 
     # region Getting
-    def get_all(self) -> List[dict]:
+    def get_all(self) -> list[dict]:
         """Get all queue entries
 
         Returns:
@@ -348,7 +345,7 @@ class DownloadHandler(metaclass=Singleton):
         raise DownloadNotFound
 
     # region Adding
-    def __determine_link_type(self, link: str) -> Union[str, None]:
+    def __determine_link_type(self, link: str) -> str | None:
         """Determine the service type of the link (e.g. getcomics, torrent, etc.).
 
         Args:
@@ -376,11 +373,11 @@ class DownloadHandler(metaclass=Singleton):
 
     async def add(
         self,
-        result: Union[SearchResultData, str],
+        result: SearchResultData | str,
         volume_id: int,
-        issue_id: Union[int, None] = None,
+        issue_id: int | None = None,
         force_match: bool = False,
-    ) -> Tuple[List[dict], Union[FailReason, None]]:
+    ) -> tuple[list[dict], FailReason | None]:
         """Add a download to the queue.
 
         Args:
@@ -415,7 +412,7 @@ class DownloadHandler(metaclass=Singleton):
             return [], None
 
         link_type = self.__determine_link_type(link)
-        downloads: List[Download] = []
+        downloads: list[Download] = []
 
         if link_type == "lg":
             downloads.append(
@@ -494,7 +491,7 @@ class DownloadHandler(metaclass=Singleton):
         return [r.todict() for r in result], None
 
     def add_multiple(
-        self, add_args: Iterable[Tuple[str, int, Union[int, None], bool]]
+        self, add_args: Iterable[tuple[str, int, int | None, bool]]
     ) -> None:
         async def add_wrapper():
             await gather(*(self.add(*entry) for entry in add_args))
@@ -723,10 +720,10 @@ class DownloadHandler(metaclass=Singleton):
 # region Download History
 # =====================
 def get_download_history(
-    volume_id: Union[int, None] = None,
-    issue_id: Union[int, None] = None,
+    volume_id: int | None = None,
+    issue_id: int | None = None,
     offset: int = 0,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Get the download history in blocks of 50.
 
     Args:

@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
-
 """
 Search for volumes/issues and fetch metadata for them on ComicVine
 """
 
 from asyncio import gather, run, sleep
+from collections.abc import Sequence
 from json import JSONDecodeError
 from re import IGNORECASE, compile
-from typing import Any, Dict, List, Sequence, Union
+from typing import Any
 
 from aiohttp import ContentTypeError
 from aiohttp.client_exceptions import ClientError
@@ -171,7 +170,7 @@ class ComicVine:
     with one issue.
     """
 
-    def __init__(self, comicvine_api_key: Union[str, None] = None) -> None:
+    def __init__(self, comicvine_api_key: str | None = None) -> None:
         """Start interacting with ComicVine.
 
         Args:
@@ -192,9 +191,7 @@ class ComicVine:
         self.ssn.params.update(self._params)  # type: ignore
         return
 
-    async def __call_request(
-        self, session: AsyncSession, url: str
-    ) -> Union[bytes, None]:
+    async def __call_request(self, session: AsyncSession, url: str) -> bytes | None:
         """Fetch a URL and get it's content async (with error handling).
 
         Args:
@@ -214,9 +211,9 @@ class ComicVine:
         self,
         session: AsyncSession,
         url_path: str,
-        params: Dict[str, Any] = {},
-        default: Union[T, None] = None,
-    ) -> Union[Dict[str, Any], T]:
+        params: dict[str, Any] = {},
+        default: T | None = None,
+    ) -> dict[str, Any] | T:
         """Make an CV API call asynchronously (with error handling).
 
         Args:
@@ -250,7 +247,7 @@ class ComicVine:
             response = await session.get(
                 self.api_url + url_path, params={**self._params, **params}
             )
-            result: Dict[str, Any] = await response.json()
+            result: dict[str, Any] = await response.json()
 
             if result["status_code"] == 107:
                 raise ClientError
@@ -266,7 +263,7 @@ class ComicVine:
                 return default
             raise CVRateLimitReached
 
-    def __format_volume_output(self, volume_data: Dict[str, Any]) -> VolumeMetadata:
+    def __format_volume_output(self, volume_data: dict[str, Any]) -> VolumeMetadata:
         """Format the ComicVine API output containing the info
         about the volume.
 
@@ -306,7 +303,7 @@ class ComicVine:
 
         return result
 
-    def __format_issue_output(self, issue_data: Dict[str, Any]) -> IssueMetadata:
+    def __format_issue_output(self, issue_data: dict[str, Any]) -> IssueMetadata:
         """Format the ComicVine API output containing the info
         about the issue.
 
@@ -330,8 +327,8 @@ class ComicVine:
         return result
 
     def __format_search_output(
-        self, search_results: List[Dict[str, Any]]
-    ) -> List[VolumeMetadata]:
+        self, search_results: list[dict[str, Any]]
+    ) -> list[VolumeMetadata]:
         """Format the search results from the ComicVine API.
 
         Args:
@@ -346,7 +343,7 @@ class ComicVine:
         formatted_results = [self.__format_volume_output(r) for r in search_results]
 
         # Mark entries that are already added
-        volume_ids: Dict[int, int] = dict(
+        volume_ids: dict[int, int] = dict(
             cursor.execute(f"""
             SELECT comicvine_id, id
             FROM volumes
@@ -387,7 +384,7 @@ class ComicVine:
 
         return run(_test_token())
 
-    async def fetch_volume(self, cv_id: Union[str, int]) -> VolumeMetadata:
+    async def fetch_volume(self, cv_id: str | int) -> VolumeMetadata:
         """Get the metadata of a volume from ComicVine, including it's issues.
 
         Args:
@@ -424,9 +421,7 @@ class ComicVine:
             )
             return volume_info
 
-    async def fetch_volumes(
-        self, cv_ids: Sequence[Union[str, int]]
-    ) -> List[VolumeMetadata]:
+    async def fetch_volumes(self, cv_ids: Sequence[str | int]) -> list[VolumeMetadata]:
         """Get the metadata of the volumes from ComicVine, without their issues.
 
         Args:
@@ -469,8 +464,8 @@ class ComicVine:
                 responses = await gather(*tasks)
 
                 # Format volume responses and prep cover requests
-                cover_map: Dict[int, Any] = {}
-                current_infos: List[VolumeMetadata] = []
+                cover_map: dict[int, Any] = {}
+                current_infos: list[VolumeMetadata] = []
                 for batch in responses:
                     for result in batch["results"]:
                         volume_info = self.__format_volume_output(result)
@@ -492,9 +487,7 @@ class ComicVine:
 
             return volume_infos
 
-    async def fetch_issues(
-        self, cv_ids: Sequence[Union[str, int]]
-    ) -> List[IssueMetadata]:
+    async def fetch_issues(self, cv_ids: Sequence[str | int]) -> list[IssueMetadata]:
         """Get the metadata of the issues of volumes from ComicVine.
 
         Args:
@@ -564,7 +557,7 @@ class ComicVine:
 
             return issue_infos
 
-    async def search_volumes(self, query: str) -> List[VolumeMetadata]:
+    async def search_volumes(self, query: str) -> list[VolumeMetadata]:
         """Search for volumes in CV.
 
         Args:
@@ -639,7 +632,7 @@ class ComicVine:
         # it multiple times. Instead search for all unique titles and then later
         # match the filename back to the title's search results. This makes it
         # one search PER SERIES TITLE instead of one search PER FILENAME.
-        titles_to_files: Dict[str, List[FilenameData]] = {}
+        titles_to_files: dict[str, list[FilenameData]] = {}
         for file_data in file_datas:
             (
                 titles_to_files.setdefault(file_data["series"].lower(), []).append(
@@ -653,7 +646,7 @@ class ComicVine:
         )
 
         # Filter for each title: title, only_english
-        titles_to_results: Dict[str, List[VolumeMetadata]] = {}
+        titles_to_results: dict[str, list[VolumeMetadata]] = {}
         for title, response in zip(titles_to_files, responses):
             titles_to_results[title] = [
                 r
