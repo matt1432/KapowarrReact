@@ -78,7 +78,7 @@ class SettingsValues:
 
 
 about_data = {
-    'version': tomllib.load(open(folder_path('pyproject.toml'), 'rb'))['project']['version'],
+    'version': tomllib.load(open(folder_path('..', 'pyproject.toml'), 'rb'))['project']['version'],
     'python_version': get_python_version(),
     'database_version': get_latest_db_version(),
     'database_location': None, # Get's filled in by db.set_db_location()

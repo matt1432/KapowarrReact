@@ -123,14 +123,14 @@
 
           postPatch = ''
             # Remove shebang
-            sed -i 1d ./Kapowarr.py
+            sed -i 1d ./src/Kapowarr.py
 
             # Disable PWA for now
-            substituteInPlace ./backend/internals/settings.py \
+            substituteInPlace ./src/backend/internals/settings.py \
                 --replace-fail "with open(filename, 'w') as f:" "" \
                 --replace-fail "dump(manifest, f, indent=4)" ""
 
-            substituteInPlace ./backend/implementations/converters.py \
+            substituteInPlace ./src/backend/implementations/converters.py \
                 --replace-fail \
                     "exe = folder_path('backend', 'lib', Constants.RAR_EXECUTABLES[platform])" \
                     "exe = '${getExe rar}'"
@@ -143,7 +143,7 @@
 
           installPhase = ''
             makeWrapper ${getExe pythonInterpreter} $out/bin/kapowarr \
-                --add-flags "$out/${python.sitePackages}/Kapowarr.py"
+                --add-flags "$out/${python.sitePackages}/src/Kapowarr.py"
           '';
 
           passthru = {
