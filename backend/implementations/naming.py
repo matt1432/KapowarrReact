@@ -36,7 +36,6 @@ from backend.internals.settings import Settings
 
 remove_year_in_image_regex = compile(r'(?:19|20)\d{2}')
 
-# TODO: make Unknown value not show up in file names (also don't show surrounding chars)
 
 # =====================
 # region Name generation
@@ -141,6 +140,27 @@ def _get_issue_naming_keys(
     )
 
 
+def get_placeholders(format: str) -> List[str]:
+    placeholders = []
+    parsed = Formatter().parse(format)
+    for x in parsed:
+        if x[1] is not None:
+            placeholders.append(x[1])
+    return placeholders
+
+
+def get_corresponding_formatted_naming_keys(placeholders: List[str], formatting_data: dict[str, str]) -> dict[str, str]:
+    sorted_formatting_data = sorted(formatting_data.items(), key=lambda item: len(item[0]))
+    formatted = {}
+
+    for placeholder in placeholders:
+        for k, v in sorted_formatting_data:
+            if placeholder.count(k) != 0:
+                formatted[placeholder] = placeholder.replace(k, str(v)) if v is not None else ""
+
+    return formatted
+
+
 def generate_volume_folder_name(
     volume: Union[int, VolumeData]
 ) -> str:
@@ -156,10 +176,10 @@ def generate_volume_folder_name(
     formatting_data = _get_volume_naming_keys(volume)
     format = Settings().sv.volume_folder_naming
 
-    name = format.format_map({
-        k: v if v is not None else 'Unknown'
-        for k, v in formatting_data.__dict__.items()
-    })
+    placeholders = get_placeholders(format)
+    formatted = get_corresponding_formatted_naming_keys(placeholders, formatting_data.__dict__)
+    name = format.format(**formatted)
+
     save_name = make_filename_safe(name)
     return save_name
 
@@ -266,10 +286,10 @@ def generate_issue_name(
             .zfill(sv.issue_padding)
         )
 
-    name = format.format_map({
-        k: v if v is not None else 'Unknown'
-        for k, v in formatting_data.__dict__.items()
-    })
+    placeholders = get_placeholders(format)
+    formatted = get_corresponding_formatted_naming_keys(placeholders, formatting_data.__dict__)
+    name = format.format(**formatted)
+
     save_name = make_filename_safe(name)
 
     if (
@@ -285,10 +305,10 @@ def generate_issue_name(
         # then EFD might think the file is for issue 1 instead of 4. Try a name
         # without the title and see if that fixes it. If so, use it. If not,
         # then give up and just use the original name.
-        titleless_name = sv.file_naming_empty.format_map({
-            k: v if v is not None else 'Unknown'
-            for k, v in formatting_data.__dict__.items()
-        })
+        placeholders = get_placeholders(sv.file_naming_empty)
+        formatted = get_corresponding_formatted_naming_keys(placeholders, formatting_data.__dict__)
+        titleless_name = sv.file_naming_empty.format(**formatted)
+
         titleless_save_name = make_filename_safe(titleless_name)
         if (
             extract_filename_data(titleless_save_name)['issue_number']
@@ -365,18 +385,17 @@ def check_format(format: str, type: str) -> bool:
     if disallowed_sep in format:
         return False
 
-    keys = [
-        fn
-        for _, fn, _, _ in Formatter().parse(format)
-        if fn is not None
-    ]
-
     naming_keys = NAMING_MAPPING[type]
-    for format_key in keys:
-        if format_key not in naming_keys.__dataclass_fields__:
-            return False
+    sorted_naming_keys = sorted(naming_keys.__dataclass_fields__, key=lambda item: len(item))
+    placeholders = get_placeholders(format)
+    checked = 0
 
-    return True
+    for placeholder in placeholders:
+        for k in sorted_naming_keys:
+            if placeholder.count(k) != 0:
+                checked += 1
+
+    return checked == len(placeholders)
 
 
 def check_mock_filename(
@@ -586,10 +605,9 @@ def check_mock_filename(
                     volume_mock, issue_mock[0]
                 )
 
-            name = filepath.format_map({
-                k: v if v is not None else 'Unknown'
-                for k, v in formatting_data.__dict__.items()
-            })
+            placeholders = get_placeholders(filepath)
+            formatted = get_corresponding_formatted_naming_keys(placeholders, formatting_data.__dict__)
+            name = filepath.format(**formatted)
             save_name = make_filename_safe(name)
 
             number_to_year: Dict[float, Union[int, None]] = {
