@@ -52,9 +52,9 @@
           config.allowUnfreePredicate = pkg: builtins.elem pkg.pname ["rar"];
         }));
   in {
-    overlays.default = final: prev: let
+    overlays.default = final: _prev: let
       pyPkgs = final.python3Packages.override {
-        overrides = pyFinal: pyPrev: {
+        overrides = pyFinal: _pyPrev: {
           inherit (final.python3Packages) libgencomics beautifulsoup4 requests idna;
 
           bencoding = pyFinal.callPackage ({
@@ -167,7 +167,7 @@
       default = pkgs.mkShell {
         packages = with pkgs; [
           alejandra
-          (python.withPackages (ps: pkgs.kapowarr.dependencies ++ [pkgs.kapowarr]))
+          (python.withPackages (_ps: pkgs.kapowarr.dependencies ++ [pkgs.kapowarr]))
         ];
       };
     });

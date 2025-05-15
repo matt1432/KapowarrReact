@@ -1,17 +1,13 @@
 # Site Details
 site_name: Kapowarr Docs
-site_description: The official guide for Kapowarr 
+site_description: The official guide for Kapowarr
 site_author: Casvt
 repo_url: https://github.com/Casvt/Kapowarr
 edit_uri: blob/development/docs/
 repo_name: Casvt/Kapowarr
 docs_dir: ../docs
-
-
-
 extra_css:
   - assets/css/extra.css
-
 # Site appearance (logos, colours, icons)
 theme:
   name: material
@@ -44,7 +40,6 @@ theme:
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
-
 # Markdown extensions
 markdown_extensions:
   - abbr
@@ -68,7 +63,6 @@ markdown_extensions:
       permalink: true
       toc_depth: 3
   - tables
-
 # mkdocs function extensions
 plugins:
   - search
@@ -79,32 +73,31 @@ plugins:
   - redirects:
       redirect_maps:
         'library-import.md': 'general_info/features.md#library-import'
-
 # Navigation Layout
 nav:
   - Home: index.md
   - Installation And Updating:
-    - Introduction: installation/installation.md
-    - Docker: installation/docker.md
-    - Manual Install: installation/manual_install.md
-    - Setup After Installation: installation/setup_after_installation.md
+      - Introduction: installation/installation.md
+      - Docker: installation/docker.md
+      - Manual Install: installation/manual_install.md
+      - Setup After Installation: installation/setup_after_installation.md
   - General Information:
-    - Introduction: general_info/workings.md
-    - Managing A Volume: general_info/managing_volume.md
-    - Downloading: general_info/downloading.md
-    - Matching: general_info/matching.md
-    - Features: general_info/features.md
+      - Introduction: general_info/workings.md
+      - Managing A Volume: general_info/managing_volume.md
+      - Downloading: general_info/downloading.md
+      - Matching: general_info/matching.md
+      - Features: general_info/features.md
   - Beta Documentation:
-    - Documentation: beta/beta.md
+      - Documentation: beta/beta.md
   - Settings:
-    - Introduction: settings/settings.md
-    - Media Management: settings/mediamanagement.md
-    - Download: settings/download.md
-    - Download Clients: settings/downloadclients.md
-    - General: settings/general.md
+      - Introduction: settings/settings.md
+      - Media Management: settings/mediamanagement.md
+      - Download: settings/download.md
+      - Download Clients: settings/downloadclients.md
+      - General: settings/general.md
   - FAQ: other_docs/faq.md
   - Other Docs:
-    - Reporting: other_docs/reporting.md
-    - FAQ: other_docs/faq.md
-    - Rate Limiting: other_docs/rate_limiting.md
-    - API: other_docs/api.md
+      - Reporting: other_docs/reporting.md
+      - FAQ: other_docs/faq.md
+      - Rate Limiting: other_docs/rate_limiting.md
+      - API: other_docs/api.md

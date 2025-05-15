@@ -8,6 +8,5 @@ services:
       - "/path/to/root_folder:/comics-1"
     ports:
       - 5656:5656
-
 volumes:
   kapowarr-db:

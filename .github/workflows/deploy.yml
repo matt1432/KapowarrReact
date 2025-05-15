@@ -1,10 +1,8 @@
 name: Build and deploy docs
-
 on:
   push:
     branches:
       - development
-
 jobs:
   deploy:
     name: Deploy docs
@@ -14,15 +12,12 @@ jobs:
         name: Setup checkout
         with:
           fetch-depth: 0
-
       - uses: actions/setup-python@v4
         name: Setup python 3.11
         with:
           python-version: 3.11
           cache: 'pip'
-
       - run: pip install -r project_management/docs-requirements.txt
         name: Install dependencies
-
       - run: mkdocs gh-deploy --force -f project_management/mkdocs.yml
         name: Build docs
