@@ -7,7 +7,7 @@ The (re)naming of folders and media
 from __future__ import annotations
 
 from os.path import abspath, basename, isdir, isfile, join, splitext
-from re import compile
+from re import compile, findall
 from string import Formatter
 from sys import platform
 from typing import Dict, List, Tuple, Type, Union
@@ -141,12 +141,7 @@ def _get_issue_naming_keys(
 
 
 def get_placeholders(format: str) -> List[str]:
-    placeholders = []
-    parsed = Formatter().parse(format)
-    for x in parsed:
-        if x[1] is not None:
-            placeholders.append(x[1])
-    return placeholders
+    return findall(r"\{([^}]*)\}", format)
 
 
 def get_corresponding_formatted_naming_keys(placeholders: List[str], formatting_data: dict[str, str]) -> dict[str, str]:
@@ -159,6 +154,13 @@ def get_corresponding_formatted_naming_keys(placeholders: List[str], formatting_
                 formatted[placeholder] = placeholder.replace(k, str(v)) if v is not None else ""
 
     return formatted
+
+
+def format_filename(format: str, formatted_data: dict[str, str]) -> str:
+    filename = format
+    for k, v in formatted_data.items():
+        filename = filename.replace('{' + k + '}', v)
+    return filename
 
 
 def generate_volume_folder_name(
@@ -178,7 +180,7 @@ def generate_volume_folder_name(
 
     placeholders = get_placeholders(format)
     formatted = get_corresponding_formatted_naming_keys(placeholders, formatting_data.__dict__)
-    name = format.format(**formatted)
+    name = format_filename(format, formatted)
 
     save_name = make_filename_safe(name)
     return save_name
@@ -288,7 +290,7 @@ def generate_issue_name(
 
     placeholders = get_placeholders(format)
     formatted = get_corresponding_formatted_naming_keys(placeholders, formatting_data.__dict__)
-    name = format.format(**formatted)
+    name = format_filename(format, formatted)
 
     save_name = make_filename_safe(name)
 
@@ -307,7 +309,7 @@ def generate_issue_name(
         # then give up and just use the original name.
         placeholders = get_placeholders(sv.file_naming_empty)
         formatted = get_corresponding_formatted_naming_keys(placeholders, formatting_data.__dict__)
-        titleless_name = sv.file_naming_empty.format(**formatted)
+        titleless_name = format_filename(sv.file_naming_empty, formatted)
 
         titleless_save_name = make_filename_safe(titleless_name)
         if (
@@ -607,7 +609,7 @@ def check_mock_filename(
 
             placeholders = get_placeholders(filepath)
             formatted = get_corresponding_formatted_naming_keys(placeholders, formatting_data.__dict__)
-            name = filepath.format(**formatted)
+            name = format_filename(filepath, formatted)
             save_name = make_filename_safe(name)
 
             number_to_year: Dict[float, Union[int, None]] = {
