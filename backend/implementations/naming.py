@@ -118,6 +118,7 @@ def _get_issue_naming_keys(
     else:
         issue_data = issue
 
+    # FIXME: File Naming For Special Versions with extra info
     return IssueNamingKeys(
         **_get_volume_naming_keys(volume).__dict__,
         issue_comicvine_id=issue_data.comicvine_id,
