@@ -7,15 +7,11 @@
       ref = "nixos-unstable";
     };
 
-    libgencomics = {
+    treefmt-nix = {
       type = "github";
-      owner = "matt1432";
-      repo = "LibgenComics";
-
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        systems.follows = "systems";
-      };
+      owner = "numtide";
+      repo = "treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     systems = {
@@ -23,12 +19,25 @@
       owner = "nix-systems";
       repo = "default-linux";
     };
+
+    libgencomics = {
+      type = "github";
+      owner = "matt1432";
+      repo = "LibgenComics";
+
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        treefmt-nix.follows = "treefmt-nix";
+        systems.follows = "systems";
+      };
+    };
   };
 
   outputs = {
     self,
     systems,
     nixpkgs,
+    treefmt-nix,
     libgencomics,
     ...
   }: let
@@ -149,13 +158,16 @@
       default = self.packages.${pkgs.system}.kapowarr;
     });
 
-    formatter = perSystem (pkgs: pkgs.alejandra);
+    formatter = perSystem (pkgs: let
+      treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+    in
+      treefmtEval.config.build.wrapper);
 
     devShells = perSystem (pkgs: {
       default = pkgs.mkShell {
         packages = with pkgs; [
           alejandra
-          python.withPackages (ps: pkgs.kapowarr.dependencies ++ [pkgs.kapowarr])
+          (python.withPackages (ps: pkgs.kapowarr.dependencies ++ [pkgs.kapowarr]))
         ];
       };
     });
