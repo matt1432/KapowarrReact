@@ -15,19 +15,19 @@ from backend.base.helpers import create_range
 from backend.implementations.blocklist import blocklist_contains
 
 if TYPE_CHECKING:
-    from backend.base.definitions import (FilenameData, SearchResultData,
-                                          SearchResultMatchData, VolumeData)
+    from backend.base.definitions import (
+        FilenameData,
+        SearchResultData,
+        SearchResultMatchData,
+        VolumeData,
+    )
 
 clean_title_regex = compile(
-    r'((?<=annual)s|/|\-|–|\+|,|\.|\!|:|\bthe\s|\band\b|&|’|\'|\"|\bone-shot\b|\btpb\b)'
+    r"((?<=annual)s|/|\-|–|\+|,|\.|\!|:|\bthe\s|\band\b|&|’|\'|\"|\bone-shot\b|\btpb\b)"
 )
 
 
-def _match_title(
-    title1: str,
-    title2: str,
-    allow_contains: bool = False
-) -> bool:
+def _match_title(title1: str, title2: str, allow_contains: bool = False) -> bool:
     """Determine if two titles match; if they refer to the same thing.
 
     Args:
@@ -40,15 +40,9 @@ def _match_title(
     Returns:
         bool: Whether the titles match.
     """
-    clean_reference_title = clean_title_regex.sub(
-        '',
-        title1.lower()
-    ).replace(' ', '')
+    clean_reference_title = clean_title_regex.sub("", title1.lower()).replace(" ", "")
 
-    clean_title = clean_title_regex.sub(
-        '',
-        title2.lower()
-    ).replace(' ', '')
+    clean_title = clean_title_regex.sub("", title2.lower()).replace(" ", "")
 
     if allow_contains:
         return clean_title in clean_reference_title
@@ -60,7 +54,7 @@ def _match_year(
     reference_year: Union[int, None],
     check_year: Union[int, None],
     end_year: Union[int, None] = None,
-    conservative: bool = False
+    conservative: bool = False,
 ) -> bool:
     """Check if two years match, with one year of 'wiggle room'.
 
@@ -93,7 +87,7 @@ def _match_volume_number(
     volume_data: VolumeData,
     volume_issues: List[IssueData],
     check_number: Union[None, int, Tuple[int, int]],
-    conservative: bool = False
+    conservative: bool = False,
 ) -> bool:
     """Check if the volume number matches the one of the volume or it's year.
     If Special Version is VAI, then the volume number (or range) should
@@ -136,11 +130,7 @@ def _match_volume_number(
         return False
 
     number_found = 0
-    numbers = (
-        check_number
-        if isinstance(check_number, tuple) else
-        (check_number,)
-    )
+    numbers = check_number if isinstance(check_number, tuple) else (check_number,)
     for issue in volume_issues:
         if issue.calculated_issue_number in numbers:
             number_found += 1
@@ -151,7 +141,7 @@ def _match_volume_number(
 def _match_special_version(
     reference_version: Union[SpecialVersion, str, None],
     check_version: Union[SpecialVersion, str, None],
-    issue_number: Union[Tuple[float, float], float, None] = None
+    issue_number: Union[Tuple[float, float], float, None] = None,
 ) -> bool:
     """Check if Special Version's match. Takes into consideration that files
     have lacking state specificity.
@@ -173,16 +163,13 @@ def _match_special_version(
     if check_version in (
         reference_version,
         SpecialVersion.COVER,
-        SpecialVersion.METADATA
+        SpecialVersion.METADATA,
     ):
         return True
 
-    if (
-        issue_number == 1.0
-        and reference_version in (
-            SpecialVersion.HARD_COVER,
-            SpecialVersion.ONE_SHOT
-        )
+    if issue_number == 1.0 and reference_version in (
+        SpecialVersion.HARD_COVER,
+        SpecialVersion.ONE_SHOT,
     ):
         return True
 
@@ -195,13 +182,10 @@ def _match_special_version(
     # Volume's Special Version could be one that often isn't explicitly
     # mentioned in the filename or that isn't possible to determine from the
     # filename. EF will determine the file to be a TPB in such scenario.
-    return (
-        check_version == SpecialVersion.TPB
-        and reference_version in (
-            SpecialVersion.HARD_COVER,
-            SpecialVersion.ONE_SHOT,
-            SpecialVersion.VOLUME_AS_ISSUE
-        )
+    return check_version == SpecialVersion.TPB and reference_version in (
+        SpecialVersion.HARD_COVER,
+        SpecialVersion.ONE_SHOT,
+        SpecialVersion.VOLUME_AS_ISSUE,
     )
 
 
@@ -209,7 +193,7 @@ def folder_extraction_filter(
     file_data: FilenameData,
     volume_data: VolumeData,
     volume_issues: List[IssueData],
-    end_year: Union[int, None]
+    end_year: Union[int, None],
 ) -> bool:
     """The filter applied to the files when extracting from a folder,
     which decides which file is relevant and which one isn't.
@@ -224,38 +208,25 @@ def folder_extraction_filter(
     Returns:
         bool: Whether the file passes the filter (if it should be kept or not).
     """
-    annual = 'annual' in volume_data.title.lower()
+    annual = "annual" in volume_data.title.lower()
 
-    matching_title = _match_title(
-        file_data['series'],
-        volume_data.title
-    )
+    matching_title = _match_title(file_data["series"], volume_data.title)
 
-    matching_year = _match_year(
-        volume_data.year,
-        file_data['year'],
-        end_year
-    )
+    matching_year = _match_year(volume_data.year, file_data["year"], end_year)
 
     matching_volume_number = _match_volume_number(
         volume_data,
         volume_issues,
-        file_data['volume_number'],
+        file_data["volume_number"],
     )
 
     # Neither are found (we play it safe so we keep those)
-    neither_found = (
-        file_data['year'], file_data['volume_number']
-    ) == (None, None)
+    neither_found = (file_data["year"], file_data["volume_number"]) == (None, None)
 
     return (
         matching_title
-        and file_data['annual'] == annual
-        and (
-            matching_year
-            or matching_volume_number
-            or neither_found
-        )
+        and file_data["annual"] == annual
+        and (matching_year or matching_volume_number or neither_found)
     )
 
 
@@ -263,7 +234,7 @@ def file_importing_filter(
     file_data: FilenameData,
     volume_data: VolumeData,
     volume_issues: List[IssueData],
-    number_to_year: Mapping[float, Union[int, None]]
+    number_to_year: Mapping[float, Union[int, None]],
 ) -> bool:
     """Filter for matching files to volumes.
 
@@ -275,43 +246,35 @@ def file_importing_filter(
     Returns:
         bool: Whether the file passes the filter (if it should be matched or not).
     """
-    if file_data['issue_number'] is not None:
-        issue_number = file_data['issue_number']
+    if file_data["issue_number"] is not None:
+        issue_number = file_data["issue_number"]
 
     elif (
         volume_data.special_version == SpecialVersion.VOLUME_AS_ISSUE
-        and file_data['volume_number'] is not None
+        and file_data["volume_number"] is not None
     ):
-        issue_number = file_data['volume_number']
+        issue_number = file_data["volume_number"]
 
     else:
-        issue_number = float('-inf')
+        issue_number = float("-inf")
 
     matching_special_version = _match_special_version(
         volume_data.special_version,
-        file_data['special_version'],
-        file_data['issue_number']
+        file_data["special_version"],
+        file_data["issue_number"],
     )
 
     matching_volume_number = _match_volume_number(
-        volume_data,
-        volume_issues,
-        file_data['volume_number']
+        volume_data, volume_issues, file_data["volume_number"]
     )
 
     matching_year = _match_year(
         volume_data.year,
-        file_data['year'],
-        number_to_year.get(create_range(issue_number)[-1])
+        file_data["year"],
+        number_to_year.get(create_range(issue_number)[-1]),
     )
 
-    is_match = (
-        matching_special_version
-        and (
-            matching_volume_number
-            or matching_year
-        )
-    )
+    is_match = matching_special_version and (matching_volume_number or matching_year)
 
     return is_match
 
@@ -320,7 +283,7 @@ def gc_group_filter(
     processed_desc: FilenameData,
     volume_data: VolumeData,
     ending_year: Union[int, None],
-    volume_issues: List[IssueData]
+    volume_issues: List[IssueData],
 ) -> bool:
     """Filter for deciding if a GC download group is a match for the
     volume/issue.
@@ -335,36 +298,30 @@ def gc_group_filter(
     Returns:
         bool: Whether the group passes the filter.
     """
-    annual = 'annual' in volume_data.title.lower()
+    annual = "annual" in volume_data.title.lower()
 
-    matching_title = _match_title(
-        volume_data.title,
-        processed_desc['series']
-    )
+    matching_title = _match_title(volume_data.title, processed_desc["series"])
 
     matching_volume_number = _match_volume_number(
-        volume_data,
-        volume_issues,
-        processed_desc['volume_number'],
-        conservative=True
+        volume_data, volume_issues, processed_desc["volume_number"], conservative=True
     )
 
     matching_year = _match_year(
         volume_data.year,
-        processed_desc['year'],
+        processed_desc["year"],
         ending_year or volume_data.year,
-        conservative=True
+        conservative=True,
     )
 
     matching_special_version = _match_special_version(
         volume_data.special_version.value,
-        processed_desc['special_version'],
-        processed_desc['issue_number']
+        processed_desc["special_version"],
+        processed_desc["issue_number"],
     )
 
     is_match = (
         matching_title
-        and processed_desc['annual'] == annual
+        and processed_desc["annual"] == annual
         and matching_special_version
         and matching_volume_number
         and matching_year
@@ -378,7 +335,7 @@ def check_search_result_match(
     volume_data: VolumeData,
     volume_issues: List[IssueData],
     number_to_year: Mapping[float, Union[int, None]],
-    calculated_issue_number: Union[float, None] = None
+    calculated_issue_number: Union[float, None] = None,
 ) -> SearchResultMatchData:
     """Filter for deciding if a search result is a match with what is searched
     for.
@@ -400,73 +357,63 @@ def check_search_result_match(
     Returns:
         SearchResultMatchData: Whether the search result passes the filter.
     """
-    annual = 'annual' in volume_data.title.lower()
+    annual = "annual" in volume_data.title.lower()
 
-    if blocklist_contains(result['link']):
-        return {'match': False, 'match_issue': 'Link is blocklisted'}
+    if blocklist_contains(result["link"]):
+        return {"match": False, "match_issue": "Link is blocklisted"}
 
-    if result['annual'] != annual:
-        return {'match': False, 'match_issue': 'Annual conflict'}
+    if result["annual"] != annual:
+        return {"match": False, "match_issue": "Annual conflict"}
 
     if not (
-        _match_title(volume_data.title, result['series'])
-        or _match_title(volume_data.alt_title or '', result['series'])
+        _match_title(volume_data.title, result["series"])
+        or _match_title(volume_data.alt_title or "", result["series"])
     ):
-        return {'match': False, 'match_issue': "Titles don't match"}
+        return {"match": False, "match_issue": "Titles don't match"}
 
     if not _match_volume_number(
-        volume_data,
-        volume_issues,
-        result['volume_number'],
-        conservative=True
+        volume_data, volume_issues, result["volume_number"], conservative=True
     ):
-        return {'match': False, 'match_issue': "Volume numbers don't match"}
+        return {"match": False, "match_issue": "Volume numbers don't match"}
 
     if not _match_special_version(
-        volume_data.special_version,
-        result['special_version'],
-        result['issue_number']
+        volume_data.special_version, result["special_version"], result["issue_number"]
     ):
-        return {'match': False, 'match_issue': 'Special version conflict'}
+        return {"match": False, "match_issue": "Special version conflict"}
 
-    if result['issue_number'] is not None:
-        issue_number = result['issue_number']
+    if result["issue_number"] is not None:
+        issue_number = result["issue_number"]
 
     elif (
         volume_data.special_version == SpecialVersion.VOLUME_AS_ISSUE
-        and result['volume_number'] is not None
+        and result["volume_number"] is not None
     ):
-        issue_number = result['volume_number']
+        issue_number = result["volume_number"]
 
     else:
-        issue_number = float('-inf')
+        issue_number = float("-inf")
 
     if volume_data.special_version in (
         SpecialVersion.NORMAL,
-        SpecialVersion.VOLUME_AS_ISSUE
+        SpecialVersion.VOLUME_AS_ISSUE,
     ):
         if calculated_issue_number is None:
             # Volume search
-            if not all(
-                i in number_to_year
-                for i in create_range(issue_number)
-            ):
+            if not all(i in number_to_year for i in create_range(issue_number)):
                 # One of the extracted issue numbers is not found in volume
-                return {
-                    'match': False,
-                    'match_issue': "Issue numbers don't match"}
+                return {"match": False, "match_issue": "Issue numbers don't match"}
 
         elif issue_number != calculated_issue_number:
             # Issue search, but
             # extracted issue number(s) don't match number of searched issue
-            return {'match': False, 'match_issue': "Issue numbers don't match"}
+            return {"match": False, "match_issue": "Issue numbers don't match"}
 
     if not _match_year(
         volume_data.year,
-        result['year'],
+        result["year"],
         number_to_year.get(create_range(issue_number)[-1]),
-        conservative=True
+        conservative=True,
     ):
-        return {'match': False, 'match_issue': "Year doesn't match"}
+        return {"match": False, "match_issue": "Year doesn't match"}
 
-    return {'match': True, 'match_issue': None}
+    return {"match": True, "match_issue": None}

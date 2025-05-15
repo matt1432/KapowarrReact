@@ -17,18 +17,19 @@ class UpToInfoFilter(logging.Filter):
 class ErrorColorFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> Any:
         result = super().format(record)
-        return f'\033[1;31:40m{result}\033[0m'
+        return f"\033[1;31:40m{result}\033[0m"
 
 
 class MPRotatingFileHandler(RotatingFileHandler):
-    def __init__(self,
+    def __init__(
+        self,
         filename,
         mode="a",
         maxBytes=0,
         backupCount=0,
         encoding=None,
         delay=False,
-        do_rollover=True
+        do_rollover=True,
     ) -> None:
         self.do_rollover = do_rollover
         return super().__init__(filename, mode, maxBytes, backupCount, encoding, delay)
@@ -46,36 +47,32 @@ LOGGING_CONFIG = {
     "formatters": {
         "simple": {
             "format": "[%(asctime)s][%(levelname)s] %(message)s",
-            "datefmt": "%H:%M:%S"
+            "datefmt": "%H:%M:%S",
         },
         "simple_red": {
             "()": ErrorColorFormatter,
             "format": "[%(asctime)s][%(levelname)s] %(message)s",
-            "datefmt": "%H:%M:%S"
+            "datefmt": "%H:%M:%S",
         },
         "detailed": {
             "format": "%(asctime)s | %(processName)s | %(threadName)s | %(filename)sL%(lineno)s | %(levelname)s | %(message)s",
             "datefmt": "%Y-%m-%dT%H:%M:%S%z",
-        }
+        },
     },
-    "filters": {
-        "up_to_info": {
-            "()": UpToInfoFilter
-        }
-    },
+    "filters": {"up_to_info": {"()": UpToInfoFilter}},
     "handlers": {
         "console_error": {
             "class": "logging.StreamHandler",
             "level": "WARNING",
             "formatter": "simple_red",
-            "stream": "ext://sys.stderr"
+            "stream": "ext://sys.stderr",
         },
         "console": {
             "class": "logging.StreamHandler",
             "level": "DEBUG",
             "formatter": "simple",
             "filters": ["up_to_info"],
-            "stream": "ext://sys.stdout"
+            "stream": "ext://sys.stdout",
         },
         "file": {
             "()": MPRotatingFileHandler,
@@ -84,20 +81,11 @@ LOGGING_CONFIG = {
             "filename": "",
             "maxBytes": 1_000_000,
             "backupCount": 1,
-            "do_rollover": True
-        }
+            "do_rollover": True,
+        },
     },
-    "loggers": {
-        Constants.LOGGER_NAME: {}
-    },
-    "root": {
-        "level": "INFO",
-        "handlers": [
-            "console",
-            "console_error",
-            "file"
-        ]
-    }
+    "loggers": {Constants.LOGGER_NAME: {}},
+    "root": {"level": "INFO", "handlers": ["console", "console_error", "file"]},
 }
 
 
@@ -109,13 +97,18 @@ def setup_logging(
 
     if log_folder is None:
         from backend.base.files import folder_path
-        LOGGING_CONFIG["handlers"]["file"]["filename"] = folder_path(Constants.LOGGER_FILENAME)
+
+        LOGGING_CONFIG["handlers"]["file"]["filename"] = folder_path(
+            Constants.LOGGER_FILENAME
+        )
     else:
         if not exists(log_folder):
-            raise ValueError('Logging location does not exist')
+            raise ValueError("Logging location does not exist")
         if not isdir(log_folder):
-            raise ValueError('Logging location is not a folder')
-        LOGGING_CONFIG["handlers"]["file"]["filename"] = join(log_folder, Constants.LOGGER_FILENAME)
+            raise ValueError("Logging location is not a folder")
+        LOGGING_CONFIG["handlers"]["file"]["filename"] = join(
+            log_folder, Constants.LOGGER_FILENAME
+        )
 
     LOGGING_CONFIG["handlers"]["file"]["do_rollover"] = do_rollover
 
@@ -130,15 +123,12 @@ def setup_logging(
 
     def log_uncaught_exceptions(e_type, value, tb):
         LOGGER.error(
-            "UNCAUGHT EXCEPTION:\n" +
-            ''.join(format_exception(e_type, value, tb))
+            "UNCAUGHT EXCEPTION:\n" + "".join(format_exception(e_type, value, tb))
         )
         return
 
     def log_uncaught_threading_exceptions(args):
-        LOGGER.exception(
-            f"UNCAUGHT EXCEPTION IN THREAD: {args.exc_value}"
-        )
+        LOGGER.exception(f"UNCAUGHT EXCEPTION IN THREAD: {args.exc_value}")
         return
 
     sys.excepthook = log_uncaught_exceptions
@@ -155,9 +145,7 @@ def get_log_filepath() -> str:
     return LOGGING_CONFIG["handlers"]["file"]["filename"]
 
 
-def set_log_level(
-    level: Union[int, str]
-) -> None:
+def set_log_level(level: Union[int, str]) -> None:
     """Change the logging level.
 
     Args:
@@ -171,7 +159,7 @@ def set_log_level(
     if root_logger.level == level:
         return
 
-    LOGGER.debug(f'Setting logging level: {level}')
+    LOGGER.debug(f"Setting logging level: {level}")
     root_logger.setLevel(level)
 
     return

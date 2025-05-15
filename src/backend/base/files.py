@@ -6,8 +6,19 @@ Handling folders, files and filenames.
 
 from collections import deque
 from os import listdir, makedirs, remove, scandir
-from os.path import (abspath, basename, commonpath, dirname, isdir,
-                     isfile, join, relpath, samefile, sep, splitext)
+from os.path import (
+    abspath,
+    basename,
+    commonpath,
+    dirname,
+    isdir,
+    isfile,
+    join,
+    relpath,
+    samefile,
+    sep,
+    splitext,
+)
 from re import compile
 from shutil import copy2, copytree, move, rmtree
 from typing import Deque, Dict, Iterable, List, Sequence, Set
@@ -16,9 +27,7 @@ from backend.base.definitions import CharConstants, Constants
 from backend.base.helpers import check_filter, force_suffix
 from backend.base.logging import LOGGER
 
-filename_cleaner = compile(
-    r'(<|>|(?<!^\w):|\"|\||\?|\*|\x00|(?:\s|\.)+(?=$|\\|/))'
-)
+filename_cleaner = compile(r"(<|>|(?<!^\w):|\"|\||\?|\*|\x00|(?:\s|\.)+(?=$|\\|/))")
 
 
 # region Conversion
@@ -47,10 +56,7 @@ def folder_path(*folders: str) -> str:
     return join(dirname_times(abspath(__file__), 3), *folders)
 
 
-def folder_is_inside_folder(
-    base_folder: str,
-    folder: str
-) -> bool:
+def folder_is_inside_folder(base_folder: str, folder: str) -> bool:
     """Check if folder is inside base_folder.
 
     Args:
@@ -60,9 +66,7 @@ def folder_is_inside_folder(
     Returns:
         bool: Whether or not folder is in base_folder.
     """
-    return (
-        force_suffix(abspath(folder))
-    ).startswith(
+    return (force_suffix(abspath(folder))).startswith(
         force_suffix(abspath(base_folder))
     )
 
@@ -96,10 +100,7 @@ def uppercase_drive_letter(path: str) -> str:
     """
     if (
         len(path) >= 4
-        and (
-            path[1:3] == ":\\"
-            or path[1:3] == ":/"
-        )
+        and (path[1:3] == ":\\" or path[1:3] == ":/")
         and path[0].lower() in CharConstants.ALPHABET
     ):
         path = path[0].upper() + path[1:]
@@ -118,7 +119,7 @@ def make_filename_safe(unsafe_filename: str) -> str:
         str: The filename, now with characters removed/replaced
         so that it's filesystem-safe.
     """
-    safe_filename = filename_cleaner.sub('', unsafe_filename)
+    safe_filename = filename_cleaner.sub("", unsafe_filename)
     return safe_filename
 
 
@@ -152,23 +153,18 @@ def list_files(folder: str, ext: Iterable[str] = []) -> List[str]:
 
             elif (
                 f.is_file()
-                and not f.name.startswith('.')
-                and check_filter(
-                    splitext(f.name)[1].lower(),
-                    ext
-                )
+                and not f.name.startswith(".")
+                and check_filter(splitext(f.name)[1].lower(), ext)
             ):
                 files.append(f.path)
 
-    ext = {'.' + e.lower().lstrip('.') for e in ext}
+    ext = {"." + e.lower().lstrip(".") for e in ext}
     _list_files(folder, ext)
     return list(files)
 
 
 def propose_basefolder_change(
-    files: Iterable[str],
-    current_base_folder: str,
-    desired_base_folder: str
+    files: Iterable[str], current_base_folder: str, desired_base_folder: str
 ) -> Dict[str, str]:
     """
     Propose new filenames with a different base folder for a list of files.
@@ -183,23 +179,13 @@ def propose_basefolder_change(
         Dict[str, str]: Key is old filename, value is new filename.
     """
     file_changes = {
-        f: join(
-            desired_base_folder,
-            relpath(
-                f,
-                current_base_folder
-            )
-        )
-        for f in files
+        f: join(desired_base_folder, relpath(f, current_base_folder)) for f in files
     }
 
     return file_changes
 
 
-def generate_archive_folder(
-    volume_folder: str,
-    archive_file: str
-) -> str:
+def generate_archive_folder(volume_folder: str, archive_file: str) -> str:
     """Generate a folder in which the given archive file can be extracted.
 
     Args:
@@ -211,14 +197,9 @@ def generate_archive_folder(
     """
     return join(
         volume_folder,
-        Constants.ARCHIVE_EXTRACT_FOLDER + '_' + splitext(
-            '_'.join(
-                relpath(
-                    archive_file,
-                    volume_folder
-                ).split(sep)
-            )
-        )[0]
+        Constants.ARCHIVE_EXTRACT_FOLDER
+        + "_"
+        + splitext("_".join(relpath(archive_file, volume_folder).split(sep)))[0],
     )
 
 
@@ -259,10 +240,7 @@ def __copy2(src, dst, *, follow_symlinks=True):
         raise
 
 
-def rename_file(
-    before: str,
-    after: str
-) -> None:
+def rename_file(before: str, after: str) -> None:
     """Rename a file, taking care of new folder locations and
     the possible complications with files on OS'es.
 
@@ -274,7 +252,7 @@ def rename_file(
         # Cannot move folder into itself
         return
 
-    LOGGER.debug(f'Renaming file {before} to {after}')
+    LOGGER.debug(f"Renaming file {before} to {after}")
 
     create_folder(dirname(after))
 
@@ -331,12 +309,10 @@ def delete_empty_parent_folders(top_folder: str, root_folder: str) -> None:
     if top_folder == root_folder:
         return
 
-    LOGGER.debug(
-        f'Deleting empty parent folders from {top_folder} until {root_folder}'
-    )
+    LOGGER.debug(f"Deleting empty parent folders from {top_folder} until {root_folder}")
 
     if not folder_is_inside_folder(root_folder, top_folder):
-        LOGGER.error(f'The folder {top_folder} is not in {root_folder}')
+        LOGGER.error(f"The folder {top_folder} is not in {root_folder}")
         return
 
     if isfile(top_folder):
@@ -359,7 +335,7 @@ def delete_empty_parent_folders(top_folder: str, root_folder: str) -> None:
 
     if child_folder:
         lowest_empty_folder = join(parent_folder, child_folder)
-        LOGGER.debug(f'Deleting folder and children: {lowest_empty_folder}')
+        LOGGER.debug(f"Deleting folder and children: {lowest_empty_folder}")
         delete_file_folder(lowest_empty_folder)
 
     return
@@ -384,7 +360,7 @@ def delete_empty_child_folders(base_folder: str) -> None:
     Args:
         base_folder (str): The base folder to remove children of.
     """
-    LOGGER.debug(f'Deleting empty child folders from {base_folder}')
+    LOGGER.debug(f"Deleting empty child folders from {base_folder}")
 
     if isfile(base_folder):
         base_folder = dirname(base_folder)
@@ -392,9 +368,7 @@ def delete_empty_child_folders(base_folder: str) -> None:
     resulting_folders: List[str] = []
 
     def _decf(
-        folder: str,
-        resulting_folders: List[str],
-        _first_call: bool = True
+        folder: str, resulting_folders: List[str], _first_call: bool = True
     ) -> bool:
         folders: List[str] = []
         contains_files: bool = False
@@ -409,10 +383,7 @@ def delete_empty_child_folders(base_folder: str) -> None:
             # Folder is empty
             return True
 
-        sub_folder_results = {
-            f: _decf(f, resulting_folders, False)
-            for f in folders
-        }
+        sub_folder_results = {f: _decf(f, resulting_folders, False) for f in folders}
 
         if not contains_files and all(sub_folder_results.values()):
             # Folder only contains (indirectly) empty folders
@@ -420,11 +391,7 @@ def delete_empty_child_folders(base_folder: str) -> None:
                 resulting_folders.extend(sub_folder_results.keys())
             return True
 
-        resulting_folders.extend((
-            k
-            for k, v in sub_folder_results.items()
-            if v
-        ))
+        resulting_folders.extend((k for k, v in sub_folder_results.items() if v))
 
         return False
 

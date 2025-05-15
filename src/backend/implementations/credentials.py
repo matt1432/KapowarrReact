@@ -4,9 +4,11 @@ from typing import Any, Dict, List, Tuple
 
 from typing_extensions import assert_never
 
-from backend.base.custom_exceptions import (ClientNotWorking,
-                                            CredentialInvalid,
-                                            CredentialNotFound)
+from backend.base.custom_exceptions import (
+    ClientNotWorking,
+    CredentialInvalid,
+    CredentialNotFound,
+)
 from backend.base.definitions import CredentialData, CredentialSource
 from backend.base.logging import LOGGER
 from backend.internals.db import get_db
@@ -27,17 +29,18 @@ class Credentials:
             List[CredentialData]: The list of credentials.
         """
         return [
-            CredentialData(**{
-                **dict(c),
-                'source': CredentialSource[c["source"].upper()]
-            })
-            for c in get_db().execute("""
+            CredentialData(
+                **{**dict(c), "source": CredentialSource[c["source"].upper()]}
+            )
+            for c in get_db()
+            .execute("""
                 SELECT
                     id, source,
                     username, email,
                     password, api_key
                 FROM credentials;
-            """).fetchall()
+            """)
+            .fetchall()
         ]
 
     def get_one(self, id: int) -> CredentialData:
@@ -52,7 +55,10 @@ class Credentials:
         Returns:
             CredentialData: The credential info
         """
-        result = get_db().execute("""
+        result = (
+            get_db()
+            .execute(
+                """
             SELECT
                 id, source,
                 username, email,
@@ -61,21 +67,19 @@ class Credentials:
             WHERE id = ?
             LIMIT 1;
             """,
-            (id,)
-        ).fetchone()
+                (id,),
+            )
+            .fetchone()
+        )
 
         if result is None:
             raise CredentialNotFound
 
-        return CredentialData(**{
-            **dict(result),
-            'source': CredentialSource(result["source"])
-        })
+        return CredentialData(
+            **{**dict(result), "source": CredentialSource(result["source"])}
+        )
 
-    def get_from_source(
-        self,
-        source: CredentialSource
-    ) -> List[CredentialData]:
+    def get_from_source(self, source: CredentialSource) -> List[CredentialData]:
         """Get credentials for the given source.
 
         Args:
@@ -84,11 +88,7 @@ class Credentials:
         Returns:
             List[CredentialData]: The credentials for the given source.
         """
-        return [
-            c
-            for c in self.get_all()
-            if c.source == source
-        ]
+        return [c for c in self.get_all() if c.source == source]
 
     def add(self, credential_data: CredentialData) -> CredentialData:
         """Add a credential.
@@ -103,18 +103,20 @@ class Credentials:
         Returns:
             CredentialData: The credential info
         """
-        LOGGER.info(f'Adding credential for {credential_data.source.value}')
+        LOGGER.info(f"Adding credential for {credential_data.source.value}")
 
         # Check if it works
         if credential_data.source == CredentialSource.MEGA:
             from backend.implementations.direct_clients.mega import (
-                MegaAccount, MegaAPIClient)
+                MegaAccount,
+                MegaAPIClient,
+            )
 
             try:
                 MegaAccount(
                     MegaAPIClient(),
-                    credential_data.email or '',
-                    credential_data.password or ''
+                    credential_data.email or "",
+                    credential_data.password or "",
                 )
 
             except ClientNotWorking as e:
@@ -124,13 +126,10 @@ class Credentials:
             credential_data.username = None
 
         elif credential_data.source == CredentialSource.PIXELDRAIN:
-            from backend.implementations.download_clients import \
-                PixelDrainDownload
+            from backend.implementations.download_clients import PixelDrainDownload
 
             try:
-                result = PixelDrainDownload.login(
-                    credential_data.api_key or ''
-                )
+                result = PixelDrainDownload.login(credential_data.api_key or "")
                 if result == -1:
                     raise ClientNotWorking("Failed to login into Pixeldrain")
 
@@ -144,12 +143,17 @@ class Credentials:
         else:
             assert_never(credential_data.source)
 
-        id = get_db().execute("""
+        id = (
+            get_db()
+            .execute(
+                """
             INSERT INTO credentials(source, username, email, password, api_key)
             VALUES (:source, :username, :email, :password, :api_key);
             """,
-            credential_data.as_dict()
-        ).lastrowid
+                credential_data.as_dict(),
+            )
+            .lastrowid
+        )
 
         return self.get_one(id)
 
@@ -162,13 +166,11 @@ class Credentials:
         Raises:
             CredentialNotFound: The ID doesn't map to any credential.
         """
-        LOGGER.info(f'Deleting credential: {cred_id}')
+        LOGGER.info(f"Deleting credential: {cred_id}")
 
         source = self.get_one(cred_id).source
 
-        get_db().execute(
-            "DELETE FROM credentials WHERE id = ?", (cred_id,)
-        )
+        get_db().execute("DELETE FROM credentials WHERE id = ?", (cred_id,))
 
         if source in self.auth_tokens:
             del self.auth_tokens[source]

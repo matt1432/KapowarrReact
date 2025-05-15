@@ -9,26 +9,41 @@ from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Tuple, Type, Union
 
 from typing_extensions import assert_never
 
-from backend.base.custom_exceptions import (DownloadLimitReached,
-                                            DownloadNotFound,
-                                            DownloadUnmovable, FailedGCPage,
-                                            InvalidKeyValue, IssueNotFound,
-                                            LinkBroken)
-from backend.base.definitions import (BlocklistReason, Constants,
-                                      Download, DownloadSource,
-                                      DownloadState, ExternalDownload,
-                                      FailReason, SeedingHandling, SearchResultData)
+from backend.base.custom_exceptions import (
+    DownloadLimitReached,
+    DownloadNotFound,
+    DownloadUnmovable,
+    FailedGCPage,
+    InvalidKeyValue,
+    IssueNotFound,
+    LinkBroken,
+)
+from backend.base.definitions import (
+    BlocklistReason,
+    Constants,
+    Download,
+    DownloadSource,
+    DownloadState,
+    ExternalDownload,
+    FailReason,
+    SeedingHandling,
+    SearchResultData,
+)
 from backend.base.files import create_folder, delete_file_folder
 from backend.base.helpers import CommaList, Singleton, get_subclasses
 from backend.base.logging import LOGGER
-from backend.features.post_processing import (PostProcessor,
-                                              PostProcessorTorrentsComplete,
-                                              PostProcessorTorrentsCopy)
+from backend.features.post_processing import (
+    PostProcessor,
+    PostProcessorTorrentsComplete,
+    PostProcessorTorrentsCopy,
+)
 from backend.implementations.blocklist import add_to_blocklist
-from backend.implementations.download_clients import (BaseDirectDownload,
-                                                      DirectDownload,
-                                                      MegaDownload,
-                                                      TorrentDownload)
+from backend.implementations.download_clients import (
+    BaseDirectDownload,
+    DirectDownload,
+    MegaDownload,
+    TorrentDownload,
+)
 from backend.implementations.external_clients import ExternalClients
 from backend.implementations.getcomics import GetComicsPage
 from backend.implementations.volumes import Issue
@@ -44,8 +59,7 @@ if TYPE_CHECKING:
 # Download handling
 # =====================
 download_type_to_class: Dict[str, Type[Download]] = {
-    c.type: c
-    for c in get_subclasses(BaseDirectDownload)
+    c.type: c for c in get_subclasses(BaseDirectDownload)
 }
 
 
@@ -66,7 +80,7 @@ class DownloadHandler(metaclass=Singleton):
             download (Download): The download to run.
                 One of the entries in self.queue.
         """
-        LOGGER.info(f'Starting download: {download.id}')
+        LOGGER.info(f"Starting download: {download.id}")
 
         ws = WebSocket()
         try:
@@ -167,9 +181,7 @@ class DownloadHandler(metaclass=Singleton):
                 # Or downloading
                 # Or seeding with files copied
                 # Or seeding with seeding_handling = 'complete'
-                download.sleep_event.wait(
-                    timeout=Constants.TORRENT_UPDATE_INTERVAL
-                )
+                download.sleep_event.wait(timeout=Constants.TORRENT_UPDATE_INTERVAL)
 
         ws.send_queue_ended(download)
         return
@@ -202,11 +214,7 @@ class DownloadHandler(metaclass=Singleton):
 
         return
 
-    def set_queue_location(
-        self,
-        download_id: int,
-        index: int
-    ) -> None:
+    def set_queue_location(self, download_id: int, index: int) -> None:
         """Set the location of a download in the queue.
 
         Args:
@@ -224,16 +232,14 @@ class DownloadHandler(metaclass=Singleton):
             raise DownloadUnmovable
 
         if index < 0 or index >= len(self.queue):
-            raise InvalidKeyValue('index', index)
+            raise InvalidKeyValue("index", index)
 
         self.queue.remove(download)
         self.queue.insert(index, download)
         return
 
     def __prepare_downloads_for_queue(
-        self,
-        downloads: List[Download],
-        forced_match: bool
+        self, downloads: List[Download], forced_match: bool
     ) -> List[Download]:
         """Get download instances ready to be put in the queue.
         Registers them in the db if not already. Creates the download thread.
@@ -282,32 +288,32 @@ class DownloadHandler(metaclass=Singleton):
                     );
                     """,
                     {
-                        'volume_id': download.volume_id,
-                        'client_type': download.type,
-                        'external_client_id': external_client_id,
-                        'download_link': download.download_link,
-                        'covered_issues': covered_issues,
-                        'force_original_name': forced_match,
-                        'source_type': download.source_type.value,
-                        'source_name': download.source_name,
-                        'web_link': download.web_link,
-                        'web_title': download.web_title,
-                        'web_sub_title': download.web_sub_title
-                    }
+                        "volume_id": download.volume_id,
+                        "client_type": download.type,
+                        "external_client_id": external_client_id,
+                        "download_link": download.download_link,
+                        "covered_issues": covered_issues,
+                        "force_original_name": forced_match,
+                        "source_type": download.source_type.value,
+                        "source_name": download.source_name,
+                        "web_link": download.web_link,
+                        "web_title": download.web_title,
+                        "web_sub_title": download.web_sub_title,
+                    },
                 ).lastrowid
 
             if not isinstance(download, ExternalDownload):
                 download.download_thread = SERVER.get_db_thread(
                     target=self.__run_download,
                     args=(download,),
-                    name='Download Handler'
+                    name="Download Handler",
                 )
 
             if isinstance(download, TorrentDownload):
                 thread = SERVER.get_db_thread(
                     target=self.__run_torrent_download,
                     args=(download,),
-                    name='Torrent Download Handler'
+                    name="Torrent Download Handler",
                 )
                 download.download_thread = thread
                 thread.start()
@@ -352,9 +358,9 @@ class DownloadHandler(metaclass=Singleton):
             Union[str, None]: The service type of the link or `None` if unknown.
         """
         if link.startswith(Constants.GC_SITE_URL):
-            return 'gc'
+            return "gc"
         if link.startswith("https://libgen.gl/get.php?md5="):
-            return 'lg'
+            return "lg"
         return None
 
     def link_in_queue(self, link: str) -> bool:
@@ -366,18 +372,14 @@ class DownloadHandler(metaclass=Singleton):
         Returns:
             bool: Whether the link is in the queue.
         """
-        return any(
-            d
-            for d in self.queue
-            if link in (d.web_link, d.download_link)
-        )
+        return any(d for d in self.queue if link in (d.web_link, d.download_link))
 
     async def add(
         self,
         result: Union[SearchResultData, str],
         volume_id: int,
         issue_id: Union[int, None] = None,
-        force_match: bool = False
+        force_match: bool = False,
     ) -> Tuple[List[dict], Union[FailReason, None]]:
         """Add a download to the queue.
 
@@ -403,36 +405,46 @@ class DownloadHandler(metaclass=Singleton):
         link = result if isinstance(result, str) else result["link"]
 
         LOGGER.info(
-            'Adding download for ' +
-            f'volume {volume_id}{f" issue {issue_id}" if issue_id else ""}: ' +
-            f'{link}'
+            "Adding download for "
+            + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}: "
+            + f"{link}"
         )
 
         if self.link_in_queue(link):
-            LOGGER.info('Download already in queue')
+            LOGGER.info("Download already in queue")
             return [], None
 
         link_type = self.__determine_link_type(link)
         downloads: List[Download] = []
 
-        if link_type == 'lg':
-            downloads.append(DirectDownload(
-                link,
-                volume_id,
-                None,
-                DownloadSource.LIBGENPLUS,
-                "Libgen+",
-                None,
-                None,
-                None,
-                result["releaser"] if not isinstance(result, str) and "releaser" in result else None,
-                result["scan_type"] if not isinstance(result, str) and "scan_type" in result else None,
-                result["resolution"] if not isinstance(result, str) and "resolution" in result else None,
-                result["dpi"] if not isinstance(result, str) and "dpi" in result else None,
-                force_match,
-            ))
+        if link_type == "lg":
+            downloads.append(
+                DirectDownload(
+                    link,
+                    volume_id,
+                    None,
+                    DownloadSource.LIBGENPLUS,
+                    "Libgen+",
+                    None,
+                    None,
+                    None,
+                    result["releaser"]
+                    if not isinstance(result, str) and "releaser" in result
+                    else None,
+                    result["scan_type"]
+                    if not isinstance(result, str) and "scan_type" in result
+                    else None,
+                    result["resolution"]
+                    if not isinstance(result, str) and "resolution" in result
+                    else None,
+                    result["dpi"]
+                    if not isinstance(result, str) and "dpi" in result
+                    else None,
+                    force_match,
+                )
+            )
 
-        if link_type == 'gc':
+        if link_type == "gc":
             gcp = GetComicsPage(link)
 
             try:
@@ -447,7 +459,7 @@ class DownloadHandler(metaclass=Singleton):
                     source=None,
                     volume_id=volume_id,
                     issue_id=issue_id,
-                    reason=BlocklistReason.LINK_BROKEN
+                    reason=BlocklistReason.LINK_BROKEN,
                 )
                 LOGGER.warning(
                     f'Unable to extract download links from source; fail_reason="{e.reason.value}"'
@@ -455,9 +467,7 @@ class DownloadHandler(metaclass=Singleton):
                 return [], e.reason
 
             try:
-                downloads = await gcp.create_downloads(
-                    volume_id, issue_id, force_match
-                )
+                downloads = await gcp.create_downloads(volume_id, issue_id, force_match)
 
             except FailedGCPage as e:
                 if e.reason == FailReason.NO_WORKING_LINKS:
@@ -469,7 +479,7 @@ class DownloadHandler(metaclass=Singleton):
                         source=None,
                         volume_id=volume_id,
                         issue_id=issue_id,
-                        reason=BlocklistReason.NO_WORKING_LINKS
+                        reason=BlocklistReason.NO_WORKING_LINKS,
                     )
 
                 LOGGER.warning(
@@ -477,24 +487,17 @@ class DownloadHandler(metaclass=Singleton):
                 )
                 return [], e.reason
 
-        result = self.__prepare_downloads_for_queue(
-            downloads,
-            forced_match=force_match
-        )
+        result = self.__prepare_downloads_for_queue(downloads, forced_match=force_match)
         self.queue += result
 
         self._process_queue()
         return [r.todict() for r in result], None
 
     def add_multiple(
-        self,
-        add_args: Iterable[Tuple[str, int, Union[int, None], bool]]
+        self, add_args: Iterable[Tuple[str, int, Union[int, None], bool]]
     ) -> None:
         async def add_wrapper():
-            await gather(
-                *(self.add(*entry)
-                for entry in add_args)
-            )
+            await gather(*(self.add(*entry) for entry in add_args))
 
         run(add_wrapper())
         return
@@ -516,74 +519,68 @@ class DownloadHandler(metaclass=Singleton):
         """).fetchall()
 
         if downloads:
-            LOGGER.info('Loading downloads')
+            LOGGER.info("Loading downloads")
 
         for download in iter_commit(downloads):
-            LOGGER.debug(f'Download from database: {dict(download)}')
+            LOGGER.debug(f"Download from database: {dict(download)}")
             try:
-                if download['covered_issues'] is None:
+                if download["covered_issues"] is None:
                     covered_issues = None
 
-                elif ',' in download['covered_issues']:
+                elif "," in download["covered_issues"]:
                     covered_issues = (
-                        float(download['covered_issues'].split(',')[0]),
-                        float(download['covered_issues'].split(',')[1])
+                        float(download["covered_issues"].split(",")[0]),
+                        float(download["covered_issues"].split(",")[1]),
                     )
 
                 else:
-                    covered_issues = float(download['covered_issues'])
+                    covered_issues = float(download["covered_issues"])
 
                 kwargs = {}
                 if issubclass(
-                    download_type_to_class[download['client_type']],
-                    ExternalDownload
+                    download_type_to_class[download["client_type"]], ExternalDownload
                 ):
                     kwargs = {
-                        'external_client': ExternalClients.get_client(
-                            download['external_client_id']
+                        "external_client": ExternalClients.get_client(
+                            download["external_client_id"]
                         )
                     }
 
-                dl_instance = download_type_to_class[download['client_type']](
-                    download_link=download['download_link'],
-                    volume_id=download['volume_id'],
+                dl_instance = download_type_to_class[download["client_type"]](
+                    download_link=download["download_link"],
+                    volume_id=download["volume_id"],
                     covered_issues=covered_issues,
-                    source_type=DownloadSource(download['source_type']),
-                    source_name=download['source_name'],
-                    web_link=download['web_link'],
-                    web_title=download['web_title'],
-                    web_sub_title=download['web_sub_title'],
-                    forced_match=download['force_original_name'],
-                    **kwargs
+                    source_type=DownloadSource(download["source_type"]),
+                    source_name=download["source_name"],
+                    web_link=download["web_link"],
+                    web_title=download["web_title"],
+                    web_sub_title=download["web_sub_title"],
+                    forced_match=download["force_original_name"],
+                    **kwargs,
                 )
-                dl_instance.id = download['id']
+                dl_instance.id = download["id"]
 
             except LinkBroken as lb:
                 # Link is broken
 
                 issue_id = None
-                if (
-                    download['covered_issues']
-                    and ',' not in download['covered_issues']
-                ):
+                if download["covered_issues"] and "," not in download["covered_issues"]:
                     issue_id = Issue.from_volume_and_calc_number(
-                        download['volume_id'],
-                        float(download['covered_issues'])
+                        download["volume_id"], float(download["covered_issues"])
                     ).id
 
                 add_to_blocklist(
-                    web_link=download['web_link'],
-                    web_title=download['web_title'],
-                    web_sub_title=download['web_sub_title'],
-                    download_link=download['download_link'],
-                    source=DownloadSource(download['source']),
-                    volume_id=download['volume_id'],
+                    web_link=download["web_link"],
+                    web_title=download["web_title"],
+                    web_sub_title=download["web_sub_title"],
+                    download_link=download["download_link"],
+                    source=DownloadSource(download["source"]),
+                    volume_id=download["volume_id"],
                     issue_id=issue_id,
-                    reason=lb.reason
+                    reason=lb.reason,
                 )
                 cursor.execute(
-                    "DELETE FROM download_queue WHERE id = ?;",
-                    (download['id'],)
+                    "DELETE FROM download_queue WHERE id = ?;", (download["id"],)
                 )
                 continue
 
@@ -594,8 +591,7 @@ class DownloadHandler(metaclass=Singleton):
                 continue
 
             self.queue += self.__prepare_downloads_for_queue(
-                [dl_instance],
-                forced_match=download['force_original_name']
+                [dl_instance], forced_match=download["force_original_name"]
             )
 
         self._process_queue()
@@ -609,8 +605,7 @@ class DownloadHandler(metaclass=Singleton):
             Thread: The thread that is loading the downloads.
         """
         result = SERVER.get_db_thread(
-            target=self.__load_downloads,
-            name="Download Importer"
+            target=self.__load_downloads, name="Download Importer"
         )
         result.start()
         return result
@@ -628,7 +623,7 @@ class DownloadHandler(metaclass=Singleton):
         Raises:
             DownloadNotFound: The ID doesn't map to any download in the queue.
         """
-        LOGGER.info(f'Removing download with id {download_id} and {blocklist=}')
+        LOGGER.info(f"Removing download with id {download_id} and {blocklist=}")
 
         download = self.get_one(download_id)
         if not download.download_thread:
@@ -645,8 +640,7 @@ class DownloadHandler(metaclass=Singleton):
             and (
                 # Download was queued when we stopped it
                 prev_state == DownloadState.QUEUED_STATE
-                or
-                (
+                or (
                     # Download errored out without catching it
                     prev_state == DownloadState.DOWNLOADING_STATE
                     and not was_thread_running
@@ -666,7 +660,7 @@ class DownloadHandler(metaclass=Singleton):
                 source=download.source_type,
                 volume_id=download.volume_id,
                 issue_id=download.issue_id,
-                reason=BlocklistReason.ADDED_BY_USER
+                reason=BlocklistReason.ADDED_BY_USER,
             )
 
         return
@@ -680,10 +674,7 @@ class DownloadHandler(metaclass=Singleton):
             queue.
         """
         for download in self.queue[::-1]:
-            if (
-                isinstance(download, MegaDownload)
-                and download.id != exclude_id
-            ):
+            if isinstance(download, MegaDownload) and download.id != exclude_id:
                 self.remove(download.id)
         return
 
@@ -695,16 +686,13 @@ class DownloadHandler(metaclass=Singleton):
 
     def stop_handle(self) -> None:
         """Cancel any running download and stop the handler"""
-        LOGGER.debug('Stopping download thread')
+        LOGGER.debug("Stopping download thread")
 
         for e in self.queue:
             e.stop(DownloadState.SHUTDOWN_STATE)
 
         for e in self.queue:
-            if (
-                e.download_thread is not None
-                and e.download_thread.is_alive()
-            ):
+            if e.download_thread is not None and e.download_thread.is_alive():
                 e.download_thread.join()
 
         return
@@ -714,19 +702,15 @@ class DownloadHandler(metaclass=Singleton):
         Empty the temporary download folder of files that aren't being downloaded.
         Handy in the case that a crash left half-downloaded files behind in the folder.
         """
-        LOGGER.info('Emptying the temporary download folder')
+        LOGGER.info("Emptying the temporary download folder")
         folder = self.settings.sv.download_folder
 
         files_in_queue = [
-            basename(file)
-            for download in self.queue
-            for file in download.files
+            basename(file) for download in self.queue for file in download.files
         ]
         files_in_folder = listdir(folder)
         ghost_files = [
-            join(folder, f)
-            for f in files_in_folder
-            if f not in files_in_queue
+            join(folder, f) for f in files_in_folder if f not in files_in_queue
         ]
 
         for f in ghost_files:
@@ -741,7 +725,7 @@ class DownloadHandler(metaclass=Singleton):
 def get_download_history(
     volume_id: Union[int, None] = None,
     issue_id: Union[int, None] = None,
-    offset: int = 0
+    offset: int = 0,
 ) -> List[Dict[str, Any]]:
     """Get the download history in blocks of 50.
 
@@ -802,14 +786,13 @@ def get_download_history(
             OFFSET :offset;
             """
 
-    return get_db().execute(
-        comm,
-        {
-            'issue_id': issue_id,
-            'volume_id': volume_id,
-            'offset': offset * 50
-        }
-    ).fetchalldict()
+    return (
+        get_db()
+        .execute(
+            comm, {"issue_id": issue_id, "volume_id": volume_id, "offset": offset * 50}
+        )
+        .fetchalldict()
+    )
 
 
 def delete_download_history() -> None:

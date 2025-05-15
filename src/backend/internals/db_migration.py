@@ -17,8 +17,7 @@ def _load_version_map() -> None:
         return
 
     VersionMappingContainer.version_map = {
-        m.start_version: m
-        for m in get_subclasses(DBMigrator)
+        m.start_version: m for m in get_subclasses(DBMigrator)
     }
     return
 
@@ -37,16 +36,13 @@ def migrate_db() -> None:
     from backend.internals.settings import Settings
 
     s = Settings()
-    current_db_version = s['database_version']
+    current_db_version = s["database_version"]
     newest_version = get_latest_db_version()
     if current_db_version == newest_version:
         return
 
-    LOGGER.info('Migrating database to newer version...')
-    LOGGER.debug(
-        "Database migration: %d -> %d",
-        current_db_version, newest_version
-    )
+    LOGGER.info("Migrating database to newer version...")
+    LOGGER.debug("Database migration: %d -> %d", current_db_version, newest_version)
 
     for start_version in iter_commit(range(current_db_version, newest_version)):
         if start_version not in VersionMappingContainer.version_map:
@@ -159,7 +155,7 @@ class MigrateRecalculateIssueNumber(DBMigrator):
             calc_issue_number = process_issue_number(result[1])
             cursor.execute(
                 "UPDATE issues SET calculated_issue_number = ? WHERE id = ?;",
-                (calc_issue_number, result[0])
+                (calc_issue_number, result[0]),
             )
         return
 
@@ -210,16 +206,13 @@ class MigrateAddCVFetchTime(DBMigrator):
         """)
 
         volume_ids = [
-            str(v[0])
-            for v in cursor.execute("SELECT comicvine_id FROM volumes;")
+            str(v[0]) for v in cursor.execute("SELECT comicvine_id FROM volumes;")
         ]
         updates = (
-            ('', r['comicvine_id'])
-            for r in run(ComicVine().fetch_volumes(volume_ids))
+            ("", r["comicvine_id"]) for r in run(ComicVine().fetch_volumes(volume_ids))
         )
         cursor.executemany(
-            "UPDATE volumes SET last_cv_update = ? WHERE comicvine_id = ?;",
-            updates
+            "UPDATE volumes SET last_cv_update = ? WHERE comicvine_id = ?;", updates
         )
 
         return
@@ -246,8 +239,7 @@ class MigrateAddSpecialVersion(DBMigrator):
     def run(self) -> None:
         # V7 -> V8
 
-        from backend.implementations.volumes import (Library,
-                                                     determine_special_version)
+        from backend.implementations.volumes import Library, determine_special_version
         from backend.internals.db import get_db
 
         cursor = get_db()
@@ -257,16 +249,11 @@ class MigrateAddSpecialVersion(DBMigrator):
         """)
 
         updates = (
-            (
-                determine_special_version(v_id),
-                v_id
-            )
-            for v_id in Library().get_volumes()
+            (determine_special_version(v_id), v_id) for v_id in Library().get_volumes()
         )
 
         cursor.executemany(
-            "UPDATE volumes SET special_version = ? WHERE id = ?;",
-            updates
+            "UPDATE volumes SET special_version = ? WHERE id = ?;", updates
         )
         return
 
@@ -332,9 +319,11 @@ class MigrateUpdateManifest(DBMigrator):
         # and the DB migration system does exactly that:
         # run pieces of code once.
 
-        url_base: str = get_db().execute(
-            "SELECT value FROM config WHERE key = 'url_base' LIMIT 1;"
-        ).fetchone()[0]
+        url_base: str = (
+            get_db()
+            .execute("SELECT value FROM config WHERE key = 'url_base' LIMIT 1;")
+            .fetchone()[0]
+        )
         update_manifest(url_base)
 
         return
@@ -346,21 +335,15 @@ class MigrateUpdateSpecialVersion(DBMigrator):
     def run(self) -> None:
         # V10 -> V11
 
-        from backend.implementations.volumes import (Library,
-                                                     determine_special_version)
+        from backend.implementations.volumes import Library, determine_special_version
         from backend.internals.db import get_db
 
         updates = (
-            (
-                determine_special_version(v_id),
-                v_id
-            )
-            for v_id in Library().get_volumes()
+            (determine_special_version(v_id), v_id) for v_id in Library().get_volumes()
         )
 
         get_db().executemany(
-            "UPDATE volumes SET special_version = ? WHERE id = ?;",
-            updates
+            "UPDATE volumes SET special_version = ? WHERE id = ?;", updates
         )
 
         return
@@ -411,9 +394,7 @@ class MigrateUnzipToFormatPreference(DBMigrator):
             "SELECT value FROM config WHERE key = 'unzip' LIMIT 1;"
         ).fetchone()[0]
 
-        cursor.execute(
-            "DELETE FROM config WHERE key = 'unzip';"
-        )
+        cursor.execute("DELETE FROM config WHERE key = 'unzip';")
 
         if unzip:
             cursor.executescript("""
@@ -424,8 +405,7 @@ class MigrateUnzipToFormatPreference(DBMigrator):
                 UPDATE config
                 SET value = 1
                 WHERE key = 'convert';
-                """
-            )
+                """)
         return
 
 
@@ -438,27 +418,31 @@ class MigrateFolderConversionToOwnSetting(DBMigrator):
         from backend.internals.db import get_db
 
         cursor = get_db()
-        format_preference: List[str] = cursor.execute("""
+        format_preference: List[str] = (
+            cursor.execute("""
             SELECT value
             FROM config
             WHERE key = 'format_preference'
             LIMIT 1;
-        """).fetchone()[0].split(',')
+        """)
+            .fetchone()[0]
+            .split(",")
+        )
 
-        if 'folder' in format_preference:
+        if "folder" in format_preference:
             cursor.execute("""
                 UPDATE config
                 SET value = 1
                 WHERE key = 'extract_issue_ranges';
+                """)
+            format_preference.remove("folder")
+            cursor.execute(
                 """
-            )
-            format_preference.remove('folder')
-            cursor.execute("""
                 UPDATE config
                 SET value = ?
                 WHERE key = 'format_preference';
                 """,
-                (",".join(format_preference),)
+                (",".join(format_preference),),
             )
         return
 
@@ -472,22 +456,23 @@ class MigrateServicePreferenceToSetting(DBMigrator):
         from backend.internals.db import get_db
 
         cursor = get_db()
-        service_preference = ','.join([
-            source[0] for source in cursor.execute(
-                "SELECT source FROM service_preference ORDER BY pref;"
-            )
-        ])
+        service_preference = ",".join(
+            [
+                source[0]
+                for source in cursor.execute(
+                    "SELECT source FROM service_preference ORDER BY pref;"
+                )
+            ]
+        )
 
         # UPDATE, not INSERT,
         # because first default settings are entered and only then is the db
         # migration done, so the key will already exist.
         cursor.execute(
             "UPDATE config SET value = ? WHERE key = 'service_preference';",
-            (service_preference,)
+            (service_preference,),
         )
-        cursor.execute(
-            "DROP TABLE service_preference;"
-        )
+        cursor.execute("DROP TABLE service_preference;")
         return
 
 
@@ -532,7 +517,7 @@ class MigrateLogLevelToInt(DBMigrator):
         from backend.internals.settings import Settings
 
         s = Settings()
-        log_number = 20 if s.sv.log_level == 'info' else 10
+        log_number = 20 if s.sv.log_level == "info" else 10
         s["log_level"] = log_number
 
         return
@@ -569,19 +554,17 @@ class MigrateTPBNamingToSpecialVersionNaming(DBMigrator):
             "SELECT value FROM config WHERE key = 'file_naming_tpb' LIMIT 1;"
         ).fetchone()[0]
 
-        cursor.execute(
-            "DELETE FROM config WHERE key = 'file_naming_tpb';"
-        )
+        cursor.execute("DELETE FROM config WHERE key = 'file_naming_tpb';")
 
         tpb_replacer = compile(
-            r'\b(tpb|trade[\s\.\-]?paper[\s\.\-]?back)\b',
-            IGNORECASE
+            r"\b(tpb|trade[\s\.\-]?paper[\s\.\-]?back)\b", IGNORECASE
         )
-        format = tpb_replacer.sub('{special_version}', format)
+        format = tpb_replacer.sub("{special_version}", format)
 
         cursor.execute(
             "UPDATE config SET value = ? WHERE key = 'file_naming_special_version';",
-            (format,))
+            (format,),
+        )
 
         return
 
@@ -599,7 +582,7 @@ class MigrateAddWeTransferToPreference(DBMigrator):
         service_preference.append("wetransfer")
         get_db().execute(
             "UPDATE config SET value = ? WHERE key = 'service_preference';",
-            (service_preference,)
+            (service_preference,),
         )
         return
 
@@ -612,9 +595,10 @@ class MigrateClearUnsupportedSourceBlocklistEntries(DBMigrator):
 
         from backend.base.definitions import BlocklistReasonID
         from backend.internals.db import get_db
+
         get_db().execute(
             "DELETE FROM blocklist WHERE reason = ?;",
-            (BlocklistReasonID.SOURCE_NOT_SUPPORTED.value,)
+            (BlocklistReasonID.SOURCE_NOT_SUPPORTED.value,),
         )
         return
 
@@ -632,7 +616,7 @@ class MigrateAddPixelDrainToPreference(DBMigrator):
         service_preference.append("pixeldrain")
         get_db().execute(
             "UPDATE config SET value = ? WHERE key = 'service_preference';",
-            (service_preference,)
+            (service_preference,),
         )
 
         return
@@ -683,22 +667,24 @@ class MigrateServicePreferenceToEnumValues(DBMigrator):
         from backend.internals.settings import Settings
 
         source_string_to_enum = {
-            'mega': GCDownloadSource.MEGA.value,
-            'mediafire': GCDownloadSource.MEDIAFIRE.value,
-            'wetransfer': GCDownloadSource.WETRANSFER.value,
-            'pixeldrain': GCDownloadSource.PIXELDRAIN.value,
-            'getcomics': GCDownloadSource.GETCOMICS.value,
-            'getcomics (torrent)': GCDownloadSource.GETCOMICS_TORRENT.value
+            "mega": GCDownloadSource.MEGA.value,
+            "mediafire": GCDownloadSource.MEDIAFIRE.value,
+            "wetransfer": GCDownloadSource.WETRANSFER.value,
+            "pixeldrain": GCDownloadSource.PIXELDRAIN.value,
+            "getcomics": GCDownloadSource.GETCOMICS.value,
+            "getcomics (torrent)": GCDownloadSource.GETCOMICS_TORRENT.value,
         }
 
-        new_service_preference = CommaList((
-            source_string_to_enum[service.lower()]
-            for service in Settings().sv.service_preference
-        ))
+        new_service_preference = CommaList(
+            (
+                source_string_to_enum[service.lower()]
+                for service in Settings().sv.service_preference
+            )
+        )
 
         get_db().execute(
             "UPDATE config SET value = ? WHERE key = 'service_preference';",
-            (new_service_preference,)
+            (new_service_preference,),
         )
 
         return
@@ -939,8 +925,7 @@ class MigrateNoneToStringFlareSolverr(DBMigrator):
             FROM config
             WHERE key = 'flaresolverr_base_url'
             LIMIT 1;
-            """
-        ).fetchone()['value']
+            """).fetchone()["value"]
 
         if not value:
             cursor.execute("""
@@ -970,25 +955,23 @@ class MigrateVaiNaming(DBMigrator):
 
         cursor = get_db()
 
-        volume_as_empty = (cursor.execute(
-            "SELECT value FROM config WHERE key = 'volume_as_empty' LIMIT 1;"
-        ).fetchone() or (None,))[0]
+        volume_as_empty = (
+            cursor.execute(
+                "SELECT value FROM config WHERE key = 'volume_as_empty' LIMIT 1;"
+            ).fetchone()
+            or (None,)
+        )[0]
         if volume_as_empty:
             cursor.execute(
                 "UPDATE config SET value = ? WHERE key = 'file_naming_vai';",
-                ('{series_name} ({year}) Volume {volume_number} Issue {issue_number}',)
+                ("{series_name} ({year}) Volume {volume_number} Issue {issue_number}",),
             )
 
         cursor.execute("SELECT key FROM config")
         delete_keys = [
-            key
-            for key in cursor
-            if key[0] not in SettingsValues.__dataclass_fields__
+            key for key in cursor if key[0] not in SettingsValues.__dataclass_fields__
         ]
-        cursor.executemany(
-            "DELETE FROM config WHERE key = ?;",
-            delete_keys
-        )
+        cursor.executemany("DELETE FROM config WHERE key = ?;", delete_keys)
 
         return
 
@@ -1094,7 +1077,8 @@ class MigrateExternalDownloadClients(DBMigrator):
                 FROM temp_torrent_clients_34;
 
             COMMIT;
-        """)
+        """
+        )
 
         return
 
@@ -1113,10 +1097,7 @@ class MigrateTypeHostingSettings(DBMigrator):
             "SELECT value FROM config WHERE key = 'port' LIMIT 1;"
         ).fetchone()[0]
 
-        cursor.execute(
-            "UPDATE config SET value=? WHERE key = 'port';",
-            (int(port),)
-        )
+        cursor.execute("UPDATE config SET value=? WHERE key = 'port';", (int(port),))
 
         settings = Settings()
         settings._fetch_settings()

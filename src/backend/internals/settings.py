@@ -8,16 +8,31 @@ from os import urandom
 from os.path import abspath, isdir, join, sep
 from typing import Any, Dict, Mapping
 
-from backend.base.custom_exceptions import (FolderNotFound, InvalidSettingKey,
-                                            InvalidSettingModification,
-                                            InvalidSettingValue)
-from backend.base.definitions import (BaseEnum, GCDownloadSource,
-                                      RestartVersion, SeedingHandling)
-from backend.base.files import (folder_is_inside_folder,
-                                folder_path, uppercase_drive_letter)
-from backend.base.helpers import (CommaList, Singleton, force_suffix,
-                                  get_python_version, normalize_base_url,
-                                  reversed_tuples)
+from backend.base.custom_exceptions import (
+    FolderNotFound,
+    InvalidSettingKey,
+    InvalidSettingModification,
+    InvalidSettingValue,
+)
+from backend.base.definitions import (
+    BaseEnum,
+    GCDownloadSource,
+    RestartVersion,
+    SeedingHandling,
+)
+from backend.base.files import (
+    folder_is_inside_folder,
+    folder_path,
+    uppercase_drive_letter,
+)
+from backend.base.helpers import (
+    CommaList,
+    Singleton,
+    force_suffix,
+    get_python_version,
+    normalize_base_url,
+    reversed_tuples,
+)
 from backend.base.logging import LOGGER, set_log_level
 from backend.internals.db import commit, get_db
 from backend.internals.db_migration import get_latest_db_version
@@ -27,34 +42,40 @@ from backend.internals.db_migration import get_latest_db_version
 class SettingsValues:
     database_version: int = get_latest_db_version()
     log_level: int = INFO
-    auth_password: str = ''
-    comicvine_api_key: str = ''
-    api_key: str = ''
+    auth_password: str = ""
+    comicvine_api_key: str = ""
+    api_key: str = ""
 
-    host: str = '0.0.0.0'
+    host: str = "0.0.0.0"
     port: int = 5656
-    url_base: str = ''
-    backup_host: str = '0.0.0.0'
+    url_base: str = ""
+    backup_host: str = "0.0.0.0"
     backup_port: int = 5656
-    backup_url_base: str = ''
+    backup_url_base: str = ""
 
     rename_downloaded_files: bool = True
-    volume_folder_naming: str = join(
-        '{series_name}', 'Volume {volume_number} ({year})'
+    volume_folder_naming: str = join("{series_name}", "Volume {volume_number} ({year})")
+    file_naming: str = (
+        "{series_name} ({year}) Volume {volume_number} Issue {issue_number}"
     )
-    file_naming: str = '{series_name} ({year}) Volume {volume_number} Issue {issue_number}'
-    file_naming_empty: str = '{series_name} ({year}) Volume {volume_number} Issue {issue_number}'
-    file_naming_special_version: str = '{series_name} ({year}) Volume {volume_number} {special_version}'
-    file_naming_vai: str = '{series_name} ({year}) Volume {issue_number}'
+    file_naming_empty: str = (
+        "{series_name} ({year}) Volume {volume_number} Issue {issue_number}"
+    )
+    file_naming_special_version: str = (
+        "{series_name} ({year}) Volume {volume_number} {special_version}"
+    )
+    file_naming_vai: str = "{series_name} ({year}) Volume {issue_number}"
 
     long_special_version: bool = False
     volume_padding: int = 2
     issue_padding: int = 3
 
-    service_preference: CommaList = field(default_factory=lambda: CommaList(
-        (s.value for s in GCDownloadSource._member_map_.values())
-    ))
-    download_folder: str = folder_path('temp_downloads')
+    service_preference: CommaList = field(
+        default_factory=lambda: CommaList(
+            (s.value for s in GCDownloadSource._member_map_.values())
+        )
+    )
+    download_folder: str = folder_path("temp_downloads")
     concurrent_direct_downloads: int = 1
     failing_torrent_timeout: int = 0
     seeding_handling: SeedingHandling = SeedingHandling.COPY
@@ -62,9 +83,9 @@ class SettingsValues:
 
     convert: bool = False
     extract_issue_ranges: bool = False
-    format_preference: CommaList = field(default_factory=lambda: CommaList(''))
+    format_preference: CommaList = field(default_factory=lambda: CommaList(""))
 
-    flaresolverr_base_url: str = ''
+    flaresolverr_base_url: str = ""
 
     enable_getcomics: bool = True
     enable_libgen: bool = True
@@ -73,24 +94,24 @@ class SettingsValues:
         return {
             k: v if not isinstance(v, BaseEnum) else v.value
             for k, v in self.__dict__.items()
-            if not k.startswith('backup_')
+            if not k.startswith("backup_")
         }
 
 
 about_data = {
-    'version': f'v{version('Kapowarr')}',
-    'python_version': get_python_version(),
-    'database_version': get_latest_db_version(),
-    'database_location': None, # Get's filled in by db.set_db_location()
-    'data_folder': folder_path()
+    "version": f"v{version('Kapowarr')}",
+    "python_version": get_python_version(),
+    "database_version": get_latest_db_version(),
+    "database_location": None,  # Get's filled in by db.set_db_location()
+    "data_folder": folder_path(),
 }
 
 
 task_intervals = {
     # If there are tasks that should be run at the same time,
     # but per se after each other, put them in that order in the dict.
-    'update_all': 3600, # every hour
-    'search_all': 86400 # every day
+    "update_all": 3600,  # every hour
+    "search_all": 86400,  # every day
 }
 
 
@@ -104,7 +125,7 @@ class Settings(metaclass=Singleton):
         "Insert any missing keys from the settings into the database."
         get_db().executemany(
             "INSERT OR IGNORE INTO config(key, value) VALUES (?, ?);",
-            asdict(SettingsValues()).items()
+            asdict(SettingsValues()).items(),
         )
         commit()
         return
@@ -113,18 +134,14 @@ class Settings(metaclass=Singleton):
         "Load the settings from the database into the cache."
         db_values = {
             k: v
-            for k, v in get_db().execute(
-                "SELECT key, value FROM config;"
-            )
+            for k, v in get_db().execute("SELECT key, value FROM config;")
             if k in SettingsValues.__dataclass_fields__
         }
 
-        for cl_key in ('format_preference', 'service_preference'):
+        for cl_key in ("format_preference", "service_preference"):
             db_values[cl_key] = CommaList(db_values[cl_key])
 
-        for en_key, en in (
-            ('seeding_handling', SeedingHandling),
-        ):
+        for en_key, en in (("seeding_handling", SeedingHandling),):
             db_values[en_key] = en[db_values[en_key].upper()]
 
         self.__cached_values = SettingsValues(**db_values)
@@ -163,10 +180,7 @@ class Settings(metaclass=Singleton):
         """
         return getattr(self.__cached_values, __name)
 
-    def update(
-        self,
-        data: Mapping[str, Any]
-    ) -> None:
+    def update(self, data: Mapping[str, Any]) -> None:
         """Change the settings, in a `dict.update()` type of way.
 
         Args:
@@ -178,27 +192,21 @@ class Settings(metaclass=Singleton):
             InvalidSettingModification: Key can not be modified this way.
             FolderNotFound: Folder not found.
         """
-        from backend.implementations.naming import (NAMING_MAPPING,
-                                                    check_mock_filename)
+        from backend.implementations.naming import NAMING_MAPPING, check_mock_filename
 
         formatted_data = {}
         for key, value in data.items():
             formatted_data[key] = self.__format_value(key, value)
 
-        if any(
-            key in formatted_data
-            for key in NAMING_MAPPING
-        ):
+        if any(key in formatted_data for key in NAMING_MAPPING):
             # Changes to naming schemes
-            check_mock_filename(**{
-                key: formatted_data.get(key)
-                for key in NAMING_MAPPING
-            })
+            check_mock_filename(
+                **{key: formatted_data.get(key) for key in NAMING_MAPPING}
+            )
 
         hosting_changes = any(
-            s in data
-            and formatted_data[s] != getattr(self.get_settings(), s)
-            for s in ('host', 'port', 'url_base')
+            s in data and formatted_data[s] != getattr(self.get_settings(), s)
+            for s in ("host", "port", "url_base")
         )
 
         if hosting_changes:
@@ -206,28 +214,24 @@ class Settings(metaclass=Singleton):
 
         get_db().executemany(
             "UPDATE config SET value = ? WHERE key = ?;",
-            reversed_tuples(formatted_data.items())
+            reversed_tuples(formatted_data.items()),
         )
 
         for key, handler in (
-            ('url_base', update_manifest),
-            ('log_level', set_log_level)
+            ("url_base", update_manifest),
+            ("log_level", set_log_level),
         ):
-            if (
-                key in data
-                and formatted_data[key] != getattr(self.get_settings(), key)
-            ):
+            if key in data and formatted_data[key] != getattr(self.get_settings(), key):
                 handler(formatted_data[key])
 
         self._fetch_settings()
 
-        LOGGER.info(f'Settings changed: {formatted_data}')
+        LOGGER.info(f"Settings changed: {formatted_data}")
 
         if hosting_changes:
             from backend.internals.server import SERVER
-            SERVER.restart(
-                RestartVersion.HOSTING_CHANGES
-            )
+
+            SERVER.restart(RestartVersion.HOSTING_CHANGES)
 
         return
 
@@ -256,14 +260,12 @@ class Settings(metaclass=Singleton):
         Raises:
             InvalidSettingKey: The key is not valid or unknown.
         """
-        LOGGER.debug(f'Setting reset: {key}')
+        LOGGER.debug(f"Setting reset: {key}")
 
         if not isinstance(
-            SettingsValues.__dataclass_fields__[key].default_factory,
-            _MISSING_TYPE
+            SettingsValues.__dataclass_fields__[key].default_factory, _MISSING_TYPE
         ):
-            self[key] = SettingsValues.__dataclass_fields__[
-                key].default_factory()
+            self[key] = SettingsValues.__dataclass_fields__[key].default_factory()
         else:
             self[key] = SettingsValues.__dataclass_fields__[key].default
 
@@ -271,25 +273,24 @@ class Settings(metaclass=Singleton):
 
     def generate_api_key(self) -> None:
         "Generate a new api key"
-        LOGGER.debug('Generating new api key')
+        LOGGER.debug("Generating new api key")
 
         api_key = urandom(16).hex()
         get_db().execute(
-            "UPDATE config SET value = ? WHERE key = 'api_key';",
-            (api_key,)
+            "UPDATE config SET value = ? WHERE key = 'api_key';", (api_key,)
         )
         self._fetch_settings()
 
-        LOGGER.info(f'Setting api key regenerated: {api_key}')
+        LOGGER.info(f"Setting api key regenerated: {api_key}")
         return
 
     def backup_hosting_settings(self) -> None:
         "Backup the hosting settings in the database."
         s = self.get_settings()
         backup_settings = {
-            'backup_host': s.host,
-            'backup_port': s.port,
-            'backup_url_base': s.url_base
+            "backup_host": s.host,
+            "backup_port": s.port,
+            "backup_url_base": s.url_base,
         }
         self.update(backup_settings)
         return
@@ -315,12 +316,11 @@ class Settings(metaclass=Singleton):
         if key not in SettingsValues.__dataclass_fields__:
             raise InvalidSettingKey(key)
 
-        if key == 'api_key':
-            raise InvalidSettingModification(key, 'POST /settings/api_key')
+        if key == "api_key":
+            raise InvalidSettingModification(key, "POST /settings/api_key")
 
-        if (
-            SettingsValues.__dataclass_fields__[key].type is CommaList
-            and isinstance(value, list)
+        if SettingsValues.__dataclass_fields__[key].type is CommaList and isinstance(
+            value, list
         ):
             value = CommaList(value)
 
@@ -333,51 +333,48 @@ class Settings(metaclass=Singleton):
         if not isinstance(value, SettingsValues.__dataclass_fields__[key].type):
             raise InvalidSettingValue(key, value)
 
-        if key == 'port' and not 0 < value <= 65_535:
+        if key == "port" and not 0 < value <= 65_535:
             raise InvalidSettingValue(key, value)
 
-        elif key == 'url_base':
+        elif key == "url_base":
             if value:
-                converted_value = ('/' + value.lstrip('/')).rstrip('/')
+                converted_value = ("/" + value.lstrip("/")).rstrip("/")
 
-        elif key == 'comicvine_api_key':
+        elif key == "comicvine_api_key":
             from backend.implementations.comicvine import ComicVine
+
             converted_value = value.strip()
             if converted_value and not ComicVine(converted_value).test_token():
                 raise InvalidSettingValue(key, value)
 
-        elif key == 'download_folder':
+        elif key == "download_folder":
             from backend.implementations.root_folders import RootFolders
 
             if not isdir(value):
                 raise FolderNotFound
 
-            converted_value = uppercase_drive_letter(
-                force_suffix(abspath(value))
-            )
+            converted_value = uppercase_drive_letter(force_suffix(abspath(value)))
 
             for rf in RootFolders().get_all():
-                if (
-                    folder_is_inside_folder(rf.folder, converted_value)
-                    or folder_is_inside_folder(converted_value, rf.folder)
-                ):
+                if folder_is_inside_folder(
+                    rf.folder, converted_value
+                ) or folder_is_inside_folder(converted_value, rf.folder):
                     raise InvalidSettingValue(key, value)
 
-        elif key == 'concurrent_direct_downloads' and value <= 0:
+        elif key == "concurrent_direct_downloads" and value <= 0:
             raise InvalidSettingValue(key, value)
 
-        elif key == 'failing_torrent_timeout' and value < 0:
+        elif key == "failing_torrent_timeout" and value < 0:
             raise InvalidSettingValue(key, value)
 
-        elif key == 'volume_padding' and not 1 <= value <= 3:
+        elif key == "volume_padding" and not 1 <= value <= 3:
             raise InvalidSettingValue(key, value)
 
-        elif key == 'issue_padding' and not 1 <= value <= 4:
+        elif key == "issue_padding" and not 1 <= value <= 4:
             raise InvalidSettingValue(key, value)
 
-        elif key == 'format_preference':
-            from backend.implementations.conversion import \
-                FileConversionHandler
+        elif key == "format_preference":
+            from backend.implementations.conversion import FileConversionHandler
 
             available = FileConversionHandler.get_available_formats()
             for entry in value:
@@ -386,11 +383,8 @@ class Settings(metaclass=Singleton):
 
             converted_value = value
 
-        elif key == 'service_preference':
-            available = [
-                s.value
-                for s in GCDownloadSource._member_map_.values()
-            ]
+        elif key == "service_preference":
+            available = [s.value for s in GCDownloadSource._member_map_.values()]
             for entry in value:
                 if entry not in available:
                     raise InvalidSettingValue(key, value)
@@ -400,7 +394,7 @@ class Settings(metaclass=Singleton):
 
             converted_value = value
 
-        elif key == 'flaresolverr_base_url':
+        elif key == "flaresolverr_base_url":
             from backend.implementations.flaresolverr import FlareSolverr
 
             fs = FlareSolverr()
@@ -418,11 +412,7 @@ class Settings(metaclass=Singleton):
                 if not fs.enable_flaresolverr(converted_value):
                     raise InvalidSettingValue(key, value)
 
-            elif (
-                converted_value
-                and fs.base_url
-                and converted_value != fs.base_url
-            ):
+            elif converted_value and fs.base_url and converted_value != fs.base_url:
                 # Enable FS, it was running before but on a different instance.
                 old_value = fs.base_url
                 fs.disable_flaresolverr()
@@ -431,8 +421,8 @@ class Settings(metaclass=Singleton):
                     raise InvalidSettingValue(key, value)
 
         else:
-            from backend.implementations.naming import (NAMING_MAPPING,
-                                                        check_format)
+            from backend.implementations.naming import NAMING_MAPPING, check_format
+
             if key in NAMING_MAPPING:
                 converted_value = value.strip().strip(sep)
                 if not check_format(converted_value, key):
@@ -448,14 +438,14 @@ def update_manifest(url_base: str) -> None:
     Args:
         url_base (str): The url base to use in the file.
     """
-    filename = folder_path('frontend', 'static', 'json', 'pwa_manifest.json')
+    filename = folder_path("frontend", "static", "json", "pwa_manifest.json")
 
-    with open(filename, 'r') as f:
+    with open(filename, "r") as f:
         manifest = load(f)
-        manifest['start_url'] = url_base + '/'
-        manifest['icons'][0]['src'] = f'{url_base}/static/img/favicon.svg'
+        manifest["start_url"] = url_base + "/"
+        manifest["icons"][0]["src"] = f"{url_base}/static/img/favicon.svg"
 
-    with open(filename, 'w') as f:
+    with open(filename, "w") as f:
         dump(manifest, f, indent=4)
 
     return

@@ -8,11 +8,18 @@ from os.path import basename, dirname, splitext
 from re import IGNORECASE, compile
 from typing import Tuple, Union
 
-from backend.base.definitions import (CONTENT_EXTENSIONS, CharConstants,
-                                      FileConstants, FilenameData,
-                                      SpecialVersion)
-from backend.base.helpers import (fix_year as fix_broken_year,
-                                  normalize_number, normalize_string)
+from backend.base.definitions import (
+    CONTENT_EXTENSIONS,
+    CharConstants,
+    FileConstants,
+    FilenameData,
+    SpecialVersion,
+)
+from backend.base.helpers import (
+    fix_year as fix_broken_year,
+    normalize_number,
+    normalize_string,
+)
 from backend.base.logging import LOGGER
 
 # autopep8: off
@@ -21,38 +28,98 @@ alphabet = {
     for letter in CharConstants.ALPHABET
 }
 
-volume_regex_snippet = r'\b(?:v(?:ol|olume)?)(?:\.\s|[\.\-\s])?(\d+(?:\s?\-\s?\d+)?|(?<!v)I{1,3})'
-year_regex_snippet = r'(?:(\d{4})(?:-\d{2}){0,2}|(\d{4})[\s\.]?[\-\s](?:[\s\.]?\d{4})?|(?:\d{2}-){1,2}(\d{4})|(\d{4})[\s\.\-_]Edition|(\d{4})\-\d{4}\s{3}\d{4})'
-issue_regex_snippet = r'(?!\d+(?:p|th|rd|st|\s?(?:gb|mb|kb)))(?<!\')(?<!cv[\s\-_])(?:\d+(?:\.\d{1,2}|\.?[a-z0-9]+|[\s\-\._]?[½¼])?|[½¼])'
+volume_regex_snippet = (
+    r"\b(?:v(?:ol|olume)?)(?:\.\s|[\.\-\s])?(\d+(?:\s?\-\s?\d+)?|(?<!v)I{1,3})"
+)
+year_regex_snippet = r"(?:(\d{4})(?:-\d{2}){0,2}|(\d{4})[\s\.]?[\-\s](?:[\s\.]?\d{4})?|(?:\d{2}-){1,2}(\d{4})|(\d{4})[\s\.\-_]Edition|(\d{4})\-\d{4}\s{3}\d{4})"
+issue_regex_snippet = r"(?!\d+(?:p|th|rd|st|\s?(?:gb|mb|kb)))(?<!\')(?<!cv[\s\-_])(?:\d+(?:\.\d{1,2}|\.?[a-z0-9]+|[\s\-\._]?[½¼])?|[½¼])"
 
 # Cleaning the filename
-strip_filename_regex = compile(r'\(.*?\)|\[.*?\]|\{.*?\}', IGNORECASE)
+strip_filename_regex = compile(r"\(.*?\)|\[.*?\]|\{.*?\}", IGNORECASE)
 
 # Supporting languages by translating them
-russian_volume_regex = compile(r'Томa?[\s\.]?(\d+)', IGNORECASE)
-russian_volume_regex_2 = compile(r'(\d+)[\s\.]?Томa?', IGNORECASE)
-chinese_volume_regex = compile(r'第(\d+)(?:卷|册)', IGNORECASE)
-chinese_volume_regex_2 = compile(r'(?:卷|册)(\d+)', IGNORECASE)
-korean_volume_regex = compile(r'제?(\d+)권', IGNORECASE)
-japanese_volume_regex = compile(r'(\d+)巻', IGNORECASE)
+russian_volume_regex = compile(r"Томa?[\s\.]?(\d+)", IGNORECASE)
+russian_volume_regex_2 = compile(r"(\d+)[\s\.]?Томa?", IGNORECASE)
+chinese_volume_regex = compile(r"第(\d+)(?:卷|册)", IGNORECASE)
+chinese_volume_regex_2 = compile(r"(?:卷|册)(\d+)", IGNORECASE)
+korean_volume_regex = compile(r"제?(\d+)권", IGNORECASE)
+japanese_volume_regex = compile(r"(\d+)巻", IGNORECASE)
 
 # Extract data from (stripped)filename
-special_version_regex = compile(r'(?:(?<!\s{3})\b|\()(?:(?P<tpb>tpb|trade paper back)|(?P<one_shot>os|one[ \-_]?shot)|(?P<hard_cover>hc|hard[ \-_]?cover))(?:\b|\))', IGNORECASE)
+special_version_regex = compile(
+    r"(?:(?<!\s{3})\b|\()(?:(?P<tpb>tpb|trade paper back)|(?P<one_shot>os|one[ \-_]?shot)|(?P<hard_cover>hc|hard[ \-_]?cover))(?:\b|\))",
+    IGNORECASE,
+)
 volume_regex = compile(volume_regex_snippet, IGNORECASE)
-volume_folder_regex = compile(volume_regex_snippet + r'|^(\d+)$', IGNORECASE)
-issue_regex = compile(r'\(_(\-?' + issue_regex_snippet + r')\)', IGNORECASE)
-issue_regex_2 = compile(r'(?:(?<!\()(?:(?<![a-z])c(?!2c)|\bissues?|\bbooks?)(?!\))|no)(?:\.?[\s\-_]?|\s\-\s)(?:#\s*)?(\-?' + issue_regex_snippet + r'(?:[\s\.]?\-[\s\.]?\-?' + issue_regex_snippet + r')?)\b', IGNORECASE)
-issue_regex_3 = compile(r'(?<!part[\s\._])(' + issue_regex_snippet + r')[\s\-\._]?\(?[\s\-\._]?of[\s\-\._]?' + issue_regex_snippet + r'\)?', IGNORECASE)
-issue_regex_4 = compile(r'(?<!--)(?<!annual\s)(?<!pages\s)(?:#\s*)?(\-?' + issue_regex_snippet + r'[\s\.]?-[\s\.]?' + issue_regex_snippet + r')(?=\s|\.|_|(?=\()|$)', IGNORECASE)
-issue_regex_5 = compile(r'(?<!page\s)#\s*(\-?' + issue_regex_snippet + r')\b(?![\s\.]?\-[\s\.]?' + issue_regex_snippet + r')', IGNORECASE)
-issue_regex_6 = compile(r'(?:(?P<i_start>^)|(?<=(?<!part)(?<!page)[\s\._])(?P<n_c>n))(\-?' + issue_regex_snippet + r')(?=(?(n_c)c\d+|\s\-)(?=\s|\.|_|(?=\()|$))', IGNORECASE)
-issue_regex_7 = compile(r'(?:(?<=\s|\.|_)|(?<=^))(\-?' + issue_regex_snippet + r')(?=\s|\.|_|\(|$)', IGNORECASE)
-year_regex = compile(r'\((?:[a-z]+\.?\s)?' + year_regex_snippet + r'\)|--' + year_regex_snippet + r'--|__' + year_regex_snippet + r'__|, ' + year_regex_snippet + r'\s{3}|\b(?:(?:\d{2}-){1,2}(\d{4})|(\d{4})(?:-\d{2}){1,2})\b', IGNORECASE)
-series_regex = compile(r'(^(\d+\.)?\s+|^\d+\s{3}|\s(?=\s)|[\s,]+$)')
-annual_regex = compile(r'(?:\+|plus)[\s\._]?annuals?|annuals?[\s\._]?(?:\+|plus)|^((?!annuals?).)*$', IGNORECASE) # If regex matches, it's NOT an annual
-cover_regex = compile(r'\b(?<!no[ \-_])(?<!hard[ \-_])(?<!\d[ \-_]covers)cover\b|n\d+c(\d+)|(?:\b|\d)i?fc\b', IGNORECASE)
-page_regex = compile(r'^(\d+(?:[a-f]|_\d+)?)$|\b(?i:page|pg)[\s\.\-_]?(\d+(?:[a-f]|_\d+)?)|n?\d+[_\-p](\d+(?:[a-f]|_\d+)?)')
-page_regex_2 = compile(r'(\d+)')
+volume_folder_regex = compile(volume_regex_snippet + r"|^(\d+)$", IGNORECASE)
+issue_regex = compile(r"\(_(\-?" + issue_regex_snippet + r")\)", IGNORECASE)
+issue_regex_2 = compile(
+    r"(?:(?<!\()(?:(?<![a-z])c(?!2c)|\bissues?|\bbooks?)(?!\))|no)(?:\.?[\s\-_]?|\s\-\s)(?:#\s*)?(\-?"
+    + issue_regex_snippet
+    + r"(?:[\s\.]?\-[\s\.]?\-?"
+    + issue_regex_snippet
+    + r")?)\b",
+    IGNORECASE,
+)
+issue_regex_3 = compile(
+    r"(?<!part[\s\._])("
+    + issue_regex_snippet
+    + r")[\s\-\._]?\(?[\s\-\._]?of[\s\-\._]?"
+    + issue_regex_snippet
+    + r"\)?",
+    IGNORECASE,
+)
+issue_regex_4 = compile(
+    r"(?<!--)(?<!annual\s)(?<!pages\s)(?:#\s*)?(\-?"
+    + issue_regex_snippet
+    + r"[\s\.]?-[\s\.]?"
+    + issue_regex_snippet
+    + r")(?=\s|\.|_|(?=\()|$)",
+    IGNORECASE,
+)
+issue_regex_5 = compile(
+    r"(?<!page\s)#\s*(\-?"
+    + issue_regex_snippet
+    + r")\b(?![\s\.]?\-[\s\.]?"
+    + issue_regex_snippet
+    + r")",
+    IGNORECASE,
+)
+issue_regex_6 = compile(
+    r"(?:(?P<i_start>^)|(?<=(?<!part)(?<!page)[\s\._])(?P<n_c>n))(\-?"
+    + issue_regex_snippet
+    + r")(?=(?(n_c)c\d+|\s\-)(?=\s|\.|_|(?=\()|$))",
+    IGNORECASE,
+)
+issue_regex_7 = compile(
+    r"(?:(?<=\s|\.|_)|(?<=^))(\-?" + issue_regex_snippet + r")(?=\s|\.|_|\(|$)",
+    IGNORECASE,
+)
+year_regex = compile(
+    r"\((?:[a-z]+\.?\s)?"
+    + year_regex_snippet
+    + r"\)|--"
+    + year_regex_snippet
+    + r"--|__"
+    + year_regex_snippet
+    + r"__|, "
+    + year_regex_snippet
+    + r"\s{3}|\b(?:(?:\d{2}-){1,2}(\d{4})|(\d{4})(?:-\d{2}){1,2})\b",
+    IGNORECASE,
+)
+series_regex = compile(r"(^(\d+\.)?\s+|^\d+\s{3}|\s(?=\s)|[\s,]+$)")
+annual_regex = compile(
+    r"(?:\+|plus)[\s\._]?annuals?|annuals?[\s\._]?(?:\+|plus)|^((?!annuals?).)*$",
+    IGNORECASE,
+)  # If regex matches, it's NOT an annual
+cover_regex = compile(
+    r"\b(?<!no[ \-_])(?<!hard[ \-_])(?<!\d[ \-_]covers)cover\b|n\d+c(\d+)|(?:\b|\d)i?fc\b",
+    IGNORECASE,
+)
+page_regex = compile(
+    r"^(\d+(?:[a-f]|_\d+)?)$|\b(?i:page|pg)[\s\.\-_]?(\d+(?:[a-f]|_\d+)?)|n?\d+[_\-p](\d+(?:[a-f]|_\d+)?)"
+)
+page_regex_2 = compile(r"(\d+)")
 # autopep8: on
 
 
@@ -75,10 +142,10 @@ def _calc_float_issue_number(issue_number: str) -> Union[float, None]:
     issue_number = normalize_number(issue_number)
 
     # Negative or not
-    if issue_number.startswith('-'):
-        converted_issue_number = '-'
+    if issue_number.startswith("-"):
+        converted_issue_number = "-"
     else:
-        converted_issue_number = ''
+        converted_issue_number = ""
 
     digits = CharConstants.DIGITS
     dot = True
@@ -88,17 +155,17 @@ def _calc_float_issue_number(issue_number: str) -> Union[float, None]:
 
         else:
             if dot:
-                converted_issue_number += '.'
+                converted_issue_number += "."
                 dot = False
 
-            if c == '½':
-                converted_issue_number += '5'
+            if c == "½":
+                converted_issue_number += "5"
 
-            elif c == '¼':
-                converted_issue_number += '3'
+            elif c == "¼":
+                converted_issue_number += "3"
 
             elif c in alphabet:
-                converted_issue_number += alphabet.get(c, alphabet['z'])
+                converted_issue_number += alphabet.get(c, alphabet["z"])
 
     if converted_issue_number:
         return float(converted_issue_number)
@@ -106,9 +173,7 @@ def _calc_float_issue_number(issue_number: str) -> Union[float, None]:
     return
 
 
-def process_issue_number(
-    issue_number: str
-) -> Union[float, Tuple[float, float], None]:
+def process_issue_number(issue_number: str) -> Union[float, Tuple[float, float], None]:
     """Convert an issue number or issue range to a (tuple of) float.
 
     Args:
@@ -121,17 +186,17 @@ def process_issue_number(
         the original issue number was a range of numbers (e.g. 1a-5b)
         or `None` if it wasn't succesfull in converting.
     """
-    if '-' not in issue_number[1:]:
+    if "-" not in issue_number[1:]:
         # Normal issue number
         return _calc_float_issue_number(issue_number)
 
     # Issue range
-    start, end = issue_number[1:].replace(' ', '').split('-', 1)
+    start, end = issue_number[1:].replace(" ", "").split("-", 1)
     start = issue_number[0] + start
 
     if not (
-        start.lstrip('-')[0] in CharConstants.DIGITS
-        and end.lstrip('-')[0] in CharConstants.DIGITS
+        start.lstrip("-")[0] in CharConstants.DIGITS
+        and end.lstrip("-")[0] in CharConstants.DIGITS
     ):
         # Not both are starting with a (negative) number, so the split
         # must've been false, so cancel the idea that the input is a range.
@@ -152,7 +217,7 @@ def process_issue_number(
 
 
 def process_volume_number(
-    volume_number: Union[str, None]
+    volume_number: Union[str, None],
 ) -> Union[int, Tuple[int, int], None]:
     """Convert a volume number or volume range to a (tuple of) int.
 
@@ -169,10 +234,7 @@ def process_volume_number(
 
     # If volume number is a straight 1-10 roman numeral, then convert it.
     volume_number = str(
-        CharConstants.ROMAN_DIGITS.get(
-            volume_number.lower(),
-            volume_number
-        )
+        CharConstants.ROMAN_DIGITS.get(volume_number.lower(), volume_number)
     )
 
     result = process_issue_number(volume_number)
@@ -187,7 +249,7 @@ def extract_filename_data(
     filepath: str,
     assume_volume_number: bool = True,
     prefer_folder_year: bool = False,
-    fix_year: bool = False
+    fix_year: bool = False,
 ) -> FilenameData:
     """Extract comic data from string and present in a formatted way.
 
@@ -210,17 +272,18 @@ def extract_filename_data(
     Returns:
         FilenameData: The extracted data in a formatted way
     """
-    LOGGER.debug(f'Extracting filename data: {filepath}')
+    LOGGER.debug(f"Extracting filename data: {filepath}")
     series, year, volume_number, special_version, issue_number = (
-        None, None, None, None, None
+        None,
+        None,
+        None,
+        None,
+        None,
     )
 
     # Process folder if file is metadata file, as metadata filename contains
     # no useful information.
-    is_metadata_file = (
-        basename(filepath.lower())
-        in FileConstants.METADATA_FILES
-    )
+    is_metadata_file = basename(filepath.lower()) in FileConstants.METADATA_FILES
     if is_metadata_file:
         filepath = dirname(filepath)
         special_version = SpecialVersion.METADATA.value
@@ -231,19 +294,17 @@ def extract_filename_data(
     annual = not (annual_result and annual_folder_result)
 
     # Generalise filename
-    filepath = (normalize_string(filepath)
-        .replace('+', ' ')
-    )
-    if 'Том' in filepath:
-        filepath = russian_volume_regex.sub(r'Volume \1', filepath)
-        filepath = russian_volume_regex_2.sub(r'Volume \1', filepath)
-    if '第' in filepath or '卷' in filepath or '册' in filepath:
-        filepath = chinese_volume_regex.sub(r'Volume \1', filepath)
-        filepath = chinese_volume_regex_2.sub(r'Volume \1', filepath)
-    if '권' in filepath:
-        filepath = korean_volume_regex.sub(r'Volume \1', filepath)
-    if '巻' in filepath:
-        filepath = japanese_volume_regex.sub(r'Volume \1', filepath)
+    filepath = normalize_string(filepath).replace("+", " ")
+    if "Том" in filepath:
+        filepath = russian_volume_regex.sub(r"Volume \1", filepath)
+        filepath = russian_volume_regex_2.sub(r"Volume \1", filepath)
+    if "第" in filepath or "卷" in filepath or "册" in filepath:
+        filepath = chinese_volume_regex.sub(r"Volume \1", filepath)
+        filepath = chinese_volume_regex_2.sub(r"Volume \1", filepath)
+    if "권" in filepath:
+        filepath = korean_volume_regex.sub(r"Volume \1", filepath)
+    if "巻" in filepath:
+        filepath = japanese_volume_regex.sub(r"Volume \1", filepath)
 
     is_image_file = filepath.endswith(FileConstants.IMAGE_EXTENSIONS)
 
@@ -253,9 +314,9 @@ def extract_filename_data(
         filename = splitext(filename)[0]
 
     # Keep stripped version of filename without (), {}, [] and extensions
-    clean_filename = strip_filename_regex.sub(
-        lambda m: " " * len(m.group()), filename
-    ) + ' '
+    clean_filename = (
+        strip_filename_regex.sub(lambda m: " " * len(m.group()), filename) + " "
+    )
 
     foldername = basename(dirname(filepath))
     upper_foldername = basename(dirname(dirname(filepath)))
@@ -274,21 +335,13 @@ def extract_filename_data(
             if year is None:
                 year = next(y for y in year_result[0].groups() if y)
             if location == filename:
-                all_year_pos = [
-                    (r.start(0), r.end(0))
-                    for r in year_result
-                ]
+                all_year_pos = [(r.start(0), r.end(0)) for r in year_result]
             if location == foldername:
-                all_year_folderpos = [
-                    (r.start(0), r.end(0))
-                    for r in year_result
-                ]
+                all_year_folderpos = [(r.start(0), r.end(0)) for r in year_result]
 
     # Get volume number
     volume_result = None
-    volume_end, volume_pos, volume_folderpos, volume_folderend = (
-        0, 10_000, 10_000, 0
-    )
+    volume_end, volume_pos, volume_folderpos, volume_folderend = (0, 10_000, 10_000, 0)
     if not is_image_file:
         volume_result = volume_regex.search(clean_filename)
         if volume_result:
@@ -329,38 +382,67 @@ def extract_filename_data(
 
         elif special_result:
             special_version = [
-                k for k, v in special_result.groupdict().items()
-                if v is not None
-            ][0].replace('_', '-')
+                k for k, v in special_result.groupdict().items() if v is not None
+            ][0].replace("_", "-")
             special_pos = special_result.start(0)
 
-    if special_version in (
-        None,
-        SpecialVersion.COVER,
-        SpecialVersion.METADATA
-    ):
+    if special_version in (None, SpecialVersion.COVER, SpecialVersion.METADATA):
         # No special version so find issue number
         if not is_image_file:
             pos_options = (
-                (filename,
-                    {'pos': volume_end},
-                    (issue_regex, issue_regex_2, issue_regex_3, issue_regex_4,
-                     issue_regex_5, issue_regex_6, issue_regex_7)),
-                (filename,
-                    {'endpos': volume_pos},
-                    (issue_regex, issue_regex_2, issue_regex_3, issue_regex_4,
-                     issue_regex_5, issue_regex_6))
+                (
+                    filename,
+                    {"pos": volume_end},
+                    (
+                        issue_regex,
+                        issue_regex_2,
+                        issue_regex_3,
+                        issue_regex_4,
+                        issue_regex_5,
+                        issue_regex_6,
+                        issue_regex_7,
+                    ),
+                ),
+                (
+                    filename,
+                    {"endpos": volume_pos},
+                    (
+                        issue_regex,
+                        issue_regex_2,
+                        issue_regex_3,
+                        issue_regex_4,
+                        issue_regex_5,
+                        issue_regex_6,
+                    ),
+                ),
             )
         else:
             pos_options = (
-                (foldername,
-                    {'pos': volume_folderend},
-                    (issue_regex, issue_regex_2, issue_regex_3, issue_regex_4,
-                     issue_regex_5, issue_regex_6, issue_regex_7)),
-                (foldername,
-                    {'endpos': volume_folderpos},
-                    (issue_regex, issue_regex_2, issue_regex_3, issue_regex_4,
-                     issue_regex_5, issue_regex_6))
+                (
+                    foldername,
+                    {"pos": volume_folderend},
+                    (
+                        issue_regex,
+                        issue_regex_2,
+                        issue_regex_3,
+                        issue_regex_4,
+                        issue_regex_5,
+                        issue_regex_6,
+                        issue_regex_7,
+                    ),
+                ),
+                (
+                    foldername,
+                    {"endpos": volume_folderpos},
+                    (
+                        issue_regex,
+                        issue_regex_2,
+                        issue_regex_3,
+                        issue_regex_4,
+                        issue_regex_5,
+                        issue_regex_6,
+                    ),
+                ),
             )
 
         for file_part_with_issue, pos_option, regex_list in pos_options:
@@ -383,8 +465,7 @@ def extract_filename_data(
                                     or special_pos < result.end(0) <= special_end
                                 )
                             )
-                            or
-                            file_part_with_issue == foldername
+                            or file_part_with_issue == foldername
                             and not any(
                                 start_pos <= result.start(0) < end_pos
                                 or start_pos < result.end(0) <= end_pos
@@ -408,16 +489,11 @@ def extract_filename_data(
         special_version = SpecialVersion.TPB.value
 
     # Get series
-    series_pos = min(
-        all_year_pos[0][0],
-        volume_pos,
-        special_pos,
-        issue_pos
-    )
+    series_pos = min(all_year_pos[0][0], volume_pos, special_pos, issue_pos)
     if series_pos and not is_image_file:
         # Series name is assumed to be in the filename,
         # left of all other information
-        series = clean_filename[:series_pos - 1]
+        series = clean_filename[: series_pos - 1]
     else:
         series_folder_pos = min(
             all_year_folderpos[0][0], volume_folderpos, issue_folderpos
@@ -425,11 +501,11 @@ def extract_filename_data(
         if series_folder_pos:
             # Series name is assumed to be in the foldername,
             # left of all other information
-            series = foldername[:series_folder_pos - 1]
+            series = foldername[: series_folder_pos - 1]
         else:
             # Series name is assumed to be the upper foldername
-            series = strip_filename_regex.sub('', upper_foldername)
-    series = series_regex.sub('', series.replace('-', ' ').replace('_', ' '))
+            series = strip_filename_regex.sub("", upper_foldername)
+    series = series_regex.sub("", series.replace("-", " ").replace("_", " "))
 
     # Format output
     if issue_number is not None:
@@ -441,15 +517,17 @@ def extract_filename_data(
     if fix_year and year is not None:
         year = fix_broken_year(year)
 
-    file_data = FilenameData({
-        'series': series,
-        'year': year,
-        'volume_number': volume_number,
-        'special_version': special_version,
-        'issue_number': calculated_issue_number,
-        'annual': annual
-    })
+    file_data = FilenameData(
+        {
+            "series": series,
+            "year": year,
+            "volume_number": volume_number,
+            "special_version": special_version,
+            "issue_number": calculated_issue_number,
+            "annual": annual,
+        }
+    )
 
-    LOGGER.debug(f'Extracting filename data: {file_data}')
+    LOGGER.debug(f"Extracting filename data: {file_data}")
 
     return file_data

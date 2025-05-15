@@ -10,8 +10,18 @@ from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass
 from enum import Enum
 from threading import Event, Thread
-from typing import (TYPE_CHECKING, Any, Dict, List, Mapping,
-                    Sequence, Tuple, TypedDict, TypeVar, Union)
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Mapping,
+    Sequence,
+    Tuple,
+    TypedDict,
+    TypeVar,
+    Union,
+)
 
 if TYPE_CHECKING:
     from backend.base.helpers import AsyncSession
@@ -26,22 +36,22 @@ class Constants:
     SUB_PROCESS_TIMEOUT = 20.0
 
     HOSTING_THREADS = 10
-    HOSTING_TIMER_DURATION = 60.0 # seconds
+    HOSTING_TIMER_DURATION = 60.0  # seconds
 
     DB_FOLDER = ("db",)
     DB_NAME = "Kapowarr.db"
-    DB_TIMEOUT = 10.0 # seconds
+    DB_TIMEOUT = 10.0  # seconds
     DB_MAX_CONCURRENT_CONNECTIONS = 32
 
     LOGGER_NAME = "Kapowarr"
     LOGGER_FILENAME = "Kapowarr.log"
 
-    ARCHIVE_EXTRACT_FOLDER = '.archive_extract'
+    ARCHIVE_EXTRACT_FOLDER = ".archive_extract"
     ZIP_MIN_MOD_TIME = 315619200
     RAR_EXECUTABLES = {
-        'linux': 'rar_linux_64',
-        'darwin': 'rar_bsd_64',
-        'win32': 'rar_windows_64.exe'
+        "linux": "rar_linux_64",
+        "darwin": "rar_bsd_64",
+        "win32": "rar_windows_64.exe",
     }
 
     DEFAULT_USERAGENT = "Kapowarr"
@@ -52,7 +62,7 @@ class Constants:
 
     CV_SITE_URL = "https://comicvine.gamespot.com"
     CV_API_URL = "https://comicvine.gamespot.com/api"
-    CV_BRAKE_TIME = 10.0 # seconds
+    CV_BRAKE_TIME = 10.0  # seconds
 
     GC_SITE_URL = "https://getcomics.org"
     GC_SOURCE_TERM = "GetComics"
@@ -65,80 +75,109 @@ class Constants:
     FS_API_BASE = "/v1"
     CF_CHALLENGE_HEADER = ("cf-mitigated", "challenge")
 
-    TORRENT_UPDATE_INTERVAL = 5 # seconds
+    TORRENT_UPDATE_INTERVAL = 5  # seconds
     TORRENT_TAG = "kapowarr"
 
 
 class FileConstants:
-    IMAGE_EXTENSIONS = ('.png', '.jpeg', '.jpg', '.webp', '.gif',
-                        '.PNG', '.JPEG', '.JPG', '.WEBP', '.GIF')
+    IMAGE_EXTENSIONS = (
+        ".png",
+        ".jpeg",
+        ".jpg",
+        ".webp",
+        ".gif",
+        ".PNG",
+        ".JPEG",
+        ".JPG",
+        ".WEBP",
+        ".GIF",
+    )
     "Image extensions, with dot-prefix, and with both lowercase and uppercase"
 
     CONTAINER_EXTENSIONS = (
-        '.cbz', '.zip', '.rar', '.cbr', '.tar.gz',
-        '.7zip', '.7z', '.cb7', '.cbt', '.epub', '.pdf'
+        ".cbz",
+        ".zip",
+        ".rar",
+        ".cbr",
+        ".tar.gz",
+        ".7zip",
+        ".7z",
+        ".cb7",
+        ".cbt",
+        ".epub",
+        ".pdf",
     )
     "Archive/container extensions, with dot-prefix, and only lowercase"
 
-    EXTRACTABLE_EXTENSIONS = (
-        '.zip', '.rar',
-        '.ZIP', '.RAR'
-    )
+    EXTRACTABLE_EXTENSIONS = (".zip", ".rar", ".ZIP", ".RAR")
     """
     Archive extensions that will be considered to be extracted,
     and with both lowercase and uppercase
     """
 
-    METADATA_EXTENSIONS = (
-        ".xml", ".json",
-        ".XML", ".JSON"
-    )
+    METADATA_EXTENSIONS = (".xml", ".json", ".XML", ".JSON")
     "Extensions of metadata files, and with both lowercase and uppercase"
 
-    METADATA_FILES = {
-        "cvinfo.xml", "comicinfo.xml",
-        "series.json", "metadata.json"
-    }
+    METADATA_FILES = {"cvinfo.xml", "comicinfo.xml", "series.json", "metadata.json"}
     "Filenames of metadata files, and only lowercase"
 
 
 CONTENT_EXTENSIONS = (
     *FileConstants.IMAGE_EXTENSIONS,
-    *FileConstants.CONTAINER_EXTENSIONS
+    *FileConstants.CONTAINER_EXTENSIONS,
 )
 "Extensions of media files"
 
 
-SCANNABLE_EXTENSIONS = (
-    *CONTENT_EXTENSIONS,
-    *FileConstants.METADATA_EXTENSIONS
-)
+SCANNABLE_EXTENSIONS = (*CONTENT_EXTENSIONS, *FileConstants.METADATA_EXTENSIONS)
 "Extensions of files that we want to scan for"
 
 
 class CharConstants:
     ALPHABET = (
-        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-        'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n",
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
     )
     "A tuple of all lowercase letters in the alphabet"
 
-    DIGITS = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
-    }
+    DIGITS = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
     "A set of the numbers 0-9 in string form"
 
     ROMAN_DIGITS = {
-        'i': 1,
-        'ii': 2,
-        'iii': 3,
-        'iv': 4,
-        'v': 5,
-        'vi': 6,
-        'vii': 7,
-        'viii': 8,
-        'ix': 9,
-        'x': 10
+        "i": 1,
+        "ii": 2,
+        "iii": 3,
+        "iv": 4,
+        "v": 5,
+        "vi": 6,
+        "vii": 7,
+        "viii": 8,
+        "ix": 9,
+        "x": 10,
     }
     "A map of lowercase roman numerals 1-10 to their int equivalent"
 
@@ -158,10 +197,10 @@ class RestartVersion(BaseEnum):
 
 
 class SeedingHandling(BaseEnum):
-    COMPLETE = 'complete'
+    COMPLETE = "complete"
     "Let torrent complete (finish seeding) and then move all files"
 
-    COPY = 'copy'
+    COPY = "copy"
     "Copy the files while the torrent is seeding, then delete original files"
 
 
@@ -173,124 +212,149 @@ class BlocklistReasonID(BaseEnum):
 
 
 class BlocklistReason(BaseEnum):
-    LINK_BROKEN = 'Link broken'
+    LINK_BROKEN = "Link broken"
 
-    SOURCE_NOT_SUPPORTED = 'Source not supported'
+    SOURCE_NOT_SUPPORTED = "Source not supported"
 
-    NO_WORKING_LINKS = 'No supported or working links'
+    NO_WORKING_LINKS = "No supported or working links"
 
-    ADDED_BY_USER = 'Added by user'
+    ADDED_BY_USER = "Added by user"
 
 
 class SpecialVersion(BaseEnum):
-    TPB = 'tpb'
+    TPB = "tpb"
 
-    ONE_SHOT = 'one-shot'
+    ONE_SHOT = "one-shot"
 
-    HARD_COVER = 'hard-cover'
+    HARD_COVER = "hard-cover"
 
-    VOLUME_AS_ISSUE = 'volume-as-issue'
+    VOLUME_AS_ISSUE = "volume-as-issue"
     "Volume where each issue is named `Volume N`"
 
-    COVER = 'cover'
+    COVER = "cover"
     "Image file is cover of either issue or volume. Overrules over SV's."
 
-    METADATA = 'metadata'
+    METADATA = "metadata"
     "Metadata file"
 
     NORMAL = None
     "Normal volume, so not a special version"
 
 
-short_sv_mapping: Dict[SpecialVersion, str] = dict((
-    (SpecialVersion.HARD_COVER, 'HC'),
-    (SpecialVersion.ONE_SHOT, 'OS'),
-    (SpecialVersion.TPB, 'TPB'),
-    (SpecialVersion.COVER, 'Cover')
-))
-full_sv_mapping: Dict[SpecialVersion, str] = dict((
-    (SpecialVersion.HARD_COVER, 'Hard-Cover'),
-    (SpecialVersion.ONE_SHOT, 'One-Shot'),
-    (SpecialVersion.TPB, 'TPB'),
-    (SpecialVersion.COVER, 'Cover')
-))
+short_sv_mapping: Dict[SpecialVersion, str] = dict(
+    (
+        (SpecialVersion.HARD_COVER, "HC"),
+        (SpecialVersion.ONE_SHOT, "OS"),
+        (SpecialVersion.TPB, "TPB"),
+        (SpecialVersion.COVER, "Cover"),
+    )
+)
+full_sv_mapping: Dict[SpecialVersion, str] = dict(
+    (
+        (SpecialVersion.HARD_COVER, "Hard-Cover"),
+        (SpecialVersion.ONE_SHOT, "One-Shot"),
+        (SpecialVersion.TPB, "TPB"),
+        (SpecialVersion.COVER, "Cover"),
+    )
+)
 
 
 class LibrarySorting(BaseEnum):
-    TITLE = 'title, year, volume_number'
-    YEAR = 'year, title, volume_number'
-    VOLUME_NUMBER = 'volume_number, title, year'
-    RECENTLY_ADDED = 'id DESC, title, year, volume_number'
-    PUBLISHER = 'publisher, title, year, volume_number'
-    WANTED = ('issues_downloaded_monitored >= issue_count_monitored, '
-              'title, year, volume_number')
+    TITLE = "title, year, volume_number"
+    YEAR = "year, title, volume_number"
+    VOLUME_NUMBER = "volume_number, title, year"
+    RECENTLY_ADDED = "id DESC, title, year, volume_number"
+    PUBLISHER = "publisher, title, year, volume_number"
+    WANTED = (
+        "issues_downloaded_monitored >= issue_count_monitored, "
+        "title, year, volume_number"
+    )
 
 
 class LibraryFilters(BaseEnum):
-    WANTED = 'WHERE issues_downloaded_monitored < issue_count_monitored'
-    MONITORED = 'WHERE monitored = 1'
+    WANTED = "WHERE issues_downloaded_monitored < issue_count_monitored"
+    MONITORED = "WHERE monitored = 1"
 
 
 class DownloadState(BaseEnum):
-    QUEUED_STATE = 'queued'
-    PAUSED_STATE = 'paused'
-    DOWNLOADING_STATE = 'downloading'
-    SEEDING_STATE = 'seeding'
-    IMPORTING_STATE = 'importing'
+    QUEUED_STATE = "queued"
+    PAUSED_STATE = "paused"
+    DOWNLOADING_STATE = "downloading"
+    SEEDING_STATE = "seeding"
+    IMPORTING_STATE = "importing"
 
-    FAILED_STATE = 'failed'
+    FAILED_STATE = "failed"
     "Download was unsuccessful"
-    CANCELED_STATE = 'canceled'
+    CANCELED_STATE = "canceled"
     "Download was removed from queue"
-    SHUTDOWN_STATE = 'shutting down'
+    SHUTDOWN_STATE = "shutting down"
     "Download was stopped because Kapowarr is shutting down"
 
 
 class SocketEvent(BaseEnum):
-    TASK_ADDED = 'task_added'
-    TASK_STATUS = 'task_status'
-    TASK_ENDED = 'task_ended'
+    TASK_ADDED = "task_added"
+    TASK_STATUS = "task_status"
+    TASK_ENDED = "task_ended"
 
-    QUEUE_ADDED = 'queue_added'
-    QUEUE_STATUS = 'queue_status'
-    QUEUE_ENDED = 'queue_ended'
+    QUEUE_ADDED = "queue_added"
+    QUEUE_STATUS = "queue_status"
+    QUEUE_ENDED = "queue_ended"
 
 
 class FailReason(BaseEnum):
-    BROKEN = 'GetComics page unavailable'
-    NO_WORKING_LINKS = 'No working download links on page'
-    LIMIT_REACHED = 'Download limit reached for service'
-    NO_MATCHES = 'No links found that match to volume and are not blocklisted'
+    BROKEN = "GetComics page unavailable"
+    NO_WORKING_LINKS = "No working download links on page"
+    LIMIT_REACHED = "Download limit reached for service"
+    NO_MATCHES = "No links found that match to volume and are not blocklisted"
 
 
 class GeneralFileType(BaseEnum):
-    METADATA = 'metadata'
-    COVER = 'cover'
+    METADATA = "metadata"
+    COVER = "cover"
 
 
 class GCDownloadSource(BaseEnum):
-    MEGA = 'Mega'
-    MEDIAFIRE = 'MediaFire'
-    WETRANSFER = 'WeTransfer'
-    PIXELDRAIN = 'Pixeldrain'
-    GETCOMICS = 'GetComics'
-    GETCOMICS_TORRENT = 'GetComics (torrent)'
+    MEGA = "Mega"
+    MEDIAFIRE = "MediaFire"
+    WETRANSFER = "WeTransfer"
+    PIXELDRAIN = "Pixeldrain"
+    GETCOMICS = "GetComics"
+    GETCOMICS_TORRENT = "GetComics (torrent)"
 
 
-download_source_versions: Dict[GCDownloadSource, Tuple[str, ...]] = dict((
-    (GCDownloadSource.MEGA, ('mega', 'mega link')),
-    (GCDownloadSource.MEDIAFIRE, ('mediafire', 'mediafire link')),
-    (GCDownloadSource.WETRANSFER,
-        ('wetransfer', 'we transfer', 'wetransfer link', 'we transfer link')),
-    (GCDownloadSource.PIXELDRAIN,
-        ('pixeldrain', 'pixel drain', 'pixeldrain link', 'pixel drain link')),
-    (GCDownloadSource.GETCOMICS,
-        ('getcomics', 'download now', 'main download', 'main server', 'main link',
-       'mirror download', 'mirror server', 'mirror link', 'link 1', 'link 2')),
-    (GCDownloadSource.GETCOMICS_TORRENT,
-        ('getcomics (torrent)', 'torrent', 'torrent link', 'magnet',
-        'magnet link')),
-))
+download_source_versions: Dict[GCDownloadSource, Tuple[str, ...]] = dict(
+    (
+        (GCDownloadSource.MEGA, ("mega", "mega link")),
+        (GCDownloadSource.MEDIAFIRE, ("mediafire", "mediafire link")),
+        (
+            GCDownloadSource.WETRANSFER,
+            ("wetransfer", "we transfer", "wetransfer link", "we transfer link"),
+        ),
+        (
+            GCDownloadSource.PIXELDRAIN,
+            ("pixeldrain", "pixel drain", "pixeldrain link", "pixel drain link"),
+        ),
+        (
+            GCDownloadSource.GETCOMICS,
+            (
+                "getcomics",
+                "download now",
+                "main download",
+                "main server",
+                "main link",
+                "mirror download",
+                "mirror server",
+                "mirror link",
+                "link 1",
+                "link 2",
+            ),
+        ),
+        (
+            GCDownloadSource.GETCOMICS_TORRENT,
+            ("getcomics (torrent)", "torrent", "torrent link", "magnet", "magnet link"),
+        ),
+    )
+)
 """
 GCDownloadSource to strings that can be found in the button text for the
 service on the GC page.
@@ -303,13 +367,13 @@ service on the GC page.
 # of the torrent and usenet sources coming, we're already making the
 # distinction here.
 class DownloadSource(BaseEnum):
-    MEGA = 'Mega'
-    MEDIAFIRE = 'MediaFire'
-    WETRANSFER = 'WeTransfer'
-    PIXELDRAIN = 'Pixeldrain'
-    GETCOMICS = 'GetComics'
-    GETCOMICS_TORRENT = 'GetComics (torrent)'
-    LIBGENPLUS = 'Libgen+'
+    MEGA = "Mega"
+    MEDIAFIRE = "MediaFire"
+    WETRANSFER = "WeTransfer"
+    PIXELDRAIN = "Pixeldrain"
+    GETCOMICS = "GetComics"
+    GETCOMICS_TORRENT = "GetComics (torrent)"
+    LIBGENPLUS = "Libgen+"
 
 
 class MonitorScheme(BaseEnum):
@@ -330,28 +394,25 @@ class DownloadType(BaseEnum):
 
 query_formats: Dict[str, Tuple[str, ...]] = {
     "TPB": (
-        '{title} Vol. {volume_number} ({year}) TPB',
-        '{title} ({year}) TPB',
-        '{title} Vol. {volume_number} TPB',
-        '{title} Vol. {volume_number}',
-        '{title}'
+        "{title} Vol. {volume_number} ({year}) TPB",
+        "{title} ({year}) TPB",
+        "{title} Vol. {volume_number} TPB",
+        "{title} Vol. {volume_number}",
+        "{title}",
     ),
-    "VAI": (
-        '{title} ({year})',
-        '{title}'
-    ),
+    "VAI": ("{title} ({year})", "{title}"),
     "Volume": (
-        '{title} Vol. {volume_number} ({year})',
-        '{title} ({year})',
-        '{title} Vol. {volume_number}',
-        '{title}'
+        "{title} Vol. {volume_number} ({year})",
+        "{title} ({year})",
+        "{title} Vol. {volume_number}",
+        "{title}",
     ),
     "Issue": (
-        '{title} #{issue_number} ({year})',
-        '{title} Vol. {volume_number} #{issue_number}',
-        '{title} #{issue_number}',
-        '{title}'
-    )
+        "{title} #{issue_number} ({year})",
+        "{title} Vol. {volume_number} #{issue_number}",
+        "{title} #{issue_number}",
+        "{title}",
+    ),
 }
 """
 Volume Special Version to query formats used when searching
@@ -385,11 +446,7 @@ class SearchResultMatchData(TypedDict):
     match_issue: Union[str, None]
 
 
-class MatchedSearchResultData(
-    SearchResultMatchData,
-    SearchResultData,
-    total=False
-):
+class MatchedSearchResultData(SearchResultMatchData, SearchResultData, total=False):
     _issue_number: Union[float, Tuple[float, float]]
 
 
@@ -577,7 +634,7 @@ class CredentialData:
 
     def as_dict(self) -> Dict[str, Any]:
         result = asdict(self)
-        result['source'] = self.source.value
+        result["source"] = self.source.value
         return result
 
 
@@ -586,8 +643,7 @@ class DBMigrator(ABC):
     start_version: int
 
     @abstractmethod
-    def run(self) -> None:
-        ...
+    def run(self) -> None: ...
 
 
 class MassEditorAction(ABC):
@@ -663,33 +719,27 @@ class ExternalDownloadClient(ABC):
 
     @property
     @abstractmethod
-    def id(self) -> int:
-        ...
+    def id(self) -> int: ...
 
     @property
     @abstractmethod
-    def title(self) -> str:
-        ...
+    def title(self) -> str: ...
 
     @property
     @abstractmethod
-    def base_url(self) -> str:
-        ...
+    def base_url(self) -> str: ...
 
     @property
     @abstractmethod
-    def username(self) -> Union[str, None]:
-        ...
+    def username(self) -> Union[str, None]: ...
 
     @property
     @abstractmethod
-    def password(self) -> Union[str, None]:
-        ...
+    def password(self) -> Union[str, None]: ...
 
     @property
     @abstractmethod
-    def api_token(self) -> Union[str, None]:
-        ...
+    def api_token(self) -> Union[str, None]: ...
 
     @abstractmethod
     def __init__(self, client_id: int) -> None:
@@ -738,10 +788,7 @@ class ExternalDownloadClient(ABC):
 
     @abstractmethod
     def add_download(
-        self,
-        download_link: str,
-        target_folder: str,
-        download_name: Union[str, None]
+        self, download_link: str, target_folder: str, download_name: Union[str, None]
     ) -> str:
         """Add a download to the client.
 
@@ -795,7 +842,7 @@ class ExternalDownloadClient(ABC):
         base_url: str,
         username: Union[str, None],
         password: Union[str, None],
-        api_token: Union[str, None]
+        api_token: Union[str, None],
     ) -> Union[str, None]:
         """Check if a download client is working.
 
@@ -812,7 +859,7 @@ class ExternalDownloadClient(ABC):
         ...
 
     def __repr__(self) -> str:
-        return f'<{self.__class__.__name__}; ID {self.id}; {id(self)}>'
+        return f"<{self.__class__.__name__}; ID {self.id}; {id(self)}>"
 
 
 class Download(ABC):
@@ -820,28 +867,23 @@ class Download(ABC):
 
     @property
     @abstractmethod
-    def id(self) -> int:
-        ...
+    def id(self) -> int: ...
 
     @id.setter
     @abstractmethod
-    def id(self, value: int) -> None:
-        ...
+    def id(self, value: int) -> None: ...
 
     @property
     @abstractmethod
-    def volume_id(self) -> int:
-        ...
+    def volume_id(self) -> int: ...
 
     @property
     @abstractmethod
-    def issue_id(self) -> Union[int, None]:
-        ...
+    def issue_id(self) -> Union[int, None]: ...
 
     @property
     @abstractmethod
-    def covered_issues(self) -> Union[float, Tuple[float, float], None]:
-        ...
+    def covered_issues(self) -> Union[float, Tuple[float, float], None]: ...
 
     @property
     @abstractmethod
@@ -879,8 +921,7 @@ class Download(ABC):
 
     @property
     @abstractmethod
-    def source_type(self) -> DownloadSource:
-        ...
+    def source_type(self) -> DownloadSource: ...
 
     @property
     @abstractmethod
@@ -899,8 +940,7 @@ class Download(ABC):
 
     @files.setter
     @abstractmethod
-    def files(self, value: List[str]) -> None:
-        ...
+    def files(self, value: List[str]) -> None: ...
 
     @property
     @abstractmethod
@@ -919,85 +959,68 @@ class Download(ABC):
 
     @property
     @abstractmethod
-    def size(self) -> int:
-        ...
+    def size(self) -> int: ...
 
     @property
     @abstractmethod
-    def state(self) -> DownloadState:
-        ...
+    def state(self) -> DownloadState: ...
 
     @state.setter
     @abstractmethod
-    def state(self, value: DownloadState) -> None:
-        ...
+    def state(self, value: DownloadState) -> None: ...
 
     @property
     @abstractmethod
-    def progress(self) -> float:
-        ...
+    def progress(self) -> float: ...
 
     @property
     @abstractmethod
-    def speed(self) -> float:
-        ...
+    def speed(self) -> float: ...
 
     @property
     @abstractmethod
-    def download_thread(self) -> Union[Thread, None]:
-        ...
+    def download_thread(self) -> Union[Thread, None]: ...
 
     @download_thread.setter
     @abstractmethod
-    def download_thread(self, value: Thread) -> None:
-        ...
+    def download_thread(self, value: Thread) -> None: ...
 
     @property
     @abstractmethod
-    def download_folder(self) -> str:
-        ...
+    def download_folder(self) -> str: ...
 
     @property
     @abstractmethod
-    def releaser(self) -> Union[str, None]:
-        ...
+    def releaser(self) -> Union[str, None]: ...
 
     @property
     @abstractmethod
-    def scan_type(self) -> Union[str, None]:
-        ...
+    def scan_type(self) -> Union[str, None]: ...
 
     @property
     @abstractmethod
-    def resolution(self) -> Union[str, None]:
-        ...
+    def resolution(self) -> Union[str, None]: ...
 
     @property
     @abstractmethod
-    def dpi(self) -> Union[str, None]:
-        ...
+    def dpi(self) -> Union[str, None]: ...
 
     @abstractmethod
     def __init__(
         self,
         download_link: str,
-
         volume_id: int,
         covered_issues: Union[float, Tuple[float, float], None],
-
         source_type: DownloadSource,
         source_name: str,
-
         web_link: Union[str, None],
         web_title: Union[str, None],
         web_sub_title: Union[str, None],
-
         releaser: Union[str, None] = None,
         scan_type: Union[str, None] = None,
         resolution: Union[str, None] = None,
         dpi: Union[str, None] = None,
-
-        forced_match: bool = False
+        forced_match: bool = False,
     ) -> None:
         """Create the download instance.
 
@@ -1047,10 +1070,7 @@ class Download(ABC):
         ...
 
     @abstractmethod
-    def stop(
-        self,
-        state: DownloadState = DownloadState.CANCELED_STATE
-    ) -> None:
+    def stop(self, state: DownloadState = DownloadState.CANCELED_STATE) -> None:
         """Interrupt the download.
 
         Args:
@@ -1072,13 +1092,11 @@ class Download(ABC):
 class ExternalDownload(Download):
     @property
     @abstractmethod
-    def external_client(self) -> ExternalDownloadClient:
-        ...
+    def external_client(self) -> ExternalDownloadClient: ...
 
     @external_client.setter
     @abstractmethod
-    def external_client(self, value: ExternalDownloadClient) -> None:
-        ...
+    def external_client(self, value: ExternalDownloadClient) -> None: ...
 
     @property
     @abstractmethod
@@ -1096,19 +1114,15 @@ class ExternalDownload(Download):
     def __init__(
         self,
         download_link: str,
-
         volume_id: int,
         covered_issues: Union[float, Tuple[float, float], None],
-
         source_type: DownloadSource,
         source_name: str,
-
         web_link: Union[str, None],
         web_title: Union[str, None],
         web_sub_title: Union[str, None],
-
         forced_match: bool = False,
-        external_client: Union[ExternalDownloadClient, None] = None
+        external_client: Union[ExternalDownloadClient, None] = None,
     ) -> None:
         """Create the download instance.
 

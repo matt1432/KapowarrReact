@@ -7,24 +7,29 @@ Setting up the database and handling connections
 from __future__ import annotations
 
 from os.path import dirname, exists, isdir, join
-from sqlite3 import (PARSE_DECLTYPES, Connection, Cursor, ProgrammingError,
-                     Row, register_adapter, register_converter)
+from sqlite3 import (
+    PARSE_DECLTYPES,
+    Connection,
+    Cursor,
+    ProgrammingError,
+    Row,
+    register_adapter,
+    register_converter,
+)
 from threading import current_thread
 from time import time
 from typing import Any, Dict, Generator, Iterable, List, Union
 
 from flask import g
 
-from backend.base.definitions import (Constants, SeedingHandling,
-                                      SpecialVersion, T)
+from backend.base.definitions import Constants, SeedingHandling, SpecialVersion, T
 from backend.base.helpers import CommaList
 from backend.base.logging import LOGGER, set_log_level
 from backend.internals.db_migration import migrate_db
 
 
 class KapowarrCursor(Cursor):
-
-    row_factory: Union[Type[Row], None] # type: ignore
+    row_factory: Union[type[Row], None]  # type: ignore
 
     @property
     def lastrowid(self) -> int:
@@ -80,17 +85,14 @@ class DBConnectionManager(type):
     def __call__(cls, *args: Any, **kwargs: Any) -> DBConnection:
         thread_id = current_thread().native_id or -1
 
-        if (
-            not thread_id in cls.instances
-            or cls.instances[thread_id].closed
-        ):
+        if thread_id not in cls.instances or cls.instances[thread_id].closed:
             cls.instances[thread_id] = super().__call__(*args, **kwargs)
 
         return cls.instances[thread_id]
 
 
 class DBConnection(Connection, metaclass=DBConnectionManager):
-    file = ''
+    file = ""
 
     def __init__(self, timeout: float) -> None:
         """Create a connection with a database
@@ -98,19 +100,14 @@ class DBConnection(Connection, metaclass=DBConnectionManager):
         Args:
             timeout (float): How long to wait before giving up on a command
         """
-        LOGGER.debug(f'Creating connection {self}')
-        super().__init__(
-            self.file,
-            timeout=timeout,
-            detect_types=PARSE_DECLTYPES
-        )
+        LOGGER.debug(f"Creating connection {self}")
+        super().__init__(self.file, timeout=timeout, detect_types=PARSE_DECLTYPES)
         super().cursor().execute("PRAGMA foreign_keys = ON;")
         self.closed = False
         return
 
-    def cursor( # type: ignore
-        self,
-        force_new: bool = False
+    def cursor(  # type: ignore
+        self, force_new: bool = False
     ) -> KapowarrCursor:
         """Get a database cursor from the connection.
 
@@ -122,7 +119,7 @@ class DBConnection(Connection, metaclass=DBConnectionManager):
         Returns:
             KapowarrCursor: The database cursor.
         """
-        if not hasattr(g, 'cursors'):
+        if not hasattr(g, "cursors"):
             g.cursors = []
 
         if not g.cursors:
@@ -140,18 +137,16 @@ class DBConnection(Connection, metaclass=DBConnectionManager):
 
     def close(self) -> None:
         """Close the database connection"""
-        LOGGER.debug(f'Closing connection {self}')
+        LOGGER.debug(f"Closing connection {self}")
         self.closed = True
         super().close()
         return
 
     def __repr__(self) -> str:
-        return f'<{self.__class__.__name__}; {current_thread().name}; {id(self)}>'
+        return f"<{self.__class__.__name__}; {current_thread().name}; {id(self)}>"
 
 
-def set_db_location(
-    db_folder: Union[str, None]
-) -> None:
+def set_db_location(db_folder: Union[str, None]) -> None:
     """Setup database location. Create folder for database and set location for
     `db.DBConnection` and `db.TempDBConnection`.
 
@@ -168,18 +163,17 @@ def set_db_location(
 
     if db_folder:
         if exists(db_folder) and not isdir(db_folder):
-            raise ValueError('Database location is not a folder')
+            raise ValueError("Database location is not a folder")
 
     db_file_location = join(
-        db_folder or folder_path(*Constants.DB_FOLDER),
-        Constants.DB_NAME
+        db_folder or folder_path(*Constants.DB_FOLDER), Constants.DB_NAME
     )
 
-    LOGGER.debug(f'Setting database location: {db_file_location}')
+    LOGGER.debug(f"Setting database location: {db_file_location}")
 
     create_folder(dirname(db_file_location))
 
-    DBConnection.file = about_data['database_location'] = db_file_location
+    DBConnection.file = about_data["database_location"] = db_file_location
 
     return
 
@@ -196,10 +190,7 @@ def get_db(force_new: bool = False) -> KapowarrCursor:
     Returns:
         KapowarrCursor: Database cursor instance that outputs Row objects.
     """
-    cursor = (
-        DBConnection(timeout=Constants.DB_TIMEOUT)
-        .cursor(force_new=force_new)
-    )
+    cursor = DBConnection(timeout=Constants.DB_TIMEOUT).cursor(force_new=force_new)
     return cursor
 
 
@@ -238,9 +229,9 @@ def close_db(e: Union[None, BaseException] = None):
         db: DBConnection = cursors[0].connection
         for c in cursors:
             c.close()
-        delattr(g, 'cursors')
+        delattr(g, "cursors")
         db.commit()
-        if not current_thread().name.startswith('waitress-'):
+        if not current_thread().name.startswith("waitress-"):
             db.close()
 
     except (AttributeError, ProgrammingError):
@@ -251,7 +242,7 @@ def close_db(e: Union[None, BaseException] = None):
 
 def close_all_db() -> None:
     "Close all non-temporary database connections that are still open"
-    LOGGER.debug('Closing any open database connections')
+    LOGGER.debug("Closing any open database connections")
 
     for i in DBConnectionManager.instances.values():
         if not i.closed:
@@ -272,7 +263,7 @@ def setup_db() -> None:
     cursor = get_db()
     cursor.execute("PRAGMA journal_mode = wal;")
     register_adapter(bool, lambda b: int(b))
-    register_converter("BOOL", lambda b: b == b'1')
+    register_converter("BOOL", lambda b: b == b"1")
     register_adapter(CommaList, lambda c: str(c))
     register_adapter(SeedingHandling, lambda e: e.value)
     register_adapter(SpecialVersion, lambda e: e.value)
@@ -458,7 +449,7 @@ def setup_db() -> None:
         settings.generate_api_key()
 
     # Add task intervals
-    LOGGER.debug(f'Inserting task intervals: {task_intervals}')
+    LOGGER.debug(f"Inserting task intervals: {task_intervals}")
     current_time = round(time())
     cursor.executemany(
         """
@@ -469,7 +460,7 @@ def setup_db() -> None:
         SET
             interval = ?;
         """,
-        ((k, v, current_time, v) for k, v in task_intervals.items())
+        ((k, v, current_time, v) for k, v in task_intervals.items()),
     )
 
     return

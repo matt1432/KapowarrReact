@@ -4,9 +4,13 @@ from time import time
 from typing import List, Union
 
 from backend.base.custom_exceptions import BlocklistEntryNotFound
-from backend.base.definitions import (BlocklistEntry, BlocklistReason,
-                                      BlocklistReasonID, DownloadSource,
-                                      GCDownloadSource)
+from backend.base.definitions import (
+    BlocklistEntry,
+    BlocklistReason,
+    BlocklistReasonID,
+    DownloadSource,
+    GCDownloadSource,
+)
 from backend.base.logging import LOGGER
 from backend.internals.db import get_db
 
@@ -24,7 +28,10 @@ def get_blocklist(offset: int = 0) -> List[BlocklistEntry]:
     Returns:
         List[BlocklistEntry]: A list of the current entries in the blocklist.
     """
-    entries = get_db().execute("""
+    entries = (
+        get_db()
+        .execute(
+            """
         SELECT
             id, volume_id, issue_id,
             web_link, web_title, web_sub_title,
@@ -35,16 +42,18 @@ def get_blocklist(offset: int = 0) -> List[BlocklistEntry]:
         LIMIT 50
         OFFSET ?;
         """,
-        (offset * 50,)
-    ).fetchalldict()
+            (offset * 50,),
+        )
+        .fetchalldict()
+    )
 
     result = [
-        BlocklistEntry(**{
-            **entry,
-            "reason": BlocklistReason[
-                BlocklistReasonID(entry["reason"]).name
-            ]
-        })
+        BlocklistEntry(
+            **{
+                **entry,
+                "reason": BlocklistReason[BlocklistReasonID(entry["reason"]).name],
+            }
+        )
         for entry in entries
     ]
 
@@ -63,7 +72,10 @@ def get_blocklist_entry(id: int) -> BlocklistEntry:
     Returns:
         BlocklistEntry: The info of the blocklist entry.
     """
-    entry = get_db().execute("""
+    entry = (
+        get_db()
+        .execute(
+            """
         SELECT
             id, volume_id, issue_id,
             web_link, web_title, web_sub_title,
@@ -73,18 +85,17 @@ def get_blocklist_entry(id: int) -> BlocklistEntry:
         WHERE id = ?
         LIMIT 1;
         """,
-        (id,)
-    ).fetchonedict()
+            (id,),
+        )
+        .fetchonedict()
+    )
 
     if not entry:
         raise BlocklistEntryNotFound
 
-    return BlocklistEntry(**{
-        **entry,
-        "reason": BlocklistReason[
-            BlocklistReasonID(entry["reason"]).name
-        ]
-    })
+    return BlocklistEntry(
+        **{**entry, "reason": BlocklistReason[BlocklistReasonID(entry["reason"]).name]}
+    )
 
 
 # region Contains and Add
@@ -98,30 +109,32 @@ def blocklist_contains(link: str) -> Union[int, None]:
         Union[int, None]: The ID of the blocklist entry, if found. Otherwise
         `None`.
     """
-    result = get_db().execute("""
+    result = (
+        get_db()
+        .execute(
+            """
         SELECT id
         FROM blocklist
         WHERE download_link = ?
             OR (web_link = ? AND download_link IS NULL)
         LIMIT 1;
         """,
-        (link, link)
-    ).exists()
+            (link, link),
+        )
+        .exists()
+    )
     return result
 
 
 def add_to_blocklist(
     web_link: Union[str, None],
     web_title: Union[str, None],
-
     web_sub_title: Union[str, None],
     download_link: Union[str, None],
     source: Union[DownloadSource, GCDownloadSource, None],
-
     volume_id: int,
     issue_id: Union[int, None],
-
-    reason: BlocklistReason
+    reason: BlocklistReason,
 ) -> BlocklistEntry:
     """Add a link to the blocklist.
 
@@ -162,13 +175,14 @@ def add_to_blocklist(
         return get_blocklist_entry(id)
 
     # Add to database
-    LOGGER.info(
-        f'Adding {blocked_link} to blocklist with reason "{reason.value}"'
-    )
+    LOGGER.info(f'Adding {blocked_link} to blocklist with reason "{reason.value}"')
 
     reason_id = BlocklistReasonID[reason.name].value
     source_value = source.value if source is not None else None
-    id = get_db().execute("""
+    id = (
+        get_db()
+        .execute(
+            """
         INSERT INTO blocklist(
             volume_id, issue_id,
             web_link, web_title, web_sub_title,
@@ -182,18 +196,20 @@ def add_to_blocklist(
             :reason, :added_at
         );
         """,
-        {
-            "volume_id": volume_id,
-            "issue_id": issue_id,
-            "web_link": web_link,
-            "web_title": web_title,
-            "web_sub_title": web_sub_title,
-            "download_link": download_link,
-            "source": source_value,
-            "reason": reason_id,
-            "added_at": round(time())
-        }
-    ).lastrowid
+            {
+                "volume_id": volume_id,
+                "issue_id": issue_id,
+                "web_link": web_link,
+                "web_title": web_title,
+                "web_sub_title": web_sub_title,
+                "download_link": download_link,
+                "source": source_value,
+                "reason": reason_id,
+                "added_at": round(time()),
+            },
+        )
+        .lastrowid
+    )
 
     return get_blocklist_entry(id)
 
@@ -201,10 +217,8 @@ def add_to_blocklist(
 # region Delete
 def delete_blocklist() -> None:
     """Delete all blocklist entries."""
-    LOGGER.info('Deleting blocklist')
-    get_db().execute(
-        "DELETE FROM blocklist;"
-    )
+    LOGGER.info("Deleting blocklist")
+    get_db().execute("DELETE FROM blocklist;")
     return
 
 
@@ -217,12 +231,9 @@ def delete_blocklist_entry(id: int) -> None:
     Raises:
         BlocklistEntryNotFound: The id doesn't map to any blocklist entry.
     """
-    LOGGER.debug(f'Deleting blocklist entry {id}')
+    LOGGER.debug(f"Deleting blocklist entry {id}")
 
-    entry_found = get_db().execute(
-        "DELETE FROM blocklist WHERE id = ?",
-        (id,)
-    ).rowcount
+    entry_found = get_db().execute("DELETE FROM blocklist WHERE id = ?", (id,)).rowcount
 
     if not entry_found:
         raise BlocklistEntryNotFound

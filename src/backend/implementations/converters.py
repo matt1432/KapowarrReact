@@ -14,13 +14,22 @@ from sys import platform
 from typing import TYPE_CHECKING, List, final
 from zipfile import ZipFile
 
-from backend.base.definitions import (SCANNABLE_EXTENSIONS, Constants,
-                                      FileConstants, FileConverter)
+from backend.base.definitions import (
+    SCANNABLE_EXTENSIONS,
+    Constants,
+    FileConstants,
+    FileConverter,
+)
 from backend.base.file_extraction import extract_filename_data
-from backend.base.files import (create_folder, delete_empty_parent_folders,
-                                delete_file_folder, folder_path,
-                                generate_archive_folder, list_files,
-                                rename_file)
+from backend.base.files import (
+    create_folder,
+    delete_empty_parent_folders,
+    delete_file_folder,
+    folder_path,
+    generate_archive_folder,
+    list_files,
+    rename_file,
+)
 from backend.base.logging import LOGGER
 from backend.implementations.matching import folder_extraction_filter
 from backend.implementations.naming import mass_rename
@@ -43,14 +52,11 @@ def run_rar(args: List[str]) -> CompletedProcess[str]:
     Returns:
         CompletedProcess[str]: The result of the process.
     """
-    exe = folder_path('backend', 'lib', Constants.RAR_EXECUTABLES[platform])
+    exe = folder_path("backend", "lib", Constants.RAR_EXECUTABLES[platform])
     return run([exe, *args], capture_output=True, text=True)
 
 
-def extract_files_from_folder(
-    source_folder: str,
-    volume_id: int
-) -> List[str]:
+def extract_files_from_folder(source_folder: str, volume_id: int) -> List[str]:
     """Move files out of folder in to volume folder,
     but only if they match to the volume. Otherwise they are deleted,
     together with the original folder.
@@ -62,10 +68,7 @@ def extract_files_from_folder(
     Returns:
         List[str]: The filepaths of the files that were extracted.
     """
-    folder_contents = list_files(
-        source_folder,
-        SCANNABLE_EXTENSIONS
-    )
+    folder_contents = list_files(source_folder, SCANNABLE_EXTENSIONS)
 
     volume = Volume(volume_id)
     volume_data = volume.get_data()
@@ -78,15 +81,12 @@ def extract_files_from_folder(
         for c in folder_contents
         if (
             folder_extraction_filter(
-                extract_filename_data(c, False),
-                volume_data,
-                volume_issues,
-                end_year
+                extract_filename_data(c, False), volume_data, volume_issues, end_year
             )
-            and 'variant cover' not in c.lower()
+            and "variant cover" not in c.lower()
         )
     ]
-    LOGGER.debug(f'Relevant files: {rel_files}')
+    LOGGER.debug(f"Relevant files: {rel_files}")
 
     # Move remaining files to main folder and delete source folder
     result = []
@@ -109,23 +109,20 @@ def extract_files_from_folder(
 # =====================
 @final
 class ZIPtoCBZ(FileConverter):
-    source_format = 'zip'
-    target_format = 'cbz'
+    source_format = "zip"
+    target_format = "cbz"
 
     @staticmethod
     def convert(file: str) -> List[str]:
-        target = splitext(file)[0] + '.cbz'
-        rename_file(
-            file,
-            target
-        )
+        target = splitext(file)[0] + ".cbz"
+        rename_file(file, target)
         return [target]
 
 
 @final
 class ZIPtoRAR(FileConverter):
-    source_format = 'zip'
-    target_format = 'rar'
+    source_format = "zip"
+    target_format = "rar"
 
     @staticmethod
     def convert(file: str) -> List[str]:
@@ -137,28 +134,30 @@ class ZIPtoRAR(FileConverter):
         volume_folder = Volume(volume_id).vd.folder
         archive_folder = generate_archive_folder(volume_folder, file)
 
-        with ZipFile(file, 'r') as zip:
+        with ZipFile(file, "r") as zip:
             zip.extractall(archive_folder)
 
-        run_rar([
-            'a', # Add files to archive
-            '-ep', # Exclude paths from names
-            '-inul', # Disable all messages
-            splitext(file)[0], # Ext-less target filename of created archive
-            archive_folder # Source folder
-        ])
+        run_rar(
+            [
+                "a",  # Add files to archive
+                "-ep",  # Exclude paths from names
+                "-inul",  # Disable all messages
+                splitext(file)[0],  # Ext-less target filename of created archive
+                archive_folder,  # Source folder
+            ]
+        )
 
         delete_file_folder(archive_folder)
         delete_file_folder(file)
         delete_empty_parent_folders(dirname(file), volume_folder)
 
-        return [splitext(file)[0] + '.rar']
+        return [splitext(file)[0] + ".rar"]
 
 
 @final
 class ZIPtoCBR(FileConverter):
-    source_format = 'zip'
-    target_format = 'cbr'
+    source_format = "zip"
+    target_format = "cbr"
 
     @staticmethod
     def convert(file: str) -> List[str]:
@@ -169,8 +168,8 @@ class ZIPtoCBR(FileConverter):
 
 @final
 class ZIPtoFOLDER(FileConverter):
-    source_format = 'zip'
-    target_format = 'folder'
+    source_format = "zip"
+    target_format = "folder"
 
     @staticmethod
     def convert(file: str) -> List[str]:
@@ -182,21 +181,15 @@ class ZIPtoFOLDER(FileConverter):
         volume_folder = Volume(volume_id).vd.folder
         archive_folder = generate_archive_folder(volume_folder, file)
 
-        with ZipFile(file, 'r') as zip:
+        with ZipFile(file, "r") as zip:
             zip.extractall(archive_folder)
 
-        resulting_files = extract_files_from_folder(
-            archive_folder,
-            volume_id
-        )
+        resulting_files = extract_files_from_folder(archive_folder, volume_id)
 
         if resulting_files:
             # FIXME: this deletes all the extra info
             scan_files(volume_id, filepath_filter=resulting_files)
-            resulting_files = mass_rename(
-                volume_id,
-                filepath_filter=resulting_files
-            )
+            resulting_files = mass_rename(volume_id, filepath_filter=resulting_files)
 
         delete_file_folder(file)
         delete_empty_parent_folders(dirname(file), volume_folder)
@@ -209,23 +202,20 @@ class ZIPtoFOLDER(FileConverter):
 # =====================
 @final
 class CBZtoZIP(FileConverter):
-    source_format = 'cbz'
-    target_format = 'zip'
+    source_format = "cbz"
+    target_format = "zip"
 
     @staticmethod
     def convert(file: str) -> List[str]:
-        target = splitext(file)[0] + '.zip'
-        rename_file(
-            file,
-            target
-        )
+        target = splitext(file)[0] + ".zip"
+        rename_file(file, target)
         return [target]
 
 
 @final
 class CBZtoRAR(FileConverter):
-    source_format = 'cbz'
-    target_format = 'rar'
+    source_format = "cbz"
+    target_format = "rar"
 
     @staticmethod
     def convert(file: str) -> List[str]:
@@ -234,8 +224,8 @@ class CBZtoRAR(FileConverter):
 
 @final
 class CBZtoCBR(FileConverter):
-    source_format = 'cbz'
-    target_format = 'cbr'
+    source_format = "cbz"
+    target_format = "cbr"
 
     @staticmethod
     def convert(file: str) -> List[str]:
@@ -246,8 +236,8 @@ class CBZtoCBR(FileConverter):
 
 @final
 class CBZtoFOLDER(FileConverter):
-    source_format = 'cbz'
-    target_format = 'folder'
+    source_format = "cbz"
+    target_format = "folder"
 
     @staticmethod
     def convert(file: str) -> List[str]:
@@ -259,23 +249,20 @@ class CBZtoFOLDER(FileConverter):
 # =====================
 @final
 class RARtoCBR(FileConverter):
-    source_format = 'rar'
-    target_format = 'cbr'
+    source_format = "rar"
+    target_format = "cbr"
 
     @staticmethod
     def convert(file: str) -> List[str]:
-        target = splitext(file)[0] + '.cbr'
-        rename_file(
-            file,
-            target
-        )
+        target = splitext(file)[0] + ".cbr"
+        rename_file(file, target)
         return [target]
 
 
 @final
 class RARtoZIP(FileConverter):
-    source_format = 'rar'
-    target_format = 'zip'
+    source_format = "rar"
+    target_format = "zip"
 
     @staticmethod
     def convert(file: str) -> List[str]:
@@ -288,24 +275,23 @@ class RARtoZIP(FileConverter):
         archive_folder = generate_archive_folder(volume_folder, file)
         create_folder(archive_folder)
 
-        run_rar([
-            'x', # Extract files with full path
-            '-inul', # Disable all messages
-            file, # Source archive file
-            archive_folder # Target folder to extract into
-        ])
+        run_rar(
+            [
+                "x",  # Extract files with full path
+                "-inul",  # Disable all messages
+                file,  # Source archive file
+                archive_folder,  # Target folder to extract into
+            ]
+        )
 
         # Files that are put in a ZIP file have to have a minimum last
         # modification time.
         for f in list_files(archive_folder):
             if getmtime(f) <= Constants.ZIP_MIN_MOD_TIME:
-                utime(
-                    f,
-                    (Constants.ZIP_MIN_MOD_TIME, Constants.ZIP_MIN_MOD_TIME)
-                )
+                utime(f, (Constants.ZIP_MIN_MOD_TIME, Constants.ZIP_MIN_MOD_TIME))
 
         target_file = splitext(file)[0]
-        target_archive = make_archive(target_file, 'zip', archive_folder)
+        target_archive = make_archive(target_file, "zip", archive_folder)
 
         delete_file_folder(archive_folder)
         delete_file_folder(file)
@@ -316,8 +302,8 @@ class RARtoZIP(FileConverter):
 
 @final
 class RARtoCBZ(FileConverter):
-    source_format = 'rar'
-    target_format = 'cbz'
+    source_format = "rar"
+    target_format = "cbz"
 
     @staticmethod
     def convert(file: str) -> List[str]:
@@ -328,8 +314,8 @@ class RARtoCBZ(FileConverter):
 
 @final
 class RARtoFOLDER(FileConverter):
-    source_format = 'rar'
-    target_format = 'folder'
+    source_format = "rar"
+    target_format = "folder"
 
     @staticmethod
     def convert(file: str) -> List[str]:
@@ -342,25 +328,21 @@ class RARtoFOLDER(FileConverter):
         archive_folder = generate_archive_folder(volume_folder, file)
         create_folder(archive_folder)
 
-        run_rar([
-            'x', # Extract files with full path
-            '-inul', # Disable all messages
-            file, # Source archive file
-            archive_folder # Target folder to extract into
-        ])
-
-        resulting_files = extract_files_from_folder(
-            archive_folder,
-            volume_id
+        run_rar(
+            [
+                "x",  # Extract files with full path
+                "-inul",  # Disable all messages
+                file,  # Source archive file
+                archive_folder,  # Target folder to extract into
+            ]
         )
+
+        resulting_files = extract_files_from_folder(archive_folder, volume_id)
 
         if resulting_files:
             # FIXME: this deletes all the extra info
             scan_files(volume_id, filepath_filter=resulting_files)
-            resulting_files = mass_rename(
-                volume_id,
-                filepath_filter=resulting_files
-            )
+            resulting_files = mass_rename(volume_id, filepath_filter=resulting_files)
 
         delete_file_folder(file)
         delete_empty_parent_folders(dirname(file), volume_folder)
@@ -373,23 +355,20 @@ class RARtoFOLDER(FileConverter):
 # =====================
 @final
 class CBRtoRAR(FileConverter):
-    source_format = 'cbr'
-    target_format = 'rar'
+    source_format = "cbr"
+    target_format = "rar"
 
     @staticmethod
     def convert(file: str) -> List[str]:
-        target = splitext(file)[0] + '.rar'
-        rename_file(
-            file,
-            target
-        )
+        target = splitext(file)[0] + ".rar"
+        rename_file(file, target)
         return [target]
 
 
 @final
 class CBRtoZIP(FileConverter):
-    source_format = 'cbr'
-    target_format = 'zip'
+    source_format = "cbr"
+    target_format = "zip"
 
     @staticmethod
     def convert(file: str) -> List[str]:
@@ -398,8 +377,8 @@ class CBRtoZIP(FileConverter):
 
 @final
 class CBRtoCBZ(FileConverter):
-    source_format = 'cbr'
-    target_format = 'cbz'
+    source_format = "cbr"
+    target_format = "cbz"
 
     @staticmethod
     def convert(file: str) -> List[str]:
@@ -410,8 +389,8 @@ class CBRtoCBZ(FileConverter):
 
 @final
 class CBRtoFOLDER(FileConverter):
-    source_format = 'cbr'
-    target_format = 'folder'
+    source_format = "cbr"
+    target_format = "folder"
 
     @staticmethod
     def convert(file: str) -> List[str]:

@@ -2,8 +2,11 @@
 
 from typing import List
 
-from backend.base.custom_exceptions import (InvalidKeyValue, KeyNotFound,
-                                            VolumeDownloadedFor)
+from backend.base.custom_exceptions import (
+    InvalidKeyValue,
+    KeyNotFound,
+    VolumeDownloadedFor,
+)
 from backend.base.definitions import MassEditorAction, MonitorScheme
 from backend.base.helpers import get_subclasses
 from backend.base.logging import LOGGER
@@ -17,14 +20,14 @@ from backend.internals.db import iter_commit
 
 
 class MassEditorDelete(MassEditorAction):
-    identifier = 'delete'
+    identifier = "delete"
 
     def run(self, **kwargs) -> None:
-        delete_volume_folder = kwargs.get('delete_folder', False)
+        delete_volume_folder = kwargs.get("delete_folder", False)
         if not isinstance(delete_volume_folder, bool):
-            raise InvalidKeyValue('delete_folder', delete_volume_folder)
+            raise InvalidKeyValue("delete_folder", delete_volume_folder)
 
-        LOGGER.info(f'Using mass editor, deleting volumes: {self.volume_ids}')
+        LOGGER.info(f"Using mass editor, deleting volumes: {self.volume_ids}")
 
         for volume_id in iter_commit(self.volume_ids):
             try:
@@ -35,19 +38,19 @@ class MassEditorDelete(MassEditorAction):
 
 
 class MassEditorRootFolder(MassEditorAction):
-    identifier = 'root_folder'
+    identifier = "root_folder"
 
     def run(self, **kwargs) -> None:
-        root_folder_id = kwargs.get('root_folder_id')
+        root_folder_id = kwargs.get("root_folder_id")
         if root_folder_id is None:
-            raise KeyNotFound('root_folder_id')
+            raise KeyNotFound("root_folder_id")
         if not isinstance(root_folder_id, int):
-            raise InvalidKeyValue('root_folder_id', root_folder_id)
+            raise InvalidKeyValue("root_folder_id", root_folder_id)
         # Raises RootFolderNotFound if ID is invalid
         RootFolders().get_one(root_folder_id)
 
         LOGGER.info(
-            f'Using mass editor, settings root folder to {root_folder_id} for volumes: {self.volume_ids}'
+            f"Using mass editor, settings root folder to {root_folder_id} for volumes: {self.volume_ids}"
         )
 
         for volume_id in iter_commit(self.volume_ids):
@@ -57,87 +60,82 @@ class MassEditorRootFolder(MassEditorAction):
 
 
 class MassEditorRename(MassEditorAction):
-    identifier = 'rename'
+    identifier = "rename"
 
     def run(self, **kwargs) -> None:
-        LOGGER.info(f'Using mass editor, renaming volumes: {self.volume_ids}')
+        LOGGER.info(f"Using mass editor, renaming volumes: {self.volume_ids}")
         for volume_id in iter_commit(self.volume_ids):
             mass_rename(volume_id)
         return
 
 
 class MassEditorUpdate(MassEditorAction):
-    identifier = 'update'
+    identifier = "update"
 
     def run(self, **kwargs) -> None:
-        LOGGER.info(f'Using mass editor, updating volumes: {self.volume_ids}')
+        LOGGER.info(f"Using mass editor, updating volumes: {self.volume_ids}")
         for volume_id in iter_commit(self.volume_ids):
             refresh_and_scan(volume_id)
         return
 
 
 class MassEditorSearch(MassEditorAction):
-    identifier = 'search'
+    identifier = "search"
 
     def run(self, **kwargs) -> None:
-        LOGGER.info(
-            f'Using mass editor, auto searching for volumes: {self.volume_ids}'
-        )
+        LOGGER.info(f"Using mass editor, auto searching for volumes: {self.volume_ids}")
         download_handler = DownloadHandler()
 
         for volume_id in self.volume_ids:
             search_results = auto_search(volume_id)
             download_handler.add_multiple(
-                (result['link'], volume_id, None, False)
-                for result in search_results
+                (result["link"], volume_id, None, False) for result in search_results
             )
 
         return
 
 
 class MassEditorConvert(MassEditorAction):
-    identifier = 'convert'
+    identifier = "convert"
 
     def run(self, **kwargs) -> None:
-        LOGGER.info(
-            f'Using mass editor, converting for volumes: {self.volume_ids}')
+        LOGGER.info(f"Using mass editor, converting for volumes: {self.volume_ids}")
         for volume_id in iter_commit(self.volume_ids):
             mass_convert(volume_id)
         return
 
 
 class MassEditorUnmonitor(MassEditorAction):
-    identifier = 'unmonitor'
+    identifier = "unmonitor"
 
     def run(self, **kwargs) -> None:
-        LOGGER.info(
-            f'Using mass editor, unmonitoring volumes: {self.volume_ids}')
+        LOGGER.info(f"Using mass editor, unmonitoring volumes: {self.volume_ids}")
         for volume_id in self.volume_ids:
-            Volume(volume_id)['monitored'] = False
+            Volume(volume_id)["monitored"] = False
         return
 
 
 class MassEditorMonitor(MassEditorAction):
-    identifier = 'monitor'
+    identifier = "monitor"
 
     def run(self, **kwargs) -> None:
-        LOGGER.info(f'Using mass editor, monitoring volumes: {self.volume_ids}')
+        LOGGER.info(f"Using mass editor, monitoring volumes: {self.volume_ids}")
         for volume_id in self.volume_ids:
-            Volume(volume_id)['monitored'] = True
+            Volume(volume_id)["monitored"] = True
         return
 
 
 class MassEditorMonitoringScheme(MassEditorAction):
-    identifier = 'monitoring_scheme'
+    identifier = "monitoring_scheme"
 
     def run(self, **kwargs) -> None:
-        monitoring_scheme = kwargs.get('monitoring_scheme')
+        monitoring_scheme = kwargs.get("monitoring_scheme")
         if monitoring_scheme is None:
-            raise KeyNotFound('monitoring_scheme')
+            raise KeyNotFound("monitoring_scheme")
         try:
             monitoring_scheme = MonitorScheme(monitoring_scheme)
         except ValueError:
-            raise InvalidKeyValue('monitoring_scheme', monitoring_scheme)
+            raise InvalidKeyValue("monitoring_scheme", monitoring_scheme)
 
         LOGGER.info(
             f'Using mass editor, applying monitoring scheme "{monitoring_scheme.value}" for volumes: {self.volume_ids}'
@@ -149,11 +147,7 @@ class MassEditorMonitoringScheme(MassEditorAction):
         return
 
 
-def run_mass_editor_action(
-    action: str,
-    volume_ids: List[int],
-    **kwargs
-) -> None:
+def run_mass_editor_action(action: str, volume_ids: List[int], **kwargs) -> None:
     """Run a mass editor action.
 
     Args:
@@ -168,7 +162,7 @@ def run_mass_editor_action(
         if ActionClass.identifier == action:
             break
     else:
-        raise InvalidKeyValue('action', action)
+        raise InvalidKeyValue("action", action)
 
     ActionClass(volume_ids).run(**kwargs)
     return

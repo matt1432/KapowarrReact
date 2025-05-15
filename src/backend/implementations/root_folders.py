@@ -5,12 +5,18 @@ from shutil import disk_usage
 from sqlite3 import IntegrityError
 from typing import Dict, List, Union
 
-from backend.base.custom_exceptions import (FolderNotFound, RootFolderInUse,
-                                            RootFolderInvalid,
-                                            RootFolderNotFound)
+from backend.base.custom_exceptions import (
+    FolderNotFound,
+    RootFolderInUse,
+    RootFolderInvalid,
+    RootFolderNotFound,
+)
 from backend.base.definitions import RootFolder, SizeData
-from backend.base.files import (create_folder, folder_is_inside_folder,
-                                uppercase_drive_letter)
+from backend.base.files import (
+    create_folder,
+    folder_is_inside_folder,
+    uppercase_drive_letter,
+)
 from backend.base.helpers import Singleton, first_of_column, force_suffix
 from backend.base.logging import LOGGER
 from backend.internals.db import get_db
@@ -27,20 +33,19 @@ class RootFolders(metaclass=Singleton):
 
     def _load_cache(self) -> None:
         """Update the cache."""
-        root_folders = get_db().execute(
-            "SELECT id, folder FROM root_folders;"
-        )
+        root_folders = get_db().execute("SELECT id, folder FROM root_folders;")
 
         for _ in range(2):
             try:
                 self.cache = {
-                    r['id']: RootFolder(
+                    r["id"]: RootFolder(
                         r["id"],
                         r["folder"],
-                        SizeData(**dict(zip(
-                            ('total', 'used', 'free'),
-                            disk_usage(r['folder'])
-                        )))
+                        SizeData(
+                            **dict(
+                                zip(("total", "used", "free"), disk_usage(r["folder"]))
+                            )
+                        ),
                     )
                     for r in root_folders
                 }
@@ -50,7 +55,7 @@ class RootFolders(metaclass=Singleton):
                 # A root folder is registered in Kapowarr,
                 # but the folder no longer exists.
                 for r in root_folders:
-                    create_folder(r['folder'])
+                    create_folder(r["folder"])
 
         return
 
@@ -96,9 +101,7 @@ class RootFolders(metaclass=Singleton):
         return
 
     def add(
-        self,
-        folder: str,
-        _exclude_folder_from_check: Union[str, None] = None
+        self, folder: str, _exclude_folder_from_check: Union[str, None] = None
     ) -> RootFolder:
         """Add a rootfolder.
 
@@ -117,14 +120,12 @@ class RootFolders(metaclass=Singleton):
             RootFolder: The rootfolder info.
         """
         # Format folder and check if it exists
-        LOGGER.info(f'Adding rootfolder from {folder}')
+        LOGGER.info(f"Adding rootfolder from {folder}")
 
         if not isdir(folder):
             raise FolderNotFound
 
-        folder = uppercase_drive_letter(
-            force_suffix(abspath(folder))
-        )
+        folder = uppercase_drive_letter(force_suffix(abspath(folder)))
 
         # New root folder can not be in, or be a parent of,
         # other root folders or the download folder.
@@ -137,24 +138,24 @@ class RootFolders(metaclass=Singleton):
                     or f.folder != _exclude_folder_from_check
                 )
             ),
-            Settings().sv.download_folder
+            Settings().sv.download_folder,
         )
         for other_folder in other_folders:
-            if (
-                folder_is_inside_folder(other_folder, folder)
-                or folder_is_inside_folder(folder, other_folder)
+            if folder_is_inside_folder(other_folder, folder) or folder_is_inside_folder(
+                folder, other_folder
             ):
                 raise RootFolderInvalid
 
-        root_folder_id = get_db().execute(
-            "INSERT INTO root_folders(folder) VALUES (?)",
-            (folder,)
-        ).lastrowid
+        root_folder_id = (
+            get_db()
+            .execute("INSERT INTO root_folders(folder) VALUES (?)", (folder,))
+            .lastrowid
+        )
 
         self._load_cache()
         root_folder = self.get_one(root_folder_id)
 
-        LOGGER.debug(f'Adding rootfolder result: {root_folder_id}')
+        LOGGER.debug(f"Adding rootfolder result: {root_folder_id}")
         return root_folder
 
     def rename(self, root_folder_id: int, new_folder: str) -> RootFolder:
@@ -172,9 +173,7 @@ class RootFolders(metaclass=Singleton):
         """
         from backend.implementations.volumes import Volume
 
-        new_folder = uppercase_drive_letter(
-            force_suffix(abspath(new_folder))
-        )
+        new_folder = uppercase_drive_letter(force_suffix(abspath(new_folder)))
 
         create_folder(new_folder)
         current_folder = self[root_folder_id]
@@ -184,19 +183,18 @@ class RootFolders(metaclass=Singleton):
             return self.get_one(root_folder_id)
 
         LOGGER.info(
-            f'Renaming root folder {self[root_folder_id]} (ID {root_folder_id}) '
-            f'to {new_folder}')
+            f"Renaming root folder {self[root_folder_id]} (ID {root_folder_id}) "
+            f"to {new_folder}"
+        )
 
-        new_id = self.add(
-            new_folder,
-            _exclude_folder_from_check=current_folder
-        ).id
+        new_id = self.add(new_folder, _exclude_folder_from_check=current_folder).id
 
         cursor = get_db()
-        volume_ids: List[int] = first_of_column(cursor.execute(
-            "SELECT id FROM volumes WHERE root_folder = ?;",
-            (root_folder_id,)
-        ))
+        volume_ids: List[int] = first_of_column(
+            cursor.execute(
+                "SELECT id FROM volumes WHERE root_folder = ?;", (root_folder_id,)
+            )
+        )
 
         for volume_id in volume_ids:
             Volume(volume_id).change_root_folder(new_id)
@@ -224,14 +222,12 @@ class RootFolders(metaclass=Singleton):
             RootFolderNotFound: The id doesn't map to any rootfolder
             RootFolderInUse: The rootfolder is still in use by a volume
         """
-        LOGGER.info(f'Deleting rootfolder {root_folder_id}')
+        LOGGER.info(f"Deleting rootfolder {root_folder_id}")
 
         # Remove from database
         cursor = get_db()
         try:
-            cursor.execute(
-                "DELETE FROM root_folders WHERE id = ?", (root_folder_id,)
-            )
+            cursor.execute("DELETE FROM root_folders WHERE id = ?", (root_folder_id,))
             if not cursor.rowcount:
                 raise RootFolderNotFound
         except IntegrityError:

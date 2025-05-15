@@ -40,8 +40,8 @@ class FlareSolverr(metaclass=Singleton):
             try:
                 result = session.post(
                     base_url + self.api_base,
-                    json={'cmd': 'sessions.create'},
-                    headers={'Content-Type': 'application/json'}
+                    json={"cmd": "sessions.create"},
+                    headers={"Content-Type": "application/json"},
                 )
 
                 if result.status_code != 200:
@@ -65,11 +65,8 @@ class FlareSolverr(metaclass=Singleton):
         with Session() as session:
             session.post(
                 self.base_url + self.api_base,
-                json={
-                    'cmd': 'sessions.destroy',
-                    'session': self.session_id
-                },
-                headers={'Content-Type': 'application/json'}
+                json={"cmd": "sessions.destroy", "session": self.session_id},
+                headers={"Content-Type": "application/json"},
             )
 
         self.base_url = None
@@ -99,13 +96,11 @@ class FlareSolverr(metaclass=Singleton):
         """
         return (
             self.ua_mapping.get(url, Constants.DEFAULT_USERAGENT),
-            self.cookie_mapping.get(url, {})
+            self.cookie_mapping.get(url, {}),
         )
 
     def handle_cf_block(
-        self,
-        url: str,
-        headers: Mapping[str, str]
+        self, url: str, headers: Mapping[str, str]
     ) -> Union[None, Dict[str, Any]]:
         """Let FS handle a URL to aquire cleared cookies and UA. These become
         available using `get_ua_cookies()` after this method completes.
@@ -128,35 +123,25 @@ class FlareSolverr(metaclass=Singleton):
             return
 
         if not (self.session_id and self.base_url):
-            LOGGER.warning(
-                "Request blocked by CloudFlare and FlareSolverr not setup"
-            )
+            LOGGER.warning("Request blocked by CloudFlare and FlareSolverr not setup")
             return
 
         with Session() as session:
             result = session.post(
                 self.base_url + self.api_base,
-                json={
-                    'cmd': 'request.get',
-                    'session': self.session_id,
-                    'url': url
-                },
-                headers={'Content-Type': 'application/json'}
-            ).json()['solution']
+                json={"cmd": "request.get", "session": self.session_id, "url": url},
+                headers={"Content-Type": "application/json"},
+            ).json()["solution"]
 
             self.ua_mapping[url] = result["userAgent"]
             self.cookie_mapping[url] = {
-                cookie["name"]: cookie["value"]
-                for cookie in result["cookies"]
+                cookie["name"]: cookie["value"] for cookie in result["cookies"]
             }
 
         return result
 
     async def handle_cf_block_async(
-        self,
-        session: AsyncSession,
-        url: str,
-        headers: Mapping[str, str]
+        self, session: AsyncSession, url: str, headers: Mapping[str, str]
     ) -> Union[None, Dict[str, Any]]:
         """Let FS handle a URL to aquire cleared cookies and UA. These become
         available using `get_ua_cookies()` after this method completes.
@@ -180,25 +165,22 @@ class FlareSolverr(metaclass=Singleton):
             return
 
         if not (self.session_id and self.base_url):
-            LOGGER.warning(
-                "Request blocked by CloudFlare and FlareSolverr not setup"
-            )
+            LOGGER.warning("Request blocked by CloudFlare and FlareSolverr not setup")
             return
 
-        result = (await (await session.post(
-            self.base_url + self.api_base,
-            json={
-                'cmd': 'request.get',
-                'session': self.session_id,
-                'url': url
-            },
-            headers={'Content-Type': 'application/json'}
-        )).json())["solution"]
+        result = (
+            await (
+                await session.post(
+                    self.base_url + self.api_base,
+                    json={"cmd": "request.get", "session": self.session_id, "url": url},
+                    headers={"Content-Type": "application/json"},
+                )
+            ).json()
+        )["solution"]
 
         self.ua_mapping[url] = result["userAgent"]
         self.cookie_mapping[url] = {
-            cookie["name"]: cookie["value"]
-            for cookie in result["cookies"]
+            cookie["name"]: cookie["value"] for cookie in result["cookies"]
         }
 
         return result

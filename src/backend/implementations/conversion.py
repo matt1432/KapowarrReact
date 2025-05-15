@@ -33,22 +33,23 @@ def archive_contains_issues(archive_file: str) -> bool:
     """
     ext = splitext(archive_file)[1].lower()
 
-    if ext == '.zip':
+    if ext == ".zip":
         with ZipFile(archive_file) as zip:
             namelist = zip.namelist()
 
-    elif ext == '.rar':
-        namelist = run_rar([
-            "lb", # List archive contents bare
-            archive_file # Archive to list contents of
-        ]).stdout.split("\n")[:-1]
+    elif ext == ".rar":
+        namelist = run_rar(
+            [
+                "lb",  # List archive contents bare
+                archive_file,  # Archive to list contents of
+            ]
+        ).stdout.split("\n")[:-1]
 
     else:
         return False
 
     return any(
-        splitext(f)[1].lower() in FileConstants.CONTAINER_EXTENSIONS
-        for f in namelist
+        splitext(f)[1].lower() in FileConstants.CONTAINER_EXTENSIONS for f in namelist
     )
 
 
@@ -64,9 +65,7 @@ class FileConversionHandler:
         """
         conversion_methods = {}
         for fc in get_subclasses(FileConverter):
-            conversion_methods.setdefault(
-                fc.source_format, {}
-            )[fc.target_format] = fc
+            conversion_methods.setdefault(fc.source_format, {})[fc.target_format] = fc
         return conversion_methods
 
     @staticmethod
@@ -77,14 +76,12 @@ class FileConversionHandler:
         Returns:
             Set[str]: The list with all formats.
         """
-        return set(chain.from_iterable(
-            FileConversionHandler.get_conversion_methods().values()
-        ))
+        return set(
+            chain.from_iterable(FileConversionHandler.get_conversion_methods().values())
+        )
 
     def __init__(
-        self,
-        file: str,
-        format_preference: Union[List[str], None] = None
+        self, file: str, format_preference: Union[List[str], None] = None
     ) -> None:
         """Prepare file for conversion.
 
@@ -96,7 +93,7 @@ class FileConversionHandler:
         """
         self.file = file
         self.fp = format_preference or Settings().sv.format_preference
-        self.source_format = splitext(file)[1].lstrip('.').lower()
+        self.source_format = splitext(file)[1].lstrip(".").lower()
         self.target_format = self.source_format
         self.converter = None
 
@@ -137,8 +134,7 @@ def convert_file(converter: FileConversionHandler) -> List[str]:
 
 
 def preview_mass_convert(
-    volume_id: int,
-    issue_id: Union[int, None] = None
+    volume_id: int, issue_id: Union[int, None] = None
 ) -> Dict[str, str]:
     """Get a list of suggested conversions for a volume or issue.
 
@@ -157,14 +153,16 @@ def preview_mass_convert(
     volume_folder = volume.vd.folder
 
     result = {}
-    for f in sorted((
-        f["filepath"]
-        for f in (
-            volume.get_all_files()
-            if not issue_id else
-            volume.get_issue(issue_id).get_files()
+    for f in sorted(
+        (
+            f["filepath"]
+            for f in (
+                volume.get_all_files()
+                if not issue_id
+                else volume.get_issue(issue_id).get_files()
+            )
         )
-    )):
+    ):
         converter = None
 
         if (
@@ -172,16 +170,16 @@ def preview_mass_convert(
             and splitext(f)[1].lower() in FileConstants.EXTRACTABLE_EXTENSIONS
             and archive_contains_issues(f)
         ):
-            converter = FileConversionHandler(f, ['folder']).converter
+            converter = FileConversionHandler(f, ["folder"]).converter
 
         if converter is None:
             converter = FileConversionHandler(f).converter
 
         if converter is not None:
-            if converter.target_format == 'folder':
+            if converter.target_format == "folder":
                 result[f] = volume_folder
             else:
-                result[f] = splitext(f)[0] + '.' + converter.target_format
+                result[f] = splitext(f)[0] + "." + converter.target_format
 
     return result
 
@@ -219,13 +217,15 @@ def mass_convert(
 
     planned_conversions: List[FileConversionHandler] = []
     for f in filtered_iter(
-        (f["filepath"]
-        for f in (
-            volume.get_all_files()
-            if not issue_id else
-            volume.get_issue(issue_id).get_files()
-        )),
-        set(filepath_filter)
+        (
+            f["filepath"]
+            for f in (
+                volume.get_all_files()
+                if not issue_id
+                else volume.get_issue(issue_id).get_files()
+            )
+        ),
+        set(filepath_filter),
     ):
         converted = False
         if (
@@ -233,7 +233,7 @@ def mass_convert(
             and splitext(f)[1].lower() in FileConstants.EXTRACTABLE_EXTENSIONS
             and archive_contains_issues(f)
         ):
-            converter = FileConversionHandler(f, ['folder'])
+            converter = FileConversionHandler(f, ["folder"])
             if converter.converter is not None:
                 resulting_files = convert_file(converter)
                 for file in resulting_files:
@@ -262,23 +262,17 @@ def mass_convert(
         with PortablePool(max_processes=total_count) as pool:
             if update_websocket:
                 ws = WebSocket()
-                ws.update_task_status(
-                    message=f'Converted 0/{total_count}'
-                )
-                for idx, iter_result in enumerate(pool.imap_unordered(
-                    convert_file,
-                    planned_conversions
-                )):
+                ws.update_task_status(message=f"Converted 0/{total_count}")
+                for idx, iter_result in enumerate(
+                    pool.imap_unordered(convert_file, planned_conversions)
+                ):
                     result += iter_result
-                    ws.update_task_status(
-                        message=f'Converted {idx+1}/{total_count}'
-                    )
+                    ws.update_task_status(message=f"Converted {idx + 1}/{total_count}")
 
             else:
-                result += chain.from_iterable(pool.map(
-                    convert_file,
-                    planned_conversions
-                ))
+                result += chain.from_iterable(
+                    pool.map(convert_file, planned_conversions)
+                )
 
     scan_files(volume_id, download=download)
 

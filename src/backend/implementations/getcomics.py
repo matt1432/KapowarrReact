@@ -8,34 +8,51 @@ from asyncio import gather
 from functools import reduce
 from hashlib import sha1
 from re import IGNORECASE, compile
-from typing import Callable, List, Tuple, Type, Union
+from typing import List, Tuple, Type, Union
 
 from aiohttp import ClientError
 from bencoding import bencode
 from bs4 import BeautifulSoup, Tag
 
-from backend.base.custom_exceptions import (DownloadLimitReached, FailedGCPage,
-                                            IssueNotFound, LinkBroken)
-from backend.base.definitions import (BlocklistReason, Constants, Download,
-                                      DownloadGroup, FailReason,
-                                      GCDownloadSource, SearchResultData,
-                                      SpecialVersion, download_source_versions)
+from backend.base.custom_exceptions import (
+    DownloadLimitReached,
+    FailedGCPage,
+    IssueNotFound,
+    LinkBroken,
+)
+from backend.base.definitions import (
+    BlocklistReason,
+    Constants,
+    Download,
+    DownloadGroup,
+    FailReason,
+    GCDownloadSource,
+    SearchResultData,
+    SpecialVersion,
+    download_source_versions,
+)
 from backend.base.file_extraction import extract_filename_data
-from backend.base.helpers import (AsyncSession, check_overlapping_issues,
-                                  create_range, fix_year,
-                                  get_torrent_info, normalize_year)
+from backend.base.helpers import (
+    AsyncSession,
+    check_overlapping_issues,
+    create_range,
+    fix_year,
+    get_torrent_info,
+    normalize_year,
+)
 from backend.base.logging import LOGGER
-from backend.implementations.blocklist import (add_to_blocklist,
-                                               blocklist_contains)
-from backend.implementations.download_clients import (DirectDownload,
-                                                      MediaFireDownload,
-                                                      MediaFireFolderDownload,
-                                                      MegaDownload,
-                                                      MegaFolderDownload,
-                                                      PixelDrainDownload,
-                                                      PixelDrainFolderDownload,
-                                                      TorrentDownload,
-                                                      WeTransferDownload)
+from backend.implementations.blocklist import add_to_blocklist, blocklist_contains
+from backend.implementations.download_clients import (
+    DirectDownload,
+    MediaFireDownload,
+    MediaFireFolderDownload,
+    MegaDownload,
+    MegaFolderDownload,
+    PixelDrainDownload,
+    PixelDrainFolderDownload,
+    TorrentDownload,
+    WeTransferDownload,
+)
 from backend.implementations.external_clients import ExternalClients
 from backend.implementations.flaresolverr import FlareSolverr
 from backend.implementations.matching import gc_group_filter
@@ -43,16 +60,11 @@ from backend.implementations.volumes import Volume
 from backend.internals.db import iter_commit
 from backend.internals.settings import Settings
 
-mediafire_dd_regex = compile(
-    r'https?://download\d+\.mediafire\.com/',
-    IGNORECASE
-)
+mediafire_dd_regex = compile(r"https?://download\d+\.mediafire\.com/", IGNORECASE)
 
 
 # region Scraping
-def _get_max_page(
-    soup: BeautifulSoup
-) -> int:
+def _get_max_page(soup: BeautifulSoup) -> int:
     """From a GC search result page, extract the total page count.
 
     Args:
@@ -66,17 +78,10 @@ def _get_max_page(
     if not page_links:
         return 1
 
-    return int(
-        page_links[-1]
-        .get_text(strip=True)
-        .replace(',', '')
-        .replace('.', '')
-    )
+    return int(page_links[-1].get_text(strip=True).replace(",", "").replace(".", ""))
 
 
-def _get_articles(
-    soup: BeautifulSoup
-) -> List[Tuple[str, str]]:
+def _get_articles(soup: BeautifulSoup) -> List[Tuple[str, str]]:
     """From a GC search result page, extract article (single search result)
     data.
 
@@ -89,22 +94,14 @@ def _get_articles(
     """
     result: List[Tuple[str, str]] = []
     for article in soup.find_all("article", {"class": "post"}):
-        link = create_range(
-            article.find('a')["href"] or ''
-        )[0]
-        title = (
-            article
-            .find("h1", {"class": "post-title"})
-            .get_text(strip=True)
-        )
+        link = create_range(article.find("a")["href"] or "")[0]
+        title = article.find("h1", {"class": "post-title"}).get_text(strip=True)
         result.append((link, title))
 
     return result
 
 
-def _get_title(
-    soup: BeautifulSoup
-) -> Union[str, None]:
+def _get_title(soup: BeautifulSoup) -> Union[str, None]:
     """From a GC article, extract the title of the article.
 
     Args:
@@ -120,9 +117,7 @@ def _get_title(
 
 
 def __check_download_link(
-    link_text: str,
-    link: str,
-    torrent_client_available: bool
+    link_text: str, link: str, torrent_client_available: bool
 ) -> Union[GCDownloadSource, None]:
     """Check if download link is supported and allowed.
 
@@ -135,7 +130,7 @@ def __check_download_link(
         Union[GCDownloadSource, None]: Either the GC service that the button
         is for or `None` if it's not allowed/unknown.
     """
-    LOGGER.debug(f'Checking download link: {link}, {link_text}')
+    LOGGER.debug(f"Checking download link: {link}, {link_text}")
     if not link:
         return
 
@@ -144,17 +139,15 @@ def __check_download_link(
         return
 
     # Check if link is from a service that should be avoided
-    if link.startswith(('https://sh.st/', 'https://torrentgalaxy.to/')):
+    if link.startswith(("https://sh.st/", "https://torrentgalaxy.to/")):
         return
 
     # Check if link is from supported source
     for source, versions in download_source_versions.items():
         if any(s in link_text for s in versions):
-            LOGGER.debug(
-                f'Checking download link: {link_text} maps to {source.value}'
-            )
+            LOGGER.debug(f"Checking download link: {link_text} maps to {source.value}")
 
-            if 'torrent' in source.value and not torrent_client_available:
+            if "torrent" in source.value and not torrent_client_available:
                 return
 
             return source
@@ -162,16 +155,12 @@ def __check_download_link(
     return
 
 
-__link_filter_1: Callable[[Tag], bool] = lambda e: (
-    e.name == 'p'
-    and 'Language' in e.text
-    and e.find('p') is None
-)
+def __link_filter_1(e: Tag) -> bool:
+    return e.name == "p" and "Language" in e.text and e.find("p") is None
 
 
 def __extract_button_links(
-    body: Tag,
-    torrent_client_available: bool
+    body: Tag, torrent_client_available: bool
 ) -> List[DownloadGroup]:
     """Extract download groups that are a list of big buttons.
 
@@ -189,26 +178,18 @@ def __extract_button_links(
             continue
 
         # Process data about group
-        extracted_title = group.get_text('\x00')
-        title = extracted_title.partition('\x00')[0]
+        extracted_title = group.get_text("\x00")
+        title = extracted_title.partition("\x00")[0]
         processed_title = extract_filename_data(
-            title,
-            assume_volume_number=False,
-            fix_year=True
+            title, assume_volume_number=False, fix_year=True
         )
 
-        if processed_title['special_version'] == 'cover':
+        if processed_title["special_version"] == "cover":
             continue
 
-        if (
-            processed_title["year"] is None
-            and "Year :\x00\xa0" in extracted_title
-        ):
+        if processed_title["year"] is None and "Year :\x00\xa0" in extracted_title:
             year = normalize_year(
-                extracted_title
-                .split("Year :\x00\xa0")[1]
-                .split(" |")[0]
-                .split('-')[0]
+                extracted_title.split("Year :\x00\xa0")[1].split(" |")[0].split("-")[0]
             )
             if year:
                 processed_title["year"] = fix_year(year)
@@ -216,56 +197,51 @@ def __extract_button_links(
         result: DownloadGroup = {
             "web_sub_title": title,
             "info": processed_title,
-            "links": {}
+            "links": {},
         }
 
         # Extract links from group
         first_find = True
-        for e in group.next_sibling.next_elements: # type: ignore
+        for e in group.next_sibling.next_elements:  # type: ignore
             e: Tag
-            if e.name == 'hr':
+            if e.name == "hr":
                 break
 
-            elif (
-                e.name == 'div'
-                and 'aio-button-center' in (e.attrs.get('class', []))
-            ):
-                group_link: Union[Tag, None] = e.find('a') # type: ignore
+            elif e.name == "div" and "aio-button-center" in (e.attrs.get("class", [])):
+                group_link: Union[Tag, None] = e.find("a")  # type: ignore
                 if not group_link:
                     continue
                 link_title = group_link.text.strip().lower()
-                if group_link.get('href') is None:
+                if group_link.get("href") is None:
                     continue
-                href = create_range(group_link.get('href') or '')[0]
+                href = create_range(group_link.get("href") or "")[0]
                 if not href:
                     continue
 
                 match = __check_download_link(
-                    link_title,
-                    href,
-                    torrent_client_available
+                    link_title, href, torrent_client_available
                 )
                 if match:
                     if first_find:
                         download_groups.append(result)
                         first_find = False
 
-                    result['links'].setdefault(match, []).append(href)
+                    result["links"].setdefault(match, []).append(href)
 
     return download_groups
 
 
-__link_filter_2: Callable[[Tag], bool] = lambda e: (
-    e.name == 'li'
-    and e.parent is not None
-    and e.parent.name == 'ul'
-    and e.find('a') is not None
-)
+def __link_filter_2(e: Tag) -> bool:
+    return (
+        e.name == "li"
+        and e.parent is not None
+        and e.parent.name == "ul"
+        and e.find("a") is not None
+    )
 
 
 def __extract_list_links(
-    body: Tag,
-    torrent_client_available: bool
+    body: Tag, torrent_client_available: bool
 ) -> List[DownloadGroup]:
     """Extract download groups that are in an unsorted list.
 
@@ -279,51 +255,43 @@ def __extract_list_links(
     download_groups: List[DownloadGroup] = []
     for group in body.find_all(__link_filter_2):
         # Process data about group
-        title: str = group.get_text('\x00').partition('\x00')[0]
+        title: str = group.get_text("\x00").partition("\x00")[0]
         processed_title = extract_filename_data(
-            title,
-            assume_volume_number=False,
-            fix_year=True
+            title, assume_volume_number=False, fix_year=True
         )
 
-        if processed_title['special_version'] == 'cover':
+        if processed_title["special_version"] == "cover":
             continue
 
         result: DownloadGroup = {
             "web_sub_title": title,
             "info": processed_title,
-            "links": {}
+            "links": {},
         }
 
         # Extract links from group
         first_find = True
-        for group_link in group.find_all('a'):
+        for group_link in group.find_all("a"):
             group_link: Tag
-            if group_link.get('href') is None:
+            if group_link.get("href") is None:
                 continue
             link_title = group_link.text.strip().lower()
-            href = create_range(group_link.get('href') or '')[0]
+            href = create_range(group_link.get("href") or "")[0]
             if not href:
                 continue
 
-            match = __check_download_link(
-                link_title,
-                href,
-                torrent_client_available
-            )
+            match = __check_download_link(link_title, href, torrent_client_available)
             if match:
                 if first_find:
                     download_groups.append(result)
                     first_find = False
 
-                result['links'].setdefault(match, []).append(href)
+                result["links"].setdefault(match, []).append(href)
 
     return download_groups
 
 
-def _get_download_groups(
-    soup: BeautifulSoup
-) -> List[DownloadGroup]:
+def _get_download_groups(soup: BeautifulSoup) -> List[DownloadGroup]:
     """From a GC article, extract the download groups.
 
     Args:
@@ -332,13 +300,11 @@ def _get_download_groups(
     Returns:
         List[DownloadGroup]: The download groups.
     """
-    LOGGER.debug('Extracting download groups')
+    LOGGER.debug("Extracting download groups")
 
     torrent_client_available = bool(ExternalClients.get_clients())
 
-    body: Union[Tag, None] = soup.find(
-        'section', {'class': 'post-contents'}
-    ) # type: ignore
+    body: Union[Tag, None] = soup.find("section", {"class": "post-contents"})  # type: ignore
     if not body:
         return []
 
@@ -351,11 +317,11 @@ def _get_download_groups(
             k: v
             for k, v in sorted(
                 group["links"].items(),
-                key=lambda k: service_preference.index(k[0].value)
+                key=lambda k: service_preference.index(k[0].value),
             )
         }
 
-    LOGGER.debug(f'Download groups: {download_groups}')
+    LOGGER.debug(f"Download groups: {download_groups}")
     return download_groups
 
 
@@ -370,14 +336,11 @@ def __sort_link_paths(p: List[DownloadGroup]) -> Tuple[float, int]:
     Returns:
         Tuple[float, int]: The rating (lower is better).
     """
-    if p[0]['info']['special_version']:
+    if p[0]["info"]["special_version"]:
         return (0.0, 0)
 
     issues_covered = sum(
-        reduce(
-            lambda a, b: (b - a) or 1,
-            create_range(entry["info"]["issue_number"])
-        )
+        reduce(lambda a, b: (b - a) or 1, create_range(entry["info"]["issue_number"]))
         for entry in p
         if entry["info"]["issue_number"] is not None
     )
@@ -386,9 +349,7 @@ def __sort_link_paths(p: List[DownloadGroup]) -> Tuple[float, int]:
 
 
 def _create_link_paths(
-    download_groups: List[DownloadGroup],
-    volume_id: int,
-    force_match: bool = False
+    download_groups: List[DownloadGroup], volume_id: int, force_match: bool = False
 ) -> List[List[DownloadGroup]]:
     """
     Based on the download groups, find different "paths" to download
@@ -412,7 +373,7 @@ def _create_link_paths(
         List[List[DownloadGroup]]: The list contains all paths. Each path is
         a list of download groups that don't overlap.
     """
-    LOGGER.debug('Creating link paths')
+    LOGGER.debug("Creating link paths")
 
     # Get info of volume
     volume = Volume(volume_id)
@@ -425,45 +386,36 @@ def _create_link_paths(
         link_paths.append([])
 
     for group in download_groups:
-        if not (force_match or gc_group_filter(
-            group['info'],
-            volume_data,
-            ending_year,
-            volume_issues
-        )):
+        if not (
+            force_match
+            or gc_group_filter(group["info"], volume_data, ending_year, volume_issues)
+        ):
             continue
 
         # Group matches/contains what is desired to be downloaded
-        if (
-            volume_data.special_version == SpecialVersion.VOLUME_AS_ISSUE
-            and (
-                group["info"]['special_version'] == SpecialVersion.TPB
-                or isinstance(group["info"]['volume_number'], tuple)
-            )
+        if volume_data.special_version == SpecialVersion.VOLUME_AS_ISSUE and (
+            group["info"]["special_version"] == SpecialVersion.TPB
+            or isinstance(group["info"]["volume_number"], tuple)
         ):
             group["info"]["issue_number"] = group["info"]["volume_number"]
             group["info"]["volume_number"] = volume_data.volume_number
             group["info"]["special_version"] = SpecialVersion.VOLUME_AS_ISSUE.value
 
         if (
-            group["info"]['special_version'] is not None
-            and group["info"]['special_version']
-                != SpecialVersion.VOLUME_AS_ISSUE
-            and volume_data.special_version in (
-                SpecialVersion.HARD_COVER,
-                SpecialVersion.ONE_SHOT
-            )
+            group["info"]["special_version"] is not None
+            and group["info"]["special_version"] != SpecialVersion.VOLUME_AS_ISSUE
+            and volume_data.special_version
+            in (SpecialVersion.HARD_COVER, SpecialVersion.ONE_SHOT)
         ):
-            group["info"]['special_version'] = volume_data.special_version.value
+            group["info"]["special_version"] = volume_data.special_version.value
 
         if force_match:
             # Add all to the same group
             link_paths[0].append(group)
 
         elif (
-            group["info"]['special_version'] is not None
-            and group["info"]['special_version']
-            != SpecialVersion.VOLUME_AS_ISSUE
+            group["info"]["special_version"] is not None
+            and group["info"]["special_version"] != SpecialVersion.VOLUME_AS_ISSUE
         ):
             link_paths.append([group])
 
@@ -474,13 +426,13 @@ def _create_link_paths(
                 for entry in path:
                     if entry["info"]["special_version"] not in (
                         SpecialVersion.NORMAL,
-                        SpecialVersion.VOLUME_AS_ISSUE
+                        SpecialVersion.VOLUME_AS_ISSUE,
                     ):
                         break
 
                     elif check_overlapping_issues(
-                        entry["info"]["issue_number"], # type: ignore
-                        group["info"]["issue_number"] # type: ignore
+                        entry["info"]["issue_number"],  # type: ignore
+                        group["info"]["issue_number"],  # type: ignore
                     ):
                         break
 
@@ -494,13 +446,12 @@ def _create_link_paths(
 
     link_paths.sort(key=__sort_link_paths)
 
-    LOGGER.debug(f'Link paths: {link_paths}')
+    LOGGER.debug(f"Link paths: {link_paths}")
     return link_paths
 
 
 async def __purify_link(
-    source: GCDownloadSource,
-    link: str
+    source: GCDownloadSource, link: str
 ) -> Tuple[str, Type[Download]]:
     """Extract the link that directly leads to the download from the link
     in the GC article.
@@ -516,11 +467,8 @@ async def __purify_link(
         Tuple[str, Type[Download]]: The pure link, and the download class for
         the correct service.
     """
-    LOGGER.debug(f'Purifying link: {link}')
-    if (
-        source == GCDownloadSource.GETCOMICS_TORRENT
-        and link.startswith("magnet:?")
-    ):
+    LOGGER.debug(f"Purifying link: {link}")
+    if source == GCDownloadSource.GETCOMICS_TORRENT and link.startswith("magnet:?"):
         # Direct magnet link
         return link, TorrentDownload
 
@@ -543,11 +491,11 @@ async def __purify_link(
         return url, MegaDownload
 
     elif source == GCDownloadSource.MEDIAFIRE:
-        if 'error.php' in url:
+        if "error.php" in url:
             # Link is broken
             raise LinkBroken(BlocklistReason.LINK_BROKEN)
 
-        elif '/folder/' in url:
+        elif "/folder/" in url:
             # Folder download
             return url, MediaFireFolderDownload
 
@@ -562,7 +510,7 @@ async def __purify_link(
         return url, WeTransferDownload
 
     elif source == GCDownloadSource.PIXELDRAIN:
-        if '/l/' in url:
+        if "/l/" in url:
             # Folder download
             return url, PixelDrainFolderDownload
 
@@ -576,8 +524,10 @@ async def __purify_link(
         # Link is to torrent file
         hash = sha1(bencode(get_torrent_info(await r.read()))).hexdigest()
         return (
-            "magnet:?xt=urn:btih:" + hash + "&tr=udp://tracker.cyberia.is:6969/announce&tr=udp://tracker.port443.xyz:6969/announce&tr=http://tracker3.itzmx.com:6961/announce&tr=udp://tracker.moeking.me:6969/announce&tr=http://vps02.net.orel.ru:80/announce&tr=http://tracker.openzim.org:80/announce&tr=udp://tracker.skynetcloud.tk:6969/announce&tr=https://1.tracker.eu.org:443/announce&tr=https://3.tracker.eu.org:443/announce&tr=http://re-tracker.uz:80/announce&tr=https://tracker.parrotsec.org:443/announce&tr=udp://explodie.org:6969/announce&tr=udp://tracker.filemail.com:6969/announce&tr=udp://tracker.nyaa.uk:6969/announce&tr=udp://retracker.netbynet.ru:2710/announce&tr=http://tracker.gbitt.info:80/announce&tr=http://tracker2.dler.org:80/announce",
-            TorrentDownload
+            "magnet:?xt=urn:btih:"
+            + hash
+            + "&tr=udp://tracker.cyberia.is:6969/announce&tr=udp://tracker.port443.xyz:6969/announce&tr=http://tracker3.itzmx.com:6961/announce&tr=udp://tracker.moeking.me:6969/announce&tr=http://vps02.net.orel.ru:80/announce&tr=http://tracker.openzim.org:80/announce&tr=udp://tracker.skynetcloud.tk:6969/announce&tr=https://1.tracker.eu.org:443/announce&tr=https://3.tracker.eu.org:443/announce&tr=http://re-tracker.uz:80/announce&tr=https://tracker.parrotsec.org:443/announce&tr=udp://explodie.org:6969/announce&tr=udp://tracker.filemail.com:6969/announce&tr=udp://tracker.nyaa.uk:6969/announce&tr=udp://retracker.netbynet.ru:2710/announce&tr=http://tracker.gbitt.info:80/announce&tr=http://tracker2.dler.org:80/announce",
+            TorrentDownload,
         )
 
     else:
@@ -592,7 +542,7 @@ async def __purify_download_group(
     issue_id: Union[int, None],
     web_link: str,
     web_title: Union[str, None],
-    forced_match: bool = False
+    forced_match: bool = False,
 ) -> Tuple[Union[Download, None], bool]:
     """Turn a download group into a working link and client for the link.
 
@@ -618,7 +568,7 @@ async def __purify_download_group(
         limit of a service was reached.
     """
     limit_reached = False
-    for source, links in group['links'].items():
+    for source, links in group["links"].items():
         for link in iter_commit(links):
             try:
                 pure_link, DownloadClass = await __purify_link(source, link)
@@ -628,12 +578,12 @@ async def __purify_download_group(
                 add_to_blocklist(
                     web_link=web_link,
                     web_title=web_title,
-                    web_sub_title=group['web_sub_title'],
+                    web_sub_title=group["web_sub_title"],
                     download_link=link,
                     source=source,
                     volume_id=volume_id,
                     issue_id=issue_id,
-                    reason=lb.reason
+                    reason=lb.reason,
                 )
                 continue
 
@@ -642,12 +592,12 @@ async def __purify_download_group(
                     download_link=pure_link,
                     volume_id=volume_id,
                     covered_issues=group["info"]["issue_number"],
-                    source_type=source, # type: ignore
+                    source_type=source,  # type: ignore
                     source_name=source.value,
                     web_link=web_link,
                     web_title=web_title,
-                    web_sub_title=group['web_sub_title'],
-                    forced_match=forced_match
+                    web_sub_title=group["web_sub_title"],
+                    forced_match=forced_match,
                 )
 
             except LinkBroken as lb:
@@ -655,12 +605,12 @@ async def __purify_download_group(
                 add_to_blocklist(
                     web_link=web_link,
                     web_title=web_title,
-                    web_sub_title=group['web_sub_title'],
+                    web_sub_title=group["web_sub_title"],
                     download_link=pure_link,
                     source=source,
                     volume_id=volume_id,
                     issue_id=issue_id,
-                    reason=lb.reason
+                    reason=lb.reason,
                 )
 
             except IssueNotFound:
@@ -685,7 +635,7 @@ async def _test_paths(
     web_title: Union[str, None],
     volume_id: int,
     issue_id: Union[int, None] = None,
-    forced_match: bool = False
+    forced_match: bool = False,
 ) -> List[Download]:
     """Test the links of the paths and determine, based on which links work,
     which path to go for.
@@ -721,22 +671,28 @@ async def _test_paths(
     downloads: Tuple[Union[Download, None]] = tuple()
     limit_reached: Tuple[bool] = tuple()
     for path in link_paths:
-        downloads, limit_reached = zip(*(await gather(*(
-            __purify_download_group(
-                group,
-                volume_id,
-                issue_id,
-                web_link,
-                web_title,
-                forced_match
+        downloads, limit_reached = zip(
+            *(
+                await gather(
+                    *(
+                        __purify_download_group(
+                            group,
+                            volume_id,
+                            issue_id,
+                            web_link,
+                            web_title,
+                            forced_match,
+                        )
+                        for group in path
+                    )
+                )
             )
-            for group in path
-        ))))
+        )
 
         if not downloads:
             continue
 
-        LOGGER.debug(f'Chosen links: {downloads}')
+        LOGGER.debug(f"Chosen links: {downloads}")
         return [d for d in downloads if d is not None]
 
     # Nothing worked
@@ -747,10 +703,7 @@ async def _test_paths(
 
 
 # region Searching
-async def search_getcomics(
-    session: AsyncSession,
-    query: str
-) -> List[SearchResultData]:
+async def search_getcomics(session: AsyncSession, query: str) -> List[SearchResultData]:
     """Give the search results from GC for the query.
 
     Args:
@@ -761,22 +714,13 @@ async def search_getcomics(
         List[SearchResultData]: The search results.
     """
     # Fetch first page and determine max pages
-    first_page = await session.get_text(
-        Constants.GC_SITE_URL,
-        params={"s": query}
-    )
+    first_page = await session.get_text(Constants.GC_SITE_URL, params={"s": query})
     first_soup = BeautifulSoup(first_page, "html.parser")
-    max_page = min(
-        _get_max_page(first_soup),
-        10
-    )
+    max_page = min(_get_max_page(first_soup), 10)
 
     # Fetch pages beyond first concurrently
     other_tasks = [
-        session.get_text(
-            f"{Constants.GC_SITE_URL}/page/{page}",
-            params={"s": query}
-        )
+        session.get_text(f"{Constants.GC_SITE_URL}/page/{page}", params={"s": query})
         for page in range(2, max_page + 1)
     ]
 
@@ -785,27 +729,19 @@ async def search_getcomics(
         other_htmls = await gather(*other_tasks)
     else:
         # FlareSolverr not available, run at sequencial speed
-        other_htmls = [
-            await task
-            for task in other_tasks
-        ]
+        other_htmls = [await task for task in other_tasks]
 
-    other_soups = [
-        BeautifulSoup(html, "html.parser")
-        for html in other_htmls
-    ]
+    other_soups = [BeautifulSoup(html, "html.parser") for html in other_htmls]
 
     # Process the search results on each page
     formatted_results: List[SearchResultData] = [
         {
             **extract_filename_data(
-                article[1],
-                assume_volume_number=False,
-                fix_year=True
+                article[1], assume_volume_number=False, fix_year=True
             ),
             "link": article[0],
             "display_title": article[1],
-            "source": Constants.GC_SOURCE_TERM
+            "source": Constants.GC_SOURCE_TERM,
         }
         for soup in (first_soup, *other_soups)
         for article in _get_articles(soup)
@@ -842,7 +778,7 @@ class GetComicsPage:
                 if not response.ok:
                     raise ClientError
 
-                soup = BeautifulSoup(await response.text(), 'html.parser')
+                soup = BeautifulSoup(await response.text(), "html.parser")
 
             except ClientError:
                 raise FailedGCPage(FailReason.BROKEN)
@@ -855,7 +791,7 @@ class GetComicsPage:
         self,
         volume_id: int,
         issue_id: Union[int, None] = None,
-        force_match: bool = False
+        force_match: bool = False,
     ) -> List[Download]:
         """Create downloads from the links on the page for a certain volume
         (and issue if given).
@@ -880,11 +816,7 @@ class GetComicsPage:
             List[Download]: The list of downloads coming from the GC page, for
             the volume.
         """
-        link_paths = _create_link_paths(
-            self.download_groups,
-            volume_id,
-            force_match
-        )
+        link_paths = _create_link_paths(self.download_groups, volume_id, force_match)
 
         if not link_paths:
             raise FailedGCPage(FailReason.NO_MATCHES)
@@ -895,7 +827,7 @@ class GetComicsPage:
             web_title=self.title,
             volume_id=volume_id,
             issue_id=issue_id,
-            forced_match=force_match
+            forced_match=force_match,
         )
 
         return result

@@ -13,8 +13,11 @@ from typing import Dict, List, Tuple, Type, Union
 
 from flask import Flask
 
-from backend.base.custom_exceptions import (InvalidComicVineApiKey,
-                                            TaskNotDeletable, TaskNotFound)
+from backend.base.custom_exceptions import (
+    InvalidComicVineApiKey,
+    TaskNotDeletable,
+    TaskNotFound,
+)
 from backend.base.helpers import Singleton, get_subclasses
 from backend.base.logging import LOGGER
 from backend.features.download_queue import DownloadHandler
@@ -35,17 +38,14 @@ class Task(ABC):
 
     @property
     @abstractmethod
-    def volume_id(self) -> Union[int, None]:
-        ...
+    def volume_id(self) -> Union[int, None]: ...
 
     @property
     @abstractmethod
-    def issue_id(self) -> Union[int, None]:
-        ...
+    def issue_id(self) -> Union[int, None]: ...
 
     @abstractmethod
-    def __init__(self, **kwargs) -> None:
-        ...
+    def __init__(self, **kwargs) -> None: ...
 
     @abstractmethod
     def run(self) -> Union[None, List[Tuple[str, int, Union[int, None]]]]:
@@ -59,6 +59,7 @@ class Task(ABC):
         """
         ...
 
+
 # =====================
 # Issue tasks
 # =====================
@@ -68,10 +69,10 @@ class AutoSearchIssue(Task):
     "Do an automatic search for an issue"
 
     stop = False
-    message = ''
-    action = 'auto_search_issue'
-    display_title = 'Auto Search'
-    category = 'download'
+    message = ""
+    action = "auto_search_issue"
+    display_title = "Auto Search"
+    category = "download"
 
     @property
     def volume_id(self) -> int:
@@ -95,15 +96,14 @@ class AutoSearchIssue(Task):
     def run(self) -> List[Tuple[str, int, Union[int, None]]]:
         volume_title = Volume(self._volume_id).vd.title
         issue_number = Issue(self._issue_id).get_data().issue_number
-        self.message = f'Searching for {volume_title} #{issue_number}'
+        self.message = f"Searching for {volume_title} #{issue_number}"
         WebSocket().update_task_status(self)
 
         # Get search results and download them
         results = auto_search(self._volume_id, self._issue_id)
         if results:
             return [
-                (result['link'], self._volume_id, self._issue_id)
-                for result in results
+                (result["link"], self._volume_id, self._issue_id) for result in results
             ]
         return []
 
@@ -112,10 +112,10 @@ class MassRenameIssue(Task):
     "Trigger a mass rename for an issue"
 
     stop = False
-    message = ''
-    action = 'mass_rename_issue'
-    display_title = 'Mass Rename'
-    category = ''
+    message = ""
+    action = "mass_rename_issue"
+    display_title = "Mass Rename"
+    category = ""
 
     @property
     def volume_id(self) -> int:
@@ -126,10 +126,7 @@ class MassRenameIssue(Task):
         return self._issue_id
 
     def __init__(
-        self,
-        volume_id: int,
-        issue_id: int,
-        filepath_filter: List[str] = []
+        self, volume_id: int, issue_id: int, filepath_filter: List[str] = []
     ) -> None:
         """Create the task
 
@@ -148,14 +145,14 @@ class MassRenameIssue(Task):
     def run(self) -> None:
         volume_title = Volume(self._volume_id).vd.title
         issue_number = Issue(self._issue_id).get_data().issue_number
-        self.message = f'Renaming files for {volume_title} #{issue_number}'
+        self.message = f"Renaming files for {volume_title} #{issue_number}"
         WebSocket().update_task_status(self)
 
         mass_rename(
             self._volume_id,
             self._issue_id,
             filepath_filter=self.filepath_filter,
-            update_websocket=True
+            update_websocket=True,
         )
 
         return
@@ -165,10 +162,10 @@ class MassConvertIssue(Task):
     "Trigger a mass convert for an issue"
 
     stop = False
-    message = ''
-    action = 'mass_convert_issue'
-    display_title = 'Mass Convert'
-    category = ''
+    message = ""
+    action = "mass_convert_issue"
+    display_title = "Mass Convert"
+    category = ""
 
     @property
     def volume_id(self) -> int:
@@ -179,10 +176,7 @@ class MassConvertIssue(Task):
         return self._issue_id
 
     def __init__(
-        self,
-        volume_id: int,
-        issue_id: int,
-        filepath_filter: List[str] = []
+        self, volume_id: int, issue_id: int, filepath_filter: List[str] = []
     ) -> None:
         """Create the task
 
@@ -201,17 +195,18 @@ class MassConvertIssue(Task):
     def run(self) -> None:
         volume_title = Volume(self._volume_id).vd.title
         issue_number = Issue(self._issue_id).get_data().issue_number
-        self.message = f'Converting files for {volume_title} #{issue_number}'
+        self.message = f"Converting files for {volume_title} #{issue_number}"
         WebSocket().update_task_status(self)
 
         mass_convert(
             self._volume_id,
             self._issue_id,
             filepath_filter=self.filepath_filter,
-            update_websocket=True
+            update_websocket=True,
         )
 
         return
+
 
 # =====================
 # Volume tasks
@@ -222,10 +217,10 @@ class AutoSearchVolume(Task):
     "Do an automatic search for a volume"
 
     stop = False
-    message = ''
-    action = 'auto_search'
-    display_title = 'Auto Search'
-    category = 'download'
+    message = ""
+    action = "auto_search"
+    display_title = "Auto Search"
+    category = "download"
 
     @property
     def volume_id(self) -> int:
@@ -246,16 +241,13 @@ class AutoSearchVolume(Task):
 
     def run(self) -> List[Tuple[str, int, Union[int, None]]]:
         volume_title = Volume(self._volume_id).vd.title
-        self.message = f'Searching for {volume_title}'
+        self.message = f"Searching for {volume_title}"
         WebSocket().update_task_status(self)
 
         # Get search results and download them
         results = auto_search(self._volume_id)
         if results:
-            return [
-                (result['link'], self._volume_id, None)
-                for result in results
-            ]
+            return [(result["link"], self._volume_id, None) for result in results]
         return []
 
 
@@ -263,10 +255,10 @@ class RefreshAndScanVolume(Task):
     "Trigger a refresh and scan for a volume"
 
     stop = False
-    message = ''
-    action = 'refresh_and_scan'
-    display_title = 'Refresh And Scan'
-    category = ''
+    message = ""
+    action = "refresh_and_scan"
+    display_title = "Refresh And Scan"
+    category = ""
 
     @property
     def volume_id(self) -> int:
@@ -287,7 +279,7 @@ class RefreshAndScanVolume(Task):
 
     def run(self) -> None:
         volume_title = Volume(self._volume_id).vd.title
-        self.message = f'Updating info on {volume_title}'
+        self.message = f"Updating info on {volume_title}"
         WebSocket().update_task_status(self)
 
         try:
@@ -302,10 +294,10 @@ class MassRenameVolume(Task):
     "Trigger a mass rename for a volume"
 
     stop = False
-    message = ''
-    action = 'mass_rename'
-    display_title = 'Mass Rename'
-    category = ''
+    message = ""
+    action = "mass_rename"
+    display_title = "Mass Rename"
+    category = ""
 
     @property
     def volume_id(self) -> int:
@@ -315,11 +307,7 @@ class MassRenameVolume(Task):
     def issue_id(self) -> None:
         return None
 
-    def __init__(
-        self,
-        volume_id: int,
-        filepath_filter: List[str] = []
-    ) -> None:
+    def __init__(self, volume_id: int, filepath_filter: List[str] = []) -> None:
         """Create the task
 
         Args:
@@ -334,13 +322,11 @@ class MassRenameVolume(Task):
 
     def run(self) -> None:
         volume_title = Volume(self._volume_id).vd.title
-        self.message = f'Renaming files for {volume_title}'
+        self.message = f"Renaming files for {volume_title}"
         WebSocket().update_task_status(self)
 
         mass_rename(
-            self._volume_id,
-            filepath_filter=self.filepath_filter,
-            update_websocket=True
+            self._volume_id, filepath_filter=self.filepath_filter, update_websocket=True
         )
 
         return
@@ -350,10 +336,10 @@ class MassConvertVolume(Task):
     "Trigger a mass convert for a volume"
 
     stop = False
-    message = ''
-    action = 'mass_convert'
-    display_title = 'Mass Convert'
-    category = ''
+    message = ""
+    action = "mass_convert"
+    display_title = "Mass Convert"
+    category = ""
 
     @property
     def volume_id(self) -> int:
@@ -363,11 +349,7 @@ class MassConvertVolume(Task):
     def issue_id(self) -> None:
         return None
 
-    def __init__(
-        self,
-        volume_id: int,
-        filepath_filter: List[str] = []
-    ) -> None:
+    def __init__(self, volume_id: int, filepath_filter: List[str] = []) -> None:
         """Create the task
 
         Args:
@@ -382,16 +364,15 @@ class MassConvertVolume(Task):
 
     def run(self) -> None:
         volume_title = Volume(self._volume_id).vd.title
-        self.message = f'Converting files for {volume_title}'
+        self.message = f"Converting files for {volume_title}"
         WebSocket().update_task_status(self)
 
         mass_convert(
-            self._volume_id,
-            filepath_filter=self.filepath_filter,
-            update_websocket=True
+            self._volume_id, filepath_filter=self.filepath_filter, update_websocket=True
         )
 
         return
+
 
 # =====================
 # Library tasks
@@ -402,10 +383,10 @@ class UpdateAll(Task):
     "Trigger a refresh and scan for each volume in the library"
 
     stop = False
-    message = ''
-    action = 'update_all'
-    display_title = 'Update All'
-    category = ''
+    message = ""
+    action = "update_all"
+    display_title = "Update All"
+    category = ""
 
     @property
     def volume_id(self) -> None:
@@ -426,14 +407,11 @@ class UpdateAll(Task):
         return
 
     def run(self) -> None:
-        self.message = f'Updating info on all volumes'
+        self.message = "Updating info on all volumes"
         WebSocket().update_task_status(self)
 
         try:
-            refresh_and_scan(
-                update_websocket=True,
-                allow_skipping=self.allow_skipping
-            )
+            refresh_and_scan(update_websocket=True, allow_skipping=self.allow_skipping)
         except InvalidComicVineApiKey:
             pass
 
@@ -444,10 +422,10 @@ class SearchAll(Task):
     "Trigger an automatic search for each volume in the library"
 
     stop = False
-    message = ''
-    action = 'search_all'
-    display_title = 'Search All'
-    category = 'download'
+    message = ""
+    action = "search_all"
+    display_title = "Search All"
+    category = "download"
 
     @property
     def volume_id(self) -> None:
@@ -462,23 +440,18 @@ class SearchAll(Task):
 
     def run(self) -> List[Tuple[str, int, Union[int, None]]]:
         cursor = get_db(force_new=True)
-        cursor.execute(
-            "SELECT id, title FROM volumes WHERE monitored = 1;"
-        )
+        cursor.execute("SELECT id, title FROM volumes WHERE monitored = 1;")
         downloads: List[Tuple[str, int, Union[int, None]]] = []
         ws = WebSocket()
         for volume_id, volume_title in cursor:
             if self.stop:
                 break
-            self.message = f'Searching for {volume_title}'
+            self.message = f"Searching for {volume_title}"
             ws.update_task_status(self)
             # Get search results and download them
             results = auto_search(volume_id)
             if results:
-                downloads += [
-                    (result['link'], volume_id, None)
-                    for result in results
-                ]
+                downloads += [(result["link"], volume_id, None) for result in results]
         return downloads
 
 
@@ -487,10 +460,7 @@ class SearchAll(Task):
 # =====================
 # Maps action attr to class for all tasks
 # Only works for classes that directly inherit from Task
-task_library: Dict[str, Type[Task]] = {
-    c.action: c
-    for c in get_subclasses(Task)
-}
+task_library: Dict[str, Type[Task]] = {c.action: c for c in get_subclasses(Task)}
 
 
 class TaskHandler(metaclass=Singleton):
@@ -501,7 +471,7 @@ class TaskHandler(metaclass=Singleton):
 
     def __init__(self) -> None:
         """Setup the handler"""
-        handler_context = Flask('handler')
+        handler_context = Flask("handler")
         handler_context.teardown_appcontext(close_db)
         self.context = handler_context.app_context
         return
@@ -512,7 +482,7 @@ class TaskHandler(metaclass=Singleton):
         Args:
             task (Task): The task to run
         """
-        LOGGER.debug(f'Running task {task.display_title}')
+        LOGGER.debug(f"Running task {task.display_title}")
         with self.context():
             socket = WebSocket()
             try:
@@ -522,22 +492,21 @@ class TaskHandler(metaclass=Singleton):
                 # Note in history
                 cursor.execute(
                     "INSERT INTO task_history VALUES (?,?,?);",
-                    (task.action, task.display_title, round(time()))
+                    (task.action, task.display_title, round(time())),
                 )
 
                 if not task.stop:
-                    if task.category == 'download' and result:
+                    if task.category == "download" and result:
                         DownloadHandler().add_multiple(
                             (link, volume_id, issue_id, False)
                             for link, volume_id, issue_id in result
                         )
 
-                    LOGGER.info(f'Finished task {task.display_title}')
+                    LOGGER.info(f"Finished task {task.display_title}")
 
             except Exception:
-                LOGGER.exception(
-                    'An error occured while trying to run a task: ')
-                task.message = 'AN ERROR OCCURED'
+                LOGGER.exception("An error occured while trying to run a task: ")
+                task.message = "AN ERROR OCCURED"
                 socket.update_task_status(task)
                 sleep(1.5)
 
@@ -559,9 +528,9 @@ class TaskHandler(metaclass=Singleton):
             return
 
         first_entry = self.queue[0]
-        if first_entry['status'] != 'running':
-            first_entry['status'] = 'running'
-            first_entry['thread'].start()
+        if first_entry["status"] != "running":
+            first_entry["status"] = "running"
+            first_entry["thread"].start()
         return
 
     def add(self, task: Task) -> int:
@@ -573,20 +542,16 @@ class TaskHandler(metaclass=Singleton):
         Returns:
             int: The id of the entry in the queue
         """
-        LOGGER.debug(f'Adding task to queue: {task.display_title}')
-        id = self.queue[-1]['id'] + 1 if self.queue else 1
+        LOGGER.debug(f"Adding task to queue: {task.display_title}")
+        id = self.queue[-1]["id"] + 1 if self.queue else 1
         task_data = {
-            'task': task,
-            'id': id,
-            'status': 'queued',
-            'thread': Thread(
-                target=self.__run_task,
-                args=(task,),
-                name="Task Handler"
-            )
+            "task": task,
+            "id": id,
+            "status": "queued",
+            "thread": Thread(target=self.__run_task, args=(task,), name="Task Handler"),
         }
         self.queue.append(task_data)
-        LOGGER.info(f'Added task: {task.display_title} ({id})')
+        LOGGER.info(f"Added task: {task.display_title} ({id})")
         WebSocket().send_task_added(task)
         self._process_queue()
         return id
@@ -604,13 +569,15 @@ class TaskHandler(metaclass=Singleton):
         return any(
             t
             for t in TaskHandler.queue
-            if (isinstance(t['task'], (UpdateAll, SearchAll))
-                or t['task'].volume_id == volume_id)
+            if (
+                isinstance(t["task"], (UpdateAll, SearchAll))
+                or t["task"].volume_id == volume_id
+            )
         )
 
     def __check_intervals(self) -> None:
         "Check if any interval task needs to be run and add to queue if so"
-        LOGGER.debug('Checking task intervals')
+        LOGGER.debug("Checking task intervals")
         with self.context():
             current_time = time()
 
@@ -618,11 +585,11 @@ class TaskHandler(metaclass=Singleton):
             interval_tasks = cursor.execute(
                 "SELECT task_name, interval, next_run FROM task_intervals;"
             ).fetchall()
-            LOGGER.debug(f'Task intervals: {list(map(dict, interval_tasks))}')
+            LOGGER.debug(f"Task intervals: {list(map(dict, interval_tasks))}")
             for task in interval_tasks:
-                if task['next_run'] <= current_time:
+                if task["next_run"] <= current_time:
                     # Add task to queue
-                    task_class = task_library[task['task_name']]
+                    task_class = task_library[task["task_name"]]
                     if task_class is UpdateAll:
                         inst = task_class(allow_skipping=True)
                     else:
@@ -630,10 +597,11 @@ class TaskHandler(metaclass=Singleton):
                     self.add(inst)
 
                     # Update next_run
-                    next_run = round(current_time + task['interval'])
+                    next_run = round(current_time + task["interval"])
                     cursor.execute(
                         "UPDATE task_intervals SET next_run = ? WHERE task_name = ?;",
-                        (next_run, task['task_name']))
+                        (next_run, task["task_name"]),
+                    )
 
         self.handle_intervals()
         return
@@ -641,11 +609,13 @@ class TaskHandler(metaclass=Singleton):
     def handle_intervals(self) -> None:
         "Find next time an interval task needs to be run"
         with self.context():
-            next_run = get_db().execute(
-                "SELECT MIN(next_run) FROM task_intervals"
-            ).fetchone()[0]
+            next_run = (
+                get_db()
+                .execute("SELECT MIN(next_run) FROM task_intervals")
+                .fetchone()[0]
+            )
         timedelta = next_run - round(time()) + 1
-        LOGGER.debug(f'Next interval task is in {timedelta} seconds')
+        LOGGER.debug(f"Next interval task is in {timedelta} seconds")
 
         # Create sleep thread for that time and that will run
         # self.__check_intervals.
@@ -655,14 +625,14 @@ class TaskHandler(metaclass=Singleton):
 
     def stop_handle(self) -> None:
         "Stop the task handler"
-        LOGGER.debug('Stopping task thread')
+        LOGGER.debug("Stopping task thread")
 
         if self.task_interval_waiter:
             self.task_interval_waiter.cancel()
 
         if self.queue:
-            self.queue[0]['task'].stop = True
-            self.queue[0]['thread'].join()
+            self.queue[0]["task"].stop = True
+            self.queue[0]["thread"].join()
 
         return
 
@@ -676,13 +646,13 @@ class TaskHandler(metaclass=Singleton):
             dict: The formatted queue entry
         """
         return {
-            'id': task['id'],
-            'action': task['task'].action,
-            'display_title': task['task'].display_title,
-            'status': task['status'],
-            'message': task['task'].message,
-            'volume_id': task['task'].volume_id,
-            'issue_id': task['task'].issue_id
+            "id": task["id"],
+            "action": task["task"].action,
+            "display_title": task["task"].display_title,
+            "status": task["status"],
+            "message": task["task"].message,
+            "volume_id": task["task"].volume_id,
+            "issue_id": task["task"].issue_id,
         }
 
     def get_all(self) -> List[dict]:
@@ -708,7 +678,7 @@ class TaskHandler(metaclass=Singleton):
                 Formatted using `self.__format_entry()`.
         """
         for entry in self.queue:
-            if entry['id'] == task_id:
+            if entry["id"] == task_id:
                 return self.__format_entry(entry)
         raise TaskNotFound
 
@@ -730,11 +700,11 @@ class TaskHandler(metaclass=Singleton):
         if self.queue[0] == task:
             raise TaskNotDeletable
 
-        task['task'].stop = True
-        task['thread'].join()
+        task["task"].stop = True
+        task["thread"].join()
         self.queue.remove(task)
-        LOGGER.info(f'Removed task: {task["task"].display_name} ({task_id})')
-        WebSocket().send_task_ended(task['task'])
+        LOGGER.info(f"Removed task: {task['task'].display_name} ({task_id})")
+        WebSocket().send_task_ended(task["task"])
         return
 
 
@@ -750,8 +720,10 @@ def get_task_history(offset: int = 0) -> List[dict]:
     Returns:
         List[dict]: The history entries.
     """
-    result = get_db().execute(
-        """
+    result = (
+        get_db()
+        .execute(
+            """
         SELECT
             task_name, display_title, run_at
         FROM task_history
@@ -759,14 +731,16 @@ def get_task_history(offset: int = 0) -> List[dict]:
         LIMIT 50
         OFFSET ?;
         """,
-        (offset * 50,)
-    ).fetchalldict()
+            (offset * 50,),
+        )
+        .fetchalldict()
+    )
     return result
 
 
 def delete_task_history() -> None:
     "Delete the complete task history"
-    LOGGER.info(f'Deleting task history')
+    LOGGER.info("Deleting task history")
     get_db().execute("DELETE FROM task_history;")
     return
 
@@ -777,8 +751,10 @@ def get_task_planning() -> List[dict]:
     Returns:
         List[dict]: List of interval tasks and their planning
     """
-    tasks = get_db().execute(
-        """
+    tasks = (
+        get_db()
+        .execute(
+            """
         SELECT
             i.task_name, interval, next_run, run_at AS last_run
         FROM task_intervals i
@@ -791,9 +767,11 @@ def get_task_planning() -> List[dict]:
         ) h
         ON i.task_name = h.task_name;
         """
-    ).fetchalldict()
+        )
+        .fetchalldict()
+    )
 
     for t in tasks:
-        t['display_name'] = task_library[t['task_name']].display_title
+        t["display_name"] = task_library[t["task_name"]].display_title
 
     return tasks

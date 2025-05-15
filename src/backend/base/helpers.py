@@ -9,11 +9,24 @@ from __future__ import annotations
 from asyncio import sleep
 from collections import deque
 from multiprocessing.pool import Pool
-from os import cpu_count, sep, symlink
-from os.path import dirname, exists, join
-from sys import base_exec_prefix, platform, version_info
-from typing import (TYPE_CHECKING, Any, Callable, Collection, Dict, Generator,
-                    Iterable, Iterator, List, Mapping, Sequence, Tuple, Union)
+from os import cpu_count, sep
+from os.path import dirname
+from sys import version_info
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Collection,
+    Dict,
+    Generator,
+    Iterable,
+    Iterator,
+    List,
+    Mapping,
+    Sequence,
+    Tuple,
+    Union,
+)
 from urllib.parse import unquote
 
 from aiohttp import ClientError, ClientSession
@@ -37,24 +50,26 @@ def get_python_version() -> str:
     Returns:
         str: The python version
     """
-    return ".".join(
-        str(i) for i in list(version_info)
-    )
+    return ".".join(str(i) for i in list(version_info))
 
 
 def check_python_version() -> bool:
     """Check if the python version that is used is a minimum version.
 
     Returns:
-        bool: Whether or not the python version is version 3.11 or above or not.
+        bool: Whether or not the python version is version 3.12 or above or not.
     """
-    if not (version_info.major == 3 and version_info.minor >= 11):
+    if not (version_info.major == 3 and version_info.minor >= 12):
         LOGGER.critical(
-            'The minimum python version required is python3.11 '
-            '(currently '
-            + str(version_info.major) + '.' + str(version_info.minor) + '.' + str(version_info.micro) + # noqa
-            ').'
-        ) # noqa
+            "The minimum python version required is python3.12 "
+            "(currently "
+            + str(version_info.major)
+            + "."
+            + str(version_info.minor)
+            + "."
+            + str(version_info.micro)  # noqa
+            + ")."
+        )  # noqa
         return False
     return True
 
@@ -63,7 +78,7 @@ def get_subclasses(
     *classes: type,
     include_self: bool = False,
     recursive: bool = True,
-    only_leafs: bool = False
+    only_leafs: bool = False,
 ) -> List[type]:
     """Get subclasses of the given classes.
 
@@ -84,11 +99,9 @@ def get_subclasses(
         result.extend(classes)
 
     if not recursive:
-        result.extend((
-            subclass
-            for current in classes
-            for subclass in current.__subclasses__()
-        ))
+        result.extend(
+            (subclass for current in classes for subclass in current.__subclasses__())
+        )
         return result
 
     to_do = deque(classes)
@@ -105,23 +118,21 @@ def get_subclasses(
     return result
 
 
-def batched(l: Sequence[T], n: int) -> Generator[Sequence[T], Any, Any]:
-    """Iterate over l in batches.
+def batched(l_val: Sequence[T], n: int) -> Generator[Sequence[T], Any, Any]:
+    """Iterate over l_val in batches.
 
     Args:
-        l (Sequence[T]): The list to iterate over.
+        l_val (Sequence[T]): The list to iterate over.
         n (int): The batch size.
 
     Yields:
-        Generator[Sequence[T], Any, Any]: A batch of size n from l
+        Generator[Sequence[T], Any, Any]: A batch of size n from l_val
     """
-    for ndx in range(0, len(l), n):
-        yield l[ndx: ndx + n]
+    for ndx in range(0, len(l_val), n):
+        yield l_val[ndx : ndx + n]
 
 
-def reversed_tuples(
-    i: Iterable[Tuple[T, U]]
-) -> Generator[Tuple[U, T], Any, Any]:
+def reversed_tuples(i: Iterable[Tuple[T, U]]) -> Generator[Tuple[U, T], Any, Any]:
     """Yield sub-tuples in reversed order.
 
     Args:
@@ -134,9 +145,7 @@ def reversed_tuples(
         yield entry_2, entry_1
 
 
-def get_first_of_range(
-    n: Union[T, Tuple[T, ...], List[T]]
-) -> T:
+def get_first_of_range(n: Union[T, Tuple[T, ...], List[T]]) -> T:
     """Get the first element from a variable that could potentially be a range,
     but could also be a single value. In the case of a single value, the value
     is returned.
@@ -153,9 +162,7 @@ def get_first_of_range(
         return n
 
 
-def create_range(
-    n: Union[T, Tuple[T, ...], List[T]]
-) -> Sequence[T]:
+def create_range(n: Union[T, Tuple[T, ...], List[T]]) -> Sequence[T]:
     """Create range if input isn't already.
 
     Args:
@@ -203,8 +210,7 @@ def check_filter(element: T, collection: Collection[T]) -> bool:
 
 
 def filtered_iter(
-    elements: Iterable[T],
-    collection: Collection[T]
+    elements: Iterable[T], collection: Collection[T]
 ) -> Generator[T, Any, Any]:
     """Yields elements from `elements` but an element is only yielded if
     `collection` is empty or if the element is in `collection`. Useful as
@@ -238,11 +244,12 @@ def normalize_string(s: str) -> str:
     Returns:
         str: Normalized string.
     """
-    return (unquote(s)
-        .replace('_28', '(')
-        .replace('_29', ')')
-        .replace('–', '-')
-        .replace('’', "'")
+    return (
+        unquote(s)
+        .replace("_28", "(")
+        .replace("_29", ")")
+        .replace("–", "-")
+        .replace("’", "'")
         .strip()
     )
 
@@ -258,13 +265,7 @@ def normalize_number(s: str) -> str:
     Returns:
         str: Normalized string.
     """
-    return (s
-        .replace(',', '.')
-        .replace('?', '0')
-        .rstrip('.')
-        .strip()
-        .lower()
-    )
+    return s.replace(",", ".").replace("?", "0").rstrip(".").strip().lower()
 
 
 def normalize_year(s: str) -> Union[int, None]:
@@ -281,26 +282,19 @@ def normalize_year(s: str) -> Union[int, None]:
     if not s:
         return None
 
-    s = (s
-        .strip()
-        .replace('-', '0')
-        .replace(',', '/')
-        .replace('?', '')
-        .replace('>', '')
-        .replace('<', '')
-        .replace('+', '')
-        .replace('.', '')
+    s = (
+        s.strip()
+        .replace("-", "0")
+        .replace(",", "/")
+        .replace("?", "")
+        .replace(">", "")
+        .replace("<", "")
+        .replace("+", "")
+        .replace(".", "")
     )
 
-    if '/' in s:
-        s = next(
-            (
-                e
-                for e in s.split('/')
-                if len(e) == 4
-            ),
-            ''
-        )
+    if "/" in s:
+        s = next((e for e in s.split("/") if len(e) == 4), "")
 
     if s and s.isdigit():
         return int(s)
@@ -317,16 +311,13 @@ def normalize_base_url(base_url: str) -> str:
     Returns:
         str: Normalized base URL.
     """
-    result = base_url.rstrip('/')
-    if not result.startswith(('http://', 'https://')):
-        result = f'http://{result}'
+    result = base_url.rstrip("/")
+    if not result.startswith(("http://", "https://")):
+        result = f"http://{result}"
     return result
 
 
-def extract_year_from_date(
-    date: Union[str, None],
-    default: T = None
-) -> Union[int, T]:
+def extract_year_from_date(date: Union[str, None], default: T = None) -> Union[int, T]:
     """Get the year from a date in the format YYYY-MM-DD
 
     Args:
@@ -339,7 +330,7 @@ def extract_year_from_date(
     """
     if date:
         try:
-            return int(date.split('-')[0])
+            return int(date.split("-")[0])
         except ValueError:
             return default
     else:
@@ -365,14 +356,14 @@ def to_number_cv_id(ids: Iterable[Union[str, int]]) -> List[int]:
             result.append(i)
             continue
 
-        if i.startswith('cv:'):
-            i = i.partition(':')[2]
+        if i.startswith("cv:"):
+            i = i.partition(":")[2]
 
         if i.isdigit():
             result.append(int(i))
 
-        elif i.startswith('4050-') and i.replace('-', '').isdigit():
-            result.append(int(i.split('4050-')[-1]))
+        elif i.startswith("4050-") and i.replace("-", "").isdigit():
+            result.append(int(i.split("4050-")[-1]))
 
         else:
             raise ValueError
@@ -414,7 +405,7 @@ def to_full_string_cv_id(ids: Iterable[Union[str, int]]) -> List[str]:
 
 def check_overlapping_issues(
     issues_1: Union[float, Tuple[float, float]],
-    issues_2: Union[float, Tuple[float, float]]
+    issues_2: Union[float, Tuple[float, float]],
 ) -> bool:
     """Check if two issues overlap. Both can be single issues or ranges.
 
@@ -434,13 +425,13 @@ def check_overlapping_issues(
         if isinstance(issues_2, (float, int)):
             return issues_1[0] <= issues_2 <= issues_1[1]
         else:
-            return (issues_1[0] <= issues_2[0] <= issues_1[1]
-                or issues_1[0] <= issues_2[1] <= issues_1[1])
+            return (
+                issues_1[0] <= issues_2[0] <= issues_1[1]
+                or issues_1[0] <= issues_2[1] <= issues_1[1]
+            )
 
 
-def first_of_column(
-    columns: Iterable[Sequence[T]]
-) -> List[T]:
+def first_of_column(columns: Iterable[Sequence[T]]) -> List[T]:
     """Get the first element of each sub-array.
 
     Args:
@@ -481,7 +472,7 @@ def get_torrent_info(torrent: bytes) -> Dict[bytes, Any]:
     Returns:
         Dict[bytes, Any]: The info.
     """
-    return bdecode(torrent)[b"info"] # type: ignore
+    return bdecode(torrent)[b"info"]  # type: ignore
 
 
 class Singleton(type):
@@ -510,11 +501,11 @@ class CommaList(list):
         if not value:
             super().__init__([])
         else:
-            super().__init__(value.split(','))
+            super().__init__(value.split(","))
         return
 
     def __str__(self) -> str:
-        return ','.join(self)
+        return ",".join(self)
 
 
 class DictKeyedDict(dict):
@@ -523,15 +514,11 @@ class DictKeyedDict(dict):
     """
 
     def __convert_dict(self, key: Mapping) -> str:
-        converted_key = ','.join(
-            sorted(key.keys()) + sorted(map(str, key.values()))
-        )
+        converted_key = ",".join(sorted(key.keys()) + sorted(map(str, key.values())))
         return converted_key
 
     def __getitem__(self, key: Mapping) -> Any:
-        return super().__getitem__(
-            self.__convert_dict(key)
-        )[1]
+        return super().__getitem__(self.__convert_dict(key))[1]
 
     def get(self, key: Mapping, default: Any = None) -> Any:
         try:
@@ -540,10 +527,7 @@ class DictKeyedDict(dict):
             return default
 
     def __setitem__(self, key: Mapping, value: Any) -> None:
-        return super().__setitem__(
-            self.__convert_dict(key),
-            (key, value)
-        )
+        return super().__setitem__(self.__convert_dict(key), (key, value))
 
     def setdefault(self, key: Mapping, default: Any = None) -> Any:
         if key not in self:
@@ -555,17 +539,15 @@ class DictKeyedDict(dict):
         if not isinstance(key, Mapping):
             return False
 
-        return super().__contains__(
-            self.__convert_dict(key)
-        )
+        return super().__contains__(self.__convert_dict(key))
 
-    def keys(self) -> Iterator[Any]: # type: ignore
+    def keys(self) -> Iterator[Any]:  # type: ignore
         return (v[0] for v in super().values())
 
-    def values(self) -> Iterator[Any]: # type: ignore
+    def values(self) -> Iterator[Any]:  # type: ignore
         return (v[1] for v in super().values())
 
-    def items(self) -> Iterator[Tuple[Any, Any]]: # type: ignore
+    def items(self) -> Iterator[Tuple[Any, Any]]:  # type: ignore
         return zip(self.keys(), self.values())
 
 
@@ -584,41 +566,60 @@ class Session(RSession):
 
         retries = Retry(
             total=Constants.TOTAL_RETRIES,
-            backoff_factor=Constants.BACKOFF_FACTOR_RETRIES, # type: ignore
-            status_forcelist=Constants.STATUS_FORCELIST_RETRIES
+            backoff_factor=Constants.BACKOFF_FACTOR_RETRIES,  # type: ignore
+            status_forcelist=Constants.STATUS_FORCELIST_RETRIES,
         )
-        self.mount('http://', HTTPAdapter(max_retries=retries))
-        self.mount('https://', HTTPAdapter(max_retries=retries))
+        self.mount("http://", HTTPAdapter(max_retries=retries))
+        self.mount("https://", HTTPAdapter(max_retries=retries))
 
-        self.headers.update({'User-Agent': Constants.DEFAULT_USERAGENT})
+        self.headers.update({"User-Agent": Constants.DEFAULT_USERAGENT})
 
         return
 
-    def request( # type: ignore
+    def request(  # type: ignore
         self,
-        method, url: str,
-        params=None, data=None, headers: Union[Dict[str, str], None] = None,
-        cookies=None, files=None, auth=None,
-        timeout=None, allow_redirects=True,
-        proxies=None, hooks=None,
-        stream=None, verify=None,
-        cert=None, json=None
+        method,
+        url: str,
+        params=None,
+        data=None,
+        headers: Union[Dict[str, str], None] = None,
+        cookies=None,
+        files=None,
+        auth=None,
+        timeout=None,
+        allow_redirects=True,
+        proxies=None,
+        hooks=None,
+        stream=None,
+        verify=None,
+        cert=None,
+        json=None,
     ):
         ua, cf_cookies = self.fs.get_ua_cookies(url)
-        self.headers.update({'User-Agent': ua})
+        self.headers.update({"User-Agent": ua})
         self.cookies.update(cf_cookies)
 
         for round in range(1, 3):
             result = super().request(
-                method, url, params, data, headers, cookies, files, auth,
-                timeout, allow_redirects, proxies, hooks, stream, verify, cert,
-                json
+                method,
+                url,
+                params,
+                data,
+                headers,
+                cookies,
+                files,
+                auth,
+                timeout,
+                allow_redirects,
+                proxies,
+                hooks,
+                stream,
+                verify,
+                cert,
+                json,
             )
 
-            if (
-                round == 1
-                and result.status_code == 403
-            ):
+            if round == 1 and result.status_code == 403:
                 fs_result = self.fs.handle_cf_block(url, result.headers)
 
                 if not fs_result:
@@ -626,10 +627,10 @@ class Session(RSession):
                     # needed
                     continue
 
-                result.url = fs_result['url']
-                result.status_code = fs_result['status']
-                result._content = fs_result['response'].encode('utf-8')
-                result.headers = CaseInsensitiveDict(fs_result['headers'])
+                result.url = fs_result["url"]
+                result.status_code = fs_result["status"]
+                result._content = fs_result["response"].encode("utf-8")
+                result.headers = CaseInsensitiveDict(fs_result["headers"])
 
             if 400 <= result.status_code < 500:
                 LOGGER.warning(
@@ -637,7 +638,8 @@ class Session(RSession):
                 )
                 LOGGER.debug(
                     f"Request response for {result.request.method} {result.request.url}: %s",
-                    result.text)
+                    result.text,
+                )
 
             return result
 
@@ -651,9 +653,7 @@ class AsyncSession(ClientSession):
     def __init__(self) -> None:
         from backend.implementations.flaresolverr import FlareSolverr
 
-        super().__init__(
-            headers={'User-Agent': Constants.DEFAULT_USERAGENT}
-        )
+        super().__init__(headers={"User-Agent": Constants.DEFAULT_USERAGENT})
 
         self.fs = FlareSolverr()
 
@@ -663,7 +663,7 @@ class AsyncSession(ClientSession):
         sleep_time = Constants.BACKOFF_FACTOR_RETRIES
 
         ua, cf_cookies = self.fs.get_ua_cookies(args[1])
-        self.headers.update({'User-Agent': ua})
+        self.headers.update({"User-Agent": ua})
         self.cookie_jar.update_cookies(cf_cookies)
 
         for round in range(1, Constants.TOTAL_RETRIES + 1):
@@ -686,14 +686,9 @@ class AsyncSession(ClientSession):
                 sleep_time *= 2
                 continue
 
-            if (
-                round == 1
-                and response.status == 403
-            ):
+            if round == 1 and response.status == 403:
                 fs_result = await self.fs.handle_cf_block_async(
-                    self,
-                    args[1],
-                    response.headers
+                    self, args[1], response.headers
                 )
 
                 if not fs_result:
@@ -701,12 +696,10 @@ class AsyncSession(ClientSession):
                     # needed
                     continue
 
-                response._url = URL(fs_result['url'])
-                response.status = fs_result['status']
-                response._body = fs_result['response'].encode('utf-8')
-                response._headers = CIMultiDictProxy(CIMultiDict(
-                    fs_result['headers']
-                ))
+                response._url = URL(fs_result["url"])
+                response.status = fs_result["status"]
+                response._body = fs_result["response"].encode("utf-8")
+                response._headers = CIMultiDictProxy(CIMultiDict(fs_result["headers"]))
 
             if response.status >= 400:
                 LOGGER.warning(
@@ -714,7 +707,7 @@ class AsyncSession(ClientSession):
                 )
                 LOGGER.debug(
                     f"Request response for {args[0]} {args[1]}: %s",
-                    await response.text()
+                    await response.text(),
                 )
 
             return response
@@ -725,10 +718,7 @@ class AsyncSession(ClientSession):
         return self
 
     async def get_text(
-        self,
-        url: str,
-        params: Dict[str, Any] = {},
-        headers: Dict[str, Any] = {}
+        self, url: str, params: Dict[str, Any] = {}, headers: Dict[str, Any] = {}
     ) -> str:
         """Fetch a page and return the body.
 
@@ -746,10 +736,7 @@ class AsyncSession(ClientSession):
             return await response.text()
 
     async def get_content(
-        self,
-        url: str,
-        params: Dict[str, Any] = {},
-        headers: Dict[str, Any] = {}
+        self, url: str, params: Dict[str, Any] = {}, headers: Dict[str, Any] = {}
     ) -> bytes:
         """Fetch a page and return the content in bytes.
 
@@ -778,6 +765,7 @@ class _ContextKeeper(metaclass=Singleton):
             return
 
         from backend.internals.server import setup_process
+
         self.ctx = setup_process(log_level, db_folder, log_folder)
         return
 
@@ -800,10 +788,7 @@ def pool_starmap_func(func, *args):
 
 
 class PortablePool(Pool):
-    def __init__(
-        self,
-        max_processes: Union[int, None] = None
-    ) -> None:
+    def __init__(self, max_processes: Union[int, None] = None) -> None:
         """Create a multiprocessing pool that can run on all OS'es and has
         access to the app context.
 
@@ -817,11 +802,15 @@ class PortablePool(Pool):
         super().__init__(
             processes=(
                 min(cpu_count() or 1, max_processes)
-                if max_processes is not None else
-                None
+                if max_processes is not None
+                else None
             ),
             initializer=_ContextKeeper,
-            initargs=(LOGGER.root.level, dirname(DBConnection.file), dirname(get_log_filepath()))
+            initargs=(
+                LOGGER.root.level,
+                dirname(DBConnection.file),
+                dirname(get_log_filepath()),
+            ),
         )
         return
 
@@ -829,32 +818,22 @@ class PortablePool(Pool):
         self,
         func: Callable[..., U],
         args: Iterable[Any] = (),
-        kwds: Mapping[str, Any] = {}
+        kwds: Mapping[str, Any] = {},
     ) -> U:
         new_args = (func, args)
         new_func = pool_apply_func
         return super().apply(new_func, new_args, kwds)
 
-    def apply_async(
-        self,
-        func,
-        args=(),
-        kwds={},
-        callback=None,
-        error_callback=None
-    ):
+    def apply_async(self, func, args=(), kwds={}, callback=None, error_callback=None):
         new_args = (func, args)
         new_func = pool_apply_func
-        return super().apply_async(
-            new_func, new_args, kwds,
-            callback, error_callback
-        )
+        return super().apply_async(new_func, new_args, kwds, callback, error_callback)
 
     def map(
         self,
         func: Callable[[T], U],
         iterable: Iterable[T],
-        chunksize: Union[int, None] = None
+        chunksize: Union[int, None] = None,
     ) -> List[U]:
         new_iterable = ((func, i) for i in iterable)
         new_func = pool_map_func
@@ -864,7 +843,7 @@ class PortablePool(Pool):
         self,
         func: Callable[[T], U],
         iterable: Iterable[T],
-        chunksize: Union[int, None] = 1
+        chunksize: Union[int, None] = 1,
     ) -> IMapIterator[U]:
         new_iterable = ((func, i) for i in iterable)
         new_func = pool_map_func
@@ -874,35 +853,26 @@ class PortablePool(Pool):
         self,
         func: Callable[[T], U],
         iterable: Iterable[T],
-        chunksize: Union[int, None] = 1
+        chunksize: Union[int, None] = 1,
     ) -> IMapIterator[U]:
         new_iterable = ((func, i) for i in iterable)
         new_func = pool_map_func
         return super().imap_unordered(new_func, new_iterable, chunksize)
 
     def map_async(
-        self,
-        func,
-        iterable,
-        chunksize=None,
-        callback=None,
-        error_callback=None
+        self, func, iterable, chunksize=None, callback=None, error_callback=None
     ):
         new_iterable = ((func, i) for i in iterable)
         new_func = pool_map_func
         return super().map_async(
-            new_func,
-            new_iterable,
-            chunksize,
-            callback,
-            error_callback
+            new_func, new_iterable, chunksize, callback, error_callback
         )
 
     def starmap(
         self,
         func: Callable[..., U],
         iterable: Iterable[Iterable[T]],
-        chunksize: Union[int, None] = None
+        chunksize: Union[int, None] = None,
     ) -> List[U]:
         new_iterable = ((func, *i) for i in iterable)
         new_func = pool_starmap_func
@@ -912,7 +882,7 @@ class PortablePool(Pool):
         self,
         func: Callable[..., U],
         iterable: Iterable[Iterable[T]],
-        chunksize: Union[int, None] = 1
+        chunksize: Union[int, None] = 1,
     ) -> IMapIterator[U]:
         "A combination of starmap and imap_unordered."
         new_iterable = ((func, i) for i in iterable)
@@ -920,19 +890,10 @@ class PortablePool(Pool):
         return super().imap_unordered(new_func, new_iterable, chunksize)
 
     def starmap_async(
-        self,
-        func,
-        iterable,
-        chunksize=None,
-        callback=None,
-        error_callback=None
+        self, func, iterable, chunksize=None, callback=None, error_callback=None
     ):
         new_iterable = ((func, *i) for i in iterable)
         new_func = pool_starmap_func
         return super().starmap_async(
-            new_func,
-            new_iterable,
-            chunksize,
-            callback,
-            error_callback
+            new_func, new_iterable, chunksize, callback, error_callback
         )

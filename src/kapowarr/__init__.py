@@ -46,9 +46,9 @@ def _main(
         NoReturn: Exit code 0 means to shutdown.
         Exit code 131 or higher means to restart with possibly special reasons.
     """
-    set_start_method('spawn')
+    set_start_method("spawn")
     setup_logging(log_folder=log_folder)
-    LOGGER.info('Starting up Kapowarr')
+    LOGGER.info("Starting up Kapowarr")
 
     if not check_python_version():
         exit(1)
@@ -85,7 +85,7 @@ def _main(
         close_all_db()
 
         if SERVER.restart_version is not None:
-            LOGGER.info('Restarting Kapowarr')
+            LOGGER.info("Restarting Kapowarr")
             exit(SERVER.restart_version.value)
 
         exit(0)
@@ -101,7 +101,7 @@ def _stop_sub_process(proc: Popen) -> None:
         return
 
     try:
-        if name != 'nt':
+        if name != "nt":
             try:
                 proc.send_signal(SIGINT)
             except ProcessLookupError:
@@ -109,19 +109,16 @@ def _stop_sub_process(proc: Popen) -> None:
         else:
             import win32api  # type: ignore
             import win32con  # type: ignore
+
             try:
-                win32api.GenerateConsoleCtrlEvent(
-                    win32con.CTRL_C_EVENT, proc.pid
-                )
+                win32api.GenerateConsoleCtrlEvent(win32con.CTRL_C_EVENT, proc.pid)
             except KeyboardInterrupt:
                 pass
     except BaseException:
         proc.terminate()
 
 
-def _run_sub_process(
-    restart_version: RestartVersion = RestartVersion.NORMAL
-) -> int:
+def _run_sub_process(restart_version: RestartVersion = RestartVersion.NORMAL) -> int:
     """Start the sub-process that Kapowarr will be run in.
 
     Args:
@@ -134,14 +131,11 @@ def _run_sub_process(
     env = {
         **environ,
         "KAPOWARR_RUN_MAIN": "1",
-        "KAPOWARR_RESTART_VERSION": str(restart_version.value)
+        "KAPOWARR_RESTART_VERSION": str(restart_version.value),
     }
 
-    proc = Popen(
-        argv,
-        env=env
-    )
-    proc._sigint_wait_secs = Constants.SUB_PROCESS_TIMEOUT # type: ignore
+    proc = Popen(argv, env=env)
+    proc._sigint_wait_secs = Constants.SUB_PROCESS_TIMEOUT  # type: ignore
     register(_stop_sub_process, proc=proc)
     signal(SIGTERM, lambda signal_no, frame: _stop_sub_process(proc))
 
@@ -159,34 +153,33 @@ def Kapowarr() -> int:
     """
     rc = RestartVersion.NORMAL.value
     while rc in RestartVersion._member_map_.values():
-        rc = _run_sub_process(
-            RestartVersion(rc)
-        )
+        rc = _run_sub_process(RestartVersion(rc))
 
     return rc
 
 
 def main() -> None:
     if environ.get("KAPOWARR_RUN_MAIN") == "1":
-
         parser = ArgumentParser(
-            description="Kapowarr is a software to build and manage a comic book library, fitting in the *arr suite of software.")
-        parser.add_argument(
-            '-d', '--DatabaseFolder',
-            type=str,
-            help="The folder in which the database will be stored or in which a database is for Kapowarr to use"
+            description="Kapowarr is a software to build and manage a comic book library, fitting in the *arr suite of software."
         )
         parser.add_argument(
-            '-l', '--LogFolder',
+            "-d",
+            "--DatabaseFolder",
             type=str,
-            help="The folder in which the logs from Kapowarr will be stored"
+            help="The folder in which the database will be stored or in which a database is for Kapowarr to use",
+        )
+        parser.add_argument(
+            "-l",
+            "--LogFolder",
+            type=str,
+            help="The folder in which the logs from Kapowarr will be stored",
         )
         args = parser.parse_args()
 
-        rv = RestartVersion(int(environ.get(
-            "KAPOWARR_RESTART_VERSION",
-            RestartVersion.NORMAL.value
-        )))
+        rv = RestartVersion(
+            int(environ.get("KAPOWARR_RESTART_VERSION", RestartVersion.NORMAL.value))
+        )
 
         try:
             _main(
@@ -196,10 +189,8 @@ def main() -> None:
             )
 
         except ValueError as e:
-            if e.args and e.args[0] == 'Database location is not a folder':
-                parser.error(
-                    "The value for -d/--DatabaseFolder is not a folder"
-                )
+            if e.args and e.args[0] == "Database location is not a folder":
+                parser.error("The value for -d/--DatabaseFolder is not a folder")
             else:
                 raise e
 

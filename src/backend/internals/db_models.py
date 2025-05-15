@@ -15,6 +15,7 @@ from backend.internals.db import get_db
 
 # TODO: allow setting extra info of files manually in UI
 
+
 class FilesDB:
     @staticmethod
     def fetch(
@@ -22,12 +23,12 @@ class FilesDB:
         volume_id: Union[int, None] = None,
         issue_id: Union[int, None] = None,
         file_id: Union[int, None] = None,
-        filepath: Union[str, None] = None
+        filepath: Union[str, None] = None,
     ) -> List[FileData]:
-
         cursor = get_db()
         if volume_id:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT DISTINCT f.id, filepath, size, releaser, scan_type, resolution, dpi
                 FROM files f
                 INNER JOIN issues_files if
@@ -38,11 +39,12 @@ class FilesDB:
                 WHERE volume_id = ?
                 ORDER BY filepath;
                 """,
-                (volume_id,)
+                (volume_id,),
             )
 
         elif issue_id:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT DISTINCT f.id, filepath, size, releaser, scan_type, resolution, dpi
                 FROM files f
                 INNER JOIN issues_files if
@@ -50,27 +52,29 @@ class FilesDB:
                 WHERE if.issue_id = ?
                 ORDER BY filepath;
                 """,
-                (issue_id,)
+                (issue_id,),
             )
 
         elif file_id:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT id, filepath, size, releaser, scan_type, resolution, dpi
                 FROM files f
                 WHERE f.id = ?
                 LIMIT 1;
                 """,
-                (file_id,)
+                (file_id,),
             )
 
         elif filepath:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT id, filepath, size, releaser, scan_type, resolution, dpi
                 FROM files f
                 WHERE f.filepath = ?
                 LIMIT 1;
                 """,
-                (filepath,)
+                (filepath,),
             )
 
         else:
@@ -78,10 +82,9 @@ class FilesDB:
                 SELECT id, filepath, size, releaser, scan_type, resolution, dpi
                 FROM files
                 ORDER BY filepath;
-                """
-            )
+                """)
 
-        result: List[FileData] = cursor.fetchalldict() # type: ignore
+        result: List[FileData] = cursor.fetchalldict()  # type: ignore
 
         if (file_id or filepath) and not result:
             raise FileNotFound
@@ -90,7 +93,10 @@ class FilesDB:
 
     @staticmethod
     def volume_of_file(filepath: str) -> Union[int, None]:
-        volume_id = get_db().execute("""
+        volume_id = (
+            get_db()
+            .execute(
+                """
             SELECT i.volume_id
             FROM
                 files f
@@ -102,11 +108,16 @@ class FilesDB:
             WHERE f.filepath = ?
             LIMIT 1;
             """,
-            (filepath,)
-        ).fetchone()
+                (filepath,),
+            )
+            .fetchone()
+        )
 
         if not volume_id:
-            volume_id = get_db().execute("""
+            volume_id = (
+                get_db()
+                .execute(
+                    """
                 SELECT vf.volume_id
                 FROM
                     files f
@@ -116,8 +127,10 @@ class FilesDB:
                 WHERE f.filepath = ?
                 LIMIT 1;
                 """,
-                (filepath,)
-            ).fetchone()
+                    (filepath,),
+                )
+                .fetchone()
+            )
 
         if not volume_id:
             return None
@@ -125,7 +138,9 @@ class FilesDB:
 
     @staticmethod
     def issues_covered(filepath: str) -> List[float]:
-        return first_of_column(get_db().execute("""
+        return first_of_column(
+            get_db().execute(
+                """
             SELECT DISTINCT
                 i.calculated_issue_number
             FROM issues i
@@ -137,8 +152,9 @@ class FilesDB:
             WHERE f.filepath = ?
             ORDER BY calculated_issue_number;
             """,
-            (filepath,)
-        ))
+                (filepath,),
+            )
+        )
 
     @staticmethod
     def add_file(
@@ -150,7 +166,7 @@ class FilesDB:
         if download is None:
             cursor.execute(
                 "INSERT OR IGNORE INTO files(filepath, size) VALUES (?,?)",
-                (filepath, stat(filepath).st_size)
+                (filepath, stat(filepath).st_size),
             )
         else:
             cursor.execute(
@@ -159,34 +175,35 @@ class FilesDB:
                         files(filepath, size, releaser, scan_type, resolution, dpi)
                     VALUES (?,?,?,?,?,?)
                 """,
-                (filepath, stat(filepath).st_size, download.releaser, download.scan_type, download.resolution, download.dpi)
+                (
+                    filepath,
+                    stat(filepath).st_size,
+                    download.releaser,
+                    download.scan_type,
+                    download.resolution,
+                    download.dpi,
+                ),
             )
 
         if cursor.rowcount:
-            LOGGER.debug(f'Added file to the database: {filepath}')
+            LOGGER.debug(f"Added file to the database: {filepath}")
             return cursor.lastrowid
 
         return FilesDB.fetch(filepath=filepath)[0]["id"]
 
     @staticmethod
     def update_filepaths(
-        old_filepaths: Iterable[str],
-        new_filepaths: Iterable[str]
+        old_filepaths: Iterable[str], new_filepaths: Iterable[str]
     ) -> None:
         get_db().executemany(
             "UPDATE files SET filepath = ? WHERE filepath = ?;",
-            ((new, old) for old, new in zip(old_filepaths, new_filepaths))
+            ((new, old) for old, new in zip(old_filepaths, new_filepaths)),
         )
         return
 
     @staticmethod
-    def delete_file(
-        file_id: int
-    ) -> None:
-        get_db().execute(
-            "DELETE FROM files WHERE id = ?;",
-            (file_id,)
-        )
+    def delete_file(file_id: int) -> None:
+        get_db().execute("DELETE FROM files WHERE id = ?;", (file_id,))
         return
 
     @staticmethod
@@ -202,7 +219,7 @@ class FilesDB:
                 WHERE volume_id = ?
             );
             """,
-            (volume_id,)
+            (volume_id,),
         )
         return
 
@@ -217,7 +234,7 @@ class FilesDB:
                 WHERE issue_id = ?
             );
             """,
-            (issue_id,)
+            (issue_id,),
         )
 
     @staticmethod
@@ -232,23 +249,27 @@ class FilesDB:
             )
             DELETE FROM files
             WHERE id NOT IN ids;
-            """
-        )
+            """)
         return
 
 
 class GeneralFilesDB:
     @staticmethod
     def fetch(volume_id: int) -> List[GeneralFileData]:
-        result: List[GeneralFileData] = get_db().execute("""
+        result: List[GeneralFileData] = (
+            get_db()
+            .execute(
+                """
             SELECT f.id, filepath, size, file_type, releaser, scan_type, resolution, dpi
             FROM files f
             INNER JOIN volume_files vf
             ON f.id = vf.file_id
             WHERE volume_id = ?;
             """,
-            (volume_id,)
-        ).fetchalldict() # type: ignore
+                (volume_id,),
+            )
+            .fetchalldict()
+        )  # type: ignore
 
         return result
 
@@ -263,6 +284,6 @@ class GeneralFilesDB:
                 WHERE volume_id = ?
             );
             """,
-            (volume_id,)
+            (volume_id,),
         )
         return
