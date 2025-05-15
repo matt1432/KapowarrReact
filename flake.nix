@@ -71,9 +71,7 @@
       kapowarr = pyPkgs.callPackage ({
         # nix build inputs
         lib,
-        stdenv,
-        python,
-        makeWrapper,
+        buildPythonApplication,
         # deps
         rar,
         # python deps
@@ -85,6 +83,7 @@
         flask-socketio,
         libgencomics,
         requests,
+        setuptools,
         typing-extensions, # from overrides
         waitress,
         websocket-client,
@@ -95,36 +94,32 @@
 
         pyproject = fromTOML (readFile ./pyproject.toml);
 
-        dependencies = [
-          typing-extensions
-          requests
-          beautifulsoup4
-          flask
-          waitress
-          cryptography
-          bencoding
-          aiohttp
-          flask-socketio
-          websocket-client
-          libgencomics
-        ];
-
-        pythonInterpreter = python.withPackages (ps: dependencies);
-
         pname = "kapowarr";
         version = "${pyproject.project.version}+${self.shortRev or "dirty"}";
       in
-        stdenv.mkDerivation {
+        buildPythonApplication {
+          format = "pyproject";
           inherit pname version;
 
           src = ./.;
 
-          nativeBuildInputs = [makeWrapper];
+          build-system = [setuptools];
+
+          dependencies = [
+            typing-extensions
+            requests
+            beautifulsoup4
+            flask
+            waitress
+            cryptography
+            bencoding
+            aiohttp
+            flask-socketio
+            websocket-client
+            libgencomics
+          ];
 
           postPatch = ''
-            # Remove shebang
-            sed -i 1d ./src/Kapowarr.py
-
             # Disable PWA for now
             substituteInPlace ./src/backend/internals/settings.py \
                 --replace-fail "with open(filename, 'w') as f:" "" \
@@ -135,20 +130,6 @@
                     "exe = folder_path('backend', 'lib', Constants.RAR_EXECUTABLES[platform])" \
                     "exe = '${getExe rar}'"
           '';
-
-          buildPhase = ''
-            mkdir -p $out/${python.sitePackages}
-            cp -r ./. $out/${python.sitePackages}
-          '';
-
-          installPhase = ''
-            makeWrapper ${getExe pythonInterpreter} $out/bin/kapowarr \
-                --add-flags "$out/${python.sitePackages}/src/Kapowarr.py"
-          '';
-
-          passthru = {
-            inherit pythonInterpreter;
-          };
 
           meta = {
             inherit (rar.meta) platforms;
@@ -174,7 +155,7 @@
       default = pkgs.mkShell {
         packages = with pkgs; [
           alejandra
-          pkgs.kapowarr.pythonInterpreter
+          python.withPackages (ps: pkgs.kapowarr.dependencies ++ [pkgs.kapowarr])
         ];
       };
     });

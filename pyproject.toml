@@ -18,6 +18,14 @@ dependencies = {file = "requirements.txt"}
 [tool.setuptools.dynamic.optional-dependencies]
 dev = {file = "requirements-dev.txt"}
 
+[tool.setuptools.package-data]
+"backend.lib" = ["*"]
+"frontend" = ["templates/*"]
+"frontend.static" = ["css/*", "img/*", "js/*", "json/*"]
+
+[project.scripts]
+kapowarr = "kapowarr:main"
+
 [tool.mypy]
 warn_unused_configs = true
 sqlite_cache = true

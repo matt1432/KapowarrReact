@@ -11,7 +11,7 @@ from collections import deque
 from multiprocessing.pool import Pool
 from os import cpu_count, sep, symlink
 from os.path import dirname, exists, join
-from sys import base_exec_prefix, executable, platform, version_info
+from sys import base_exec_prefix, platform, version_info
 from typing import (TYPE_CHECKING, Any, Callable, Collection, Dict, Generator,
                     Iterable, Iterator, List, Mapping, Sequence, Tuple, Union)
 from urllib.parse import unquote
@@ -57,31 +57,6 @@ def check_python_version() -> bool:
         ) # noqa
         return False
     return True
-
-
-def get_python_exe() -> str:
-    """Get the path to the python executable.
-
-    Returns:
-        str: The python executable path.
-    """
-    if platform.startswith('darwin'):
-        bundle_path = join(
-            base_exec_prefix,
-            "Resources",
-            "Python.app",
-            "Contents",
-            "MacOS",
-            "Python"
-        )
-        if exists(bundle_path):
-            from tempfile import mkdtemp
-            python_path = join(mkdtemp(), "python")
-            symlink(bundle_path, python_path)
-
-            return python_path
-
-    return executable
 
 
 def get_subclasses(

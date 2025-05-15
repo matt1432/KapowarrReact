@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import tomllib
 from dataclasses import _MISSING_TYPE, asdict, dataclass, field
+from importlib.metadata import version
 from json import dump, load
 from logging import INFO
 from os import urandom
@@ -78,7 +78,7 @@ class SettingsValues:
 
 
 about_data = {
-    'version': tomllib.load(open(folder_path('..', 'pyproject.toml'), 'rb'))['project']['version'],
+    'version': f'v{version('Kapowarr')}',
     'python_version': get_python_version(),
     'database_version': get_latest_db_version(),
     'database_location': None, # Get's filled in by db.set_db_location()
