@@ -173,7 +173,10 @@ class SearchLibgenPlus:
                     covered_issues = issue_number_str.split("-")
 
                     if len(covered_issues) == 2:
-                        issue_number = (float(covered_issues[0]), float(covered_issues[1]))
+                        issue_number = (
+                            float(covered_issues[0]),
+                            float(covered_issues[1]),
+                        )
 
                 else:
                     issue_number = float(issue_number_str)
@@ -184,9 +187,9 @@ class SearchLibgenPlus:
                         "series": file_result.issue.series.title or "",
                         "year": file_result.issue.year,
                         "volume_number": self.volume_number,
-                        "special_version": None, # TODO: figure this out
+                        "special_version": None,  # TODO: figure this out
                         "issue_number": issue_number,
-                        "annual": False, # TODO: figure this out
+                        "annual": False,  # TODO: figure this out
                         "link": file_result.download_link or "",
                         "display_title": file_result.filename or "",
                         "source": "Libgen+",

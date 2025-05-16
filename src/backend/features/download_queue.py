@@ -423,12 +423,14 @@ class DownloadHandler(metaclass=Singleton):
                 DirectDownload(
                     link,
                     volume_id,
-                    None,
+                    result["issue_number"]
+                    if not isinstance(result, str) and "issue_number" in result
+                    else None,
                     DownloadSource.LIBGENPLUS,
                     "Libgen+",
-                    None,
-                    None,
-                    None,
+                    None,  # web_link: str | None,
+                    None,  # web_title: str | None,
+                    None,  # web_sub_title: str | None,
                     result["releaser"]
                     if not isinstance(result, str) and "releaser" in result
                     else None,
