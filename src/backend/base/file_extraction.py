@@ -169,7 +169,7 @@ def _calc_float_issue_number(issue_number: str) -> float | None:
     if converted_issue_number:
         return float(converted_issue_number)
 
-    return
+    return None
 
 
 def process_issue_number(issue_number: str) -> float | tuple[float, float] | None:

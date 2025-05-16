@@ -1,4 +1,4 @@
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from sqlite3 import IntegrityError
 from typing import Any
 
@@ -22,7 +22,7 @@ from backend.internals.db import get_db
 # region Base External Client
 # =====================
 class BaseExternalClient(ExternalDownloadClient):
-    required_tokens = ("title", "base_url")
+    required_tokens: Sequence[str] = ("title", "base_url")
 
     @property
     def id(self) -> int:
@@ -97,7 +97,7 @@ class BaseExternalClient(ExternalDownloadClient):
         ):
             raise ClientDownloading(self.id)
 
-        filtered_data = {}
+        filtered_data: dict[str, str | None] = {}
         for key in ("title", "base_url", "username", "password", "api_token"):
             if key in self.required_tokens and key not in data:
                 raise KeyNotFound(key)
@@ -122,10 +122,10 @@ class BaseExternalClient(ExternalDownloadClient):
             raise InvalidKeyValue("password", filtered_data["password"])
 
         fail_reason = self.test(
-            filtered_data["base_url"],
-            filtered_data["username"],
-            filtered_data["password"],
-            filtered_data["api_token"],
+            filtered_data["base_url"] or "",
+            filtered_data["username"] or "",
+            filtered_data["password"] or "",
+            filtered_data["api_token"] or "",
         )
         if fail_reason:
             raise ExternalClientNotWorking(fail_reason)
@@ -225,9 +225,9 @@ class ExternalClients:
 
     @staticmethod
     def add(
-        client_type: str,
-        title: str,
-        base_url: str,
+        client_type: str | None,
+        title: str | None,
+        base_url: str | None,
         username: str | None,
         password: str | None,
         api_token: str | None,
@@ -261,6 +261,9 @@ class ExternalClients:
         Returns:
             ExternalDownloadClient: The new client.
         """
+        if client_type is None:
+            raise InvalidKeyValue("client_type", client_type)
+
         if title is None:
             raise InvalidKeyValue("title", title)
 

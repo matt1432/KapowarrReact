@@ -1,6 +1,7 @@
 from os.path import abspath, isdir, samefile
 from shutil import disk_usage
 from sqlite3 import IntegrityError
+from typing import cast
 
 from backend.base.custom_exceptions import (
     FolderNotFound,
@@ -38,10 +39,11 @@ class RootFolders(metaclass=Singleton):
                     r["id"]: RootFolder(
                         r["id"],
                         r["folder"],
-                        SizeData(
-                            **dict(
+                        cast(
+                            SizeData,
+                            dict(
                                 zip(("total", "used", "free"), disk_usage(r["folder"]))
-                            )
+                            ),
                         ),
                     )
                     for r in root_folders

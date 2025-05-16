@@ -12,7 +12,7 @@ from backend.base.custom_exceptions import InvalidSettingValue
 from backend.base.definitions import (
     BaseNamingKeys,
     FileConstants,
-    GeneralFileData,
+    FileData,
     IssueData,
     IssueNamingKeys,
     SpecialVersion,
@@ -101,7 +101,7 @@ def _get_volume_naming_keys(
 def _get_issue_naming_keys(
     volume: int | VolumeData,
     issue: int | IssueData,
-    file_data: GeneralFileData | None = None,
+    file_data: FileData | None = None,
 ) -> IssueNamingKeys:
     """Generate the values of the naming keys for an issue.
 
@@ -219,7 +219,7 @@ def generate_issue_name(
     volume_id: int,
     special_version: SpecialVersion,
     calculated_issue_number: float | tuple[float, float] | None,
-    file_data: GeneralFileData | None = None,
+    file_data: FileData | None = None,
 ) -> str:
     """Generate an issue file name based on the format string for the issue
     type.
@@ -353,9 +353,9 @@ def generate_image_name(filename: str) -> str:
     if page_result:
         return next(filter(bool, page_result.groups()))
 
-    page_result = page_regex_2.findall(file_body)
-    if page_result:
-        return page_result[-1]
+    page_result_2 = page_regex_2.findall(file_body)
+    if page_result_2:
+        return page_result_2[-1]
 
     return "1"
 
@@ -708,7 +708,7 @@ def preview_mass_rename(
         folder if it is not the same as the current folder. Otherwise, it's
         `None`.
     """
-    result = {}
+    result: dict[str, str] = {}
     volume = Volume(volume_id)
     volume_data = volume.get_data()
     volume_folder = volume_data.folder
@@ -741,7 +741,7 @@ def preview_mass_rename(
 
         LOGGER.debug(f"Renaming: original filename: {file}")
 
-        file_data: GeneralFileData = FilesDB.fetch(filepath=file)[0]
+        file_data: FileData = FilesDB.fetch(filepath=file)[0]
 
         issues = FilesDB.issues_covered(file)
         if len(issues) > 1:

@@ -11,11 +11,11 @@ from os.path import basename, join, sep, splitext
 from re import IGNORECASE, compile
 from threading import Event, Thread
 from time import perf_counter
-from typing import TYPE_CHECKING, Any, final
+from typing import TYPE_CHECKING, Any, cast, final
 from urllib.parse import unquote_plus
 
 from bs4 import BeautifulSoup, Tag
-from requests import RequestException, Response
+from requests import RequestException
 from websocket import create_connection
 from websocket._exceptions import WebSocketBadStatusException
 
@@ -35,6 +35,7 @@ from backend.base.definitions import (
     DownloadType,
     ExternalDownload,
     ExternalDownloadClient,
+    GeneralFileData,
 )
 from backend.base.helpers import Session, get_first_of_range, get_torrent_info
 from backend.base.logging import LOGGER
@@ -67,9 +68,12 @@ WETRANSFER_API_LINK = "https://wetransfer.com/api/v4/transfers/{transfer_id}/dow
 
 # region Base Direct Download
 class BaseDirectDownload(Download):
+    __r: Any | None
+    _id: int | None
+
     @property
-    def id(self) -> int:
-        return self._id  # type: ignore
+    def id(self) -> int | None:
+        return self._id
 
     @id.setter
     def id(self, value: int) -> None:
@@ -153,6 +157,8 @@ class BaseDirectDownload(Download):
     @property
     def speed(self) -> float:
         return self._speed
+
+    _download_thread: Thread | None
 
     @property
     def download_thread(self) -> Thread | None:
@@ -263,12 +269,15 @@ class BaseDirectDownload(Download):
                     volume_id,
                     volume.get_data().special_version,
                     covered_issues,
-                    {
-                        "releaser": releaser,
-                        "scan_type": scan_type,
-                        "resolution": resolution,
-                        "dpi": dpi,
-                    },
+                    cast(
+                        GeneralFileData,
+                        {
+                            "releaser": releaser,
+                            "scan_type": scan_type,
+                            "resolution": resolution,
+                            "dpi": dpi,
+                        },
+                    ),
                 )
 
         except IssueNotFound as e:
@@ -364,7 +373,7 @@ class BaseDirectDownload(Download):
     def stop(self, state: DownloadState = DownloadState.CANCELED_STATE) -> None:
         self._state = state
         if self.__r and self.__r.raw._fp and not isinstance(self.__r.raw._fp, str):
-            self.__r.raw._fp.fp.raw._sock.shutdown(2)  # SHUT_RDWR
+            self.__r.raw._fp.fp.raw._sock.shutdown(2)
         return
 
     def todict(self) -> dict[str, Any]:
@@ -477,20 +486,21 @@ class PixelDrainDownload(BaseDirectDownload):
     "For downloading a file from PixelDrain"
 
     type = "pd"
+    _api_key: str | None
 
     @staticmethod
     def login(api_key: str) -> int:
         LOGGER.debug("Logging into Pixeldrain with user api key")
         try:
             with Session() as session:
-                response = session.get(
+                ses_response = session.get(
                     Constants.PIXELDRAIN_API_URL + "/user/lists",
                     headers={
                         "Authorization": "Basic "
                         + b64encode(f":{api_key}".encode()).decode()
                     },
                 )
-                if response.status_code == 401:
+                if ses_response.status_code == 401:
                     return -1
 
             ws = create_connection(
@@ -539,7 +549,7 @@ class PixelDrainDownload(BaseDirectDownload):
                     break
             self._first_fetch = False
 
-        headers = {}
+        headers: dict[str, str] = {}
         if self._api_key:
             headers["Authorization"] = (
                 "Basic " + b64encode(f":{self._api_key}".encode()).decode()
@@ -586,17 +596,37 @@ class MegaDownload(BaseDirectDownload):
     def _size(self) -> int:
         return self._mega.size
 
+    @_size.setter
+    def _size(self, value: int) -> None:
+        self._mega.size = value
+        return
+
     @property
     def _progress(self) -> float:
         return self._mega.progress
+
+    @_progress.setter
+    def _progress(self, value: float) -> None:
+        self._mega.progress = value
+        return
 
     @property
     def _speed(self) -> float:
         return self._mega.speed
 
+    @_speed.setter
+    def _speed(self, value: float) -> None:
+        self._mega.speed = value
+        return
+
     @property
     def _pure_link(self) -> str:
         return self._mega.pure_link
+
+    @_pure_link.setter
+    def _pure_link(self, value: str) -> None:
+        self._mega.pure_link = value
+        return
 
     def __init__(
         self,

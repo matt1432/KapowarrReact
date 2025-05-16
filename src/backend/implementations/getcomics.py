@@ -6,6 +6,7 @@ from asyncio import gather
 from functools import reduce
 from hashlib import sha1
 from re import IGNORECASE, compile
+from typing import cast
 
 from aiohttp import ClientError
 from bencoding import bencode
@@ -129,15 +130,15 @@ def __check_download_link(
     """
     LOGGER.debug(f"Checking download link: {link}, {link_text}")
     if not link:
-        return
+        return None
 
     # Check if link is in blocklist
     if blocklist_contains(link):
-        return
+        return None
 
     # Check if link is from a service that should be avoided
     if link.startswith(("https://sh.st/", "https://torrentgalaxy.to/")):
-        return
+        return None
 
     # Check if link is from supported source
     for source, versions in download_source_versions.items():
@@ -145,11 +146,11 @@ def __check_download_link(
             LOGGER.debug(f"Checking download link: {link_text} maps to {source.value}")
 
             if "torrent" in source.value and not torrent_client_available:
-                return
+                return None
 
             return source
 
-    return
+    return None
 
 
 def __link_filter_1(e: Tag) -> bool:
@@ -169,8 +170,8 @@ def __extract_button_links(
         List[DownloadGroup]: The download groups.
     """
     download_groups: list[DownloadGroup] = []
-    for group in body.find_all(__link_filter_1):
-        group: Tag
+    for _group in body.find_all(__link_filter_1):
+        group: Tag = _group
         if not group.next_sibling:
             continue
 
@@ -199,8 +200,8 @@ def __extract_button_links(
 
         # Extract links from group
         first_find = True
-        for e in group.next_sibling.next_elements:  # type: ignore
-            e: Tag
+        for _e in group.next_sibling.next_elements:
+            e: Tag = _e  # type: ignore
             if e.name == "hr":
                 break
 
@@ -268,8 +269,8 @@ def __extract_list_links(
 
         # Extract links from group
         first_find = True
-        for group_link in group.find_all("a"):
-            group_link: Tag
+        for gk in group.find_all("a"):
+            group_link: Tag = gk
             if group_link.get("href") is None:
                 continue
             link_title = group_link.text.strip().lower()
@@ -519,7 +520,7 @@ async def __purify_link(
         and content_type == "application/x-bittorrent"
     ):
         # Link is to torrent file
-        hash = sha1(bencode(get_torrent_info(await r.read()))).hexdigest()
+        hash = sha1(bencode(get_torrent_info(await r.read()))).hexdigest()  # type: ignore
         return (
             "magnet:?xt=urn:btih:"
             + hash
@@ -665,8 +666,8 @@ async def _test_paths(
     Returns:
         List[Download]: A list of downloads.
     """
-    downloads: tuple[Download | None] = tuple()
-    limit_reached: tuple[bool] = tuple()
+    downloads: tuple[Download | None]
+    limit_reached: tuple[bool]
     for path in link_paths:
         downloads, limit_reached = zip(
             *(
@@ -732,16 +733,21 @@ async def search_getcomics(session: AsyncSession, query: str) -> list[SearchResu
 
     # Process the search results on each page
     formatted_results: list[SearchResultData] = [
-        {
-            **extract_filename_data(
-                article[1], assume_volume_number=False, fix_year=True
+        cast(
+            SearchResultData,
+            (
+                {
+                    **extract_filename_data(
+                        article[1], assume_volume_number=False, fix_year=True
+                    ),
+                    "link": article[0],
+                    "display_title": article[1],
+                    "source": Constants.GC_SOURCE_TERM,
+                }
+                for soup in (first_soup, *other_soups)
+                for article in _get_articles(soup)
             ),
-            "link": article[0],
-            "display_title": article[1],
-            "source": Constants.GC_SOURCE_TERM,
-        }
-        for soup in (first_soup, *other_soups)
-        for article in _get_articles(soup)
+        )
     ]
 
     return formatted_results

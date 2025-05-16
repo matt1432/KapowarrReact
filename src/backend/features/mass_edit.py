@@ -1,3 +1,5 @@
+from typing import Any
+
 from backend.base.custom_exceptions import (
     InvalidKeyValue,
     KeyNotFound,
@@ -18,7 +20,7 @@ from backend.internals.db import iter_commit
 class MassEditorDelete(MassEditorAction):
     identifier = "delete"
 
-    def run(self, **kwargs) -> None:
+    def run(self, **kwargs: Any) -> None:
         delete_volume_folder = kwargs.get("delete_folder", False)
         if not isinstance(delete_volume_folder, bool):
             raise InvalidKeyValue("delete_folder", delete_volume_folder)
@@ -36,7 +38,7 @@ class MassEditorDelete(MassEditorAction):
 class MassEditorRootFolder(MassEditorAction):
     identifier = "root_folder"
 
-    def run(self, **kwargs) -> None:
+    def run(self, **kwargs: Any) -> None:
         root_folder_id = kwargs.get("root_folder_id")
         if root_folder_id is None:
             raise KeyNotFound("root_folder_id")
@@ -58,7 +60,7 @@ class MassEditorRootFolder(MassEditorAction):
 class MassEditorRename(MassEditorAction):
     identifier = "rename"
 
-    def run(self, **kwargs) -> None:
+    def run(self, **kwargs: Any) -> None:
         LOGGER.info(f"Using mass editor, renaming volumes: {self.volume_ids}")
         for volume_id in iter_commit(self.volume_ids):
             mass_rename(volume_id)
@@ -68,7 +70,7 @@ class MassEditorRename(MassEditorAction):
 class MassEditorUpdate(MassEditorAction):
     identifier = "update"
 
-    def run(self, **kwargs) -> None:
+    def run(self, **kwargs: Any) -> None:
         LOGGER.info(f"Using mass editor, updating volumes: {self.volume_ids}")
         for volume_id in iter_commit(self.volume_ids):
             refresh_and_scan(volume_id)
@@ -78,7 +80,7 @@ class MassEditorUpdate(MassEditorAction):
 class MassEditorSearch(MassEditorAction):
     identifier = "search"
 
-    def run(self, **kwargs) -> None:
+    def run(self, **kwargs: Any) -> None:
         LOGGER.info(f"Using mass editor, auto searching for volumes: {self.volume_ids}")
         download_handler = DownloadHandler()
 
@@ -94,7 +96,7 @@ class MassEditorSearch(MassEditorAction):
 class MassEditorConvert(MassEditorAction):
     identifier = "convert"
 
-    def run(self, **kwargs) -> None:
+    def run(self, **kwargs: Any) -> None:
         LOGGER.info(f"Using mass editor, converting for volumes: {self.volume_ids}")
         for volume_id in iter_commit(self.volume_ids):
             mass_convert(volume_id)
@@ -104,7 +106,7 @@ class MassEditorConvert(MassEditorAction):
 class MassEditorUnmonitor(MassEditorAction):
     identifier = "unmonitor"
 
-    def run(self, **kwargs) -> None:
+    def run(self, **kwargs: Any) -> None:
         LOGGER.info(f"Using mass editor, unmonitoring volumes: {self.volume_ids}")
         for volume_id in self.volume_ids:
             Volume(volume_id)["monitored"] = False
@@ -114,7 +116,7 @@ class MassEditorUnmonitor(MassEditorAction):
 class MassEditorMonitor(MassEditorAction):
     identifier = "monitor"
 
-    def run(self, **kwargs) -> None:
+    def run(self, **kwargs: Any) -> None:
         LOGGER.info(f"Using mass editor, monitoring volumes: {self.volume_ids}")
         for volume_id in self.volume_ids:
             Volume(volume_id)["monitored"] = True
@@ -124,7 +126,7 @@ class MassEditorMonitor(MassEditorAction):
 class MassEditorMonitoringScheme(MassEditorAction):
     identifier = "monitoring_scheme"
 
-    def run(self, **kwargs) -> None:
+    def run(self, **kwargs: Any) -> None:
         monitoring_scheme = kwargs.get("monitoring_scheme")
         if monitoring_scheme is None:
             raise KeyNotFound("monitoring_scheme")
@@ -143,13 +145,13 @@ class MassEditorMonitoringScheme(MassEditorAction):
         return
 
 
-def run_mass_editor_action(action: str, volume_ids: list[int], **kwargs) -> None:
+def run_mass_editor_action(action: str, volume_ids: list[int], **kwargs: Any) -> None:
     """Run a mass editor action.
 
     Args:
         action (str): The action to run.
         volume_ids (List[int]): The volume IDs to run the action on.
-        **kwargs (Dict[str, Any]): The arguments to pass to the action.
+        **kwargs: Any)(Dict[str, Any]): The arguments to pass to the action.
 
     Raises:
         InvalidKeyValue: If the action or any argument is not valid.

@@ -15,7 +15,7 @@ from collections.abc import (
     Mapping,
     Sequence,
 )
-from multiprocessing.pool import Pool
+from multiprocessing.pool import AsyncResult, MapResult, Pool
 from os import cpu_count, sep
 from os.path import dirname
 from sys import version_info
@@ -25,7 +25,7 @@ from typing import (
 )
 from urllib.parse import unquote
 
-from aiohttp import ClientError, ClientSession
+from aiohttp import ClientError, ClientResponse, ClientSession
 from bencoding import bdecode
 from multidict import CIMultiDict, CIMultiDictProxy
 from requests import Session as RSession
@@ -71,11 +71,11 @@ def check_python_version() -> bool:
 
 
 def get_subclasses(
-    *classes: type,
+    *classes: type[Any],
     include_self: bool = False,
     recursive: bool = True,
     only_leafs: bool = False,
-) -> list[type]:
+) -> list[type[Any]]:
     """Get subclasses of the given classes.
 
     Args:
@@ -90,7 +90,7 @@ def get_subclasses(
     Returns:
         List[type]: The subclasses.
     """
-    result: list[type] = []
+    result: list[type[Any]] = []
     if include_self:
         result.extend(classes)
 
@@ -313,7 +313,9 @@ def normalize_base_url(base_url: str) -> str:
     return result
 
 
-def extract_year_from_date(date: str | None, default: T = None) -> int | T:
+def extract_year_from_date(
+    date: str | None, default: T | None = None
+) -> int | T | None:
     """Get the year from a date in the format YYYY-MM-DD
 
     Args:
@@ -472,9 +474,9 @@ def get_torrent_info(torrent: bytes) -> dict[bytes, Any]:
 
 
 class Singleton(type):
-    _instances = {}
+    _instances: dict[str, str] = {}
 
-    def __call__(cls, *args, **kwargs):
+    def __call__(cls, *args: Any, **kwargs: Any) -> str:
         c = str(cls)
         if c not in cls._instances:
             cls._instances[c] = super().__call__(*args, **kwargs)
@@ -655,7 +657,7 @@ class AsyncSession(ClientSession):
 
         return
 
-    async def _request(self, *args, **kwargs):
+    async def _request(self, *args: Any, **kwargs: Any) -> ClientResponse:
         sleep_time = Constants.BACKOFF_FACTOR_RETRIES
 
         ua, cf_cookies = self.fs.get_ua_cookies(args[1])
@@ -766,19 +768,19 @@ class _ContextKeeper(metaclass=Singleton):
         return
 
 
-def pool_apply_func(args=(), kwds={}):
+def pool_apply_func(args: Any = (), kwds: Any = {}) -> Any:
     func, value = args
     with _ContextKeeper().ctx():
         return func(*value, **kwds)
 
 
-def pool_map_func(func_value):
+def pool_map_func(func_value: tuple[Callable[[T], U], T]) -> U:
     func, value = func_value
     with _ContextKeeper().ctx():
         return func(value)
 
 
-def pool_starmap_func(func, *args):
+def pool_starmap_func(func: Callable[[T], U], *args: T) -> U:
     with _ContextKeeper().ctx():
         return func(*args)
 
@@ -820,7 +822,14 @@ class PortablePool(Pool):
         new_func = pool_apply_func
         return super().apply(new_func, new_args, kwds)
 
-    def apply_async(self, func, args=(), kwds={}, callback=None, error_callback=None):
+    def apply_async(
+        self,
+        func: Callable[..., T],
+        args: Iterable[Any] = (),
+        kwds: Mapping[str, Any] = {},
+        callback: Callable[[T], object] | None = None,
+        error_callback: Callable[[BaseException], object] | None = None,
+    ) -> AsyncResult[T]:
         new_args = (func, args)
         new_func = pool_apply_func
         return super().apply_async(new_func, new_args, kwds, callback, error_callback)
@@ -856,8 +865,13 @@ class PortablePool(Pool):
         return super().imap_unordered(new_func, new_iterable, chunksize)
 
     def map_async(
-        self, func, iterable, chunksize=None, callback=None, error_callback=None
-    ):
+        self,
+        func: Callable[[U], T],
+        iterable: Iterable[U],
+        chunksize: int | None = None,
+        callback: Callable[[list[T]], object] | None = None,
+        error_callback: Callable[[BaseException], object] | None = None,
+    ) -> MapResult[T]:
         new_iterable = ((func, i) for i in iterable)
         new_func = pool_map_func
         return super().map_async(
@@ -886,8 +900,13 @@ class PortablePool(Pool):
         return super().imap_unordered(new_func, new_iterable, chunksize)
 
     def starmap_async(
-        self, func, iterable, chunksize=None, callback=None, error_callback=None
-    ):
+        self,
+        func: Callable[..., T],
+        iterable: Iterable[Iterable[Any]],
+        chunksize: int | None = None,
+        callback: Callable[[list[T]], object] | None = None,
+        error_callback: Callable[[BaseException], object] | None = None,
+    ) -> AsyncResult[list[T]]:
         new_iterable = ((func, *i) for i in iterable)
         new_func = pool_starmap_func
         return super().starmap_async(

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from asyncio import run
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from datetime import datetime, timedelta
 from functools import lru_cache
 from io import BytesIO
@@ -427,7 +427,7 @@ class Volume:
         if not _skip_files:
             cursor.execute(
                 """
-                SELECT i.id AS issue_id, f.id AS file_id, filepath, size
+                SELECT i.id AS issue_id, f.id AS file_id, filepath, size, releaser, scan_type, resolution, dpi
                 FROM files f
                 INNER JOIN issues_files if
                     ON f.id = if.file_id
@@ -444,6 +444,10 @@ class Volume:
                         "id": file["file_id"],
                         "filepath": file["filepath"],
                         "size": file["size"],
+                        "releaser": file["releaser"],
+                        "scan_type": file["scan_type"],
+                        "resolution": file["resolution"],
+                        "dpi": file["dpi"],
                     }
                 )
 
@@ -524,6 +528,8 @@ class Volume:
         return GeneralFilesDB.fetch(self.id)
 
     def update(self, data: Mapping[str, Any], from_public: bool = False) -> None:
+        allowed_keys: Sequence[str]
+
         if from_public:
             allowed_keys = (
                 "monitored",
@@ -609,7 +615,7 @@ class Volume:
             )
 
         else:
-            assert_never(monitoring_scheme)
+            assert_never(monitoring_scheme)  # type: ignore
 
         return
 
@@ -1040,7 +1046,7 @@ class Library:
             {
                 "comicvine_id": vd["comicvine_id"],
                 "title": vd["title"],
-                "alt_title": (vd["aliases"] or [None])[0],
+                "alt_title": (vd["aliases"] or [None])[0],  # type: ignore
                 "year": vd["year"],
                 "publisher": vd["publisher"],
                 "volume_number": vd["volume_number"],
@@ -1360,6 +1366,8 @@ def refresh_and_scan(
     """
     cursor = get_db()
 
+    cv_to_id: dict[int, int]
+
     one_day_ago = round(time()) - SECONDS_IN_DAY
     if volume_id:
         cv_to_id = dict(
@@ -1390,7 +1398,6 @@ def refresh_and_scan(
                 (one_day_ago,),
             )
         )
-    cv_to_id: dict[int, int]
     if not cv_to_id:
         return
 
@@ -1415,7 +1422,7 @@ def refresh_and_scan(
         (
             {
                 "title": vd["title"],
-                "alt_title": (vd["aliases"] or [None])[0],
+                "alt_title": (vd["aliases"] or [None])[0],  # type: ignore
                 "year": vd["year"],
                 "publisher": vd["publisher"],
                 "volume_number": vd["volume_number"],
@@ -1538,6 +1545,8 @@ def refresh_and_scan(
         scan_files(volume_id)
 
     else:
+        v_ids: list[tuple[Any, list[Any], bool]] = []
+
         if allow_skipping:
             v_ids = [(cv_to_id[v["comicvine_id"]], [], False) for v in volume_datas]
         else:

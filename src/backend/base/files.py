@@ -4,7 +4,7 @@ Handling folders, files and filenames.
 
 from collections import deque
 from collections.abc import Iterable, Sequence
-from os import listdir, makedirs, remove, scandir
+from os import PathLike, listdir, makedirs, remove, scandir
 from os.path import (
     abspath,
     basename,
@@ -20,11 +20,15 @@ from os.path import (
 )
 from re import compile
 from shutil import copy2, copytree, move, rmtree
+from typing import TypeVar
 
 from backend.base.definitions import CharConstants, Constants
 from backend.base.helpers import check_filter, force_suffix
 from backend.base.logging import LOGGER
 
+StrPath = str | PathLike[str]
+
+_StrPathT = TypeVar("_StrPathT", bound=StrPath)
 filename_cleaner = compile(r"(<|>|(?<!^\w):|\"|\||\?|\*|\x00|(?:\s|\.)+(?=$|\\|/))")
 
 
@@ -137,7 +141,7 @@ def list_files(folder: str, ext: Iterable[str] = []) -> list[str]:
     """
     files: deque[str] = deque()
 
-    def _list_files(folder: str, ext: set[str] = set()):
+    def _list_files(folder: str, ext: set[str] = set()) -> None:
         """Internal function to add all files in a folder to the files list.
 
         Args:
@@ -213,7 +217,9 @@ def create_folder(folder: str) -> None:
 
 
 # region Moving
-def __copy2(src, dst, *, follow_symlinks=True):
+def __copy2(
+    src: StrPath, dst: _StrPathT, *, follow_symlinks: bool = True
+) -> _StrPathT | str:
     try:
         return copy2(src, dst, follow_symlinks=follow_symlinks)
 

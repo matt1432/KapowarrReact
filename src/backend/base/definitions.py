@@ -561,10 +561,10 @@ class IssueNamingKeys(SVNamingKeys):
     issue_title: str | None
     issue_release_date: str | None
     issue_release_year: int | None
-    releaser: int | None
-    scan_type: int | None
-    resolution: int | None
-    dpi: int | None
+    releaser: str | None
+    scan_type: str | None
+    resolution: str | None
+    dpi: str | None
 
 
 @dataclass
@@ -653,7 +653,7 @@ class MassEditorAction(ABC):
         return
 
     @abstractmethod
-    def run(self, **kwargs) -> None:
+    def run(self, **kwargs: Any) -> None:
         """Run the mass editor action."""
         ...
 

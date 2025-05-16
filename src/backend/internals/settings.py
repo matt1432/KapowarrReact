@@ -264,7 +264,7 @@ class Settings(metaclass=Singleton):
         if not isinstance(
             SettingsValues.__dataclass_fields__[key].default_factory, _MISSING_TYPE
         ):
-            self[key] = SettingsValues.__dataclass_fields__[key].default_factory()
+            self[key] = SettingsValues.__dataclass_fields__[key].default_factory()  # type: ignore
         else:
             self[key] = SettingsValues.__dataclass_fields__[key].default
 
@@ -323,13 +323,13 @@ class Settings(metaclass=Singleton):
         ):
             value = CommaList(value)
 
-        if issubclass(SettingsValues.__dataclass_fields__[key].type, BaseEnum):
+        if issubclass(SettingsValues.__dataclass_fields__[key].type, BaseEnum):  # type: ignore
             try:
-                value = SettingsValues.__dataclass_fields__[key].type(value)
+                value = SettingsValues.__dataclass_fields__[key].type(value)  # type: ignore
             except ValueError:
                 raise InvalidSettingValue(key, value)
 
-        if not isinstance(value, SettingsValues.__dataclass_fields__[key].type):
+        if not isinstance(value, SettingsValues.__dataclass_fields__[key].type):  # type: ignore
             raise InvalidSettingValue(key, value)
 
         if key == "port" and not 0 < value <= 65_535:
@@ -375,9 +375,9 @@ class Settings(metaclass=Singleton):
         elif key == "format_preference":
             from backend.implementations.conversion import FileConversionHandler
 
-            available = FileConversionHandler.get_available_formats()
+            available_formats = FileConversionHandler.get_available_formats()
             for entry in value:
-                if entry not in available:
+                if entry not in available_formats:
                     raise InvalidSettingValue(key, value)
 
             converted_value = value

@@ -217,7 +217,7 @@ def iter_commit(iterable: Iterable[T]) -> Generator[T, Any, Any]:
     return
 
 
-def close_db(e: None | BaseException = None):
+def close_db(e: None | BaseException = None) -> None:
     """Close database cursor, commit database and close database.
 
     Args:

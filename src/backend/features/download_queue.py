@@ -4,7 +4,7 @@ from asyncio import gather, run
 from collections.abc import Iterable
 from os import listdir
 from os.path import basename, join
-from typing import TYPE_CHECKING, Any, assert_never
+from typing import TYPE_CHECKING, Any, Never, assert_never
 
 from backend.base.custom_exceptions import (
     DownloadLimitReached,
@@ -123,8 +123,12 @@ class DownloadHandler(metaclass=Singleton):
         """
         download.run()
 
+        post_processer: (
+            type[PostProcessorTorrentsComplete] | type[PostProcessorTorrentsCopy]
+        )
+
         ws = WebSocket()
-        seeding_handling = self.settings.sv.seeding_handling
+        seeding_handling: SeedingHandling | Never = self.settings.sv.seeding_handling
 
         if seeding_handling == SeedingHandling.COMPLETE:
             post_processer = PostProcessorTorrentsComplete
@@ -133,7 +137,7 @@ class DownloadHandler(metaclass=Singleton):
             post_processer = PostProcessorTorrentsCopy
 
         else:
-            assert_never(seeding_handling)
+            assert_never(seeding_handling)  # type: ignore
 
         # When seeding_handling is 'copy', keep track of whether we already
         # copied the files
@@ -484,16 +488,18 @@ class DownloadHandler(metaclass=Singleton):
                 )
                 return [], e.reason
 
-        result = self.__prepare_downloads_for_queue(downloads, forced_match=force_match)
-        self.queue += result
+        dl_result = self.__prepare_downloads_for_queue(
+            downloads, forced_match=force_match
+        )
+        self.queue += dl_result
 
         self._process_queue()
-        return [r.todict() for r in result], None
+        return [r.todict() for r in dl_result], None
 
     def add_multiple(
         self, add_args: Iterable[tuple[str, int, int | None, bool]]
     ) -> None:
-        async def add_wrapper():
+        async def add_wrapper() -> None:
             await gather(*(self.add(*entry) for entry in add_args))
 
         run(add_wrapper())
@@ -521,6 +527,8 @@ class DownloadHandler(metaclass=Singleton):
         for download in iter_commit(downloads):
             LOGGER.debug(f"Download from database: {dict(download)}")
             try:
+                covered_issues: tuple[float, float] | float | None
+
                 if download["covered_issues"] is None:
                     covered_issues = None
 
@@ -533,28 +541,36 @@ class DownloadHandler(metaclass=Singleton):
                 else:
                     covered_issues = float(download["covered_issues"])
 
-                kwargs = {}
-                if issubclass(
-                    download_type_to_class[download["client_type"]], ExternalDownload
-                ):
-                    kwargs = {
-                        "external_client": ExternalClients.get_client(
-                            download["external_client_id"]
-                        )
-                    }
+                dl_subclass = download_type_to_class[download["client_type"]]
+                dl_instance: Download | ExternalDownload
 
-                dl_instance = download_type_to_class[download["client_type"]](
-                    download_link=download["download_link"],
-                    volume_id=download["volume_id"],
-                    covered_issues=covered_issues,
-                    source_type=DownloadSource(download["source_type"]),
-                    source_name=download["source_name"],
-                    web_link=download["web_link"],
-                    web_title=download["web_title"],
-                    web_sub_title=download["web_sub_title"],
-                    forced_match=download["force_original_name"],
-                    **kwargs,
-                )
+                if issubclass(dl_subclass, ExternalDownload):
+                    dl_instance = dl_subclass(
+                        download_link=download["download_link"],
+                        volume_id=download["volume_id"],
+                        covered_issues=covered_issues,
+                        source_type=DownloadSource(download["source_type"]),
+                        source_name=download["source_name"],
+                        web_link=download["web_link"],
+                        web_title=download["web_title"],
+                        web_sub_title=download["web_sub_title"],
+                        forced_match=download["force_original_name"],
+                        external_client=ExternalClients.get_client(
+                            download["external_client_id"]
+                        ),
+                    )
+                else:
+                    dl_instance = dl_subclass(
+                        download_link=download["download_link"],
+                        volume_id=download["volume_id"],
+                        covered_issues=covered_issues,
+                        source_type=DownloadSource(download["source_type"]),
+                        source_name=download["source_name"],
+                        web_link=download["web_link"],
+                        web_title=download["web_title"],
+                        web_sub_title=download["web_sub_title"],
+                        forced_match=download["force_original_name"],
+                    )
                 dl_instance.id = download["id"]
 
             except LinkBroken as lb:
@@ -671,7 +687,11 @@ class DownloadHandler(metaclass=Singleton):
             queue.
         """
         for download in self.queue[::-1]:
-            if isinstance(download, MegaDownload) and download.id != exclude_id:
+            if (
+                isinstance(download, MegaDownload)
+                and download.id is not None
+                and download.id != exclude_id
+            ):
                 self.remove(download.id)
         return
 

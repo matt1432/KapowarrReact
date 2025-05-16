@@ -255,7 +255,7 @@ class GeneralFilesDB:
     @staticmethod
     def fetch(volume_id: int) -> list[GeneralFileData]:
         result: list[GeneralFileData] = (
-            get_db()
+            get_db()  # type: ignore
             .execute(
                 """
             SELECT f.id, filepath, size, file_type, releaser, scan_type, resolution, dpi
@@ -267,7 +267,7 @@ class GeneralFilesDB:
                 (volume_id,),
             )
             .fetchalldict()
-        )  # type: ignore
+        )
 
         return result
 

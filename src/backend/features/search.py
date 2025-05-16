@@ -51,7 +51,7 @@ def _rank_search_result(
     Returns:
         List[int]: A list of numbers which determines the ranking of the result.
     """
-    rating = []
+    rating: list[int] = []
 
     # Prefer matches (False == 0 == higher rank)
     rating.append(not result["match"])
@@ -101,8 +101,17 @@ def _rank_search_result(
             ):
                 # Issue number falls between range
                 rating.append(
-                    1
-                    - (1 / (result["issue_number"][1] - result["issue_number"][0] + 1))
+                    int(
+                        1
+                        - (
+                            1
+                            / (
+                                result["issue_number"][1]
+                                - result["issue_number"][0]
+                                + 1
+                            )
+                        )
+                    )
                 )
 
             else:
@@ -121,7 +130,7 @@ def _rank_search_result(
         # Search was for volume
         if isinstance(result["issue_number"], tuple):
             rating.append(
-                1.0 / (result["issue_number"][1] - result["issue_number"][0] + 1)
+                int(1.0 / (result["issue_number"][1] - result["issue_number"][0] + 1))
             )
 
         elif isinstance(result["issue_number"], float):
@@ -136,7 +145,9 @@ class SearchGetComics(SearchSource):
 
 
 class SearchLibgenPlus:
-    def __init__(self, comicvine_id: int, volume_number: int, issue_number: int | None):
+    def __init__(
+        self, comicvine_id: int, volume_number: int, issue_number: float | None
+    ):
         self.comicvine_id = comicvine_id
         self.volume_number = volume_number
         self.issue_number = issue_number
@@ -155,14 +166,14 @@ class SearchLibgenPlus:
             results.append(
                 SearchResultData(
                     {
-                        "series": file_result.issue.series.title,
+                        "series": file_result.issue.series.title or "",
                         "year": file_result.issue.year,
                         "volume_number": self.volume_number,
                         "special_version": None,
-                        "issue_number": file_result.issue.number or "",
+                        "issue_number": float(file_result.issue.number or "-1"),
                         "annual": False,
-                        "link": file_result.download_link,
-                        "display_title": file_result.filename,
+                        "link": file_result.download_link or "",
+                        "display_title": file_result.filename or "",
                         "source": "Libgen+",
                         "filesize": file_result.filesize or 0,
                         "pages": file_result.pages or 0,
@@ -286,7 +297,7 @@ def manual_search(
             libgen_results = SearchLibgenPlus(
                 volume_data.comicvine_id,
                 volume_data.volume_number,
-                issue_number,
+                float(issue_number) if issue_number is not None else None,
             ).search(libgen_url)
 
         if not search_results and not libgen_results:
@@ -369,9 +380,9 @@ def auto_search(
 
     if not searchable_issues:
         # No issues to search for
-        result = []
-        LOGGER.debug(f"Auto search results: {result}")
-        return result
+        issue_result: list[MatchedSearchResultData] = []
+        LOGGER.debug(f"Auto search results: {issue_result}")
+        return issue_result
 
     search_results = [r for r in manual_search(volume_id, issue_id) if r["match"]]
 
@@ -380,9 +391,9 @@ def auto_search(
         and special_version != SpecialVersion.VOLUME_AS_ISSUE
     ):
         # We're searching for one "item", so just grab first search result.
-        result = search_results[:1] if search_results else []
-        LOGGER.debug("Auto search results: %s", result)
-        return result
+        issue_result = search_results[:1] if search_results else []
+        LOGGER.debug("Auto search results: %s", issue_result)
+        return issue_result
 
     # We're searching for a volume, so we might download multiple search results.
     # Find a combination of search results that download the most issues.

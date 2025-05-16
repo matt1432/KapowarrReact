@@ -1,10 +1,13 @@
 import logging
 import logging.config
 from logging.handlers import RotatingFileHandler
+from os import PathLike
 from os.path import exists, isdir, join
 from typing import Any
 
 from backend.base.definitions import Constants
+
+StrPath = str | PathLike[str]
 
 
 class UpToInfoFilter(logging.Filter):
@@ -21,13 +24,13 @@ class ErrorColorFormatter(logging.Formatter):
 class MPRotatingFileHandler(RotatingFileHandler):
     def __init__(
         self,
-        filename,
-        mode="a",
-        maxBytes=0,
-        backupCount=0,
-        encoding=None,
-        delay=False,
-        do_rollover=True,
+        filename: StrPath,
+        mode: str = "a",
+        maxBytes: int = 0,
+        backupCount: int = 0,
+        encoding: str | None = None,
+        delay: bool = False,
+        do_rollover: bool = True,
     ) -> None:
         self.do_rollover = do_rollover
         return super().__init__(filename, mode, maxBytes, backupCount, encoding, delay)
@@ -39,7 +42,7 @@ class MPRotatingFileHandler(RotatingFileHandler):
 
 
 LOGGER = logging.getLogger(Constants.LOGGER_NAME)
-LOGGING_CONFIG = {
+LOGGING_CONFIG: dict = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
@@ -88,7 +91,7 @@ LOGGING_CONFIG = {
 
 
 def setup_logging(
-    log_folder: str = None,
+    log_folder: str | None = None,
     do_rollover: bool = True,
 ) -> None:
     "Setup the basic config of the logging module"
@@ -119,13 +122,13 @@ def setup_logging(
     import threading
     from traceback import format_exception
 
-    def log_uncaught_exceptions(e_type, value, tb):
+    def log_uncaught_exceptions(e_type: Any, value: Any, tb: Any) -> None:
         LOGGER.error(
             "UNCAUGHT EXCEPTION:\n" + "".join(format_exception(e_type, value, tb))
         )
         return
 
-    def log_uncaught_threading_exceptions(args):
+    def log_uncaught_threading_exceptions(args: Any) -> None:
         LOGGER.exception(f"UNCAUGHT EXCEPTION IN THREAD: {args.exc_value}")
         return
 

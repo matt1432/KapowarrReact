@@ -4,7 +4,7 @@ Setting up, running and shutting down the API and web-ui
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Mapping
+from collections.abc import Callable, Collection, Iterable, Mapping
 from os import urandom
 from threading import Thread, Timer, current_thread
 from typing import TYPE_CHECKING, Any
@@ -79,6 +79,7 @@ def diffuse_timers() -> None:
 
 
 class Server(metaclass=Singleton):
+    restart_version: RestartVersion | None
     api_prefix = "/api"
 
     def __init__(self) -> None:
@@ -118,21 +119,21 @@ class Server(metaclass=Singleton):
 
         # Add error handlers
         @app.errorhandler(404)
-        def not_found(e):
+        def not_found(e: Any) -> str | tuple[dict[str, Collection[str]], int]:
             if request.path.startswith(self.api_prefix):
                 return {"error": "NotFound", "result": {}}, 404
             return render_template("page_not_found.html")
 
         @app.errorhandler(400)
-        def bad_request(e):
+        def bad_request(e: Any) -> tuple[dict[str, Collection[str]], int]:
             return {"error": "BadRequest", "result": {}}, 400
 
         @app.errorhandler(405)
-        def method_not_allowed(e):
+        def method_not_allowed(e: Any) -> tuple[dict[str, Collection[str]], int]:
             return {"error": "MethodNotAllowed", "result": {}}, 405
 
         @app.errorhandler(500)
-        def internal_error(e):
+        def internal_error(e: Any) -> tuple[dict[str, Collection[str]], int]:
             return {"error": "InternalError", "result": {}}, 500
 
         # Add endpoints
@@ -263,7 +264,7 @@ class Server(metaclass=Singleton):
             Thread: The thread instance.
         """
 
-        def db_thread(*args, **kwargs) -> None:
+        def db_thread(*args: Any, **kwargs: Any) -> None:
             with self.app.app_context():
                 target(*args, **kwargs)
 

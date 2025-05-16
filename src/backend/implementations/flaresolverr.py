@@ -46,8 +46,7 @@ class FlareSolverr(metaclass=Singleton):
                 if result.status_code != 200:
                     return False
 
-                result = result.json()
-                self.session_id = result["session"]
+                self.session_id = result.json()["session"]
                 self.base_url = base_url
 
             except RequestException:
@@ -119,11 +118,11 @@ class FlareSolverr(metaclass=Singleton):
             != Constants.CF_CHALLENGE_HEADER[1]
         ):
             # Request not failed because of CF block
-            return
+            return None
 
         if not (self.session_id and self.base_url):
             LOGGER.warning("Request blocked by CloudFlare and FlareSolverr not setup")
-            return
+            return None
 
         with Session() as session:
             result = session.post(
@@ -161,11 +160,11 @@ class FlareSolverr(metaclass=Singleton):
             != Constants.CF_CHALLENGE_HEADER[1]
         ):
             # Request not failed because of CF block
-            return
+            return None
 
         if not (self.session_id and self.base_url):
             LOGGER.warning("Request blocked by CloudFlare and FlareSolverr not setup")
-            return
+            return None
 
         result = (
             await (

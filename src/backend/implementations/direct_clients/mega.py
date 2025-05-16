@@ -137,7 +137,7 @@ class MegaCrypto:
         return MegaCrypto.bytes_to_a32(MegaCrypto.ecb_decrypt(result, key))
 
     @staticmethod
-    def encrypt_key(data: Sequence[int], key: Sequence[int]):
+    def encrypt_key(data: Sequence[int], key: Sequence[int]) -> tuple[int, ...]:
         """
         Encrypt a decrypted key.
         """
@@ -250,7 +250,7 @@ class MegaAPIClient:
         self.node_id = node_id
         return
 
-    def api_request(self, **kwargs) -> dict[str, Any] | int:
+    def api_request(self, **kwargs: Any) -> dict[str, Any] | int:
         get_params: dict[str, Any] = {"id": self.id}
 
         if self.sid:
@@ -296,7 +296,7 @@ class MegaAccount:
 
         return
 
-    def __get_password_key(self, password):
+    def __get_password_key(self, password: str) -> tuple[int, ...]:
         password_key = MegaCrypto.a32_to_bytes(
             [0x93C467E3, 0x7DB0C7A4, 0xD1BE3F81, 0x0152CB56]
         )
@@ -311,23 +311,23 @@ class MegaAccount:
 
         return MegaCrypto.bytes_to_a32(password_key)
 
-    def __get_user_hash_v1(self, user, password_key):
+    def __get_user_hash_v1(self, user: str, password_key: tuple[int, ...]) -> str:
         user_a32 = MegaCrypto.bytes_to_a32(MegaCrypto.to_bytes(user, "utf-8"))
-        user_hash = [0, 0, 0, 0]
+        user_hash_list = [0, 0, 0, 0]
         for i in range(len(user_a32)):
-            user_hash[i % 4] ^= user_a32[i]
+            user_hash_list[i % 4] ^= user_a32[i]
 
-        user_hash = MegaCrypto.a32_to_bytes(user_hash)
+        user_hash_b = MegaCrypto.a32_to_bytes(user_hash_list)
         for i in range(0x4000):
-            user_hash = MegaCrypto.cbc_encrypt(user_hash, password_key)
+            user_hash_b = MegaCrypto.cbc_encrypt(user_hash_b, password_key)
 
-        user_hash = MegaCrypto.bytes_to_a32(user_hash)
+        user_hash = MegaCrypto.bytes_to_a32(user_hash_b)
 
         return MegaCrypto.to_str(
             MegaCrypto.a32_to_base64((user_hash[0], user_hash[2])), "ascii"
         )
 
-    def __mpi_to_int(self, s):
+    def __mpi_to_int(self, s: Any) -> int:
         """
         Convert GCRYMPI_FMT_PGP bignum format to integer.
         """
@@ -445,24 +445,27 @@ class MegaAccount:
                 raise ClientNotWorking("Failed to login into Mega")
 
             encrypted_sid = self.__mpi_to_int(MegaCrypto.base64_decode(res["csid"]))
-            sid = "{:x}".format(
+            sid_1 = "{:x}".format(
                 pow(
                     encrypted_sid,
                     rsa_private_key[2],
                     rsa_private_key[0] * rsa_private_key[1],
                 )
             )
-            sid = "0" * (-len(sid) % 2) + sid
-            sid = bytes([(int(sid[i : i + 2], 16)) for i in range(0, len(sid), 2)])
-            sid = MegaCrypto.to_str(
-                MegaCrypto.base64_encode(sid[:43]), "ascii"
+            sid_2 = "0" * (-len(sid_1) % 2) + sid_1
+            sid_3 = bytes(
+                [(int(sid_2[i : i + 2], 16)) for i in range(0, len(sid_2), 2)]
+            )
+            sid_4 = MegaCrypto.to_str(
+                MegaCrypto.base64_encode(sid_3[:43]), "ascii"
             ).replace("=", "")
-            return sid
+            return sid_4
 
         raise ClientNotWorking("Failed to login into Mega")
 
 
 class MegaABC(ABC):
+    __r: Any | None
     size: int
     progress: float
     speed: float
@@ -635,7 +638,7 @@ class Mega(MegaABC):
     def stop(self) -> None:
         self.downloading = False
         if self.__r and self.__r._fp and not isinstance(self.__r._fp, str):
-            self.__r._fp.fp.raw._sock.shutdown(2)  # SHUT_RDWR
+            self.__r._fp.fp.raw._sock.shutdown(2)
         return
 
 
@@ -790,6 +793,6 @@ class MegaFolder(MegaABC):
 
     def stop(self) -> None:
         self.downloading = False
-        if self.__r and self.__r._fp and not isinstance(self.__r._fp, str):
-            self.__r._fp.fp.raw._sock.shutdown(2)  # SHUT_RDWR
+        if self.__r and self.__r._fp and not isinstance(self.__r._fp, str):  # type: ignore
+            self.__r._fp.fp.raw._sock.shutdown(2)  # type: ignore
         return

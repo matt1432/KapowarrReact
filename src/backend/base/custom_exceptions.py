@@ -14,6 +14,8 @@ from backend.base.definitions import (
 )
 from backend.base.logging import LOGGER
 
+type ApiResponse = dict[str, str | dict[str, str | int | None] | int]
+
 
 class CustomException(Exception):
     def __init__(self, e: Any = None) -> None:
@@ -82,7 +84,7 @@ class VolumeDownloadedFor(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {
             "error": "VolumeDownloadedFor",
             "result": {"volume_id": self.volume_id},
@@ -102,7 +104,7 @@ class TaskForVolumeRunning(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {
             "error": "TaskForVolumeRunning",
             "result": {"volume_id": self.volume_id},
@@ -157,7 +159,7 @@ class LinkBroken(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {
             "error": "LinkBroken",
             "result": {"reason_text": self.reason_text, "reason_id": self.reason_id},
@@ -174,7 +176,7 @@ class FailedGCPage(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {
             "error": "FailedGCPage",
             "result": {"reason_text": self.reason.value},
@@ -192,7 +194,7 @@ class InvalidSettingKey(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {"error": "InvalidSettingKey", "result": {"key": self.key}, "code": 400}
 
 
@@ -207,7 +209,7 @@ class InvalidSettingValue(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {
             "error": "InvalidSettingValue",
             "result": {"key": self.key, "value": self.value},
@@ -229,7 +231,7 @@ class InvalidSettingModification(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {
             "error": "InvalidSettingModification",
             "result": {"key": self.key, "instead": self.instead},
@@ -251,7 +253,7 @@ class KeyNotFound(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {"error": "KeyNotFound", "result": {"key": self.key}, "code": 400}
 
 
@@ -270,7 +272,7 @@ class InvalidKeyValue(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {
             "error": "InvalidKeyValue",
             "result": {"key": self.key, "value": self.value},
@@ -293,7 +295,7 @@ class CredentialInvalid(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {
             "error": "CredentialInvalid",
             "result": {"description": self.desc},
@@ -312,7 +314,7 @@ class DownloadLimitReached(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {
             "error": "DownloadLimitReached",
             "result": {"source": self.source.value},
@@ -348,7 +350,7 @@ class ClientDownloading(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {
             "error": "ClientDownloading",
             "result": {"client_id": self.client_id},
@@ -366,7 +368,7 @@ class ClientNotWorking(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {
             "error": "ClientNotWorking",
             "result": {"description": self.desc},
@@ -386,7 +388,7 @@ class ExternalClientNotWorking(Exception):
         return
 
     @property
-    def api_response(self):
+    def api_response(self) -> ApiResponse:
         return {
             "error": "ExternalClientNotWorking",
             "result": {"description": self.desc},

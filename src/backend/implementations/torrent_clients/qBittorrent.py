@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from re import IGNORECASE, compile
 from time import time
 from typing import Any
@@ -18,7 +19,7 @@ class qBittorrent(BaseExternalClient):
     client_type = "qBittorrent"
     download_type = DownloadType.TORRENT
 
-    required_tokens = ("title", "base_url", "username", "password")
+    required_tokens: Sequence[str] = ("title", "base_url", "username", "password")
 
     state_mapping = {
         "queuedDL": DownloadState.QUEUED_STATE,
@@ -107,10 +108,10 @@ class qBittorrent(BaseExternalClient):
 
     def get_download(self, download_id: str) -> dict | None:
         if not self.ssn:
-            result = self._login(self.base_url, self.username, self.password)
-            if isinstance(result, str):
-                raise ExternalClientNotWorking(result)
-            self.ssn = result
+            ssn_result = self._login(self.base_url, self.username, self.password)
+            if isinstance(ssn_result, str):
+                raise ExternalClientNotWorking(ssn_result)
+            self.ssn = ssn_result
 
         r: list[dict[str, Any]] = self.ssn.get(
             f"{self.base_url}/api/v2/torrents/info", params={"hashes": download_id}

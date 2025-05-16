@@ -7,6 +7,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from threading import Thread, Timer
 from time import sleep, time
+from typing import Any
 
 from flask import Flask
 
@@ -42,7 +43,7 @@ class Task(ABC):
     def issue_id(self) -> int | None: ...
 
     @abstractmethod
-    def __init__(self, **kwargs) -> None: ...
+    def __init__(self, **kwargs: Any) -> None: ...
 
     @abstractmethod
     def run(self) -> None | list[tuple[str, int, int | None]]:

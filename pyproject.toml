@@ -22,6 +22,13 @@ disallow_untyped_calls = true
 disallow_untyped_defs = true
 no_implicit_optional = true
 
+[[tool.mypy.overrides]]
+module = [
+  "libgencomics.*",
+  "bencoding.*"
+]
+follow_untyped_imports = true
+
 [tool.ruff]
 target-version = "py312"
 line-length = 88

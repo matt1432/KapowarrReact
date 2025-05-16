@@ -4,6 +4,7 @@ The post-download processing (a.k.a. post-processing or PP) of downloads.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from os.path import basename, exists, join, splitext
 from time import time
 from typing import TYPE_CHECKING
@@ -119,7 +120,7 @@ def move_to_dest(download: Download) -> None:
     return
 
 
-def move_torrent_to_dest(download: TorrentDownload) -> None:
+def move_torrent_to_dest(download: Download) -> None:
     """
     Move folder downloaded using torrent from download folder to
     final destination, extract files, scan them, rename them.
@@ -220,7 +221,7 @@ class PostProcessor:
         add_file_to_database,
     ]
 
-    actions_seeding = []
+    actions_seeding: list[Callable] = []
 
     actions_canceled = [delete_file, remove_from_queue]
 
@@ -236,43 +237,43 @@ class PostProcessor:
     ]
 
     @staticmethod
-    def _run_actions(actions: list, download) -> None:
+    def _run_actions(actions: list, download: Download) -> None:
         for action in actions:
             action(download)
         return
 
     @classmethod
-    def success(cls, download) -> None:
+    def success(cls, download: Download) -> None:
         LOGGER.info(f"Postprocessing of successful download: {download.id}")
         cls._run_actions(cls.actions_success, download)
         return
 
     @classmethod
-    def seeding(cls, download) -> None:
+    def seeding(cls, download: Download) -> None:
         LOGGER.info(f"Postprocessing of seeding download: {download.id}")
         cls._run_actions(cls.actions_seeding, download)
         return
 
     @classmethod
-    def canceled(cls, download) -> None:
+    def canceled(cls, download: Download) -> None:
         LOGGER.info(f"Postprocessing of canceled download: {download.id}")
         cls._run_actions(cls.actions_canceled, download)
         return
 
     @classmethod
-    def shutdown(cls, download) -> None:
+    def shutdown(cls, download: Download) -> None:
         LOGGER.info(f"Postprocessing of shut down download: {download.id}")
         cls._run_actions(cls.actions_shutdown, download)
         return
 
     @classmethod
-    def failed(cls, download) -> None:
+    def failed(cls, download: Download) -> None:
         LOGGER.info(f"Postprocessing of failed download: {download.id}")
         cls._run_actions(cls.actions_failed, download)
         return
 
     @classmethod
-    def perm_failed(cls, download) -> None:
+    def perm_failed(cls, download: Download) -> None:
         LOGGER.info(f"Postprocessing of permanently failed download: {download.id}")
         cls._run_actions(cls.actions_perm_failed, download)
         return

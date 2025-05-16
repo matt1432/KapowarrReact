@@ -60,7 +60,7 @@ class FileConversionHandler:
             Dict[str, Dict[str, Type[FileConverter]]]: Mapping of source_format
             to target_format to conversion class.
         """
-        conversion_methods = {}
+        conversion_methods: dict[str, dict[str, type[FileConverter]]] = {}
         for fc in get_subclasses(FileConverter):
             conversion_methods.setdefault(fc.source_format, {})[fc.target_format] = fc
         return conversion_methods
@@ -239,7 +239,7 @@ def mass_convert(
                 planned_conversions.append(fch)
 
     total_count = len(planned_conversions)
-    result = []
+    result: list[str] = []
     if not total_count:
         return result
 

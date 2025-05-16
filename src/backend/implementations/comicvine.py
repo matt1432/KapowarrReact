@@ -86,7 +86,7 @@ def _clean_description(description: str, short: bool = False) -> str:
 
     if not short:
         # Remove everything after the first title with list
-        removed_elements = []
+        removed_elements: list[Tag] = []
         for el in soup:
             if not isinstance(el, Tag):
                 continue
@@ -99,7 +99,7 @@ def _clean_description(description: str, short: bool = False) -> str:
 
             if el.name in lists:
                 removed_elements.append(el)
-                prev_sib = el.previous_sibling
+                prev_sib: Tag | None = el.previous_sibling  # type: ignore
                 if prev_sib is not None and prev_sib.text.endswith(":"):
                     removed_elements.append(prev_sib)
                 continue
@@ -114,8 +114,8 @@ def _clean_description(description: str, short: bool = False) -> str:
                 el.decompose()
 
     # Fix links
-    for link in soup.find_all("a"):
-        link: Tag
+    for _link in soup.find_all("a"):
+        link: Tag = _link
         link.attrs = {k: v for k, v in link.attrs.items() if not k.startswith("data-")}
         link["target"] = "_blank"
         link["href"] = link.attrs.get("href", "").lstrip(".").lstrip("/")
@@ -370,7 +370,7 @@ class ComicVine:
             bool: Whether the token works.
         """
 
-        async def _test_token():
+        async def _test_token() -> bool:
             try:
                 async with AsyncSession() as session:
                     await self.__call_api(
@@ -449,7 +449,7 @@ class ComicVine:
                     await sleep(Constants.CV_BRAKE_TIME)
 
                 # Fetch 10 batches of 100 volumes
-                tasks = [
+                tasks: list = [
                     self.__call_api(
                         session,
                         "/volumes",
@@ -535,7 +535,7 @@ class ComicVine:
                             )
                             await sleep(Constants.CV_BRAKE_TIME)
 
-                        tasks = [
+                        tasks: list = [
                             self.__call_api(
                                 session,
                                 "/issues",
