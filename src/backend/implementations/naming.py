@@ -51,7 +51,9 @@ remove_year_in_image_regex = compile(r"(?:19|20)\d{2}")
 # region Name generation
 # =====================
 def _get_volume_naming_keys(
-    volume: int | VolumeData, _special_version: SpecialVersion | None = None
+    volume: int | VolumeData,
+    _special_version: SpecialVersion | None = None,
+    file_data: FileData | None = None,
 ) -> SVNamingKeys:
     """Generate the values of the naming keys for a volume.
 
@@ -95,6 +97,16 @@ def _get_volume_naming_keys(
         year=volume_data.year,
         publisher=volume_data.publisher,
         special_version=sv_mapping.get(volume_data.special_version),
+        releaser=file_data["releaser"]
+        if file_data is not None and "releaser" in file_data
+        else None,
+        scan_type=file_data["scan_type"]
+        if file_data is not None and "scan_type" in file_data
+        else None,
+        resolution=file_data["resolution"]
+        if file_data is not None and "resolution" in file_data
+        else None,
+        dpi=file_data["dpi"] if file_data is not None and "dpi" in file_data else None,
     )
 
 
@@ -121,9 +133,8 @@ def _get_issue_naming_keys(
     else:
         issue_data = issue
 
-    # FIXME: File Naming For Special Versions with extra info
     return IssueNamingKeys(
-        **_get_volume_naming_keys(volume).__dict__,
+        **_get_volume_naming_keys(volume, file_data=file_data).__dict__,
         issue_comicvine_id=issue_data.comicvine_id,
         issue_number=(str(issue_data.issue_number or "").zfill(issue_padding) or None),
         issue_title=(
@@ -131,16 +142,6 @@ def _get_issue_naming_keys(
         ),
         issue_release_date=issue_data.date,
         issue_release_year=extract_year_from_date(issue_data.date),
-        releaser=file_data["releaser"]
-        if file_data is not None and "releaser" in file_data
-        else None,
-        scan_type=file_data["scan_type"]
-        if file_data is not None and "scan_type" in file_data
-        else None,
-        resolution=file_data["resolution"]
-        if file_data is not None and "resolution" in file_data
-        else None,
-        dpi=file_data["dpi"] if file_data is not None and "dpi" in file_data else None,
     )
 
 
@@ -246,7 +247,7 @@ def generate_issue_name(
         SpecialVersion.HARD_COVER,
     ):
         # Iron-Man Volume 2 One-Shot
-        formatting_data = _get_volume_naming_keys(volume_id)
+        formatting_data = _get_volume_naming_keys(volume_id, file_data=file_data)
         format = sv.file_naming_special_version
 
     elif special_version == SpecialVersion.VOLUME_AS_ISSUE:

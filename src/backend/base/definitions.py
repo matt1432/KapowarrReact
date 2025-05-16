@@ -552,6 +552,10 @@ class BaseNamingKeys:
 @dataclass
 class SVNamingKeys(BaseNamingKeys):
     special_version: str | None
+    releaser: str | None
+    scan_type: str | None
+    resolution: str | None
+    dpi: str | None
 
 
 @dataclass
@@ -561,10 +565,6 @@ class IssueNamingKeys(SVNamingKeys):
     issue_title: str | None
     issue_release_date: str | None
     issue_release_year: int | None
-    releaser: str | None
-    scan_type: str | None
-    resolution: str | None
-    dpi: str | None
 
 
 @dataclass
