@@ -163,15 +163,30 @@ class SearchLibgenPlus:
         )
 
         for file_result in file_results:
+            issue_number: float | tuple[float, float] = -1
+            issue_number_str: str | None = file_result.issue.number
+
+            if issue_number_str is not None:
+                issue_number_str = issue_number_str.replace(",", ".")
+
+                if issue_number_str.count("-") != 0:
+                    covered_issues = issue_number_str.split("-")
+
+                    if len(covered_issues) == 2:
+                        issue_number = (float(covered_issues[0]), float(covered_issues[1]))
+
+                else:
+                    issue_number = float(issue_number_str)
+
             results.append(
                 SearchResultData(
                     {
                         "series": file_result.issue.series.title or "",
                         "year": file_result.issue.year,
                         "volume_number": self.volume_number,
-                        "special_version": None,
-                        "issue_number": float(file_result.issue.number or "-1"),
-                        "annual": False,
+                        "special_version": None, # TODO: figure this out
+                        "issue_number": issue_number,
+                        "annual": False, # TODO: figure this out
                         "link": file_result.download_link or "",
                         "display_title": file_result.filename or "",
                         "source": "Libgen+",
