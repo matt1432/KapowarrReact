@@ -376,18 +376,9 @@ function showManualSearch(api_key, issue_id = null) {
                     title.href = result.link;
                     title.innerText = result.display_title;
 
-                    let filesize = result.filesize;
-
-                    if (filesize) {
-                        const sizeMb = filesize * Math.pow(10, -6);
-
-                        filesize = `${sizeMb.toFixed(2)} MB`;
-                    }
-                    else {
-                        filesize = '';
-                    }
-
-                    entry.querySelector('.size-column').innerText = filesize;
+                    entry.querySelector('.size-column').innerText = result.filesize ?
+                        convertSize(result.filesize) :
+                        '';
 
                     entry.querySelector('.issue-column').innerText = result.issue_number ?? '';
                     entry.querySelector('.pages-column').innerText = result.pages ?? '';
