@@ -443,6 +443,9 @@ class DownloadHandler(metaclass=Singleton):
                     result["dpi"]
                     if not isinstance(result, str) and "dpi" in result
                     else None,
+                    result["extension"]
+                    if not isinstance(result, str) and "extension" in result
+                    else None,
                     force_match,
                 )
             )

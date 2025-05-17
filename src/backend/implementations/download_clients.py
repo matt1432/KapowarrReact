@@ -189,6 +189,10 @@ class BaseDirectDownload(Download):
     def dpi(self) -> str | None:
         return self._dpi
 
+    @property
+    def extension(self) -> str | None:
+        return self._extension
+
     def __init__(
         self,
         download_link: str,
@@ -203,6 +207,7 @@ class BaseDirectDownload(Download):
         scan_type: str | None = None,
         resolution: str | None = None,
         dpi: str | None = None,
+        extension: str | None = None,
         forced_match: bool = False,
     ) -> None:
         LOGGER.debug("Creating download: %s", download_link)
@@ -232,6 +237,7 @@ class BaseDirectDownload(Download):
         self._scan_type = scan_type
         self._resolution = resolution
         self._dpi = dpi
+        self._extension = extension
 
         self._ssn = Session()
 
@@ -308,6 +314,9 @@ class BaseDirectDownload(Download):
         return splitext(unquote_plus(self.pure_link.split("/")[-1].split("?")[0]))[0]
 
     def _extract_extension(self, response: Response | None) -> str:
+        if self.extension is not None:
+            return f".{self.extension}"
+
         if not response:
             return ""
 

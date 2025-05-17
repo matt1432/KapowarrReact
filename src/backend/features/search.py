@@ -184,6 +184,7 @@ class SearchLibgenPlus:
                         "scan_type": file_result.scan_type or "",
                         "resolution": file_result.resolution or "",
                         "dpi": file_result.dpi or "",
+                        "extension": file_result.extension or "",
                     }
                 )
             )

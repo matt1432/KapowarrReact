@@ -432,6 +432,7 @@ class SearchResultData(FilenameData):
     scan_type: str
     resolution: str
     dpi: str
+    extension: str
 
 
 class SearchResultMatchData(TypedDict):
