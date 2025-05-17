@@ -1,32 +1,32 @@
 .main-window {
-	padding: 1rem;
+    padding: 1rem;
 }
 
 .table-container {
-	overflow-x: auto;
+    overflow-x: auto;
 }
 
 table {
-	width: 100%;
-	min-width: 30rem;
+    width: 100%;
+    min-width: 30rem;
 
-	color: var(--text-color);
+    color: var(--text-color);
 }
 
 tbody tr {
-	transition: background-color 200ms ease-in-out;
+    transition: background-color 200ms ease-in-out;
 }
 
 tbody tr:hover {
-	background-color: var(--hover-color);
+    background-color: var(--hover-color);
 }
 
 th, td {
-	padding: .5rem;
+    padding: .5rem;
 }
 
 .history-entry > * {
-	border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);
 }
 
 .history-entry a:not([href]):hover {

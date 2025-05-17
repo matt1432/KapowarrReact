@@ -14,48 +14,48 @@ main:not(:has(#queue tr)) .tool-bar-container {
 }
 
 table {
-	width: 100%;
-	min-width: 50rem;
-	padding: 1rem;
-	color: var(--text-color);
+    width: 100%;
+    min-width: 50rem;
+    padding: 1rem;
+    color: var(--text-color);
 }
 
 th, td {
-	padding: .5rem;
+    padding: .5rem;
 }
 
 .queue-entry > * {
-	border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);
 }
 
 .queue-entry:nth-child(1 of .queue-entry:not([data-status="downloading"])) .move-up-dl,
 .queue-entry:nth-last-child(1 of .queue-entry:not([data-status="downloading"])) .move-down-dl,
 .queue-entry[data-status="downloading"] :where(.move-up-dl, .move-down-dl) {
-	display: none;
+    display: none;
 }
 
 .queue-entry:nth-child(1 of .queue-entry:not([data-status="downloading"])) .move-down-dl {
-	margin-left: calc(20px + .75rem);
+    margin-left: calc(20px + .75rem);
 }
 
 .queue-entry:nth-last-child(1 of .queue-entry:not([data-status="downloading"])) .move-up-dl {
-	margin-right: calc(20px + 1.25rem);
+    margin-right: calc(20px + 1.25rem);
 }
 
 .queue-entry[data-status="downloading"] .remove-dl {
-	margin-left: calc(20px + 2.75rem);
+    margin-left: calc(20px + 2.75rem);
 }
 
 .status-column {
-	width: clamp(7.5rem, 11vw, 10rem);
+    width: clamp(7.5rem, 11vw, 10rem);
 }
 
 .number-column {
-	width: 6.5rem;
+    width: 6.5rem;
 }
 
 .option-column {
-	width: 9rem;
+    width: 9rem;
 }
 
 .option-column button:not(:last-child) {
@@ -63,7 +63,7 @@ th, td {
 }
 
 .option-column button img {
-	width: 20px;
+    width: 20px;
 }
 
 @media (min-width: 720px) {

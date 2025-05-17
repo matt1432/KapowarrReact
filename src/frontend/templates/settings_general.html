@@ -2,114 +2,114 @@
 {% from "base.html" import icon_button %}
 {% block title %}General Settings{% endblock %}
 {% block css %}
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
 {% endblock %}
 {% block js %}
-	<script src="{{ url_for('static', filename='js/settings_general.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/settings_general.js') }}" defer></script>
 {% endblock %}
 
 {% block main %}
 <main>
-	<section class="tool-bar-container" aria-label="Tool bar">
-		<div class="tool-bar">
-			{{ icon_button("save-button", "Save the changes made", "save.svg", "Save", True) }}
-		</div>
-	</section>
-	<div class="settings-container">
-		<form id="settings-form">
-			<h2>Host</h2>
-			<p>Changing hosting settings will immediately restart Kapowarr. Access the web-ui within 60 seconds for the changes to stay, or they will be reverted.</p>
-			<table class="fold-table">
-				<tr>
-					<th><label for="bind-address-input">Bind Address</label></th>
-					<td>
-						<input type="text" id="bind-address-input" required spellcheck="false">
-						<p>Valid IPv4 address (default is '0.0.0.0' for all available interfaces).</p>
-					</td>
-				</tr>
-				<tr>
-					<th><label for="port-input">Port Number</label></th>
-					<td>
-						<input type="text" id="port-input" required spellcheck="false">
-						<p>The port used to access the web UI (default is '5656').</p>
-					</td>
-				</tr>
-				<tr>
-					<th><label for="url-base-input">Base URL</label></th>
-					<td>
-						<input type="text" id="url-base-input" spellcheck="false">
-						<p>For reverse proxy support (default is empty).</p>
-					</td>
-				</tr>
-			</table>
-			<h2>Security</h2>
-			<table class="fold-table">
-				<tr>
-					<th><label for="password-input">Login Password</label></th>
-					<td>
-						<input type="password" id="password-input" required spellcheck="false" autocomplete="new-password">
-						<p>When set, a password is required to be entered to get access to web-UI and API.</p>
-					</td>
-				</tr>
-				<tr>
-					<th><label>API Key</label></th>
-					<td>
-						<div id="api-container" class="icon-light-color">
-							<input type="text" id="api-input" readonly>
-							<button type="button" id="generate-api"><img src="{{url_base}}/static/img/refresh.svg" alt=""></button>
-						</div>
-					</td>
-				</tr>
-			</table>
-			<h2>External Websites</h2>
-			<table class="fold-table">
-				<tr>
-					<th><label for="cv-input">Comic Vine API Key</label></th>
-					<td>
-						<input type="text" id="cv-input" required spellcheck="false">
-						<p>The API key of the <a href="https://comicvine.gamespot.com/api" target="_blank">Comic Vine API</a>, which is required for Kapowarr to work.</p>
-					</td>
-				</tr>
-				<tr>
-					<th><label for="flaresolverr-input">FlareSolverr Base URL</label></th>
-					<td>
-						<input type="url" name="" id="flaresolverr-input">
-						<p>Base URL of a FlareSolverr instance (set empty to disable). Needed in case of a large amount of requests to CloudFlare protected websites.</p>
-					</td>
-				</tr>
-			</table>
-			<h2>UI</h2>
-			<table class="fold-table">
-				<tr>
-					<th><label for="theme-input">Theme</label></th>
-					<td>
-						<select id="theme-input">
-							<option value="light">Light</option>
-							<option value="dark">Dark</option>
-						</select>
-					</td>
-				</tr>
-			</table>
-			<h2>Logging</h2>
-			<table class="fold-table">
-				<tr>
-					<th><label for="log-level-input">Log Level</label></th>
-					<td>
-						<select id="log-level-input" required>
-							<option value="20">Info</option>
-							<option value="10">Debug</option>
-						</select>
-						<p>Change this to 'Debug' if detailed logging is needed for troubleshooting. Change it back to 'Info' when done.</p>
-					</td>
-				</tr>
-				<tr>
-					<th><label for="download-logs-button">Download Logs</label></th>
-					<td>
-						<a id="download-logs-button" href="">Download Logs</a>
-					</td>
-				</tr>
-			</table>
-		</form>
-	</div>
+    <section class="tool-bar-container" aria-label="Tool bar">
+        <div class="tool-bar">
+            {{ icon_button("save-button", "Save the changes made", "save.svg", "Save", True) }}
+        </div>
+    </section>
+    <div class="settings-container">
+        <form id="settings-form">
+            <h2>Host</h2>
+            <p>Changing hosting settings will immediately restart Kapowarr. Access the web-ui within 60 seconds for the changes to stay, or they will be reverted.</p>
+            <table class="fold-table">
+                <tr>
+                    <th><label for="bind-address-input">Bind Address</label></th>
+                    <td>
+                        <input type="text" id="bind-address-input" required spellcheck="false">
+                        <p>Valid IPv4 address (default is '0.0.0.0' for all available interfaces).</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="port-input">Port Number</label></th>
+                    <td>
+                        <input type="text" id="port-input" required spellcheck="false">
+                        <p>The port used to access the web UI (default is '5656').</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="url-base-input">Base URL</label></th>
+                    <td>
+                        <input type="text" id="url-base-input" spellcheck="false">
+                        <p>For reverse proxy support (default is empty).</p>
+                    </td>
+                </tr>
+            </table>
+            <h2>Security</h2>
+            <table class="fold-table">
+                <tr>
+                    <th><label for="password-input">Login Password</label></th>
+                    <td>
+                        <input type="password" id="password-input" required spellcheck="false" autocomplete="new-password">
+                        <p>When set, a password is required to be entered to get access to web-UI and API.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label>API Key</label></th>
+                    <td>
+                        <div id="api-container" class="icon-light-color">
+                            <input type="text" id="api-input" readonly>
+                            <button type="button" id="generate-api"><img src="{{url_base}}/static/img/refresh.svg" alt=""></button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <h2>External Websites</h2>
+            <table class="fold-table">
+                <tr>
+                    <th><label for="cv-input">Comic Vine API Key</label></th>
+                    <td>
+                        <input type="text" id="cv-input" required spellcheck="false">
+                        <p>The API key of the <a href="https://comicvine.gamespot.com/api" target="_blank">Comic Vine API</a>, which is required for Kapowarr to work.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="flaresolverr-input">FlareSolverr Base URL</label></th>
+                    <td>
+                        <input type="url" name="" id="flaresolverr-input">
+                        <p>Base URL of a FlareSolverr instance (set empty to disable). Needed in case of a large amount of requests to CloudFlare protected websites.</p>
+                    </td>
+                </tr>
+            </table>
+            <h2>UI</h2>
+            <table class="fold-table">
+                <tr>
+                    <th><label for="theme-input">Theme</label></th>
+                    <td>
+                        <select id="theme-input">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <h2>Logging</h2>
+            <table class="fold-table">
+                <tr>
+                    <th><label for="log-level-input">Log Level</label></th>
+                    <td>
+                        <select id="log-level-input" required>
+                            <option value="20">Info</option>
+                            <option value="10">Debug</option>
+                        </select>
+                        <p>Change this to 'Debug' if detailed logging is needed for troubleshooting. Change it back to 'Info' when done.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="download-logs-button">Download Logs</label></th>
+                    <td>
+                        <a id="download-logs-button" href="">Download Logs</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
 </main>
 {% endblock main %}

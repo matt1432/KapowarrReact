@@ -2,38 +2,38 @@
 {% from "base.html" import icon_button %}
 {% block title %}Queue{% endblock %}
 {% block css %}
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/queue.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/queue.css') }}">
 {% endblock %}
 {% block js %}
-	<script src="{{ url_for('static', filename='js/queue.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/queue.js') }}" defer></script>
 {% endblock %}
 
 {% block pre_build_rows %}
 <tr class="queue-entry">
-	<td class="status-column"></td>
-	<td>
-		<a href="" target="_blank"></a>
-	</td>
-	<td class="status-column">
+    <td class="status-column"></td>
+    <td>
         <a href="" target="_blank"></a>
     </td>
-	<td class="number-column"></td>
-	<td class="number-column"></td>
-	<td class="number-column"></td>
-	<td class="option-column">
+    <td class="status-column">
+        <a href="" target="_blank"></a>
+    </td>
+    <td class="number-column"></td>
+    <td class="number-column"></td>
+    <td class="number-column"></td>
+    <td class="option-column">
         <button title="Move download up" class="move-up-dl">
-			<img src="{{ url_for('static', filename='img/arrow_up.svg') }}">
+            <img src="{{ url_for('static', filename='img/arrow_up.svg') }}">
         </button>
         <button title="Move download down" class="move-down-dl">
-			<img src="{{ url_for('static', filename='img/arrow_down.svg') }}">
+            <img src="{{ url_for('static', filename='img/arrow_down.svg') }}">
         </button>
-		<button title="Remove download" class="remove-dl">
-			<img src="{{ url_for('static', filename='img/delete.svg') }}">
-		</button>
+        <button title="Remove download" class="remove-dl">
+            <img src="{{ url_for('static', filename='img/delete.svg') }}">
+        </button>
         <button title="Remove and blocklist download" class="blocklist-dl">
             <img src="{{ url_for('static', filename='img/blocklist.svg') }}">
         </button>
-	</td>
+    </td>
 </tr>
 {% endblock %}
 

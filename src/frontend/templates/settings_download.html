@@ -2,125 +2,125 @@
 {% from "base.html" import icon_button %}
 {% block title %}Download Settings{% endblock %}
 {% block css %}
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
 {% endblock %}
 {% block js %}
-	<script src="{{ url_for('static', filename='js/settings_download.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/settings_download.js') }}" defer></script>
 {% endblock %}
 
 {% block main %}
 <main>
-	<section class="tool-bar-container" aria-label="Tool bar">
-		<div class="tool-bar">
-			{{ icon_button("save-button", "Save the changes made", "save.svg", "Save", True) }}
-		</div>
-	</section>
-	<div class="settings-container">
-		<form id="settings-form">
-			<h2>Download Location</h2>
-			<table class="fold-table">
-				<tbody>
-					<tr>
-						<th><label for="download-folder-input">Direct Download <br>Temporary Folder</label></th>
-						<td>
-							<input type="text" id="download-folder-input" required spellcheck="false">
-							<p>The folder that direct downloads temporarily get downloaded to before being moved to the correct location</p>
-						</td>
-					</tr>
-					<tr>
-						<th><label for="empty-download-folder">Empty Temporary <br>Download Folder</label></th>
-						<td>
-							<button type="button" id="empty-download-folder">Reset</button>
-							<p>Removes any "ghost" files in the direct download temporary folder (handy if the application crashed while downloading, leading to half-downloaded files in the folder).</p>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<h2>Queue</h2>
-			<table class="fold-table">
-				<tbody>
-					<tr>
-						<th><label for="concurrent-direct-downloads-input">Concurrent <br>Direct Downloads</label></th>
-						<td>
-							<input type="number" id="concurrent-direct-downloads-input" min="1">
-							<p>The amount of direct downloads that are allowed to run at the same time.</p>
-						</td>
-					</tr>
-					<tr>
-						<th><label for="torrent-timeout-input">Failing Torrent Timeout</label></th>
-						<td>
-							<input type="number" id="torrent-timeout-input" min="0">
-							<p>Time in minutes that the torrent is stalled before it's considered to be failing and is removed from the queue. Set empty to disable.</p>
-						</td>
-					</tr>
-					<tr>
-						<th><label for="seeding-handling-input">Seeding Handling</label></th>
-						<td>
-							<select id="seeding-handling-input">
-								<option value="complete">Complete</option>
-								<option value="copy">Copy</option>
-							</select>
-							<p>How a torrent that goes seeding should be handled. Either wait until it has completed seeding and then move the files, or copy the files and then delete the original when seeding finishes.</p>
-						</td>
-					</tr>
-					<tr>
-						<th><label for="delete-torrents-input">Delete Completed Torrents</label></th>
-						<td>
-							<input type="checkbox" id="delete-torrents-input">
-							<p>Remove torrents from the download client history when they have completed.</p>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<h2>Service preference</h2>
-			<p>The preference for service to download from when using GetComics as the source.</p>
-			<table id="pref-table" class="short-table">
-				<tbody>
-					<tr>
-						<th>1</th>
-						<td>
-							<select data-place="1">
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<th>2</th>
-						<td>
-							<select data-place="2">
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<th>3</th>
-						<td>
-							<select data-place="3">
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<th>4</th>
-						<td>
-							<select data-place="4">
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<th>5</th>
-						<td>
-							<select data-place="5">
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<th>6</th>
-						<td>
-							<select data-place="6">
-							</select>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</form>
-	</div>
+    <section class="tool-bar-container" aria-label="Tool bar">
+        <div class="tool-bar">
+            {{ icon_button("save-button", "Save the changes made", "save.svg", "Save", True) }}
+        </div>
+    </section>
+    <div class="settings-container">
+        <form id="settings-form">
+            <h2>Download Location</h2>
+            <table class="fold-table">
+                <tbody>
+                    <tr>
+                        <th><label for="download-folder-input">Direct Download <br>Temporary Folder</label></th>
+                        <td>
+                            <input type="text" id="download-folder-input" required spellcheck="false">
+                            <p>The folder that direct downloads temporarily get downloaded to before being moved to the correct location</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="empty-download-folder">Empty Temporary <br>Download Folder</label></th>
+                        <td>
+                            <button type="button" id="empty-download-folder">Reset</button>
+                            <p>Removes any "ghost" files in the direct download temporary folder (handy if the application crashed while downloading, leading to half-downloaded files in the folder).</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2>Queue</h2>
+            <table class="fold-table">
+                <tbody>
+                    <tr>
+                        <th><label for="concurrent-direct-downloads-input">Concurrent <br>Direct Downloads</label></th>
+                        <td>
+                            <input type="number" id="concurrent-direct-downloads-input" min="1">
+                            <p>The amount of direct downloads that are allowed to run at the same time.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="torrent-timeout-input">Failing Torrent Timeout</label></th>
+                        <td>
+                            <input type="number" id="torrent-timeout-input" min="0">
+                            <p>Time in minutes that the torrent is stalled before it's considered to be failing and is removed from the queue. Set empty to disable.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="seeding-handling-input">Seeding Handling</label></th>
+                        <td>
+                            <select id="seeding-handling-input">
+                                <option value="complete">Complete</option>
+                                <option value="copy">Copy</option>
+                            </select>
+                            <p>How a torrent that goes seeding should be handled. Either wait until it has completed seeding and then move the files, or copy the files and then delete the original when seeding finishes.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="delete-torrents-input">Delete Completed Torrents</label></th>
+                        <td>
+                            <input type="checkbox" id="delete-torrents-input">
+                            <p>Remove torrents from the download client history when they have completed.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2>Service preference</h2>
+            <p>The preference for service to download from when using GetComics as the source.</p>
+            <table id="pref-table" class="short-table">
+                <tbody>
+                    <tr>
+                        <th>1</th>
+                        <td>
+                            <select data-place="1">
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>2</th>
+                        <td>
+                            <select data-place="2">
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>3</th>
+                        <td>
+                            <select data-place="3">
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>4</th>
+                        <td>
+                            <select data-place="4">
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>5</th>
+                        <td>
+                            <select data-place="5">
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>6</th>
+                        <td>
+                            <select data-place="6">
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
 </main>
 {% endblock main %}

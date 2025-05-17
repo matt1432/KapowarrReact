@@ -1,43 +1,43 @@
 .main-window {
-	padding: 1rem;
+    padding: 1rem;
 }
 
 .table-container {
-	overflow-x: auto;
+    overflow-x: auto;
 }
 
 table {
-	width: 100%;
-	min-width: 33.3rem;
-	table-layout: fixed;
+    width: 100%;
+    min-width: 33.3rem;
+    table-layout: fixed;
 
-	color: var(--text-color);
+    color: var(--text-color);
 }
 
 th, td {
-	padding: .5rem .9rem;
+    padding: .5rem .9rem;
 }
 
 .link-column {
-	overflow: auto;
+    overflow: auto;
 }
 
 .reason-column {
-	width: 9rem;
+    width: 9rem;
 }
 
 .date-column {
-	width: 11rem;
+    width: 11rem;
 }
 
 .option-column {
-	width: 4.5rem;
+    width: 4.5rem;
 }
 
 .list-entry > * {
-	border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);
 }
 
 .delete-entry > img {
-	width: 20px;
+    width: 20px;
 }

@@ -2,158 +2,158 @@
 {% from "base.html" import icon_button %}
 {% block title %}Media Management Settings{% endblock %}
 {% block css %}
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
 {% endblock %}
 {% block js %}
-	<script src="{{ url_for('static', filename='js/settings_mediamanagement.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/settings_mediamanagement.js') }}" defer></script>
 {% endblock %}
 
 {% block main %}
 <main>
-	<section class="tool-bar-container" aria-label="Tool bar">
-		<div class="tool-bar">
-			{{ icon_button("save-button", "Save the changes made", "save.svg", "Save", True) }}
-		</div>
-	</section>
-	<form id="settings-form">
-		<div class="settings-container">
-			<h2>File Naming</h2>
-			<table class="fold-table">
-				<tbody>
-					<tr>
-						<th><label for="renaming-input">Rename Downloaded Files</label></th>
-						<td><input type="checkbox" id="renaming-input"></td>
-					</tr>
-					<tr>
-						<th><label for="volume-folder-naming-input">Volume Folder Naming</label></th>
-						<td>
-							<input type="text" id="volume-folder-naming-input" required spellcheck="false">
-							<p>The naming format for the volume folder.</p>
-							<p>Available variables are: {series_name}, {clean_series_name}, {volume_number}, {comicvine_id}, {year} and {publisher}</p>
-						</td>
-					</tr>
-					<tr>
-						<th><label for="file-naming-input">File Naming</label></th>
-						<td>
-							<input type="text" id="file-naming-input" required spellcheck="false">
-							<p>The naming format for the file itself.</p>
-							<p>Available variables are: {series_name}, {clean_series_name}, {volume_number}, {comicvine_id}, {year}, {publisher}, {issue_comicvine_id}, {issue_number}, {issue_title}, {issue_release_date}, {issue_release_year}, {releaser}, {scan_type}, {resolution} and {dpi}</p>
-						</td>
-					</tr>
-					<tr>
-						<th><label for="file-naming-empty-input">File Naming For <br>Issues Without Title</label></th>
-						<td>
-							<input type="text" id="file-naming-empty-input" required spellcheck="false">
-							<p>The naming format for the file itself if there is no issue title.</p>
+    <section class="tool-bar-container" aria-label="Tool bar">
+        <div class="tool-bar">
+            {{ icon_button("save-button", "Save the changes made", "save.svg", "Save", True) }}
+        </div>
+    </section>
+    <form id="settings-form">
+        <div class="settings-container">
+            <h2>File Naming</h2>
+            <table class="fold-table">
+                <tbody>
+                    <tr>
+                        <th><label for="renaming-input">Rename Downloaded Files</label></th>
+                        <td><input type="checkbox" id="renaming-input"></td>
+                    </tr>
+                    <tr>
+                        <th><label for="volume-folder-naming-input">Volume Folder Naming</label></th>
+                        <td>
+                            <input type="text" id="volume-folder-naming-input" required spellcheck="false">
+                            <p>The naming format for the volume folder.</p>
+                            <p>Available variables are: {series_name}, {clean_series_name}, {volume_number}, {comicvine_id}, {year} and {publisher}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="file-naming-input">File Naming</label></th>
+                        <td>
+                            <input type="text" id="file-naming-input" required spellcheck="false">
+                            <p>The naming format for the file itself.</p>
+                            <p>Available variables are: {series_name}, {clean_series_name}, {volume_number}, {comicvine_id}, {year}, {publisher}, {issue_comicvine_id}, {issue_number}, {issue_title}, {issue_release_date}, {issue_release_year}, {releaser}, {scan_type}, {resolution} and {dpi}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="file-naming-empty-input">File Naming For <br>Issues Without Title</label></th>
+                        <td>
+                            <input type="text" id="file-naming-empty-input" required spellcheck="false">
+                            <p>The naming format for the file itself if there is no issue title.</p>
 <p>Available variables are: {series_name}, {clean_series_name}, {volume_number}, {comicvine_id}, {year}, {publisher}, {issue_comicvine_id}, {issue_number}, {issue_release_date}, {issue_release_year}, {releaser}, {scan_type}, {resolution} and {dpi}</p>
-						</td>
-					</tr>
-					<tr>
-						<th><label for="file-naming-sv-input">File Naming For <br>Special Versions</label></th>
-						<td>
-							<input type="text" id="file-naming-sv-input" required spellcheck="false">
-							<p>The naming format for the file itself (if it's a special version, like a one shot, tpb or hard cover).</p>
-							<p>Available variables are: {series_name}, {clean_series_name}, {volume_number}, {comicvine_id}, {year}, {publisher}, {special_version}, {releaser}, {scan_type}, {resolution} and {dpi}</p>
-						</td>
-					</tr>
-					<tr>
-						<th><label for="file-naming-vai-input">File Naming For <br>"Volume As Issue"</label></th>
-						<td>
-							<input type="text" id="file-naming-vai-input" required spellcheck="false">
-							<p>The naming format for the file itself (if it's a Volume As Issue, so an issue named "Volume N").</p>
-							<p>Available variables are: {series_name}, {clean_series_name}, {volume_number}, {comicvine_id}, {year}, {publisher}, {issue_comicvine_id}, {issue_number}, {issue_title}, {issue_release_date}, {issue_release_year}, {releaser}, {scan_type}, {resolution} and {dpi}</p>
-						</td>
-					</tr>
-					<tr>
-						<th><label for="long-sv-input">Use Long Special Version Labels</label></th>
-						<td>
-							<input type="checkbox" id="long-sv-input">
-							<p>Whether or not to use, for example, 'One-Shot' instead of 'OS'. The term 'TPB' will always stay 'TPB'.</p>
-						</td>
-					</tr>
-					<tr>
-						<th><label for="issue-padding-input">Issue Padding</label></th>
-						<td>
-							<select id="issue-padding-input">
-								<option value="4">000x</option>
-								<option value="3">00x</option>
-								<option value="2">0x</option>
-								<option value="1">x</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<th><label for="volume-padding-input">Volume Padding</label></th>
-						<td>
-							<select id="volume-padding-input">
-								<option value="3">00x</option>
-								<option value="2">0x</option>
-								<option value="1">x</option>
-							</select>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<h2>Converting</h2>
-			<p>The "Converting" feature allows you to change the format of your files (e.g. from cbr to cbz). Extracting archive files also falls under "converting".</p>
-			<table class="fold-table">
-				<tbody>
-					<tr>
-						<th><label for="convert-input">Convert/Extract <br>Downloaded Files</label></th>
-						<td>
-							<input type="checkbox" id="convert-input">
-							<p>After a file is downloaded, automatically convert it (if a format preference is set) and/or extract its contents (if it's an archive and the setting below is enabled).</p>
-						</td>
-					</tr>
-					<tr>
-						<th><label for="extract-input">Extract archives <br>containing issues</label></th>
-						<td>
-							<input type="checkbox" id="extract-input">
-							<p>If an archive file has (most often multiple) complete issues inside, then extract the files inside and convert those issue files following the format preference.</p>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<label for="add-convert-input">Format Preference</label>
-			<p>The list below specifies the desired format, in order of preference.</p>
-			<table id="convert-table" class="short-table icon-text-color">
-				<tbody>
-					<tr>
-						<th></th>
-						<td>
-							<select id="add-convert-input"></select>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<h2>Root Folders</h2>
-			<div id="root-folder-container">
-				<table id="root-folder-table" class="icon-text-color">
-					<thead>
-						<tr>
-							<th>Path</th>
-							<th class="number-column">Free Space</th>
-							<th class="number-column">Total Space</th>
-							<th class="action-column">Action</th>
-						</tr>
-					</thead>
-					<tbody id="root-folder-list"></tbody>
-					<tbody>
-						<tr id="add-row" class="hidden">
-							<td>
-								<input type="text" id="folder-input">
-								<p class="error" id="folder-error">*Folder doesn't exist</p>
-								<p class="error" id="folder-in-folder-error">*Folder is in other root folder or download folder</p>
-							</td>
-							<td></td>
-							<td></td>
-							<td><button id="add-folder" type="button">Add</button></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<button type="button" id="toggle-root-folder">Add Root Folder</button>
-		</div>
-	</form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="file-naming-sv-input">File Naming For <br>Special Versions</label></th>
+                        <td>
+                            <input type="text" id="file-naming-sv-input" required spellcheck="false">
+                            <p>The naming format for the file itself (if it's a special version, like a one shot, tpb or hard cover).</p>
+                            <p>Available variables are: {series_name}, {clean_series_name}, {volume_number}, {comicvine_id}, {year}, {publisher}, {special_version}, {releaser}, {scan_type}, {resolution} and {dpi}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="file-naming-vai-input">File Naming For <br>"Volume As Issue"</label></th>
+                        <td>
+                            <input type="text" id="file-naming-vai-input" required spellcheck="false">
+                            <p>The naming format for the file itself (if it's a Volume As Issue, so an issue named "Volume N").</p>
+                            <p>Available variables are: {series_name}, {clean_series_name}, {volume_number}, {comicvine_id}, {year}, {publisher}, {issue_comicvine_id}, {issue_number}, {issue_title}, {issue_release_date}, {issue_release_year}, {releaser}, {scan_type}, {resolution} and {dpi}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="long-sv-input">Use Long Special Version Labels</label></th>
+                        <td>
+                            <input type="checkbox" id="long-sv-input">
+                            <p>Whether or not to use, for example, 'One-Shot' instead of 'OS'. The term 'TPB' will always stay 'TPB'.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="issue-padding-input">Issue Padding</label></th>
+                        <td>
+                            <select id="issue-padding-input">
+                                <option value="4">000x</option>
+                                <option value="3">00x</option>
+                                <option value="2">0x</option>
+                                <option value="1">x</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="volume-padding-input">Volume Padding</label></th>
+                        <td>
+                            <select id="volume-padding-input">
+                                <option value="3">00x</option>
+                                <option value="2">0x</option>
+                                <option value="1">x</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2>Converting</h2>
+            <p>The "Converting" feature allows you to change the format of your files (e.g. from cbr to cbz). Extracting archive files also falls under "converting".</p>
+            <table class="fold-table">
+                <tbody>
+                    <tr>
+                        <th><label for="convert-input">Convert/Extract <br>Downloaded Files</label></th>
+                        <td>
+                            <input type="checkbox" id="convert-input">
+                            <p>After a file is downloaded, automatically convert it (if a format preference is set) and/or extract its contents (if it's an archive and the setting below is enabled).</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="extract-input">Extract archives <br>containing issues</label></th>
+                        <td>
+                            <input type="checkbox" id="extract-input">
+                            <p>If an archive file has (most often multiple) complete issues inside, then extract the files inside and convert those issue files following the format preference.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <label for="add-convert-input">Format Preference</label>
+            <p>The list below specifies the desired format, in order of preference.</p>
+            <table id="convert-table" class="short-table icon-text-color">
+                <tbody>
+                    <tr>
+                        <th></th>
+                        <td>
+                            <select id="add-convert-input"></select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2>Root Folders</h2>
+            <div id="root-folder-container">
+                <table id="root-folder-table" class="icon-text-color">
+                    <thead>
+                        <tr>
+                            <th>Path</th>
+                            <th class="number-column">Free Space</th>
+                            <th class="number-column">Total Space</th>
+                            <th class="action-column">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="root-folder-list"></tbody>
+                    <tbody>
+                        <tr id="add-row" class="hidden">
+                            <td>
+                                <input type="text" id="folder-input">
+                                <p class="error" id="folder-error">*Folder doesn't exist</p>
+                                <p class="error" id="folder-in-folder-error">*Folder is in other root folder or download folder</p>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td><button id="add-folder" type="button">Add</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button type="button" id="toggle-root-folder">Add Root Folder</button>
+        </div>
+    </form>
 </main>
 {% endblock main %}

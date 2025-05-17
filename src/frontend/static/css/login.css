@@ -1,70 +1,70 @@
 body {
-	height: 100vh;
+    height: 100vh;
 
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	gap: 8rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8rem;
 
-	background-color: var(--background-color);
+    background-color: var(--background-color);
 }
 
 #text-container {
-	text-align: center;
+    text-align: center;
 }
 
 #text-container h1 {
-	margin-bottom: .5rem;
+    margin-bottom: .5rem;
 
-	color: var(--accent-color);
+    color: var(--accent-color);
 
-	font-size: min(20vw, 8rem);
+    font-size: min(20vw, 8rem);
 }
 
 #text-container p {
-	color: var(--text-color);
+    color: var(--text-color);
 }
 
 #login-form {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
 
 #password-input {
-	margin-bottom: .3rem;
+    margin-bottom: .3rem;
 
-	padding: .6rem;
-	outline: 0;
-	border: 1px solid transparent;
-	border-radius: 4px;
-	color: var(--dark-color);
+    padding: .6rem;
+    outline: 0;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--dark-color);
 
-	font-size: 1.3rem;
+    font-size: 1.3rem;
 
-	transition: border .3s ease-in;
+    transition: border .3s ease-in;
 }
 
 #password-input:focus {
-	border: 1px solid var(--accent-color);
+    border: 1px solid var(--accent-color);
 }
 
 #password-input::placeholder {
-	font-size: .6rem;
-	text-align: right;
-	transition: color .3s ease-out;
+    font-size: .6rem;
+    text-align: right;
+    transition: color .3s ease-out;
 }
 
 #password-input:focus::placeholder {
-	color: transparent;
+    color: transparent;
 }
 
 #login-form button {
-	padding: .5rem 1.6rem;
-	border-radius: 3px;
-	color: var(--dark-color);
-	background-color: var(--accent-color);
+    padding: .5rem 1.6rem;
+    border-radius: 3px;
+    color: var(--dark-color);
+    background-color: var(--accent-color);
 
-	font-size: 1.1rem;
+    font-size: 1.1rem;
 }
