@@ -111,6 +111,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.envrc
+.direnv
 
 # Spyder project settings
 .spyderproject
@@ -143,3 +145,6 @@ temp_downloads/*
 
 # Project management files
 release*.sh
+
+# JavaScript
+node_modules

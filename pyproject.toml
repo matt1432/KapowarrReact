@@ -44,4 +44,4 @@ dev = {file = "requirements-dev.txt"}
 [tool.setuptools.package-data]
 "backend.lib" = ["*"]
 "frontend" = ["templates/*"]
-"frontend.static" = ["css/*", "img/*", "js/*", "json/*"]
+"frontend.static" = ["css/*", "img/*", "js/*.js", "json/*"]
