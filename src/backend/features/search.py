@@ -146,7 +146,10 @@ class SearchGetComics(SearchSource):
 
 class SearchLibgenPlus:
     def __init__(
-        self, comicvine_id: int, volume_number: int, issue_number: float | None
+        self,
+        comicvine_id: int,
+        volume_number: int,
+        issue_number: float | tuple[float, float] | None = None,
     ):
         self.comicvine_id = comicvine_id
         self.volume_number = volume_number
@@ -158,29 +161,11 @@ class SearchLibgenPlus:
         file_results = LibgenSearch().search_comicvine_id(
             Settings().sv.comicvine_api_key,
             self.comicvine_id,
-            str(self.issue_number) if self.issue_number is not None else None,
+            self.issue_number,
             libgen_url,
         )
 
         for file_result in file_results:
-            issue_number: float | tuple[float, float] = -1
-            issue_number_str: str | None = file_result.issue.number
-
-            if issue_number_str is not None:
-                issue_number_str = issue_number_str.replace(",", ".")
-
-                if issue_number_str.count("-") != 0:
-                    covered_issues = issue_number_str.split("-")
-
-                    if len(covered_issues) == 2:
-                        issue_number = (
-                            float(covered_issues[0]),
-                            float(covered_issues[1]),
-                        )
-
-                else:
-                    issue_number = float(issue_number_str)
-
             results.append(
                 SearchResultData(
                     {
@@ -188,7 +173,7 @@ class SearchLibgenPlus:
                         "year": file_result.issue.year,
                         "volume_number": self.volume_number,
                         "special_version": None,  # TODO: figure this out
-                        "issue_number": issue_number,
+                        "issue_number": file_result.issue.number,
                         "annual": False,  # TODO: figure this out
                         "link": file_result.download_link or "",
                         "display_title": file_result.filename or "",
