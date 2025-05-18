@@ -444,6 +444,7 @@ def check_mock_filename(
                 VolumeData(
                     id=0,
                     comicvine_id=123,
+                    libgen_url=None,
                     title="Spider-Man",
                     alt_title="Spiderman",
                     year=2023,
@@ -481,6 +482,7 @@ def check_mock_filename(
                 VolumeData(
                     id=0,
                     comicvine_id=123,
+                    libgen_url=None,
                     title="Spider-Man",
                     alt_title="Spiderman",
                     year=2023,
@@ -520,6 +522,7 @@ def check_mock_filename(
                 VolumeData(
                     id=0,
                     comicvine_id=123,
+                    libgen_url=None,
                     title="Spider-Man",
                     alt_title="Spiderman",
                     year=2023,
@@ -559,6 +562,7 @@ def check_mock_filename(
                 VolumeData(
                     id=0,
                     comicvine_id=123,
+                    libgen_url=None,
                     title="Spider-Man",
                     alt_title="Spiderman",
                     year=2023,

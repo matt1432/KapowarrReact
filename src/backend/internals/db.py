@@ -279,6 +279,7 @@ def setup_db() -> None:
         CREATE TABLE IF NOT EXISTS volumes(
             id INTEGER PRIMARY KEY,
             comicvine_id INTEGER NOT NULL,
+            libgen_url VARCHAR(255),
             title VARCHAR(255) NOT NULL,
             alt_title VARCHAR(255),
             year INTEGER(5),

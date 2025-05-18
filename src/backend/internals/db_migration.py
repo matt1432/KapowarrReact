@@ -1206,3 +1206,18 @@ class MigrateAddFileInfo(DBMigrator):
             COMMIT;
         """)
         return
+
+
+class MigrateAddLibgenURLToVolumes(DBMigrator):
+    start_version = 39
+
+    def run(self) -> None:
+        # V39 -> V40
+
+        from backend.internals.db import get_db
+
+        get_db().execute("""
+            ALTER TABLE volumes ADD COLUMN
+                libgen_url VARCHAR(255);
+        """)
+        return

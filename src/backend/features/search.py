@@ -147,16 +147,21 @@ class SearchGetComics(SearchSource):
 class SearchLibgenPlus:
     def __init__(
         self,
-        comicvine_id: int,
-        volume_number: int,
+        volume: Volume,
         issue_number: float | tuple[float, float] | None = None,
     ):
-        self.comicvine_id = comicvine_id
-        self.volume_number = volume_number
+        self.volume = volume
+        self.comicvine_id = self.volume.get_data().comicvine_id
+        self.volume_number = self.volume.get_data().volume_number
         self.issue_number = issue_number
 
     def search(self, libgen_url: str | None = None) -> list[SearchResultData]:
         results: list[SearchResultData] = []
+
+        volume_data = self.volume.get_data()
+
+        if volume_data.libgen_url is not None:
+            libgen_url = volume_data.libgen_url
 
         file_results = LibgenSearch().search_comicvine_id(
             Settings().sv.comicvine_api_key,
@@ -164,6 +169,19 @@ class SearchLibgenPlus:
             self.issue_number,
             libgen_url,
         )
+
+        if len(file_results) > 0:
+            new_libgen_url = (
+                f"https://libgen.gs/series.php?id={file_results[0].issue.series.id}"
+            )
+
+            # TODO: add way to change this manually in the UI
+            if volume_data.libgen_url != new_libgen_url:
+                self.volume.update(
+                    {
+                        "libgen_url": new_libgen_url,
+                    }
+                )
 
         for file_result in file_results:
             results.append(
@@ -299,8 +317,7 @@ def manual_search(
         libgen_results = []
         if Settings().sv.enable_libgen:
             libgen_results = SearchLibgenPlus(
-                volume_data.comicvine_id,
-                volume_data.volume_number,
+                volume,
                 float(issue_number) if issue_number is not None else None,
             ).search(libgen_url)
 

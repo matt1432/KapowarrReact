@@ -589,6 +589,7 @@ class IssueData:
 class VolumeData:
     id: int
     comicvine_id: int
+    libgen_url: str | None
     title: str
     alt_title: str | None
     year: int

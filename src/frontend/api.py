@@ -629,6 +629,7 @@ def api_volumes_search() -> ApiReturn:
         vd = VolumeData(
             id=0,
             comicvine_id=data["comicvine_id"],
+            libgen_url=data["libgen_url"],
             title=data["title"],
             alt_title=data["title"],
             year=data["year"],

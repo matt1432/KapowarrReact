@@ -270,7 +270,7 @@ class Volume:
             .execute(
                 """
             SELECT
-                id, comicvine_id,
+                id, comicvine_id, libgen_url,
                 title, alt_title,
                 year, publisher, volume_number,
                 description, site_url,
