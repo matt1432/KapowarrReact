@@ -6,6 +6,12 @@ build-backend = "setuptools.build_meta"
 name = "Kapowarr"
 version = "2.0.0a2"
 description = "Kapowarr is a software to build and manage a comic book library, fitting in the *arr suite of software."
+authors = [
+  {name = "Casvt"}
+]
+maintainers = [
+  {name = "matt1432", email = "matt@nelim.org"}
+]
 readme = "README.md"
 license-files = ["LICENSE"]
 requires-python = ">= 3.12"
