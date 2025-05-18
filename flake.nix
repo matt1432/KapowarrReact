@@ -93,7 +93,6 @@
         libgencomics,
         requests,
         setuptools,
-        typing-extensions, # from overrides
         waitress,
         websocket-client,
         ...
@@ -115,7 +114,6 @@
           build-system = [setuptools];
 
           dependencies = [
-            typing-extensions
             requests
             beautifulsoup4
             flask

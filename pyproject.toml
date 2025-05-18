@@ -9,7 +9,17 @@ description = "Kapowarr is a software to build and manage a comic book library, 
 readme = "README.md"
 license-files = ["LICENSE"]
 requires-python = ">= 3.12"
-dynamic = ["dependencies", "optional-dependencies"]
+dependencies = [
+  "aiohttp ~= 3.11.15",
+  "beautifulsoup4 ~= 4.12.3",
+  "bencoding ~= 0.2.6",
+  "cryptography ~= 44.0.2",
+  "flask ~= 3.1",
+  "flask-socketio ~= 5.5.1",
+  "requests ~= 2.32.3",
+  "waitress ~= 3.0.2",
+  "websocket-client ~= 1.8.0"
+]
 
 [project.scripts]
 kapowarr = "kapowarr:main"
@@ -34,12 +44,6 @@ target-version = "py312"
 line-length = 88
 lint.select = ["E", "F", "I", "U"]
 lint.ignore = ["E501"]
-
-[tool.setuptools.dynamic]
-dependencies = {file = "requirements.txt"}
-
-[tool.setuptools.dynamic.optional-dependencies]
-dev = {file = "requirements-dev.txt"}
 
 [tool.setuptools.package-data]
 "backend.lib" = ["*"]
