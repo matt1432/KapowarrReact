@@ -327,129 +327,138 @@ function autosearchIssue(issue_id, api_key) {
 //
 // Manual search
 //
+
 function showManualSearch(api_key, issue_id = null) {
-    // Display searching message
     const message = document.querySelector('#searching-message');
+
     const table = document.querySelector('#search-result-table');
     const tbody = table.querySelector('tbody');
+
     const libgenInput = document.querySelector('#libgen-input');
     const libgenContainer = libgenInput.parentNode;
 
+    // Display searching message and hide the rest
     hide([table, libgenContainer], [message]);
+    tbody.innerHTML = '';
+
+    const addSearchResult = (result) => {
+        const entry = ViewEls.pre_build.manual_search.cloneNode(true);
+        const match = entry.querySelector('.match-column');
+
+        if (result.match) {
+            setImage(
+                match,
+                images.check,
+                'Search result matches',
+            );
+        }
+        else {
+            setImage(
+                match,
+                images.cancel,
+                result.match_issue,
+            );
+        }
+
+        const title = entry.querySelector('a');
+
+        title.href = result.link;
+        title.innerText = result.display_title;
+
+        entry.querySelector('.size-column').innerText = result.filesize ?
+            convertSize(result.filesize) :
+            '';
+
+        entry.querySelector('.issue-column').innerText = result.issue_number ?? '';
+        entry.querySelector('.pages-column').innerText = result.pages ?? '';
+        entry.querySelector('.releaser-column').innerText = result.releaser ?? '';
+        entry.querySelector('.scan-type-column').innerText = result.scan_type ?? '';
+        entry.querySelector('.resolution-column').innerText = result.resolution ?? '';
+        entry.querySelector('.dpi-column').innerText = result.dpi ?? '';
+        entry.querySelector('.source-column').innerText = result.source;
+
+        const download_button = entry.querySelector('.search-action-column :nth-child(1)');
+
+        download_button.classList.add('icon-text-color');
+        download_button.onclick = () => addManualSearch(
+            result, false, download_button, api_key, issue_id,
+        );
+
+        const force_download_button = entry.querySelector(
+            '.search-action-column :nth-child(2)',
+        );
+
+        force_download_button.classList.add('icon-text-color');
+        force_download_button.onclick = () => addManualSearch(
+            result, true, force_download_button, api_key, issue_id,
+        );
+
+        const blocklist_button = entry.querySelector('.search-action-column :nth-child(3)');
+
+        // Show blocklist button
+        if (result.match_issue === null || !result.match_issue.includes('blocklist')) {
+            blocklist_button.onclick = () => blockManualSearch(
+                result.link,
+                result.display_title,
+                volume_id,
+                issue_id,
+                blocklist_button,
+                match,
+                api_key,
+            );
+        }
+        // No blocklist button
+        else {
+            blocklist_button.remove();
+        }
+
+        return [parseFloat(result.issue_number ?? -1), entry];
+    };
 
     // Show window
     showWindow('manual-search-window');
 
     // Start search
-    tbody.innerHTML = '';
     const url = issue_id ?
         `/issues/${issue_id}/manualsearch` :
         `/volumes/${volume_id}/manualsearch`;
 
-    fetchAPI(url, api_key)
-        .then((jsonObj) => {
-            const setupTable = (json) => {
-                json.result.forEach((result) => {
-                    const entry = ViewEls.pre_build.manual_search.cloneNode(true);
-
-                    tbody.appendChild(entry);
-
-                    const match = entry.querySelector('.match-column');
-
-                    if (result.match) {
-                        setImage(
-                            match,
-                            images.check,
-                            'Search result matches',
-                        );
-                    }
-                    else {
-                        setImage(
-                            match,
-                            images.cancel,
-                            result.match_issue,
-                        );
-                    }
-
-                    const title = entry.querySelector('a');
-
-                    title.href = result.link;
-                    title.innerText = result.display_title;
-
-                    entry.querySelector('.size-column').innerText = result.filesize ?
-                        convertSize(result.filesize) :
-                        '';
-
-                    entry.querySelector('.issue-column').innerText = result.issue_number ?? '';
-                    entry.querySelector('.pages-column').innerText = result.pages ?? '';
-                    entry.querySelector('.releaser-column').innerText = result.releaser ?? '';
-                    entry.querySelector('.scan-type-column').innerText = result.scan_type ?? '';
-                    entry.querySelector('.resolution-column').innerText = result.resolution ?? '';
-                    entry.querySelector('.dpi-column').innerText = result.dpi ?? '';
-                    entry.querySelector('.source-column').innerText = result.source;
-
-                    const download_button = entry.querySelector('.search-action-column :nth-child(1)');
-
-                    download_button.classList.add('icon-text-color');
-                    download_button.onclick = () => addManualSearch(
-                        result, false, download_button, api_key, issue_id,
-                    );
-
-                    const force_download_button = entry.querySelector(
-                        '.search-action-column :nth-child(2)',
-                    );
-
-                    force_download_button.classList.add('icon-text-color');
-                    force_download_button.onclick = () => addManualSearch(
-                        result, true, force_download_button, api_key, issue_id,
-                    );
-
-                    const blocklist_button = entry.querySelector('.search-action-column :nth-child(3)');
-
-                    // Show blocklist button
-                    if (result.match_issue === null || !result.match_issue.includes('blocklist')) {
-                        blocklist_button.onclick = () => blockManualSearch(
-                            result.link,
-                            result.display_title,
-                            volume_id,
-                            issue_id,
-                            blocklist_button,
-                            match,
-                            api_key,
-                        );
-                    }
-                    // No blocklist button
-                    else {
-                        blocklist_button.remove();
-                    }
+    fetchAPI(url, api_key).then((jsonObj) => {
+        const setupTable = (json) => {
+            json.result
+                .map((result) => addSearchResult(result, api_key))
+                .sort((a, b) => a[0] - b[0])
+                .forEach(([_k, elem]) => {
+                    tbody.appendChild(elem);
                 });
 
-                hide([message], [table]);
-            };
+            hide([message], [table]);
+        };
 
-            const fail_r = 'Libgen series could not be found. Try again with a link to it if it exists.';
+        const fail_r = 'Libgen series could not be found. Try again with a link to it if it exists.';
 
-            if (jsonObj.result.fail_reason === fail_r) {
-                libgenInput.addEventListener('keypress', (event) => {
-                    if (event.key === 'Enter') {
-                        event.preventDefault();
-                        hide([libgenContainer], [message]);
+        // Handle when no matching Libgen series were found
+        if (jsonObj.result.fail_reason === fail_r) {
+            libgenInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    hide([libgenContainer], [message]);
 
-                        sendAPI('POST', url, api_key, { url: libgenInput.value })
-                            .then((response) => response.json())
-                            .then((jsonObj2) => {
-                                tbody.innerHTML = '';
-                                setupTable(jsonObj2);
-                                hide([], [table]);
-                            });
-                    }
-                });
-                hide([message, table], [libgenContainer]);
-            }
-            else {
-                setupTable(jsonObj);
-            }
-        });
+                    sendAPI('POST', url, api_key, { url: libgenInput.value })
+                        .then((response) => response.json())
+                        .then((jsonObj2) => {
+                            tbody.innerHTML = '';
+                            setupTable(jsonObj2);
+                            hide([], [table]);
+                        });
+                }
+            });
+            hide([message, table], [libgenContainer]);
+        }
+        else {
+            setupTable(jsonObj);
+        }
+    });
 };
 
 function addManualSearch(result, force, button, api_key, issue_id = null) {
