@@ -1,12 +1,11 @@
 import unittest
 from json import dumps
-from typing import Dict
 
 from backend.base.file_extraction import extract_filename_data as ef
 
 
 class extract_filename_data(unittest.TestCase):
-    def run_cases(self, cases: Dict[str, dict]):
+    def run_cases(self, cases: dict[str, dict]):
         self.longMessage = False
         for input, output in cases.items():
             self.assertEqual(
@@ -16,7 +15,7 @@ class extract_filename_data(unittest.TestCase):
             )
         return
 
-    def run_cases_folder_year(self, cases: Dict[str, dict]):
+    def run_cases_folder_year(self, cases: dict[str, dict]):
         self.longMessage = False
         for input, output in cases.items():
             self.assertEqual(
