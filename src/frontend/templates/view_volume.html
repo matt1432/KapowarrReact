@@ -31,16 +31,16 @@
         <td class="match-column" title="">
             <img src="">
         </td>
-        <td class="issue-column"></td>
+        <td><input class="issue-column" oninput="this.style.minInlineSize = (this.value.length + 3) + 'ch'"/></td>
         <td>
             <a href="" target="_blank"></a>
         </td>
         <td class="size-column"></td>
         <td class="pages-column"></td>
-        <td class="releaser-column"></td>
-        <td class="scan-type-column"></td>
-        <td class="resolution-column"></td>
-        <td class="dpi-column"></td>
+        <td><input class="releaser-column" oninput="this.style.minInlineSize = (this.value.length + 3) + 'ch'" /></td>
+        <td><input class="scan-type-column" oninput="this.style.minInlineSize = (this.value.length + 3) + 'ch'"/></td>
+        <td><input class="resolution-column" oninput="this.style.minInlineSize = (this.value.length + 3) + 'ch'"/></td>
+        <td><input class="dpi-column" oninput="this.style.minInlineSize = (this.value.length + 3) + 'ch'"/></td>
         <td class="source-column"></td>
         <td class="search-action-column action-list" aria-label="Actions">
             {{ icon_button('', "Download", "download.svg") }}
@@ -197,7 +197,7 @@
         <p id="searching-message">Searching...</p>
     <div>
         <label for="libgen-input">Enter Libgen URL for the series</label>
-          <input type="text" id="libgen-input">
+        <input type="text" id="libgen-input">
     </div>
         <table id="search-result-table" class="icon-text-color">
             <thead>

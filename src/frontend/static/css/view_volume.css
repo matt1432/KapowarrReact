@@ -225,6 +225,10 @@ tbody .issue-title:hover {
     border-top: 1px solid var(--border-color);
 }
 
+.search-entry input {
+    font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+}
+
 .match-column {
     width: 4rem;
 }

@@ -365,23 +365,48 @@ function showManualSearch(api_key, issue_id = null) {
         title.href = result.link;
         title.innerText = result.display_title;
 
+        const issueInput = entry.querySelector('.issue-column');
+        const releaserInput = entry.querySelector('.releaser-column');
+        const scanTypeInput = entry.querySelector('.scan-type-column');
+        const resolutionInput = entry.querySelector('.resolution-column');
+        const dpiInput = entry.querySelector('.dpi-column');
+
+        issueInput.value = result.issue_number ?? '';
+        issueInput.style.minInlineSize = `${issueInput.value.length + 3}ch`;
+
+        releaserInput.value = result.releaser ?? '';
+        releaserInput.style.minInlineSize = `${releaserInput.value.length + 3}ch`;
+
+        scanTypeInput.value = result.scan_type ?? '';
+        scanTypeInput.style.minInlineSize = `${scanTypeInput.value.length + 3}ch`;
+
+        resolutionInput.value = result.resolution ?? '';
+        resolutionInput.style.minInlineSize = `${resolutionInput.value.length + 3}ch`;
+
+        dpiInput.value = result.dpi ?? '';
+        dpiInput.style.minInlineSize = `${dpiInput.value.length + 3}ch`;
+
+        const editResult = () => {
+            result.issue_number = parseFloat(issueInput.value);
+            result.releaser = releaserInput.value;
+            result.scan_type = scanTypeInput.value;
+            result.resolution = resolutionInput.value;
+            result.dpi = dpiInput.value;
+
+            return result;
+        };
+
         entry.querySelector('.size-column').innerText = result.filesize ?
             convertSize(result.filesize) :
             '';
-
-        entry.querySelector('.issue-column').innerText = result.issue_number ?? '';
         entry.querySelector('.pages-column').innerText = result.pages ?? '';
-        entry.querySelector('.releaser-column').innerText = result.releaser ?? '';
-        entry.querySelector('.scan-type-column').innerText = result.scan_type ?? '';
-        entry.querySelector('.resolution-column').innerText = result.resolution ?? '';
-        entry.querySelector('.dpi-column').innerText = result.dpi ?? '';
         entry.querySelector('.source-column').innerText = result.source;
 
         const download_button = entry.querySelector('.search-action-column :nth-child(1)');
 
         download_button.classList.add('icon-text-color');
         download_button.onclick = () => addManualSearch(
-            result, false, download_button, api_key, issue_id,
+            editResult(), false, download_button, api_key, issue_id,
         );
 
         const force_download_button = entry.querySelector(
@@ -390,7 +415,7 @@ function showManualSearch(api_key, issue_id = null) {
 
         force_download_button.classList.add('icon-text-color');
         force_download_button.onclick = () => addManualSearch(
-            result, true, force_download_button, api_key, issue_id,
+            editResult(), true, force_download_button, api_key, issue_id,
         );
 
         const blocklist_button = entry.querySelector('.search-action-column :nth-child(3)');
