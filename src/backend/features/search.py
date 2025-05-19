@@ -1,6 +1,6 @@
 from asyncio import gather, run
 
-from libgencomics import LibgenSearch
+from libgencomics import ResultFile, LibgenSearch
 
 from backend.base.definitions import (
     MatchedSearchResultData,
@@ -160,38 +160,18 @@ class SearchLibgenPlus:
 
         volume_data = self.volume.get_data()
 
-        if volume_data.libgen_url is not None:
-            libgen_url = volume_data.libgen_url
+        if libgen_url is not None and libgen_url.startswith("https://libgen.gs/file.php?id="):
+            file_id = libgen_url.replace("https://libgen.gs/file.php?id=", "")
+            file_result = ResultFile(file_id)
 
-        file_results = LibgenSearch().search_comicvine_id(
-            Settings().sv.comicvine_api_key,
-            self.comicvine_id,
-            self.issue_number,
-            libgen_url,
-        )
-
-        if len(file_results) > 0:
-            new_libgen_url = (
-                f"https://libgen.gs/series.php?id={file_results[0].issue.series.id}"
-            )
-
-            # TODO: add way to change this manually in the UI
-            if volume_data.libgen_url != new_libgen_url:
-                self.volume.update(
-                    {
-                        "libgen_url": new_libgen_url,
-                    }
-                )
-
-        for file_result in file_results:
             results.append(
                 SearchResultData(
                     {
-                        "series": file_result.issue.series.title or "",
-                        "year": file_result.issue.year,
+                        "series": volume_data.title,
+                        "year": volume_data.year,
                         "volume_number": self.volume_number,
                         "special_version": None,  # TODO: figure this out
-                        "issue_number": file_result.issue.number,
+                        "issue_number": "", # file_result.issue is None, let the user handle this
                         "annual": False,  # TODO: figure this out
                         "link": file_result.download_link or "",
                         "display_title": file_result.filename or "",
@@ -206,6 +186,54 @@ class SearchLibgenPlus:
                     }
                 )
             )
+
+        else:
+            if volume_data.libgen_url is not None:
+                libgen_url = volume_data.libgen_url
+
+            file_results = LibgenSearch().search_comicvine_id(
+                Settings().sv.comicvine_api_key,
+                self.comicvine_id,
+                self.issue_number,
+                libgen_url,
+            )
+
+            if len(file_results) > 0:
+                new_libgen_url = (
+                    f"https://libgen.gs/series.php?id={file_results[0].issue.series.id}"
+                )
+
+                # TODO: add way to change this manually in the UI
+                if volume_data.libgen_url != new_libgen_url:
+                    self.volume.update(
+                        {
+                            "libgen_url": new_libgen_url,
+                        }
+                    )
+
+            for file_result in file_results:
+                results.append(
+                    SearchResultData(
+                        {
+                            "series": file_result.issue.series.title or "",
+                            "year": file_result.issue.year,
+                            "volume_number": self.volume_number,
+                            "special_version": None,  # TODO: figure this out
+                            "issue_number": file_result.issue.number,
+                            "annual": False,  # TODO: figure this out
+                            "link": file_result.download_link or "",
+                            "display_title": file_result.filename or "",
+                            "source": "Libgen+",
+                            "filesize": file_result.filesize or 0,
+                            "pages": file_result.pages or 0,
+                            "releaser": file_result.releaser or "",
+                            "scan_type": file_result.scan_type or "",
+                            "resolution": file_result.resolution or "",
+                            "dpi": file_result.dpi or "",
+                            "extension": file_result.extension or "",
+                        }
+                    )
+                )
 
         return results
 

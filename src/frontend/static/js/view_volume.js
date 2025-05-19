@@ -449,6 +449,7 @@ function showManualSearch(api_key, issue_id = null) {
         `/volumes/${volume_id}/manualsearch`;
 
     fetchAPI(url, api_key).then((jsonObj) => {
+        // TODO: add filters, maybe in Built-in Clients
         const setupTable = (json) => {
             json.result
                 .map((result) => addSearchResult(result, api_key))
