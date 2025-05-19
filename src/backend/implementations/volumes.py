@@ -303,7 +303,7 @@ class Volume:
             .execute(
                 """
             SELECT
-                v.id, comicvine_id,
+                v.id, comicvine_id, libgen_url,
                 title, year, publisher,
                 volume_number,
                 special_version, special_version_locked,
@@ -536,6 +536,7 @@ class Volume:
                 "monitor_new_issues",
                 "special_version",
                 "special_version_locked",
+                "libgen_url",
             )
         else:
             allowed_keys = (*VolumeData.__annotations__, "cover")

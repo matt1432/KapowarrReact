@@ -27,6 +27,7 @@ const ViewEls = {
         root_folder: document.querySelector('#root-folder-input'),
         volume_folder: document.querySelector('#volumefolder-input'),
         special_version: document.querySelector('#specialoverride-input'),
+        libgen_edit: document.querySelector('#libgen-edit-input'),
     },
     tool_bar: {
         refresh: document.querySelector('#refresh-button'),
@@ -179,6 +180,9 @@ function fillPage(data, api_key) {
     else {
         setIcon(monitor, icons.unmonitored, 'Volume is unmonitored. Click to monitor.');
     }
+
+    // Libgen URL
+    ViewEls.vol_edit.libgen_edit.value = data.libgen_url;
 
     // Title
     ViewEls.vol_data.title.innerText = data.title;
@@ -749,21 +753,21 @@ function showEdit(api_key) {
     const volume_root_folder = parseInt(ViewEls.vol_data.path.dataset.root_folder);
     const volume_folder = ViewEls.vol_data.path.dataset.volume_folder;
 
-    fetchAPI('/rootfolder', api_key)
-        .then((json) => {
-            ViewEls.vol_edit.root_folder.innerHTML = '';
-            json.result.forEach((root_folder) => {
-                const entry = document.createElement('option');
+    fetchAPI('/rootfolder', api_key).then((json) => {
+        ViewEls.vol_edit.root_folder.innerHTML = '';
+        json.result.forEach((root_folder) => {
+            const entry = document.createElement('option');
 
-                entry.value = root_folder.id;
-                entry.innerText = root_folder.folder;
-                if (root_folder.id === volume_root_folder) {
-                    entry.setAttribute('selected', 'true');
-                };
-                ViewEls.vol_edit.root_folder.appendChild(entry);
-            });
-            showWindow('edit-window');
+            entry.value = root_folder.id;
+            entry.innerText = root_folder.folder;
+            if (root_folder.id === volume_root_folder) {
+                entry.setAttribute('selected', 'true');
+            };
+            ViewEls.vol_edit.root_folder.appendChild(entry);
         });
+        showWindow('edit-window');
+    });
+
     ViewEls.vol_edit.monitor.value = ViewEls.vol_data.monitor.dataset.monitored;
     ViewEls.vol_edit.monitoring_scheme.value = '';
     ViewEls.vol_edit.volume_folder.value = volume_folder;
@@ -778,6 +782,7 @@ function editVolume() {
         monitor_new_issues: ViewEls.vol_edit.monitor_new_issues.value === 'true',
         root_folder: parseInt(ViewEls.vol_edit.root_folder.value),
         volume_folder: ViewEls.vol_edit.volume_folder.value,
+        libgen_url: ViewEls.vol_edit.libgen_edit.value,
     };
 
     if (ViewEls.vol_edit.monitoring_scheme.value !== '') {
@@ -791,11 +796,10 @@ function editVolume() {
         data['special_version'] = so || null;
     }
 
-    usingApiKey()
-        .then((api_key) => {
-            sendAPI('PUT', `/volumes/${volume_id}`, api_key, {}, data)
-                .then(() => window.location.reload());
-        });
+    usingApiKey().then((api_key) => {
+        sendAPI('PUT', `/volumes/${volume_id}`, api_key, {}, data)
+            .then(() => window.location.reload());
+    });
 };
 
 //
@@ -808,24 +812,23 @@ function deleteVolume() {
     const delete_folder = document.querySelector('#delete-folder-input').value;
 
     hide([downloading_error, tasking_error]);
-    usingApiKey()
-        .then((api_key) => {
-            sendAPI('DELETE', `/volumes/${volume_id}`, api_key, { delete_folder })
-                .then(() => {
-                    window.location.href = `${url_base}/`;
-                })
-                .catch((e) => e.json().then((j) => {
-                    if (j.error === 'TaskForVolumeRunning') {
-                        hide([downloading_error], [tasking_error]);
-                    }
-                    else if (j.error === 'VolumeDownloadedFor') {
-                        hide([tasking_error], [downloading_error]);
-                    }
-                    else {
-                        console.log(j);
-                    }
-                }));
-        });
+    usingApiKey().then((api_key) => {
+        sendAPI('DELETE', `/volumes/${volume_id}`, api_key, { delete_folder })
+            .then(() => {
+                window.location.href = `${url_base}/`;
+            })
+            .catch((e) => e.json().then((j) => {
+                if (j.error === 'TaskForVolumeRunning') {
+                    hide([downloading_error], [tasking_error]);
+                }
+                else if (j.error === 'VolumeDownloadedFor') {
+                    hide([tasking_error], [downloading_error]);
+                }
+                else {
+                    console.log(j);
+                }
+            }));
+    });
 };
 
 //
@@ -833,6 +836,7 @@ function deleteVolume() {
 //
 function showIssueInfo(issue_id, api_key) {
     document.querySelector('#issue-rename-selector').dataset.issue_id = issue_id;
+
     fetchAPI(`/issues/${issue_id}`, api_key).then((json) => {
         document.querySelector('#issue-info-title').innerText =
                 `${json.result.title} - #${json.result.issue_number} - ${json.result.date}`;
@@ -875,38 +879,37 @@ function showInfoWindow(window) {
 
 // code run on load
 
-usingApiKey()
-    .then((api_key) => {
-        fetchAPI(`/volumes/${volume_id}`, api_key)
-            .then((json) => fillPage(json.result, api_key))
-            .catch((e) => {
-                if (e.status === 404) {
-                    window.location.href = `${url_base}/`;
-                }
-                else {
-                    console.log(e);
-                }
-            });
+usingApiKey().then((api_key) => {
+    fetchAPI(`/volumes/${volume_id}`, api_key)
+        .then((json) => fillPage(json.result, api_key))
+        .catch((e) => {
+            if (e.status === 404) {
+                window.location.href = `${url_base}/`;
+            }
+            else {
+                console.log(e);
+            }
+        });
 
-        ViewEls.tool_bar.refresh.onclick = () => refreshVolume(api_key);
-        ViewEls.tool_bar.auto_search.onclick = () => autosearchVolume(api_key);
-        ViewEls.tool_bar.manual_search.onclick = () => showManualSearch(api_key);
-        ViewEls.tool_bar.rename.onclick = () => showRename(api_key);
-        ViewEls.tool_bar.convert.onclick = () => showConvert(api_key);
-        ViewEls.tool_bar.edit.onclick = () => showEdit(api_key);
+    ViewEls.tool_bar.refresh.onclick = () => refreshVolume(api_key);
+    ViewEls.tool_bar.auto_search.onclick = () => autosearchVolume(api_key);
+    ViewEls.tool_bar.manual_search.onclick = () => showManualSearch(api_key);
+    ViewEls.tool_bar.rename.onclick = () => showRename(api_key);
+    ViewEls.tool_bar.convert.onclick = () => showConvert(api_key);
+    ViewEls.tool_bar.edit.onclick = () => showEdit(api_key);
 
-        document.querySelector('#submit-rename').onclick = (e) => renameVolume(
-            api_key, e.target.dataset.issue_id || null,
-        );
+    document.querySelector('#submit-rename').onclick = (e) => renameVolume(
+        api_key, e.target.dataset.issue_id || null,
+    );
 
-        document.querySelector('#submit-convert').onclick = (e) => convertVolume(
-            api_key, e.target.dataset.issue_id || null,
-        );
+    document.querySelector('#submit-convert').onclick = (e) => convertVolume(
+        api_key, e.target.dataset.issue_id || null,
+    );
 
-        document.querySelector('#issue-rename-selector').onclick = (e) => showRename(
-            api_key, e.target.dataset.issue_id,
-        );
-    });
+    document.querySelector('#issue-rename-selector').onclick = (e) => showRename(
+        api_key, e.target.dataset.issue_id,
+    );
+});
 
 ViewEls.tool_bar.files.onclick = () => showWindow('files-window');
 ViewEls.tool_bar.delete.onclick = () => showWindow('delete-window');
