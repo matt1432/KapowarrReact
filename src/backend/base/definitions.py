@@ -428,11 +428,11 @@ class SearchResultData(FilenameData):
     source: str
     filesize: int
     pages: int
-    releaser: str
-    scan_type: str
-    resolution: str
-    dpi: str
-    extension: str
+    releaser: str | None
+    scan_type: str | None
+    resolution: str | None
+    dpi: str | None
+    extension: str | None
 
 
 class SearchResultMatchData(TypedDict):

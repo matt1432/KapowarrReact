@@ -98,15 +98,15 @@ def _get_volume_naming_keys(
         publisher=volume_data.publisher,
         special_version=sv_mapping.get(volume_data.special_version),
         releaser=file_data["releaser"]
-        if file_data is not None and "releaser" in file_data
+        if file_data is not None and "releaser" in file_data and file_data["releaser"] != ""
         else None,
         scan_type=file_data["scan_type"]
-        if file_data is not None and "scan_type" in file_data
+        if file_data is not None and "scan_type" in file_data and file_data["scan_type"] != ""
         else None,
         resolution=file_data["resolution"]
-        if file_data is not None and "resolution" in file_data
+        if file_data is not None and "resolution" in file_data and file_data["resolution"] != ""
         else None,
-        dpi=file_data["dpi"] if file_data is not None and "dpi" in file_data else None,
+        dpi=file_data["dpi"] if file_data is not None and "dpi" in file_data and file_data["dpi"] != "" else None,
     )
 
 
