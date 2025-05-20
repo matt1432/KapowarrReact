@@ -182,7 +182,7 @@ function fillPage(data, api_key) {
     }
 
     // Libgen URL
-    ViewEls.vol_edit.libgen_edit.value = data.libgen_url;
+    ViewEls.vol_edit.libgen_edit.value = data.libgen_url ?? '';
 
     // Title
     ViewEls.vol_data.title.innerText = data.title;
@@ -782,7 +782,9 @@ function editVolume() {
         monitor_new_issues: ViewEls.vol_edit.monitor_new_issues.value === 'true',
         root_folder: parseInt(ViewEls.vol_edit.root_folder.value),
         volume_folder: ViewEls.vol_edit.volume_folder.value,
-        libgen_url: ViewEls.vol_edit.libgen_edit.value,
+        libgen_url: ViewEls.vol_edit.libgen_edit.value !== '' ?
+            ViewEls.vol_edit.libgen_edit.value :
+            null,
     };
 
     if (ViewEls.vol_edit.monitoring_scheme.value !== '') {
