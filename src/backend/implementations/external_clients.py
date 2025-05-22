@@ -14,7 +14,7 @@ from backend.base.definitions import (
     DownloadType,
     ExternalDownloadClient,
 )
-from backend.base.helpers import get_subclasses, normalize_base_url
+from backend.base.helpers import normalize_base_url
 from backend.internals.db import get_db
 
 
@@ -174,9 +174,10 @@ class ExternalClients:
         Returns:
             Dict[str, Type[ExternalDownloadClient]]: The mapping.
         """
-        return {
-            client.client_type: client for client in get_subclasses(BaseExternalClient)
-        }
+
+        from backend.implementations.torrent_clients import external_clients
+
+        return {client.client_type: client for client in external_clients}
 
     @staticmethod
     def test(
