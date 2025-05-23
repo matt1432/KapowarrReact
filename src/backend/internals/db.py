@@ -374,6 +374,11 @@ def setup_db() -> None:
             web_title TEXT,
             web_sub_title TEXT,
 
+            releaser VARCHAR(255),
+            scan_type VARCHAR(255),
+            resolution VARCHAR(255),
+            dpi VARCHAR(255),
+
             FOREIGN KEY (external_client_id) REFERENCES external_download_clients(id),
             FOREIGN KEY (volume_id) REFERENCES volumes(id)
         );

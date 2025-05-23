@@ -279,13 +279,15 @@ class DownloadHandler(metaclass=Singleton):
                         volume_id, client_type, external_client_id, external_id,
                         download_link, covered_issues, force_original_name,
                         source_type, source_name,
-                        web_link, web_title, web_sub_title
+                        web_link, web_title, web_sub_title,
+                        releaser, scan_type, resolution, dpi
                     )
                     VALUES (
                         :volume_id, :client_type, :external_client_id, :external_id,
                         :download_link, :covered_issues, :force_original_name,
                         :source_type, :source_name,
-                        :web_link, :web_title, :web_sub_title
+                        :web_link, :web_title, :web_sub_title,
+                        :releaser, :scan_type, :resolution, :dpi
                     );
                     """,
                     {
@@ -303,6 +305,10 @@ class DownloadHandler(metaclass=Singleton):
                         "web_link": download.web_link,
                         "web_title": download.web_title,
                         "web_sub_title": download.web_sub_title,
+                        "releaser": download.releaser,
+                        "scan_type": download.scan_type,
+                        "resolution": download.resolution,
+                        "dpi": download.dpi,
                     },
                 ).lastrowid
 
@@ -444,6 +450,17 @@ class DownloadHandler(metaclass=Singleton):
                         external_client=None,
                         external_id=None,
                         filename=f"{torrent_name}/{result['md5']}.{result['extension']}",
+                        releaser=result["releaser"] if "releaser" in result else None,
+                        scan_type=result["scan_type"]
+                        if "scan_type" in result
+                        else None,
+                        resolution=result["resolution"]
+                        if "resolution" in result
+                        else None,
+                        dpi=result["dpi"] if "dpi" in result else None,
+                        extension=result["extension"]
+                        if "extension" in result
+                        else None,
                     )
                 )
 
@@ -547,7 +564,8 @@ class DownloadHandler(metaclass=Singleton):
                 download_link, covered_issues,
                 force_original_name,
                 source_type, source_name,
-                web_link, web_title, web_sub_title
+                web_link, web_title, web_sub_title,
+                releaser, scan_type, resolution, dpi
             FROM download_queue;
         """).fetchall()
 
@@ -590,6 +608,10 @@ class DownloadHandler(metaclass=Singleton):
                             download["external_client_id"]
                         ),
                         external_id=download["external_id"],
+                        releaser=download["releaser"],
+                        scan_type=download["scan_type"],
+                        resolution=download["resolution"],
+                        dpi=download["dpi"],
                     )
                 else:
                     dl_instance = dl_subclass(
@@ -602,6 +624,10 @@ class DownloadHandler(metaclass=Singleton):
                         web_title=download["web_title"],
                         web_sub_title=download["web_sub_title"],
                         forced_match=download["force_original_name"],
+                        releaser=download["releaser"],
+                        scan_type=download["scan_type"],
+                        resolution=download["resolution"],
+                        dpi=download["dpi"],
                     )
                 dl_instance.id = download["id"]
 

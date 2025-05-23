@@ -1236,3 +1236,29 @@ class MigrateAddExternalIDToDownloadQueue(DBMigrator):
                 external_id VARCHAR(255);
         """)
         return
+
+
+class MigrateAddFileInfoToDownloadQueue(DBMigrator):
+    start_version = 41
+
+    def run(self) -> None:
+        # V41 -> V42
+
+        from backend.internals.db import get_db
+
+        get_db().executescript("""
+            BEGIN TRANSACTION;
+            PRAGMA defer_foreign_keys = ON;
+
+            ALTER TABLE download_queue ADD COLUMN
+                releaser VARCHAR(255);
+            ALTER TABLE download_queue ADD COLUMN
+                scan_type VARCHAR(255);
+            ALTER TABLE download_queue ADD COLUMN
+                resolution VARCHAR(255);
+            ALTER TABLE download_queue ADD COLUMN
+                dpi VARCHAR(255);
+
+            COMMIT;
+        """)
+        return

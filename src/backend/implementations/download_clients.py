@@ -767,6 +767,11 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         external_client: ExternalDownloadClient | None = None,
         external_id: str | None = None,
         filename: str | None = None,
+        releaser: str | None = None,
+        scan_type: str | None = None,
+        resolution: str | None = None,
+        dpi: str | None = None,
+        extension: str | None = None,
     ) -> None:
         LOGGER.debug("Creating download: %s", download_link)
 
@@ -792,6 +797,12 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         self._download_thread = None
         self._download_folder = settings.download_folder
         self._sleep_event = Event()
+
+        self._releaser = releaser
+        self._scan_type = scan_type
+        self._resolution = resolution
+        self._dpi = dpi
+        self._extension = extension
 
         self._original_files: list[str] = []
         if external_client:
