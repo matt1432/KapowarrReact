@@ -185,6 +185,9 @@ class SearchLibgenPlus:
                         "resolution": file_result.resolution or "",
                         "dpi": file_result.dpi or "",
                         "extension": file_result.extension or "",
+                        "comics_id": int(file_result.get("comics_id"))
+                        if file_result.get("comics_id") is not None
+                        else None,
                     }
                 )
             )
@@ -244,6 +247,9 @@ class SearchLibgenPlus:
                                 "resolution": file_result.resolution or "",
                                 "dpi": file_result.dpi or "",
                                 "extension": file_result.extension or "",
+                                "comics_id": int(file_result.get("comics_id"))
+                                if file_result.get("comics_id") is not None
+                                else None,
                             }
                         )
                     )

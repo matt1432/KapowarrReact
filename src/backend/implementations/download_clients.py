@@ -14,6 +14,7 @@ from time import perf_counter
 from typing import TYPE_CHECKING, Any, cast, final
 from urllib.parse import unquote_plus
 
+import requests
 from bs4 import BeautifulSoup, Tag
 from requests import RequestException
 from websocket import create_connection
@@ -807,18 +808,23 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
 
         # Find name of torrent as that becomes folder that media is
         # downloaded in
-        try:
-            response = Session().post(
-                "https://magnet2torrent.com/upload/", data={"magnet": download_link}
-            )
-            response.raise_for_status()
-            if response.headers.get("Content-Type") != "application/x-bittorrent":
-                raise RequestException
+        if download_link.startswith("magnet"):
+            try:
+                response = Session().post(
+                    "https://magnet2torrent.com/upload/", data={"magnet": download_link}
+                )
+                response.raise_for_status()
+                if response.headers.get("Content-Type") != "application/x-bittorrent":
+                    raise RequestException
 
-        except RequestException:
-            raise LinkBroken(BlocklistReason.LINK_BROKEN)
+            except RequestException:
+                raise LinkBroken(BlocklistReason.LINK_BROKEN)
 
-        torrent_name = get_torrent_info(response.content)[b"name"].decode()
+            torrent_name = get_torrent_info(response.content)[b"name"].decode()
+        else:
+            torrent_name = get_torrent_info(requests.get(download_link).content)[
+                b"name"
+            ].decode()
 
         self._filename_body = ""
         if settings.rename_downloaded_files:

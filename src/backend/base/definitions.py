@@ -433,6 +433,7 @@ class SearchResultData(FilenameData):
     resolution: str | None
     dpi: str | None
     extension: str | None
+    comics_id: int | None
 
 
 class SearchResultMatchData(TypedDict):
