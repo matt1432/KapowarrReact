@@ -593,7 +593,6 @@ class DownloadHandler(metaclass=Singleton):
                 dl_instance: Download | ExternalDownload
 
                 if issubclass(dl_subclass, ExternalDownload):
-                    LOGGER.info(download["external_id"])
                     dl_instance = dl_subclass(
                         download_link=download["download_link"],
                         volume_id=download["volume_id"],

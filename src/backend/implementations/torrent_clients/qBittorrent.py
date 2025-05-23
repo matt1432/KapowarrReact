@@ -157,7 +157,7 @@ class qBittorrent(BaseExternalClient):
             self.torrent_hashes[download_id] = None
 
         return {
-            "size": result.info["total_size"],
+            "size": result.size,
             "progress": round(result.progress * 100, 2),
             "speed": result.info["dlspeed"],
             "state": state,
