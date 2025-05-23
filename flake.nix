@@ -95,6 +95,7 @@
         setuptools,
         waitress,
         websocket-client,
+        qbittorrent-api,
         ...
       }: let
         inherit (lib) getExe;
@@ -124,6 +125,7 @@
             flask-socketio
             websocket-client
             libgencomics
+            qbittorrent-api
           ];
 
           postPatch = ''
@@ -165,7 +167,7 @@
       default = pkgs.mkShell {
         packages = with pkgs; [
           alejandra
-          (python.withPackages (_ps: pkgs.kapowarr.dependencies ++ [pkgs.kapowarr]))
+          (python3.withPackages (_ps: pkgs.kapowarr.dependencies ++ [pkgs.kapowarr]))
         ];
       };
     });
