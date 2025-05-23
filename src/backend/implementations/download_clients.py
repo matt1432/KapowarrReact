@@ -44,6 +44,7 @@ from backend.implementations.credentials import Credentials
 from backend.implementations.direct_clients.mega import Mega, MegaABC, MegaFolder
 from backend.implementations.external_clients import ExternalClients
 from backend.implementations.naming import generate_issue_name
+from backend.implementations.torrent_clients.qBittorrent import qBittorrent
 from backend.implementations.volumes import Issue, Volume
 from backend.internals.db import get_db
 from backend.internals.server import WebSocket
@@ -795,7 +796,7 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         self._original_files: list[str] = []
         if external_client:
             self._external_client = external_client
-            if external_id:
+            if external_id and isinstance(self._external_client, qBittorrent):
                 self._external_client.torrent_hashes[external_id] = None
         else:
             self._external_client = ExternalClients.get_least_used_client(

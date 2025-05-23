@@ -430,38 +430,48 @@ class DownloadHandler(metaclass=Singleton):
 
                 downloads.append(
                     TorrentDownload(
-                        torrent_link,
-                        volume_id,
-                        result["issue_number"] if "issue_number" in result else None,
-                        DownloadSource.LIBGENPLUS,
-                        "Libgen+",
-                        None,  # web_link: str | None,
-                        None,  # web_title: str | None,
-                        None,  # web_sub_title: str | None,
-                        force_match,
-                        None,
-                        None,
-                        f"{torrent_name}/{result['md5']}.{result['extension']}",
+                        download_link=torrent_link,
+                        volume_id=volume_id,
+                        covered_issues=result["issue_number"]
+                        if "issue_number" in result
+                        else None,
+                        source_type=DownloadSource.LIBGENPLUS,
+                        source_name="Libgen+",
+                        web_link=None,
+                        web_title=None,
+                        web_sub_title=None,
+                        forced_match=force_match,
+                        external_client=None,
+                        external_id=None,
+                        filename=f"{torrent_name}/{result['md5']}.{result['extension']}",
                     )
                 )
 
             else:
                 downloads.append(
                     DirectDownload(
-                        link,
-                        volume_id,
-                        result["issue_number"] if "issue_number" in result else None,
-                        DownloadSource.LIBGENPLUS,
-                        "Libgen+",
-                        None,  # web_link: str | None,
-                        None,  # web_title: str | None,
-                        None,  # web_sub_title: str | None,
-                        result["releaser"] if "releaser" in result else None,
-                        result["scan_type"] if "scan_type" in result else None,
-                        result["resolution"] if "resolution" in result else None,
-                        result["dpi"] if "dpi" in result else None,
-                        result["extension"] if "extension" in result else None,
-                        force_match,
+                        download_link=link,
+                        volume_id=volume_id,
+                        covered_issues=result["issue_number"]
+                        if "issue_number" in result
+                        else None,
+                        source_type=DownloadSource.LIBGENPLUS,
+                        source_name="Libgen+",
+                        web_link=None,
+                        web_title=None,
+                        web_sub_title=None,
+                        releaser=result["releaser"] if "releaser" in result else None,
+                        scan_type=result["scan_type"]
+                        if "scan_type" in result
+                        else None,
+                        resolution=result["resolution"]
+                        if "resolution" in result
+                        else None,
+                        dpi=result["dpi"] if "dpi" in result else None,
+                        extension=result["extension"]
+                        if "extension" in result
+                        else None,
+                        forced_match=force_match,
                     )
                 )
 
