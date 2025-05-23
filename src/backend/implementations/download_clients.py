@@ -866,6 +866,7 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
 
     def run(self) -> None:
         if not self.external_id:
+            # FIXME: set a unique name for folder in case of torrent file collision
             self._external_id = self.external_client.add_download(
                 self.download_link, self._download_folder, self.title, self._filename
             )
