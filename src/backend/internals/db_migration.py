@@ -1221,3 +1221,18 @@ class MigrateAddLibgenURLToVolumes(DBMigrator):
                 libgen_url VARCHAR(255);
         """)
         return
+
+
+class MigrateAddExternalIDToDownloadQueue(DBMigrator):
+    start_version = 40
+
+    def run(self) -> None:
+        # V40 -> V41
+
+        from backend.internals.db import get_db
+
+        get_db().execute("""
+            ALTER TABLE download_queue ADD COLUMN
+                external_id VARCHAR(255);
+        """)
+        return

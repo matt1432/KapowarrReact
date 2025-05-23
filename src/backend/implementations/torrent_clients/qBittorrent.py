@@ -1,13 +1,12 @@
 from collections.abc import Sequence
 from re import IGNORECASE, compile
 from time import time
-from typing import Any
 
-from requests.exceptions import RequestException
+import requests
+from qbittorrentapi import Client
 
 from backend.base.custom_exceptions import ExternalClientNotWorking
 from backend.base.definitions import Constants, DownloadState, DownloadType
-from backend.base.helpers import Session
 from backend.base.logging import LOGGER
 from backend.implementations.external_clients import BaseExternalClient
 from backend.internals.settings import Settings
@@ -24,6 +23,8 @@ class qBittorrent(BaseExternalClient):
     state_mapping = {
         "queuedDL": DownloadState.QUEUED_STATE,
         "pausedDL": DownloadState.PAUSED_STATE,
+        "stoppedDL": DownloadState.PAUSED_STATE,
+        "stalledDL": DownloadState.DOWNLOADING_STATE,
         "checkingDL": DownloadState.DOWNLOADING_STATE,
         "metaDL": DownloadState.DOWNLOADING_STATE,
         "checkingResumeData": DownloadState.DOWNLOADING_STATE,
@@ -41,7 +42,7 @@ class qBittorrent(BaseExternalClient):
     def __init__(self, client_id: int) -> None:
         super().__init__(client_id)
 
-        self.ssn: Session | None = None
+        self.ssn: Client | None = None
         self.torrent_hashes: dict[str, int | None] = {}
         self.settings = Settings()
         return
@@ -49,51 +50,25 @@ class qBittorrent(BaseExternalClient):
     @staticmethod
     def _login(
         base_url: str, username: str | None, password: str | None
-    ) -> Session | str:
-        ssn = Session()
-        if username and password:
-            params = {"username": username, "password": password}
-        else:
-            params = {}
-
+    ) -> Client | str:
         try:
-            auth_request = ssn.post(f"{base_url}/api/v2/auth/login", data=params)
+            ssn = Client(host=base_url, username=username, password=password)
 
-        except RequestException:
+        except Exception:
             LOGGER.exception("Can't connect to qBittorrent instance: ")
             return "Can't connect; invalid base URL"
-
-        if auth_request.status_code == 404:
-            LOGGER.error(
-                f"Can't connect or version too low of qBittorrent instance: {auth_request.text}"
-            )
-            return "Invalid base URL or version too low; at least v4.1"
-
-        if not auth_request.ok:
-            LOGGER.error(f"Not connected to qBittorrent instance: {auth_request.text}")
-            return "Invalid instance; not Qbittorrent"
-
-        auth_success = auth_request.headers.get("set-cookie") is not None
-
-        if not auth_success:
-            LOGGER.error(
-                f"Failed to authenticate for qBittorrent instance: {auth_request.text}"
-            )
-            return "Can't authenticate"
 
         return ssn
 
     def add_download(
-        self, download_link: str, target_folder: str, download_name: str | None
+        self,
+        download_link: str,
+        target_folder: str,
+        download_name: str | None,
+        filename: str | None = None,
     ) -> str:
         if download_name is not None:
             download_link = filename_magnet_link.sub(download_name, download_link)
-
-        files = {
-            "urls": (None, download_link),
-            "savepath": (None, target_folder),
-            "category": (None, Constants.TORRENT_TAG),
-        }
 
         if not self.ssn:
             result = self._login(self.base_url, self.username, self.password)
@@ -101,8 +76,50 @@ class qBittorrent(BaseExternalClient):
                 raise ExternalClientNotWorking(result)
             self.ssn = result
 
-        self.ssn.post(f"{self.base_url}/api/v2/torrents/add", files=files)
-        t_hash = download_link.split("urn:btih:")[1].split("&")[0]
+        if download_link.startswith("magnet"):
+            self.ssn.torrents_add(
+                urls=download_link,
+                save_path=target_folder,
+                category=Constants.TORRENT_TAG,
+            )
+            t_hash = download_link.split("urn:btih:")[1].split("&")[0]
+        else:
+            is_stopped = filename is not None
+            list_before = self.ssn.torrents_info().data
+
+            self.ssn.torrents_add(
+                torrent_files=requests.get(download_link).content,
+                save_path=target_folder,
+                category=Constants.TORRENT_TAG,
+                is_stopped=is_stopped,
+            )
+
+            t_hash = None
+
+            while t_hash is None:
+                list_after = self.ssn.torrents_info().data
+                new_torrent_list = [
+                    item for item in list_after if item not in list_before
+                ]
+                if new_torrent_list:
+                    new_torrent = new_torrent_list[0]
+                    t_hash = new_torrent.hash
+
+            if is_stopped:
+                for file in self.ssn.torrents_files(torrent_hash=t_hash).data:
+                    if file and file.name != filename:
+                        self.ssn.torrents_file_priority(
+                            torrent_hash=t_hash, file_ids=file.id, priority=0
+                        )
+                    elif file:
+                        self.ssn.torrents_file_priority(
+                            torrent_hash=t_hash, file_ids=file.id, priority=1
+                        )
+                self.ssn.torrents_resume(torrent_hashes=t_hash)
+
+        if t_hash is None:
+            raise Exception()  # TODO: make better exception
+
         self.torrent_hashes[t_hash] = None
         return t_hash
 
@@ -113,9 +130,7 @@ class qBittorrent(BaseExternalClient):
                 raise ExternalClientNotWorking(ssn_result)
             self.ssn = ssn_result
 
-        r: list[dict[str, Any]] = self.ssn.get(
-            f"{self.base_url}/api/v2/torrents/info", params={"hashes": download_id}
-        ).json()
+        r = self.ssn.torrents_info(torrent_hashes=download_id).data
         if not r:
             if download_id in self.torrent_hashes:
                 return None
@@ -124,8 +139,9 @@ class qBittorrent(BaseExternalClient):
 
         result = r[0]
 
-        state = self.state_mapping.get(result["state"], DownloadState.IMPORTING_STATE)
-        if result["state"] in ("metaDL", "stalledDL", "checkingDL"):
+        state = self.state_mapping.get(result.state, DownloadState.IMPORTING_STATE)
+
+        if result.state in ("metaDL", "stalledDL", "checkingDL"):
             # Torrent is failing
             if self.torrent_hashes[download_id] is None:
                 self.torrent_hashes[download_id] = round(time())
@@ -141,9 +157,9 @@ class qBittorrent(BaseExternalClient):
             self.torrent_hashes[download_id] = None
 
         return {
-            "size": result["total_size"],
-            "progress": round(result["progress"] * 100, 2),
-            "speed": result["dlspeed"],
+            "size": result.info["total_size"],
+            "progress": round(result.progress * 100, 2),
+            "speed": result.info["dlspeed"],
             "state": state,
         }
 
@@ -154,10 +170,8 @@ class qBittorrent(BaseExternalClient):
                 raise ExternalClientNotWorking(result)
             self.ssn = result
 
-        self.ssn.post(
-            f"{self.base_url}/api/v2/torrents/delete",
-            data={"hashes": download_id, "deleteFiles": delete_files},
-        )
+        self.ssn.torrents_delete(torrent_hashes=download_id, delete_files=delete_files)
+
         del self.torrent_hashes[download_id]
         return
 

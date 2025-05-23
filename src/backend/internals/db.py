@@ -361,6 +361,7 @@ def setup_db() -> None:
             volume_id INTEGER NOT NULL,
             client_type VARCHAR(255) NOT NULL,
             external_client_id INTEGER,
+            external_id VARCHAR(255),
 
             download_link TEXT NOT NULL,
             covered_issues VARCHAR(255),

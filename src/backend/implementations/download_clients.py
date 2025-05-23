@@ -45,6 +45,7 @@ from backend.implementations.direct_clients.mega import Mega, MegaABC, MegaFolde
 from backend.implementations.external_clients import ExternalClients
 from backend.implementations.naming import generate_issue_name
 from backend.implementations.volumes import Issue, Volume
+from backend.internals.db import get_db
 from backend.internals.server import WebSocket
 from backend.internals.settings import Settings
 
@@ -763,6 +764,8 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         web_sub_title: str | None,
         forced_match: bool = False,
         external_client: ExternalDownloadClient | None = None,
+        external_id: str | None = None,
+        filename: str | None = None,
     ) -> None:
         LOGGER.debug("Creating download: %s", download_link)
 
@@ -777,6 +780,8 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         self._web_link = web_link
         self._web_title = web_title
         self._web_sub_title = web_sub_title
+        self._external_id = external_id
+        self._filename = filename
 
         self._id = None
         self._state = DownloadState.QUEUED_STATE
@@ -788,9 +793,10 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         self._sleep_event = Event()
 
         self._original_files: list[str] = []
-        self._external_id: str | None = None
         if external_client:
             self._external_client = external_client
+            if external_id:
+                self._external_client.torrent_hashes[external_id] = None
         else:
             self._external_client = ExternalClients.get_least_used_client(
                 DownloadType.TORRENT
@@ -847,9 +853,15 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         return
 
     def run(self) -> None:
-        self._external_id = self.external_client.add_download(
-            self.download_link, self._download_folder, self.title
-        )
+        if not self.external_id:
+            self._external_id = self.external_client.add_download(
+                self.download_link, self._download_folder, self.title, self._filename
+            )
+            if self.id:
+                get_db().execute(
+                    "UPDATE download_queue SET external_id = ? WHERE id = ?;",
+                    (self.external_id, self.id),
+                )
         return
 
     def update_status(self) -> None:

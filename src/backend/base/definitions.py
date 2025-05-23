@@ -434,6 +434,7 @@ class SearchResultData(FilenameData):
     dpi: str | None
     extension: str | None
     comics_id: int | None
+    md5: str | None
 
 
 class SearchResultMatchData(TypedDict):
@@ -784,7 +785,11 @@ class ExternalDownloadClient(ABC):
 
     @abstractmethod
     def add_download(
-        self, download_link: str, target_folder: str, download_name: str | None
+        self,
+        download_link: str,
+        target_folder: str,
+        download_name: str | None,
+        filename: str | None = None,
     ) -> str:
         """Add a download to the client.
 
@@ -1119,6 +1124,7 @@ class ExternalDownload(Download):
         web_sub_title: str | None,
         forced_match: bool = False,
         external_client: ExternalDownloadClient | None = None,
+        external_id: str | None = None,
     ) -> None:
         """Create the download instance.
 

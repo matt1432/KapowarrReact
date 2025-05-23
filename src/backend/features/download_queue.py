@@ -276,13 +276,13 @@ class DownloadHandler(metaclass=Singleton):
                 download.id = cursor.execute(
                     """
                     INSERT INTO download_queue(
-                        volume_id, client_type, external_client_id,
+                        volume_id, client_type, external_client_id, external_id,
                         download_link, covered_issues, force_original_name,
                         source_type, source_name,
                         web_link, web_title, web_sub_title
                     )
                     VALUES (
-                        :volume_id, :client_type, :external_client_id,
+                        :volume_id, :client_type, :external_client_id, :external_id,
                         :download_link, :covered_issues, :force_original_name,
                         :source_type, :source_name,
                         :web_link, :web_title, :web_sub_title
@@ -292,6 +292,9 @@ class DownloadHandler(metaclass=Singleton):
                         "volume_id": download.volume_id,
                         "client_type": download.type,
                         "external_client_id": external_client_id,
+                        "external_id": download.external_id
+                        if isinstance(download, ExternalDownload)
+                        else None,
                         "download_link": download.download_link,
                         "covered_issues": covered_issues,
                         "force_original_name": forced_match,
@@ -418,37 +421,49 @@ class DownloadHandler(metaclass=Singleton):
         link_type = self.__determine_link_type(link)
         downloads: list[Download] = []
 
-        if link_type == "lg":
-            downloads.append(
-                DirectDownload(
-                    link,
-                    volume_id,
-                    result["issue_number"]
-                    if not isinstance(result, str) and "issue_number" in result
-                    else None,
-                    DownloadSource.LIBGENPLUS,
-                    "Libgen+",
-                    None,  # web_link: str | None,
-                    None,  # web_title: str | None,
-                    None,  # web_sub_title: str | None,
-                    result["releaser"]
-                    if not isinstance(result, str) and "releaser" in result
-                    else None,
-                    result["scan_type"]
-                    if not isinstance(result, str) and "scan_type" in result
-                    else None,
-                    result["resolution"]
-                    if not isinstance(result, str) and "resolution" in result
-                    else None,
-                    result["dpi"]
-                    if not isinstance(result, str) and "dpi" in result
-                    else None,
-                    result["extension"]
-                    if not isinstance(result, str) and "extension" in result
-                    else None,
-                    force_match,
+        if link_type == "lg" and not isinstance(result, str):
+            if "comics_id" in result and result["comics_id"] is not None:
+                torrent_name = str(int(int(result["comics_id"]) / 1000) * 1000)
+                torrent_link = (
+                    f"https://libgen.gs/torrents/comics/c_{torrent_name}.torrent"
                 )
-            )
+
+                downloads.append(
+                    TorrentDownload(
+                        torrent_link,
+                        volume_id,
+                        result["issue_number"] if "issue_number" in result else None,
+                        DownloadSource.LIBGENPLUS,
+                        "Libgen+",
+                        None,  # web_link: str | None,
+                        None,  # web_title: str | None,
+                        None,  # web_sub_title: str | None,
+                        force_match,
+                        None,
+                        None,
+                        f"{torrent_name}/{result['md5']}.{result['extension']}",
+                    )
+                )
+
+            else:
+                downloads.append(
+                    DirectDownload(
+                        link,
+                        volume_id,
+                        result["issue_number"] if "issue_number" in result else None,
+                        DownloadSource.LIBGENPLUS,
+                        "Libgen+",
+                        None,  # web_link: str | None,
+                        None,  # web_title: str | None,
+                        None,  # web_sub_title: str | None,
+                        result["releaser"] if "releaser" in result else None,
+                        result["scan_type"] if "scan_type" in result else None,
+                        result["resolution"] if "resolution" in result else None,
+                        result["dpi"] if "dpi" in result else None,
+                        result["extension"] if "extension" in result else None,
+                        force_match,
+                    )
+                )
 
         if link_type == "gc":
             gcp = GetComicsPage(link)
@@ -518,7 +533,7 @@ class DownloadHandler(metaclass=Singleton):
         cursor = get_db()
         downloads = cursor.execute("""
             SELECT
-                id, volume_id, client_type, external_client_id,
+                id, volume_id, client_type, external_client_id, external_id,
                 download_link, covered_issues,
                 force_original_name,
                 source_type, source_name,
@@ -550,6 +565,7 @@ class DownloadHandler(metaclass=Singleton):
                 dl_instance: Download | ExternalDownload
 
                 if issubclass(dl_subclass, ExternalDownload):
+                    LOGGER.info(download["external_id"])
                     dl_instance = dl_subclass(
                         download_link=download["download_link"],
                         volume_id=download["volume_id"],
@@ -563,6 +579,7 @@ class DownloadHandler(metaclass=Singleton):
                         external_client=ExternalClients.get_client(
                             download["external_client_id"]
                         ),
+                        external_id=download["external_id"],
                     )
                 else:
                     dl_instance = dl_subclass(

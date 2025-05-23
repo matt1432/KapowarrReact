@@ -188,6 +188,7 @@ class SearchLibgenPlus:
                         "comics_id": int(file_result.get("comics_id"))
                         if file_result.get("comics_id") is not None
                         else None,
+                        "md5": file_result.get("md5"),
                     }
                 )
             )
@@ -250,6 +251,7 @@ class SearchLibgenPlus:
                                 "comics_id": int(file_result.get("comics_id"))
                                 if file_result.get("comics_id") is not None
                                 else None,
+                                "md5": file_result.get("md5"),
                             }
                         )
                     )
