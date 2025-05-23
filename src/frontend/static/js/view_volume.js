@@ -390,12 +390,13 @@ function showManualSearch(api_key, issue_id = null) {
         dpiInput.value = result.dpi ?? '';
         dpiInput.style.minInlineSize = `${dpiInput.value.length + 3}ch`;
 
-        const editResult = () => {
+        const editResult = (isTorrent = false) => {
             result.issue_number = parseFloat(issueInput.value);
             result.releaser = releaserInput.value;
             result.scan_type = scanTypeInput.value;
             result.resolution = resolutionInput.value;
             result.dpi = dpiInput.value;
+            result.comics_id = isTorrent ? result.comics_id : null;
 
             return result;
         };
@@ -406,7 +407,14 @@ function showManualSearch(api_key, issue_id = null) {
         entry.querySelector('.pages-column').innerText = result.pages ?? '';
         entry.querySelector('.source-column').innerText = result.source;
 
-        const download_button = entry.querySelector('.search-action-column :nth-child(1)');
+        const torrent_button = entry.querySelector('.search-action-column :nth-child(1)');
+
+        torrent_button.classList.add('icon-text-color');
+        torrent_button.onclick = () => addManualSearch(
+            editResult(true), false, torrent_button, api_key, issue_id,
+        );
+
+        const download_button = entry.querySelector('.search-action-column :nth-child(2)');
 
         download_button.classList.add('icon-text-color');
         download_button.onclick = () => addManualSearch(
@@ -414,7 +422,7 @@ function showManualSearch(api_key, issue_id = null) {
         );
 
         const force_download_button = entry.querySelector(
-            '.search-action-column :nth-child(2)',
+            '.search-action-column :nth-child(3)',
         );
 
         force_download_button.classList.add('icon-text-color');
@@ -422,7 +430,7 @@ function showManualSearch(api_key, issue_id = null) {
             editResult(), true, force_download_button, api_key, issue_id,
         );
 
-        const blocklist_button = entry.querySelector('.search-action-column :nth-child(3)');
+        const blocklist_button = entry.querySelector('.search-action-column :nth-child(4)');
 
         // Show blocklist button
         if (result.match_issue === null || !result.match_issue.includes('blocklist')) {

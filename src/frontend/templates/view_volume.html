@@ -43,6 +43,7 @@
         <td><input class="dpi-column" oninput="this.style.minInlineSize = (this.value.length + 3) + 'ch'"/></td>
         <td class="source-column"></td>
         <td class="search-action-column action-list" aria-label="Actions">
+            {{ icon_button('', "Torrent", "torrents.svg") }}
             {{ icon_button('', "Download", "download.svg") }}
             {{ icon_button('', "Force Download", "manual_search.svg") }}
             {{ icon_button('', "Add to blocklist", "blocklist.svg") }}

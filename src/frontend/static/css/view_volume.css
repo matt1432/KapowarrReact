@@ -246,7 +246,7 @@ tbody .issue-title:hover {
 }
 
 .search-action-column {
-    width: 9rem;
+    width: 12rem;
     display: flex;
     gap: .1rem;
     flex-wrap: wrap;
@@ -255,6 +255,10 @@ tbody .issue-title:hover {
 .search-action-column > button {
     width: 2rem;
     padding: .40rem;
+}
+
+.search-action-column :nth-child(1) img {
+    scale: 1.7;
 }
 
 /*  */
