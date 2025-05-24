@@ -1,3 +1,17 @@
+# Direnv
+.envrc
+.direnv
+
+# JavaScript
+node_modules
+
+# Nix artifacts
+result
+result-*
+
+
+# -------------- From template --------------
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -25,8 +39,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-result
-result-*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -111,8 +123,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-.envrc
-.direnv
 
 # Spyder project settings
 .spyderproject
@@ -139,12 +149,3 @@ dmypy.json
 
 # vs-code
 *.code-workspace
-
-# Downloads
-temp_downloads/*
-
-# Project management files
-release*.sh
-
-# JavaScript
-node_modules
