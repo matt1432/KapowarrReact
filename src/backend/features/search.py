@@ -324,7 +324,7 @@ def manual_search(
         "Starting manual search: %s (%d) %s",
         volume_data.title,
         volume_data.year,
-        f"#{issue_number}" if issue_number else "",
+        f"#{calculated_issue_number}" if calculated_issue_number else "",
     )
 
     for title in (volume_data.title, volume_data.alt_title):
@@ -367,7 +367,7 @@ def manual_search(
         if Settings().sv.enable_libgen:
             libgen_results = SearchLibgenPlus(
                 volume,
-                float(issue_number) if issue_number is not None else None,
+                calculated_issue_number,
             ).search(libgen_url)
 
         if not search_results and not libgen_results:
