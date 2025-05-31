@@ -4,7 +4,7 @@ All custom exceptions are defined here
 Note: Not all CE's inherit from CustomException.
 """
 
-from typing import Any
+from typing import Any, TypedDict
 
 from backend.base.definitions import (
     BlocklistReason,
@@ -14,7 +14,11 @@ from backend.base.definitions import (
 )
 from backend.base.logging import LOGGER
 
-type ApiResponse = dict[str, str | dict[str, str | int | None] | int]
+
+class ApiResponse(TypedDict):
+    error: str
+    result: dict[str, str | int | None]
+    code: int
 
 
 class CustomException(Exception):

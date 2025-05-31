@@ -667,7 +667,8 @@ async def _test_paths(
         List[Download]: A list of downloads.
     """
     downloads: tuple[Download | None]
-    limit_reached: tuple[bool]
+    limit_reached: tuple[bool] | None = None
+
     for path in link_paths:
         downloads, limit_reached = zip(
             *(
@@ -694,7 +695,7 @@ async def _test_paths(
         return [d for d in downloads if d is not None]
 
     # Nothing worked
-    if any(limit_reached):
+    if limit_reached is not None and any(limit_reached):
         raise FailedGCPage(FailReason.LIMIT_REACHED)
     else:
         raise FailedGCPage(FailReason.NO_WORKING_LINKS)

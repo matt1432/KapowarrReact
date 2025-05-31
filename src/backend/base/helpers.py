@@ -474,9 +474,9 @@ def get_torrent_info(torrent: bytes) -> dict[bytes, Any]:
 
 
 class Singleton(type):
-    _instances: dict[str, str] = {}
+    _instances: dict[str, type] = {}
 
-    def __call__(cls, *args: Any, **kwargs: Any) -> str:
+    def __call__(cls, *args: Any, **kwargs: Any) -> type:
         c = str(cls)
         if c not in cls._instances:
             cls._instances[c] = super().__call__(*args, **kwargs)
@@ -753,6 +753,9 @@ class AsyncSession(ClientSession):
 
 
 class _ContextKeeper(metaclass=Singleton):
+    def ctx(self):
+        return self._ctx()
+
     def __init__(
         self,
         log_level: int | None = None,
@@ -764,7 +767,7 @@ class _ContextKeeper(metaclass=Singleton):
 
         from backend.internals.server import setup_process
 
-        self.ctx = setup_process(log_level, db_folder, log_folder)
+        self._ctx = setup_process(log_level, db_folder, log_folder)
         return
 
 

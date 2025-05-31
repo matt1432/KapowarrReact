@@ -868,7 +868,7 @@ class Download(ABC):
 
     @property
     @abstractmethod
-    def id(self) -> int: ...
+    def id(self) -> int | None: ...
 
     @id.setter
     @abstractmethod

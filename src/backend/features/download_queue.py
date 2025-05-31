@@ -85,7 +85,7 @@ class DownloadHandler(metaclass=Singleton):
 
         except DownloadLimitReached as e:
             download.stop(DownloadState.FAILED_STATE)
-            if e.source == DownloadSource.MEGA:
+            if e.source == DownloadSource.MEGA and download.id is not None:
                 self._remove_mega(exclude_id=download.id)
 
         ws.update_queue_status(download)
@@ -755,7 +755,8 @@ class DownloadHandler(metaclass=Singleton):
     def remove_all(self) -> None:
         """Remove all downloads from the queue"""
         for download in self.queue[::-1]:
-            self.remove(download.id)
+            if download.id is not None:
+                self.remove(download.id)
         return
 
     def stop_handle(self) -> None:

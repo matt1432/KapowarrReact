@@ -22,6 +22,9 @@ from backend.internals.db import get_db
 # region Base External Client
 # =====================
 class BaseExternalClient(ExternalDownloadClient):
+    _title: str
+    _base_url: str
+
     required_tokens: Sequence[str] = ("title", "base_url")
 
     @property
@@ -143,8 +146,8 @@ class BaseExternalClient(ExternalDownloadClient):
             """,
             {**filtered_data, "id": self._id},
         )
-        self._title = filtered_data["title"]
-        self._base_url = filtered_data["base_url"]
+        self._title = filtered_data["title"] or ""
+        self._base_url = filtered_data["base_url"] or ""
         self._username = filtered_data["username"]
         self._password = filtered_data["password"]
         self._api_token = filtered_data["api_token"]

@@ -138,7 +138,11 @@ def error_handler(method: Callable[[Any], Any]) -> Any:
             VolumeDownloadedFor,
             VolumeNotFound,
         ) as e:
-            return return_api(**e.api_response)
+            return return_api(
+                e.api_response["result"],
+                e.api_response["error"],
+                e.api_response["code"],
+            )
 
     wrapper.__name__ = method.__name__
     return wrapper

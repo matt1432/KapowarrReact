@@ -32,20 +32,9 @@ dependencies = [
 [project.scripts]
 kapowarr = "kapowarr:main"
 
-[tool.mypy]
-python_version = "3.12"
-pretty = true
-warn_redundant_casts = true
-disallow_untyped_calls = true
-disallow_untyped_defs = true
-no_implicit_optional = true
-
-[[tool.mypy.overrides]]
-module = [
-  "libgencomics.*",
-  "bencoding.*"
-]
-follow_untyped_imports = true
+[tool.basedpyright]
+typeCheckingMode = "standard"
+pythonVersion = "3.12"
 
 [tool.ruff]
 target-version = "py312"
