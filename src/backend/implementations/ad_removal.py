@@ -1,12 +1,12 @@
-import os
 import re
-import shutil
 from collections import Counter
 from zipfile import ZipFile, ZipInfo
 
+from backend.base.files import delete_file_folder
 from backend.base.logging import LOGGER
 
 
+# FIXME: improve prefix logic
 def find_outliers(files: list[ZipInfo]):
     strings = [file.filename for file in files if not file.is_dir()]
 
@@ -21,18 +21,19 @@ def find_outliers(files: list[ZipInfo]):
         else:
             prefixes.append(s)  # If no 3-digit sequence, use the whole string as prefix
 
-    # Find the most common prefix
     most_common_prefix, _ = Counter(prefixes).most_common(1)[0]
-
-    # Find outliers: strings that don't start with this prefix
     outliers = [s for s, p in zip(strings, prefixes) if p != most_common_prefix]
 
-    if len(outliers) == len(files):
-        return []
-    return outliers
+    # If there are as many outliers as original files, there are no outliers
+    return outliers if len(outliers) != len(files) else []
 
 
 def get_ad_filenames(file: str) -> list[str]:
+    """
+    Gets all outliers that start with the letter 'z'. Most ads
+    will have one or more z's at the start of the filename to
+    show at the end of the book.
+    """
     with ZipFile(file, "r") as zip:
         return [
             outlier
@@ -43,8 +44,9 @@ def get_ad_filenames(file: str) -> list[str]:
 
 def remove_ads(file: str) -> None:
     # TODO: replace this with a proper solution like in converters
-    folder = "/tmp"
+    archive_folder = "/tmp"
 
+    # TODO: support removing ads from CBR
     if not file.endswith(".cbz"):
         return
 
@@ -54,18 +56,15 @@ def remove_ads(file: str) -> None:
         return
 
     with ZipFile(file, "r") as zip:
-        files = zip.infolist()
-        zip.extractall(folder)
+        files = zip.namelist()
+        zip.extractall(archive_folder)
 
     with ZipFile(file, "w") as zip:
-        for file in [f"{folder}/{f.filename}" for f in files if f.filename not in ads]:
-            zip.write(file)
-
-    LOGGER.info(f"Removed ads: {ads}")
+        for f in files:
+            if f not in ads:
+                zip.write(filename=f"{archive_folder}/{f}", arcname=f)
 
     for f in files:
-        if f.is_dir():
-            shutil.rmtree(f"{folder}/{f.filename}")
-            return
-        else:
-            os.remove(f"{folder}/{f.filename}")
+        delete_file_folder(f"{archive_folder}/{f}")
+
+    LOGGER.info(f"Removed ads: {ads}")
