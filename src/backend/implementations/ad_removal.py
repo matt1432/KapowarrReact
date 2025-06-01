@@ -1,8 +1,9 @@
 import re
 from collections import Counter
+from os.path import dirname
 from zipfile import ZipFile, ZipInfo
 
-from backend.base.files import delete_file_folder
+from backend.base.files import delete_file_folder, generate_archive_folder
 from backend.base.logging import LOGGER
 
 
@@ -43,8 +44,7 @@ def get_ad_filenames(file: str) -> list[str]:
 
 
 def remove_ads(file: str) -> None:
-    # TODO: replace this with a proper solution like in converters
-    archive_folder = "/tmp"
+    archive_folder = generate_archive_folder(dirname(file), file)
 
     # TODO: support removing ads from CBR
     if not file.endswith(".cbz"):
@@ -64,7 +64,6 @@ def remove_ads(file: str) -> None:
             if f not in ads:
                 zip.write(filename=f"{archive_folder}/{f}", arcname=f)
 
-    for f in files:
-        delete_file_folder(f"{archive_folder}/{f}")
+    delete_file_folder(archive_folder)
 
     LOGGER.info(f"Removed ads: {ads}")
