@@ -53,52 +53,39 @@
         }));
   in {
     overlays.default = final: _prev: let
-      pyPkgs = final.python3Packages.override {
-        overrides = pyFinal: _pyPrev: {
-          inherit (final.python3Packages) libgencomics beautifulsoup4 requests idna;
-
-          bencoding = pyFinal.callPackage ({
-            # nix build inputs
-            buildPythonPackage,
-            fetchPypi,
-            ...
-          }: let
-            pname = "bencoding";
-            version = "0.2.6";
-          in
-            buildPythonPackage {
-              inherit pname version;
-
-              src = fetchPypi {
+      pyPkgs = final.python3Packages.override (o: {
+        overrides = pyFinal: pyPrev:
+          (o.overrides pyFinal pyPrev)
+          // {
+            bencoding = pyFinal.callPackage ({
+              # nix build inputs
+              buildPythonPackage,
+              fetchPypi,
+              ...
+            }: let
+              pname = "bencoding";
+              version = "0.2.6";
+            in
+              buildPythonPackage {
                 inherit pname version;
-                hash = "sha256-Q8zjHUhj4p1rxhFVHU6fJlK+KZXp1eFbRtg4PxgNREA=";
-              };
-            }) {};
-        };
-      };
+
+                src = fetchPypi {
+                  inherit pname version;
+                  hash = "sha256-Q8zjHUhj4p1rxhFVHU6fJlK+KZXp1eFbRtg4PxgNREA=";
+                };
+              }) {};
+          };
+      });
     in {
-      kapowarr = pyPkgs.callPackage ({
+      kapowarr = final.callPackage ({
         # nix build inputs
         lib,
-        buildPythonApplication,
+        python3Packages,
         # deps
         rar,
-        # python deps
-        aiohttp,
-        beautifulsoup4,
-        bencoding, # from overrides
-        cryptography,
-        flask,
-        flask-socketio,
-        libgencomics,
-        requests,
-        setuptools,
-        waitress,
-        websocket-client,
-        qbittorrent-api,
         ...
       }: let
-        inherit (lib) getExe;
+        inherit (lib) attrValues getExe;
         inherit (builtins) fromTOML readFile;
 
         pyproject = fromTOML (readFile ./pyproject.toml);
@@ -106,27 +93,32 @@
         pname = "kapowarr";
         version = "${pyproject.project.version}+${self.shortRev or "dirty"}";
       in
-        buildPythonApplication {
+        python3Packages.buildPythonApplication {
           format = "pyproject";
           inherit pname version;
 
           src = ./.;
 
-          build-system = [setuptools];
+          build-system = attrValues {
+            inherit (python3Packages) setuptools;
+          };
 
-          dependencies = [
-            requests
-            beautifulsoup4
-            flask
-            waitress
-            cryptography
-            bencoding
-            aiohttp
-            flask-socketio
-            websocket-client
-            libgencomics
-            qbittorrent-api
-          ];
+          dependencies = attrValues {
+            inherit
+              (python3Packages)
+              requests
+              beautifulsoup4
+              flask
+              waitress
+              cryptography
+              bencoding # from overrides
+              aiohttp
+              flask-socketio
+              websocket-client
+              libgencomics # from overrides
+              qbittorrent-api
+              ;
+          };
 
           postPatch = ''
             # Disable PWA for now
@@ -150,12 +142,12 @@
               fitting in the *arr suite of software.
             '';
           };
-        }) {};
+        }) {python3Packages = pyPkgs;};
     };
 
     packages = perSystem (pkgs: {
       kapowarr = pkgs.kapowarr;
-      default = self.packages.${pkgs.system}.kapowarr;
+      default = pkgs.kapowarr;
     });
 
     formatter = perSystem (pkgs: let
