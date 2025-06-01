@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 from backend.base.definitions import SCANNABLE_EXTENSIONS, BlocklistReason
 from backend.base.files import copy_directory, delete_file_folder, rename_file
 from backend.base.logging import LOGGER
+from backend.implementations.ad_removal import remove_ads
 from backend.implementations.blocklist import add_to_blocklist
 from backend.implementations.conversion import mass_convert
 from backend.implementations.converters import extract_files_from_folder
@@ -23,8 +24,6 @@ from backend.internals.settings import Settings
 
 if TYPE_CHECKING:
     from backend.base.definitions import Download
-
-# TODO: add ad_removal here
 
 
 # region General
@@ -213,6 +212,13 @@ def convert_file(download: Download) -> None:
     return
 
 
+def remove_ads_from_files(download: Download) -> None:
+    "Remove most last page ads from all CBZ files downloaded"
+    for f in download.files:
+        remove_ads(f)
+    return
+
+
 class PostProcessor:
     actions_success = [
         remove_from_queue,
@@ -220,6 +226,7 @@ class PostProcessor:
         move_to_dest,
         add_file_to_database,
         convert_file,
+        remove_ads_from_files,
         add_file_to_database,
     ]
 
