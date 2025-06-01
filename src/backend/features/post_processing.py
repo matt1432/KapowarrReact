@@ -24,6 +24,8 @@ from backend.internals.settings import Settings
 if TYPE_CHECKING:
     from backend.base.definitions import Download
 
+# TODO: add ad_removal here
+
 
 # region General
 def reset_file_link(download: TorrentDownload) -> None:

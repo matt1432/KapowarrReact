@@ -10,6 +10,7 @@ from backend.base.helpers import get_subclasses
 from backend.base.logging import LOGGER
 from backend.features.download_queue import DownloadHandler
 from backend.features.search import auto_search
+from backend.implementations.ad_removal import remove_ads
 from backend.implementations.conversion import mass_convert
 from backend.implementations.naming import mass_rename
 from backend.implementations.root_folders import RootFolders
@@ -142,6 +143,17 @@ class MassEditorMonitoringScheme(MassEditorAction):
         for volume_id in self.volume_ids:
             Volume(volume_id).apply_monitor_scheme(monitoring_scheme)
 
+        return
+
+
+class MassEditorRemoveAds(MassEditorAction):
+    identifier = "remove_ads"
+
+    def run(self, **kwargs: Any) -> None:
+        LOGGER.info(f"Using mass editor, removing ads: {self.volume_ids}")
+        for volume_id in self.volume_ids:
+            for file in Volume(volume_id).get_all_files():
+                remove_ads(file["filepath"])
         return
 
 
