@@ -42,6 +42,9 @@ line-length = 88
 lint.select = ["E", "F", "I", "U"]
 lint.ignore = ["E501"]
 
+[tool.setuptools]
+include-package-data = false
+
 [tool.setuptools.package-data]
 "backend.lib" = ["*"]
 "frontend" = ["templates/*"]
