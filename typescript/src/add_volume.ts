@@ -1,5 +1,9 @@
 // @ts-nocheck
 
+import WindowFuncs from './window.js';
+import usingApiKey from './auth.js';
+import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
+
 const SearchEls = {
     pre_build: {
         search_entry: document.querySelector('.pre-build-els .search-entry'),
@@ -462,7 +466,7 @@ function showAddWindow(comicvine_id, api_key) {
         .then((json) => {
             volume_data._volume_folder = json.result.folder;
             SearchEls.window.volume_folder_input.value = json.result.folder;
-            showWindow('add-window');
+            WindowFuncs.showWindow('add-window');
         });
 
     SearchEls.window.title.innerText = volume_data.title;
@@ -481,7 +485,7 @@ function showAddWindow(comicvine_id, api_key) {
 
 // eslint-disable-next-line
 function addVolume() {
-    showLoadWindow('add-window');
+    WindowFuncs.showLoadWindow('add-window');
     const volume_folder = SearchEls.window.volume_folder_input.value;
 
     const data = {
@@ -521,12 +525,12 @@ function addVolume() {
                     );
 
                     addAlreadyAdded(entry, json.result.id);
-                    closeWindow();
+                    WindowFuncs.closeWindow();
                 })
                 .catch((e) => {
                     if (e.status === 509) {
                         SearchEls.window.submit.innerText = 'ComicVine API rate limit reached';
-                        showWindow('add-window');
+                        WindowFuncs.showWindow('add-window');
                     }
                     else {
                         console.log(e);
@@ -556,3 +560,5 @@ SearchEls.filters.translations
     .setAttribute('selected', '');
 
 processURLParams();
+
+export {};

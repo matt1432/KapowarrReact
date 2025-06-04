@@ -1,4 +1,8 @@
 // @ts-nocheck
+import usingApiKey from './auth.js';
+
+import WindowFuncs from './window.js';
+import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
 
 function createUsernameInput(id) {
     const username_row = document.createElement('tr');
@@ -108,7 +112,7 @@ function loadEditTorrent(api_key, id) {
                         form.appendChild(token_input);
                     };
 
-                    showWindow('edit-torrent-window');
+                    WindowFuncs.showWindow('edit-torrent-window');
                 });
         });
 };
@@ -135,7 +139,7 @@ function saveEditTorrent() {
                 sendAPI('PUT', `/externalclients/${id}`, api_key, {}, data)
                     .then(() => {
                         loadTorrentClients(api_key);
-                        closeWindow();
+                        WindowFuncs.closeWindow();
                     })
                     .catch((e) => {
                         if (e.status === 400) {
@@ -190,7 +194,7 @@ function deleteTorrent(api_key) {
     sendAPI('DELETE', `/externalclients/${id}`, api_key)
         .then(() => {
             loadTorrentClients(api_key);
-            closeWindow();
+            WindowFuncs.closeWindow();
         })
         .catch((e) => {
             if (e.status === 400) {
@@ -217,7 +221,7 @@ function loadTorrentList(api_key) {
                 entry.onclick = () => loadAddTorrent(api_key, c);
                 table.appendChild(entry);
             });
-            showWindow('choose-torrent-window');
+            WindowFuncs.showWindow('choose-torrent-window');
         });
 };
 
@@ -254,7 +258,7 @@ function loadAddTorrent(api_key, client_type) {
             form.appendChild(createApiTokenInput('add-token-input'));
         }
 
-        showWindow('add-torrent-window');
+        WindowFuncs.showWindow('add-torrent-window');
     });
 };
 
@@ -279,7 +283,7 @@ function saveAddTorrent() {
 
                 sendAPI('POST', '/externalclients', api_key, {}, data).then(() => {
                     loadTorrentClients(api_key);
-                    closeWindow();
+                    WindowFuncs.closeWindow();
                 });
             });
         });
@@ -478,6 +482,8 @@ document.querySelectorAll('#builtin-client-list > button').forEach((b) => {
             i.value = '';
         });
 
-        showWindow('builtin-window');
+        WindowFuncs.showWindow('builtin-window');
     };
 });
+
+export {};

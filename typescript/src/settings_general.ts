@@ -1,4 +1,6 @@
 // @ts-nocheck
+import usingApiKey from './auth.js';
+import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
 
 function fillSettings(api_key) {
     fetchAPI('/settings', api_key).then((json) => {
@@ -86,3 +88,5 @@ document.querySelector('#theme-input').onchange = () => {
         document.querySelector(':root').classList.remove('dark-mode');
     }
 };
+
+export {};

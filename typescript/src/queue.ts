@@ -1,4 +1,6 @@
 // @ts-nocheck
+import usingApiKey from './auth.js';
+import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
 
 const QEls = {
     queue: document.querySelector('#queue'),
@@ -118,3 +120,5 @@ usingApiKey()
         socket.on('queue_ended', (data) => removeQueueEntry(data.id));
         QEls.tool_bar.remove_all.onclick = () => deleteAll(api_key);
     });
+
+export {};

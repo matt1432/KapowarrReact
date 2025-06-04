@@ -1,4 +1,6 @@
 // @ts-nocheck
+import usingApiKey from './auth.js';
+import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
 
 function fillSettings(api_key) {
     fetchAPI('/settings', api_key)
@@ -115,3 +117,5 @@ usingApiKey()
         document.querySelector('#save-button').onclick = () => saveSettings(api_key);
         document.querySelector('#empty-download-folder').onclick = () => emptyFolder(api_key);
     });
+
+export {};

@@ -1,22 +1,24 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
+    // Target
     "target": "ESNext",
     "lib": [
       "DOM",
       "ESNext"
     ],
-    "module": "preserve",
-    "moduleResolution": "bundler",
-    "baseUrl": ".",
-    "newLine": "LF",
+    // Modules
+    "module": "esnext",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "skipLibCheck": true,
+    // Type Checking
     "strict": true,
     "noImplicitAny": false,
+    // Misc
+    "forceConsistentCasingInFileNames": true,
+    "newLine": "LF",
+    // Build
     "rootDir": "src",
     "outDir": "../src/frontend/static/js"
   },

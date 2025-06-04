@@ -6,8 +6,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/view_volume.css') }}">
 {% endblock %}
 {% block js %}
-    <script src="{{ url_for('static', filename='js/window.js') }}" defer></script>
-    <script src="{{ url_for('static', filename='js/view_volume.js') }}" defer></script>
+    <script type="module" src="{{ url_for('static', filename='js/view_volume.js') }}" defer></script>
 {% endblock %}
 
 {% block pre_build_rows %}

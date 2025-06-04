@@ -1,4 +1,8 @@
 // @ts-nocheck
+import usingApiKey from './auth.js';
+
+import WindowFuncs from './window.js'
+import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
 
 const LIEls = {
     pre_build: {
@@ -120,7 +124,7 @@ function openEditCVMatch(rowid) {
     LIEls.search.results.innerHTML = '';
     hide([LIEls.search.container]);
     LIEls.search.input.value = '';
-    showWindow('cv-window');
+    WindowFuncs.showWindow('cv-window');
     LIEls.search.input.focus();
 };
 
@@ -183,7 +187,7 @@ function searchCV() {
                                 result.year,
                                 result.issue_count,
                             );
-                            closeWindow();
+                            WindowFuncs.closeWindow();
                         };
 
                         const select_for_all_button = entry.querySelector('td:nth-child(4) button');
@@ -202,7 +206,7 @@ function searchCV() {
                                 result.issue_count,
                                 group_number,
                             );
-                            closeWindow();
+                            WindowFuncs.closeWindow();
                         };
 
                         LIEls.search.results.appendChild(entry);
@@ -248,3 +252,5 @@ LIEls.buttons.cancel.forEach((b) => {
         [LIEls.views.start],
     );
 });
+
+export {};

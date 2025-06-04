@@ -1,4 +1,6 @@
 // @ts-nocheck
+import usingApiKey from './auth.js';
+import { volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
 
 const url_base = document.querySelector('#url_base').dataset.value;
 
@@ -65,3 +67,5 @@ if (JSON.parse(localStorage.getItem('kapowarr') || { theme: 'light' })['theme'] 
 }
 
 document.querySelector('#login-form').action = 'javascript:login();';
+
+export {};

@@ -1,7 +1,8 @@
 // @ts-nocheck
+import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
 
 // eslint-disable-next-line
-async function usingApiKey(redirect = true) {
+export default async function usingApiKey(redirect = true) {
     const key_data = JSON.parse(localStorage.getItem('kapowarr'));
 
     if (key_data.api_key === null || (key_data.last_login < (Date.now() / 1000 - 86400))) {
@@ -44,4 +45,3 @@ async function usingApiKey(redirect = true) {
         return key_data.api_key;
     };
 };
-

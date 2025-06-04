@@ -1,4 +1,6 @@
 // @ts-nocheck
+import usingApiKey from './auth.js';
+import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
 
 const library_els = {
     pages: {
@@ -362,3 +364,5 @@ library_els.mass_edit.select_all.onchange = () => library_els.views.table
     .forEach((c) => {
         c.checked = library_els.mass_edit.select_all.checked;
     });
+
+export {};

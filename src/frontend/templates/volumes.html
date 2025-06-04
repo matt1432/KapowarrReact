@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/volumes.css') }}">
 {% endblock %}
 {% block js %}
-    <script src="{{ url_for('static', filename='js/volumes.js') }}" defer></script>
+    <script type="module" src="{{ url_for('static', filename='js/volumes.js') }}" defer></script>
 {% endblock %}
 
 {% block pre_build_els %}

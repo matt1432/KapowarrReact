@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
 
 // eslint-disable-next-line
 function showWindow(id) {
@@ -64,3 +65,9 @@ document.querySelectorAll(
 ).forEach((e) => {
     e.onclick = () => closeWindow();
 });
+
+export default {
+    showWindow,
+    showLoadWindow,
+    closeWindow,
+};

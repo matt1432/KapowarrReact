@@ -1,4 +1,6 @@
 // @ts-nocheck
+import usingApiKey from './auth.js';
+import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
 
 const inputs = {
     renaming_input: document.querySelector('#renaming-input'),
@@ -401,3 +403,5 @@ document.querySelector('#add-convert-input').onchange = (e) => {
         updateConvertList();
     };
 };
+
+export {};

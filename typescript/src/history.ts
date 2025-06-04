@@ -1,4 +1,6 @@
 // @ts-nocheck
+import usingApiKey from './auth.js';
+import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
 
 const HistoryEls = {
     table: document.querySelector('#history'),
@@ -90,3 +92,5 @@ usingApiKey().then((api_key) => {
     HistoryEls.page_turner.previous.onclick = () => reduceOffset(api_key);
     HistoryEls.page_turner.next.onclick = () => increaseOffset(api_key);
 });
+
+export {};

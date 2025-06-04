@@ -1,4 +1,8 @@
 // @ts-nocheck
+import usingApiKey from './auth.js';
+
+import WindowFuncs from './window.js';
+import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
 
 const ViewEls = {
     views: {
@@ -111,10 +115,10 @@ class IssueEntry {
 function fillTable(issues, api_key) {
     ViewEls.issues_list.innerHTML = '';
 
-    for (i = issues.length - 1; i >= 0; i--) {
+    for (let i = issues.length - 1; i >= 0; i--) {
         const obj = issues[i];
 
-        const entry = ViewEls.pre_build.issue_entry.cloneNode(deep = true);
+        const entry = ViewEls.pre_build.issue_entry.cloneNode(true);
 
         entry.dataset.id = obj.id;
         ViewEls.issues_list.appendChild(entry);
@@ -455,7 +459,7 @@ function showManualSearch(api_key, issue_id = null) {
     };
 
     // Show window
-    showWindow('manual-search-window');
+    WindowFuncs.showWindow('manual-search-window');
 
     // Start search
     const url = issue_id ?
@@ -596,7 +600,7 @@ function showRename(api_key, issue_id = null) {
                     after_row.querySelector('td:last-child').innerText = mapping[1];
                 });
             };
-            showWindow('rename-window');
+            WindowFuncs.showWindow('rename-window');
         });
 };
 
@@ -616,7 +620,7 @@ function renameVolume(api_key, issue_id = null) {
     )];
 
     if (checkboxes.every((e) => !e.checked)) {
-        closeWindow();
+        WindowFuncs.closeWindow();
 
         return;
     };
@@ -640,7 +644,7 @@ function renameVolume(api_key, issue_id = null) {
     };
 
     sendAPI('POST', '/system/tasks', api_key, {}, data)
-        .then(() => closeWindow());
+        .then(() => WindowFuncs.closeWindow());
 };
 
 //
@@ -709,7 +713,7 @@ function showConvert(api_key, issue_id = null) {
                     after_row.querySelector('td:last-child').innerText = mapping[1];
                 });
             };
-            showWindow('convert-window');
+            WindowFuncs.showWindow('convert-window');
         });
 };
 
@@ -729,7 +733,7 @@ function convertVolume(api_key, issue_id = null) {
     )];
 
     if (checkboxes.every((e) => !e.checked)) {
-        closeWindow();
+        WindowFuncs.closeWindow();
 
         return;
     };
@@ -753,7 +757,7 @@ function convertVolume(api_key, issue_id = null) {
     };
 
     sendAPI('POST', '/system/tasks', api_key, {}, data)
-        .then(() => closeWindow());
+        .then(() => WindowFuncs.closeWindow());
 };
 
 //
@@ -775,7 +779,7 @@ function showEdit(api_key) {
             };
             ViewEls.vol_edit.root_folder.appendChild(entry);
         });
-        showWindow('edit-window');
+        WindowFuncs.showWindow('edit-window');
     });
 
     ViewEls.vol_edit.monitor.value = ViewEls.vol_data.monitor.dataset.monitored;
@@ -785,7 +789,7 @@ function showEdit(api_key) {
 
 // eslint-disable-next-line
 function editVolume() {
-    showLoadWindow('edit-window');
+    WindowFuncs.showLoadWindow('edit-window');
 
     const data = {
         monitored: ViewEls.vol_edit.monitor.value === 'true',
@@ -876,7 +880,7 @@ function showIssueInfo(issue_id, api_key) {
 
             files_table.appendChild(entry);
         });
-        showWindow('issue-info-window');
+        WindowFuncs.showWindow('issue-info-window');
     });
 };
 
@@ -923,8 +927,8 @@ usingApiKey().then((api_key) => {
     );
 });
 
-ViewEls.tool_bar.files.onclick = () => showWindow('files-window');
-ViewEls.tool_bar.delete.onclick = () => showWindow('delete-window');
+ViewEls.tool_bar.files.onclick = () => WindowFuncs.showWindow('files-window');
+ViewEls.tool_bar.delete.onclick = () => WindowFuncs.showWindow('delete-window');
 
 document.querySelector('#issue-info-selector').onclick = () => showInfoWindow('issue-info');
 document.querySelector('#issue-files-selector').onclick = () => showInfoWindow('issue-files');
@@ -933,3 +937,5 @@ document.querySelector('#selectall-convert-input').onchange = () => toggleAllCon
 
 document.querySelector('#edit-form').action = 'javascript:editVolume();';
 document.querySelector('#delete-form').action = 'javascript:deleteVolume();';
+
+export {};
