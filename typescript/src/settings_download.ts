@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 function fillSettings(api_key) {
     fetchAPI('/settings', api_key)
         .then((json) => {

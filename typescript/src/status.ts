@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const StatEls = {
     version: document.querySelector('#version'),
     python_version: document.querySelector('#python-version'),

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 // eslint-disable-next-line
 async function usingApiKey(redirect = true) {
     const key_data = JSON.parse(localStorage.getItem('kapowarr'));

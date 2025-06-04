@@ -3,12 +3,12 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": [
+      "DOM",
       "ESNext"
     ],
     "module": "preserve",
     "moduleResolution": "bundler",
     "baseUrl": ".",
-    "noEmit": true,
     "newLine": "LF",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -16,10 +16,15 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "strict": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "rootDir": "src",
+    "outDir": "../src/frontend/static/js"
   },
+  "exclude": [
+    "eslint.config.ts"
+  ],
   "includes": [
-    "eslint.config.ts",
-    "*.js"
+    // "eslint.config.ts",
+    "src/*.ts"
   ]
 }

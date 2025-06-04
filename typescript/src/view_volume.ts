@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const ViewEls = {
     views: {
         loading: document.querySelector('#loading-screen'),

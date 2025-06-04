@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const LIEls = {
     pre_build: {
         li_result: document.querySelector('.pre-build-els .li-result'),

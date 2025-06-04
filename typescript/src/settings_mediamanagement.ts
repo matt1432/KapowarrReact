@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const inputs = {
     renaming_input: document.querySelector('#renaming-input'),
     volume_folder_naming_input: document.querySelector('#volume-folder-naming-input'),

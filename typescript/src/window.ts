@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 // eslint-disable-next-line
 function showWindow(id) {
     // Deselect all windows

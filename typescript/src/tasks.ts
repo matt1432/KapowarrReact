@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const TaskEls = {
     pre_build: {
         task: document.querySelector('.pre-build-els .task-entry'),

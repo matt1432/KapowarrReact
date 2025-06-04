@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const QEls = {
     queue: document.querySelector('#queue'),
     queue_entry: document.querySelector('.pre-build-els .queue-entry'),

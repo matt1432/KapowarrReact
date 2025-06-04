@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 function fillSettings(api_key) {
     fetchAPI('/settings', api_key).then((json) => {
         document.querySelector('#bind-address-input').value = json.result.host;

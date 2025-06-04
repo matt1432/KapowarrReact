@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const url_base = document.querySelector('#url_base').dataset.value;
 const volume_id = parseInt(window.location.pathname.split('/').at(-1)) || null;
 

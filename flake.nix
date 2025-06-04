@@ -83,6 +83,7 @@
         python3Packages,
         # deps
         rar,
+        typescript,
         ...
       }: let
         inherit (lib) attrValues getExe;
@@ -98,6 +99,8 @@
           inherit pname version;
 
           src = ./.;
+
+          nativeBuildInputs = [typescript];
 
           build-system = attrValues {
             inherit (python3Packages) setuptools;

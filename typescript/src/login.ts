@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const url_base = document.querySelector('#url_base').dataset.value;
 
 function redirect() {

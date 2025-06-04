@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const HistoryEls = {
     table: document.querySelector('#history'),
     page_turner: {

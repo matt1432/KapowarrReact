@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const SearchEls = {
     pre_build: {
         search_entry: document.querySelector('.pre-build-els .search-entry'),

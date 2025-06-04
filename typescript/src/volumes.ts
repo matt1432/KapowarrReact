@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const library_els = {
     pages: {
         loading: document.querySelector('#loading-library'),

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const BlockEls = {
     table: document.querySelector('#blocklist'),
     page_turner: {

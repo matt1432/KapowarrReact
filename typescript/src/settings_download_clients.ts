@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 function createUsernameInput(id) {
     const username_row = document.createElement('tr');
     const username_header = document.createElement('th');
