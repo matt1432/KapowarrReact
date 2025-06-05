@@ -18,8 +18,9 @@ function showLoadWindow(id: string) {
     });
 
     // Select the correct window
-    // @ts-ignore
-    const loading_window = document.querySelector(`.window > section#${id}`)?.dataset.loading_window;
+    const loading_window = (document.querySelector(
+        `.window > section#${id}`,
+    ) as HTMLElement).dataset.loading_window;
 
     if (loading_window) {
         document.querySelector(`.window > section#${loading_window}`)?.setAttribute('show-window', '');

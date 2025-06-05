@@ -54,9 +54,15 @@ function fillPlanning(api_key: string) {
             const entry = TaskEls.pre_build.task.cloneNode(true) as typeof TaskEls.pre_build.task;
 
             (entry.querySelector('.name-column') as HTMLElement).innerText = e.display_name;
-            (entry.querySelector('.interval-column') as HTMLElement).innerText = convertInterval(e.interval);
-            (entry.querySelector('.prev-column') as HTMLElement).innerText = convertTime(e.last_run, false);
-            (entry.querySelector('.next-column') as HTMLElement).innerText = convertTime(e.next_run, true);
+            (entry.querySelector(
+                '.interval-column',
+            ) as HTMLElement).innerText = convertInterval(e.interval);
+            (entry.querySelector(
+                '.prev-column',
+            ) as HTMLElement).innerText = convertTime(e.last_run, false);
+            (entry.querySelector(
+                '.next-column',
+            ) as HTMLElement).innerText = convertTime(e.next_run, true);
 
             TaskEls.intervals.appendChild(entry);
         });

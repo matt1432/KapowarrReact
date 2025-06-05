@@ -22,6 +22,7 @@ function fillHistory(api_key: string) {
     fetchAPI('/activity/history', api_key, { offset }).then((json) => {
         HistoryEls.table.innerHTML = '';
 
+        // eslint-disable-next-line
         (json.result as Record<string, any>[]).forEach((obj) => {
             const entry = HistoryEls.entry.cloneNode(true) as typeof HistoryEls.entry;
 
@@ -48,7 +49,8 @@ function fillHistory(api_key: string) {
             }
 
             const d = new Date(obj.downloaded_at * 1000);
-            const formatted_date = `${d.toLocaleString('en-CA').slice(0, 10)} ${d.toTimeString().slice(0, 5)}`;
+            const formatted_date = `${d.toLocaleString('en-CA')
+                .slice(0, 10)} ${d.toTimeString().slice(0, 5)}`;
 
             (entry.querySelector('td:last-child') as HTMLElement).innerText = formatted_date;
 

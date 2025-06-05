@@ -1,7 +1,20 @@
 import usingApiKey from './auth.js';
 
 import WindowFuncs from './window.js';
-import { url_base, volume_id, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, convertSize } from './general.js';
+import {
+    url_base,
+    volume_id,
+    setIcon,
+    setImage,
+    hide,
+    fetchAPI,
+    sendAPI,
+    icons,
+    images,
+    task_to_button,
+    mapButtons,
+    convertSize,
+} from './general.js';
 
 /* Types */
 import { RootFolder } from './add_volume.js';
@@ -106,7 +119,9 @@ const ViewEls = {
         rename_before: document.querySelector('.pre-build-els .rename-before') as HTMLTableRowElement,
         rename_after: document.querySelector('.pre-build-els .rename-after') as HTMLTableRowElement,
         files_entry: document.querySelector('.pre-build-els .files-entry') as HTMLTableRowElement,
-        general_files_entry: document.querySelector('.pre-build-els .general-files-entry') as HTMLTableRowElement,
+        general_files_entry: document.querySelector(
+            '.pre-build-els .general-files-entry',
+        ) as HTMLTableRowElement,
     },
     vol_data: {
         monitor: document.querySelector('#volume-monitor') as HTMLButtonElement,
@@ -115,7 +130,9 @@ const ViewEls = {
         tags: document.querySelector('#volume-tags') as HTMLTableSectionElement,
         path: document.querySelector('#volume-path') as HTMLParagraphElement,
         description: document.querySelector('#volume-description') as HTMLTableSectionElement,
-        mobile_description: document.querySelector('#volume-description-mobile') as HTMLTableSectionElement,
+        mobile_description: document.querySelector(
+            '#volume-description-mobile',
+        ) as HTMLTableSectionElement,
     },
     vol_edit: {
         monitor: document.querySelector('#monitored-input') as HTMLSelectElement,
@@ -222,7 +239,8 @@ function fillTable(issues: IssueData[], api_key: string) {
     for (let i = issues.length - 1; i >= 0; i--) {
         const obj = issues[i];
 
-        const entry = ViewEls.pre_build.issue_entry.cloneNode(true) as typeof ViewEls.pre_build.issue_entry;
+        const entry = ViewEls.pre_build.issue_entry
+            .cloneNode(true) as typeof ViewEls.pre_build.issue_entry;
 
         entry.dataset.id = obj.id.toString();
         ViewEls.issues_list.appendChild(entry);
@@ -345,7 +363,8 @@ function fillPage(data: VolumePublicInfo, api_key: string) {
 
     table.innerHTML = '';
     data.general_files.forEach((gf) => {
-        const entry = ViewEls.pre_build.general_files_entry.cloneNode(true) as typeof ViewEls.pre_build.general_files_entry;
+        const entry = ViewEls.pre_build.general_files_entry
+            .cloneNode(true) as typeof ViewEls.pre_build.general_files_entry;
 
         const short_f = gf.filepath.slice(
             gf.filepath.indexOf(data.volume_folder) +
@@ -455,8 +474,12 @@ function showManualSearch(api_key: string, issue_id: number | null = null) {
     hide([table, libgenContainer], [message]);
     tbody.innerHTML = '';
 
-    const addSearchResult = (result: MatchedSearchResultData, api_key: string): [number, typeof ViewEls.pre_build.manual_search] => {
-        const entry = ViewEls.pre_build.manual_search.cloneNode(true) as typeof ViewEls.pre_build.manual_search;
+    const addSearchResult = (
+        result: MatchedSearchResultData,
+    ): [number, typeof ViewEls.pre_build.manual_search] => {
+        const entry = ViewEls.pre_build.manual_search
+            .cloneNode(true) as typeof ViewEls.pre_build.manual_search;
+
         const match = entry.querySelector('.match-column') as HTMLElement;
 
         if (result.match) {
@@ -517,14 +540,18 @@ function showManualSearch(api_key: string, issue_id: number | null = null) {
         (entry.querySelector('.pages-column') as HTMLElement).innerText = result.pages?.toString() ?? '';
         (entry.querySelector('.source-column') as HTMLElement).innerText = result.source;
 
-        const torrent_button = entry.querySelector('.search-action-column :nth-child(1)') as HTMLInputElement;
+        const torrent_button = entry.querySelector(
+            '.search-action-column :nth-child(1)',
+        ) as HTMLInputElement;
 
         torrent_button.classList.add('icon-text-color');
         torrent_button.onclick = () => addManualSearch(
             editResult(true), false, torrent_button, api_key, issue_id,
         );
 
-        const download_button = entry.querySelector('.search-action-column :nth-child(2)') as HTMLInputElement;
+        const download_button = entry.querySelector(
+            '.search-action-column :nth-child(2)',
+        ) as HTMLInputElement;
 
         download_button.classList.add('icon-text-color');
         download_button.onclick = () => addManualSearch(
@@ -540,7 +567,9 @@ function showManualSearch(api_key: string, issue_id: number | null = null) {
             editResult(), true, force_download_button, api_key, issue_id,
         );
 
-        const blocklist_button = entry.querySelector('.search-action-column :nth-child(4)') as HTMLInputElement;
+        const blocklist_button = entry.querySelector(
+            '.search-action-column :nth-child(4)',
+        ) as HTMLInputElement;
 
         // Show blocklist button
         if (result.match_issue === null || !result.match_issue.includes('blocklist')) {
@@ -574,7 +603,7 @@ function showManualSearch(api_key: string, issue_id: number | null = null) {
         // TODO: add filters, maybe in Built-in Clients
         const setupTable = (results: MatchedSearchResultData[]) => {
             results
-                .map((result) => addSearchResult(result, api_key))
+                .map((result) => addSearchResult(result))
                 .sort((a, b) => a[0] - b[0])
                 .forEach(([_k, elem]) => {
                     tbody.appendChild(elem);
@@ -644,14 +673,14 @@ function addManualSearch(
 
 function blockManualSearch(
     web_link: string, web_title: string,
-    volume_id: number | null, issue_id: number | null,
+    vid: number | null, issue_id: number | null,
     button: HTMLInputElement, match: HTMLElement,
     api_key: string,
 ) {
     sendAPI('POST', '/blocklist', api_key, {}, {
         web_link,
         web_title,
-        volume_id,
+        volume_id: vid,
         issue_id,
         reason_id: 4,
     })
@@ -686,7 +715,9 @@ function showRename(api_key: string, issue_id: string | null = null) {
         rename_button.dataset.issue_id = issue_id;
     };
     fetchAPI(url, api_key).then((json: { result: PreviewRenameResult }) => {
-        const empty_message = document.querySelector('#rename-window .empty-rename-message') as HTMLElement;
+        const empty_message = document.querySelector(
+            '#rename-window .empty-rename-message',
+        ) as HTMLElement;
         const table_container = document.querySelector('#rename-window .rename-preview') as HTMLElement;
         const table = table_container.querySelector('tbody')!;
 
@@ -699,10 +730,12 @@ function showRename(api_key: string, issue_id: string | null = null) {
             hide([empty_message], [table_container, rename_button]);
 
             Object.entries(json.result).forEach((mapping) => {
-                const before_row = ViewEls.pre_build.rename_before.cloneNode(true) as typeof ViewEls.pre_build.rename_before;
+                const before_row = ViewEls.pre_build.rename_before
+                    .cloneNode(true) as typeof ViewEls.pre_build.rename_before;
 
                 table.appendChild(before_row);
-                const after_row = ViewEls.pre_build.rename_after.cloneNode(true) as typeof ViewEls.pre_build.rename_after;
+                const after_row = ViewEls.pre_build.rename_after
+                    .cloneNode(true) as typeof ViewEls.pre_build.rename_after;
 
                 table.appendChild(after_row);
 
@@ -798,7 +831,9 @@ function showConvert(api_key: string, issue_id: number | null = null) {
     };
 
     fetchAPI(url, api_key).then((json: { result: PreviewRenameResult }) => {
-        const empty_rename = document.querySelector('#convert-window .empty-rename-message') as HTMLElement;
+        const empty_rename = document.querySelector(
+            '#convert-window .empty-rename-message',
+        ) as HTMLElement;
         const table_container = document.querySelector('#convert-window table') as HTMLTableElement;
         const table = table_container.querySelector('tbody')!;
 
@@ -810,10 +845,12 @@ function showConvert(api_key: string, issue_id: number | null = null) {
         else {
             hide([empty_rename], [table_container, convert_button]);
             Object.entries(json.result).forEach((mapping) => {
-                const before_row = ViewEls.pre_build.rename_before.cloneNode(true) as typeof ViewEls.pre_build.rename_before;
+                const before_row = ViewEls.pre_build.rename_before
+                    .cloneNode(true) as typeof ViewEls.pre_build.rename_before;
 
                 table.appendChild(before_row);
-                const after_row = ViewEls.pre_build.rename_after.cloneNode(true) as typeof ViewEls.pre_build.rename_after;
+                const after_row = ViewEls.pre_build.rename_after
+                    .cloneNode(true) as typeof ViewEls.pre_build.rename_after;
 
                 table.appendChild(after_row);
 
@@ -939,6 +976,7 @@ export function deleteVolume() {
             .then(() => {
                 window.location.href = `${url_base}/`;
             })
+            // eslint-disable-next-line
             .catch((e) => e.json().then((j: any) => {
                 if (j.error === 'TaskForVolumeRunning') {
                     hide([downloading_error], [tasking_error]);
@@ -957,7 +995,9 @@ export function deleteVolume() {
 // Issue info
 //
 function showIssueInfo(issue_id: number, api_key: string) {
-    (document.querySelector('#issue-rename-selector') as HTMLElement).dataset.issue_id = issue_id.toString();
+    (document.querySelector(
+        '#issue-rename-selector',
+    ) as HTMLElement).dataset.issue_id = issue_id.toString();
 
     fetchAPI(`/issues/${issue_id}`, api_key).then((json) => {
         (document.querySelector('#issue-info-title') as HTMLElement).innerText =
@@ -967,7 +1007,8 @@ function showIssueInfo(issue_id: number, api_key: string) {
 
         files_table.innerHTML = '';
         json.result.files.forEach((f: FileData) => {
-            const entry = ViewEls.pre_build.files_entry.cloneNode(true) as typeof ViewEls.pre_build.files_entry;
+            const entry = ViewEls.pre_build.files_entry
+                .cloneNode(true) as typeof ViewEls.pre_build.files_entry;
 
             const vf = ViewEls.vol_data.path.dataset.volume_folder!;
             const short_f = f.filepath.slice(
@@ -1036,8 +1077,14 @@ usingApiKey().then((api_key) => {
 ViewEls.tool_bar.files.onclick = () => WindowFuncs.showWindow('files-window');
 ViewEls.tool_bar.delete.onclick = () => WindowFuncs.showWindow('delete-window');
 
-(document.querySelector('#issue-info-selector') as HTMLElement).onclick = () => showInfoWindow('issue-info');
-(document.querySelector('#issue-files-selector') as HTMLElement).onclick = () => showInfoWindow('issue-files');
+(document.querySelector(
+    '#issue-info-selector',
+) as HTMLElement).onclick = () => showInfoWindow('issue-info');
+
+(document.querySelector(
+    '#issue-files-selector',
+) as HTMLElement).onclick = () => showInfoWindow('issue-files');
+
 (document.querySelector('#selectall-input') as HTMLElement).onchange = () => toggleAllRenames();
 (document.querySelector('#selectall-convert-input') as HTMLElement).onchange = () => toggleAllConverts();
 

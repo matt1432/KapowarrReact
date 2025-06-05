@@ -66,7 +66,8 @@ function fillList(api_key: string) {
             (entry.querySelector('.reason-column') as HTMLElement).innerText = obj.reason;
 
             const d = new Date(obj.added_at * 1000);
-            const formatted_date = `${d.toLocaleString('en-CA').slice(0, 10)} ${d.toTimeString().slice(0, 5)}`;
+            const formatted_date = `${d.toLocaleString('en-CA')
+                .slice(0, 10)} ${d.toTimeString().slice(0, 5)}`;
 
             (entry.querySelector('.date-column') as HTMLElement).innerText = formatted_date;
 

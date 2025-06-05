@@ -75,7 +75,9 @@ export async function fetchAPI(endpoint: string, api_key: string, params = {}, j
         });
 };
 
-export async function sendAPI(method: string, endpoint: string, api_key: string, params = {}, body = {}) {
+export async function sendAPI(
+    method: string, endpoint: string, api_key: string, params = {}, body = {},
+) {
     let formatted_params = '';
 
     if (Object.keys(params).length) {
@@ -125,7 +127,7 @@ export const task_to_button = {};
 
 export function mapButtons(id: number | null) {
     if (window.location.pathname === '/' ||
-        window.location.pathname === (`${url_base}/`)) {
+      window.location.pathname === (`${url_base}/`)) {
         task_to_button['search_all'] = {
             button: document.querySelector('#searchall-button'),
             icon: `${url_base}/static/img/search.svg`,
@@ -271,7 +273,7 @@ export function handleTaskRemoved(data: Task) {
 };
 
 export function connectToWebSocket() {
-    // @ts-expect-error
+    // @ts-expect-error remove this once we handle node_modules
     const socket = io({
         path: `${url_base}/api/socket.io`,
         transports: ['polling'],

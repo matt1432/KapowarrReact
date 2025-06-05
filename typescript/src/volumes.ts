@@ -1,22 +1,32 @@
 import { RootFolder } from './add_volume.js';
 import usingApiKey from './auth.js';
-import { url_base, setIcon, hide, fetchAPI, sendAPI, icons, convertSize, getLocalStorage, setLocalStorage } from './general.js';
+import {
+    url_base,
+    setIcon,
+    hide,
+    fetchAPI,
+    sendAPI,
+    icons,
+    convertSize,
+    getLocalStorage,
+    setLocalStorage,
+} from './general.js';
 
 /* Types */
 export interface LibrarySearchResult {
-    id: number;
-    comicvine_id: number;
+    id: number
+    comicvine_id: number
     title: string
-    year: number;
-    publisher: string;
-    volume_number: number;
-    description: string;
-    monitored: boolean;
-    monitor_new_issues: boolean;
-    issue_count: number;
-    issue_count_monitored: number;
-    issues_downloaded: number;
-    issues_downloaded_monitored: number;
+    year: number
+    publisher: string
+    volume_number: number
+    description: string
+    monitored: boolean
+    monitor_new_issues: boolean
+    issue_count: number
+    issue_count_monitored: number
+    issues_downloaded: number
+    issues_downloaded_monitored: number
 }
 
 const library_els = {
@@ -45,8 +55,12 @@ const library_els = {
     },
     stats: {
         volume_count: document.querySelector('#volume-count') as HTMLTableCellElement,
-        volume_monitored_count: document.querySelector('#volume-monitored-count') as HTMLTableCellElement,
-        volume_unmonitored_count: document.querySelector('#volume-unmonitored-count') as HTMLTableCellElement,
+        volume_monitored_count: document.querySelector(
+            '#volume-monitored-count',
+        ) as HTMLTableCellElement,
+        volume_unmonitored_count: document.querySelector(
+            '#volume-unmonitored-count',
+        ) as HTMLTableCellElement,
         issue_count: document.querySelector('#issue-count') as HTMLTableCellElement,
         issue_download_count: document.querySelector('#issue-download-count') as HTMLTableCellElement,
         file_count: document.querySelector('#file-count') as HTMLTableCellElement,
@@ -88,7 +102,9 @@ class LibraryEntry {
             monitored,
         })
             .then(() => {
-                const monitored_button = this.table_entry.querySelector('.table-monitored') as HTMLInputElement;
+                const monitored_button = this.table_entry.querySelector(
+                    '.table-monitored',
+                ) as HTMLInputElement;
 
                 monitored_button.onclick = () => new LibraryEntry(this.id, this.api_key)
                     .setMonitored(!monitored);
@@ -115,8 +131,11 @@ function populateLibrary(volumes: LibrarySearchResult[], api_key: string) {
     const space_taker = document.querySelector('.space-taker');
 
     volumes.forEach((volume) => {
-        const list_entry = pre_build_els.list_entry.cloneNode(true) as typeof pre_build_els.list_entry;
-        const table_entry = pre_build_els.table_entry.cloneNode(true) as typeof pre_build_els.table_entry;
+        const list_entry = pre_build_els.list_entry
+            .cloneNode(true) as typeof pre_build_els.list_entry;
+
+        const table_entry = pre_build_els.table_entry
+            .cloneNode(true) as typeof pre_build_els.table_entry;
 
         // Label
         const label = `View the volume ${volume.title} (${volume.year}) Volume ${volume.volume_number}`;
@@ -261,7 +280,8 @@ function runAction(api_key: string, action: string, args = {}) {
 
     const volume_ids = (Array.from(library_els.views.table.querySelectorAll(
         'input[type="checkbox"]:checked',
-    )) as HTMLInputElement[]).map((v) => parseInt((v.parentNode!.parentNode as HTMLElement).dataset.id!));
+    )) as HTMLInputElement[])
+        .map((v) => parseInt((v.parentNode!.parentNode as HTMLElement).dataset.id!));
 
     sendAPI('POST', '/masseditor', api_key, {}, {
         volume_ids,
@@ -337,7 +357,9 @@ usingApiKey().then((api_key) => {
     library_els.mass_edit.button.onclick = edit_action;
     library_els.mass_edit.cancel.onclick = edit_action;
 
-    (library_els.mass_edit.bar.querySelectorAll('.action-divider > button[data-action]') as NodeListOf<HTMLButtonElement>).forEach(
+    (library_els.mass_edit.bar.querySelectorAll(
+        '.action-divider > button[data-action]',
+    ) as NodeListOf<HTMLButtonElement>).forEach(
         (b) => {
             b.onclick = (e) => runAction(api_key, (e.target as HTMLElement).dataset.action!);
         },

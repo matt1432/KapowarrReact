@@ -41,7 +41,8 @@ function fillSettings(api_key: string) {
     fetchAPI('/settings', api_key).then((json) => {
         const result: Settings = json.result;
 
-        (document.querySelector('#download-folder-input') as HTMLInputElement).value = result.download_folder;
+        (document.querySelector('#download-folder-input') as HTMLInputElement).value = result
+            .download_folder;
 
         (document.querySelector('#concurrent-direct-downloads-input') as HTMLInputElement).value = result
             .concurrent_direct_downloads.toString();
@@ -50,7 +51,8 @@ function fillSettings(api_key: string) {
             ((result.failing_torrent_timeout || 0) / 60).toString()
         ) || '';
 
-        (document.querySelector('#seeding-handling-input') as HTMLInputElement).value = result.seeding_handling;
+        (document.querySelector('#seeding-handling-input') as HTMLInputElement).value = result
+            .seeding_handling;
 
         (document.querySelector('#delete-torrents-input') as HTMLInputElement).checked = result
             .delete_completed_torrents;
@@ -71,8 +73,12 @@ function saveSettings(api_key: string) {
             (document.querySelector('#torrent-timeout-input') as HTMLInputElement).value || '0',
         ) * 60,
         seeding_handling: (document.querySelector('#seeding-handling-input') as HTMLInputElement).value,
-        delete_completed_torrents: (document.querySelector('#delete-torrents-input') as HTMLInputElement).checked,
-        service_preference: Array.from((document.querySelectorAll('#pref-table select') as NodeListOf<HTMLInputElement>)).map((e) => e.value),
+        delete_completed_torrents: (document.querySelector(
+            '#delete-torrents-input',
+        ) as HTMLInputElement).checked,
+        service_preference: Array.from((document.querySelectorAll(
+            '#pref-table select',
+        ) as NodeListOf<HTMLInputElement>)).map((e) => e.value),
     };
 
     sendAPI('PUT', '/settings', api_key, {}, data)
@@ -82,6 +88,7 @@ function saveSettings(api_key: string) {
         .catch((e) => {
             (document.querySelector('#save-button p') as HTMLElement).innerText = 'Failed';
 
+            // eslint-disable-next-line
             e.json().then((e: any) => {
                 if (
                     (e.error === 'InvalidSettingValue' && e.result.key === 'download_folder') ||
@@ -141,7 +148,9 @@ function updatePrefOrder(e: Event) {
     for (const select of other_selects) {
         if (select.value === target.value) {
             // Set it to old value of target select
-            const all_values = Array.from((document.querySelector('#pref-table select') as HTMLSelectElement).options).map((s) => s.value);
+            const all_values = Array.from((document.querySelector(
+                '#pref-table select',
+            ) as HTMLSelectElement).options).map((s) => s.value);
             const used_values = new Set([
                 ...(Array.from(document.querySelectorAll('#pref-table select')) as HTMLSelectElement[]),
             ].map((s) => s.value));
@@ -157,5 +166,7 @@ usingApiKey().then((api_key) => {
     fillSettings(api_key);
 
     (document.querySelector('#save-button') as HTMLButtonElement).onclick = () => saveSettings(api_key);
-    (document.querySelector('#empty-download-folder') as HTMLButtonElement).onclick = () => emptyFolder(api_key);
+    (document.querySelector(
+        '#empty-download-folder',
+    ) as HTMLButtonElement).onclick = () => emptyFolder(api_key);
 });

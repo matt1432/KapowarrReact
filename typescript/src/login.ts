@@ -4,6 +4,7 @@ const url_base = (document.querySelector('#url_base') as HTMLInputElement).datas
 
 function redirect() {
     const parameters = new URLSearchParams(window.location.search);
+
     window.location.href = parameters.get('redirect') || `${url_base}/`;
 }
 

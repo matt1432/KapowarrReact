@@ -6,13 +6,21 @@ function fillSettings(api_key: string) {
         (document.querySelector('#bind-address-input') as HTMLInputElement).value = json.result.host;
         (document.querySelector('#port-input') as HTMLInputElement).value = json.result.port;
         (document.querySelector('#url-base-input') as HTMLInputElement).value = json.result.url_base;
-        (document.querySelector('#password-input') as HTMLInputElement).value = json.result.auth_password;
-        (document.querySelector('#api-input') as HTMLInputElement).value = api_key;
+        (document.querySelector(
+            '#password-input',
+        ) as HTMLInputElement).value = json.result.auth_password;
+        (document.querySelector(
+            '#api-input',
+        ) as HTMLInputElement).value = api_key;
         (document.querySelector('#cv-input') as HTMLInputElement).value = json.result.comicvine_api_key;
-        (document.querySelector('#flaresolverr-input') as HTMLInputElement).value = json.result.flaresolverr_base_url;
+        (document.querySelector(
+            '#flaresolverr-input',
+        ) as HTMLInputElement).value = json.result.flaresolverr_base_url;
         (document.querySelector('#log-level-input') as HTMLInputElement).value = json.result.log_level;
     });
-    (document.querySelector('#theme-input') as HTMLInputElement).value = getLocalStorage('theme')['theme'];
+    (document.querySelector(
+        '#theme-input',
+    ) as HTMLInputElement).value = getLocalStorage('theme')['theme'];
 };
 
 function saveSettings(api_key: string) {
@@ -48,7 +56,9 @@ function saveSettings(api_key: string) {
                 e.error === 'InvalidSettingValue' &&
                 e.result.key === 'flaresolverr_base_url'
             ) {
-                (document.querySelector('#flaresolverr-input') as HTMLElement).classList.add('error-input');
+                (document.querySelector(
+                    '#flaresolverr-input',
+                ) as HTMLElement).classList.add('error-input');
             }
 
             else {

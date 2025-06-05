@@ -104,7 +104,8 @@ function buildResults(results: VolumeMetadata[], api_key: string) {
             e.remove();
         });
     results.forEach((result) => {
-        const entry = SearchEls.pre_build.search_entry.cloneNode(true) as typeof SearchEls.pre_build.search_entry;
+        const entry = SearchEls.pre_build.search_entry
+            .cloneNode(true) as typeof SearchEls.pre_build.search_entry;
 
         const _title =
             result.year !== null ?
@@ -555,9 +556,9 @@ export function addVolume() {
         sendAPI('POST', '/volumes', api_key, {}, data)
             .then((response) => response?.json())
             .then((json) => {
-                const entry = (document.querySelector(
+                const entry = document.querySelector(
                     `button[data-comicvine_id="${data.comicvine_id}"]`,
-                ) as HTMLButtonElement);
+                ) as HTMLButtonElement;
 
                 addAlreadyAdded(entry, json.result.id);
                 WindowFuncs.closeWindow();

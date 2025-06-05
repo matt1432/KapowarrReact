@@ -81,7 +81,8 @@ function updateQueueEntry(obj: DownloadDict) {
 
     tr.dataset.status = obj.status;
 
-    (tr.querySelector('td:nth-child(1)') as HTMLElement).innerText = obj.status.charAt(0).toUpperCase() + obj.status.slice(1);
+    (tr.querySelector('td:nth-child(1)') as HTMLElement).innerText = obj.status
+        .charAt(0).toUpperCase() + obj.status.slice(1);
 
     (tr.querySelector('td:nth-child(4)') as HTMLElement).innerText = convertSize(obj.size);
 

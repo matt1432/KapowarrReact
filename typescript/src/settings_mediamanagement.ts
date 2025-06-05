@@ -4,7 +4,9 @@ import { url_base, hide, fetchAPI, sendAPI, convertSize } from './general.js';
 
 const inputs = {
     renaming_input: document.querySelector('#renaming-input') as HTMLInputElement,
-    volume_folder_naming_input: document.querySelector('#volume-folder-naming-input') as HTMLInputElement,
+    volume_folder_naming_input: document.querySelector(
+        '#volume-folder-naming-input',
+    ) as HTMLInputElement,
     file_naming_input: document.querySelector('#file-naming-input') as HTMLInputElement,
     file_naming_empty_input: document.querySelector('#file-naming-empty-input') as HTMLInputElement,
     file_naming_sv_input: document.querySelector('#file-naming-sv-input') as HTMLInputElement,
@@ -49,7 +51,9 @@ function saveSettings(api_key: string) {
     inputs.file_naming_vai_input.classList.remove('error-input');
     const data = {
         rename_downloaded_files: (document.querySelector('#renaming-input') as HTMLInputElement).checked,
-        volume_folder_naming: (document.querySelector('#volume-folder-naming-input') as HTMLInputElement).value,
+        volume_folder_naming: (document.querySelector(
+            '#volume-folder-naming-input',
+        ) as HTMLInputElement).value,
         file_naming: inputs.file_naming_input.value,
         file_naming_empty: inputs.file_naming_empty_input.value,
         file_naming_special_version: inputs.file_naming_sv_input.value,
@@ -68,6 +72,7 @@ function saveSettings(api_key: string) {
         })
         .catch((ev) => {
             (document.querySelector('#save-button p') as HTMLElement).innerText = 'Failed';
+            // eslint-disable-next-line
             ev.json().then((e: any) => {
                 if (e.error === 'InvalidSettingValue') {
                     if (e.result.key === 'volume_folder_naming') {
@@ -156,7 +161,7 @@ function updateConvertList() {
             )[0];
 
             const used_values = new Set(Array.from(
-                table.querySelectorAll('tr[data-place] select') as NodeListOf<HTMLSelectElement>
+                table.querySelectorAll('tr[data-place] select') as NodeListOf<HTMLSelectElement>,
             ).map((el) => el.value));
             const missing_value = convert_preference
                 .filter((f) => !used_values.has(f))[0];
@@ -353,7 +358,9 @@ function toggleEditRootFolder(id: number) {
         [],
     );
 
-    const input = document.querySelector(`#root-folder-list tr[data-id="${id}"] input`) as HTMLInputElement;
+    const input = document.querySelector(
+        `#root-folder-list tr[data-id="${id}"] input`,
+    ) as HTMLInputElement;
 
     if (input.readOnly) {
         input.readOnly = false;
@@ -375,7 +382,9 @@ function deleteRootFolder(id: number, api_key: string) {
 
                 message.classList.add('error');
                 message.innerText = 'Root folder is still in use by a volume';
-                (document.querySelector(`tr[data-id="${id}"] > :nth-child(1)`) as HTMLElement).appendChild(message);
+                (document.querySelector(
+                    `tr[data-id="${id}"] > :nth-child(1)`,
+                ) as HTMLElement).appendChild(message);
             };
         });
 };

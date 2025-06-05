@@ -1,15 +1,15 @@
 import usingApiKey from './auth.js';
 
-import WindowFuncs from './window.js'
+import WindowFuncs from './window.js';
 import { hide, fetchAPI, sendAPI } from './general.js';
 
 /* Types */
 import { type VolumeMetadata } from './add_volume.js';
 interface ComicVineResult {
-    id: VolumeMetadata["comicvine_id"],
+    id: VolumeMetadata['comicvine_id']
     title: string
-    issue_count: VolumeMetadata["issue_count"]
-    link: VolumeMetadata["site_url"]
+    issue_count: VolumeMetadata['issue_count']
+    link: VolumeMetadata['site_url']
 }
 
 interface ProposedImport {
@@ -73,7 +73,8 @@ function loadProposal(api_key: string) {
     fetchAPI('/libraryimport', api_key, params)
         .then((json) => {
             (json.result as ProposedImport[]).forEach((result, rowid) => {
-                const entry = LIEls.pre_build.li_result.cloneNode(true) as typeof LIEls.pre_build.li_result;
+                const entry = LIEls.pre_build.li_result
+                    .cloneNode(true) as typeof LIEls.pre_build.li_result;
 
                 entry.dataset.rowid = rowid.toString();
                 entry.dataset.group_number = result.group_number.toString();
@@ -92,7 +93,8 @@ function loadProposal(api_key: string) {
                 CV_link.href = result.cv.link || '';
                 CV_link.innerText = result.cv.title || '';
 
-                (entry.querySelector('.issue-count') as HTMLElement).innerText = result.cv.issue_count.toString();
+                (entry.querySelector('.issue-count') as HTMLElement)
+                    .innerText = result.cv.issue_count.toString();
 
                 entry.querySelector('button')!.onclick = () => openEditCVMatch(rowid);
 
@@ -107,7 +109,7 @@ function loadProposal(api_key: string) {
             }
         })
         .catch((e) => {
-            e.json().then((j: {error: string}) => {
+            e.json().then((j: { error: string }) => {
                 if (j.error === 'InvalidComicVineApiKey') {
                     hide([LIEls.views.loading], [LIEls.views.no_cv]);
                 }
@@ -127,7 +129,9 @@ function loadProposal(api_key: string) {
 function toggleSelectAll() {
     const checked = LIEls.select_all.checked;
 
-    (LIEls.proposal_list.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>).forEach(
+    (LIEls.proposal_list.querySelectorAll(
+        'input[type="checkbox"]',
+    ) as NodeListOf<HTMLInputElement>).forEach(
         (e) => {
             e.checked = checked;
         },
@@ -181,14 +185,16 @@ export function searchCV() {
 
         fetchAPI('/volumes/search', api_key, { query: input.value }).then((json) => {
             json.result.forEach((result: VolumeMetadata) => {
-                const entry = LIEls.pre_build.search_result.cloneNode(true) as typeof LIEls.pre_build.search_result;
+                const entry = LIEls.pre_build.search_result
+                    .cloneNode(true) as typeof LIEls.pre_build.search_result;
 
                 const title = entry.querySelector('td:nth-child(1) a') as HTMLAnchorElement;
 
                 title.href = result.site_url;
                 title.innerText = `${result.title} (${result.year})`;
 
-                (entry.querySelector('td:nth-child(2)') as HTMLElement).innerText = result.issue_count.toString();
+                (entry.querySelector('td:nth-child(2)') as HTMLElement)
+                    .innerText = result.issue_count.toString();
 
                 const select_button = entry.querySelector('td:nth-child(3) button') as HTMLButtonElement;
 
@@ -204,11 +210,14 @@ export function searchCV() {
                     WindowFuncs.closeWindow();
                 };
 
-                const select_for_all_button = entry.querySelector('td:nth-child(4) button') as HTMLButtonElement;
+                const select_for_all_button = entry.querySelector(
+                    'td:nth-child(4) button',
+                ) as HTMLButtonElement;
 
                 select_for_all_button.onclick = () => {
                     const rowid = LIEls.search.window.dataset.rowid;
-                    const group_number = parseInt((document.querySelector(`tr[data-rowid="${rowid}"]`) as HTMLInputElement)
+                    const group_number = parseInt((document
+                        .querySelector(`tr[data-rowid="${rowid}"]`) as HTMLInputElement)
                         .dataset.group_number!);
 
                     editCVMatch(
