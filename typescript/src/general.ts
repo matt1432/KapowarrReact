@@ -1,30 +1,39 @@
-// @ts-nocheck
+/** @import { io } from 'socket.io-client'; */
+
 import usingApiKey from './auth.js';
 
-export const url_base = document.querySelector('#url_base').dataset.value;
-export const volume_id = parseInt(window.location.pathname.split('/').at(-1)) || null;
+/* Types */
+export interface Task {
+    stop: boolean
+    message: string
+    action: string
+    display_title: string
+    category: string
+    volume_id: number | null
+    issue_id: number | null
+}
+
+export const url_base = (document.querySelector('#url_base') as HTMLButtonElement).dataset.value;
+export const volume_id = parseInt(window.location.pathname.split('/').at(-1)!) || null;
 
 //
 // General functions
 //
-export function twoDigits(n) {
+export function twoDigits(n: number) {
     return n.toLocaleString('en', { minimumFractionDigits: 2 });
 };
 
-// eslint-disable-next-line
-export function setIcon(container, icon, title = '') {
+export function setIcon(container: HTMLElement, icon: string, title = '') {
     container.title = title;
     container.innerHTML = icon;
 };
 
-// eslint-disable-next-line
-export function setImage(container, img, title = '') {
+export function setImage(container: HTMLElement, img: string, title = '') {
     container.title = title;
-    container.querySelector('img').src = `${url_base}/static/img/${img}`;
+    container.querySelector('img')!.src = `${url_base}/static/img/${img}`;
 };
 
-// eslint-disable-next-line
-export function hide(to_hide, to_show = null) {
+export function hide(to_hide: HTMLElement[], to_show: HTMLElement[] | null = null) {
     to_hide.forEach((el) => {
         el.classList.add('hidden');
     });
@@ -36,8 +45,7 @@ export function hide(to_hide, to_show = null) {
     }
 };
 
-// eslint-disable-next-line
-export async function fetchAPI(endpoint, api_key, params = {}, json_return = true) {
+export async function fetchAPI(endpoint: string, api_key: string, params = {}, json_return = true) {
     let formatted_params = '';
 
     if (Object.keys(params).length) {
@@ -67,8 +75,7 @@ export async function fetchAPI(endpoint, api_key, params = {}, json_return = tru
         });
 };
 
-// eslint-disable-next-line
-export async function sendAPI(method, endpoint, api_key, params = {}, body = {}) {
+export async function sendAPI(method: string, endpoint: string, api_key: string, params = {}, body = {}) {
     let formatted_params = '';
 
     if (Object.keys(params).length) {
@@ -101,13 +108,11 @@ export async function sendAPI(method, endpoint, api_key, params = {}, body = {})
 //
 // Icons
 //
-// eslint-disable-next-line
 export const icons = {
     monitored: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" version="1.1" width="256" height="256" x="0" y="0" viewBox="0 0 24 24" style="enable-background:new 0 0 512 512" xml:space="preserve"><g><path d="M2.849,23.55a2.954,2.954,0,0,0,3.266-.644L12,17.053l5.885,5.853a2.956,2.956,0,0,0,2.1.881,3.05,3.05,0,0,0,1.17-.237A2.953,2.953,0,0,0,23,20.779V5a5.006,5.006,0,0,0-5-5H6A5.006,5.006,0,0,0,1,5V20.779A2.953,2.953,0,0,0,2.849,23.55Z"/></g></svg>',
     unmonitored: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" version="1.1" width="256" height="256" x="0" y="0" viewBox="0 0 24 24" style="enable-background:new 0 0 512 512" xml:space="preserve"><g><path d="M20.137,24a2.8,2.8,0,0,1-1.987-.835L12,17.051,5.85,23.169a2.8,2.8,0,0,1-3.095.609A2.8,2.8,0,0,1,1,21.154V5A5,5,0,0,1,6,0H18a5,5,0,0,1,5,5V21.154a2.8,2.8,0,0,1-1.751,2.624A2.867,2.867,0,0,1,20.137,24ZM6,2A3,3,0,0,0,3,5V21.154a.843.843,0,0,0,1.437.6h0L11.3,14.933a1,1,0,0,1,1.41,0l6.855,6.819a.843.843,0,0,0,1.437-.6V5a3,3,0,0,0-3-3Z"/></g></svg>',
 };
 
-// eslint-disable-next-line
 export const images = {
     check: 'check.svg',
     cancel: 'cancel.svg',
@@ -118,9 +123,9 @@ export const images = {
 //
 export const task_to_button = {};
 
-export function mapButtons(id) {
+export function mapButtons(id: number | null) {
     if (window.location.pathname === '/' ||
-      window.location.pathname === (`${url_base}/`)) {
+        window.location.pathname === (`${url_base}/`)) {
         task_to_button['search_all'] = {
             button: document.querySelector('#searchall-button'),
             icon: `${url_base}/static/img/search.svg`,
@@ -154,7 +159,7 @@ export function mapButtons(id) {
             loading_icon: `${url_base}/static/img/loading.svg`,
         };
 
-        document.querySelectorAll('.issue-entry').forEach((entry) => {
+        (document.querySelectorAll('.issue-entry') as NodeListOf<HTMLButtonElement>).forEach((entry) => {
             task_to_button[`auto_search_issue#${id}#${entry.dataset.id}`] = {
                 button: entry.querySelector('.action-column > button:first-child'),
                 icon: `${url_base}/static/img/search.svg`,
@@ -169,7 +174,7 @@ export function mapButtons(id) {
     };
 };
 
-export function buildTaskString(task) {
+export function buildTaskString(task: Task) {
     let task_string = task.action;
 
     if (task.volume_id !== null) {
@@ -182,8 +187,8 @@ export function buildTaskString(task) {
     return task_string;
 };
 
-export function setTaskMessage(message) {
-    const table = document.querySelector('#task-queue');
+export function setTaskMessage(message: string) {
+    const table = document.querySelector('#task-queue')!;
 
     table.innerHTML = '';
     if (message !== '') {
@@ -194,7 +199,7 @@ export function setTaskMessage(message) {
     };
 };
 
-export function spinButton(task_string) {
+export function spinButton(task_string: string) {
     const button_info = task_to_button[task_string];
     const icon = button_info.button.querySelector('img');
 
@@ -206,7 +211,7 @@ export function spinButton(task_string) {
     icon.classList.add('spinning');
 };
 
-export function unspinButton(task_string) {
+export function unspinButton(task_string: string) {
     const button_info = task_to_button[task_string];
     const icon = button_info.button.querySelector('img');
 
@@ -218,7 +223,7 @@ export function unspinButton(task_string) {
     icon.classList.remove('spinning');
 };
 
-export function fillTaskQueue(api_key) {
+export function fillTaskQueue(api_key: string) {
     fetch(`${url_base}/api/system/tasks?api_key=${api_key}`, {
         priority: 'low',
     })
@@ -231,7 +236,7 @@ export function fillTaskQueue(api_key) {
         })
         .then((json) => {
             setTaskMessage(json.result[0].message);
-            json.result.forEach((task) => {
+            (json.result as Task[]).forEach((task) => {
                 const task_string = buildTaskString(task);
 
                 if (task_string in task_to_button) {
@@ -247,7 +252,7 @@ export function fillTaskQueue(api_key) {
         });
 };
 
-export function handleTaskAdded(data) {
+export function handleTaskAdded(data: Task) {
     const task_string = buildTaskString(data);
 
     if (task_string in task_to_button) {
@@ -255,7 +260,7 @@ export function handleTaskAdded(data) {
     }
 };
 
-export function handleTaskRemoved(data) {
+export function handleTaskRemoved(data: Task) {
     setTaskMessage('');
 
     const task_string = buildTaskString(data);
@@ -266,6 +271,7 @@ export function handleTaskRemoved(data) {
 };
 
 export function connectToWebSocket() {
+    // @ts-expect-error
     const socket = io({
         path: `${url_base}/api/socket.io`,
         transports: ['polling'],
@@ -281,7 +287,7 @@ export function connectToWebSocket() {
 
     socket.on('task_added', handleTaskAdded);
     socket.on('task_ended', handleTaskRemoved);
-    socket.on('task_status', (data) => setTaskMessage(data.message));
+    socket.on('task_status', (data: Task) => setTaskMessage(data.message));
     socket.connect();
 
     return socket;
@@ -298,8 +304,7 @@ export const sizes = {
     TB: 1000000000000,
 };
 
-// eslint-disable-next-line
-export function convertSize(size) {
+export function convertSize(size: number | null) {
     if (size === null || size <= 0) {
         return 'Unknown';
     }
@@ -308,15 +313,11 @@ export function convertSize(size) {
         const resulting_size = size / division_size;
 
         if (0 <= resulting_size && resulting_size <= 1000) {
-            size = `${twoDigits(Math.round((size / division_size * 100)) / 100)} ${term}`;
-
-            return size;
+            return `${twoDigits(Math.round((size / division_size * 100)) / 100)} ${term}`;
         };
     };
 
-    size = `${(Math.round((size / sizes.TB * 100)) / 100).toString()} TB`;
-
-    return size;
+    return `${(Math.round((size / sizes.TB * 100)) / 100).toString()} TB`;
 };
 
 //
@@ -343,10 +344,10 @@ export function setupLocalStorage() {
     const missing_keys = [
         ...Object.keys(default_values),
     ].filter((e) =>
-        ![...Object.keys(JSON.parse(localStorage.getItem('kapowarr')))].includes(e));
+        ![...Object.keys(JSON.parse(localStorage.getItem('kapowarr') ?? ''))].includes(e));
 
     if (missing_keys.length) {
-        const storage = JSON.parse(localStorage.getItem('kapowarr'));
+        const storage = JSON.parse(localStorage.getItem('kapowarr') ?? '');
 
         missing_keys.forEach((missing_key) => {
             storage[missing_key] = default_values[missing_key];
@@ -356,9 +357,9 @@ export function setupLocalStorage() {
     };
 };
 
-export function getLocalStorage(...keys) {
-    const storage = JSON.parse(localStorage.getItem('kapowarr'));
-    const result = {};
+export function getLocalStorage(...keys: string[]) {
+    const storage = JSON.parse(localStorage.getItem('kapowarr') ?? '');
+    const result = {} as Record<string, string>;
 
     for (const key of keys) {
         result[key] = storage[key];
@@ -367,8 +368,8 @@ export function getLocalStorage(...keys) {
     return result;
 };
 
-export function setLocalStorage(keys_values) {
-    const storage = JSON.parse(localStorage.getItem('kapowarr'));
+export function setLocalStorage(keys_values: Record<string, string | boolean | null>) {
+    const storage = JSON.parse(localStorage.getItem('kapowarr') ?? '');
 
     for (const [key, value] of Object.entries(keys_values)) {
         storage[key] = value;
@@ -388,11 +389,10 @@ usingApiKey()
 
 setupLocalStorage();
 if (getLocalStorage('theme')['theme'] === 'dark') {
-    document.querySelector(':root').classList.add('dark-mode');
+    document.querySelector(':root')?.classList.add('dark-mode');
 }
 
-// eslint-disable-next-line
 export const socket = connectToWebSocket();
 
-document.querySelector('#toggle-nav').onclick = () =>
-    document.querySelector('#nav-bar').classList.toggle('show-nav');
+(document.querySelector('#toggle-nav') as HTMLButtonElement).onclick = () =>
+    document.querySelector('#nav-bar')?.classList.toggle('show-nav');

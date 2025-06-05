@@ -1,51 +1,93 @@
-// @ts-nocheck
 import usingApiKey from './auth.js';
-import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
+import { fetchAPI, sendAPI } from './general.js';
 
-function fillSettings(api_key) {
-    fetchAPI('/settings', api_key)
-        .then((json) => {
-            document.querySelector('#download-folder-input').value = json.result.download_folder;
-            document.querySelector('#concurrent-direct-downloads-input').value = json.result
-                .concurrent_direct_downloads;
-            document.querySelector('#torrent-timeout-input').value = (
-                (json.result.failing_torrent_timeout || 0) / 60
-            ) || '';
-            document.querySelector('#seeding-handling-input').value = json.result.seeding_handling;
-            document.querySelector('#delete-torrents-input').checked = json.result
-                .delete_completed_torrents;
-            fillPref(json.result.service_preference);
-        });
+/* Types */
+export interface Settings {
+    database_version: number
+    log_level: number
+    auth_password: string
+    comicvine_api_key: string
+    api_key: string
+    host: string
+    port: number
+    url_base: string
+    backup_host: string
+    backup_port: number
+    backup_url_base: string
+    rename_downloaded_files: boolean
+    volume_folder_naming: string
+    file_naming: string
+    file_naming_empty: string
+    file_naming_special_version: string
+    file_naming_vai: string
+    long_special_version: boolean
+    volume_padding: number
+    issue_padding: number
+    service_preference: string[]
+    download_folder: string
+    concurrent_direct_downloads: number
+    failing_torrent_timeout: number
+    seeding_handling: string
+    delete_completed_torrents: boolean
+    convert: boolean
+    extract_issue_ranges: boolean
+    format_preference: string[]
+    flaresolverr_base_url: string
+    enable_getcomics: boolean
+    enable_libgen: boolean
+}
+
+function fillSettings(api_key: string) {
+    fetchAPI('/settings', api_key).then((json) => {
+        const result: Settings = json.result;
+
+        (document.querySelector('#download-folder-input') as HTMLInputElement).value = result.download_folder;
+
+        (document.querySelector('#concurrent-direct-downloads-input') as HTMLInputElement).value = result
+            .concurrent_direct_downloads.toString();
+
+        (document.querySelector('#torrent-timeout-input') as HTMLInputElement).value = (
+            ((result.failing_torrent_timeout || 0) / 60).toString()
+        ) || '';
+
+        (document.querySelector('#seeding-handling-input') as HTMLInputElement).value = result.seeding_handling;
+
+        (document.querySelector('#delete-torrents-input') as HTMLInputElement).checked = result
+            .delete_completed_torrents;
+
+        fillPref(result.service_preference);
+    });
 };
 
-function saveSettings(api_key) {
-    document.querySelector('#save-button p').innerText = 'Saving';
-    document.querySelector('#download-folder-input').classList.remove('error-input');
+function saveSettings(api_key: string) {
+    (document.querySelector('#save-button p') as HTMLElement).innerText = 'Saving';
+    document.querySelector('#download-folder-input')?.classList.remove('error-input');
     const data = {
-        download_folder: document.querySelector('#download-folder-input').value,
+        download_folder: (document.querySelector('#download-folder-input') as HTMLInputElement).value,
         concurrent_direct_downloads: parseInt(
-            document.querySelector('#concurrent-direct-downloads-input').value,
+            (document.querySelector('#concurrent-direct-downloads-input') as HTMLInputElement).value,
         ),
         failing_torrent_timeout: parseInt(
-            document.querySelector('#torrent-timeout-input').value || 0,
+            (document.querySelector('#torrent-timeout-input') as HTMLInputElement).value || '0',
         ) * 60,
-        seeding_handling: document.querySelector('#seeding-handling-input').value,
-        delete_completed_torrents: document.querySelector('#delete-torrents-input').checked,
-        service_preference: [...document.querySelectorAll('#pref-table select')].map((e) => e.value),
+        seeding_handling: (document.querySelector('#seeding-handling-input') as HTMLInputElement).value,
+        delete_completed_torrents: (document.querySelector('#delete-torrents-input') as HTMLInputElement).checked,
+        service_preference: Array.from((document.querySelectorAll('#pref-table select') as NodeListOf<HTMLInputElement>)).map((e) => e.value),
     };
 
     sendAPI('PUT', '/settings', api_key, {}, data)
         .then(() => {
-            document.querySelector('#save-button p').innerText = 'Saved';
+            (document.querySelector('#save-button p') as HTMLElement).innerText = 'Saved';
         })
-        .catch(() => {
-            document.querySelector('#save-button p').innerText = 'Failed';
-            e.json().then((e) => {
+        .catch((e) => {
+            (document.querySelector('#save-button p') as HTMLElement).innerText = 'Failed';
+
+            e.json().then((e: any) => {
                 if (
                     (e.error === 'InvalidSettingValue' && e.result.key === 'download_folder') ||
                     e.error === 'FolderNotFound'
                 ) {
-                    document.querySelector('#download-folder-input').classList.add('error-input');
+                    document.querySelector('#download-folder-input')?.classList.add('error-input');
                 }
 
                 else {
@@ -58,23 +100,24 @@ function saveSettings(api_key) {
 //
 // Empty download folder
 //
-function emptyFolder(api_key) {
+function emptyFolder(api_key: string) {
     sendAPI('DELETE', '/activity/folder', api_key).then(() => {
-        document.querySelector('#empty-download-folder').innerText = 'Done';
+        (document.querySelector('#empty-download-folder') as HTMLButtonElement).innerText = 'Done';
     });
 };
 
 //
 // Service preference
 //
-function fillPref(pref) {
-    const selects = document.querySelectorAll('#pref-table select');
+function fillPref(pref: string[]) {
+    const selects = document.querySelectorAll('#pref-table select') as NodeListOf<HTMLSelectElement>;
 
     for (let i = 0; i < pref.length; i++) {
         const service = pref[i];
         const select = selects[i];
 
         select.onchange = updatePrefOrder;
+
         pref.forEach((option) => {
             const entry = document.createElement('option');
 
@@ -88,34 +131,31 @@ function fillPref(pref) {
     };
 };
 
-function updatePrefOrder(e) {
-    const other_selects = document.querySelectorAll(
-        `#pref-table select:not([data-place="${e.target.dataset.place}"])`,
-    );
+function updatePrefOrder(e: Event) {
+    const target = e.target as HTMLInputElement;
+    const other_selects = Array.from(document.querySelectorAll(
+        `#pref-table select:not([data-place="${target.dataset.place}"])`,
+    )) as HTMLSelectElement[];
 
     // Find select that has the value of the target select
     for (const select of other_selects) {
-        if (select.value === e.target.value) {
+        if (select.value === target.value) {
             // Set it to old value of target select
-            all_values = [...document.querySelector('#pref-table select').options].map((s) => s.value);
-            used_values = new Set([
-                ...document.querySelectorAll('#pref-table select'),
+            const all_values = Array.from((document.querySelector('#pref-table select') as HTMLSelectElement).options).map((s) => s.value);
+            const used_values = new Set([
+                ...(Array.from(document.querySelectorAll('#pref-table select')) as HTMLSelectElement[]),
             ].map((s) => s.value));
 
-            open_value = all_values.filter((v) => !used_values.has(v))[0];
-            select.value = open_value;
+            select.value = all_values.filter((v) => !used_values.has(v))[0];
             break;
         };
     };
 };
 
 // code run on load
-usingApiKey()
-    .then((api_key) => {
-        fillSettings(api_key);
+usingApiKey().then((api_key) => {
+    fillSettings(api_key);
 
-        document.querySelector('#save-button').onclick = () => saveSettings(api_key);
-        document.querySelector('#empty-download-folder').onclick = () => emptyFolder(api_key);
-    });
-
-export {};
+    (document.querySelector('#save-button') as HTMLButtonElement).onclick = () => saveSettings(api_key);
+    (document.querySelector('#empty-download-folder') as HTMLButtonElement).onclick = () => emptyFolder(api_key);
+});

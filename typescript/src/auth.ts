@@ -1,9 +1,7 @@
-// @ts-nocheck
-import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
+import { url_base } from './general.js';
 
-// eslint-disable-next-line
 export default async function usingApiKey(redirect = true) {
-    const key_data = JSON.parse(localStorage.getItem('kapowarr'));
+    const key_data = JSON.parse(localStorage.getItem('kapowarr') ?? '');
 
     if (key_data.api_key === null || (key_data.last_login < (Date.now() / 1000 - 86400))) {
         return fetch(`${url_base}/api/auth`, {

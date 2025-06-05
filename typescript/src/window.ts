@@ -1,45 +1,41 @@
-// @ts-nocheck
-import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
-
-// eslint-disable-next-line
-function showWindow(id) {
+function showWindow(id: string) {
     // Deselect all windows
     document.querySelectorAll('.window > section').forEach((window) => {
         window.removeAttribute('show-window');
     });
 
     // Select the correct window
-    document.querySelector(`.window > section#${id}`).setAttribute('show-window', '');
+    document.querySelector(`.window > section#${id}`)?.setAttribute('show-window', '');
 
     // Show the window
-    document.querySelector('.window').setAttribute('show-window', '');
+    document.querySelector('.window')?.setAttribute('show-window', '');
 };
 
-// eslint-disable-next-line
-function showLoadWindow(id) {
+function showLoadWindow(id: string) {
     // Deselect all windows
     document.querySelectorAll('.window > section').forEach((window) => {
         window.removeAttribute('show-window');
     });
 
     // Select the correct window
-    const loading_window = document.querySelector(`.window > section#${id}`).dataset.loading_window;
+    // @ts-ignore
+    const loading_window = document.querySelector(`.window > section#${id}`)?.dataset.loading_window;
 
     if (loading_window) {
-        document.querySelector(`.window > section#${loading_window}`).setAttribute('show-window', '');
+        document.querySelector(`.window > section#${loading_window}`)?.setAttribute('show-window', '');
     }
 
     // Show the window
-    document.querySelector('.window').setAttribute('show-window', '');
+    document.querySelector('.window')?.setAttribute('show-window', '');
 };
 
 function closeWindow() {
-    document.querySelector('.window').removeAttribute('show-window');
+    document.querySelector('.window')?.removeAttribute('show-window');
 };
 
 // code run on load
 
-document.querySelector('body').onkeydown = (e) => {
+document.body.onkeydown = (e) => {
     if (
         e.code === 'Escape' &&
         document.querySelector('.window[show-window]')
@@ -49,20 +45,20 @@ document.querySelector('body').onkeydown = (e) => {
     };
 };
 
-document.querySelector('.window').onclick = (e) => {
+(document.querySelector('.window') as HTMLButtonElement).onclick = (e) => {
     e.stopImmediatePropagation();
     closeWindow();
 };
 
-document.querySelectorAll('.window > section').forEach(
+(document.querySelectorAll('.window > section') as NodeListOf<HTMLButtonElement>).forEach(
     (el) => {
         el.onclick = (e) => e.stopImmediatePropagation();
     },
 );
 
-document.querySelectorAll(
+(document.querySelectorAll(
     '.window > section :where(button[title="Cancel"], button.cancel-window)',
-).forEach((e) => {
+) as NodeListOf<HTMLButtonElement>).forEach((e) => {
     e.onclick = () => closeWindow();
 });
 

@@ -8,7 +8,8 @@
       "ESNext"
     ],
     // Modules
-    "module": "esnext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,

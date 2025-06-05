@@ -1,54 +1,54 @@
-// @ts-nocheck
 import usingApiKey from './auth.js';
-import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
+import { url_base, fetchAPI, sendAPI, getLocalStorage, setLocalStorage } from './general.js';
 
-function fillSettings(api_key) {
+function fillSettings(api_key: string) {
     fetchAPI('/settings', api_key).then((json) => {
-        document.querySelector('#bind-address-input').value = json.result.host;
-        document.querySelector('#port-input').value = json.result.port;
-        document.querySelector('#url-base-input').value = json.result.url_base;
-        document.querySelector('#password-input').value = json.result.auth_password;
-        document.querySelector('#api-input').value = api_key;
-        document.querySelector('#cv-input').value = json.result.comicvine_api_key;
-        document.querySelector('#flaresolverr-input').value = json.result.flaresolverr_base_url;
-        document.querySelector('#log-level-input').value = json.result.log_level;
+        (document.querySelector('#bind-address-input') as HTMLInputElement).value = json.result.host;
+        (document.querySelector('#port-input') as HTMLInputElement).value = json.result.port;
+        (document.querySelector('#url-base-input') as HTMLInputElement).value = json.result.url_base;
+        (document.querySelector('#password-input') as HTMLInputElement).value = json.result.auth_password;
+        (document.querySelector('#api-input') as HTMLInputElement).value = api_key;
+        (document.querySelector('#cv-input') as HTMLInputElement).value = json.result.comicvine_api_key;
+        (document.querySelector('#flaresolverr-input') as HTMLInputElement).value = json.result.flaresolverr_base_url;
+        (document.querySelector('#log-level-input') as HTMLInputElement).value = json.result.log_level;
     });
-    document.querySelector('#theme-input').value = getLocalStorage('theme')['theme'];
+    (document.querySelector('#theme-input') as HTMLInputElement).value = getLocalStorage('theme')['theme'];
 };
 
-function saveSettings(api_key) {
-    document.querySelector('#save-button p').innerText = 'Saving';
-    document.querySelector('#cv-input').classList.remove('error-input');
-    document.querySelector('#flaresolverr-input').classList.remove('error-input');
+function saveSettings(api_key: string) {
+    (document.querySelector('#save-button p') as HTMLElement).innerText = 'Saving';
+    (document.querySelector('#cv-input') as HTMLElement).classList.remove('error-input');
+    (document.querySelector('#flaresolverr-input') as HTMLElement).classList.remove('error-input');
+
     const data = {
-        host: document.querySelector('#bind-address-input').value,
-        port: parseInt(document.querySelector('#port-input').value),
-        url_base: document.querySelector('#url-base-input').value,
-        auth_password: document.querySelector('#password-input').value,
-        comicvine_api_key: document.querySelector('#cv-input').value,
-        flaresolverr_base_url: document.querySelector('#flaresolverr-input').value,
-        log_level: parseInt(document.querySelector('#log-level-input').value),
+        host: (document.querySelector('#bind-address-input') as HTMLInputElement).value,
+        port: parseInt((document.querySelector('#port-input') as HTMLInputElement).value),
+        url_base: (document.querySelector('#url-base-input') as HTMLInputElement).value,
+        auth_password: (document.querySelector('#password-input') as HTMLInputElement).value,
+        comicvine_api_key: (document.querySelector('#cv-input') as HTMLInputElement).value,
+        flaresolverr_base_url: (document.querySelector('#flaresolverr-input') as HTMLInputElement).value,
+        log_level: parseInt((document.querySelector('#log-level-input') as HTMLInputElement).value),
     };
 
     sendAPI('PUT', '/settings', api_key, {}, data)
-        .then((response) => response.json())
+        .then((response) => response?.json())
         .then((json) => {
             if (json.error !== null) {
                 return Promise.reject(json);
             }
-            document.querySelector('#save-button p').innerText = 'Saved';
+            (document.querySelector('#save-button p') as HTMLElement).innerText = 'Saved';
         })
         .catch((e) => {
-            document.querySelector('#save-button p').innerText = 'Failed';
+            (document.querySelector('#save-button p') as HTMLElement).innerText = 'Failed';
             if (e.error === 'InvalidComicVineApiKey') {
-                document.querySelector('#cv-input').classList.add('error-input');
+                (document.querySelector('#cv-input') as HTMLElement).classList.add('error-input');
             }
 
             else if (
                 e.error === 'InvalidSettingValue' &&
                 e.result.key === 'flaresolverr_base_url'
             ) {
-                document.querySelector('#flaresolverr-input').classList.add('error-input');
+                (document.querySelector('#flaresolverr-input') as HTMLElement).classList.add('error-input');
             }
 
             else {
@@ -57,36 +57,35 @@ function saveSettings(api_key) {
         });
 };
 
-function generateApiKey(api_key) {
+function generateApiKey(api_key: string) {
     sendAPI('POST', '/settings/api_key', api_key)
-        .then((response) => response.json())
+        .then((response) => response?.json())
         .then((json) => {
             setLocalStorage({ api_key: json.result.api_key });
-            document.querySelector('#api-input').innerText = json.result.api_key;
+            (document.querySelector('#api-input') as HTMLElement).innerText = json.result.api_key;
         });
 };
 
 // code run on load
 
-usingApiKey()
-    .then((api_key) => {
-        fillSettings(api_key);
-        document.querySelector('#save-button').onclick = () => saveSettings(api_key);
-        document.querySelector('#generate-api').onclick = () => generateApiKey(api_key);
-        document.querySelector('#download-logs-button').href =
-            `${url_base}/api/system/logs?api_key=${api_key}`;
-    });
+usingApiKey().then((api_key) => {
+    fillSettings(api_key);
+    (document.querySelector('#save-button') as HTMLElement).onclick = () => saveSettings(api_key);
+    (document.querySelector('#generate-api') as HTMLElement).onclick = () => generateApiKey(api_key);
+    (document.querySelector('#download-logs-button') as HTMLAnchorElement).href =
+        `${url_base}/api/system/logs?api_key=${api_key}`;
+});
 
-document.querySelector('#theme-input').onchange = () => {
-    const value = document.querySelector('#theme-input').value;
+(document.querySelector('#theme-input') as HTMLElement).onchange = () => {
+    const value = (document.querySelector('#theme-input') as HTMLInputElement).value;
 
     setLocalStorage({ theme: value });
     if (value === 'dark') {
-        document.querySelector(':root').classList.add('dark-mode');
+        (document.querySelector(':root') as HTMLElement).classList.add('dark-mode');
     }
     else if (value === 'light') {
-        document.querySelector(':root').classList.remove('dark-mode');
+        (document.querySelector(':root') as HTMLElement).classList.remove('dark-mode');
     }
 };
 
-export {};
+export { };

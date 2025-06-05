@@ -1,17 +1,16 @@
-// @ts-nocheck
 import usingApiKey from './auth.js';
-import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
+import { fetchAPI, sendAPI } from './general.js';
 
 const StatEls = {
-    version: document.querySelector('#version'),
-    python_version: document.querySelector('#python-version'),
-    database_version: document.querySelector('#database-version'),
-    database_location: document.querySelector('#database-location'),
-    data_folder: document.querySelector('#data-folder'),
+    version: document.querySelector('#version') as HTMLTableCellElement,
+    python_version: document.querySelector('#python-version') as HTMLTableCellElement,
+    database_version: document.querySelector('#database-version') as HTMLTableCellElement,
+    database_location: document.querySelector('#database-location') as HTMLTableCellElement,
+    data_folder: document.querySelector('#data-folder') as HTMLTableCellElement,
     buttons: {
-        copy: document.querySelector('#copy-about'),
-        restart: document.querySelector('#restart-button'),
-        shutdown: document.querySelector('#shutdown-button'),
+        copy: document.querySelector('#copy-about') as HTMLButtonElement,
+        restart: document.querySelector('#restart-button') as HTMLButtonElement,
+        shutdown: document.querySelector('#shutdown-button') as HTMLButtonElement,
     },
 };
 
@@ -28,47 +27,47 @@ const about_table = `
 
 // code run on load
 
-usingApiKey()
-    .then((api_key) => {
-        fetchAPI('/system/about', api_key)
-            .then((json) => {
-                StatEls.version.innerText = json.result.version;
-                StatEls.python_version.innerText = json.result.python_version;
-                StatEls.database_version.innerText = json.result.database_version;
-                StatEls.database_location.innerText = json.result.database_location;
-                StatEls.data_folder.innerText = json.result.data_folder;
+usingApiKey().then((api_key) => {
+    fetchAPI('/system/about', api_key).then((json) => {
+        StatEls.version.innerText = json.result.version;
+        StatEls.python_version.innerText = json.result.python_version;
+        StatEls.database_version.innerText = json.result.database_version;
+        StatEls.database_location.innerText = json.result.database_location;
+        StatEls.data_folder.innerText = json.result.data_folder;
 
-                StatEls.buttons.copy.onclick = () => {
-                    copy(about_table
-                        .replace('{k_version}', json.result.version)
-                        .replace('{p_version}', json.result.python_version)
-                        .replace('{d_version}', json.result.database_version)
-                        .replace('{d_loc}', json.result.database_location)
-                        .replace('{folder}', json.result.data_folder));
-                };
-            });
-        StatEls.buttons.restart.onclick = () => {
-            StatEls.buttons.restart.innerText = 'Restarting';
-            sendAPI('POST', '/system/power/restart', api_key);
-        };
-        StatEls.buttons.shutdown.onclick = () => {
-            StatEls.buttons.shutdown.innerText = 'Shutting down';
-            sendAPI('POST', '/system/power/shutdown', api_key);
+        StatEls.buttons.copy.onclick = () => {
+            copy(about_table
+                .replace('{k_version}', json.result.version)
+                .replace('{p_version}', json.result.python_version)
+                .replace('{d_version}', json.result.database_version)
+                .replace('{d_loc}', json.result.database_location)
+                .replace('{folder}', json.result.data_folder));
         };
     });
 
+    StatEls.buttons.restart.onclick = () => {
+        StatEls.buttons.restart.innerText = 'Restarting';
+        sendAPI('POST', '/system/power/restart', api_key);
+    };
 
-function copy(text) {
-    range = document.createRange();
-    selection = document.getSelection();
+    StatEls.buttons.shutdown.onclick = () => {
+        StatEls.buttons.shutdown.innerText = 'Shutting down';
+        sendAPI('POST', '/system/power/shutdown', api_key);
+    };
+});
+
+
+function copy(text: string) {
+    const range = document.createRange();
+    const selection = document.getSelection();
 
     const container = document.createElement('span');
 
     container.textContent = text;
-    container.ariaHidden = true;
+    container.ariaHidden = 'true';
     container.style.all = 'unset';
     container.style.position = 'fixed';
-    container.style.top = 0;
+    container.style.top = '0';
     container.style.clip = 'rect(0, 0, 0, 0)';
     container.style.whiteSpace = 'pre';
     container.style.userSelect = 'text';
@@ -77,7 +76,7 @@ function copy(text) {
 
     try {
         range.selectNodeContents(container);
-        selection.addRange(range);
+        selection?.addRange(range);
         document.execCommand('copy');
         StatEls.buttons.copy.innerText = 'Copied';
     }
@@ -86,9 +85,7 @@ function copy(text) {
         StatEls.buttons.copy.innerText = 'Failed';
     }
     finally {
-        selection.removeAllRanges();
+        selection?.removeAllRanges();
         document.body.removeChild(container);
     }
 }
-
-export {};

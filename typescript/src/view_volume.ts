@@ -1,70 +1,174 @@
-// @ts-nocheck
 import usingApiKey from './auth.js';
 
 import WindowFuncs from './window.js';
-import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
+import { url_base, volume_id, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, convertSize } from './general.js';
+
+/* Types */
+import { RootFolder } from './add_volume.js';
+
+export interface FileData {
+    id: number
+    filepath: string
+    size: number
+    releaser: string
+    scan_type: string
+    resolution: string
+    dpi: string
+}
+
+export interface GeneralFileData extends FileData {
+    file_type: string
+}
+
+export interface IssueData {
+    id: number
+    volume_id: number
+    comicvine_id: number
+    issue_number: string
+    calculated_issue_number: number
+    title: string | null
+    date: string | null
+    description: string | null
+    monitored: boolean
+    files: FileData[]
+}
+
+export interface VolumePublicInfo {
+    id: number
+    comicvine_id: number
+    libgen_url: string | null
+    title: string
+    alt_title: string | null
+    year: number
+    publisher: string
+    volume_number: number
+    description: string
+    site_url: string
+    monitored: boolean
+    monitor_new_issues: boolean
+    root_folder: string
+    folder: string
+    custom_folder: boolean
+    special_version: string
+    special_version_locked: boolean
+    last_cv_fetch: number
+    issue_count: number
+    issues_downloaded: number
+    total_size: number
+    volume_folder: string
+    issues: IssueData[]
+    general_files: GeneralFileData[]
+}
+
+export interface FilenameData {
+    series: string
+    year: number | null
+    volume_number: number | [number, number] | null
+    special_version: string | null
+    issue_number: number | null
+    annual: boolean
+}
+
+export interface SearchResultData extends FilenameData {
+    link: string
+    display_title: string
+    source: string
+    filesize: number
+    pages: number
+    releaser: string | null
+    scan_type: string | null
+    resolution: string | null
+    dpi: string | null
+    extension: string | null
+    comics_id: number | null
+    md5: string | null
+}
+
+export interface SearchResultMatchData {
+    match: boolean
+    match_issue: string | null
+}
+
+export interface MatchedSearchResultData extends SearchResultMatchData, SearchResultData {
+    _issue_number: number | [number, number]
+}
+
+export type PreviewRenameResult = Record<string, string>;
 
 const ViewEls = {
     views: {
-        loading: document.querySelector('#loading-screen'),
-        main: document.querySelector('main'),
+        loading: document.querySelector('#loading-screen') as HTMLDivElement,
+        main: document.querySelector('main')!,
     },
     pre_build: {
-        issue_entry: document.querySelector('.pre-build-els .issue-entry'),
-        manual_search: document.querySelector('.pre-build-els .search-entry'),
-        rename_before: document.querySelector('.pre-build-els .rename-before'),
-        rename_after: document.querySelector('.pre-build-els .rename-after'),
-        files_entry: document.querySelector('.pre-build-els .files-entry'),
-        general_files_entry: document.querySelector('.pre-build-els .general-files-entry'),
+        issue_entry: document.querySelector('.pre-build-els .issue-entry') as HTMLTableRowElement,
+        manual_search: document.querySelector('.pre-build-els .search-entry') as HTMLTableRowElement,
+        rename_before: document.querySelector('.pre-build-els .rename-before') as HTMLTableRowElement,
+        rename_after: document.querySelector('.pre-build-els .rename-after') as HTMLTableRowElement,
+        files_entry: document.querySelector('.pre-build-els .files-entry') as HTMLTableRowElement,
+        general_files_entry: document.querySelector('.pre-build-els .general-files-entry') as HTMLTableRowElement,
     },
     vol_data: {
-        monitor: document.querySelector('#volume-monitor'),
-        title: document.querySelector('.volume-title-monitored > h2'),
-        cover: document.querySelector('.volume-info > img'),
-        tags: document.querySelector('#volume-tags'),
-        path: document.querySelector('#volume-path'),
-        description: document.querySelector('#volume-description'),
-        mobile_description: document.querySelector('#volume-description-mobile'),
+        monitor: document.querySelector('#volume-monitor') as HTMLButtonElement,
+        title: document.querySelector('.volume-title-monitored > h2') as HTMLElement,
+        cover: document.querySelector('.volume-info > img') as HTMLImageElement,
+        tags: document.querySelector('#volume-tags') as HTMLTableSectionElement,
+        path: document.querySelector('#volume-path') as HTMLParagraphElement,
+        description: document.querySelector('#volume-description') as HTMLTableSectionElement,
+        mobile_description: document.querySelector('#volume-description-mobile') as HTMLTableSectionElement,
     },
     vol_edit: {
-        monitor: document.querySelector('#monitored-input'),
-        monitor_new_issues: document.querySelector('#monitor-issues-input'),
-        monitoring_scheme: document.querySelector('#monitoring-scheme-input'),
-        root_folder: document.querySelector('#root-folder-input'),
-        volume_folder: document.querySelector('#volumefolder-input'),
-        special_version: document.querySelector('#specialoverride-input'),
-        libgen_edit: document.querySelector('#libgen-edit-input'),
+        monitor: document.querySelector('#monitored-input') as HTMLSelectElement,
+        monitor_new_issues: document.querySelector('#monitor-issues-input') as HTMLSelectElement,
+        monitoring_scheme: document.querySelector('#monitoring-scheme-input') as HTMLSelectElement,
+        root_folder: document.querySelector('#root-folder-input') as HTMLSelectElement,
+        volume_folder: document.querySelector('#volumefolder-input') as HTMLInputElement,
+        special_version: document.querySelector('#specialoverride-input') as HTMLSelectElement,
+        libgen_edit: document.querySelector('#libgen-edit-input') as HTMLInputElement,
     },
     tool_bar: {
-        refresh: document.querySelector('#refresh-button'),
-        auto_search: document.querySelector('#autosearch-button'),
-        manual_search: document.querySelector('#manualsearch-button'),
-        rename: document.querySelector('#rename-button'),
-        convert: document.querySelector('#convert-button'),
-        files: document.querySelector('#files-button'),
-        edit: document.querySelector('#edit-button'),
-        delete: document.querySelector('#delete-button'),
+        refresh: document.querySelector('#refresh-button') as HTMLButtonElement,
+        auto_search: document.querySelector('#autosearch-button') as HTMLButtonElement,
+        manual_search: document.querySelector('#manualsearch-button') as HTMLButtonElement,
+        rename: document.querySelector('#rename-button') as HTMLButtonElement,
+        convert: document.querySelector('#convert-button') as HTMLButtonElement,
+        files: document.querySelector('#files-button') as HTMLButtonElement,
+        edit: document.querySelector('#edit-button') as HTMLButtonElement,
+        delete: document.querySelector('#delete-button') as HTMLButtonElement,
     },
-    issues_list: document.querySelector('#issues-list'),
+    issues_list: document.querySelector('#issues-list') as HTMLElement,
 };
 
 //
 // Filling data
 //
 class IssueEntry {
-    constructor(id, api_key) {
+    id: string;
+    api_key: string;
+    entry: HTMLTableRowElement;
+    monitored: HTMLButtonElement;
+    issue_number: HTMLElement;
+    title: HTMLElement;
+    date: HTMLElement;
+    status: HTMLElement;
+    auto_search: HTMLButtonElement;
+    manual_search: HTMLButtonElement;
+    convert: HTMLButtonElement;
+
+
+    constructor(id: string, api_key: string) {
         this.id = id;
         this.api_key = api_key;
-        this.entry = ViewEls.issues_list.querySelector(`tr[data-id="${id}"]`);
+        this.entry = ViewEls.issues_list.querySelector(`tr[data-id="${id}"]`)!;
 
-        this.monitored = this.entry.querySelector('.issue-monitored button');
-        this.issue_number = this.entry.querySelector('.issue-number');
-        this.title = this.entry.querySelector('.issue-title');
-        this.date = this.entry.querySelector('.issue-date');
-        this.status = this.entry.querySelector('.issue-status');
-        this.auto_search = this.entry.querySelector('.action-column :nth-child(1)');
-        this.manual_search = this.entry.querySelector('.action-column :nth-child(2)');
-        this.convert = this.entry.querySelector('.action-column :nth-child(3)');
+        this.monitored = this.entry.querySelector('.issue-monitored button')!;
+        this.issue_number = this.entry.querySelector('.issue-number')!;
+        this.title = this.entry.querySelector('.issue-title')!;
+        this.date = this.entry.querySelector('.issue-date')!;
+        this.status = this.entry.querySelector('.issue-status')!;
+        this.auto_search = this.entry.querySelector('.action-column :nth-child(1)')!;
+        this.manual_search = this.entry.querySelector('.action-column :nth-child(2)')!;
+        this.convert = this.entry.querySelector('.action-column :nth-child(3)')!;
     };
 
     setMonitorIcon() {
@@ -91,12 +195,12 @@ class IssueEntry {
             monitored,
         })
             .then(() => {
-                this.monitored.dataset.monitored = monitored;
+                this.monitored.dataset.monitored = JSON.stringify(monitored);
                 this.setMonitorIcon();
             });
     };
 
-    setDownloaded(downloaded) {
+    setDownloaded(downloaded: number) {
         if (downloaded) {
             // Downloaded
             setImage(this.status, images.check, 'Issue is downloaded');
@@ -112,25 +216,25 @@ class IssueEntry {
     };
 };
 
-function fillTable(issues, api_key) {
+function fillTable(issues: IssueData[], api_key: string) {
     ViewEls.issues_list.innerHTML = '';
 
     for (let i = issues.length - 1; i >= 0; i--) {
         const obj = issues[i];
 
-        const entry = ViewEls.pre_build.issue_entry.cloneNode(true);
+        const entry = ViewEls.pre_build.issue_entry.cloneNode(true) as typeof ViewEls.pre_build.issue_entry;
 
-        entry.dataset.id = obj.id;
+        entry.dataset.id = obj.id.toString();
         ViewEls.issues_list.appendChild(entry);
 
-        const inst = new IssueEntry(obj.id, api_key);
+        const inst = new IssueEntry(obj.id.toString(), api_key);
 
         // ARIA
         inst.entry.ariaLabel = `Issue ${obj.issue_number}`;
 
         // Monitored
-        inst.monitored.dataset.monitored = obj.monitored;
-        inst.monitored.dataset.id = obj.id;
+        inst.monitored.dataset.monitored = JSON.stringify(obj.monitored);
+        inst.monitored.dataset.id = obj.id.toString();
         inst.monitored.onclick = () => inst.toggleMonitored();
         inst.setMonitorIcon();
 
@@ -138,11 +242,11 @@ function fillTable(issues, api_key) {
         inst.issue_number.innerText = obj.issue_number;
 
         // Title
-        inst.title.innerText = obj.title;
+        inst.title.innerText = obj.title ?? '';
         inst.title.onclick = () => showIssueInfo(obj.id, api_key);
 
         // Release date
-        inst.date.innerText = obj.date;
+        inst.date.innerText = obj.date ?? '';
 
         // Download status
         inst.setDownloaded(obj.files.length);
@@ -154,18 +258,18 @@ function fillTable(issues, api_key) {
     };
 };
 
-function fillPage(data, api_key) {
+function fillPage(data: VolumePublicInfo, api_key: string) {
     if (data.special_version_locked) {
         ViewEls.vol_edit.special_version.value = data.special_version || '';
     }
     else {
         ViewEls.vol_edit.special_version.value = 'auto';
-        const sv_name = ViewEls.vol_edit.special_version
-            .querySelector(`option[value='${data.special_version || ''}']`)
+        const sv_name = (ViewEls.vol_edit.special_version
+            .querySelector(`option[value='${data.special_version || ''}']`) as HTMLElement)
             .innerText;
 
-        ViewEls.vol_edit.special_version
-            .querySelector("option[value='auto']")
+        (ViewEls.vol_edit.special_version
+            .querySelector("option[value='auto']") as HTMLElement)
             .innerText += ` (${sv_name})`;
     };
 
@@ -173,10 +277,10 @@ function fillPage(data, api_key) {
     ViewEls.vol_data.cover.src = `${url_base}/api/volumes/${data.id}/cover?api_key=${api_key}`;
 
     // Monitored state
-    ViewEls.vol_edit.monitor_new_issues.value = data.monitor_new_issues;
+    ViewEls.vol_edit.monitor_new_issues.value = JSON.stringify(data.monitor_new_issues);
     const monitor = ViewEls.vol_data.monitor;
 
-    monitor.dataset.monitored = data.monitored;
+    monitor.dataset.monitored = JSON.stringify(data.monitored);
     monitor.onclick = () => toggleMonitored(api_key);
     // Volume is monitored
     if (data.monitored) {
@@ -197,7 +301,7 @@ function fillPage(data, api_key) {
     const tags = ViewEls.vol_data.tags;
     const year = document.createElement('p');
 
-    year.innerText = data.year;
+    year.innerText = data.year.toString();
     tags.appendChild(year);
     const volume_number = document.createElement('p');
 
@@ -237,25 +341,25 @@ function fillPage(data, api_key) {
 
     hide([ViewEls.views.loading], [ViewEls.views.main]);
 
-    const table = document.querySelector('#files-window tbody');
+    const table = document.querySelector('#files-window tbody') as HTMLElement;
 
     table.innerHTML = '';
     data.general_files.forEach((gf) => {
-        const entry = ViewEls.pre_build.general_files_entry.cloneNode(true);
+        const entry = ViewEls.pre_build.general_files_entry.cloneNode(true) as typeof ViewEls.pre_build.general_files_entry;
 
         const short_f = gf.filepath.slice(
             gf.filepath.indexOf(data.volume_folder) +
             data.volume_folder.length +
             1,
         );
-        const file_name = entry.querySelector('.gf-filepath');
+        const file_name = entry.querySelector('.gf-filepath') as HTMLElement;
 
         file_name.innerText = short_f;
         file_name.title = gf.filepath;
 
-        entry.querySelector('.gf-type').innerText = gf.file_type;
-        entry.querySelector('.gf-size').innerText = convertSize(gf.size);
-        entry.querySelector('.gf-delete button').onclick = () =>
+        (entry.querySelector('.gf-type') as HTMLElement).innerText = gf.file_type;
+        (entry.querySelector('.gf-size') as HTMLElement).innerText = convertSize(gf.size);
+        (entry.querySelector('.gf-delete button') as HTMLElement).onclick = () =>
             sendAPI('DELETE', `/files/${gf.id}`, api_key)
                 .then(() => entry.remove());
 
@@ -266,14 +370,14 @@ function fillPage(data, api_key) {
 //
 // Actions
 //
-function toggleMonitored(api_key) {
+function toggleMonitored(api_key: string) {
     const monitored = ViewEls.vol_data.monitor.dataset.monitored !== 'true';
 
     sendAPI('PUT', `/volumes/${volume_id}`, api_key, {}, {
         monitored,
     })
         .then(() => {
-            ViewEls.vol_data.monitor.dataset.monitored = monitored;
+            ViewEls.vol_data.monitor.dataset.monitored = JSON.stringify(monitored);
             if (monitored) {
                 setIcon(
                     ViewEls.vol_data.monitor,
@@ -294,7 +398,7 @@ function toggleMonitored(api_key) {
 //
 // Tasks
 //
-function refreshVolume(api_key) {
+function refreshVolume(api_key: string) {
     const button_info = task_to_button[`refresh_and_scan#${volume_id}`];
     const icon = button_info.button.querySelector('img');
 
@@ -307,7 +411,7 @@ function refreshVolume(api_key) {
     });
 };
 
-function autosearchVolume(api_key) {
+function autosearchVolume(api_key: string) {
     const button_info = task_to_button[`auto_search#${volume_id}`];
     const icon = button_info.button.querySelector('img');
 
@@ -320,7 +424,7 @@ function autosearchVolume(api_key) {
     });
 };
 
-function autosearchIssue(issue_id, api_key) {
+function autosearchIssue(issue_id: number, api_key: string) {
     const button_info = task_to_button[`auto_search_issue#${volume_id}#${issue_id}`];
     const icon = button_info.button.querySelector('img');
 
@@ -338,22 +442,22 @@ function autosearchIssue(issue_id, api_key) {
 // Manual search
 //
 
-function showManualSearch(api_key, issue_id = null) {
-    const message = document.querySelector('#searching-message');
+function showManualSearch(api_key: string, issue_id: number | null = null) {
+    const message = document.querySelector('#searching-message') as HTMLElement;
 
-    const table = document.querySelector('#search-result-table');
-    const tbody = table.querySelector('tbody');
+    const table = document.querySelector('#search-result-table') as HTMLElement;
+    const tbody = table.querySelector('tbody')!;
 
-    const libgenInput = document.querySelector('#libgen-input');
-    const libgenContainer = libgenInput.parentNode;
+    const libgenInput = document.querySelector('#libgen-input') as HTMLInputElement;
+    const libgenContainer = libgenInput.parentNode as HTMLElement;
 
     // Display searching message and hide the rest
     hide([table, libgenContainer], [message]);
     tbody.innerHTML = '';
 
-    const addSearchResult = (result) => {
-        const entry = ViewEls.pre_build.manual_search.cloneNode(true);
-        const match = entry.querySelector('.match-column');
+    const addSearchResult = (result: MatchedSearchResultData, api_key: string): [number, typeof ViewEls.pre_build.manual_search] => {
+        const entry = ViewEls.pre_build.manual_search.cloneNode(true) as typeof ViewEls.pre_build.manual_search;
+        const match = entry.querySelector('.match-column') as HTMLElement;
 
         if (result.match) {
             setImage(
@@ -366,22 +470,22 @@ function showManualSearch(api_key, issue_id = null) {
             setImage(
                 match,
                 images.cancel,
-                result.match_issue,
+                result.match_issue ?? '',
             );
         }
 
-        const title = entry.querySelector('a');
+        const title = entry.querySelector('a')!;
 
         title.href = result.link;
         title.innerText = result.display_title;
 
-        const issueInput = entry.querySelector('.issue-column');
-        const releaserInput = entry.querySelector('.releaser-column');
-        const scanTypeInput = entry.querySelector('.scan-type-column');
-        const resolutionInput = entry.querySelector('.resolution-column');
-        const dpiInput = entry.querySelector('.dpi-column');
+        const issueInput = entry.querySelector('.issue-column') as HTMLInputElement;
+        const releaserInput = entry.querySelector('.releaser-column') as HTMLInputElement;
+        const scanTypeInput = entry.querySelector('.scan-type-column') as HTMLInputElement;
+        const resolutionInput = entry.querySelector('.resolution-column') as HTMLInputElement;
+        const dpiInput = entry.querySelector('.dpi-column') as HTMLInputElement;
 
-        issueInput.value = result.issue_number ?? '';
+        issueInput.value = result.issue_number?.toString() ?? '';
         issueInput.style.minInlineSize = `${issueInput.value.length + 3}ch`;
 
         releaserInput.value = result.releaser ?? '';
@@ -407,20 +511,20 @@ function showManualSearch(api_key, issue_id = null) {
             return result;
         };
 
-        entry.querySelector('.size-column').innerText = result.filesize ?
+        (entry.querySelector('.size-column') as HTMLElement).innerText = result.filesize ?
             convertSize(result.filesize) :
             '';
-        entry.querySelector('.pages-column').innerText = result.pages ?? '';
-        entry.querySelector('.source-column').innerText = result.source;
+        (entry.querySelector('.pages-column') as HTMLElement).innerText = result.pages?.toString() ?? '';
+        (entry.querySelector('.source-column') as HTMLElement).innerText = result.source;
 
-        const torrent_button = entry.querySelector('.search-action-column :nth-child(1)');
+        const torrent_button = entry.querySelector('.search-action-column :nth-child(1)') as HTMLInputElement;
 
         torrent_button.classList.add('icon-text-color');
         torrent_button.onclick = () => addManualSearch(
             editResult(true), false, torrent_button, api_key, issue_id,
         );
 
-        const download_button = entry.querySelector('.search-action-column :nth-child(2)');
+        const download_button = entry.querySelector('.search-action-column :nth-child(2)') as HTMLInputElement;
 
         download_button.classList.add('icon-text-color');
         download_button.onclick = () => addManualSearch(
@@ -429,14 +533,14 @@ function showManualSearch(api_key, issue_id = null) {
 
         const force_download_button = entry.querySelector(
             '.search-action-column :nth-child(3)',
-        );
+        ) as HTMLInputElement;
 
         force_download_button.classList.add('icon-text-color');
         force_download_button.onclick = () => addManualSearch(
             editResult(), true, force_download_button, api_key, issue_id,
         );
 
-        const blocklist_button = entry.querySelector('.search-action-column :nth-child(4)');
+        const blocklist_button = entry.querySelector('.search-action-column :nth-child(4)') as HTMLInputElement;
 
         // Show blocklist button
         if (result.match_issue === null || !result.match_issue.includes('blocklist')) {
@@ -455,7 +559,7 @@ function showManualSearch(api_key, issue_id = null) {
             blocklist_button.remove();
         }
 
-        return [parseFloat(result.issue_number ?? -1), entry];
+        return [parseFloat(result.issue_number?.toString() ?? '-1'), entry];
     };
 
     // Show window
@@ -468,8 +572,8 @@ function showManualSearch(api_key, issue_id = null) {
 
     fetchAPI(url, api_key).then((jsonObj) => {
         // TODO: add filters, maybe in Built-in Clients
-        const setupTable = (json) => {
-            json.result
+        const setupTable = (results: MatchedSearchResultData[]) => {
+            results
                 .map((result) => addSearchResult(result, api_key))
                 .sort((a, b) => a[0] - b[0])
                 .forEach(([_k, elem]) => {
@@ -489,7 +593,7 @@ function showManualSearch(api_key, issue_id = null) {
                     hide([libgenContainer], [message]);
 
                     sendAPI('POST', url, api_key, { url: libgenInput.value })
-                        .then((response) => response.json())
+                        .then((response) => response?.json())
                         .then((jsonObj2) => {
                             tbody.innerHTML = '';
                             setupTable(jsonObj2);
@@ -500,15 +604,21 @@ function showManualSearch(api_key, issue_id = null) {
             hide([message, table], [libgenContainer]);
         }
         else {
-            setupTable(jsonObj);
+            setupTable(jsonObj.result);
         }
     });
 };
 
-function addManualSearch(result, force, button, api_key, issue_id = null) {
+function addManualSearch(
+    result: MatchedSearchResultData,
+    force: boolean,
+    button: HTMLInputElement,
+    api_key: string,
+    issue_id: number | null = null,
+) {
     button.classList.remove('error');
     button.title = 'Download';
-    const img = button.querySelector('img');
+    const img = button.querySelector('img')!;
 
     img.src = `${url_base}/static/img/loading.svg`;
     img.classList.add('spinning');
@@ -518,7 +628,7 @@ function addManualSearch(result, force, button, api_key, issue_id = null) {
         `/volumes/${volume_id}/download`;
 
     sendAPI('POST', url, api_key, { ...result, force_match: force })
-        .then((response) => response.json())
+        .then((response) => response?.json())
         .then((json) => {
             img.classList.remove('spinning');
             if (json.result.fail_reason === null) {
@@ -533,10 +643,10 @@ function addManualSearch(result, force, button, api_key, issue_id = null) {
 };
 
 function blockManualSearch(
-    web_link, web_title,
-    volume_id, issue_id,
-    button, match,
-    api_key,
+    web_link: string, web_title: string,
+    volume_id: number | null, issue_id: number | null,
+    button: HTMLInputElement, match: HTMLElement,
+    api_key: string,
 ) {
     sendAPI('POST', '/blocklist', api_key, {}, {
         web_link,
@@ -547,7 +657,7 @@ function blockManualSearch(
     })
         .then(() => {
             console.log(button, match);
-            button.querySelector('img').src = `${url_base}/static/img/check.svg`;
+            button.querySelector('img')!.src = `${url_base}/static/img/check.svg`;
             setImage(
                 match,
                 'cancel.svg',
@@ -559,11 +669,11 @@ function blockManualSearch(
 //
 // Renaming
 //
-function showRename(api_key, issue_id = null) {
-    document.querySelector('#selectall-input').checked = true;
+function showRename(api_key: string, issue_id: string | null = null) {
+    (document.querySelector('#selectall-input') as HTMLInputElement).checked = true;
 
-    const rename_button = document.querySelector('#submit-rename');
-    let url;
+    const rename_button = document.querySelector('#submit-rename') as HTMLInputElement;
+    let url: string;
 
     if (issue_id === null) {
         // Preview volume rename
@@ -575,49 +685,49 @@ function showRename(api_key, issue_id = null) {
         url = `/issues/${issue_id}/rename`;
         rename_button.dataset.issue_id = issue_id;
     };
-    fetchAPI(url, api_key)
-        .then((json) => {
-            const empty_message = document.querySelector('#rename-window .empty-rename-message');
-            const table_container = document.querySelector('#rename-window .rename-preview');
-            const table = table_container.querySelector('tbody');
+    fetchAPI(url, api_key).then((json: { result: PreviewRenameResult }) => {
+        const empty_message = document.querySelector('#rename-window .empty-rename-message') as HTMLElement;
+        const table_container = document.querySelector('#rename-window .rename-preview') as HTMLElement;
+        const table = table_container.querySelector('tbody')!;
 
-            table.innerHTML = '';
+        table.innerHTML = '';
 
-            if (!Object.keys(json.result).length) {
-                hide([table_container, rename_button], [empty_message]);
-            }
-            else {
-                hide([empty_message], [table_container, rename_button]);
-                Object.entries(json.result).forEach((mapping) => {
-                    const before_row = ViewEls.pre_build.rename_before.cloneNode(true);
+        if (!Object.keys(json.result).length) {
+            hide([table_container, rename_button], [empty_message]);
+        }
+        else {
+            hide([empty_message], [table_container, rename_button]);
 
-                    table.appendChild(before_row);
-                    const after_row = ViewEls.pre_build.rename_after.cloneNode(true);
+            Object.entries(json.result).forEach((mapping) => {
+                const before_row = ViewEls.pre_build.rename_before.cloneNode(true) as typeof ViewEls.pre_build.rename_before;
 
-                    table.appendChild(after_row);
+                table.appendChild(before_row);
+                const after_row = ViewEls.pre_build.rename_after.cloneNode(true) as typeof ViewEls.pre_build.rename_after;
 
-                    before_row.querySelector('td:last-child').innerText = mapping[0];
-                    after_row.querySelector('td:last-child').innerText = mapping[1];
-                });
-            };
-            WindowFuncs.showWindow('rename-window');
-        });
+                table.appendChild(after_row);
+
+                (before_row.querySelector('td:last-child') as HTMLElement).innerText = mapping[0];
+                (after_row.querySelector('td:last-child') as HTMLElement).innerText = mapping[1];
+            });
+        };
+        WindowFuncs.showWindow('rename-window');
+    });
 };
 
 function toggleAllRenames() {
-    const checked = document.querySelector('#selectall-input').checked;
+    const checked = (document.querySelector('#selectall-input') as HTMLInputElement).checked;
 
-    document.querySelectorAll(
+    (document.querySelectorAll(
         '#rename-window tbody input[type="checkbox"]',
-    ).forEach((e) => {
+    ) as NodeListOf<HTMLInputElement>).forEach((e) => {
         e.checked = checked;
     });
 };
 
-function renameVolume(api_key, issue_id = null) {
-    const checkboxes = [...document.querySelectorAll(
+function renameVolume(api_key: string, issue_id: string | null = null) {
+    const checkboxes = Array.from(document.querySelectorAll(
         '#rename-window tbody input[type="checkbox"]',
-    )];
+    )) as HTMLInputElement[];
 
     if (checkboxes.every((e) => !e.checked)) {
         WindowFuncs.closeWindow();
@@ -625,17 +735,17 @@ function renameVolume(api_key, issue_id = null) {
         return;
     };
 
-    const data = {
+    const data: Record<string, unknown> = {
         cmd: 'mass_rename',
         volume_id,
         filepath_filter:
-        checkboxes
-            .filter((e) => e.checked)
-            .map((e) => e
-                .parentNode
-                .parentNode
-                .querySelector('td:last-child')
-                .innerText),
+            checkboxes
+                .filter((e) => e.checked)
+                .map((e) => (e
+                    .parentNode!
+                    .parentNode!
+                    .querySelector('td:last-child') as HTMLElement)
+                    .innerText),
     };
 
     if (issue_id !== null) {
@@ -650,32 +760,31 @@ function renameVolume(api_key, issue_id = null) {
 //
 // Converting
 //
-function loadConvertPreference(api_key) {
-    const el = document.querySelector('#convert-preference');
+function loadConvertPreference(api_key: string) {
+    const el = document.querySelector('#convert-preference') as HTMLElement;
 
     if (el.innerHTML !== '') {
         return;
     }
 
-    fetchAPI('/settings', api_key)
-        .then((json) => {
-            const pref = [
-                'source',
-                ...json.result.format_preference,
-                'no conversion',
-            ].join(' - ');
+    fetchAPI('/settings', api_key).then((json) => {
+        const pref = [
+            'source',
+            ...json.result.format_preference,
+            'no conversion',
+        ].join(' - ');
 
-            el.innerHTML = pref;
-            el.ariaLabel = `The format preference is the following: ${pref}`;
-        });
+        el.innerHTML = pref;
+        el.ariaLabel = `The format preference is the following: ${pref}`;
+    });
 };
 
-function showConvert(api_key, issue_id = null) {
-    document.querySelector('#selectall-convert-input').checked = true;
+function showConvert(api_key: string, issue_id: number | null = null) {
+    (document.querySelector('#selectall-convert-input') as HTMLInputElement).checked = true;
     loadConvertPreference(api_key);
 
-    const convert_button = document.querySelector('#submit-convert');
-    let url;
+    const convert_button = document.querySelector('#submit-convert') as HTMLButtonElement;
+    let url: string;
 
     if (issue_id === null) {
         // Preview issue conversion
@@ -685,52 +794,51 @@ function showConvert(api_key, issue_id = null) {
     else {
         // Preview issue conversion
         url = `/issues/${issue_id}/convert`;
-        convert_button.dataset.issue_id = issue_id;
+        convert_button.dataset.issue_id = issue_id.toString();
     };
 
-    fetchAPI(url, api_key)
-        .then((json) => {
-            const empty_rename = document.querySelector('#convert-window .empty-rename-message');
-            const table_container = document.querySelector('#convert-window table');
-            const table = table_container.querySelector('tbody');
+    fetchAPI(url, api_key).then((json: { result: PreviewRenameResult }) => {
+        const empty_rename = document.querySelector('#convert-window .empty-rename-message') as HTMLElement;
+        const table_container = document.querySelector('#convert-window table') as HTMLTableElement;
+        const table = table_container.querySelector('tbody')!;
 
-            table.innerHTML = '';
+        table.innerHTML = '';
 
-            if (!Object.keys(json.result).length) {
-                hide([table_container, convert_button], [empty_rename]);
-            }
-            else {
-                hide([empty_rename], [table_container, convert_button]);
-                Object.entries(json.result).forEach((mapping) => {
-                    const before_row = ViewEls.pre_build.rename_before.cloneNode(true);
+        if (!Object.keys(json.result).length) {
+            hide([table_container, convert_button], [empty_rename]);
+        }
+        else {
+            hide([empty_rename], [table_container, convert_button]);
+            Object.entries(json.result).forEach((mapping) => {
+                const before_row = ViewEls.pre_build.rename_before.cloneNode(true) as typeof ViewEls.pre_build.rename_before;
 
-                    table.appendChild(before_row);
-                    const after_row = ViewEls.pre_build.rename_after.cloneNode(true);
+                table.appendChild(before_row);
+                const after_row = ViewEls.pre_build.rename_after.cloneNode(true) as typeof ViewEls.pre_build.rename_after;
 
-                    table.appendChild(after_row);
+                table.appendChild(after_row);
 
-                    before_row.querySelector('td:last-child').innerText = mapping[0];
-                    after_row.querySelector('td:last-child').innerText = mapping[1];
-                });
-            };
-            WindowFuncs.showWindow('convert-window');
-        });
+                (before_row.querySelector('td:last-child') as HTMLElement).innerText = mapping[0];
+                (after_row.querySelector('td:last-child') as HTMLElement).innerText = mapping[1];
+            });
+        };
+        WindowFuncs.showWindow('convert-window');
+    });
 };
 
 function toggleAllConverts() {
-    const checked = document.querySelector('#selectall-convert-input').checked;
+    const checked = (document.querySelector('#selectall-convert-input') as HTMLInputElement).checked;
 
-    document.querySelectorAll(
+    (document.querySelectorAll(
         '#convert-window tbody input[type="checkbox"]',
-    ).forEach((e) => {
+    ) as NodeListOf<HTMLInputElement>).forEach((e) => {
         e.checked = checked;
     });
 };
 
-function convertVolume(api_key, issue_id = null) {
-    const checkboxes = [...document.querySelectorAll(
+function convertVolume(api_key: string, issue_id: string | null = null) {
+    const checkboxes = Array.from(document.querySelectorAll(
         '#convert-window tbody input[type="checkbox"]',
-    )];
+    )) as HTMLInputElement[];
 
     if (checkboxes.every((e) => !e.checked)) {
         WindowFuncs.closeWindow();
@@ -738,17 +846,17 @@ function convertVolume(api_key, issue_id = null) {
         return;
     };
 
-    const data = {
+    const data: Record<string, unknown> = {
         cmd: 'mass_convert',
         volume_id,
         filepath_filter:
-        checkboxes
-            .filter((e) => e.checked)
-            .map((e) => e
-                .parentNode
-                .parentNode
-                .querySelector('td:last-child')
-                .innerText),
+            checkboxes
+                .filter((e) => e.checked)
+                .map((e) => (e
+                    .parentNode!
+                    .parentNode!
+                    .querySelector('td:last-child') as HTMLElement)
+                    .innerText),
     };
 
     if (issue_id !== null) {
@@ -763,16 +871,16 @@ function convertVolume(api_key, issue_id = null) {
 //
 // Editing
 //
-function showEdit(api_key) {
-    const volume_root_folder = parseInt(ViewEls.vol_data.path.dataset.root_folder);
-    const volume_folder = ViewEls.vol_data.path.dataset.volume_folder;
+function showEdit(api_key: string) {
+    const volume_root_folder = parseInt(ViewEls.vol_data.path.dataset.root_folder!);
+    const volume_folder = ViewEls.vol_data.path.dataset.volume_folder!;
 
     fetchAPI('/rootfolder', api_key).then((json) => {
         ViewEls.vol_edit.root_folder.innerHTML = '';
-        json.result.forEach((root_folder) => {
+        json.result.forEach((root_folder: RootFolder) => {
             const entry = document.createElement('option');
 
-            entry.value = root_folder.id;
+            entry.value = root_folder.id.toString();
             entry.innerText = root_folder.folder;
             if (root_folder.id === volume_root_folder) {
                 entry.setAttribute('selected', 'true');
@@ -782,13 +890,12 @@ function showEdit(api_key) {
         WindowFuncs.showWindow('edit-window');
     });
 
-    ViewEls.vol_edit.monitor.value = ViewEls.vol_data.monitor.dataset.monitored;
+    ViewEls.vol_edit.monitor.value = ViewEls.vol_data.monitor.dataset.monitored!;
     ViewEls.vol_edit.monitoring_scheme.value = '';
     ViewEls.vol_edit.volume_folder.value = volume_folder;
 };
 
-// eslint-disable-next-line
-function editVolume() {
+export function editVolume() {
     WindowFuncs.showLoadWindow('edit-window');
 
     const data = {
@@ -805,7 +912,7 @@ function editVolume() {
         data['monitoring_scheme'] = ViewEls.vol_edit.monitoring_scheme.value;
     }
 
-    const so = document.querySelector('#specialoverride-input').value;
+    const so = (document.querySelector('#specialoverride-input') as HTMLInputElement).value;
 
     data['special_version_locked'] = so !== 'auto';
     if (so !== 'auto') {
@@ -813,27 +920,26 @@ function editVolume() {
     }
 
     usingApiKey().then((api_key) => {
-        sendAPI('PUT', `/volumes/${volume_id}`, api_key, {}, data)
-            .then(() => window.location.reload());
+        sendAPI('PUT', `/volumes/${volume_id}`, api_key, {}, data).then(() => window.location.reload());
     });
 };
 
 //
 // Deleting
 //
-// eslint-disable-next-line
-function deleteVolume() {
-    const downloading_error = document.querySelector('#volume-downloading-error');
-    const tasking_error = document.querySelector('#volume-tasking-error');
-    const delete_folder = document.querySelector('#delete-folder-input').value;
+export function deleteVolume() {
+    const downloading_error = document.querySelector('#volume-downloading-error') as HTMLElement;
+    const tasking_error = document.querySelector('#volume-tasking-error') as HTMLElement;
+    const delete_folder = (document.querySelector('#delete-folder-input') as HTMLInputElement).value;
 
     hide([downloading_error, tasking_error]);
+
     usingApiKey().then((api_key) => {
         sendAPI('DELETE', `/volumes/${volume_id}`, api_key, { delete_folder })
             .then(() => {
                 window.location.href = `${url_base}/`;
             })
-            .catch((e) => e.json().then((j) => {
+            .catch((e) => e.json().then((j: any) => {
                 if (j.error === 'TaskForVolumeRunning') {
                     hide([downloading_error], [tasking_error]);
                 }
@@ -850,31 +956,31 @@ function deleteVolume() {
 //
 // Issue info
 //
-function showIssueInfo(issue_id, api_key) {
-    document.querySelector('#issue-rename-selector').dataset.issue_id = issue_id;
+function showIssueInfo(issue_id: number, api_key: string) {
+    (document.querySelector('#issue-rename-selector') as HTMLElement).dataset.issue_id = issue_id.toString();
 
     fetchAPI(`/issues/${issue_id}`, api_key).then((json) => {
-        document.querySelector('#issue-info-title').innerText =
-                `${json.result.title} - #${json.result.issue_number} - ${json.result.date}`;
-        document.querySelector('#issue-info-desc').innerHTML = json.result.description;
-        const files_table = document.querySelector('#issue-files-list');
+        (document.querySelector('#issue-info-title') as HTMLElement).innerText =
+            `${json.result.title} - #${json.result.issue_number} - ${json.result.date}`;
+        (document.querySelector('#issue-info-desc') as HTMLElement).innerHTML = json.result.description;
+        const files_table = document.querySelector('#issue-files-list') as HTMLElement;
 
         files_table.innerHTML = '';
-        json.result.files.forEach((f) => {
-            const entry = ViewEls.pre_build.files_entry.cloneNode(true);
+        json.result.files.forEach((f: FileData) => {
+            const entry = ViewEls.pre_build.files_entry.cloneNode(true) as typeof ViewEls.pre_build.files_entry;
 
-            const vf = ViewEls.vol_data.path.dataset.volume_folder;
+            const vf = ViewEls.vol_data.path.dataset.volume_folder!;
             const short_f = f.filepath.slice(
                 f.filepath.indexOf(vf) +
                 vf.length +
                 1,
             );
 
-            entry.querySelector('.f-filepath').innerText = short_f;
-            entry.querySelector('.f-filepath').title = f.filepath;
+            (entry.querySelector('.f-filepath') as HTMLElement).innerText = short_f;
+            (entry.querySelector('.f-filepath') as HTMLElement).title = f.filepath;
 
-            entry.querySelector('.f-size').innerText = convertSize(f.size);
-            entry.querySelector('.f-delete button').onclick = () =>
+            (entry.querySelector('.f-size') as HTMLElement).innerText = convertSize(f.size);
+            (entry.querySelector('.f-delete button') as HTMLElement).onclick = () =>
                 sendAPI('DELETE', `/files/${f.id}`, api_key)
                     .then(() => entry.remove());
 
@@ -884,12 +990,12 @@ function showIssueInfo(issue_id, api_key) {
     });
 };
 
-function showInfoWindow(window) {
+function showInfoWindow(window: string) {
     hide(
-        [...document.querySelectorAll(
+        Array.from(document.querySelectorAll(
             '#issue-info-window > div:nth-child(2) > div:not(#issue-info-selectors)',
-        )],
-        [document.querySelector(`#${window}`)],
+        )) as HTMLDivElement[],
+        [document.querySelector(`#${window}`)!],
     );
 };
 
@@ -914,28 +1020,26 @@ usingApiKey().then((api_key) => {
     ViewEls.tool_bar.convert.onclick = () => showConvert(api_key);
     ViewEls.tool_bar.edit.onclick = () => showEdit(api_key);
 
-    document.querySelector('#submit-rename').onclick = (e) => renameVolume(
-        api_key, e.target.dataset.issue_id || null,
+    (document.querySelector('#submit-rename') as HTMLElement).onclick = (e) => renameVolume(
+        api_key, (e.target as HTMLElement).dataset.issue_id || null,
     );
 
-    document.querySelector('#submit-convert').onclick = (e) => convertVolume(
-        api_key, e.target.dataset.issue_id || null,
+    (document.querySelector('#submit-convert') as HTMLElement).onclick = (e) => convertVolume(
+        api_key, (e.target as HTMLElement).dataset.issue_id || null,
     );
 
-    document.querySelector('#issue-rename-selector').onclick = (e) => showRename(
-        api_key, e.target.dataset.issue_id,
+    (document.querySelector('#issue-rename-selector') as HTMLElement).onclick = (e) => showRename(
+        api_key, (e.target as HTMLElement).dataset.issue_id || null,
     );
 });
 
 ViewEls.tool_bar.files.onclick = () => WindowFuncs.showWindow('files-window');
 ViewEls.tool_bar.delete.onclick = () => WindowFuncs.showWindow('delete-window');
 
-document.querySelector('#issue-info-selector').onclick = () => showInfoWindow('issue-info');
-document.querySelector('#issue-files-selector').onclick = () => showInfoWindow('issue-files');
-document.querySelector('#selectall-input').onchange = () => toggleAllRenames();
-document.querySelector('#selectall-convert-input').onchange = () => toggleAllConverts();
+(document.querySelector('#issue-info-selector') as HTMLElement).onclick = () => showInfoWindow('issue-info');
+(document.querySelector('#issue-files-selector') as HTMLElement).onclick = () => showInfoWindow('issue-files');
+(document.querySelector('#selectall-input') as HTMLElement).onchange = () => toggleAllRenames();
+(document.querySelector('#selectall-convert-input') as HTMLElement).onchange = () => toggleAllConverts();
 
-document.querySelector('#edit-form').action = 'javascript:editVolume();';
-document.querySelector('#delete-form').action = 'javascript:deleteVolume();';
-
-export {};
+(document.querySelector('#edit-form') as HTMLFormElement).action = 'javascript:editVolume();';
+(document.querySelector('#delete-form') as HTMLFormElement).action = 'javascript:deleteVolume();';

@@ -1,10 +1,30 @@
-// @ts-nocheck
 import usingApiKey from './auth.js';
 
 import WindowFuncs from './window.js';
-import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
+import { hide, fetchAPI, sendAPI } from './general.js';
 
-function createUsernameInput(id) {
+/* Types */
+export interface ExternalClient {
+    id: number
+    download_type: string
+    client_type: string
+    title: string
+    base_url: string
+    username: string | null
+    password: string | null
+    api_token: string
+}
+
+export interface CredentialData {
+    id: number
+    source: string
+    username: string | null
+    email: string | null
+    password: string | null
+    api_key: string | null
+}
+
+function createUsernameInput(id: string) {
     const username_row = document.createElement('tr');
     const username_header = document.createElement('th');
     const username_label = document.createElement('label');
@@ -24,7 +44,7 @@ function createUsernameInput(id) {
     return username_row;
 };
 
-function createPasswordInput(id) {
+function createPasswordInput(id: string) {
     const password_row = document.createElement('tr');
     const password_header = document.createElement('th');
     const password_label = document.createElement('label');
@@ -44,7 +64,7 @@ function createPasswordInput(id) {
     return password_row;
 };
 
-function createApiTokenInput(id) {
+function createApiTokenInput(id: string) {
     const token_row = document.createElement('tr');
     const token_header = document.createElement('th');
     const token_label = document.createElement('label');
@@ -64,19 +84,19 @@ function createApiTokenInput(id) {
     return token_row;
 };
 
-function loadEditTorrent(api_key, id) {
-    const form = document.querySelector('#edit-torrent-form tbody');
+function loadEditTorrent(api_key: string, id: number) {
+    const form = document.querySelector('#edit-torrent-form tbody') as HTMLElement;
 
-    form.dataset.id = id;
+    form.dataset.id = id.toString();
     form.querySelectorAll(
         'tr:not(:has(input#edit-title-input, input#edit-baseurl-input))',
     ).forEach((el) => {
         el.remove();
     });
-    document.querySelector('#test-torrent-edit').classList.remove(
+    document.querySelector('#test-torrent-edit')?.classList.remove(
         'show-success', 'show-fail',
     );
-    hide([document.querySelector('#edit-error')]);
+    hide([document.querySelector('#edit-error')!]);
 
     fetchAPI(`/externalclients/${id}`, api_key)
         .then((client_data) => {
@@ -87,28 +107,28 @@ function loadEditTorrent(api_key, id) {
                 .then((options) => {
                     const client_options = options.result[client_type];
 
-                    form.querySelector('#edit-title-input').value = client_data.result.title || '';
+                    (form.querySelector('#edit-title-input') as HTMLInputElement).value = client_data.result.title || '';
 
-                    form.querySelector('#edit-baseurl-input').value = client_data.result.base_url;
+                    (form.querySelector('#edit-baseurl-input') as HTMLInputElement).value = client_data.result.base_url;
 
                     if (client_options.includes('username')) {
                         const username_input = createUsernameInput('edit-username-input');
 
-                        username_input.querySelector('input').value = client_data.result.username || '';
+                        username_input.querySelector('input')!.value = client_data.result.username || '';
                         form.appendChild(username_input);
                     };
 
                     if (client_options.includes('password')) {
                         const password_input = createPasswordInput('edit-password-input');
 
-                        password_input.querySelector('input').value = client_data.result.password || '';
+                        password_input.querySelector('input')!.value = client_data.result.password || '';
                         form.appendChild(password_input);
                     };
 
                     if (client_options.includes('api_token')) {
                         const token_input = createApiTokenInput('edit-token-input');
 
-                        token_input.querySelector('input').value = client_data.result.api_token || '';
+                        token_input.querySelector('input')!.value = client_data.result.api_token || '';
                         form.appendChild(token_input);
                     };
 
@@ -117,61 +137,59 @@ function loadEditTorrent(api_key, id) {
         });
 };
 
-// eslint-disable-next-line
-function saveEditTorrent() {
-    usingApiKey()
-        .then((api_key) => {
-            testEditTorrent(api_key).then((result) => {
-                if (!result) {
-                    return;
-                }
+export function saveEditTorrent() {
+    usingApiKey().then((api_key) => {
+        testEditTorrent(api_key).then((result) => {
+            if (!result) {
+                return;
+            }
 
-                const form = document.querySelector('#edit-torrent-form tbody');
-                const id = form.dataset.id;
-                const data = {
-                    title: form.querySelector('#edit-title-input').value,
-                    base_url: form.querySelector('#edit-baseurl-input').value,
-                    username: form.querySelector('#edit-username-input')?.value || null,
-                    password: form.querySelector('#edit-password-input')?.value || null,
-                    api_token: form.querySelector('#edit-token-input')?.value || null,
-                };
+            const form = document.querySelector('#edit-torrent-form tbody') as HTMLElement;
+            const id = form.dataset.id;
+            const data = {
+                title: (form.querySelector('#edit-title-input') as HTMLInputElement).value,
+                base_url: (form.querySelector('#edit-baseurl-input') as HTMLInputElement).value,
+                username: (form.querySelector('#edit-username-input') as HTMLInputElement)?.value || null,
+                password: (form.querySelector('#edit-password-input') as HTMLInputElement)?.value || null,
+                api_token: (form.querySelector('#edit-token-input') as HTMLInputElement)?.value || null,
+            };
 
-                sendAPI('PUT', `/externalclients/${id}`, api_key, {}, data)
-                    .then(() => {
-                        loadTorrentClients(api_key);
-                        WindowFuncs.closeWindow();
-                    })
-                    .catch((e) => {
-                        if (e.status === 400) {
-                            // Client is downloading
-                            const error = document.querySelector('#edit-error');
+            sendAPI('PUT', `/externalclients/${id}`, api_key, {}, data)
+                .then(() => {
+                    loadTorrentClients(api_key);
+                    WindowFuncs.closeWindow();
+                })
+                .catch((e) => {
+                    if (e.status === 400) {
+                        // Client is downloading
+                        const error = document.querySelector('#edit-error') as HTMLElement;
 
-                            error.innerText = '*Client is downloading';
-                            hide([], [error]);
-                        };
-                    });
-            });
+                        error.innerText = '*Client is downloading';
+                        hide([], [error]);
+                    };
+                });
         });
+    });
 };
 
-async function testEditTorrent(api_key) {
-    const error = document.querySelector('#edit-error');
+async function testEditTorrent(api_key: string) {
+    const error = document.querySelector('#edit-error') as HTMLElement;
 
     hide([error]);
-    const form = document.querySelector('#edit-torrent-form tbody');
-    const test_button = document.querySelector('#test-torrent-edit');
+    const form = document.querySelector('#edit-torrent-form tbody') as HTMLElement;
+    const test_button = document.querySelector('#test-torrent-edit') as HTMLElement;
 
     test_button.classList.remove('show-success', 'show-fail');
     const data = {
         client_type: form.dataset.type,
-        base_url: form.querySelector('#edit-baseurl-input').value,
-        username: form.querySelector('#edit-username-input')?.value || null,
-        password: form.querySelector('#edit-password-input')?.value || null,
-        api_token: form.querySelector('#edit-token-input')?.value || null,
+        base_url: (form.querySelector('#edit-baseurl-input') as HTMLInputElement).value,
+        username: (form.querySelector('#edit-username-input') as HTMLInputElement)?.value || null,
+        password: (form.querySelector('#edit-password-input') as HTMLInputElement)?.value || null,
+        api_token: (form.querySelector('#edit-token-input') as HTMLInputElement)?.value || null,
     };
 
     return await sendAPI('POST', '/externalclients/test', api_key, {}, data)
-        .then((response) => response.json())
+        .then((response) => response?.json())
         .then((json) => {
             // Test successful
             if (json.result.success) {
@@ -188,8 +206,8 @@ async function testEditTorrent(api_key) {
         });
 };
 
-function deleteTorrent(api_key) {
-    const id = document.querySelector('#edit-torrent-form tbody').dataset.id;
+function deleteTorrent(api_key: string) {
+    const id = (document.querySelector('#edit-torrent-form tbody') as HTMLElement).dataset.id;
 
     sendAPI('DELETE', `/externalclients/${id}`, api_key)
         .then(() => {
@@ -199,7 +217,7 @@ function deleteTorrent(api_key) {
         .catch((e) => {
             if (e.status === 400) {
                 // Client is downloading
-                const error = document.querySelector('#edit-error');
+                const error = document.querySelector('#edit-error') as HTMLElement;
 
                 error.innerText = '*Client is downloading';
                 hide([], [error]);
@@ -207,39 +225,41 @@ function deleteTorrent(api_key) {
         });
 };
 
-function loadTorrentList(api_key) {
-    const table = document.querySelector('#choose-torrent-list');
+function loadTorrentList(api_key: string) {
+    const table = document.querySelector('#choose-torrent-list') as HTMLElement;
 
     table.innerHTML = '';
 
-    fetchAPI('/externalclients/options', api_key)
-        .then((json) => {
-            Object.keys(json.result).forEach((c) => {
-                const entry = document.createElement('button');
+    fetchAPI('/externalclients/options', api_key).then((json) => {
+        Object.keys(json.result).forEach((c) => {
+            const entry = document.createElement('button');
 
-                entry.innerText = c;
-                entry.onclick = () => loadAddTorrent(api_key, c);
-                table.appendChild(entry);
-            });
-            WindowFuncs.showWindow('choose-torrent-window');
+            entry.innerText = c;
+            entry.onclick = () => loadAddTorrent(api_key, c);
+            table.appendChild(entry);
         });
+        WindowFuncs.showWindow('choose-torrent-window');
+    });
 };
 
-function loadAddTorrent(api_key, client_type) {
-    const form = document.querySelector('#add-torrent-form tbody');
+function loadAddTorrent(api_key: string, client_type: string) {
+    const form = document.querySelector('#add-torrent-form tbody') as HTMLElement;
 
     form.dataset.type = client_type;
+
     form.querySelectorAll(
         'tr:not(:has(input#add-title-input, input#add-baseurl-input))',
     ).forEach((el) => {
         el.remove();
     });
-    document.querySelector('#test-torrent-add').classList.remove(
+
+    document.querySelector('#test-torrent-add')?.classList.remove(
         'show-success', 'show-fail',
     );
-    form.querySelectorAll(
+
+    (form.querySelectorAll(
         '#add-title-input, #add-baseurl-input',
-    ).forEach((el) => {
+    ) as NodeListOf<HTMLInputElement>).forEach((el) => {
         el.value = '';
     });
 
@@ -262,51 +282,50 @@ function loadAddTorrent(api_key, client_type) {
     });
 };
 
-// eslint-disable-next-line
-function saveAddTorrent() {
-    usingApiKey()
-        .then((api_key) => {
-            testAddTorrent(api_key).then((result) => {
-                if (!result) {
-                    return;
-                }
+export function saveAddTorrent() {
+    usingApiKey().then((api_key) => {
+        testAddTorrent(api_key).then((result) => {
+            if (!result) {
+                return;
+            }
 
-                const form = document.querySelector('#add-torrent-form tbody');
-                const data = {
-                    client_type: form.dataset.type,
-                    title: form.querySelector('#add-title-input').value,
-                    base_url: form.querySelector('#add-baseurl-input').value,
-                    username: form.querySelector('#add-username-input')?.value || null,
-                    password: form.querySelector('#add-password-input')?.value || null,
-                    api_token: form.querySelector('#add-token-input')?.value || null,
-                };
+            const form = document.querySelector('#add-torrent-form tbody') as HTMLElement;
+            const data = {
+                client_type: form.dataset.type,
+                title: (form.querySelector('#add-title-input') as HTMLInputElement).value,
+                base_url: (form.querySelector('#add-baseurl-input') as HTMLInputElement).value,
+                username: (form.querySelector('#add-username-input') as HTMLInputElement)?.value || null,
+                password: (form.querySelector('#add-password-input') as HTMLInputElement)?.value || null,
+                api_token: (form.querySelector('#add-token-input') as HTMLInputElement)?.value || null,
+            };
 
-                sendAPI('POST', '/externalclients', api_key, {}, data).then(() => {
-                    loadTorrentClients(api_key);
-                    WindowFuncs.closeWindow();
-                });
+            sendAPI('POST', '/externalclients', api_key, {}, data).then(() => {
+                loadTorrentClients(api_key);
+                WindowFuncs.closeWindow();
             });
         });
+    });
 };
 
-async function testAddTorrent(api_key) {
-    const error = document.querySelector('#add-error');
+async function testAddTorrent(api_key: string) {
+    const error = document.querySelector('#add-error') as HTMLElement;
 
     hide([error]);
-    const form = document.querySelector('#add-torrent-form tbody');
-    const test_button = document.querySelector('#test-torrent-add');
+    const form = document.querySelector('#add-torrent-form tbody') as HTMLElement;
+    const test_button = document.querySelector('#test-torrent-add') as HTMLElement;
 
     test_button.classList.remove('show-success', 'show-fail');
+
     const data = {
         client_type: form.dataset.type,
-        base_url: form.querySelector('#add-baseurl-input').value,
-        username: form.querySelector('#add-username-input')?.value || null,
-        password: form.querySelector('#add-password-input')?.value || null,
-        api_token: form.querySelector('#add-token-input')?.value || null,
+        base_url: (form.querySelector('#add-baseurl-input') as HTMLInputElement).value,
+        username: (form.querySelector('#add-username-input') as HTMLInputElement)?.value || null,
+        password: (form.querySelector('#add-password-input') as HTMLInputElement)?.value || null,
+        api_token: (form.querySelector('#add-token-input') as HTMLInputElement)?.value || null,
     };
 
     return await sendAPI('POST', '/externalclients/test', api_key, {}, data)
-        .then((response) => response.json())
+        .then((response) => response?.json())
         .then((json) => {
             // Test successful
             if (json.result.success) {
@@ -323,26 +342,25 @@ async function testAddTorrent(api_key) {
         });
 };
 
-function loadTorrentClients(api_key) {
-    fetchAPI('/externalclients', api_key)
-        .then((json) => {
-            const table = document.querySelector('#torrent-client-list');
+function loadTorrentClients(api_key: string) {
+    fetchAPI('/externalclients', api_key).then((json) => {
+        const table = document.querySelector('#torrent-client-list') as HTMLElement;
 
-            document.querySelectorAll('#torrent-client-list > :not(:first-child)').forEach((el) => {
-                el.remove();
-            });
-
-            json.result.forEach((client) => {
-                const entry = document.createElement('button');
-
-                entry.onclick = () => loadEditTorrent(api_key, client.id);
-                entry.innerText = client.title;
-                table.appendChild(entry);
-            });
+        document.querySelectorAll('#torrent-client-list > :not(:first-child)').forEach((el) => {
+            el.remove();
         });
+
+        (json.result as ExternalClient[]).forEach((client) => {
+            const entry = document.createElement('button');
+
+            entry.onclick = () => loadEditTorrent(api_key, client.id);
+            entry.innerText = client.title;
+            table.appendChild(entry);
+        });
+    });
 };
 
-function fillCredentials(api_key) {
+function fillCredentials(api_key: string) {
     fetchAPI('/credentials', api_key)
         .then((json) => {
             document.querySelectorAll('#mega-creds, #pixeldrain-creds').forEach(
@@ -350,61 +368,59 @@ function fillCredentials(api_key) {
                     c.innerHTML = '';
                 },
             );
-            json.result.forEach((result) => {
+            (json.result as CredentialData[]).forEach((result) => {
                 if (result.source === 'mega') {
                     const row = document.querySelector(
                         '.pre-build-els .mega-cred-entry',
-                    ).cloneNode(true);
+                    )?.cloneNode(true) as HTMLElement;
 
-                    row.querySelector('.mega-email').innerText = result.email;
-                    row.querySelector('.mega-password').innerText = result.password;
-                    row.querySelector('.delete-credential').onclick = () => {
-                        sendAPI('DELETE', `/credentials/${result.id}`, api_key)
-                            .then(() => row.remove());
+                    (row.querySelector('.mega-email') as HTMLElement).innerText = result.email ?? '';
+                    (row.querySelector('.mega-password') as HTMLElement).innerText = result.password ?? '';
+                    (row.querySelector('.delete-credential') as HTMLButtonElement).onclick = () => {
+                        sendAPI('DELETE', `/credentials/${result.id}`, api_key).then(() => row.remove());
                     };
-                    document.querySelector('#mega-creds').appendChild(row);
+                    document.querySelector('#mega-creds')?.appendChild(row);
                 }
                 else if (result.source === 'pixeldrain') {
                     const row = document.querySelector(
                         '.pre-build-els .pixeldrain-cred-entry',
-                    ).cloneNode(true);
+                    )?.cloneNode(true) as HTMLElement;
 
-                    row.querySelector('.pixeldrain-key').innerText = result.api_key;
-                    row.querySelector('.delete-credential').onclick = () => {
+                    (row.querySelector('.pixeldrain-key') as HTMLElement).innerText = result.api_key ?? '';
+                    (row.querySelector('.delete-credential') as HTMLButtonElement).onclick = () => {
                         sendAPI('DELETE', `/credentials/${result.id}`, api_key)
                             .then(() => row.remove());
                     };
-                    document.querySelector('#pixeldrain-creds').appendChild(row);
+                    document.querySelector('#pixeldrain-creds')?.appendChild(row);
                 };
             });
         });
 
-    document.querySelectorAll('#mega-form input, #pixeldrain-form input').forEach(
+    (document.querySelectorAll('#mega-form input, #pixeldrain-form input') as NodeListOf<HTMLInputElement>).forEach(
         (i) => {
             i.value = '';
         },
     );
 };
 
-// eslint-disable-next-line
-function addCredential() {
-    hide([document.querySelector('#builtin-window p.error')]);
+export function addCredential() {
+    hide([document.querySelector('#builtin-window p.error')!]);
 
-    const source = document.querySelector('#builtin-window').dataset.tag;
-    let data;
+    const source = (document.querySelector('#builtin-window') as HTMLElement).dataset.tag;
+    let data: Record<string, string>;
 
     if (source === 'mega') {
         data = {
             source,
-            email: document.querySelector('#add-mega .mega-email input').value,
-            password: document.querySelector('#add-mega .mega-password input').value,
+            email: (document.querySelector('#add-mega .mega-email input') as HTMLInputElement).value,
+            password: (document.querySelector('#add-mega .mega-password input') as HTMLInputElement).value,
         };
     }
 
     else if (source === 'pixeldrain') {
         data = {
             source,
-            api_key: document.querySelector('#add-pixeldrain .pixeldrain-key input').value,
+            api_key: (document.querySelector('#add-pixeldrain .pixeldrain-key input') as HTMLInputElement).value,
         };
     }
 
@@ -413,11 +429,11 @@ function addCredential() {
             .then(() => fillCredentials(api_key))
             .catch((e) => {
                 if (e.status === 400) {
-                    e.json().then((json) => {
-                        document.querySelector('#builtin-window p.error')
+                    e.json().then((json: any) => {
+                        (document.querySelector('#builtin-window p.error') as HTMLElement)
                             .innerText = json.result.description;
 
-                        hide([], [document.querySelector('#builtin-window p.error')]);
+                        hide([], [document.querySelector('#builtin-window p.error')!]);
                     });
                 }
                 else {
@@ -428,11 +444,11 @@ function addCredential() {
 };
 
 const toggles = {
-    getcomics: document.querySelector('#gc-toggle'),
-    libgen: document.querySelector('#lg-toggle'),
+    getcomics: document.querySelector('#gc-toggle') as HTMLInputElement,
+    libgen: document.querySelector('#lg-toggle') as HTMLInputElement,
 };
 
-function fillSettings(api_key) {
+function fillSettings(api_key: string) {
     fetchAPI('/settings', api_key)
         .then((json) => {
             toggles.getcomics.checked = json.result.enable_getcomics;
@@ -442,48 +458,48 @@ function fillSettings(api_key) {
 
 // code run on load
 
-usingApiKey()
-    .then((api_key) => {
-        fillSettings(api_key);
-        fillCredentials(api_key);
-        loadTorrentClients(api_key);
-        document.querySelector('#delete-torrent-edit').onclick = () => deleteTorrent(api_key);
-        document.querySelector('#test-torrent-edit').onclick = () => testEditTorrent(api_key);
-        document.querySelector('#test-torrent-add').onclick = () => testAddTorrent(api_key);
-        document.querySelector('#add-torrent-client').onclick = () => loadTorrentList(api_key);
+usingApiKey().then((api_key) => {
+    fillSettings(api_key);
+    fillCredentials(api_key);
+    loadTorrentClients(api_key);
 
-        toggles.getcomics.onchange = () => {
-            const data = { enable_getcomics: toggles.getcomics.checked };
+    (document.querySelector('#delete-torrent-edit') as HTMLInputElement).onclick = () => deleteTorrent(api_key);
+    (document.querySelector('#test-torrent-edit') as HTMLInputElement).onclick = () => testEditTorrent(api_key);
+    (document.querySelector('#test-torrent-add') as HTMLInputElement).onclick = () => testAddTorrent(api_key);
+    (document.querySelector('#add-torrent-client') as HTMLInputElement).onclick = () => loadTorrentList(api_key);
 
-            sendAPI('PUT', '/settings', api_key, {}, data);
-        };
+    toggles.getcomics.onchange = () => {
+        const data = { enable_getcomics: toggles.getcomics.checked };
 
-        toggles.libgen.onchange = () => {
-            const data = { enable_libgen: toggles.libgen.checked };
+        sendAPI('PUT', '/settings', api_key, {}, data);
+    };
 
-            sendAPI('PUT', '/settings', api_key, {}, data);
-        };
-    });
+    toggles.libgen.onchange = () => {
+        const data = { enable_libgen: toggles.libgen.checked };
 
-document.querySelector('#edit-torrent-form').action = 'javascript:saveEditTorrent()';
-document.querySelector('#add-torrent-form').action = 'javascript:saveAddTorrent()';
-document.querySelectorAll('#cred-container > form').forEach(
+        sendAPI('PUT', '/settings', api_key, {}, data);
+    };
+});
+
+(document.querySelector('#edit-torrent-form') as HTMLFormElement).action = 'javascript:saveEditTorrent()';
+(document.querySelector('#add-torrent-form') as HTMLFormElement).action = 'javascript:saveAddTorrent()';
+
+(document.querySelectorAll('#cred-container > form') as NodeListOf<HTMLFormElement>).forEach(
     (f) => {
         f.action = 'javascript:addCredential();';
     },
 );
-document.querySelectorAll('#builtin-client-list > button').forEach((b) => {
+
+(document.querySelectorAll('#builtin-client-list > button') as NodeListOf<HTMLButtonElement>).forEach((b) => {
     const tag = b.dataset.tag;
 
     b.onclick = () => {
-        document.querySelector('#builtin-window').dataset.tag = tag;
-        hide([document.querySelector('#builtin-window p.error')]);
-        document.querySelectorAll('#builtin-window input').forEach((i) => {
+        (document.querySelector('#builtin-window') as HTMLElement).dataset.tag = tag;
+        hide([document.querySelector('#builtin-window p.error')!]);
+        (document.querySelectorAll('#builtin-window input') as NodeListOf<HTMLButtonElement>).forEach((i) => {
             i.value = '';
         });
 
         WindowFuncs.showWindow('builtin-window');
     };
 });
-
-export {};

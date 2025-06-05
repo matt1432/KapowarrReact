@@ -1,72 +1,70 @@
-// @ts-nocheck
 import usingApiKey from './auth.js';
-import { url_base, volume_id, twoDigits, setIcon, setImage, hide, fetchAPI, sendAPI, icons, images, task_to_button, mapButtons, buildTaskString, spinButton, unspinButton, fillTaskQueue, handleTaskAdded, handleTaskRemoved, connectToWebSocket, sizes, convertSize, default_values, setupLocalStorage, getLocalStorage, setLocalStorage, socket } from './general.js';
+import { url_base, fetchAPI, sendAPI } from './general.js';
 
 const HistoryEls = {
-    table: document.querySelector('#history'),
+    table: document.querySelector('#history') as HTMLElement,
     page_turner: {
-        container: document.querySelector('.page-turner'),
-        previous: document.querySelector('#previous-page'),
-        next: document.querySelector('#next-page'),
-        number: document.querySelector('#page-number'),
+        container: document.querySelector('.page-turner') as HTMLTableSectionElement,
+        previous: document.querySelector('#previous-page') as HTMLButtonElement,
+        next: document.querySelector('#next-page') as HTMLButtonElement,
+        number: document.querySelector('#page-number') as HTMLParagraphElement,
     },
     buttons: {
-        refresh: document.querySelector('#refresh-button'),
-        clear: document.querySelector('#clear-button'),
+        refresh: document.querySelector('#refresh-button') as HTMLButtonElement,
+        clear: document.querySelector('#clear-button') as HTMLButtonElement,
     },
-    entry: document.querySelector('.pre-build-els .history-entry'),
+    entry: document.querySelector('.pre-build-els .history-entry') as HTMLTableRowElement,
 };
 
 let offset = 0;
 
-function fillHistory(api_key) {
-    fetchAPI('/activity/history', api_key, { offset })
-        .then((json) => {
-            HistoryEls.table.innerHTML = '';
-            json.result.forEach((obj) => {
-                const entry = HistoryEls.entry.cloneNode(true);
+function fillHistory(api_key: string) {
+    fetchAPI('/activity/history', api_key, { offset }).then((json) => {
+        HistoryEls.table.innerHTML = '';
 
-                const title = entry.querySelector('a');
+        (json.result as Record<string, any>[]).forEach((obj) => {
+            const entry = HistoryEls.entry.cloneNode(true) as typeof HistoryEls.entry;
 
-                title.href = obj.web_link;
-                title.innerText = obj.web_title;
-                title.title = obj.web_title;
-                if (obj.web_sub_title !== null) {
-                    title.title += `\n\n${obj.web_sub_title}`;
+            const title = entry.querySelector('a')!;
+
+            title.href = obj.web_link;
+            title.innerText = obj.web_title;
+            title.title = obj.web_title;
+            if (obj.web_sub_title !== null) {
+                title.title += `\n\n${obj.web_sub_title}`;
+            }
+
+            if (obj.file_title !== null) {
+                const vol_link = entry.querySelector('td:nth-child(2) a') as HTMLAnchorElement;
+
+                vol_link.innerText = obj.file_title;
+                if (obj.volume_id !== null) {
+                    vol_link.href = `${url_base}/volumes/${obj.volume_id}`;
                 }
+            };
 
-                if (obj.file_title !== null) {
-                    const vol_link = entry.querySelector('td:nth-child(2) a');
+            if (obj.source !== null) {
+                (entry.querySelector('td:nth-child(3)') as HTMLElement).innerText = obj.source;
+            }
 
-                    vol_link.innerText = obj.file_title;
-                    if (obj.volume_id !== null) {
-                        vol_link.href = `${url_base}/volumes/${obj.volume_id}`;
-                    }
-                };
+            const d = new Date(obj.downloaded_at * 1000);
+            const formatted_date = `${d.toLocaleString('en-CA').slice(0, 10)} ${d.toTimeString().slice(0, 5)}`;
 
-                if (obj.source !== null) {
-                    entry.querySelector('td:nth-child(3)').innerText = obj.source;
-                }
+            (entry.querySelector('td:last-child') as HTMLElement).innerText = formatted_date;
 
-                const d = new Date(obj.downloaded_at * 1000);
-                const formatted_date = `${d.toLocaleString('en-CA').slice(0, 10)} ${
-                    d.toTimeString().slice(0, 5)}`;
-
-                entry.querySelector('td:last-child').innerText = formatted_date;
-
-                HistoryEls.table.appendChild(entry);
-            });
+            HistoryEls.table.appendChild(entry);
         });
+    });
 };
 
-function clearHistory(api_key) {
+function clearHistory(api_key: string) {
     sendAPI('DELETE', '/activity/history', api_key);
     offset = 0;
     HistoryEls.page_turner.number.innerText = 'Page 1';
     HistoryEls.table.innerHTML = '';
 };
 
-function reduceOffset(api_key) {
+function reduceOffset(api_key: string) {
     if (offset === 0) {
         return;
     }
@@ -75,7 +73,7 @@ function reduceOffset(api_key) {
     fillHistory(api_key);
 };
 
-function increaseOffset(api_key) {
+function increaseOffset(api_key: string) {
     if (HistoryEls.table.innerHTML === '') {
         return;
     }
@@ -92,5 +90,3 @@ usingApiKey().then((api_key) => {
     HistoryEls.page_turner.previous.onclick = () => reduceOffset(api_key);
     HistoryEls.page_turner.next.onclick = () => increaseOffset(api_key);
 });
-
-export {};
