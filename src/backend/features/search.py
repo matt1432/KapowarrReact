@@ -173,7 +173,7 @@ class SearchLibgenPlus:
                         "year": volume_data.year,
                         "volume_number": self.volume_number,
                         "special_version": None,  # TODO: figure this out
-                        "issue_number": None,  # file_result.issue is None, let the user handle this
+                        "issue_number": 1,  # file_result.issue is None, let the user handle this
                         "annual": False,  # TODO: figure this out
                         "link": file_result.download_link or "",
                         "display_title": file_result.filename or "",
@@ -212,7 +212,6 @@ class SearchLibgenPlus:
                         f"https://libgen.gs/series.php?id={issue.series.id}"
                     )
 
-                    # TODO: add way to change this manually in the UI
                     if volume_data.libgen_url != new_libgen_url:
                         self.volume.update(
                             {

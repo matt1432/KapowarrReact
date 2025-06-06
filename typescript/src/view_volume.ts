@@ -625,7 +625,7 @@ function showManualSearch(api_key: string, issue_id: number | null = null) {
                         .then((response) => response?.json())
                         .then((jsonObj2) => {
                             tbody.innerHTML = '';
-                            setupTable(jsonObj2);
+                            setupTable(jsonObj2.result);
                             hide([], [table]);
                         });
                 }
