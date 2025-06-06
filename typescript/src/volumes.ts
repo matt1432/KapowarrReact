@@ -249,7 +249,7 @@ function fetchLibrary(api_key: string) {
     });
 };
 
-export function searchLibrary() {
+function searchLibrary() {
     usingApiKey().then((api_key) => fetchLibrary(api_key));
 };
 
@@ -408,3 +408,11 @@ library_els.mass_edit.select_all.onchange = () => (library_els.views.table
     .forEach((c) => {
         c.checked = library_els.mass_edit.select_all.checked;
     });
+
+declare global {
+    interface Window {
+        searchLibrary: () => void
+    }
+}
+
+window.searchLibrary = searchLibrary;

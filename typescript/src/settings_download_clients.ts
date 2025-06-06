@@ -139,7 +139,7 @@ function loadEditTorrent(api_key: string, id: number) {
         });
 };
 
-export function saveEditTorrent() {
+function saveEditTorrent() {
     usingApiKey().then((api_key) => {
         testEditTorrent(api_key).then((result) => {
             if (!result) {
@@ -290,7 +290,7 @@ function loadAddTorrent(api_key: string, client_type: string) {
     });
 };
 
-export function saveAddTorrent() {
+function saveAddTorrent() {
     usingApiKey().then((api_key) => {
         testAddTorrent(api_key).then((result) => {
             if (!result) {
@@ -415,7 +415,7 @@ function fillCredentials(api_key: string) {
     );
 };
 
-export function addCredential() {
+function addCredential() {
     hide([document.querySelector('#builtin-window p.error')!]);
 
     const source = (document.querySelector('#builtin-window') as HTMLElement).dataset.tag;
@@ -540,3 +540,15 @@ usingApiKey().then((api_key) => {
         WindowFuncs.showWindow('builtin-window');
     };
 });
+
+declare global {
+    interface Window {
+        addCredential: () => void
+        saveAddTorrent: () => void
+        saveEditTorrent: () => void
+    }
+}
+
+window.addCredential = addCredential;
+window.saveAddTorrent = saveAddTorrent;
+window.saveEditTorrent = saveEditTorrent;

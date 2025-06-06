@@ -17,7 +17,7 @@ function registerLogin(api_key: string) {
     redirect();
 }
 
-export function login() {
+function login() {
     const error = document.querySelector('#error-message') as HTMLElement;
 
     error.classList.add('hidden');
@@ -63,3 +63,11 @@ if (JSON.parse(localStorage.getItem('kapowarr') || '{ "theme": "light" }')['them
 }
 
 (document.querySelector('#login-form') as HTMLFormElement).action = 'javascript:login();';
+
+declare global {
+    interface Window {
+        login: () => void
+    }
+}
+
+window.login = login;

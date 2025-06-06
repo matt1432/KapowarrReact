@@ -932,7 +932,7 @@ function showEdit(api_key: string) {
     ViewEls.vol_edit.volume_folder.value = volume_folder;
 };
 
-export function editVolume() {
+function editVolume() {
     WindowFuncs.showLoadWindow('edit-window');
 
     const data = {
@@ -964,7 +964,7 @@ export function editVolume() {
 //
 // Deleting
 //
-export function deleteVolume() {
+function deleteVolume() {
     const downloading_error = document.querySelector('#volume-downloading-error') as HTMLElement;
     const tasking_error = document.querySelector('#volume-tasking-error') as HTMLElement;
     const delete_folder = (document.querySelector('#delete-folder-input') as HTMLInputElement).value;
@@ -1090,3 +1090,13 @@ ViewEls.tool_bar.delete.onclick = () => WindowFuncs.showWindow('delete-window');
 
 (document.querySelector('#edit-form') as HTMLFormElement).action = 'javascript:editVolume();';
 (document.querySelector('#delete-form') as HTMLFormElement).action = 'javascript:deleteVolume();';
+
+declare global {
+    interface Window {
+        deleteVolume: () => void
+        editVolume: () => void
+    }
+}
+
+window.deleteVolume = deleteVolume;
+window.editVolume = editVolume;

@@ -521,7 +521,7 @@ function showAddWindow(comicvine_id: string, api_key: string) {
     SearchEls.window.monitoring_scheme.value = monitoring_pref.monitoring_scheme;
 };
 
-export function addVolume() {
+function addVolume() {
     WindowFuncs.showLoadWindow('add-window');
     const volume_folder = SearchEls.window.volume_folder_input.value;
 
@@ -596,3 +596,13 @@ SearchEls.filters.translations
     ?.setAttribute('selected', '');
 
 processURLParams();
+
+declare global {
+    interface Window {
+        addVolume: () => void
+        search: () => void
+    }
+}
+
+window.addVolume = addVolume;
+window.search = search;

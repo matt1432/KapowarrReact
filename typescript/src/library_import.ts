@@ -175,7 +175,7 @@ function editCVMatch(
     });
 };
 
-export function searchCV() {
+function searchCV() {
     const input = LIEls.search.input;
 
     input.blur();
@@ -274,3 +274,11 @@ LIEls.buttons.cancel.forEach((b) => {
         [LIEls.views.start],
     );
 });
+
+declare global {
+    interface Window {
+        searchCV: () => void
+    }
+}
+
+window.searchCV = searchCV;
