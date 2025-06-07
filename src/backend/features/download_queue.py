@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from asyncio import gather, run
 from collections.abc import Iterable
 from os import listdir
@@ -70,7 +71,7 @@ class DownloadHandler(metaclass=Singleton):
         return
 
     # region Running Download
-    def __run_download(self, download: Download) -> None:
+    def __run_download(self, download: Download, attempts: int = 0) -> None:
         """Start a download. Intended to be run in a thread.
 
         Args:
@@ -97,6 +98,12 @@ class DownloadHandler(metaclass=Singleton):
             PostProcessor.canceled(download)
 
         elif download.state == DownloadState.FAILED_STATE:
+            # Libgen downloads can fail a few times before working
+            # when their servers are struggling
+            if download.source_type == DownloadSource.LIBGENPLUS and attempts < 15:
+                time.sleep(1)
+                self.__run_download(download, attempts + 1)
+                return
             PostProcessor.failed(download)
 
         elif download.state == DownloadState.DOWNLOADING_STATE:
