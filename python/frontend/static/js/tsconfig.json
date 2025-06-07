@@ -21,13 +21,12 @@
     "newLine": "LF",
     // Build
     "rootDir": "src",
-    "outDir": "../python/frontend/static/js"
+    "outDir": "./."
   },
   "exclude": [
     "eslint.config.ts"
   ],
   "includes": [
-    // "eslint.config.ts",
     "src/*.ts"
   ]
 }
