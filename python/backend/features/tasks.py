@@ -9,8 +9,6 @@ from threading import Thread, Timer
 from time import sleep, time
 from typing import Any
 
-from flask import Flask
-
 from backend.base.custom_exceptions import (
     InvalidComicVineApiKey,
     TaskNotDeletable,
@@ -25,6 +23,7 @@ from backend.implementations.naming import mass_rename
 from backend.implementations.volumes import Issue, Volume, refresh_and_scan
 from backend.internals.db import close_db, get_db
 from backend.internals.server import WebSocket
+from flask import Flask
 
 
 class Task(ABC):

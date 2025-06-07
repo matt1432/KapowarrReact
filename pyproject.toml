@@ -49,3 +49,6 @@ include-package-data = false
 "backend.lib" = ["*"]
 "frontend" = ["templates/*"]
 "frontend.static" = ["css/*", "img/*", "js/*.js", "json/*"]
+
+[tool.setuptools.packages.find]
+where = ["python"]

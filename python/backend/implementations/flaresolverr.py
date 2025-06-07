@@ -3,11 +3,10 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any
 
-from requests import RequestException
-
 from backend.base.definitions import Constants
 from backend.base.helpers import Session, Singleton
 from backend.base.logging import LOGGER
+from requests import RequestException
 
 if TYPE_CHECKING:
     from backend.base.helpers import AsyncSession

@@ -26,15 +26,14 @@ from typing import (
 from urllib.parse import unquote
 
 from aiohttp import ClientError, ClientResponse, ClientSession
+from backend.base.definitions import Constants, T, U
+from backend.base.logging import LOGGER, get_log_filepath
 from bencoding import bdecode
 from multidict import CIMultiDict, CIMultiDictProxy
 from requests import Session as RSession
 from requests.adapters import HTTPAdapter, Retry
 from requests.structures import CaseInsensitiveDict
 from yarl import URL
-
-from backend.base.definitions import Constants, T, U
-from backend.base.logging import LOGGER, get_log_filepath
 
 if TYPE_CHECKING:
     from multiprocessing.pool import IMapIterator

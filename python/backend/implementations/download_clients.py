@@ -15,11 +15,6 @@ from typing import TYPE_CHECKING, Any, cast, final
 from urllib.parse import unquote_plus
 
 import requests
-from bs4 import BeautifulSoup, Tag
-from requests import RequestException
-from websocket import create_connection
-from websocket._exceptions import WebSocketBadStatusException
-
 from backend.base.custom_exceptions import (
     ClientNotWorking,
     DownloadLimitReached,
@@ -49,6 +44,10 @@ from backend.implementations.volumes import Issue, Volume
 from backend.internals.db import get_db
 from backend.internals.server import WebSocket
 from backend.internals.settings import Settings
+from bs4 import BeautifulSoup, Tag
+from requests import RequestException
+from websocket import create_connection
+from websocket._exceptions import WebSocketBadStatusException
 
 if TYPE_CHECKING:
     from requests import Response

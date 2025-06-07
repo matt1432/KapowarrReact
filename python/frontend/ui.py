@@ -1,9 +1,8 @@
 from typing import Any
 
+from backend.internals.server import SERVER
 from flask import Blueprint, redirect, render_template
 from werkzeug.wrappers.response import Response
-
-from backend.internals.server import SERVER
 
 ui = Blueprint("ui", __name__)
 methods = ["GET"]

@@ -10,8 +10,6 @@ from typing import Any
 
 from aiohttp import ContentTypeError
 from aiohttp.client_exceptions import ClientError
-from bs4 import BeautifulSoup, Tag
-
 from backend.base.custom_exceptions import (
     CVRateLimitReached,
     InvalidComicVineApiKey,
@@ -46,6 +44,7 @@ from backend.base.logging import LOGGER
 from backend.implementations.matching import _match_title, _match_year
 from backend.internals.db import get_db
 from backend.internals.settings import Settings
+from bs4 import BeautifulSoup, Tag
 
 translation_regex = compile(
     r"^<p>\s*\w+ publication(\.?</p>$|,\s| \(in the \w+ language\)|, translates )|"
