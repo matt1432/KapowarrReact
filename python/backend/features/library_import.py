@@ -11,6 +11,7 @@ from backend.base.definitions import (
     FileConstants,
     FilenameData,
     MonitorScheme,
+    SpecialVersion,
 )
 from backend.base.file_extraction import extract_filename_data
 from backend.base.files import (
@@ -100,7 +101,13 @@ def propose_library_import(
             # File directly in root folder is not allowed
             continue
 
-        if f.endswith(FileConstants.IMAGE_EXTENSIONS):
+        efd = extract_filename_data(f, prefer_folder_year=True)
+        del efd["issue_number"]  # type: ignore
+
+        if (
+            f.endswith(FileConstants.IMAGE_EXTENSIONS)
+            and efd["special_version"] != SpecialVersion.COVER
+        ):
             if d in image_folders:
                 continue
             image_folders.add(d)
@@ -111,8 +118,6 @@ def propose_library_import(
         if len(folders) > limit:
             break
 
-        efd = extract_filename_data(f, prefer_folder_year=True)
-        del efd["issue_number"]  # type: ignore
         unimported_files.setdefault(efd, []).append(f)
 
     LOGGER.debug("File groupings: %s", unimported_files)
