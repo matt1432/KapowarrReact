@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import builtins
 from base64 import b64encode
-from json import loads
 from os.path import basename, join, sep, splitext
 from re import IGNORECASE, compile
 from threading import Event, Thread
@@ -46,8 +45,6 @@ from backend.internals.server import WebSocket
 from backend.internals.settings import Settings
 from bs4 import BeautifulSoup, Tag
 from requests import RequestException
-from websocket import create_connection
-from websocket._exceptions import WebSocketBadStatusException
 
 if TYPE_CHECKING:
     from requests import Response
@@ -502,47 +499,37 @@ class PixelDrainDownload(BaseDirectDownload):
     @staticmethod
     def login(api_key: str) -> int:
         LOGGER.debug("Logging into Pixeldrain with user api key")
-        try:
-            with Session() as session:
-                ses_response = session.get(
+        with Session() as session:
+            try:
+                response = session.get(
                     Constants.PIXELDRAIN_API_URL + "/user/lists",
                     headers={
                         "Authorization": "Basic "
                         + b64encode(f":{api_key}".encode()).decode()
                     },
                 )
-                if ses_response.status_code == 401:
+                if response.status_code == 401:
                     return -1
 
-            ws = create_connection(
-                Constants.PIXELDRAIN_WEBSOCKET_URL + "/file_stats",
-                header=["Cookie: pd_auth_key=" + api_key],
-            )
+            except RequestException:
+                raise ClientNotWorking(
+                    "An unexpected error occured when making contact with Pixeldrain"
+                )
 
-        except RequestException:
-            raise ClientNotWorking(
-                "An unexpected error occured when making contact with Pixeldrain"
-            )
+            limits = session.get(
+                Constants.PIXELDRAIN_API_URL + "/misc/rate_limits",
+                headers={
+                    "Authorization": "Basic "
+                    + b64encode(f":{api_key}".encode()).decode()
+                },
+            ).json()
 
-        except WebSocketBadStatusException as e:
-            if e.status_code == 401:
-                return -1
-
-            raise ClientNotWorking(
-                "An unexpected error occured when making contact with Pixeldrain"
-            )
-
-        ws.send('{"type": "limits"}')
-        response = loads(ws.recv())
-        ws.close()
-
+        transfer_limit_used = limits["transfer_limit_used"]
+        transfer_limit = limits["transfer_limit"]
         LOGGER.debug(
-            f"Pixeldrain account transfer state: {response['limits']['transfer_limit_used']}/{response['limits']['transfer_limit']}"
+            f"Pixeldrain account transfer state: {transfer_limit_used}/{transfer_limit}"
         )
-        return int(
-            response["limits"]["transfer_limit_used"]
-            < response["limits"]["transfer_limit"]
-        )
+        return int(transfer_limit_used < transfer_limit)
 
     def _convert_to_pure_link(self) -> str:
         self._api_key = None
