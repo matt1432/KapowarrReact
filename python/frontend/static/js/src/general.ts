@@ -279,6 +279,7 @@ export function connectToWebSocket() {
         transports: ['polling'],
         upgrade: false,
         autoConnect: false,
+        closeOnBeforeunload: true,
     });
 
     socket.on('connect', () => console.log('Connected to WebSocket'));
