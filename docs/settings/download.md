@@ -12,9 +12,9 @@ This isn't so much of a setting as it is a tool. It will delete all files from t
 
 ## Queue
 
-### Failing Torrent Timeout
+### Failing Download Timeout
 
-If a torrent is stalled (no seeders, no metadata found, etc.) for a long time, you can be pretty confident that it's not going to work. Kapowarr can automatically delete a torrent when it's stalled for a set amount of minutes. So for example, if you set it to 60, then Kapowarr will delete torrents that have been stalled for more than 60 minutes. Make the field empty (or set it to 0) to disable this feature.
+If a download is stalled (no seeders, no servers, no metadata found, etc.) for a long time, you can be pretty confident that it's not going to work. Kapowarr can automatically delete a download when it's stalled for a set amount of minutes. So for example, if you set it to 60, then Kapowarr will delete downloads that have been stalled for more than 60 minutes. Make the field empty (or set it to 0) to disable this feature.
 
 ### Seeding Handling
 

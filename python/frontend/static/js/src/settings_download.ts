@@ -26,7 +26,7 @@ export interface Settings {
     service_preference: string[]
     download_folder: string
     concurrent_direct_downloads: number
-    failing_torrent_timeout: number
+    failing_download_timeout: number
     seeding_handling: string
     delete_completed_torrents: boolean
     convert: boolean
@@ -47,8 +47,8 @@ function fillSettings(api_key: string) {
         (document.querySelector('#concurrent-direct-downloads-input') as HTMLInputElement).value = result
             .concurrent_direct_downloads.toString();
 
-        (document.querySelector('#torrent-timeout-input') as HTMLInputElement).value = (
-            ((result.failing_torrent_timeout || 0) / 60).toString()
+        (document.querySelector('#download-timeout-input') as HTMLInputElement).value = (
+            ((result.failing_download_timeout || 0) / 60).toString()
         ) || '';
 
         (document.querySelector('#seeding-handling-input') as HTMLInputElement).value = result
@@ -69,8 +69,8 @@ function saveSettings(api_key: string) {
         concurrent_direct_downloads: parseInt(
             (document.querySelector('#concurrent-direct-downloads-input') as HTMLInputElement).value,
         ),
-        failing_torrent_timeout: parseInt(
-            (document.querySelector('#torrent-timeout-input') as HTMLInputElement).value || '0',
+        failing_download_timeout: parseInt(
+            (document.querySelector('#download-timeout-input') as HTMLInputElement).value || '0',
         ) * 60,
         seeding_handling: (document.querySelector('#seeding-handling-input') as HTMLInputElement).value,
         delete_completed_torrents: (document.querySelector(

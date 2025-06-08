@@ -1251,3 +1251,28 @@ class MigrateAddFileInfoToDownloadQueue(DBMigrator):
             COMMIT;
         """)
         return
+
+
+class MigrateTorrentTimeoutToDownloadTimeout(DBMigrator):
+    start_version = 42
+
+    def run(self) -> None:
+        # V42 -> V43
+
+        from backend.internals.db import get_db
+
+        cursor = get_db()
+
+        old_value = cursor.execute(
+            "SELECT value FROM config WHERE key = 'failing_torrent_timeout' LIMIT 1;"
+        ).fetchone()[0]
+
+        cursor.execute(
+            "UPDATE config SET value = ? WHERE key = 'failing_download_timeout';",
+            (old_value,))
+
+        cursor.execute(
+            "DELETE FROM config WHERE key = 'failing_torrent_timeout';"
+        )
+
+        return

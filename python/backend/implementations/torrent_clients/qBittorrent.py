@@ -147,7 +147,7 @@ class qBittorrent(BaseExternalClient):
                 state = DownloadState.DOWNLOADING_STATE
 
             else:
-                timeout = self.settings.sv.failing_torrent_timeout
+                timeout = self.settings.sv.failing_download_timeout
                 if timeout and (
                     time() - (self.torrent_hashes[download_id] or 0) > timeout
                 ):
