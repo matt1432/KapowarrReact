@@ -165,7 +165,7 @@ class MegaCrypto:
         if len(key) == 4:
             k = key
         else:
-            k, iv, meta_mac = MegaCrypto.get_cipher_key(key)
+            k, _iv, _meta_mac = MegaCrypto.get_cipher_key(key)
         attr = MegaCrypto.cbc_decrypt(dec_data, k)
 
         #: Data is padded, 0-bytes must be stripped
@@ -201,7 +201,7 @@ class MegaCrypto:
         """
 
         def __init__(self, key: Sequence[int]) -> None:
-            k, iv, meta_mac = MegaCrypto.get_cipher_key(key)
+            k, iv, _meta_mac = MegaCrypto.get_cipher_key(key)
             self.hash = b"\0" * 16
             self.key = MegaCrypto.a32_to_bytes(k)
             self.iv = MegaCrypto.a32_to_bytes(iv[0:2] * 2)
@@ -300,7 +300,7 @@ class MegaAccount:
             [0x93C467E3, 0x7DB0C7A4, 0xD1BE3F81, 0x0152CB56]
         )
         password_a32 = MegaCrypto.bytes_to_a32(MegaCrypto.to_bytes(password, "utf-8"))
-        for c in range(0x10000):
+        for _ in range(0x10000):
             for j in range(0, len(password_a32), 4):
                 key = [0, 0, 0, 0]
                 for i in range(4):
@@ -602,14 +602,16 @@ class Mega(MegaABC):
             Session().get(self.pure_link, stream=True).raw as r,
         ):
             self.__r = r
-            for chunk_start, chunk_size in MegaCrypto.get_chunks(self.size):
+            for _chunk_start, chunk_size in MegaCrypto.get_chunks(self.size):
                 if not self.downloading:
                     break
 
                 try:
                     chunk = r.read(chunk_size)
                 except ProtocolError:
-                    break
+                    # Server responded with invalid data, probably
+                    # download limit reachedAdd commentMore actions
+                    chunk = None
 
                 if not chunk:
                     # Download limit reached mid download
@@ -636,7 +638,13 @@ class Mega(MegaABC):
 
     def stop(self) -> None:
         self.downloading = False
-        if self.__r and self.__r._fp and not isinstance(self.__r._fp, str):
+        if (
+            self.__r is not None
+            and self.__r._fp is not None
+            and not isinstance(self.__r._fp, str)
+            and self.__r._fp.fp is not None
+            and self.__r._fp.fp.raw is not None
+        ):
             self.__r._fp.fp.raw._sock.shutdown(2)
         return
 
@@ -754,14 +762,16 @@ class MegaFolder(MegaABC):
                     Session().get(self.pure_link, stream=True).raw as r,
                 ):
                     self.__r = r
-                    for chunk_start, chunk_size in MegaCrypto.get_chunks(file["size"]):
+                    for _chunk_start, chunk_size in MegaCrypto.get_chunks(file["size"]):
                         if not self.downloading:
                             break
 
                         try:
                             chunk = r.read(chunk_size)
                         except ProtocolError:
-                            break
+                            # Server responded with invalid data, probably
+                            # download limit reachedAdd commentMore actions
+                            chunk = None
 
                         if not chunk:
                             # Download limit reached mid download
@@ -792,6 +802,12 @@ class MegaFolder(MegaABC):
 
     def stop(self) -> None:
         self.downloading = False
-        if self.__r and self.__r._fp and not isinstance(self.__r._fp, str):  # type: ignore
+        if (
+            self.__r is not None
+            and self.__r._fp is not None
+            and not isinstance(self.__r._fp, str)
+            and self.__r._fp.fp is not None
+            and self.__r._fp.fp.raw is not None
+        ):
             self.__r._fp.fp.raw._sock.shutdown(2)  # type: ignore
         return
