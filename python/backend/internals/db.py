@@ -216,7 +216,7 @@ def iter_commit(iterable: Iterable[T]) -> Generator[T, Any, Any]:
     return
 
 
-def close_db(e: None | BaseException = None) -> None:
+def close_db(_e: None | BaseException = None) -> None:
     """Close database cursor, commit database and close database.
 
     Args:
@@ -235,20 +235,6 @@ def close_db(e: None | BaseException = None) -> None:
     except (AttributeError, ProgrammingError):
         pass
 
-    return
-
-
-def close_all_db() -> None:
-    "Close all non-temporary database connections that are still open"
-    LOGGER.debug("Closing any open database connections")
-
-    for i in DBConnectionManager.instances.values():
-        if not i.closed:
-            i.close()
-
-    c = DBConnection(timeout=20.0)
-    c.commit()
-    c.close()
     return
 
 
