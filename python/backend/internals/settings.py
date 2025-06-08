@@ -136,6 +136,10 @@ class Settings(metaclass=Singleton):
             if k in SettingsValues.__dataclass_fields__
         }
 
+        for key, value in db_values.items():
+            if SettingsValues.__dataclass_fields__[key].type is bool:
+                db_values[key] = bool(value)
+
         for cl_key in ("format_preference", "service_preference"):
             db_values[cl_key] = CommaList(db_values[cl_key])
 
