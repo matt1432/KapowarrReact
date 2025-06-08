@@ -22,7 +22,7 @@ from re import compile
 from shutil import copy2, copytree, move, rmtree
 from typing import TypeVar
 
-from backend.base.definitions import CharConstants, Constants
+from backend.base.definitions import CharConstants, Constants, FileConstants
 from backend.base.helpers import check_filter, force_suffix
 from backend.base.logging import LOGGER
 
@@ -111,6 +111,51 @@ def uppercase_drive_letter(path: str) -> str:
         path = path[0].upper() + path[1:]
 
     return path
+
+
+def set_detected_extension(filepath: str) -> str:
+    """Find the archive type of a file based on its actual mimetype (via magic
+    bytes) and return the filepath with the correct extension. If the file
+    is not an archive or the archive is not recognised, the original
+    filepath is returned.
+
+    This function is not very fast because it has to read the first few bytes
+    of the file. So only use when really necessary.
+
+    Args:
+        filepath (str): The filepath to check and possibly change the extension of.
+
+    Returns:
+        str: The filepath with the correct extension based on the archive type.
+    """
+    max_len = max(len(sig) for sig in FileConstants.ARCHIVE_MAGIC_BYTES)
+
+    with open(filepath, "rb") as f:
+        file_start = f.read(max_len)
+        for sig, ext in FileConstants.ARCHIVE_MAGIC_BYTES.items():
+            if file_start.startswith(sig):
+                break
+        else:
+            return filepath
+
+    # Found archive type
+    file_parts = splitext(filepath)
+    current_extension = file_parts[1].lower().lstrip(".")
+    if current_extension == ext:
+        # Already has the correct extension
+        return filepath
+
+    if current_extension in FileConstants.CB_TO_ARCHIVE_EXTENSIONS:
+        # Current file uses cb* extension, so find cb* version of proper
+        # extension
+        for cb_ext, normal_ext in FileConstants.CB_TO_ARCHIVE_EXTENSIONS.items():
+            if ext == normal_ext:
+                ext = cb_ext
+                break
+        else:
+            return filepath
+
+    return file_parts[0] + "." + ext
 
 
 def clean_filepath_simple(filepath: str) -> str:

@@ -27,6 +27,7 @@ from backend.base.files import (
     generate_archive_folder,
     list_files,
     rename_file,
+    set_detected_extension,
 )
 from backend.base.logging import LOGGER
 from backend.implementations.matching import folder_extraction_filter
@@ -81,7 +82,7 @@ def extract_files_from_folder(source_folder: str, volume_id: int) -> list[str]:
             folder_extraction_filter(
                 extract_filename_data(c, False), volume_data, volume_issues, end_year
             )
-            and "variant cover" not in c.lower()
+            and "variant cover" not in c.lower().replace(" ", "")
         )
     ]
     LOGGER.debug(f"Relevant files: {rel_files}")
@@ -94,6 +95,8 @@ def extract_files_from_folder(source_folder: str, volume_id: int) -> list[str]:
 
         else:
             dest = join(volume_data.folder, basename(c))
+
+        dest = splitext(dest)[0] + splitext(set_detected_extension(c))[1]
 
         rename_file(c, dest)
         result.append(dest)

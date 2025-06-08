@@ -116,6 +116,23 @@ class FileConstants:
     METADATA_FILES = {"cvinfo.xml", "comicinfo.xml", "series.json", "metadata.json"}
     "Filenames of metadata files, and only lowercase"
 
+    ARCHIVE_MAGIC_BYTES = {
+        b"\x50\x4b\x03\x04": "zip",  # ZIP
+        b"Rar!\x1a\x07\x00": "rar",  # RAR 4.x
+        b"Rar!\x1a\x07\x01\x00": "rar",  # RAR 5.x
+        b"\x37\x7a\xbc\xaf\x27\x1c": "7z",  # 7z
+    }
+    """
+    Maps magic bytes of archive files to their lowercase extension
+    without dot-prefix
+    """
+
+    CB_TO_ARCHIVE_EXTENSIONS = {"cbz": "zip", "cbr": "rar", "cb7": "7z"}
+    """
+    Maps lowercase cb* extensions to their lowercase archive extension,
+    both without dot-prefix
+    """
+
 
 CONTENT_EXTENSIONS = (
     *FileConstants.IMAGE_EXTENSIONS,
