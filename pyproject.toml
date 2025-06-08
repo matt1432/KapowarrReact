@@ -7,7 +7,7 @@ name = "Kapowarr"
 version = "2.0.0a3"
 description = "Kapowarr is a software to build and manage a comic book library, fitting in the *arr suite of software."
 authors = [
-  {name = "Casvt"}
+  {name = "Cas van Tijn"}
 ]
 maintainers = [
   {name = "matt1432", email = "matt@nelim.org"}
