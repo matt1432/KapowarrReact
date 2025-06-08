@@ -1,7 +1,6 @@
 from collections.abc import Mapping
 from dataclasses import _MISSING_TYPE, asdict, dataclass, field
 from importlib.metadata import version
-from json import dump, load
 from logging import INFO
 from os import urandom
 from os.path import abspath, isdir, join, sep
@@ -216,12 +215,10 @@ class Settings(metaclass=Singleton):
             reversed_tuples(formatted_data.items()),
         )
 
-        for key, handler in (
-            ("url_base", update_manifest),
-            ("log_level", set_log_level),
+        if "log_level" in data and formatted_data["log_level"] != getattr(
+            self.get_settings(), "log_level"
         ):
-            if key in data and formatted_data[key] != getattr(self.get_settings(), key):
-                handler(formatted_data[key])
+            set_log_level(formatted_data["log_level"])
 
         self._fetch_settings()
 
@@ -428,23 +425,3 @@ class Settings(metaclass=Singleton):
                     raise InvalidSettingValue(key, value)
 
         return converted_value
-
-
-def update_manifest(url_base: str) -> None:
-    """Update the url's in the manifest file.
-    Needs to happen when url base changes.
-
-    Args:
-        url_base (str): The url base to use in the file.
-    """
-    filename = folder_path("frontend", "static", "json", "pwa_manifest.json")
-
-    with open(filename) as f:
-        manifest = load(f)
-        manifest["start_url"] = url_base + "/"
-        manifest["icons"][0]["src"] = f"{url_base}/static/img/favicon.svg"
-
-    with open(filename, "w") as f:
-        dump(manifest, f, indent=4)
-
-    return

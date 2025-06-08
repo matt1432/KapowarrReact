@@ -1,7 +1,9 @@
+from io import BytesIO
+from json import dumps
 from typing import Any
 
 from backend.internals.server import SERVER
-from flask import Blueprint, redirect, render_template
+from flask import Blueprint, redirect, render_template, send_file
 from werkzeug.wrappers.response import Response
 
 ui = Blueprint("ui", __name__)
@@ -10,6 +12,38 @@ methods = ["GET"]
 
 def render(filename: str, **kwargs: Any) -> str:
     return render_template(filename, url_base=SERVER.url_base, **kwargs)
+
+
+@ui.route("/manifest.json", methods=methods)
+def ui_manifest():
+    return send_file(
+        BytesIO(
+            dumps(
+                {
+                    "name": "Kapowarr",
+                    "short_name": "Kapowarr",
+                    "description": "Kapowarr is a software to build and manage a comic book library, fitting in the *arr suite of software.",
+                    "display": "standalone",
+                    "orientation": "portrait-primary",
+                    "start_url": f"{SERVER.url_base}/",
+                    "scope": f"{SERVER.url_base}/",
+                    "id": f"{SERVER.url_base}/",
+                    "background_color": "#464b51",
+                    "theme_color": "#ebc700",
+                    "icons": [
+                        {
+                            "src": f"{SERVER.url_base}/static/img/favicon.svg",
+                            "type": "image/svg+xml",
+                            "sizes": "any",
+                        }
+                    ],
+                },
+                indent=4,
+            ).encode("utf-8")
+        ),
+        mimetype="application/manifest+json",
+        download_name="manifest.json",
+    ), 200
 
 
 @ui.route("/login", methods=methods)
@@ -32,8 +66,8 @@ def ui_library_import() -> str:
     return render("library_import.html")
 
 
-@ui.route("/volumes/<id>", methods=methods)
-def ui_view_volume(id: str) -> str:
+@ui.route("/volumes/<_id>", methods=methods)
+def ui_view_volume(_id: str) -> str:
     return render("view_volume.html")
 
 
