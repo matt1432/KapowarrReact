@@ -160,6 +160,9 @@ class ZIPtoCBR(FileConverter):
     @staticmethod
     def convert(file: str) -> list[str]:
         rar_file = ZIPtoRAR.convert(file)[0]
+        if rar_file == file:
+            # File not matched to volumeAdd commentMore actions
+            return [file]
         cbr_file = RARtoCBR.convert(rar_file)
         return cbr_file
 
@@ -228,6 +231,9 @@ class CBZtoCBR(FileConverter):
     @staticmethod
     def convert(file: str) -> list[str]:
         rar_file = ZIPtoRAR.convert(file)[0]
+        if rar_file == file:
+            # File not matched to volumeAdd commentMore actions
+            return [file]
         cbr_file = RARtoCBR.convert(rar_file)
         return cbr_file
 
@@ -306,6 +312,9 @@ class RARtoCBZ(FileConverter):
     @staticmethod
     def convert(file: str) -> list[str]:
         zip_file = RARtoZIP.convert(file)[0]
+        if zip_file == file:
+            # File not matched to volume
+            return [file]
         cbz_file = ZIPtoCBZ.convert(zip_file)
         return cbz_file
 
@@ -381,6 +390,9 @@ class CBRtoCBZ(FileConverter):
     @staticmethod
     def convert(file: str) -> list[str]:
         zip_file = RARtoZIP.convert(file)[0]
+        if zip_file == file:
+            # File not matched to volume
+            return [file]
         cbz_file = ZIPtoCBZ.convert(zip_file)
         return cbz_file
 
