@@ -57,6 +57,7 @@ from backend.implementations.root_folders import RootFolders
 from backend.internals.db import commit, get_db
 from backend.internals.db_models import FilesDB, GeneralFilesDB
 from backend.internals.server import WebSocket
+from backend.internals.settings import Settings
 
 if TYPE_CHECKING:
     from backend.base.definitions import Download
@@ -652,11 +653,14 @@ class Volume:
         FilesDB.update_filepaths(file_changes.keys(), file_changes.values())
 
         self["root_folder"] = new_root_folder.id
-        self["folder"] = propose_basefolder_change(
+        self["folder"] = new_folder = propose_basefolder_change(
             (vd.folder,), current_root_folder.folder, new_root_folder.folder
         )[vd.folder]
 
         delete_empty_parent_folders(vd.folder, current_root_folder.folder)
+
+        if Settings().sv.create_empty_volume_folders:
+            create_folder(new_folder)
 
         return
 
@@ -685,7 +689,6 @@ class Volume:
 
         self["custom_folder"] = new_volume_folder is not None
         self["folder"] = new_volume_folder
-        create_folder(new_volume_folder)
 
         file_changes = propose_basefolder_change(
             (f["filepath"] for f in self.get_all_files()),
@@ -698,7 +701,14 @@ class Volume:
 
         FilesDB.update_filepaths(file_changes.keys(), file_changes.values())
 
-        if folder_is_inside_folder(new_volume_folder, current_volume_folder):
+        create_empty_volume_folders = Settings().sv.create_empty_volume_folders
+        if create_empty_volume_folders:
+            create_folder(new_volume_folder)
+
+        if (
+            (create_empty_volume_folders or file_changes)
+            and folder_is_inside_folder(new_volume_folder, current_volume_folder)
+        ):
             # New folder is parent of current folder, so delete up to new
             # folder.
             delete_empty_parent_folders(current_volume_folder, new_volume_folder)
@@ -1113,9 +1123,11 @@ class Library:
             root_folder.folder, volume_folder or volume_id
         )
         volume["folder"] = folder
-        create_folder(folder)
 
-        scan_files(volume_id)
+        if Settings().sv.create_empty_volume_folders:
+            create_folder(folder)
+            scan_files(volume_id)
+
         volume.apply_monitor_scheme(monitor_scheme)
 
         if auto_search:
@@ -1215,6 +1227,13 @@ def scan_files(
 
     volume = Volume(volume_id)
     volume_data = volume.get_data()
+
+    if not isdir(volume_data.folder):
+        if Settings().sv.create_empty_volume_folders:
+            create_folder(volume_data.folder)
+        else:
+            return
+
     volume_issues = volume.get_issues(_skip_files=True)
     general_files = tuple(
         (gf["id"], gf["file_type"]) for gf in volume.get_general_files()
@@ -1223,9 +1242,6 @@ def scan_files(
     number_to_year: dict[float, int | None] = {
         i.calculated_issue_number: extract_year_from_date(i.date) for i in volume_issues
     }
-
-    if not isdir(volume_data.folder):
-        create_folder(volume_data.folder)
 
     bindings: list[tuple[int, int]] = []
     general_bindings: list[tuple[int, str]] = []

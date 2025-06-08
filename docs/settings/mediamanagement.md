@@ -147,6 +147,12 @@ Options are:
 - 0x (2 digits, i.e. 01, 02...99, 100)
 - 00x (3 digits, i.e. 001, 002...099, 100)
 
+## Folders
+
+### Create Empty Volume Folders
+
+When scanning for files, if a volume folder doesn't exist, create it.
+
 ## Converting
 
 The "Converting" feature allows you to change the format of your files (e.g. from cbr to cbz). Extracting archive files also falls under "converting".
