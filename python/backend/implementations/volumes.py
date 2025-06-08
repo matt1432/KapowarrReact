@@ -1225,11 +1225,12 @@ def scan_files(
     """
     LOGGER.debug(f"Scanning for files for {volume_id}")
 
+    settings = Settings().get_settings()
     volume = Volume(volume_id)
     volume_data = volume.get_data()
 
     if not isdir(volume_data.folder):
-        if Settings().sv.create_empty_volume_folders:
+        if settings.create_empty_volume_folders:
             create_folder(volume_data.folder)
         else:
             return
@@ -1362,6 +1363,17 @@ def scan_files(
         FilesDB.delete_unmatched_files()
 
     commit()
+
+    if settings.delete_empty_folders:
+        delete_empty_child_folders(volume_data.folder)
+        if (
+            not list_files(volume_data.folder)
+            and not settings.create_empty_volume_folders
+        ):
+            delete_empty_parent_folders(
+                volume_data.folder,
+                RootFolders()[volume_data.root_folder]
+            )
 
     return
 

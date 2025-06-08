@@ -69,6 +69,7 @@ class SettingsValues:
     issue_padding: int = 3
 
     create_empty_volume_folders: bool = True
+    delete_empty_folders: bool = False
 
     service_preference: CommaList = field(
         default_factory=lambda: CommaList(

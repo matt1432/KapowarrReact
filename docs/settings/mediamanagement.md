@@ -153,6 +153,10 @@ Options are:
 
 When scanning for files, if a volume folder doesn't exist, create it.
 
+### Delete Empty Folders
+
+When scanning for files, delete any empty folders that are found in the volume folder. If "Create Empty Volume Folders" is disabled and the volume folder is empty, it'll also be deleted.
+
 ## Converting
 
 The "Converting" feature allows you to change the format of your files (e.g. from cbr to cbz). Extracting archive files also falls under "converting".
