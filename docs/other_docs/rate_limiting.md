@@ -6,7 +6,7 @@ This page covers how Kapowarr handles the rate limits of the services it uses.
 
 Hourly, Kapowarr finds the volumes that haven't had a metadata fetch for more than a day. It tries to fetch for as many volumes as possible. If it can't fetch for them all in one go, the ones that didn't get fetched, get preference the next hour.
 
-With this setup, all volumes (unless you have an absurdly big library) get updated every day and as little as possible requests are made. When we still surpass the limit, the volumes that need to be fetched the most (the ones that haven't been updated for the longest) get preference to ensure that they "keep up". Kapowarr can update at most 25.000 volumes and 25.000 issues per hour.
+With this setup, all volumes (unless you have an absurdly big library) get updated every day and as little as possible requests are made. When we still surpass the limit, the volumes that need to be fetched the most (the ones that haven't been updated for the longest) get preference to ensure that they "keep up". Kapowarr can update at most 25.000 volumes and 25.000 issues per hour. Issues only get updated if Kapowarr detects that a new one has released, and otherwise once every 5 days.
 
 ## Mega
 

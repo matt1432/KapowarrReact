@@ -426,7 +426,7 @@ def api_tasks() -> ApiReturn:
             kwargs["filepath_filter"] = filepath_filter or []
 
         if task.action == "update_all":
-            allow_skipping = data.get("allow_skipping", False)
+            allow_skipping = data.get("allow_skipping", True)
             if not isinstance(allow_skipping, bool):
                 raise InvalidKeyValue("allow_skipping", allow_skipping)
             kwargs["allow_skipping"] = allow_skipping
