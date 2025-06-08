@@ -11,6 +11,7 @@ from sys import platform
 from backend.base.custom_exceptions import InvalidSettingValue
 from backend.base.definitions import (
     BaseNamingKeys,
+    Constants,
     FileConstants,
     FileData,
     IssueData,
@@ -314,30 +315,42 @@ def generate_issue_name(
 
     save_name = make_filename_safe(name)
 
-    if (
-        normal_filename
-        and format == sv.file_naming
-        and extract_filename_data(save_name)["issue_number"] != calculated_issue_number
-    ):
-        # When applying the EFD algorithm to the generated filename, we don't
-        # get back the same issue number(s) as that we originally made the
-        # filename for. This probably means that the title of the issue is
-        # messing up the algorithm. E.g. the title of issue 4 is "Book 1",
-        # then EFD might think the file is for issue 1 instead of 4. Try a name
-        # without the title and see if that fixes it. If so, use it. If not,
-        # then give up and just use the original name.
-        placeholders = get_placeholders(sv.file_naming_empty)
-        formatted = get_corresponding_formatted_naming_keys(
-            placeholders, formatting_data.__dict__
-        )
-        titleless_name = format_filename(sv.file_naming_empty, formatted)
+    if normal_filename and format == sv.file_naming:
+        if len(save_name) > Constants.MAX_FILENAME_LENGTH:
+            # Filename too long, so generate without issue title and see if that
+            # fixes it.
+            titleless_name = sv.file_naming_empty.format_map(
+                {
+                    k: v if v is not None else "Unknown"
+                    for k, v in formatting_data.__dict__.items()
+                }
+            )
+            titleless_save_name = make_filename_safe(titleless_name)
+            if len(titleless_save_name) <= Constants.MAX_FILENAME_LENGTH:
+                save_name = titleless_save_name
 
-        titleless_save_name = make_filename_safe(titleless_name)
-        if (
-            extract_filename_data(titleless_save_name)["issue_number"]
-            == calculated_issue_number
+        elif (
+            extract_filename_data(save_name)["issue_number"] != calculated_issue_number
         ):
-            save_name = titleless_save_name
+            # When applying the EFD algorithm to the generated filename, we don't
+            # get back the same issue number(s) as that we originally made the
+            # filename for. This probably means that the title of the issue is
+            # messing up the algorithm. E.g. the title of issue 4 is "Book 1",
+            # then EFD might think the file is for issue 1 instead of 4. Try a name
+            # without the title and see if that fixes it. If so, use it. If not,
+            # then give up and just use the original name.
+            titleless_name = sv.file_naming_empty.format_map(
+                {
+                    k: v if v is not None else "Unknown"
+                    for k, v in formatting_data.__dict__.items()
+                }
+            )
+            titleless_save_name = make_filename_safe(titleless_name)
+            if (
+                extract_filename_data(titleless_save_name)["issue_number"]
+                == calculated_issue_number
+            ):
+                save_name = titleless_save_name
 
     return save_name
 

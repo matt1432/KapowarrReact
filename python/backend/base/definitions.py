@@ -39,6 +39,8 @@ class Constants:
     LOGGER_NAME = "Kapowarr"
     LOGGER_FILENAME = "Kapowarr.log"
 
+    MAX_FILENAME_LENGTH = 255
+
     ARCHIVE_EXTRACT_FOLDER = ".archive_extract"
     ZIP_MIN_MOD_TIME = 315619200
     RAR_EXECUTABLES = {
