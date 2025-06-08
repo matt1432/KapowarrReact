@@ -1328,11 +1328,7 @@ def scan_files(
                 (volume_id,),
             )
         ]
-        delete_bindings = tuple(
-            b
-            for b in current_bindings
-            if b not in bindings
-        )
+        delete_bindings = tuple(b for b in current_bindings if b not in bindings)
         cursor.executemany(
             "DELETE FROM issues_files WHERE file_id = ? AND issue_id = ?;",
             delete_bindings,
@@ -1340,8 +1336,7 @@ def scan_files(
         if settings.unmonitor_deleted_issues:
             # Unmonitor issues that have no files bound to them anymoreAdd commentMore actions
             issue_binding_count = {
-                issue_id: 0
-                for _file_id, issue_id in current_bindings
+                issue_id: 0 for _file_id, issue_id in current_bindings
             }
             for _file_id, issue_id in current_bindings:
                 issue_binding_count[issue_id] += 1
@@ -1355,7 +1350,7 @@ def scan_files(
                     (issue_id,)
                     for issue_id, count in issue_binding_count.items()
                     if count == 0
-                )
+                ),
             )
 
     # Add bindings that aren't in current bindings
@@ -1630,6 +1625,7 @@ def refresh_and_scan(
 
     return
 
+
 def delete_issue_file(file_id: int) -> None:
     """Delete a file from the library and remove it from the filesystem.
 
@@ -1648,7 +1644,8 @@ def delete_issue_file(file_id: int) -> None:
         delete_file_folder(file_data["filepath"])
 
     if unmonitor_deleted_issues:
-        get_db().execute("""
+        get_db().execute(
+            """
             WITH matched_file_counts AS (
                 SELECT issue_id, COUNT(file_id) AS matched_file_count
                 FROM issues_files
@@ -1666,7 +1663,7 @@ def delete_issue_file(file_id: int) -> None:
                 WHERE matched_file_count = 1
             );
             """,
-            (file_id,)
+            (file_id,),
         )
 
     FilesDB.delete_file(file_id)
