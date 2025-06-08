@@ -797,11 +797,13 @@ class Library:
                     FROM issues
                     WHERE volume_id = volumes.id
                 ),
-                issues_with_files AS (
-                    SELECT DISTINCT issue_id, monitored
+                issues_to_files AS (
+                    SELECT issue_id, monitored, f.id, size
                     FROM issues i
                     INNER JOIN issues_files if
+                    INNER JOIN files f
                     ON i.id = if.issue_id
+                        AND if.file_id = f.id
                     WHERE volume_id = volumes.id
                 )
             SELECT
@@ -809,6 +811,7 @@ class Library:
                 title, year, publisher,
                 volume_number, description,
                 monitored, monitor_new_issues,
+                folder,
                 (
                     SELECT COUNT(id) FROM vol_issues
                 ) AS issue_count,
@@ -816,11 +819,14 @@ class Library:
                     SELECT COUNT(id) FROM vol_issues WHERE monitored = 1
                 ) AS issue_count_monitored,
                 (
-                    SELECT COUNT(issue_id) FROM issues_with_files
+                    SELECT COUNT(DISTINCT issue_id) FROM issues_to_files
                 ) AS issues_downloaded,
                 (
-                    SELECT COUNT(issue_id) FROM issues_with_files WHERE monitored = 1
-                ) AS issues_downloaded_monitored
+                    SELECT COUNT(DISTINCT issue_id) FROM issues_to_files WHERE monitored = 1
+                ) AS issues_downloaded_monitored,
+                (
+                    SELECT SUM(size) FROM (SELECT DISTINCT id, size FROM issues_to_files)
+                ) AS total_size
             FROM volumes
             {sql_filter}
             ORDER BY {sort.value};
