@@ -15,8 +15,8 @@ from backend.base.custom_exceptions import (
 from backend.base.definitions import (
     BaseEnum,
     GCDownloadSource,
-    RestartVersion,
     SeedingHandling,
+    StartType,
 )
 from backend.base.files import (
     folder_is_inside_folder,
@@ -120,6 +120,9 @@ task_intervals = {
 
 
 class Settings(metaclass=Singleton):
+    restart_on_hosting_changes: bool = True
+    "Override this to disable the server restart on hosting changes."
+
     def __init__(self) -> None:
         self._insert_missing_settings()
         self._fetch_settings()
@@ -217,7 +220,7 @@ class Settings(metaclass=Singleton):
             for s in ("host", "port", "url_base")
         )
 
-        if hosting_changes:
+        if hosting_changes and self.restart_on_hosting_changes:
             self.backup_hosting_settings()
 
         get_db().executemany(
@@ -237,7 +240,7 @@ class Settings(metaclass=Singleton):
         if hosting_changes:
             from backend.internals.server import SERVER
 
-            SERVER.restart(RestartVersion.HOSTING_CHANGES)
+            SERVER.restart(StartType.RESTART_HOSTING_CHANGES)
 
         return
 

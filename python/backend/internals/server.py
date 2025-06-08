@@ -9,7 +9,7 @@ from os import urandom
 from threading import Thread, Timer, current_thread
 from typing import TYPE_CHECKING, Any
 
-from backend.base.definitions import Constants, RestartVersion, SocketEvent
+from backend.base.definitions import Constants, SocketEvent, StartType
 from backend.base.files import folder_path
 from backend.base.helpers import Singleton
 from backend.base.logging import LOGGER, set_log_level, setup_logging
@@ -86,13 +86,13 @@ class ThreadedTaskDispatcher(TTD):
         return result
 
 
-def handle_restart_version(restart_version: RestartVersion) -> None:
-    """Do special actions needed based on restart version.
+def handle_start_type(start_type: StartType) -> None:
+    """Do special actions needed based on the type of start.
 
     Args:
-        restart_version (RestartVersion): The restart version.
+        start_type (StartType): The start type.
     """
-    if restart_version == RestartVersion.HOSTING_CHANGES:
+    if start_type == StartType.RESTART_HOSTING_CHANGES:
         LOGGER.info("Starting timer for hosting changes")
         SERVER.revert_hosting_timer.start()
 
@@ -109,11 +109,11 @@ def diffuse_timers() -> None:
 
 
 class Server(metaclass=Singleton):
-    restart_version: RestartVersion | None
+    start_type: StartType | None
     api_prefix = "/api"
 
     def __init__(self) -> None:
-        self.restart_version = None
+        self.start_type = None
         self.url_base = ""
 
         self.revert_hosting_timer = Timer(
@@ -246,15 +246,16 @@ class Server(metaclass=Singleton):
         t.start()
         return
 
-    def restart(self, restart_version: RestartVersion = RestartVersion.NORMAL) -> None:
+    def restart(self, start_type: StartType = StartType.RESTART) -> None:
         """Same as `self.shutdown()`, but restart instead of shutting down.
 
         Args:
+            start_type (StartType, optional): Why Kapowarr should
             restart_version (RestartVersion, optional): Why Kapowarr should
             restart.
-                Defaults to RestartVersion.NORMAL.
+                Defaults to StartType.RESTART.
         """
-        self.restart_version = restart_version
+        self.start_type = start_type
         self.shutdown()
         return
 
@@ -409,10 +410,11 @@ class WebSocket(SocketIO, metaclass=Singleton):
 
 def setup_process(
     log_level: int,
-    db_folder: str | None,
     log_folder: str | None,
+    log_file: str | None,
+    db_folder: str | None,
 ) -> Callable[[], AppContext]:
-    setup_logging(log_folder=log_folder, do_rollover=False)
+    setup_logging(log_folder, log_file, do_rollover=False)
     set_log_level(log_level)
     set_db_location(db_folder)
     setup_db_adapters_and_converters()

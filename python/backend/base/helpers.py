@@ -17,7 +17,7 @@ from collections.abc import (
 )
 from multiprocessing.pool import AsyncResult, MapResult, Pool
 from os import cpu_count, sep
-from os.path import dirname
+from os.path import basename, dirname
 from sys import version_info
 from typing import (
     TYPE_CHECKING,
@@ -37,6 +37,8 @@ from yarl import URL
 
 if TYPE_CHECKING:
     from multiprocessing.pool import IMapIterator
+
+    from flask.ctx import AppContext
 
 
 def get_python_version() -> str:
@@ -752,21 +754,24 @@ class AsyncSession(ClientSession):
 
 
 class _ContextKeeper(metaclass=Singleton):
+    _ctx: Callable[[], AppContext]
+
     def ctx(self):
         return self._ctx()
 
     def __init__(
         self,
         log_level: int | None = None,
-        db_folder: str | None = None,
         log_folder: str | None = None,
+        log_file: str | None = None,
+        db_folder: str | None = None,
     ) -> None:
         if not log_level:
             return
 
         from backend.internals.server import setup_process
 
-        self._ctx = setup_process(log_level, db_folder, log_folder)
+        self.ctx = setup_process(log_level, log_folder, log_file, db_folder)
         return
 
 
@@ -799,6 +804,7 @@ class PortablePool(Pool):
         """
         from backend.internals.db import DBConnection
 
+        log_file = get_log_filepath()
         super().__init__(
             processes=(
                 min(cpu_count() or 1, max_processes)
@@ -808,8 +814,9 @@ class PortablePool(Pool):
             initializer=_ContextKeeper,
             initargs=(
                 LOGGER.root.level,
+                dirname(log_file),
+                basename(log_file),
                 dirname(DBConnection.file),
-                dirname(get_log_filepath()),
             ),
         )
         return

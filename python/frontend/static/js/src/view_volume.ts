@@ -320,7 +320,7 @@ function fillPage(data: VolumePublicInfo, api_key: string) {
 
     if (data.year !== null) {
         const year = document.createElement('p');
-        year.innerText = data.year;
+        year.innerText = data.year.toString();
         tags.appendChild(year);
     }
 

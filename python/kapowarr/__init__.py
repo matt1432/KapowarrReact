@@ -7,45 +7,63 @@ from subprocess import Popen
 from sys import argv
 from typing import NoReturn
 
-from backend.base.definitions import Constants, RestartVersion
+from backend.base.custom_exceptions import InvalidSettingValue
+from backend.base.definitions import Constants, StartType
 from backend.base.helpers import check_python_version
 from backend.base.logging import LOGGER, setup_logging
 from backend.features.download_queue import DownloadHandler
 from backend.features.tasks import TaskHandler
 from backend.implementations.flaresolverr import FlareSolverr
 from backend.internals.db import set_db_location, setup_db
-from backend.internals.server import SERVER, handle_restart_version
+from backend.internals.server import SERVER, handle_start_type
 from backend.internals.settings import Settings
 
 
 def _main(
-    restart_version: RestartVersion,
+    start_type: StartType,
     db_folder: str | None = None,
     log_folder: str | None = None,
+    log_file: str | None = None,
+    host: str | None = None,
+    port: int | None = None,
+    url_base: str | None = None,
 ) -> NoReturn:
-    """The main function of the Kapowarr sub-process
+    """The main function of the Kapowarr sub-process.
 
     Args:
-        restart_version (RestartVersion): The type of (re)start.
+        start_type (StartType): The type of (re)start.
 
-        db_folder (Union[str, None], optional): The folder in which the database
-        will be stored or in which a database is for Kapowarr to use. Give
-        `None` for the default location.
+        db_folder (str | None, optional): The folder in which the database
+        will be stored or in which a database is for Kapowarr to use.
             Defaults to None.
 
-        log_folder (Union[str, None], optional): The folder in which the logs from
-        Kapowarr will be stored. Give `None` for the default location.
+        log_folder (str | None, optional): The folder in which the logs
+        from Kapowarr will be stored.
+            Defaults to None.
+
+        log_file (str | None, optional): The filename of the file in which
+        the logs from Kapowarr will be stored.
+            Defaults to None.
+
+        host (str | None, optional): The host to bind the server to.
+            Defaults to None.
+
+        port (int | None, optional): The port to bind the server to.
+            Defaults to None.
+
+        url_base (str | None, optional): The URL base to use for the
+        server.
             Defaults to None.
 
     Raises:
-        ValueError: Value of `db_folder` exists but is not a folder.
+        ValueError: One of the arguments has an invalid value.
 
     Returns:
         NoReturn: Exit code 0 means to shutdown.
         Exit code 131 or higher means to restart with possibly special reasons.
     """
     set_start_method("spawn")
-    setup_logging(log_folder=log_folder)
+    setup_logging(log_folder, log_file)
     LOGGER.info("Starting up Kapowarr")
 
     if not check_python_version():
@@ -56,10 +74,32 @@ def _main(
     SERVER.create_app()
 
     with SERVER.app.app_context():
-        handle_restart_version(restart_version)
+        handle_start_type(start_type)
         setup_db()
 
-        settings = Settings().get_settings()
+        s = Settings()
+        s.restart_on_hosting_changes = False
+
+        if host:
+            try:
+                s.update({"host": host})
+            except InvalidSettingValue:
+                raise ValueError("Invalid host value")
+
+        if port:
+            try:
+                s.update({"port": port})
+            except InvalidSettingValue:
+                raise ValueError("Invalid port value")
+
+        if url_base is not None:
+            try:
+                s.update({"url_base": url_base})
+            except InvalidSettingValue:
+                raise ValueError("Invalid url base value")
+
+        s.restart_on_hosting_changes = True
+        settings = s.get_settings()
         flaresolverr = FlareSolverr()
         SERVER.set_url_base(settings.url_base)
 
@@ -81,9 +121,9 @@ def _main(
         task_handler.stop_handle()
         flaresolverr.disable_flaresolverr()
 
-        if SERVER.restart_version is not None:
+        if SERVER.start_type is not None:
             LOGGER.info("Restarting Kapowarr")
-            exit(SERVER.restart_version.value)
+            exit(SERVER.start_type.value)
 
         exit(0)
 
@@ -115,12 +155,12 @@ def _stop_sub_process(proc: Popen) -> None:
         proc.terminate()
 
 
-def _run_sub_process(restart_version: RestartVersion = RestartVersion.NORMAL) -> int:
+def _run_sub_process(start_type: StartType = StartType.STARTUP) -> int:
     """Start the sub-process that Kapowarr will be run in.
 
     Args:
-        restart_version (RestartVersion, optional): Why Kapowarr was restarted.
-            Defaults to `RestartVersion.NORMAL`.
+        start_type (StartType, optional): Why Kapowarr was started.
+            Defaults to `StartType.STARTUP`.
 
     Returns:
         int: The return code from the sub-process.
@@ -128,7 +168,7 @@ def _run_sub_process(restart_version: RestartVersion = RestartVersion.NORMAL) ->
     env = {
         **environ,
         "KAPOWARR_RUN_MAIN": "1",
-        "KAPOWARR_RESTART_VERSION": str(restart_version.value),
+        "KAPOWARR_START_TYPE": str(start_type.value),
     }
 
     proc = Popen(argv, env=env)
@@ -143,14 +183,14 @@ def _run_sub_process(restart_version: RestartVersion = RestartVersion.NORMAL) ->
 
 
 def Kapowarr() -> int:
-    """The main function of Kapowarr
+    """The main function of Kapowarr.
 
     Returns:
         int: The return code.
     """
-    rc = RestartVersion.NORMAL.value
-    while rc in RestartVersion._member_map_.values():
-        rc = _run_sub_process(RestartVersion(rc))
+    rc = StartType.STARTUP.value
+    while rc in StartType._member_map_.values():
+        rc = _run_sub_process(StartType(rc))
 
     return rc
 
@@ -160,34 +200,83 @@ def main() -> None:
         parser = ArgumentParser(
             description="Kapowarr is a software to build and manage a comic book library, fitting in the *arr suite of software."
         )
-        parser.add_argument(
+
+        fs = parser.add_argument_group(title="Folders and files")
+        fs.add_argument(
             "-d",
             "--DatabaseFolder",
             type=str,
             help="The folder in which the database will be stored or in which a database is for Kapowarr to use",
         )
-        parser.add_argument(
+        fs.add_argument(
             "-l",
             "--LogFolder",
             type=str,
             help="The folder in which the logs from Kapowarr will be stored",
         )
+        fs.add_argument(
+            "-f",
+            "--LogFile",
+            type=str,
+            help="The filename of the file in which the logs from Kapowarr will be stored",
+        )
+
+        hs = parser.add_argument_group(title="Hosting settings")
+        hs.add_argument("-o", "--Host", type=str, help="The host to bind the server to")
+        hs.add_argument("-p", "--Port", type=int, help="The port to bind the server to")
+        hs.add_argument(
+            "-u", "--UrlBase", type=str, help="The URL base to use for the server"
+        )
+
         args = parser.parse_args()
 
-        rv = RestartVersion(
-            int(environ.get("KAPOWARR_RESTART_VERSION", RestartVersion.NORMAL.value))
-        )
+        st = StartType(int(environ.get("KAPOWARR_START_TYPE", StartType.STARTUP.value)))
+
+        db_folder: str | None = args.DatabaseFolder
+        log_folder: str | None = args.LogFolder
+        log_file: str | None = args.LogFile
+        host: str | None = None
+        port: int | None = None
+        url_base: str | None = None
+
+        if st == StartType.STARTUP:
+            host = args.Host
+            port = args.Port
+            url_base = args.UrlBase
 
         try:
             _main(
-                restart_version=rv,
-                db_folder=args.DatabaseFolder,
-                log_folder=args.LogFolder,
+                start_type=st,
+                db_folder=db_folder,
+                log_folder=log_folder,
+                log_file=log_file,
+                host=host,
+                port=port,
+                url_base=url_base,
             )
 
         except ValueError as e:
-            if e.args and e.args[0] == "Database location is not a folder":
+            if not e.args:
+                raise e
+
+            elif e.args[0] == "Database location is not a folder":
                 parser.error("The value for -d/--DatabaseFolder is not a folder")
+
+            elif e.args[0] == "Logging folder is not a folder":
+                parser.error("The value for -l/--LogFolder is not a folder")
+
+            elif e.args[0] == "Logging file is not a file":
+                parser.error("The value for -f/--LogFile is not a file")
+
+            elif e.args[0] == "Invalid host value":
+                parser.error("The value for -h/--Host is not valid")
+
+            elif e.args[0] == "Invalid port value":
+                parser.error("The value for -p/--Port is not valid")
+
+            elif e.args[0] == "Invalid url prefix value":
+                parser.error("The value for -u/--UrlPrefix is not valid")
+
             else:
                 raise e
 

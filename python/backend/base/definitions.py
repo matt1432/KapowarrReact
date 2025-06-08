@@ -203,9 +203,10 @@ class BaseEnum(Enum):
         return id(self.value)
 
 
-class RestartVersion(BaseEnum):
-    NORMAL = 131
-    HOSTING_CHANGES = 132
+class StartType(BaseEnum):
+    STARTUP = 130
+    RESTART = 131
+    RESTART_HOSTING_CHANGES = 132
 
 
 class SeedingHandling(BaseEnum):
