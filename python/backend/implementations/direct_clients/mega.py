@@ -179,7 +179,7 @@ class MegaCrypto:
         return loads(search_result.group(0))
 
     @staticmethod
-    def get_chunks(size: int) -> Generator[tuple[int, int], Any, None]:
+    def get_chunks(start: int, size: int) -> Generator[tuple[int, int], Any, None]:
         """
         Calculate chunks for a given encrypted file size.
         """
@@ -187,7 +187,8 @@ class MegaCrypto:
         chunk_size = 0x20000
 
         while chunk_start + chunk_size < size:
-            yield chunk_start, chunk_size
+            if chunk_start >= start:
+                yield chunk_start, chunk_size
             chunk_start += chunk_size
             if chunk_size < 0x100000:
                 chunk_size += 0x20000
@@ -597,36 +598,58 @@ class Mega(MegaABC):
         cbc_mac = MegaCrypto.Checksum(self.__master_key)
 
         start_time = perf_counter()
-        with (
-            open(filename, "wb") as f,
-            Session().get(self.pure_link, stream=True).raw as r,
-        ):
-            self.__r = r
-            for _chunk_start, chunk_size in MegaCrypto.get_chunks(self.size):
-                if not self.downloading:
-                    break
+        tries_left = Constants.TOTAL_RETRIES
+        with open(filename, "wb") as f:
+            while tries_left > 0:
+                tries_left -= 1
 
-                try:
-                    chunk = r.read(chunk_size)
-                except ProtocolError:
-                    # Server responded with invalid data, probably
-                    # download limit reachedAdd commentMore actions
-                    chunk = None
+                with (
+                    Session()
+                    .get(f"{self.pure_link}/{size_downloaded}-", stream=True)
+                    .raw as r
+                ):
+                    self.__r = r
+                    for _chunk_start, chunk_size in MegaCrypto.get_chunks(
+                        size_downloaded, self.size
+                    ):
+                        if not self.downloading:
+                            break
 
-                if not chunk:
-                    # Download limit reached mid download
-                    raise DownloadLimitReached(DownloadSource.MEGA)
+                        try:
+                            chunk = r.read(chunk_size)
 
-                chunk = decryptor.update(chunk)
-                f.write(chunk)
-                cbc_mac.update(chunk)
+                        except ProtocolError:
+                            # Connection error, packet loss, etc. Just try again
+                            break
 
-                chunk_length = len(chunk)
-                size_downloaded += chunk_length
-                self.speed = round(chunk_length / (perf_counter() - start_time), 2)
-                self.progress = round(size_downloaded / self.size * 100, 2)
-                start_time = perf_counter()
-                websocket_updater()
+                        if not chunk:
+                            # Download limit reached mid download
+                            raise DownloadLimitReached(DownloadSource.MEGA)
+
+                        chunk = decryptor.update(chunk)
+                        f.write(chunk)
+                        cbc_mac.update(chunk)
+
+                        chunk_length = len(chunk)
+                        size_downloaded += chunk_length
+                        self.speed = round(
+                            chunk_length / (perf_counter() - start_time), 2
+                        )
+                        self.progress = round(size_downloaded / self.size * 100, 2)
+                        start_time = perf_counter()
+                        websocket_updater()
+
+                    else:
+                        # Success
+                        break
+
+                    if not self.downloading:
+                        break
+            else:
+                # Failed to download file
+                raise ClientNotWorking(
+                    "The Mega download could not be downloaded, because of a connection error"
+                )
 
         if self.downloading:
             if cbc_mac.digest() != meta_mac:
@@ -756,39 +779,64 @@ class MegaFolder(MegaABC):
                     raise DownloadLimitReached(DownloadSource.MEGA)
 
                 self.pure_link = res["g"]
+                file_size_downloaded = 0
                 start_time = perf_counter()
-                with (
-                    zip.open(file["name"], "w", force_zip64=True) as f,
-                    Session().get(self.pure_link, stream=True).raw as r,
-                ):
-                    self.__r = r
-                    for _chunk_start, chunk_size in MegaCrypto.get_chunks(file["size"]):
-                        if not self.downloading:
-                            break
+                tries_left = Constants.TOTAL_RETRIES
+                with zip.open(file["name"], "w", force_zip64=True) as f:
+                    while tries_left > 0:
+                        tries_left -= 1
 
-                        try:
-                            chunk = r.read(chunk_size)
-                        except ProtocolError:
-                            # Server responded with invalid data, probably
-                            # download limit reachedAdd commentMore actions
-                            chunk = None
+                        with (
+                            Session()
+                            .get(f"{self.pure_link}/{size_downloaded}-", stream=True)
+                            .raw as r
+                        ):
+                            self.__r = r
+                            for _chunk_start, chunk_size in MegaCrypto.get_chunks(
+                                file_size_downloaded, file["size"]
+                            ):
+                                if not self.downloading:
+                                    break
 
-                        if not chunk:
-                            # Download limit reached mid download
-                            raise DownloadLimitReached(DownloadSource.MEGA)
+                                try:
+                                    chunk = r.read(chunk_size)
 
-                        chunk = decryptor.update(chunk)
-                        f.write(chunk)
-                        cbc_mac.update(chunk)
+                                except ProtocolError:
+                                    # Connection error, packet loss, etc. Just
+                                    # try again
+                                    break
 
-                        chunk_length = len(chunk)
-                        size_downloaded += chunk_length
-                        self.speed = round(
-                            chunk_length / (perf_counter() - start_time), 2
+                                if not chunk:
+                                    # Download limit reached mid download
+                                    raise DownloadLimitReached(DownloadSource.MEGA)
+
+                                chunk = decryptor.update(chunk)
+                                f.write(chunk)
+                                cbc_mac.update(chunk)
+
+                                chunk_length = len(chunk)
+                                size_downloaded += chunk_length
+                                file_size_downloaded += chunk_length
+                                self.speed = round(
+                                    chunk_length / (perf_counter() - start_time), 2
+                                )
+                                self.progress = round(
+                                    size_downloaded / self.size * 100, 2
+                                )
+                                start_time = perf_counter()
+                                websocket_updater()
+
+                            else:
+                                # Success
+                                break
+
+                            if not self.downloading:
+                                break
+                    else:
+                        # Failed to download file
+                        raise ClientNotWorking(
+                            "The Mega download could not be downloaded, because of a connection error"
                         )
-                        self.progress = round(size_downloaded / self.size * 100, 2)
-                        start_time = perf_counter()
-                        websocket_updater()
 
                 if self.downloading:
                     if cbc_mac.digest() != meta_mac:
