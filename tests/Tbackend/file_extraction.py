@@ -1,7 +1,7 @@
 import unittest
 from json import dumps
 
-from backend.base.file_extraction import extract_filename_data as ef
+from backend.base.file_extraction import extract_filename_data as ef  # type: ignore
 
 
 class extract_filename_data(unittest.TestCase):
@@ -351,6 +351,22 @@ class extract_filename_data(unittest.TestCase):
                 "volume_number": 2,
                 "special_version": None,
                 "issue_number": (5.0, 8.01),
+                "annual": False,
+            },
+            "Iron-Man (1993) T3": {
+                "series": "Iron Man",
+                "year": 1993,
+                "volume_number": 1,
+                "special_version": None,
+                "issue_number": 3.0,
+                "annual": False,
+            },
+            "Iron-Man (1993) Tome 4": {
+                "series": "Iron Man",
+                "year": 1993,
+                "volume_number": 1,
+                "special_version": None,
+                "issue_number": 4.0,
                 "annual": False,
             },
         }

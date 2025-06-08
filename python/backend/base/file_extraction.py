@@ -43,7 +43,7 @@ chinese_volume_regex = compile(r"第(\d+)(?:卷|册)", IGNORECASE)
 chinese_volume_regex_2 = compile(r"(?:卷|册)(\d+)", IGNORECASE)
 korean_volume_regex = compile(r"제?(\d+)권", IGNORECASE)
 japanese_volume_regex = compile(r"(\d+)巻", IGNORECASE)
-french_issue_regex = compile(r'\bT(?:omes?)?(?=[\s\.]?\d)', IGNORECASE)
+french_issue_regex = compile(r"\bT(?:omes?)?(?=[\s\.]?\d)", IGNORECASE)
 
 # Extract data from (stripped)filename
 special_version_regex = compile(
@@ -186,7 +186,7 @@ def process_issue_number(issue_number: str) -> float | tuple[float, float] | Non
         the original issue number was a range of numbers (e.g. 1a-5b)
         or `None` if it wasn't succesfull in converting.
     """
-    issue_number = issue_number.replace('/', '-')
+    issue_number = issue_number.replace("/", "-")
 
     if "-" not in issue_number[1:]:
         # Normal issue number
