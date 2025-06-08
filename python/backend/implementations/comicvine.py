@@ -317,7 +317,7 @@ class ComicVine:
         result: IssueMetadata = {
             "comicvine_id": int(issue_data["id"]),
             "volume_id": int(issue_data["volume"]["id"]),
-            "issue_number": issue_data["issue_number"],
+            "issue_number": issue_data["issue_number"].replace('/', '-'),
             "calculated_issue_number": cin if cin is not None else 0.0,
             "title": issue_data["name"] or None,
             "date": issue_data["cover_date"] or None,

@@ -185,6 +185,8 @@ def process_issue_number(issue_number: str) -> float | tuple[float, float] | Non
         the original issue number was a range of numbers (e.g. 1a-5b)
         or `None` if it wasn't succesfull in converting.
     """
+    issue_number = issue_number.replace('/', '-')
+
     if "-" not in issue_number[1:]:
         # Normal issue number
         return _calc_float_issue_number(issue_number)
