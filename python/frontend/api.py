@@ -47,6 +47,7 @@ from backend.base.definitions import (
     SpecialVersion,
     VolumeData,
 )
+from backend.base.helpers import hash_password
 from backend.base.logging import LOGGER, get_log_filepath
 from backend.features.download_queue import (
     DownloadHandler,
@@ -315,12 +316,13 @@ def api_auth() -> ApiReturn:
     ip = request.environ.get("HTTP_X_FORWARDED_FOR", request.remote_addr)
 
     if settings.auth_password:
-        given_password = request.get_json().get("password")
+        given_password = request.get_json().get("password") or None
         if given_password is None:
+            LOGGER.warning(f"Login attempt failed from {ip}")
             return return_api({}, "PasswordInvalid", 401)
 
-        auth_password = settings.auth_password
-        if auth_password is not None and given_password != auth_password:
+        hashed_attempt = hash_password(settings.auth_salt, given_password)
+        if hashed_attempt != settings.auth_password:
             LOGGER.warning(f"Login attempt failed from {ip}")
             return return_api({}, "PasswordInvalid", 401)
 

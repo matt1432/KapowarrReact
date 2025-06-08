@@ -4,6 +4,7 @@ from importlib.metadata import version
 from logging import INFO
 from os import urandom
 from os.path import abspath, isdir, join, sep
+from secrets import token_bytes
 from typing import Any
 
 from backend.base.custom_exceptions import (
@@ -14,6 +15,7 @@ from backend.base.custom_exceptions import (
 )
 from backend.base.definitions import (
     BaseEnum,
+    Constants,
     GCDownloadSource,
     SeedingHandling,
     StartType,
@@ -28,6 +30,7 @@ from backend.base.helpers import (
     Singleton,
     force_suffix,
     get_python_version,
+    hash_password,
     normalize_base_url,
     reversed_tuples,
 )
@@ -41,6 +44,7 @@ class SettingsValues:
     database_version: int = get_latest_db_version()
     log_level: int = INFO
     auth_password: str = ""
+    auth_salt: bytes = token_bytes()
     comicvine_api_key: str = ""
     api_key: str = ""
 
@@ -95,11 +99,23 @@ class SettingsValues:
     enable_libgen: bool = True
 
     def to_dict(self) -> dict[str, Any]:
-        return {
-            k: v if not isinstance(v, BaseEnum) else v.value
-            for k, v in self.__dict__.items()
-            if not k.startswith("backup_")
-        }
+        result = {}
+        for k, v in self.__dict__.items():
+            if k.startswith("backup_"):
+                continue
+
+            if k == "auth_salt":
+                continue
+
+            if k == "auth_password" and v:
+                v = Constants.PASSWORD_REPLACEMENT
+
+            if isinstance(v, BaseEnum):
+                result[k] = v.value
+            else:
+                result[k] = v
+
+        return result
 
 
 about_data = {
@@ -341,6 +357,13 @@ class Settings(metaclass=Singleton):
 
         if not isinstance(value, SettingsValues.__dataclass_fields__[key].type):  # type: ignore
             raise InvalidSettingValue(key, value)
+
+        if key == "auth_password":
+            if value == Constants.PASSWORD_REPLACEMENT:
+                converted_value = self.sv.auth_password
+
+            elif value:
+                converted_value = hash_password(self.sv.auth_salt, value)
 
         if key == "port" and not 0 < value <= 65_535:
             raise InvalidSettingValue(key, value)

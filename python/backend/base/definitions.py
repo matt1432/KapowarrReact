@@ -39,6 +39,8 @@ class Constants:
     LOGGER_NAME = "Kapowarr"
     LOGGER_FILENAME = "Kapowarr.log"
 
+    PASSWORD_REPLACEMENT: str = "********"
+
     MAX_FILENAME_LENGTH = 255
 
     ARCHIVE_EXTRACT_FOLDER = ".archive_extract"

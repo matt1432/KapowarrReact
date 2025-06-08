@@ -5,6 +5,7 @@ General "helper" functions and classes
 from __future__ import annotations
 
 from asyncio import sleep
+from base64 import urlsafe_b64encode
 from collections import deque
 from collections.abc import (
     Callable,
@@ -15,6 +16,7 @@ from collections.abc import (
     Mapping,
     Sequence,
 )
+from hashlib import pbkdf2_hmac
 from multiprocessing.pool import AsyncResult, MapResult, Pool
 from os import cpu_count, sep
 from os.path import basename, dirname
@@ -460,6 +462,21 @@ def fix_year(year: int) -> int:
         return year
 
     return int(year_str[0] + year_str[2] + year_str[1] + year_str[3])
+
+
+def hash_password(salt: bytes, password: str) -> str:
+    """Hash a password.
+
+    Args:
+        salt (bytes): The salt to use with the hash.
+        password (str): The password the hash.
+
+    Returns:
+        str: The resulting hash.
+    """
+    return urlsafe_b64encode(
+        pbkdf2_hmac("sha256", password.encode(), salt, 100_000)
+    ).decode()
 
 
 def get_torrent_info(torrent: bytes) -> dict[bytes, Any]:

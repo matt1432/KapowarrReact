@@ -1299,3 +1299,20 @@ class MigrateDeleteCompletedTorrentsToDownloads(DBMigrator):
         cursor.execute("DELETE FROM config WHERE key = 'delete_completed_torrents';")
 
         return
+
+
+class MigrateHashPassword(DBMigrator):
+    start_version = 44
+
+    def run(self) -> None:
+        # V44 -> V45
+
+        from backend.internals.settings import Settings
+
+        s = Settings()
+        settings = s.get_settings()
+
+        if settings.auth_password:
+            s.update({"auth_password": settings.auth_password})
+
+        return
