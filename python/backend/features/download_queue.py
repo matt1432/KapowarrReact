@@ -581,21 +581,21 @@ class DownloadHandler(metaclass=Singleton):
 
         for download in iter_commit(downloads):
             LOGGER.debug(f"Download from database: {dict(download)}")
+            covered_issues: tuple[float, float] | float | None
+
+            if download["covered_issues"] is None:
+                covered_issues = None
+
+            elif "," in download["covered_issues"]:
+                covered_issues = (
+                    float(download["covered_issues"].split(",")[0]),
+                    float(download["covered_issues"].split(",")[1]),
+                )
+
+            else:
+                covered_issues = float(download["covered_issues"])
+
             try:
-                covered_issues: tuple[float, float] | float | None
-
-                if download["covered_issues"] is None:
-                    covered_issues = None
-
-                elif "," in download["covered_issues"]:
-                    covered_issues = (
-                        float(download["covered_issues"].split(",")[0]),
-                        float(download["covered_issues"].split(",")[1]),
-                    )
-
-                else:
-                    covered_issues = float(download["covered_issues"])
-
                 dl_subclass = download_type_to_class[download["client_type"]]
                 dl_instance: Download | ExternalDownload
 
@@ -641,9 +641,9 @@ class DownloadHandler(metaclass=Singleton):
                 # Link is broken
 
                 issue_id = None
-                if download["covered_issues"] and "," not in download["covered_issues"]:
+                if isinstance(covered_issues, float):
                     issue_id = Issue.from_volume_and_calc_number(
-                        download["volume_id"], float(download["covered_issues"])
+                        download["volume_id"], covered_issues
                     ).id
 
                 add_to_blocklist(
@@ -661,10 +661,10 @@ class DownloadHandler(metaclass=Singleton):
                 )
                 continue
 
-            except DownloadLimitReached:
-                continue
-
-            except IssueNotFound:
+            except (DownloadLimitReached, IssueNotFound):
+                cursor.execute(
+                    "DELETE FROM download_queue WHERE id = ?;", (download["id"],)
+                )
                 continue
 
             self.queue += self.__prepare_downloads_for_queue(

@@ -394,7 +394,15 @@ def _create_link_paths(
             group["info"]["special_version"] == SpecialVersion.TPB
             or isinstance(group["info"]["volume_number"], tuple)
         ):
-            group["info"]["issue_number"] = group["info"]["volume_number"]
+            if isinstance(group["info"]["volume_number"], tuple):
+                group["info"]["issue_number"] = (
+                    float(group["info"]["volume_number"][0]),
+                    float(group["info"]["volume_number"][1]),
+                )
+
+            elif isinstance(group["info"]["volume_number"], int):
+                group["info"]["issue_number"] = float(group["info"]["volume_number"])
+
             group["info"]["volume_number"] = volume_data.volume_number
             group["info"]["special_version"] = SpecialVersion.VOLUME_AS_ISSUE.value
 
