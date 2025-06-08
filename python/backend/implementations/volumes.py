@@ -705,9 +705,8 @@ class Volume:
         if create_empty_volume_folders:
             create_folder(new_volume_folder)
 
-        if (
-            (create_empty_volume_folders or file_changes)
-            and folder_is_inside_folder(new_volume_folder, current_volume_folder)
+        if (create_empty_volume_folders or file_changes) and folder_is_inside_folder(
+            new_volume_folder, current_volume_folder
         ):
             # New folder is parent of current folder, so delete up to new
             # folder.
@@ -1371,8 +1370,7 @@ def scan_files(
             and not settings.create_empty_volume_folders
         ):
             delete_empty_parent_folders(
-                volume_data.folder,
-                RootFolders()[volume_data.root_folder]
+                volume_data.folder, RootFolders()[volume_data.root_folder]
             )
 
     return

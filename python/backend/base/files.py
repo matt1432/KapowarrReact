@@ -29,7 +29,10 @@ from backend.base.logging import LOGGER
 StrPath = str | PathLike[str]
 
 _StrPathT = TypeVar("_StrPathT", bound=StrPath)
-filename_cleaner = compile(r"(<|>|(?<!^\w):|\"|\||\?|\*|\x00|(?:\s|\.)+(?=$|\\|/))")
+filepath_cleaner = compile(r"(<|>|(?<!^\w):|\"|\||\?|\*|\x00|(?:\s|\.)+(?=$|\\|/))")
+smart_filepath_cleaner_compact = compile(r"(\b[<>:]\b)")
+smart_filepath_cleaner_spaced = compile(r"(\b\s[<>]\s\b|\b:\s\b)")
+smart_filestring_cleaner_compact = compile(r"((?:\b|^)/(?:\b|$))")
 
 
 # region Conversion
@@ -110,19 +113,65 @@ def uppercase_drive_letter(path: str) -> str:
     return path
 
 
-def make_filename_safe(unsafe_filename: str) -> str:
-    """Make a filename safe to use in a filesystem.
-    It removes illegal characters.
+def clean_filepath_simple(filepath: str) -> str:
+    """Clean a filepath by removing illegal characters. This makes it safe for
+    a use in a filesystem.
 
     Args:
-        unsafe_filename (str): The filename to be made safe.
+        filepath (str): The filepath to be cleaned.
 
     Returns:
-        str: The filename, now with characters removed/replaced
-        so that it's filesystem-safe.
+        str: The cleaned filepath.
     """
-    safe_filename = filename_cleaner.sub("", unsafe_filename)
-    return safe_filename
+    safe_filepath = filepath_cleaner.sub("", filepath)
+    return safe_filepath
+
+
+def clean_filepath_smartly(filepath: str) -> str:
+    """Clean a filepath by replacing illegal characters smartly. Either remove
+    the character, replace it with a dash or dash with spaces around it. This
+    makes it safe for a use in a filesystem.
+
+    Args:
+        filepath (str): The filepath to be cleaned.
+
+    Returns:
+        str: The cleaned filepath.
+    """
+    save_filepath = smart_filepath_cleaner_compact.sub("-", filepath)
+    save_filepath = smart_filepath_cleaner_spaced.sub(" - ", save_filepath)
+    save_filepath = clean_filepath_simple(save_filepath)
+    return save_filepath
+
+
+def clean_filestring_simple(filestring: str) -> str:
+    """Clean a part of a filename (so no path seperators) by removing illegal
+    characters. This makes it safe for a use in a filesystem.
+
+    Args:
+        filestring (str): The string to clean.
+
+    Returns:
+        str: The cleaned string.
+    """
+    return clean_filepath_simple(filestring.replace("/", "").replace("\\", ""))
+
+
+def clean_filestring_smartly(filestring: str) -> str:
+    """Clean a part of a filename (so no path seperators) by replacing illegal
+    characters smartly. Either remove the character, replace it with a dash or
+    dash with spaces around it. This makes it safe for a use in a filesystem.
+
+    Args:
+        filestring (str): The string to clean.
+
+    Returns:
+        str: The cleaned string.
+    """
+    save_filepath = smart_filestring_cleaner_compact.sub("-", filestring)
+    save_filepath = save_filepath.replace(" / ", " - ")
+    save_filepath = clean_filepath_smartly(save_filepath)
+    return save_filepath
 
 
 def list_files(folder: str, ext: Iterable[str] = []) -> list[str]:

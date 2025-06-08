@@ -52,6 +52,7 @@ class SettingsValues:
     backup_url_base: str = ""
 
     rename_downloaded_files: bool = True
+    replace_illegal_characters: bool = True
     volume_folder_naming: str = join("{series_name}", "Volume {volume_number} ({year})")
     file_naming: str = (
         "{series_name} ({year}) Volume {volume_number} Issue {issue_number}"
