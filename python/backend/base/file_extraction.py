@@ -43,6 +43,7 @@ chinese_volume_regex = compile(r"第(\d+)(?:卷|册)", IGNORECASE)
 chinese_volume_regex_2 = compile(r"(?:卷|册)(\d+)", IGNORECASE)
 korean_volume_regex = compile(r"제?(\d+)권", IGNORECASE)
 japanese_volume_regex = compile(r"(\d+)巻", IGNORECASE)
+french_issue_regex = compile(r'\bT(?:omes?)?(?=[\s\.]?\d)', IGNORECASE)
 
 # Extract data from (stripped)filename
 special_version_regex = compile(
@@ -296,6 +297,7 @@ def extract_filename_data(
 
     # Generalise filename
     filepath = normalize_string(filepath).replace("+", " ")
+    filepath = french_issue_regex.sub("Issue", filepath)
     if "Том" in filepath:
         filepath = russian_volume_regex.sub(r"Volume \1", filepath)
         filepath = russian_volume_regex_2.sub(r"Volume \1", filepath)
