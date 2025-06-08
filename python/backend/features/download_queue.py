@@ -764,6 +764,12 @@ class DownloadHandler(metaclass=Singleton):
         for download in self.queue[::-1]:
             if download.id is not None:
                 self.remove(download.id)
+
+        for download in self.queue:
+            if download.download_thread is not None:
+                download.download_thread.join()
+
+        get_db().execute("DELETE FROM download_queue;")
         return
 
     def stop_handle(self) -> None:
