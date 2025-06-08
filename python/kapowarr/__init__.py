@@ -13,7 +13,7 @@ from backend.base.logging import LOGGER, setup_logging
 from backend.features.download_queue import DownloadHandler
 from backend.features.tasks import TaskHandler
 from backend.implementations.flaresolverr import FlareSolverr
-from backend.internals.db import close_all_db, set_db_location, setup_db
+from backend.internals.db import set_db_location, setup_db
 from backend.internals.server import SERVER, handle_restart_version
 from backend.internals.settings import Settings
 
@@ -80,7 +80,6 @@ def _main(
         download_handler.stop_handle()
         task_handler.stop_handle()
         flaresolverr.disable_flaresolverr()
-        close_all_db()
 
         if SERVER.restart_version is not None:
             LOGGER.info("Restarting Kapowarr")
