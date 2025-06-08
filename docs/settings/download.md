@@ -23,9 +23,9 @@ When a torrent has completed downloading, it will start to seed depending on the
 1. **Complete**: wait until the torrent has completed seeding and then move the files. You'll have to wait until the torrent has completed seeding before the comics are available.
 2. **Copy**: make a copy of the downloaded files and post-process those (moving, renaming, converting, etc.). When the torrent finishes seeding, it's files are deleted. With this setup, your downloaded comics will be available immediately, but will temporarily take up twice as much space.
 
-### Delete Completed Torrents
+### Delete Completed Downloads
 
-Whether Kapowarr should delete torrents from the client once they have completed. Otherwise leave them in the queue of the torrent client as 'completed'.
+Whether Kapowarr should delete external downloads from their client once they have completed. Otherwise leave them in the queue of the external download client as 'completed'.
 
 ## Service preference
 

@@ -77,7 +77,7 @@ class SettingsValues:
     concurrent_direct_downloads: int = 1
     failing_download_timeout: int = 0
     seeding_handling: SeedingHandling = SeedingHandling.COPY
-    delete_completed_torrents: bool = True
+    delete_completed_downloads: bool = True
 
     convert: bool = False
     extract_issue_ranges: bool = False

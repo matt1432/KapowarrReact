@@ -28,7 +28,7 @@ export interface Settings {
     concurrent_direct_downloads: number
     failing_download_timeout: number
     seeding_handling: string
-    delete_completed_torrents: boolean
+    delete_completed_downloads: boolean
     convert: boolean
     extract_issue_ranges: boolean
     format_preference: string[]
@@ -54,8 +54,8 @@ function fillSettings(api_key: string) {
         (document.querySelector('#seeding-handling-input') as HTMLInputElement).value = result
             .seeding_handling;
 
-        (document.querySelector('#delete-torrents-input') as HTMLInputElement).checked = result
-            .delete_completed_torrents;
+        (document.querySelector('#delete-downloads-input') as HTMLInputElement).checked = result
+            .delete_completed_downloads;
 
         fillPref(result.service_preference);
     });
@@ -73,8 +73,8 @@ function saveSettings(api_key: string) {
             (document.querySelector('#download-timeout-input') as HTMLInputElement).value || '0',
         ) * 60,
         seeding_handling: (document.querySelector('#seeding-handling-input') as HTMLInputElement).value,
-        delete_completed_torrents: (document.querySelector(
-            '#delete-torrents-input',
+        delete_completed_downloads: (document.querySelector(
+            '#delete-downloads-input',
         ) as HTMLInputElement).checked,
         service_preference: Array.from((document.querySelectorAll(
             '#pref-table select',

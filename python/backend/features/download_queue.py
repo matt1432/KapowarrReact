@@ -178,7 +178,7 @@ class DownloadHandler(metaclass=Singleton):
                 post_processer.seeding(download)
 
             elif download.state == DownloadState.IMPORTING_STATE:
-                if self.settings.sv.delete_completed_torrents:
+                if self.settings.sv.delete_completed_downloads:
                     download.remove_from_client(delete_files=False)
                 post_processer.success(download)
                 self.queue.remove(download)

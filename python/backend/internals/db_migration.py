@@ -1269,10 +1269,33 @@ class MigrateTorrentTimeoutToDownloadTimeout(DBMigrator):
 
         cursor.execute(
             "UPDATE config SET value = ? WHERE key = 'failing_download_timeout';",
-            (old_value,))
+            (old_value,),
+        )
+
+        cursor.execute("DELETE FROM config WHERE key = 'failing_torrent_timeout';")
+
+        return
+
+
+class MigrateDeleteCompletedTorrentsToDownloads(DBMigrator):
+    start_version = 43
+
+    def run(self) -> None:
+        # V43 -> V44
+
+        from backend.internals.db import get_db
+
+        cursor = get_db()
+
+        old_value = cursor.execute(
+            "SELECT value FROM config WHERE key = 'delete_completed_torrents' LIMIT 1;"
+        ).fetchone()[0]
 
         cursor.execute(
-            "DELETE FROM config WHERE key = 'failing_torrent_timeout';"
+            "UPDATE config SET value = ? WHERE key = 'delete_completed_downloads';",
+            (old_value,),
         )
+
+        cursor.execute("DELETE FROM config WHERE key = 'delete_completed_torrents';")
 
         return
