@@ -91,8 +91,12 @@ def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str]]:
     """
     result: list[tuple[str, str]] = []
     for article in soup.find_all("article", {"class": "post"}):
-        link = create_range(article.find("a")["href"] or "")[0]
-        title = article.find("h1", {"class": "post-title"}).get_text(strip=True)
+        title_el = article.find("h1", {"class": "post-title"})
+        if not title_el:
+            continue
+
+        link = create_range(title_el.find("a")["href"] or "")[0]
+        title = title_el.get_text(strip=True)
         result.append((link, title))
 
     return result
@@ -673,7 +677,7 @@ async def _test_paths(
     Returns:
         List[Download]: A list of downloads.
     """
-    downloads: tuple[Download | None]
+    downloads: tuple[Download | None] = (None,)
     limit_reached: tuple[bool] | None = None
 
     for path in link_paths:
@@ -695,7 +699,7 @@ async def _test_paths(
             )
         )
 
-        if not downloads:
+        if downloads == (None,) or not downloads:
             continue
 
         LOGGER.debug(f"Chosen links: {downloads}")
