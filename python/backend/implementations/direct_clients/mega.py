@@ -788,7 +788,7 @@ class MegaFolder(MegaABC):
 
                         with (
                             Session()
-                            .get(f"{self.pure_link}/{size_downloaded}-", stream=True)
+                            .get(f"{self.pure_link}/{file_size_downloaded}-", stream=True)
                             .raw as r
                         ):
                             self.__r = r
