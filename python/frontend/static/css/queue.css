@@ -42,7 +42,8 @@ th, td {
     margin-right: calc(20px + 1.25rem);
 }
 
-.queue-entry[data-status="downloading"] .remove-dl {
+.queue-entry[data-status="downloading"] .remove-dl,
+.queue-entry:nth-child(1 of .queue-entry:not([data-status="downloading"])):nth-last-child(1 of .queue-entry:not([data-status="downloading"])) .remove-dl {
     margin-left: calc(20px + 2.75rem);
 }
 
