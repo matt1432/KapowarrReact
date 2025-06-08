@@ -113,7 +113,7 @@ annual_regex = compile(
     IGNORECASE,
 )  # If regex matches, it's NOT an annual
 cover_regex = compile(
-    r"\b(?<!no[ \-_])(?<!hard[ \-_])(?<!\d[ \-_]covers)cover\b|n\d+c(\d+)|(?:\b|\d)i?fc\b",
+    r"\b(?<!no[ \-_])(?<!hard[ \-_])(?<!\d[ \-_]covers)cover\b|n\d+c(\d+)|(?:\b|\d)i?fc\b|^folder$",
     IGNORECASE,
 )
 page_regex = compile(
