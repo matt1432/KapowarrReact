@@ -70,6 +70,13 @@ main:has(#massedit-toggle:checked) #library-container {
 }
 
 /*  */
+/* Tool Bar */
+/*  */
+#sort-button {Add commentMore actions
+    width: 9rem;
+}
+
+/*  */
 /* Library List */
 /*  */
 #list-library {

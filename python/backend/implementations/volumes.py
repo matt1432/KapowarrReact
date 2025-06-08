@@ -802,7 +802,7 @@ class Library:
             .execute(f"""
             WITH
                 vol_issues AS (
-                    SELECT id, monitored
+                    SELECT id, monitored, date
                     FROM issues
                     WHERE volume_id = volumes.id
                 ),
