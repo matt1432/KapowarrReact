@@ -85,3 +85,8 @@ def ui_download_clients() -> str:
 @ui.route("/settings/general", methods=methods)
 def ui_general() -> str:
     return render("settings_general.html")
+
+
+@ui.route("/react", methods=methods)
+def ui_react() -> str:
+    return render("react.html")

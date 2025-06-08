@@ -77,11 +77,14 @@
           };
       });
     in {
+      kapowarr-web = final.callPackage ./react {};
+
       kapowarr = final.callPackage ({
         # nix build inputs
         lib,
         python3Packages,
         # deps
+        kapowarr-web,
         rar,
         typescript,
         ...
@@ -135,6 +138,14 @@
                     'exe = "${getExe rar}"'
           '';
 
+          preBuild = ''
+            for dir in ${kapowarr-web}/share/kapowarr-web/*; do
+                if [[ "$dir" != "${kapowarr-web}/share/kapowarr-web" ]]; then
+                    cp $dir/* "./python/frontend/static/$(basename $dir)"
+                fi
+            done
+          '';
+
           meta = {
             inherit (rar.meta) platforms;
             mainProgram = pname;
@@ -149,7 +160,7 @@
     };
 
     packages = perSystem (pkgs: {
-      kapowarr = pkgs.kapowarr;
+      inherit (pkgs) kapowarr-web kapowarr;
       default = pkgs.kapowarr;
     });
 
