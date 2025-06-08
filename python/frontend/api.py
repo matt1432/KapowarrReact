@@ -2,7 +2,7 @@ from asyncio import run
 from collections.abc import Callable
 from datetime import datetime
 from io import BytesIO, StringIO
-from os.path import dirname, exists
+from os.path import exists
 from typing import Any, cast
 
 from backend.base.custom_exceptions import (
@@ -47,7 +47,6 @@ from backend.base.definitions import (
     SpecialVersion,
     VolumeData,
 )
-from backend.base.files import delete_empty_parent_folders, delete_file_folder
 from backend.base.logging import LOGGER, get_log_filepath
 from backend.features.download_queue import (
     DownloadHandler,
@@ -84,7 +83,7 @@ from backend.implementations.naming import (
     preview_mass_rename,
 )
 from backend.implementations.root_folders import RootFolders
-from backend.implementations.volumes import Library
+from backend.implementations.volumes import Library, delete_issue_file
 from backend.internals.db_models import FilesDB
 from backend.internals.server import SERVER, diffuse_timers
 from backend.internals.settings import Settings, about_data
@@ -1258,24 +1257,14 @@ def api_mass_editor() -> ApiReturn:
 # =====================
 # Files
 # =====================
-@api.route("/files/<int:id>", methods=["GET", "DELETE"])
+@api.route("/files/<int:f_id>", methods=["GET", "DELETE"])
 @error_handler
 @auth
-def api_files(id: int) -> ApiReturn:
+def api_files(f_id: int) -> ApiReturn:
     if request.method == "GET":
-        result = FilesDB.fetch(file_id=id)[0]
+        result = FilesDB.fetch(file_id=f_id)[0]
         return return_api(result)
 
     else:  # if request.method == "DELETE":
-        file_data = FilesDB.fetch(file_id=id)[0]
-        volume_id = FilesDB.volume_of_file(file_data["filepath"])
-
-        if volume_id:
-            vf = library.get_volume(volume_id).vd.folder
-            delete_file_folder(file_data["filepath"])
-            delete_empty_parent_folders(dirname(file_data["filepath"]), vf)
-        else:
-            delete_file_folder(file_data["filepath"])
-
-        FilesDB.delete_file(id)
+        delete_issue_file(f_id)
         return return_api({})

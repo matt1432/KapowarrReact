@@ -17,6 +17,7 @@ const inputs = {
     volume_padding_input: document.querySelector('#volume-padding-input') as HTMLInputElement,
     create_empty_volume_folders_input: document.querySelector('#create-vf-input') as HTMLInputElement,
     delete_empty_folders_input: document.querySelector('#delete-empty-folders-input') as HTMLInputElement,
+    unmonitor_deleted_input: document.querySelector('#unmonitor-deleted-input') as HTMLInputElement,
     convert_input: document.querySelector('#convert-input') as HTMLInputElement,
     extract_input: document.querySelector('#extract-input') as HTMLInputElement,
 };
@@ -41,6 +42,7 @@ function fillSettings(api_key: string) {
         inputs.volume_padding_input.value = json.result.volume_padding;
         inputs.create_empty_volume_folders_input.checked = json.result.create_empty_volume_folders;
         inputs.delete_empty_folders_input.checked = json.result.delete_empty_folders;
+        inputs.unmonitor_deleted_input.checked = json.result.unmonitor_deleted_issues;
         inputs.convert_input.checked = json.result.convert;
         inputs.extract_input.checked = json.result.extract_issue_ranges;
 
@@ -68,6 +70,7 @@ function saveSettings(api_key: string) {
         volume_padding: parseInt(inputs.volume_padding_input.value),
         create_empty_volume_folders: inputs.create_empty_volume_folders_input.checked,
         delete_empty_folders: inputs.delete_empty_folders_input.checked,
+        unmonitor_deleted_issues: inputs.unmonitor_deleted_input.checked,
         convert: inputs.convert_input.checked,
         extract_issue_ranges: inputs.extract_input.checked,
         format_preference: convert_preference,

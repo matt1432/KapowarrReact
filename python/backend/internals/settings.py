@@ -72,6 +72,8 @@ class SettingsValues:
     create_empty_volume_folders: bool = True
     delete_empty_folders: bool = False
 
+    unmonitor_deleted_issues: bool = False
+
     service_preference: CommaList = field(
         default_factory=lambda: CommaList(
             s.value for s in GCDownloadSource._member_map_.values()

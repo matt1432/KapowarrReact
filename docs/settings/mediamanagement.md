@@ -157,6 +157,12 @@ When scanning for files, if a volume folder doesn't exist, create it.
 
 When scanning for files, delete any empty folders that are found in the volume folder. If "Create Empty Volume Folders" is disabled and the volume folder is empty, it'll also be deleted.
 
+## File Management
+
+### Unmonitor Deleted Issues
+
+If an issue had files matched to it, but all have been deleted, automatically unmonitor the issue.
+
 ## Converting
 
 The "Converting" feature allows you to change the format of your files (e.g. from cbr to cbz). Extracting archive files also falls under "converting".

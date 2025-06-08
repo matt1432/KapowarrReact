@@ -5,7 +5,7 @@ from collections.abc import Mapping, Sequence
 from datetime import datetime, timedelta
 from functools import lru_cache
 from io import BytesIO
-from os.path import exists, isdir, relpath
+from os.path import dirname, exists, isdir, relpath
 from re import IGNORECASE, compile
 from time import time
 from typing import TYPE_CHECKING, Any, assert_never
@@ -1328,11 +1328,35 @@ def scan_files(
                 (volume_id,),
             )
         ]
-        delete_bindings = (b for b in current_bindings if b not in bindings)
+        delete_bindings = tuple(
+            b
+            for b in current_bindings
+            if b not in bindings
+        )
         cursor.executemany(
             "DELETE FROM issues_files WHERE file_id = ? AND issue_id = ?;",
             delete_bindings,
         )
+        if settings.unmonitor_deleted_issues:
+            # Unmonitor issues that have no files bound to them anymoreAdd commentMore actions
+            issue_binding_count = {
+                issue_id: 0
+                for _file_id, issue_id in current_bindings
+            }
+            for _file_id, issue_id in current_bindings:
+                issue_binding_count[issue_id] += 1
+
+            for _file_id, issue_id in delete_bindings:
+                issue_binding_count[issue_id] -= 1
+
+            cursor.executemany(
+                "UPDATE issues SET monitored = 0 WHERE id = ?;",
+                (
+                    (issue_id,)
+                    for issue_id, count in issue_binding_count.items()
+                    if count == 0
+                )
+            )
 
     # Add bindings that aren't in current bindings
     cursor.executemany(
@@ -1603,5 +1627,48 @@ def refresh_and_scan(
                 pool.starmap(scan_files, v_ids)
 
         FilesDB.delete_unmatched_files()
+
+    return
+
+def delete_issue_file(file_id: int) -> None:
+    """Delete a file from the library and remove it from the filesystem.
+
+    Args:
+        file_id (int): The ID of the file to delete.
+    """
+    file_data = FilesDB.fetch(file_id=file_id)[0]
+    volume_id = FilesDB.volume_of_file(file_data["filepath"])
+    unmonitor_deleted_issues = Settings().sv.unmonitor_deleted_issues and volume_id
+
+    if volume_id:
+        vf = Library().get_volume(volume_id).vd.folder
+        delete_file_folder(file_data["filepath"])
+        delete_empty_parent_folders(dirname(file_data["filepath"]), vf)
+    else:
+        delete_file_folder(file_data["filepath"])
+
+    if unmonitor_deleted_issues:
+        get_db().execute("""
+            WITH matched_file_counts AS (
+                SELECT issue_id, COUNT(file_id) AS matched_file_count
+                FROM issues_files
+                WHERE issue_id IN (
+                    SELECT issue_id
+                    FROM issues_files
+                    WHERE file_id = ?
+                )
+                GROUP BY issue_id
+            )
+            UPDATE issues
+            SET monitored = 0
+            WHERE id IN (
+                SELECT issue_id FROM matched_file_counts
+                WHERE matched_file_count = 1
+            );
+            """,
+            (file_id,)
+        )
+
+    FilesDB.delete_file(file_id)
 
     return
