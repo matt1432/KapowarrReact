@@ -215,9 +215,13 @@ class FilesDB:
                 INNER JOIN issues
                 ON issues_files.issue_id = issues.id
                 WHERE volume_id = ?
+            ) OR id IN (
+                SELECT DISTINCT file_id
+                FROM volume_files
+                WHERE volume_id = ?
             );
             """,
-            (volume_id,),
+            (volume_id, volume_id),
         )
         return
 
