@@ -237,7 +237,7 @@ class DownloadHandler(metaclass=Singleton):
         """
         download = self.get_one(download_id)
         if download.state != DownloadState.QUEUED_STATE:
-            raise DownloadUnmovable
+            raise DownloadUnmovable(download_id)
 
         if index < 0 or index >= len(self.queue):
             raise InvalidKeyValue("index", index)
@@ -362,7 +362,7 @@ class DownloadHandler(metaclass=Singleton):
         for entry in self.queue:
             if entry.id == download_id:
                 return entry
-        raise DownloadNotFound
+        raise DownloadNotFound(download_id)
 
     # region Adding
     def __determine_link_type(self, link: str) -> str | None:

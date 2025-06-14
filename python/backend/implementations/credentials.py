@@ -69,7 +69,7 @@ class Credentials:
         )
 
         if result is None:
-            raise CredentialNotFound
+            raise CredentialNotFound(id)
 
         return CredentialData(
             **{**dict(result), "source": CredentialSource(result["source"])}

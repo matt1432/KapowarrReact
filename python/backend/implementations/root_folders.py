@@ -82,7 +82,7 @@ class RootFolders(metaclass=Singleton):
         root_folder = self.cache.get(root_folder_id)
 
         if not root_folder:
-            raise RootFolderNotFound
+            raise RootFolderNotFound(root_folder_id)
 
         return root_folder
 
@@ -122,7 +122,7 @@ class RootFolders(metaclass=Singleton):
         LOGGER.info(f"Adding rootfolder from {folder}")
 
         if not isdir(folder):
-            raise FolderNotFound
+            raise FolderNotFound(folder)
 
         folder = uppercase_drive_letter(force_suffix(abspath(folder)))
 
@@ -143,7 +143,7 @@ class RootFolders(metaclass=Singleton):
             if folder_is_inside_folder(other_folder, folder) or folder_is_inside_folder(
                 folder, other_folder
             ):
-                raise RootFolderInvalid
+                raise RootFolderInvalid(folder)
 
         root_folder_id = (
             get_db()
@@ -228,9 +228,9 @@ class RootFolders(metaclass=Singleton):
         try:
             cursor.execute("DELETE FROM root_folders WHERE id = ?", (root_folder_id,))
             if not cursor.rowcount:
-                raise RootFolderNotFound
+                raise RootFolderNotFound(root_folder_id)
         except IntegrityError:
-            raise RootFolderInUse
+            raise RootFolderInUse(root_folder_id)
 
         self._load_cache()
         return

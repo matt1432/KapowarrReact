@@ -88,7 +88,7 @@ def get_blocklist_entry(id: int) -> BlocklistEntry:
     )
 
     if not entry:
-        raise BlocklistEntryNotFound
+        raise BlocklistEntryNotFound(id)
 
     return BlocklistEntry(
         **{**entry, "reason": BlocklistReason[BlocklistReasonID(entry["reason"]).name]}
@@ -233,6 +233,6 @@ def delete_blocklist_entry(id: int) -> None:
     entry_found = get_db().execute("DELETE FROM blocklist WHERE id = ?", (id,)).rowcount
 
     if not entry_found:
-        raise BlocklistEntryNotFound
+        raise BlocklistEntryNotFound(id)
 
     return

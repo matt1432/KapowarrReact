@@ -1,303 +1,529 @@
 """
-All custom exceptions are defined here
-
-Note: Not all CE's inherit from CustomException.
+Definitions of exceptions.
 """
 
-from typing import Any, TypedDict
+from typing import Any
 
 from backend.base.definitions import (
+    ApiResponse,
     BlocklistReason,
     BlocklistReasonID,
     DownloadSource,
     FailReason,
+    KapowarrException,
 )
 from backend.base.logging import LOGGER
 
 
-class ApiResponse(TypedDict):
-    error: str
-    result: dict[str, str | int | None]
-    code: int
-
-
-class CustomException(Exception):
-    def __init__(self, e: Any = None) -> None:
-        LOGGER.warning(self.__doc__)
-        super().__init__(e)
-        return
-
-
-class FolderNotFound(CustomException):
-    """Folder not found"""
-
-    api_response = {"error": "FolderNotFound", "result": {}, "code": 404}
-
-
-class RootFolderNotFound(CustomException):
-    """Rootfolder with given ID not found"""
-
-    api_response = {"error": "RootFolderNotFound", "result": {}, "code": 404}
-
-
-class RootFolderInUse(CustomException):
-    """A root folder with the given ID is requested to be deleted but is used by a volume"""
-
-    api_response = {"error": "RootFolderInUse", "result": {}, "code": 400}
-
-
-class RootFolderInvalid(CustomException):
-    """The root folder is a parent or child of an existing root folder, which is not allowed"""
-
-    api_response = {"error": "RootFolderInvalid", "result": {}, "code": 400}
-
-
-class VolumeNotFound(CustomException):
-    """The volume with the given (comicvine-) key was not found"""
-
-    api_response = {"error": "VolumeNotFound", "result": {}, "code": 404}
-
-
-class VolumeNotMatched(CustomException):
-    """Volume not matched with ComicVine database"""
-
-    api_response = {"error": "VolumeNotMatched", "result": {}, "code": 400}
-
-
-class VolumeFolderInvalid(CustomException):
-    """The volume folder is a parent or child of an existing volume folder, which is not allowed"""
-
-    api_response = {"error": "VolumeFolderInvalid", "result": {}, "code": 400}
-
-
-class CVRateLimitReached(CustomException):
-    """ComicVine API rate limit reached"""
-
-    api_response = {"error": "CVRateLimitReached", "result": {}, "code": 509}
-
-
-class VolumeAlreadyAdded(CustomException):
-    """The volume that is desired to be added is already added"""
-
-    api_response = {"error": "VolumeAlreadyAdded", "result": {}, "code": 400}
-
-
-class VolumeDownloadedFor(Exception):
-    """The volume is desired to be deleted but there is a download for it going"""
-
-    def __init__(self, volume_id: int):
-        self.volume_id = volume_id
-        super().__init__(self.volume_id)
-        LOGGER.warning(
-            f"Deleting volume failed because there is a download for the volume: {self.volume_id}"
-        )
-        return
-
-    @property
-    def api_response(self) -> ApiResponse:
-        return {
-            "error": "VolumeDownloadedFor",
-            "result": {"volume_id": self.volume_id},
-            "code": 400,
-        }
-
-
-class TaskForVolumeRunning(Exception):
-    """The volume is desired to be deleted but there is a task running for it"""
-
-    def __init__(self, volume_id: int):
-        self.volume_id = volume_id
-        super().__init__(self.volume_id)
-        LOGGER.warning(
-            f"Deleting volume failed because there is a task for the volume: {self.volume_id}"
-        )
-        return
-
-    @property
-    def api_response(self) -> ApiResponse:
-        return {
-            "error": "TaskForVolumeRunning",
-            "result": {"volume_id": self.volume_id},
-            "code": 400,
-        }
-
-
-class IssueNotFound(CustomException):
-    """Issue with given ID not found"""
-
-    api_response = {"error": "IssueNotFound", "result": {}, "code": 404}
-
-
-class TaskNotFound(CustomException):
-    """Task with given ID not found"""
-
-    api_response = {"error": "TaskNotFound", "result": {}, "code": 404}
-
-
-class TaskNotDeletable(CustomException):
-    """The task could not be deleted because it's the first in the queue"""
-
-    api_response = {"error": "TaskNotDeletable", "result": {}, "code": 400}
-
-
-class DownloadNotFound(CustomException):
-    """Download with given ID not found"""
-
-    api_response = {"error": "DownloadNotFound", "result": {}, "code": 404}
-
-
-class BlocklistEntryNotFound(CustomException):
-    """Blocklist entry with given ID not found"""
-
-    api_response = {"error": "BlocklistEntryNotFound", "result": {}, "code": 404}
-
-
-class InvalidComicVineApiKey(CustomException):
-    """No Comic Vine API key is set or it's invalid"""
-
-    api_response = {"error": "InvalidComicVineApiKey", "result": {}, "code": 400}
-
-
-class LinkBroken(Exception):
-    """Download link doesn't work"""
-
-    def __init__(self, reason: BlocklistReason):
-        self.reason = reason
-        self.reason_text = reason.value
-        self.reason_id = BlocklistReasonID[reason.name].value
-        super().__init__(self.reason_id)
-        return
-
-    @property
-    def api_response(self) -> ApiResponse:
-        return {
-            "error": "LinkBroken",
-            "result": {"reason_text": self.reason_text, "reason_id": self.reason_id},
-            "code": 400,
-        }
-
-
-class FailedGCPage(Exception):
-    """Something failed processing the GC page"""
-
-    def __init__(self, reason: FailReason):
-        self.reason = reason
-        super().__init__(self.reason.value)
-        return
-
-    @property
-    def api_response(self) -> ApiResponse:
-        return {
-            "error": "FailedGCPage",
-            "result": {"reason_text": self.reason.value},
-            "code": 400,
-        }
-
-
-class InvalidSettingKey(Exception):
-    """The setting key is unknown"""
-
-    def __init__(self, key: str = ""):
+# region API
+class KeyNotFound(KapowarrException):
+    "A key that is required to be given in the API request was not found"
+
+    def __init__(self, key: str) -> None:
         self.key = key
-        super().__init__(self.key)
+        if key != "password":
+            LOGGER.warning(
+                "This key was not found in the API request, "
+                f"even though it's required: {key}"
+            )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"key": self.key},
+        }
+
+
+class InvalidKeyValue(KapowarrException):
+    "A key given in the API request has an invalid value"
+
+    def __init__(self, key: str = "", value: Any = "") -> None:
+        self.key = key
+        self.value = value
+        if value not in ("undefined", "null"):
+            LOGGER.warning(
+                f"This key in the API request has an invalid value: {key} = {value}"
+            )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"key": self.key, "value": self.value},
+        }
+
+
+# region Settings
+class InvalidSettingKey(KapowarrException):
+    "The setting key is unknown"
+
+    def __init__(self, key: str) -> None:
+        self.key = key
         LOGGER.warning(f"No setting matched the given key: {key}")
         return
 
     @property
     def api_response(self) -> ApiResponse:
-        return {"error": "InvalidSettingKey", "result": {"key": self.key}, "code": 400}
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"key": self.key},
+        }
 
 
-class InvalidSettingValue(Exception):
-    """The setting value is invalid"""
+class InvalidSettingValue(KapowarrException):
+    "The setting value is invalid"
 
-    def __init__(self, key: str = "", value: Any = ""):
+    def __init__(self, key: str, value: Any):
         self.key = key
         self.value = value
-        super().__init__(self.key)
-        LOGGER.warning(f"The value for this setting is invalid: {key}: {value}")
+        LOGGER.warning(f"The value for this setting is invalid: {key}={value}")
         return
 
     @property
     def api_response(self) -> ApiResponse:
         return {
-            "error": "InvalidSettingValue",
-            "result": {"key": self.key, "value": self.value},
             "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"key": self.key, "value": self.value},
         }
 
 
-class InvalidSettingModification(Exception):
-    """The setting is not allowed to be changed this way"""
+class InvalidSettingModification(KapowarrException):
+    "The setting is not allowed to be changed this way"
 
-    def __init__(self, key: str = "", instead: str = ""):
+    def __init__(self, key: str, instead: str):
         self.key = key
         self.instead = instead
-        super().__init__(key)
         LOGGER.warning(
-            f"This setting is not allowed to be changed this way: {key}."
-            + f" Instead: {instead}"
+            f"This setting is not allowed to be changed this way: {key}. "
+            f"Instead: {instead}"
         )
         return
 
     @property
     def api_response(self) -> ApiResponse:
         return {
-            "error": "InvalidSettingModification",
-            "result": {"key": self.key, "instead": self.instead},
             "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"key": self.key, "instead": self.instead},
         }
 
 
-class KeyNotFound(Exception):
-    """A key that is required to be given in the api request was not found"""
+# region Folders/Files
+class FolderNotFound(KapowarrException):
+    "Folder not found"
 
-    def __init__(self, key: str = ""):
-        self.key = key
-        super().__init__(self.key)
-        if key != "password":
-            LOGGER.warning(
-                "This key was not found in the API request,"
-                + f" eventhough it's required: {key}"
-            )
-        return
-
-    @property
-    def api_response(self) -> ApiResponse:
-        return {"error": "KeyNotFound", "result": {"key": self.key}, "code": 400}
-
-
-class InvalidKeyValue(Exception):
-    """A key given in the api request has an invalid value"""
-
-    def __init__(self, key: str = "", value: Any = ""):
-        self.key = key
-        self.value = value
-        super().__init__(self.key)
-        if value not in ("undefined", "null"):
-            LOGGER.warning(
-                "This key in the API request has an invalid value: "
-                + f"{key} = {value}"
-            )
+    def __init__(self, folder: str) -> None:
+        self.folder = folder
+        LOGGER.warning(f"The folder was not found: {folder}")
         return
 
     @property
     def api_response(self) -> ApiResponse:
         return {
-            "error": "InvalidKeyValue",
-            "result": {"key": self.key, "value": self.value},
-            "code": 400,
+            "code": 404,
+            "error": self.__class__.__name__,
+            "result": {"folder": self.folder},
         }
 
 
-class CredentialNotFound(CustomException):
-    """Credential with given ID not found"""
+class FileNotFound(KapowarrException):
+    "File with given filepath or ID not found"
 
-    api_response = {"error": "CredentialNotFound", "result": {}, "code": 404}
+    def __init__(self, id_or_path: int | str) -> None:
+        self.file_id = None
+        self.filepath = None
+        if isinstance(id_or_path, int):
+            self.file_id = id_or_path
+            LOGGER.warning(f"File with given ID not found: {id_or_path}")
+        else:
+            self.filepath = id_or_path
+            LOGGER.warning(f"File with given path not found: {id_or_path}")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 404,
+            "error": self.__class__.__name__,
+            "result": {"file_id": self.file_id, "filepath": self.filepath},
+        }
 
 
-class CredentialInvalid(Exception):
-    """A credential is incorrect (can't login with it)"""
+class LogFileNotFound(KapowarrException):
+    "No log file was found"
+
+    def __init__(self) -> None:
+        LOGGER.warning("No log file found")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {"code": 404, "error": self.__class__.__name__, "result": {}}
+
+
+# region Rootfolders
+class RootFolderNotFound(KapowarrException):
+    "Rootfolder with given ID not found"
+
+    def __init__(self, root_folder_id: int) -> None:
+        self.root_folder_id = root_folder_id
+        LOGGER.warning(f"Rootfolder with given ID not found: {root_folder_id}")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 404,
+            "error": self.__class__.__name__,
+            "result": {"root_folder_id": self.root_folder_id},
+        }
+
+
+class RootFolderInUse(KapowarrException):
+    """
+    A root folder with the given ID is requested to be deleted
+    but is used by a volume
+    """
+
+    def __init__(self, root_folder_id: int) -> None:
+        self.root_folder_id = root_folder_id
+        LOGGER.warning(
+            "Rootfolder with the given ID is requested to be deleted "
+            f"but is used by a volume: {root_folder_id}"
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"root_folder_id": self.root_folder_id},
+        }
+
+
+class RootFolderInvalid(KapowarrException):
+    """
+    The root folder is a parent or child of an existing root folder,
+    which is not allowed
+    """
+
+    def __init__(self, folder: str) -> None:
+        self.folder = folder
+        LOGGER.warning(
+            "The root folder is a parent or child of an existing root folder, "
+            f"which is not allowed: {folder}"
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"folder": self.folder},
+        }
+
+
+# region Volumes
+class VolumeNotFound(KapowarrException):
+    "The volume with the given (comicvine) key was not found"
+
+    def __init__(self, volume_id: int) -> None:
+        self.volume_id = volume_id
+        LOGGER.warning(
+            f"The volume with the given (comicvine) key was not found: {volume_id}"
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 404,
+            "error": self.__class__.__name__,
+            "result": {"volume_id": self.volume_id},
+        }
+
+
+class VolumeNotMatched(KapowarrException):
+    "Volume not matched with ComicVine database"
+
+    def __init__(self) -> None:
+        LOGGER.warning("Volume not matched with ComicVine database")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {"code": 400, "error": self.__class__.__name__, "result": {}}
+
+
+class VolumeAlreadyAdded(KapowarrException):
+    "The volume that is desired to be added is already added"
+
+    def __init__(self, comicvine_id: int) -> None:
+        self.comicvine_id = comicvine_id
+        LOGGER.warning(
+            "The volume that is desired to be added is already added: "
+            f"CV {comicvine_id}"
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"comicvine_id": self.comicvine_id},
+        }
+
+
+class VolumeFolderInvalid(KapowarrException):
+    """
+    The volume folder is a parent or child of an existing volume folder,
+    which is not allowed
+    """
+
+    def __init__(self, folder: str) -> None:
+        self.folder = folder
+        LOGGER.warning(
+            "The volume folder is a parent or child of an existing volume folder, "
+            f"which is not allowed: {folder}"
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"folder": self.folder},
+        }
+
+
+class VolumeDownloadedFor(KapowarrException):
+    "The volume is desired to be deleted but there is a download for it going"
+
+    def __init__(self, volume_id: int) -> None:
+        self.volume_id = volume_id
+        LOGGER.warning(
+            "The volume is desired to be deleted but "
+            f"there is a download for it going: {volume_id}"
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"volume_id": self.volume_id},
+        }
+
+
+class TaskForVolumeRunning(KapowarrException):
+    "The volume is desired to be deleted but there is a task running for it"
+
+    def __init__(self, volume_id: int) -> None:
+        self.volume_id = volume_id
+        LOGGER.warning(
+            "The volume is desired to be deleted but "
+            f"there is a task running for it: {volume_id}"
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"volume_id": self.volume_id},
+        }
+
+
+class IssueNotFound(KapowarrException):
+    "The issue with the given (comicvine) key was not found"
+
+    def __init__(self, issue_id: int) -> None:
+        self.issue_id = issue_id
+        LOGGER.warning(
+            f"The issue with the given (comicvine) key was not found: {issue_id}"
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 404,
+            "error": self.__class__.__name__,
+            "result": {"issue_id": self.issue_id},
+        }
+
+
+# region Tasks
+class TaskNotFound(KapowarrException):
+    "Task with given ID or name not found"
+
+    def __init__(self, id_or_name: int | str) -> None:
+        self.task_id = None
+        self.task_name = None
+        if isinstance(id_or_name, int):
+            self.task_id = id_or_name
+            LOGGER.warning(f"Task with given ID not found: {id_or_name}")
+        else:
+            self.task_name = id_or_name
+            LOGGER.warning(f"Task with given name not found: {id_or_name}")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 404,
+            "error": self.__class__.__name__,
+            "result": {"task_id": self.task_id, "task_name": self.task_name},
+        }
+
+
+class TaskNotDeletable(KapowarrException):
+    "The task could not be deleted because it's at the front of the queue"
+
+    def __init__(self, task_id: int) -> None:
+        self.task_id = task_id
+        LOGGER.warning(
+            "The task could not be deleted because "
+            f"it's at the front of the queue: {task_id}"
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"task_id": self.task_id},
+        }
+
+
+# region Downloads
+class DownloadNotFound(KapowarrException):
+    "Download with given ID not found"
+
+    def __init__(self, download_id: int) -> None:
+        self.download_id = download_id
+        LOGGER.warning(f"Download with given ID not found: {download_id}")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 404,
+            "error": self.__class__.__name__,
+            "result": {"download_id": self.download_id},
+        }
+
+
+class LinkBroken(KapowarrException):
+    "Download link doesn't work"
+
+    def __init__(self, reason: BlocklistReason) -> None:
+        self.reason = reason
+        self.reason_text = reason.value
+        self.reason_id = BlocklistReasonID[reason.name].value
+        LOGGER.warning(f"Download link is broken: {self.reason_text}")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"reason_text": self.reason_text, "reason_id": self.reason_id},
+        }
+
+
+class FailedGCPage(KapowarrException):
+    "Something failed processing the GetComics page"
+
+    def __init__(self, reason: FailReason) -> None:
+        self.reason = reason
+        self.reason_text = reason.value
+        LOGGER.warning(f"Failed processing the GetComics page: {self.reason_text}")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"reason_text": self.reason.value},
+        }
+
+
+class DownloadLimitReached(KapowarrException):
+    "The download limit of the source is reached"
+
+    def __init__(self, source: DownloadSource) -> None:
+        self.source = source
+        self.source_text = source.value
+        LOGGER.warning(
+            f"Download source {self.source_text} has reached it's download limit"
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 509,
+            "error": self.__class__.__name__,
+            "result": {"source": self.source.value},
+        }
+
+
+class DownloadUnmovable(KapowarrException):
+    "The position of the download in the queue can not be changed"
+
+    def __init__(self, download_id: int) -> None:
+        self.download_id = download_id
+        LOGGER.warning(
+            f"The position of the download in the queue can not be changed: {download_id}"
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"download_id": self.download_id},
+        }
+
+
+# region Credentials
+class CredentialNotFound(KapowarrException):
+    "Credential with given ID not found"
+
+    def __init__(self, credential_id: int) -> None:
+        self.credential_id = credential_id
+        LOGGER.warning(f"Credential with given ID not found: {credential_id}")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 404,
+            "error": self.__class__.__name__,
+            "result": {"credential_id": self.credential_id},
+        }
+
+
+class CredentialInvalid(KapowarrException):
+    "A credential is incorrect (can't login with it)"
 
     def __init__(self, description: str) -> None:
         self.desc = description
@@ -307,91 +533,75 @@ class CredentialInvalid(Exception):
     @property
     def api_response(self) -> ApiResponse:
         return {
-            "error": "CredentialInvalid",
-            "result": {"description": self.desc},
             "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"description": self.desc},
         }
 
 
-class DownloadLimitReached(Exception):
-    """The download limit (download quota) of the source is reached"""
+# region Download Clients
+class ExternalClientNotFound(KapowarrException):
+    "External client with given ID not found"
 
-    def __init__(self, source: DownloadSource) -> None:
-        self.source = source
-        LOGGER.warning(
-            f"Download source {source.value} has reached it's download limit"
-        )
+    def __init__(self, external_client_id: int) -> None:
+        self.external_client_id = external_client_id
+        LOGGER.warning(f"External client with given ID not found: {external_client_id}")
         return
 
     @property
     def api_response(self) -> ApiResponse:
         return {
-            "error": "DownloadLimitReached",
-            "result": {"source": self.source.value},
-            "code": 509,
+            "code": 404,
+            "error": self.__class__.__name__,
+            "result": {"external_client_id": self.external_client_id},
         }
 
 
-class DownloadUnmovable(CustomException):
-    """The position of the download in the queue can not be changed"""
-
-    api_response = {"error": "DownloadUnmovable", "result": {}, "code": 400}
-
-
-class ExternalClientNotFound(CustomException):
-    """External client with given ID not found"""
-
-    api_response = {"error": "ExternalClientNotFound", "result": {}, "code": 404}
-
-
-class ClientDownloading(Exception):
+class ClientDownloading(KapowarrException):
     """
     The external client is desired to be deleted
     but there is a download using it
     """
 
-    def __init__(self, client_id: int):
+    def __init__(self, client_id: int) -> None:
         self.client_id = client_id
-        super().__init__(self.client_id)
         LOGGER.warning(
-            "Deleting external client failed because there is "
-            + f"a download using it: {self.client_id}"
+            "The external client is desired to be deleted but "
+            f"there is a download using it: {client_id}"
         )
         return
 
     @property
     def api_response(self) -> ApiResponse:
         return {
-            "error": "ClientDownloading",
-            "result": {"client_id": self.client_id},
             "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"client_id": self.client_id},
         }
 
 
-class ClientNotWorking(Exception):
-    """The client is not working"""
+class ClientNotWorking(KapowarrException):
+    "The download client is not working"
 
-    def __init__(self, description: str = "") -> None:
+    def __init__(self, description: str) -> None:
         self.desc = description
-        super().__init__(self.desc)
-        LOGGER.warning(f"Client failed with description: {self.desc}")
+        LOGGER.warning(f"The download client isn't working: {self.desc}")
         return
 
     @property
     def api_response(self) -> ApiResponse:
         return {
-            "error": "ClientNotWorking",
-            "result": {"description": self.desc},
             "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"description": self.desc},
         }
 
 
-class ExternalClientNotWorking(Exception):
-    """External client is not working"""
+class ExternalClientNotWorking(KapowarrException):
+    "The external client is not working"
 
     def __init__(self, description: str | None = None) -> None:
         self.desc = description
-        super().__init__(self.desc)
         LOGGER.warning(
             f"Failed to connect to external client for the following reason: {self.desc}"
         )
@@ -400,19 +610,50 @@ class ExternalClientNotWorking(Exception):
     @property
     def api_response(self) -> ApiResponse:
         return {
-            "error": "ExternalClientNotWorking",
-            "result": {"description": self.desc},
             "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"description": self.desc},
         }
 
 
-class LogFileNotFound(CustomException):
-    """No log file was found"""
+# region ComicVine
+class CVRateLimitReached(KapowarrException):
+    "ComicVine API rate limit reached"
 
-    api_response = {"error": "LogFileNotFound", "result": {}, "code": 404}
+    def __init__(self) -> None:
+        LOGGER.warning("Reached the rate limit of ComicVine")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {"code": 509, "error": self.__class__.__name__, "result": {}}
 
 
-class FileNotFound(CustomException):
-    """File with given ID not found"""
+class InvalidComicVineApiKey(KapowarrException):
+    "No Comic Vine API key is set or it's invalid"
 
-    api_response = {"error": "FileNotFound", "result": {}, "code": 404}
+    def __init__(self) -> None:
+        LOGGER.warning("No Comic Vine API key is set or it's invalid")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {"code": 400, "error": self.__class__.__name__, "result": {}}
+
+
+# region Blocklist
+class BlocklistEntryNotFound(KapowarrException):
+    "Blocklist entry with given ID not found"
+
+    def __init__(self, blocklist_entry_id: int) -> None:
+        self.blocklist_entry_id = blocklist_entry_id
+        LOGGER.warning(f"Blocklist entry with given ID not found: {blocklist_entry_id}")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 404,
+            "error": self.__class__.__name__,
+            "result": {"blocklist_entry_id": self.blocklist_entry_id},
+        }

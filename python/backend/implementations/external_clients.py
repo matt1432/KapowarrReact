@@ -373,7 +373,7 @@ class ExternalClients:
         )
 
         if not client_type:
-            raise ExternalClientNotFound
+            raise ExternalClientNotFound(client_id)
 
         return ExternalClients.get_client_types()[client_type](client_id)
 
@@ -422,4 +422,4 @@ class ExternalClients:
         if first_id:
             return ExternalClients.get_client(first_id[0])
 
-        raise ExternalClientNotFound
+        raise ExternalClientNotFound(-1)

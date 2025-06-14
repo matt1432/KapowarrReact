@@ -105,7 +105,7 @@ class Issue:
         )
 
         if issue_id is None:
-            raise IssueNotFound
+            raise IssueNotFound(id)
         return
 
     @classmethod
@@ -143,7 +143,7 @@ class Issue:
         )
 
         if not issue_id:
-            raise IssueNotFound
+            raise IssueNotFound(-1)
 
         return cls(issue_id, check_existence=True)
 
@@ -276,7 +276,7 @@ class Volume:
         )
 
         if volume_id is None:
-            raise VolumeNotFound
+            raise VolumeNotFound(id)
         return
 
     def get_data(self) -> VolumeData:
@@ -1058,7 +1058,7 @@ class Library:
         )
 
         if self._volume_added(comicvine_id):
-            raise VolumeAlreadyAdded
+            raise VolumeAlreadyAdded(comicvine_id)
 
         # Raises RootFolderNotFound when ID is invalid
         root_folder = RootFolders().get_one(root_folder_id)
@@ -1167,7 +1167,7 @@ class Library:
                     or folder_is_inside_folder(other_vf[0], folder)
                 ):
                     rollback()
-                    raise VolumeFolderInvalid
+                    raise VolumeFolderInvalid(folder)
 
             volume["folder"] = folder
 
@@ -1216,10 +1216,18 @@ def determine_special_version(volume_id: int) -> SpecialVersion:
         if hc_regex.search(volume_data.title):
             return SpecialVersion.HARD_COVER
 
-        if (issues[0].title or "").lower().replace(' ', '') in ("hc", "hard-cover", "hardcover"):
+        if (issues[0].title or "").lower().replace(" ", "") in (
+            "hc",
+            "hard-cover",
+            "hardcover",
+        ):
             return SpecialVersion.HARD_COVER
 
-        if (issues[0].title or "").lower().replace(' ', '') in ("os", "one-shot", "oneshot"):
+        if (issues[0].title or "").lower().replace(" ", "") in (
+            "os",
+            "one-shot",
+            "oneshot",
+        ):
             return SpecialVersion.ONE_SHOT
 
     if "annual" in volume_data.title.lower():

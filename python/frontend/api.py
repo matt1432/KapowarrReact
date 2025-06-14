@@ -197,7 +197,7 @@ def extract_key(request: Request, key: str, check_existence: bool = True) -> Any
         elif key == "cmd":
             value = task_library.get(value)
             if value is None:
-                raise TaskNotFound
+                raise TaskNotFound(value)
 
         elif key == "api_key":
             if not value or value != Settings().sv.api_key:
@@ -385,7 +385,7 @@ def api_tasks() -> ApiReturn:
 
         task: type[Task] | None = task_library.get(data.get("cmd", ""))
         if not task:
-            raise TaskNotFound
+            raise TaskNotFound(data.get("cmd", ""))
 
         kwargs = {}
         if task.action in (

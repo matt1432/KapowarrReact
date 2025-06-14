@@ -684,7 +684,7 @@ class TaskHandler(metaclass=Singleton):
         for entry in self.queue:
             if entry["id"] == task_id:
                 return self.__format_entry(entry)
-        raise TaskNotFound
+        raise TaskNotFound(task_id)
 
     def remove(self, task_id: int) -> None:
         """Remove a task from the queue
@@ -702,7 +702,7 @@ class TaskHandler(metaclass=Singleton):
 
         # Check if task is allowed to be deleted
         if self.queue[0] == task:
-            raise TaskNotDeletable
+            raise TaskNotDeletable(task_id)
 
         task["task"].stop = True
         task["thread"].join()
