@@ -1,7 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// https://vite.dev/config/
 export default defineConfig({
     plugins: [react()],
     build: {
@@ -12,9 +11,9 @@ export default defineConfig({
                 },
                 chunkFileNames: 'out/js/[name].js',
                 manualChunks: {
-                    react: ['src/main.tsx']
-                }
+                    react: ['src/main.tsx'],
+                },
             },
         },
     },
-})
+});
