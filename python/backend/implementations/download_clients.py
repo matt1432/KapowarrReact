@@ -417,9 +417,7 @@ class BaseDirectDownload(Download):
 class DirectDownload(BaseDirectDownload):
     "For downloading a file directly from a link"
 
-    @property
-    def identifier(self) -> str:
-        return "direct"
+    identifier: str = "direct"
 
 
 # region MediaFire
@@ -427,9 +425,7 @@ class DirectDownload(BaseDirectDownload):
 class MediaFireDownload(BaseDirectDownload):
     "For downloading a MediaFire file"
 
-    @property
-    def identifier(self) -> str:
-        return "mf"
+    identifier: str = "mf"
 
     def _convert_to_pure_link(self) -> str:
         r = self._ssn.get(self.download_link, stream=True)
@@ -452,9 +448,7 @@ class MediaFireDownload(BaseDirectDownload):
 class MediaFireFolderDownload(BaseDirectDownload):
     "For downloading a MediaFire folder (for MF file, use MediaFireDownload)"
 
-    @property
-    def identifier(self) -> str:
-        return "mf_folder"
+    identifier: str = "mf_folder"
 
     def _convert_to_pure_link(self) -> str:
         return self.download_link.split("/folder/")[1].split("/")[0]
@@ -477,9 +471,7 @@ class MediaFireFolderDownload(BaseDirectDownload):
 class WeTransferDownload(BaseDirectDownload):
     "For downloading a file or folder from WeTransfer"
 
-    @property
-    def identifier(self) -> str:
-        return "wt"
+    identifier: str = "wt"
 
     def _convert_to_pure_link(self) -> str:
         transfer_id, security_hash = self.download_link.split("/")[-2:]
@@ -503,9 +495,7 @@ class WeTransferDownload(BaseDirectDownload):
 class PixelDrainDownload(BaseDirectDownload):
     "For downloading a file from PixelDrain"
 
-    @property
-    def identifier(self) -> str:
-        return "pd"
+    identifier: str = "pd"
 
     @staticmethod
     def login(api_key: str) -> int:
@@ -572,9 +562,7 @@ class PixelDrainDownload(BaseDirectDownload):
 class PixelDrainFolderDownload(PixelDrainDownload):
     "For downloading a PixelDrain folder (for PD file, use PixelDrainDownload)"
 
-    @property
-    def identifier(self) -> str:
-        return "pd_folder"
+    identifier: str = "pd_folder"
 
     def _convert_to_pure_link(self) -> str:
         self._api_key = None
@@ -588,9 +576,7 @@ class PixelDrainFolderDownload(PixelDrainDownload):
 class MegaDownload(BaseDirectDownload):
     "For downloading a file via Mega"
 
-    @property
-    def identifier(self) -> str:
-        return "mega"
+    identifier: str = "mega"
 
     _mega_class: builtins.type[MegaABC] = Mega
 
@@ -729,9 +715,7 @@ class MegaDownload(BaseDirectDownload):
 class MegaFolderDownload(MegaDownload):
     "For downloading a Mega folder (for Mega file, use MegaDownload)"
 
-    @property
-    def identifier(self) -> str:
-        return "mega_folder"
+    identifier: str = "mega_folder"
 
     _mega_class = MegaFolder
 
@@ -739,9 +723,7 @@ class MegaFolderDownload(MegaDownload):
 # region Torrent
 @final
 class TorrentDownload(ExternalDownload, BaseDirectDownload):
-    @property
-    def identifier(self) -> str:
-        return "torrent"
+    identifier: str = "torrent"
 
     @property
     def external_client(self) -> ExternalDownloadClient:
