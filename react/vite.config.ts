@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+import postcss from './vite.postcss';
+
 export default defineConfig({
     plugins: [react()],
     build: {
@@ -14,6 +16,14 @@ export default defineConfig({
                     react: ['src/main.tsx'],
                 },
             },
+        },
+    },
+    css: {
+        postcss,
+    },
+    resolve: {
+        alias: {
+            '~normalize.css': 'normalize.css',
         },
     },
 });
