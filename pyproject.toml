@@ -16,10 +16,10 @@ readme = "README.md"
 license-files = ["LICENSE"]
 requires-python = ">= 3.12"
 dependencies = [
-  "aiohttp ~= 3.11.15",
-  "beautifulsoup4 ~= 4.12.3",
+  "aiohttp ~= 3.12.10",
+  "beautifulsoup4 ~= 4.13.4",
   "bencoding ~= 0.2.6",
-  "cryptography ~= 44.0.2",
+  "cryptography ~= 45.0.2",
   "flask ~= 3.1",
   "flask-socketio ~= 5.5.1",
   "libgencomics @ git+https://github.com/matt1432/LibgenComics.git@v0.0.4",
