@@ -133,6 +133,7 @@
                     'exe = "${getExe rar}"'
           '';
 
+          /*
           preBuild = ''
             for dir in ${kapowarr-web}/share/kapowarr-web/*; do
                 if [[ "$dir" != "${kapowarr-web}/share/kapowarr-web" ]]; then
@@ -140,6 +141,7 @@
                 fi
             done
           '';
+          */
 
           meta = {
             inherit (rar.meta) platforms;
