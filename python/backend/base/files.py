@@ -20,7 +20,6 @@ from os.path import (
 )
 from re import compile
 from shutil import copy2, copytree, move, rmtree
-from typing import TypeVar
 
 from backend.base.definitions import CharConstants, Constants, FileConstants
 from backend.base.helpers import check_filter, force_suffix
@@ -28,7 +27,6 @@ from backend.base.logging import LOGGER
 
 StrPath = str | PathLike[str]
 
-_StrPathT = TypeVar("_StrPathT", bound=StrPath)
 filepath_cleaner = compile(r"(<|>|(?<!^\w):|\"|\||\?|\*|\x00|(?:\s|\.)+(?=$|\\|/))")
 smart_filepath_cleaner_compact = compile(r"(\b[<>:]\b)")
 smart_filepath_cleaner_spaced = compile(r"(\b\s[<>]\s\b|\b:\s\b)")
@@ -311,9 +309,9 @@ def create_folder(folder: str) -> None:
 
 
 # region Moving
-def __copy2(
-    src: StrPath, dst: _StrPathT, *, follow_symlinks: bool = True
-) -> _StrPathT | str:
+def __copy2[T: StrPath](
+    src: StrPath, dst: T, *, follow_symlinks: bool = True
+) -> T | str:
     try:
         return copy2(src, dst, follow_symlinks=follow_symlinks)
 

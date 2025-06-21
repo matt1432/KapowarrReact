@@ -179,7 +179,7 @@ class MegaCrypto:
         return loads(search_result.group(0))
 
     @staticmethod
-    def get_chunks(start: int, size: int) -> Generator[tuple[int, int], Any, None]:
+    def get_chunks(start: int, size: int) -> Generator[tuple[int, int], Any]:
         """
         Calculate chunks for a given encrypted file size.
         """

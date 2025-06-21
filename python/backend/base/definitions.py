@@ -13,15 +13,10 @@ from typing import (
     TYPE_CHECKING,
     Any,
     TypedDict,
-    TypeVar,
 )
 
 if TYPE_CHECKING:
     from backend.base.helpers import AsyncSession
-
-# region Types
-T = TypeVar("T")
-U = TypeVar("U")
 
 
 # region Constants

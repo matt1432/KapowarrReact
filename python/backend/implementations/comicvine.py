@@ -6,7 +6,7 @@ from asyncio import gather, run, sleep
 from collections.abc import Sequence
 from json import JSONDecodeError
 from re import IGNORECASE, compile
-from typing import Any
+from typing import Any, cast
 
 from aiohttp import ContentTypeError
 from aiohttp.client_exceptions import ClientError
@@ -20,7 +20,6 @@ from backend.base.definitions import (
     FilenameData,
     IssueMetadata,
     SpecialVersion,
-    T,
     VolumeMetadata,
 )
 from backend.base.file_extraction import (
@@ -114,12 +113,12 @@ def _clean_description(description: str, short: bool = False) -> str:
 
     # Fix links
     for _link in soup.find_all("a"):
-        link: Tag = _link
+        link = cast(Tag, _link)
         link.attrs = {k: v for k, v in link.attrs.items() if not k.startswith("data-")}
         link["target"] = "_blank"
-        link["href"] = link.attrs.get("href", "").lstrip(".").lstrip("/")
-        if not link.attrs.get("href", "http").startswith("http"):
-            link["href"] = Constants.CV_SITE_URL + "/" + link.attrs.get("href", "")
+        link["href"] = str(link.attrs.get("href", "")).lstrip(".").lstrip("/")
+        if not str(link.attrs.get("href", "http")).startswith("http"):
+            link["href"] = Constants.CV_SITE_URL + "/" + str(link.attrs.get("href", ""))
 
     result = str(soup)
     return result
@@ -206,7 +205,7 @@ class ComicVine:
         except ClientError:
             return None
 
-    async def __call_api(
+    async def __call_api[T](
         self,
         session: AsyncSession,
         url_path: str,

@@ -19,7 +19,7 @@ from threading import current_thread
 from time import time
 from typing import Any
 
-from backend.base.definitions import Constants, SeedingHandling, SpecialVersion, T
+from backend.base.definitions import Constants, SeedingHandling, SpecialVersion
 from backend.base.helpers import CommaList
 from backend.base.logging import LOGGER, set_log_level
 from backend.internals.db_migration import migrate_db
@@ -104,9 +104,7 @@ class DBConnection(Connection, metaclass=DBConnectionManager):
         self.closed = False
         return
 
-    def cursor(  # type: ignore
-        self, force_new: bool = False
-    ) -> KapowarrCursor:
+    def cursor(self, force_new: bool = False) -> KapowarrCursor:  # type: ignore
         """Get a database cursor from the connection.
 
         Args:
@@ -198,7 +196,7 @@ def commit() -> None:
     return
 
 
-def iter_commit(iterable: Iterable[T]) -> Generator[T, Any, Any]:
+def iter_commit[T](iterable: Iterable[T]) -> Generator[T, Any, Any]:
     """Commit the database after each iteration. Also commits just before the
     first iteration starts.
 

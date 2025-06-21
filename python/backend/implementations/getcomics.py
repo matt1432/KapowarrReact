@@ -90,12 +90,16 @@ def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str]]:
         tuple is the link, second string is the title.
     """
     result: list[tuple[str, str]] = []
-    for article in soup.find_all("article", {"class": "post"}):
-        title_el = article.find("h1", {"class": "post-title"})
+
+    for _article in soup.find_all("article", {"class": "post"}):
+        article = cast(Tag, _article)
+
+        title_el = cast(Tag, article.find("h1", {"class": "post-title"}))
         if not title_el:
             continue
 
-        link = create_range(title_el.find("a")["href"] or "")[0]
+        link_el = cast(Tag, title_el.find("a"))
+        link = create_range(str(link_el.get("href", "")))[0]
         title = title_el.get_text(strip=True)
         result.append((link, title))
 
@@ -174,7 +178,8 @@ def __extract_button_links(
     """
     download_groups: list[DownloadGroup] = []
     for _group in body.find_all(__link_filter_1):
-        group: Tag = _group
+        group = cast(Tag, _group)
+
         if not group.next_sibling:
             continue
 
@@ -215,7 +220,7 @@ def __extract_button_links(
                 link_title = group_link.text.strip().lower()
                 if group_link.get("href") is None:
                     continue
-                href = create_range(group_link.get("href") or "")[0]
+                href = create_range(str(group_link.get("href", "")))[0]
                 if not href:
                     continue
 
@@ -254,7 +259,9 @@ def __extract_list_links(
         List[DownloadGroup]: The download groups.
     """
     download_groups: list[DownloadGroup] = []
-    for group in body.find_all(__link_filter_2):
+    for _group in body.find_all(__link_filter_2):
+        group = cast(Tag, _group)
+
         # Process data about group
         title: str = group.get_text("\x00").partition("\x00")[0]
         processed_title = extract_filename_data(
@@ -273,11 +280,11 @@ def __extract_list_links(
         # Extract links from group
         first_find = True
         for gk in group.find_all("a"):
-            group_link: Tag = gk
+            group_link = cast(Tag, gk)
             if group_link.get("href") is None:
                 continue
             link_title = group_link.text.strip().lower()
-            href = create_range(group_link.get("href") or "")[0]
+            href = create_range(str(group_link.get("href", "")))[0]
             if not href:
                 continue
 

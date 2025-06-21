@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Kapowarr"
-version = "2.0.0a3"
+version = "2.0.0a4"
 description = "Kapowarr is a software to build and manage a comic book library, fitting in the *arr suite of software."
 authors = [
   {name = "Cas van Tijn"}
@@ -14,7 +14,7 @@ maintainers = [
 ]
 readme = "README.md"
 license-files = ["LICENSE"]
-requires-python = ">= 3.12"
+requires-python = ">= 3.13"
 dependencies = [
   "aiohttp ~= 3.12.10",
   "beautifulsoup4 ~= 4.13.4",
@@ -34,10 +34,10 @@ kapowarr = "kapowarr:main"
 
 [tool.basedpyright]
 typeCheckingMode = "standard"
-pythonVersion = "3.12"
+pythonVersion = "3.13"
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py313"
 line-length = 88
 lint.select = ["E", "F", "I", "U"]
 lint.ignore = ["E501"]

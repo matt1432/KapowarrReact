@@ -84,7 +84,7 @@
         lib,
         python3Packages,
         # deps
-        kapowarr-web,
+        # kapowarr-web,
         rar,
         typescript,
         ...
@@ -170,7 +170,7 @@
       default = pkgs.mkShell {
         packages = with pkgs; [
           alejandra
-          (python3.withPackages (_ps: pkgs.kapowarr.dependencies ++ [pkgs.kapowarr]))
+          (python3.withPackages (_: pkgs.kapowarr.dependencies ++ [pkgs.kapowarr]))
         ];
       };
     });

@@ -28,7 +28,7 @@ from typing import (
 from urllib.parse import unquote
 
 from aiohttp import ClientError, ClientResponse, ClientSession
-from backend.base.definitions import Constants, T, U
+from backend.base.definitions import Constants
 from backend.base.logging import LOGGER, get_log_filepath
 from bencoding import bdecode
 from multidict import CIMultiDict, CIMultiDictProxy
@@ -117,7 +117,7 @@ def get_subclasses(
     return result
 
 
-def batched(l_val: Sequence[T], n: int) -> Generator[Sequence[T], Any, Any]:
+def batched[T](l_val: Sequence[T], n: int) -> Generator[Sequence[T], Any, Any]:
     """Iterate over l_val in batches.
 
     Args:
@@ -131,7 +131,7 @@ def batched(l_val: Sequence[T], n: int) -> Generator[Sequence[T], Any, Any]:
         yield l_val[ndx : ndx + n]
 
 
-def reversed_tuples(i: Iterable[tuple[T, U]]) -> Generator[tuple[U, T], Any, Any]:
+def reversed_tuples[T, U](i: Iterable[tuple[T, U]]) -> Generator[tuple[U, T], Any, Any]:
     """Yield sub-tuples in reversed order.
 
     Args:
@@ -144,7 +144,7 @@ def reversed_tuples(i: Iterable[tuple[T, U]]) -> Generator[tuple[U, T], Any, Any
         yield entry_2, entry_1
 
 
-def get_first_of_range(n: T | tuple[T, ...] | list[T]) -> T:
+def get_first_of_range[T](n: T | tuple[T, ...] | list[T]) -> T:
     """Get the first element from a variable that could potentially be a range,
     but could also be a single value. In the case of a single value, the value
     is returned.
@@ -161,7 +161,7 @@ def get_first_of_range(n: T | tuple[T, ...] | list[T]) -> T:
         return n
 
 
-def create_range(n: T | tuple[T, ...] | list[T]) -> Sequence[T]:
+def create_range[T](n: T | tuple[T, ...] | list[T]) -> Sequence[T]:
     """Create range if input isn't already.
 
     Args:
@@ -192,7 +192,7 @@ def force_suffix(source: str, suffix: str = sep) -> str:
         return source + suffix
 
 
-def check_filter(element: T, collection: Collection[T]) -> bool:
+def check_filter[T](element: T, collection: Collection[T]) -> bool:
     """Check if `element` is in `collection`, but only if `collection` has
     content, otherwise return True. Useful as filtering where an empty filter
     is possible.
@@ -208,7 +208,7 @@ def check_filter(element: T, collection: Collection[T]) -> bool:
     return True if not collection else (element in collection)
 
 
-def filtered_iter(
+def filtered_iter[T](
     elements: Iterable[T], collection: Collection[T]
 ) -> Generator[T, Any, Any]:
     """Yields elements from `elements` but an element is only yielded if
@@ -316,7 +316,7 @@ def normalize_base_url(base_url: str) -> str:
     return result
 
 
-def extract_year_from_date(
+def extract_year_from_date[T](
     date: str | None, default: T | None = None
 ) -> int | T | None:
     """Get the year from a date in the format YYYY-MM-DD
@@ -432,7 +432,7 @@ def check_overlapping_issues(
             )
 
 
-def first_of_column(columns: Iterable[Sequence[T]]) -> list[T]:
+def first_of_column[T](columns: Iterable[Sequence[T]]) -> list[T]:
     """Get the first element of each sub-array.
 
     Args:
@@ -798,13 +798,13 @@ def pool_apply_func(args: Any = (), kwds: Any = {}) -> Any:
         return func(*value, **kwds)
 
 
-def pool_map_func(func_value: tuple[Callable[[T], U], T]) -> U:
+def pool_map_func[T, U](func_value: tuple[Callable[[T], U], T]) -> U:
     func, value = func_value
     with _ContextKeeper().ctx():
         return func(value)
 
 
-def pool_starmap_func(func: Callable[[T], U], *args: T) -> U:
+def pool_starmap_func[T, U](func: Callable[[T], U], *args: T) -> U:
     with _ContextKeeper().ctx():
         return func(*args)
 
@@ -838,7 +838,7 @@ class PortablePool(Pool):
         )
         return
 
-    def apply(
+    def apply[U](
         self,
         func: Callable[..., U],
         args: Iterable[Any] = (),
@@ -848,7 +848,7 @@ class PortablePool(Pool):
         new_func = pool_apply_func
         return super().apply(new_func, new_args, kwds)
 
-    def apply_async(
+    def apply_async[T](
         self,
         func: Callable[..., T],
         args: Iterable[Any] = (),
@@ -860,7 +860,7 @@ class PortablePool(Pool):
         new_func = pool_apply_func
         return super().apply_async(new_func, new_args, kwds, callback, error_callback)
 
-    def map(
+    def map[T, U](
         self,
         func: Callable[[T], U],
         iterable: Iterable[T],
@@ -870,7 +870,7 @@ class PortablePool(Pool):
         new_func = pool_map_func
         return super().map(new_func, new_iterable, chunksize)
 
-    def imap(
+    def imap[T, U](
         self,
         func: Callable[[T], U],
         iterable: Iterable[T],
@@ -880,7 +880,7 @@ class PortablePool(Pool):
         new_func = pool_map_func
         return super().imap(new_func, new_iterable, chunksize)
 
-    def imap_unordered(
+    def imap_unordered[T, U](
         self,
         func: Callable[[T], U],
         iterable: Iterable[T],
@@ -890,7 +890,7 @@ class PortablePool(Pool):
         new_func = pool_map_func
         return super().imap_unordered(new_func, new_iterable, chunksize)
 
-    def map_async(
+    def map_async[T, U](
         self,
         func: Callable[[U], T],
         iterable: Iterable[U],
@@ -904,7 +904,7 @@ class PortablePool(Pool):
             new_func, new_iterable, chunksize, callback, error_callback
         )
 
-    def starmap(
+    def starmap[T, U](
         self,
         func: Callable[..., U],
         iterable: Iterable[Iterable[T]],
@@ -914,7 +914,7 @@ class PortablePool(Pool):
         new_func = pool_starmap_func
         return super().starmap(new_func, new_iterable, chunksize)
 
-    def istarmap_unordered(
+    def istarmap_unordered[T, U](
         self,
         func: Callable[..., U],
         iterable: Iterable[Iterable[T]],
@@ -925,7 +925,7 @@ class PortablePool(Pool):
         new_func = pool_apply_func
         return super().imap_unordered(new_func, new_iterable, chunksize)
 
-    def starmap_async(
+    def starmap_async[T](
         self,
         func: Callable[..., T],
         iterable: Iterable[Iterable[Any]],
