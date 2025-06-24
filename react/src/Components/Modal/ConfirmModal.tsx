@@ -52,7 +52,7 @@ function ConfirmModal({
 
                 <ModalFooter>
                     {!hideCancelButton && (
-                        <Button kind="default" onPress={onCancel}>
+                        <Button kind="defaultKind" onPress={onCancel}>
                             {cancelLabel}
                         </Button>
                     )}

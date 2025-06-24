@@ -2,7 +2,7 @@
 // Please do not change this file!
 interface CssExports {
     danger: string;
-    default: string;
+    defaultKind: string;
     disabled: string;
     info: string;
     inverse: string;

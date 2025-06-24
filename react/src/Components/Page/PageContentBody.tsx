@@ -1,7 +1,7 @@
 import { type ForwardedRef, forwardRef, type ReactNode, useCallback } from 'react';
 import Scroller, { type OnScroll } from 'Components/Scroller/Scroller';
 import { isLocked } from 'Utilities/scrollLock';
-import styles from './PageContentBody.css';
+import styles from './PageContentBody.module.css';
 
 interface PageContentBodyProps {
     className?: string;

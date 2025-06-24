@@ -1,4 +1,4 @@
-import styles from './LoadingMessage.css';
+import styles from './LoadingMessage.module.css';
 
 const messages = [
     'Downloading more RAM',

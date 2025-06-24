@@ -21,7 +21,7 @@
     }
 }
 
-.default {
+.default-kind {
     border-color: var(--themeLightColor);
     background-color: var(--themeLightColor);
 

@@ -84,7 +84,7 @@
         lib,
         python3Packages,
         # deps
-        # kapowarr-web,
+        kapowarr-web,
         rar,
         typescript,
         ...
@@ -133,7 +133,6 @@
                     'exe = "${getExe rar}"'
           '';
 
-          /*
           preBuild = ''
             for dir in ${kapowarr-web}/share/kapowarr-web/*; do
                 if [[ "$dir" != "${kapowarr-web}/share/kapowarr-web" ]]; then
@@ -141,7 +140,6 @@
                 fi
             done
           '';
-          */
 
           meta = {
             inherit (rar.meta) platforms;

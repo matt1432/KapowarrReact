@@ -10,7 +10,7 @@ import MenuItemSeparator from 'Components/Menu/MenuItemSeparator';
 import { align, icons, kinds } from 'Helpers/Props';
 // import { restart, shutdown } from 'Store/Actions/systemActions';
 import translate from 'Utilities/String/translate';
-import styles from './PageHeaderActionsMenu.css';
+import styles from './PageHeaderActionsMenu.module.css';
 
 interface PageHeaderActionsMenuProps {
     onKeyboardShortcutsPress(): void;

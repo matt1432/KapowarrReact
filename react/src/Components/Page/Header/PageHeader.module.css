@@ -4,7 +4,7 @@
     align-items: center;
     flex: 0 0 auto;
     height: $headerHeight;
-        background-color: var(--pageHeaderBackgroundColor);
+    background-color: var(--pageHeaderBackgroundColor);
     color: var(--white);
 }
 
@@ -38,7 +38,7 @@
 }
 
 .donate {
-    composes: link from '~Components/Link/Link.css';
+    composes: link from '../../Link/Link.module.css';
 
     width: 30px;
     color: var(--themeRed);

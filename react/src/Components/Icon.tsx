@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { type ComponentProps } from 'react';
 import { kinds } from 'Helpers/Props';
 import { type Kind } from 'Helpers/Props/kinds';
-import styles from './Icon.css';
+import styles from './Icon.module.css';
 
 export type IconName = FontAwesomeIconProps['icon'];
 export type IconKind = Extract<Kind, keyof typeof styles>;
@@ -22,7 +22,7 @@ export default function Icon({
     containerClassName,
     className,
     name,
-    kind = kinds.DEFAULT,
+    kind = kinds.DEFAULT_KIND,
     size = 14,
     title,
     isSpinning = false,

@@ -1,4 +1,4 @@
-import styles from './MenuItemSeparator.css';
+import styles from './MenuItemSeparator.module.css';
 
 function MenuItemSeparator() {
     return <div className={styles.separator} />;

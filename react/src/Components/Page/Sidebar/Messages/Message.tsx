@@ -1,11 +1,11 @@
 import classNames from 'classnames';
 import { useEffect, useMemo, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+// import { useDispatch } from 'react-redux';
 import { type MessageType } from 'App/State/MessagesAppState';
 import Icon, { type IconName } from 'Components/Icon';
 import { icons } from 'Helpers/Props';
 // import { hideMessage } from 'Store/Actions/appActions';
-import styles from './Message.css';
+import styles from './Message.module.css';
 
 interface MessageProps {
     id: number;
@@ -16,7 +16,7 @@ interface MessageProps {
 }
 
 function Message({ id, hideAfter, name, message, type }: MessageProps) {
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
     const dismissTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
     const icon: IconName = useMemo(() => {
@@ -60,7 +60,7 @@ function Message({ id, hideAfter, name, message, type }: MessageProps) {
                 clearTimeout(dismissTimeout.current);
             }
         };
-    }, [id, hideAfter, message, type, dispatch]);
+    }, [id, hideAfter, message, type /*, dispatch*/]);
 
     return (
         <div className={classNames(styles.message, styles[type])}>

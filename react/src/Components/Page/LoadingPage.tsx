@@ -1,6 +1,6 @@
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import LoadingMessage from 'Components/Loading/LoadingMessage';
-import styles from './LoadingPage.css';
+import styles from './LoadingPage.module.css';
 
 // TODO: set this to correct link
 const kapowarrLogo = '';

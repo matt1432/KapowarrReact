@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import Icon, { type IconProps } from 'Components/Icon';
 import translate from 'Utilities/String/translate';
 import Link, { type LinkProps } from './Link';
-import styles from './IconButton.css';
+import styles from './IconButton.module.css';
 
 export interface IconButtonProps
     extends Omit<LinkProps, 'name' | 'kind'>,

@@ -1,7 +1,7 @@
 import { type Error } from 'App/State/AppSectionState';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
-import styles from './ErrorPage.css';
+import styles from './ErrorPage.module.css';
 
 interface ErrorPageProps {
     version: string;

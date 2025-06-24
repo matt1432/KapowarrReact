@@ -9,7 +9,7 @@ import {
     useInteractions,
 } from '@floating-ui/react';
 import React, { type ReactElement, useCallback, useEffect, useId, useState } from 'react';
-import styles from './Menu.css';
+import styles from './Menu.module.css';
 
 interface MenuProps {
     className?: string;

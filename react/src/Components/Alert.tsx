@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 import { type Kind } from 'Helpers/Props/kinds';
-import styles from './Alert.css';
+import styles from './Alert.module.css';
 
 interface AlertProps {
     className?: string;

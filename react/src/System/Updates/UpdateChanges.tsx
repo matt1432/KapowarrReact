@@ -1,5 +1,5 @@
 import InlineMarkdown from 'Components/Markdown/InlineMarkdown';
-import styles from './UpdateChanges.css';
+import styles from './UpdateChanges.module.css';
 
 interface UpdateChangesProps {
     title: string;

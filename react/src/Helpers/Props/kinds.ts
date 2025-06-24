@@ -1,5 +1,5 @@
 export const DANGER = 'danger';
-export const DEFAULT = 'default';
+export const DEFAULT_KIND = 'defaultKind';
 export const DISABLED = 'disabled';
 export const INFO = 'info';
 export const INVERSE = 'inverse';
@@ -11,7 +11,7 @@ export const WARNING = 'warning';
 
 export const all = [
     DANGER,
-    DEFAULT,
+    DEFAULT_KIND,
     DISABLED,
     INFO,
     INVERSE,
@@ -24,7 +24,7 @@ export const all = [
 
 export type Kind =
     | 'danger'
-    | 'default'
+    | 'defaultKind'
     | 'disabled'
     | 'info'
     | 'inverse'

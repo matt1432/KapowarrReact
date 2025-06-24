@@ -3,7 +3,7 @@ import { type ComponentProps, type ReactNode } from 'react';
 import { kinds, sizes } from 'Helpers/Props';
 import { type Kind } from 'Helpers/Props/kinds';
 import { type Size } from 'Helpers/Props/sizes';
-import styles from './Label.css';
+import styles from './Label.module.css';
 
 export interface LabelProps extends ComponentProps<'span'> {
     kind?: Extract<Kind, keyof typeof styles>;
@@ -14,7 +14,7 @@ export interface LabelProps extends ComponentProps<'span'> {
 
 export default function Label({
     className = styles.label,
-    kind = kinds.DEFAULT,
+    kind = kinds.DEFAULT_KIND,
     size = sizes.SMALL,
     outline = false,
     ...otherProps

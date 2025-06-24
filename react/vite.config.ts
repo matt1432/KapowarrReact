@@ -1,11 +1,15 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
+import { patchCssModules } from 'vite-css-modules';
 import postcss from './vite.postcss';
 
 export default defineConfig({
-    plugins: [react()],
+    plugins: [react(), tsconfigPaths(), patchCssModules()],
     build: {
+        minify: false,
+        chunkSizeWarningLimit: 750,
         rollupOptions: {
             output: {
                 assetFileNames: (asset) => {
@@ -20,6 +24,9 @@ export default defineConfig({
     },
     css: {
         postcss,
+        modules: {
+            localsConvention: 'camelCase',
+        },
     },
     resolve: {
         alias: {

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { Children, type ComponentPropsWithoutRef, type ReactNode } from 'react';
 import { type Size } from 'Helpers/Props/sizes';
-import styles from './FormGroup.css';
+import styles from './FormGroup.module.css';
 
 interface FormGroupProps extends ComponentPropsWithoutRef<'div'> {
     className?: string;

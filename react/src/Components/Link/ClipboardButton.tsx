@@ -4,7 +4,7 @@ import FormInputButton from 'Components/Form/FormInputButton';
 import Icon from 'Components/Icon';
 import { icons, kinds } from 'Helpers/Props';
 import { type ButtonProps } from './Button';
-import styles from './ClipboardButton.css';
+import styles from './ClipboardButton.module.css';
 
 export interface ClipboardButtonProps extends Omit<ButtonProps, 'children'> {
     value: string;

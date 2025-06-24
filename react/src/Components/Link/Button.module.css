@@ -1,5 +1,5 @@
 .button {
-    composes: link from '~./Link.css';
+    composes: link from './Link.module.css';
 
     overflow: hidden;
     border: 1px solid;
@@ -30,7 +30,7 @@
     }
 }
 
-.default {
+.default-kind {
     border-color: var(--defaultBorderColor);
     background-color: var(--defaultBackgroundColor);
     color: var(--defaultColor);

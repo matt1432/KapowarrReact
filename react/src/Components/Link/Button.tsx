@@ -4,7 +4,7 @@ import { type Align } from 'Helpers/Props/align';
 import { type Kind } from 'Helpers/Props/kinds';
 import { type Size } from 'Helpers/Props/sizes';
 import Link, { type LinkProps } from './Link';
-import styles from './Button.css';
+import styles from './Button.module.css';
 
 export interface ButtonProps extends Omit<LinkProps, 'children' | 'size'> {
     buttonGroupPosition?: Extract<Align, keyof typeof styles>;
@@ -16,7 +16,7 @@ export interface ButtonProps extends Omit<LinkProps, 'children' | 'size'> {
 export default function Button({
     className = styles.button,
     buttonGroupPosition,
-    kind = kinds.DEFAULT,
+    kind = kinds.DEFAULT_KIND,
     size = sizes.MEDIUM,
     ...otherProps
 }: ButtonProps) {

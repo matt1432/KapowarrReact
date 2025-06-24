@@ -5,7 +5,7 @@ import {
     type SyntheticEvent,
     useCallback,
 } from 'react';
-import styles from './Link.css';
+import styles from './Link.module.css';
 
 export type LinkProps<C extends ElementType = 'button'> = ComponentPropsWithoutRef<C> & {
     component?: C;

@@ -5,7 +5,7 @@ import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons } from 'Helpers/Props';
 import { type ValidationFailure } from 'typings/pending';
 import { type Error } from 'App/State/AppSectionState';
-import styles from './SpinnerErrorButton.css';
+import styles from './SpinnerErrorButton.module.css';
 
 function getTestResult(error: Error | string | undefined) {
     if (!error) {
@@ -92,7 +92,7 @@ function SpinnerErrorButton({
 
         return {
             iconName: icons.CHECK,
-            iconKind: kind === 'primary' ? 'default' : 'success',
+            iconKind: kind === 'primary' ? 'defaultKind' : 'success',
         };
     }, [kind, hasError, hasWarning]);
 

@@ -7,7 +7,7 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 // import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
 import translate from 'Utilities/String/translate';
-import styles from './KeyboardShortcutsModalContent.css';
+import styles from './KeyboardShortcutsModalContent.module.css';
 
 function getShortcuts() {
     const allShortcuts: Shortcut[] = [];
