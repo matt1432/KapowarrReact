@@ -4,23 +4,13 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/react.css') }}">
         <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/x-icon">
     </head>
     <body>
         <div id="portal-root"></div>
         <div id="root"></div>
-        <script>
-            window.Kapowarr = {
-                apiKey: '',
-                apiRoot: '',
-                instanceName: '',
-                isProduction: true,
-                theme: 'dark',
-                urlBase: '/kapowarr',
-                version: '2.0.0',
-            };
-        </script>
         <script type="module" src="{{ url_for('static', filename='js/react.js') }}" defer></script>
     </body>
 </html>
