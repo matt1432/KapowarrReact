@@ -6,7 +6,6 @@ import Link from 'Components/Link/Link';
 import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 import { icons } from 'Helpers/Props';
 // import { setIsSidebarVisible } from 'Store/Actions/appActions';
-import translate from 'Utilities/String/translate';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import PageHeaderActionsMenu from './PageHeaderActionsMenu';
 // import SeriesSearchInput from './SeriesSearchInput';
@@ -44,11 +43,11 @@ function PageHeader() {
     return (
         <div className={styles.header}>
             <div className={styles.logoContainer}>
-                <Link className={styles.logoLink} to="/">
+                <Link className={styles.logoLink} to={window.Kapowarr.urlBase}>
                     <img
                         className={styles.logo}
-                        src={`${window.Kapowarr.urlBase}/Content/Images/logo.svg`}
-                        alt="Sonarr Logo"
+                        src={`${window.Kapowarr.urlBase}/static/img/favicon.svg`}
+                        alt="Kapowarr Logo"
                     />
                 </Link>
             </div>
@@ -61,15 +60,6 @@ function PageHeader() {
             {/*<SeriesSearchInput />*/}
 
             <div className={styles.right}>
-                <IconButton
-                    className={styles.donate}
-                    name={icons.HEART}
-                    aria-label={translate('Donate')}
-                    to="https://sonarr.tv/donate.html"
-                    size={14}
-                    title={translate('Donate')}
-                />
-
                 <PageHeaderActionsMenu
                     onKeyboardShortcutsPress={handleOpenKeyboardShortcutsModal}
                 />

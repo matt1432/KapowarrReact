@@ -39,7 +39,7 @@ function Page({ children = [] }: PageProps) {
     //     (state: AppState) => state.app,
     // );
     const isSidebarVisible = true;
-    const isUpdated = true;
+    const isUpdated = false;
     const isDisconnected = false;
     const version = '2.0.0a3';
 
@@ -110,7 +110,7 @@ function Page({ children = [] }: PageProps) {
 
             <ConnectionLostModal isOpen={isConnectionLostModalOpen} />
 
-            <AuthenticationRequiredModal isOpen={true /* !authenticationEnabled */} />
+            <AuthenticationRequiredModal isOpen={false /* !authenticationEnabled */} />
         </div>
     );
     // </ColorImpairedContext.Provider>
