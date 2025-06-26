@@ -6,7 +6,7 @@ import { type Store } from 'redux';
 import Page from 'Components/Page/Page';
 import ApplyTheme from './ApplyTheme';
 import type { History } from 'history';
-// import AppRoutes from './AppRoutes';
+import AppRoutes from './AppRoutes';
 
 interface AppProps {
     store: Store;
@@ -22,7 +22,9 @@ function App({ store, history }: AppProps) {
             <Provider store={store}>
                 <Router history={history}>
                     <ApplyTheme />
-                    <Page>{/*<AppRoutes />*/}</Page>
+                    <Page>
+                        <AppRoutes />
+                    </Page>
                 </Router>
             </Provider>
             {/*</QueryClientProvider>*/}

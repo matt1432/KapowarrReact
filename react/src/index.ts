@@ -3,12 +3,12 @@ import getApiKey from 'bootstrap/auth';
 import 'Styles/globals.css';
 import './index.css';
 
-// Init empty values
+// Init default values
 window.Kapowarr = {
     apiKey: '',
     apiRoot: '',
-    instanceName: '',
-    theme: '',
+    instanceName: 'Kapowarr',
+    theme: 'dark',
     urlBase: '',
     version: '',
 };

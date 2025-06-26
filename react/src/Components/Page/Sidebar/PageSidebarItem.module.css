@@ -5,7 +5,7 @@
 }
 
 .isActiveItem {
-    border-left: 3px solid var(--themeAlternateBlue);
+    border-left: 3px solid var(--themeAlternateYellow);
 }
 
 .link {
@@ -28,7 +28,7 @@
 }
 
 .isActiveLink {
-    color: var(--themeAlternateBlue);
+    color: var(--themeAlternateYellow);
 }
 
 .isActiveParentLink {

@@ -1,4 +1,5 @@
 const kapowarrYellow = '#ebc700';
+const kapowarrAlternateYellow = '#9c860e';
 const darkGray = '#888';
 const mediumGray = '#999';
 const gray = '#adadad';
@@ -35,7 +36,7 @@ export default {
     // Theme Colors
 
     themeYellow: kapowarrYellow,
-    themeAlternateBlue: '#2193b5',
+    themeAlternateYellow: kapowarrAlternateYellow,
     themeRed: '#c4273c',
     themeDarkColor: '#494949',
     themeLightColor: '#595959',

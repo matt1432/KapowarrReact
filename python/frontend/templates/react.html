@@ -10,11 +10,28 @@
 
         <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/react.css') }}">
+
+        <style>
+            .root {
+                overflow: hidden;
+                height: 100%; /* needed for proper layout */
+            }
+
+            @media only screen and (max-width: 768px) {
+                .root {
+                    display: flex;
+                    flex-direction: column;
+                    min-height: 100%;
+                    height: auto;
+                }
+            }
+        </style>
+
         <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/x-icon">
     </head>
     <body>
         <div id="portal-root"></div>
-        <div id="root"></div>
+        <div id="root" class="root"></div>
         <script type="module" src="{{ url_for('static', filename='js/react.js') }}" defer></script>
     </body>
 </html>
