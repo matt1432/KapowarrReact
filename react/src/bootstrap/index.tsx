@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import createAppStore from 'Store/createAppStore';
-import App from './App/App';
+import App from 'App/App';
 
 const { store, history } = createAppStore();
 const container = document.getElementById('root');

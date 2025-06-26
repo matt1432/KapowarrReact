@@ -17,7 +17,7 @@ export default defineConfig({
                 },
                 chunkFileNames: 'out/js/[name].js',
                 manualChunks: {
-                    bootstrap: ['src/bootstrap.tsx'],
+                    bootstrap: ['src/bootstrap/index.tsx'],
                     react: ['src/index.ts'],
                 },
             },
