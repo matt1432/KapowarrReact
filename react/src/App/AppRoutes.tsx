@@ -4,6 +4,7 @@ import getPathWithUrlBase from 'Utilities/getPathWithUrlBase';
 
 import Switch from 'Components/Router/Switch';
 
+import ComicsIndex from 'Comics/Index/ComicsIndex';
 import NotFound from 'Components/NotFound';
 
 /*
@@ -14,7 +15,6 @@ import AddNewSeries from 'AddSeries/AddNewSeries/AddNewSeries';
 import ImportSeriesPage from 'AddSeries/ImportSeries/ImportSeriesPage';
 import CalendarPage from 'Calendar/CalendarPage';
 import SeriesDetailsPage from 'Series/Details/SeriesDetailsPage';
-import SeriesIndex from 'Series/Index/SeriesIndex';
 import CustomFormatSettingsPage from 'Settings/CustomFormats/CustomFormatSettingsPage';
 import DownloadClientSettings from 'Settings/DownloadClients/DownloadClientSettings';
 import GeneralSettings from 'Settings/General/GeneralSettings';
@@ -47,7 +47,7 @@ function AppRoutes() {
     return (
         <Switch>
             {/*Series*/}
-            {/*<Route exact={true} path="/" component={SeriesIndex} />*/}
+            <Route exact={true} path="/" component={ComicsIndex} />
 
             {window.Kapowarr.urlBase && (
                 <Route
