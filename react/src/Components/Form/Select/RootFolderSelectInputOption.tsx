@@ -11,7 +11,7 @@ interface RootFolderSelectInputOptionProps extends EnhancedSelectInputOptionProp
     value: string;
     freeSpace?: number;
     isMissing?: boolean;
-    seriesFolder?: string;
+    comicsFolder?: string;
     isMobile: boolean;
     isWindows?: boolean;
 }
@@ -21,7 +21,7 @@ function RootFolderSelectInputOption({
     value,
     freeSpace,
     isMissing,
-    seriesFolder,
+    comicsFolder,
     isMobile,
     isWindows,
     ...otherProps
@@ -34,10 +34,10 @@ function RootFolderSelectInputOption({
                 <div className={styles.value}>
                     {value}
 
-                    {seriesFolder && id !== 'addNew' ? (
-                        <div className={styles.seriesFolder}>
+                    {comicsFolder && id !== 'addNew' ? (
+                        <div className={styles.comicsFolder}>
                             {slashCharacter}
-                            {seriesFolder}
+                            {comicsFolder}
                         </div>
                     ) : null}
                 </div>

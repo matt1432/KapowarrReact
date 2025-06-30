@@ -4,7 +4,7 @@ import Icon from 'Components/Icon';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRowButton from 'Components/Table/TableRowButton';
 import { icons } from 'Helpers/Props';
-import styles from './FileBrowserRow.css';
+import styles from './FileBrowserRow.module.css';
 
 function getIconName(type: PathType) {
     switch (type) {

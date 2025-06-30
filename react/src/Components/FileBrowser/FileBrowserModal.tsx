@@ -2,7 +2,7 @@ import Modal from 'Components/Modal/Modal';
 import FileBrowserModalContent, {
     type FileBrowserModalContentProps,
 } from './FileBrowserModalContent';
-import styles from './FileBrowserModal.css';
+import styles from './FileBrowserModal.module.css';
 
 interface FileBrowserModalProps extends FileBrowserModalContentProps {
     isOpen: boolean;

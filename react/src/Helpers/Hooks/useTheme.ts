@@ -1,28 +1,27 @@
-// import { useSelector } from 'react-redux';
-// import { createSelector } from 'reselect';
-// import AppState from 'App/State/AppState';
+import { useSelector } from 'react-redux';
+import { createSelector } from 'reselect';
+import { type AppState } from 'App/State/AppState';
 import themes from 'Styles/Themes';
 
-/*
 function createThemeSelector() {
     return createSelector(
-        (state: AppState) => state.settings.ui.item.theme || window.Sonarr.theme,
+        (state: AppState) => state.settings.ui.item.theme || window.Kapowarr.theme,
         (theme) => {
             return theme;
         },
     );
 }
-*/
 
 const useTheme = (): keyof typeof themes => {
-    return 'dark'; // useSelector(createThemeSelector());
+    return useSelector(createThemeSelector());
 };
 
 export default useTheme;
 
-export const useThemeColor = (color: string) => {
+export const useThemeColor = (color: string): string => {
     const theme = useTheme();
     const themeVariables = themes[theme];
 
-    return themeVariables[color as keyof typeof themeVariables];
+    // @ts-expect-error TODO:
+    return themeVariables[color];
 };

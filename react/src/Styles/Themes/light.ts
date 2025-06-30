@@ -223,10 +223,10 @@ export default {
     tableRowHoverBackgroundColor: '#fafbfc',
 
     //
-    // Series
+    // Comics
 
-    addSeriesBackgroundColor: '#ededed',
-    seriesBackgroundColor: '#ededed',
+    addComicsBackgroundColor: '#ededed',
+    comicsBackgroundColor: '#ededed',
     searchIconContainerBackgroundColor: offWhite,
     collapseButtonBackgroundColor: offWhite,
 

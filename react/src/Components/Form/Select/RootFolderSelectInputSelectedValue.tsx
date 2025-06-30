@@ -7,7 +7,7 @@ import styles from './RootFolderSelectInputSelectedValue.module.css';
 interface RootFolderSelectInputSelectedValueProps {
     selectedValue: string;
     values: RootFolderSelectInputValue[];
-    seriesFolder?: string;
+    comicsFolder?: string;
     isWindows?: boolean;
     includeFreeSpace?: boolean;
 }
@@ -15,7 +15,7 @@ interface RootFolderSelectInputSelectedValueProps {
 function RootFolderSelectInputSelectedValue({
     selectedValue,
     values,
-    seriesFolder,
+    comicsFolder,
     includeFreeSpace = true,
     isWindows,
     ...otherProps
@@ -29,10 +29,10 @@ function RootFolderSelectInputSelectedValue({
             <div className={styles.pathContainer}>
                 <div className={styles.path}>{value}</div>
 
-                {seriesFolder ? (
-                    <div className={styles.seriesFolder}>
+                {comicsFolder ? (
+                    <div className={styles.comicsFolder}>
                         {slashCharacter}
-                        {seriesFolder}
+                        {comicsFolder}
                     </div>
                 ) : null}
             </div>

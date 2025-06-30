@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import FileBrowserModal from 'Components/FileBrowser/FileBrowserModal';
 import usePrevious from 'Helpers/Hooks/usePrevious';
-import { addRootFolder, fetchRootFolders } from 'Store/Actions/rootFolderActions';
+// import { addRootFolder, fetchRootFolders } from 'Store/Actions/rootFolderActions';
 import createRootFoldersSelector from 'Store/Selectors/createRootFoldersSelector';
 import { type EnhancedSelectInputChanged, type InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
@@ -128,7 +128,7 @@ function RootFolderSelectInput({
     const handleNewRootFolderSelect = useCallback(
         ({ value: newValue }: InputChanged<string>) => {
             setNewRootFolderPath(newValue);
-            dispatch(addRootFolder({ path: newValue }));
+            // dispatch(addRootFolder({ path: newValue }));
         },
         [setNewRootFolderPath, dispatch],
     );
@@ -172,7 +172,7 @@ function RootFolderSelectInput({
     }, []);
 
     useEffect(() => {
-        dispatch(fetchRootFolders());
+        // dispatch(fetchRootFolders());
     }, [dispatch]);
 
     return (

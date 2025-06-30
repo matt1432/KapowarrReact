@@ -11,10 +11,10 @@ import NotFound from 'Components/NotFound';
 import Blocklist from 'Activity/Blocklist/Blocklist';
 import History from 'Activity/History/History';
 import Queue from 'Activity/Queue/Queue';
-import AddNewSeries from 'AddSeries/AddNewSeries/AddNewSeries';
-import ImportSeriesPage from 'AddSeries/ImportSeries/ImportSeriesPage';
+import AddNewComics from 'AddComics/AddNewComics/AddNewComics';
+import ImportComicsPage from 'AddComics/ImportComics/ImportComicsPage';
 import CalendarPage from 'Calendar/CalendarPage';
-import SeriesDetailsPage from 'Series/Details/SeriesDetailsPage';
+import ComicsDetailsPage from 'Comics/Details/ComicsDetailsPage';
 import CustomFormatSettingsPage from 'Settings/CustomFormats/CustomFormatSettingsPage';
 import DownloadClientSettings from 'Settings/DownloadClients/DownloadClientSettings';
 import GeneralSettings from 'Settings/General/GeneralSettings';
@@ -46,7 +46,7 @@ function RedirectWithUrlBase() {
 function AppRoutes() {
     return (
         <Switch>
-            {/*Series*/}
+            {/*Comics*/}
             <Route exact={true} path="/" component={ComicsIndex} />
 
             {window.Kapowarr.urlBase && (
@@ -60,15 +60,15 @@ function AppRoutes() {
             )}
 
             {/*
-            <Route path="/add/new" component={AddNewSeries} />
+            <Route path="/add/new" component={AddNewComics} />
 
-            <Route path="/add/import" component={ImportSeriesPage} />
+            <Route path="/add/import" component={ImportComicsPage} />
 
-            <Route path="/serieseditor" exact={true} render={RedirectWithUrlBase} />
+            <Route path="/comicseditor" exact={true} render={RedirectWithUrlBase} />
 
             <Route path="/seasonpass" exact={true} render={RedirectWithUrlBase} />
 
-            <Route path="/series/:titleSlug" component={SeriesDetailsPage} />
+            <Route path="/comics/:titleSlug" component={ComicsDetailsPage} />
 
             {/*Calendar*/
             /*}

@@ -29,13 +29,13 @@ export interface Image {
 
 export interface Statistics {
     seasonCount: number;
-    episodeCount: number;
-    episodeFileCount: number;
-    percentOfEpisodes: number;
+    issueCount: number;
+    issueFileCount: number;
+    percentOfIssues: number;
     previousAiring?: Date;
     releaseGroups: string[];
     sizeOnDisk: number;
-    totalEpisodeCount: number;
+    totalIssueCount: number;
     lastAired?: string;
 }
 
@@ -61,8 +61,8 @@ export interface AlternateTitle {
 
 export interface ComicsAddOptions {
     monitor: ComicsMonitor;
-    searchForMissingEpisodes: boolean;
-    searchForCutoffUnmetEpisodes: boolean;
+    searchForMissingIssues: boolean;
+    searchForCutoffUnmetIssues: boolean;
 }
 
 export interface Comics extends ModelBase {
@@ -89,7 +89,7 @@ export interface Comics extends ModelBase {
     runtime: number;
     seasonFolder: boolean;
     seasons: Season[];
-    seriesType: ComicsType;
+    comicsType: ComicsType;
     sortTitle: string;
     statistics?: Statistics;
     status: ComicsStatus;

@@ -42,7 +42,7 @@ export const shortcuts: Record<string, Shortcut> = {
         },
     },
 
-    SERIES_SEARCH_INPUT: {
+    COMICS_SEARCH_INPUT: {
         key: 's',
         get name() {
             return translate('KeyboardShortcutsFocusSearchBox');

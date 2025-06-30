@@ -8,7 +8,7 @@ import { icons } from 'Helpers/Props';
 // import { setIsSidebarVisible } from 'Store/Actions/appActions';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import PageHeaderActionsMenu from './PageHeaderActionsMenu';
-// import SeriesSearchInput from './SeriesSearchInput';
+// import ComicsSearchInput from './ComicsSearchInput';
 import styles from './PageHeader.module.css';
 
 function PageHeader() {
@@ -57,7 +57,7 @@ function PageHeader() {
                 {/* onPress={handleSidebarToggle} */}
             </div>
 
-            {/*<SeriesSearchInput />*/}
+            {/*<ComicsSearchInput />*/}
 
             <div className={styles.right}>
                 <PageHeaderActionsMenu

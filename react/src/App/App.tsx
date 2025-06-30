@@ -1,4 +1,4 @@
-// import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Router } from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 import { Provider } from 'react-redux';
@@ -13,21 +13,21 @@ interface AppProps {
     history: History;
 }
 
-// const queryClient = new QueryClient();
+const queryClient = new QueryClient();
 
 function App({ store, history }: AppProps) {
     return (
         <DocumentTitle title={window.Kapowarr.instanceName}>
-            {/*<QueryClientProvider client={queryClient}>*/}
-            <Provider store={store}>
-                <Router history={history}>
-                    <ApplyTheme />
-                    <Page>
-                        <AppRoutes />
-                    </Page>
-                </Router>
-            </Provider>
-            {/*</QueryClientProvider>*/}
+            <QueryClientProvider client={queryClient}>
+                <Provider store={store}>
+                    <Router history={history}>
+                        <ApplyTheme />
+                        <Page>
+                            <AppRoutes />
+                        </Page>
+                    </Router>
+                </Provider>
+            </QueryClientProvider>
         </DocumentTitle>
     );
 }

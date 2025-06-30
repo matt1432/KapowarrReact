@@ -31,13 +31,13 @@ function Message({ id, hideAfter, name, message, type }: MessageProps) {
                 return icons.SEARCH;
             case 'Housekeeping':
                 return icons.HOUSEKEEPING;
-            case 'RefreshSeries':
+            case 'RefreshComics':
                 return icons.REFRESH;
             case 'RssSync':
                 return icons.RSS;
             case 'SeasonSearch':
                 return icons.SEARCH;
-            case 'SeriesSearch':
+            case 'ComicsSearch':
                 return icons.SEARCH;
             case 'UpdateSceneMapping':
                 return icons.REFRESH;

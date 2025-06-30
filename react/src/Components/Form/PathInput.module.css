@@ -1,6 +1,6 @@
 .hasFileBrowser {
-    composes: input from '~./AutoSuggestInput.css';
-    composes: hasButton from '~Components/Form/Input.css';
+    composes: input from './AutoSuggestInput.module.css';
+    composes: hasButton from '../../Components/Form/Input.module.css';
 }
 
 .inputWrapper {
@@ -12,11 +12,11 @@
 }
 
 .fileBrowserButton {
-    composes: button from '~./FormInputButton.css';
+    composes: button from './FormInputButton.module.css';
 
     height: 35px;
 }
 
 .fileBrowserMiddleButton {
-    composes: middleButton from '~./FormInputButton.css';
+    composes: middleButton from './FormInputButton.module.css';
 }
