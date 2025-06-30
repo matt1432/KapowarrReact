@@ -18,9 +18,9 @@ import QualityFilterBuilderRowValue from './QualityFilterBuilderRowValue';
 import QualityProfileFilterBuilderRowValue from './QualityProfileFilterBuilderRowValue';
 import QueueStatusFilterBuilderRowValue from './QueueStatusFilterBuilderRowValue';
 import SeasonsMonitoredStatusFilterBuilderRowValue from './SeasonsMonitoredStatusFilterBuilderRowValue';
-import ComicsFilterBuilderRowValue from './ComicsFilterBuilderRowValue';
-import ComicsStatusFilterBuilderRowValue from './ComicsStatusFilterBuilderRowValue';
-import ComicsTypeFilterBuilderRowValue from './ComicsTypeFilterBuilderRowValue';
+import VolumesFilterBuilderRowValue from './VolumesFilterBuilderRowValue';
+import VolumesStatusFilterBuilderRowValue from './VolumesStatusFilterBuilderRowValue';
+import VolumesTypeFilterBuilderRowValue from './VolumesTypeFilterBuilderRowValue';
 import TagFilterBuilderRowValue from './TagFilterBuilderRowValue';
 import styles from './FilterBuilderRow.module.css';
 
@@ -97,14 +97,14 @@ function getRowValueConnector<T>(selectedFilterBuilderProp: FilterBuilderProp<T>
         case filterBuilderValueTypes.SEASONS_MONITORED_STATUS:
             return SeasonsMonitoredStatusFilterBuilderRowValue;
 
-        case filterBuilderValueTypes.COMICS:
-            return ComicsFilterBuilderRowValue;
+        case filterBuilderValueTypes.VOLUMES:
+            return VolumesFilterBuilderRowValue;
 
-        case filterBuilderValueTypes.COMICS_STATUS:
-            return ComicsStatusFilterBuilderRowValue;
+        case filterBuilderValueTypes.VOLUMES_STATUS:
+            return VolumesStatusFilterBuilderRowValue;
 
-        case filterBuilderValueTypes.COMICS_TYPES:
-            return ComicsTypeFilterBuilderRowValue;
+        case filterBuilderValueTypes.VOLUMES_TYPES:
+            return VolumesTypeFilterBuilderRowValue;
 
         case filterBuilderValueTypes.TAG:
             return TagFilterBuilderRowValue;

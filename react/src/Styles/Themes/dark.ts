@@ -222,10 +222,10 @@ export default {
     tableRowHoverBackgroundColor: 'rgba(255, 255, 255, 0.08)',
 
     //
-    // Comics
+    // Volumes
 
-    addComicsBackgroundColor: '#2a2a2a',
-    comicsBackgroundColor: '#2a2a2a',
+    addVolumesBackgroundColor: '#2a2a2a',
+    volumesBackgroundColor: '#2a2a2a',
     searchIconContainerBackgroundColor: '#2b2b2b',
     collapseButtonBackgroundColor: '#2a2a2a',
 
@@ -233,7 +233,7 @@ export default {
     // Season
 
     seasonBackgroundColor: '#424242',
-    episodesBackgroundColor: '#2a2a2a',
+    issuesBackgroundColor: '#2a2a2a',
 
     //
     // misc

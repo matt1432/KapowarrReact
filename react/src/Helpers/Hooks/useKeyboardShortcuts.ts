@@ -33,7 +33,7 @@ export const shortcuts = {
         },
     },
 
-    focusComicsSearchInput: {
+    focusVolumesSearchInput: {
         key: 's',
         get name() {
             return translate('KeyboardShortcutsFocusSearchBox');

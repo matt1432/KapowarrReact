@@ -3,10 +3,10 @@ import { type AppSectionItemState } from 'App/State/AppSectionState';
 import { type Issue } from 'Issue/Issue';
 import { type Language } from 'Language/Language';
 import { type QualityModel } from 'Quality/Quality';
-import { type Comics } from 'Comics/Comics';
+import { type Volumes } from 'Volumes/Volumes';
 import { type CustomFormat } from 'typings/CustomFormat';
 
-export interface ComicsTitleInfo {
+export interface VolumesTitleInfo {
     title: string;
     titleWithoutYear: string;
     year: number;
@@ -15,11 +15,11 @@ export interface ComicsTitleInfo {
 
 export interface ParsedIssueInfo {
     releaseTitle: string;
-    comicsTitle: string;
-    comicsTitleInfo: ComicsTitleInfo;
+    volumesTitle: string;
+    volumesTitleInfo: VolumesTitleInfo;
     quality: QualityModel;
     seasonNumber: number;
-    episodeNumbers: number[];
+    issueNumbers: number[];
     absoluteIssueNumbers: number[];
     specialAbsoluteIssueNumbers: number[];
     languages: Language[];
@@ -42,8 +42,8 @@ export interface ParsedIssueInfo {
 export interface ParseModel extends ModelBase {
     title: string;
     parsedIssueInfo: ParsedIssueInfo;
-    comics?: Comics;
-    episodes: Issue[];
+    volumes?: Volumes;
+    issues: Issue[];
     languages?: Language[];
     customFormats?: CustomFormat[];
     customFormatScore?: number;

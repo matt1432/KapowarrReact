@@ -1,8 +1,8 @@
-import { type Comics } from 'Comics/Comics';
+import { type Volumes } from 'Volumes/Volumes';
 
 const STARTS_WITH_NUMBER_REGEX = /^\d/;
 
-export default function getIndexOfFirstCharacter(items: Comics[], character: string) {
+export default function getIndexOfFirstCharacter(items: Volumes[], character: string) {
     return items.findIndex((item) => {
         const firstCharacter = item.sortTitle.charAt(0);
 

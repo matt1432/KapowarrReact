@@ -4,17 +4,17 @@ import getPathWithUrlBase from 'Utilities/getPathWithUrlBase';
 
 import Switch from 'Components/Router/Switch';
 
-import ComicsIndex from 'Comics/Index/ComicsIndex';
+import VolumesIndex from 'Volumes/Index/VolumesIndex';
 import NotFound from 'Components/NotFound';
 
 /*
 import Blocklist from 'Activity/Blocklist/Blocklist';
 import History from 'Activity/History/History';
 import Queue from 'Activity/Queue/Queue';
-import AddNewComics from 'AddComics/AddNewComics/AddNewComics';
-import ImportComicsPage from 'AddComics/ImportComics/ImportComicsPage';
+import AddNewVolumes from 'AddVolumes/AddNewVolumes/AddNewVolumes';
+import ImportVolumesPage from 'AddVolumes/ImportVolumes/ImportVolumesPage';
 import CalendarPage from 'Calendar/CalendarPage';
-import ComicsDetailsPage from 'Comics/Details/ComicsDetailsPage';
+import VolumesDetailsPage from 'Volumes/Details/VolumesDetailsPage';
 import CustomFormatSettingsPage from 'Settings/CustomFormats/CustomFormatSettingsPage';
 import DownloadClientSettings from 'Settings/DownloadClients/DownloadClientSettings';
 import GeneralSettings from 'Settings/General/GeneralSettings';
@@ -46,8 +46,8 @@ function RedirectWithUrlBase() {
 function AppRoutes() {
     return (
         <Switch>
-            {/*Comics*/}
-            <Route exact={true} path="/" component={ComicsIndex} />
+            {/*Volumes*/}
+            <Route exact={true} path="/" component={VolumesIndex} />
 
             {window.Kapowarr.urlBase && (
                 <Route
@@ -60,15 +60,15 @@ function AppRoutes() {
             )}
 
             {/*
-            <Route path="/add/new" component={AddNewComics} />
+            <Route path="/add/new" component={AddNewVolumes} />
 
-            <Route path="/add/import" component={ImportComicsPage} />
+            <Route path="/add/import" component={ImportVolumesPage} />
 
-            <Route path="/comicseditor" exact={true} render={RedirectWithUrlBase} />
+            <Route path="/volumeseditor" exact={true} render={RedirectWithUrlBase} />
 
             <Route path="/seasonpass" exact={true} render={RedirectWithUrlBase} />
 
-            <Route path="/comics/:titleSlug" component={ComicsDetailsPage} />
+            <Route path="/volumes/:titleSlug" component={VolumesDetailsPage} />
 
             {/*Calendar*/
             /*}

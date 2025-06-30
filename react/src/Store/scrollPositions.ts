@@ -1,5 +1,5 @@
 const scrollPositions: Record<string, number> = {
-    comicsIndex: 0,
+    volumesIndex: 0,
 };
 
 export default scrollPositions;

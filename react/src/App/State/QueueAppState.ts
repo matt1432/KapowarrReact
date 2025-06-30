@@ -38,6 +38,6 @@ export interface QueueAppState {
     details: QueueDetailsAppState;
     paged: QueuePagedAppState;
     options: {
-        includeUnknownComicsItems: boolean;
+        includeUnknownVolumesItems: boolean;
     };
 }

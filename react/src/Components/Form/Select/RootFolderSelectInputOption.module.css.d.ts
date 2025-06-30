@@ -5,7 +5,7 @@ interface CssExports {
     isMissing: string;
     isMobile: string;
     optionText: string;
-    comicsFolder: string;
+    volumesFolder: string;
     value: string;
 }
 export const cssExports: CssExports;

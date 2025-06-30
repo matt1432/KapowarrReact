@@ -1,15 +1,15 @@
-import type { MonitorNewItems, ComicsMonitor, ComicsType } from 'Comics/Comics';
+import type { MonitorNewItems, VolumesMonitor, VolumesType } from 'Volumes/Volumes';
 import { type Provider } from './Provider';
 
 export interface ImportList extends Provider {
     enable: boolean;
     enableAutomaticAdd: boolean;
-    searchForMissingEpisodes: boolean;
+    searchForMissingIssues: boolean;
     qualityProfileId: number;
     rootFolderPath: string;
-    shouldMonitor: ComicsMonitor;
+    shouldMonitor: VolumesMonitor;
     monitorNewItems: MonitorNewItems;
-    comicsType: ComicsType;
+    volumesType: VolumesType;
     seasonFolder: boolean;
     listType: string;
     listOrder: number;

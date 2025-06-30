@@ -43,7 +43,7 @@ export interface Queue extends ModelBase {
     downloadClient: string;
     outputPath: string;
     issueHasFile: boolean;
-    comicsId?: number;
+    volumesId?: number;
     issueId?: number;
     seasonNumber?: number;
     downloadClientHasPostImportCategory: boolean;

@@ -27,17 +27,17 @@ function Message({ id, hideAfter, name, message, type }: MessageProps) {
                 return icons.BACKUP;
             case 'CheckHealth':
                 return icons.HEALTH;
-            case 'EpisodeSearch':
+            case 'IssueSearch':
                 return icons.SEARCH;
             case 'Housekeeping':
                 return icons.HOUSEKEEPING;
-            case 'RefreshComics':
+            case 'RefreshVolumes':
                 return icons.REFRESH;
             case 'RssSync':
                 return icons.RSS;
             case 'SeasonSearch':
                 return icons.SEARCH;
-            case 'ComicsSearch':
+            case 'VolumesSearch':
                 return icons.SEARCH;
             case 'UpdateSceneMapping':
                 return icons.REFRESH;

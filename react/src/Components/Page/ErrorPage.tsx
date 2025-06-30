@@ -7,7 +7,7 @@ interface ErrorPageProps {
     version: string;
     isLocalStorageSupported: boolean;
     translationsError?: Error;
-    comicsError?: Error;
+    volumesError?: Error;
     customFiltersError?: Error;
     tagsError?: Error;
     qualityProfilesError?: Error;
@@ -20,7 +20,7 @@ function ErrorPage(props: ErrorPageProps) {
         version,
         isLocalStorageSupported,
         translationsError,
-        comicsError,
+        volumesError,
         customFiltersError,
         tagsError,
         qualityProfilesError,
@@ -39,8 +39,8 @@ function ErrorPage(props: ErrorPageProps) {
             translate('FailedToLoadTranslationsFromApi'),
         );
     }
-    else if (comicsError) {
-        errorMessage = getErrorMessage(comicsError, translate('FailedToLoadComicsFromApi'));
+    else if (volumesError) {
+        errorMessage = getErrorMessage(volumesError, translate('FailedToLoadVolumesFromApi'));
     }
     else if (customFiltersError) {
         errorMessage = getErrorMessage(

@@ -1,7 +1,7 @@
 import { type ParseModel } from 'App/State/ParseAppState';
 import FieldSet from 'Components/FieldSet';
 import IssueFormats from 'Issue/IssueFormats';
-import ComicsTitleLink from 'Comics/ComicsTitleLink';
+import VolumesTitleLink from 'Volumes/VolumesTitleLink';
 import translate from 'Utilities/String/translate';
 import ParseResultItem from './ParseResultItem';
 import styles from './ParseResult.module.css';
@@ -12,16 +12,16 @@ interface ParseResultProps {
 
 function ParseResult(props: ParseResultProps) {
     const { item } = props;
-    const { customFormats, customFormatScore, episodes, languages, parsedIssueInfo, comics } = item;
+    const { customFormats, customFormatScore, issues, languages, parsedIssueInfo, volumes } = item;
 
     const {
         releaseTitle,
-        comicsTitle,
-        comicsTitleInfo,
+        volumesTitle,
+        volumesTitleInfo,
         releaseGroup,
         releaseHash,
         seasonNumber,
-        episodeNumbers,
+        issueNumbers,
         absoluteIssueNumbers,
         special,
         fullSeason,
@@ -39,18 +39,18 @@ function ParseResult(props: ParseResultProps) {
             <FieldSet legend={translate('Release')}>
                 <ParseResultItem title={translate('ReleaseTitle')} data={releaseTitle} />
 
-                <ParseResultItem title={translate('ComicsTitle')} data={comicsTitle} />
+                <ParseResultItem title={translate('VolumesTitle')} data={volumesTitle} />
 
                 <ParseResultItem
                     title={translate('Year')}
-                    data={comicsTitleInfo.year > 0 ? comicsTitleInfo.year : '-'}
+                    data={volumesTitleInfo.year > 0 ? volumesTitleInfo.year : '-'}
                 />
 
                 <ParseResultItem
                     title={translate('AllTitles')}
                     data={
-                        comicsTitleInfo.allTitles?.length > 0
-                            ? comicsTitleInfo.allTitles.join(', ')
+                        volumesTitleInfo.allTitles?.length > 0
+                            ? volumesTitleInfo.allTitles.join(', ')
                             : '-'
                     }
                 />
@@ -77,7 +77,7 @@ function ParseResult(props: ParseResultProps) {
 
                         <ParseResultItem
                             title={translate('IssueNumbers')}
-                            data={episodeNumbers.join(', ') || '-'}
+                            data={issueNumbers.join(', ') || '-'}
                         />
 
                         <ParseResultItem
@@ -161,10 +161,10 @@ function ParseResult(props: ParseResultProps) {
 
             <FieldSet legend={translate('Details')}>
                 <ParseResultItem
-                    title={translate('MatchedToComics')}
+                    title={translate('MatchedToVolumes')}
                     data={
-                        comics ? (
-                            <ComicsTitleLink titleSlug={comics.titleSlug} title={comics.title} />
+                        volumes ? (
+                            <VolumesTitleLink titleSlug={volumes.titleSlug} title={volumes.title} />
                         ) : (
                             '-'
                         )
@@ -173,19 +173,19 @@ function ParseResult(props: ParseResultProps) {
 
                 <ParseResultItem
                     title={translate('MatchedToSeason')}
-                    data={episodes.length ? episodes[0].seasonNumber : '-'}
+                    data={issues.length ? issues[0].seasonNumber : '-'}
                 />
 
                 <ParseResultItem
                     title={translate('MatchedToIssues')}
                     data={
-                        episodes.length ? (
+                        issues.length ? (
                             <div>
-                                {episodes.map((e) => {
+                                {issues.map((e) => {
                                     return (
                                         <div key={e.id}>
-                                            {e.episodeNumber}
-                                            {comics?.comicsType === 'anime' && e.absoluteIssueNumber
+                                            {e.issueNumber}
+                                            {volumes?.volumesType === 'anime' && e.absoluteIssueNumber
                                                 ? ` (${e.absoluteIssueNumber})`
                                                 : ''}{' '}
                                             {` - ${e.title}`}

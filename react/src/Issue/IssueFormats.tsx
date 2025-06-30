@@ -2,11 +2,11 @@ import Label from 'Components/Label';
 import { kinds } from 'Helpers/Props';
 import { type CustomFormat } from 'typings/CustomFormat';
 
-interface EpisodeFormatsProps {
+interface IssueFormatsProps {
     formats: CustomFormat[];
 }
 
-function EpisodeFormats({ formats }: EpisodeFormatsProps) {
+function IssueFormats({ formats }: IssueFormatsProps) {
     return (
         <div>
             {formats.map(({ id, name }) => (
@@ -18,4 +18,4 @@ function EpisodeFormats({ formats }: EpisodeFormatsProps) {
     );
 }
 
-export default EpisodeFormats;
+export default IssueFormats;

@@ -17,7 +17,7 @@
     display: flex;
 }
 
-.comicsFolder {
+.volumesFolder {
     flex: 0 0 auto;
     color: var(--disabledColor);
 }

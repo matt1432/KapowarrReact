@@ -8,11 +8,11 @@ import { type TagsAppState } from './TagsAppState';
 import { type FilterBuilderTypes } from 'Helpers/Props/filterBuilderTypes';
 import { type ParseAppState } from './ParseAppState';
 import { type MessagesAppState } from './MessagesAppState';
-import { type ComicsAppState, type ComicsIndexAppState } from './ComicsAppState';
+import { type VolumesAppState, type VolumesIndexAppState } from './VolumesAppState';
 import { type CustomFiltersAppState } from './CustomFiltersAppState';
 import { type CommandAppState } from './CommandAppState';
 import { type SystemAppState } from './SystemAppState';
-import { type ImportComicsAppState } from './ImportComicsAppState';
+import { type ImportVolumesAppState } from './ImportVolumesAppState';
 import { type RootFolderAppState } from './RootFolderAppState';
 import { type QueueAppState } from './QueueAppState';
 
@@ -70,17 +70,17 @@ export interface AppSectionState {
 }
 
 export interface AppState {
-    app: AppSectionState; // TODO: what to put here instead of unknown
+    app: AppSectionState;
     // blocklist: BlocklistAppState;
     // calendar: CalendarAppState;
     commands: CommandAppState;
     customFilters: CustomFiltersAppState;
-    // issueFiles: EpisodeFilesAppState;
+    // issueFiles: IssueFilesAppState;
     // issueHistory: HistoryAppState;
-    // issues: EpisodesAppState;
-    // issuesSelection: EpisodesAppState;
+    // issues: IssuesAppState;
+    // issuesSelection: IssuesAppState;
     // history: HistoryAppState;
-    importComics: ImportComicsAppState;
+    importVolumes: ImportVolumesAppState;
     // interactiveImport: InteractiveImportAppState;
     oAuth: OAuthAppState;
     // organizePreview: OrganizePreviewAppState;
@@ -90,9 +90,9 @@ export interface AppState {
     queue: QueueAppState;
     // releases: ReleasesAppState;
     rootFolders: RootFolderAppState;
-    comics: ComicsAppState;
-    // comicsHistory: ComicsHistoryAppState;
-    comicsIndex: ComicsIndexAppState;
+    volumes: VolumesAppState;
+    // volumesHistory: VolumesHistoryAppState;
+    volumesIndex: VolumesIndexAppState;
     settings: SettingsAppState;
     system: SystemAppState;
     tags: TagsAppState;

@@ -37,12 +37,12 @@ import QualityProfileSelectInput, {
 import RootFolderSelectInput, {
     type RootFolderSelectInputProps,
 } from './Select/RootFolderSelectInput';
-import ComicsTypeSelectInput, {
-    type ComicsTypeSelectInputProps,
-} from './Select/ComicsTypeSelectInput';
+import VolumesTypeSelectInput, {
+    type VolumesTypeSelectInputProps,
+} from './Select/VolumesTypeSelectInput';
 import UMaskInput, { type UMaskInputProps } from './Select/UMaskInput';
 import DeviceInput, { type DeviceInputProps } from './Tag/DeviceInput';
-import ComicsTagInput, { type ComicsTagInputProps } from './Tag/ComicsTagInput';
+import VolumesTagInput, { type VolumesTagInputProps } from './Tag/VolumesTagInput';
 import TagSelectInput, { type TagSelectInputProps } from './Tag/TagSelectInput';
 import TextTagInput, { type TextTagInputProps } from './Tag/TextTagInput';
 import TextArea, { type TextAreaProps } from './TextArea';
@@ -71,9 +71,9 @@ const componentMap: Record<InputType, ElementType> = {
     qualityProfileSelect: QualityProfileSelectInput,
     rootFolderSelect: RootFolderSelectInput,
     select: EnhancedSelectInput,
-    comicsTag: ComicsTagInput,
-    comicsTypeSelect: ComicsTypeSelectInput,
-    tag: ComicsTagInput,
+    volumesTag: VolumesTagInput,
+    volumesTypeSelect: VolumesTypeSelectInput,
+    tag: VolumesTagInput,
     tagSelect: TagSelectInput,
     text: TextInput,
     textArea: TextArea,
@@ -126,12 +126,12 @@ type PickProps<V, C extends InputType> = C extends 'text'
                                             : C extends 'select'
                                               ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                                 EnhancedSelectInputProps<any, V>
-                                              : C extends 'comicsTag'
-                                                ? ComicsTagInputProps<V>
-                                                : C extends 'comicsTypeSelect'
-                                                  ? ComicsTypeSelectInputProps
+                                              : C extends 'volumesTag'
+                                                ? VolumesTagInputProps<V>
+                                                : C extends 'volumesTypeSelect'
+                                                  ? VolumesTypeSelectInputProps
                                                   : C extends 'tag'
-                                                    ? ComicsTagInputProps<V>
+                                                    ? VolumesTagInputProps<V>
                                                     : C extends 'tagSelect'
                                                       ? TagSelectInputProps
                                                       : C extends 'text'

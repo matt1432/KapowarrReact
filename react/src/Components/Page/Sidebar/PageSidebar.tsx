@@ -37,10 +37,10 @@ interface SidebarItem {
 
 const LINKS: SidebarItem[] = [
     {
-        iconName: icons.COMICS_CONTINUING,
-        title: () => translate('Comics'),
+        iconName: icons.VOLUMES_CONTINUING,
+        title: () => translate('Volumes'),
         to: '/',
-        alias: '/comics',
+        alias: '/volumes',
         children: [
             {
                 title: () => translate('AddNew'),

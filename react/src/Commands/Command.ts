@@ -23,10 +23,10 @@ export interface CommandBody {
     lastStartTime: string;
     trigger: string;
     suppressMessages: boolean;
-    comicsId?: number;
-    comicsIds?: number[];
+    volumesId?: number;
+    volumesIds?: number[];
     seasonNumber?: number;
-    episodeIds?: number[];
+    issueIds?: number[];
     [key: string]: string | number | boolean | number[] | undefined;
 }
 

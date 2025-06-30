@@ -46,8 +46,8 @@ export default {
     // Modal
     modalBodyPadding: '30px',
 
-    // Comics
-    comicsIndexColumnPadding: '10px',
-    comicsIndexColumnPaddingSmallScreen: '5px',
-    comicsIndexOverviewInfoRowHeight: '21px',
+    // Volumes
+    volumesIndexColumnPadding: '10px',
+    volumesIndexColumnPaddingSmallScreen: '5px',
+    volumesIndexOverviewInfoRowHeight: '21px',
 };

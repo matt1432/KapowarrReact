@@ -16,9 +16,9 @@ export const LANGUAGE_SELECT = 'languageSelect';
 export const DOWNLOAD_CLIENT_SELECT = 'downloadClientSelect';
 export const ROOT_FOLDER_SELECT = 'rootFolderSelect';
 export const SELECT = 'select';
-export const COMICS_TAG = 'comicsTag';
+export const VOLUMES_TAG = 'volumesTag';
 export const DYNAMIC_SELECT = 'dynamicSelect';
-export const COMICS_TYPE_SELECT = 'comicsTypeSelect';
+export const VOLUMES_TYPE_SELECT = 'volumesTypeSelect';
 export const TAG = 'tag';
 export const TEXT = 'text';
 export const TEXT_AREA = 'textArea';
@@ -44,9 +44,9 @@ export const all = [
     ROOT_FOLDER_SELECT,
     LANGUAGE_SELECT,
     SELECT,
-    COMICS_TAG,
+    VOLUMES_TAG,
     DYNAMIC_SELECT,
-    COMICS_TYPE_SELECT,
+    VOLUMES_TYPE_SELECT,
     TAG,
     TEXT,
     TEXT_AREA,
@@ -76,9 +76,9 @@ export type InputType =
     | 'downloadClientSelect'
     | 'rootFolderSelect'
     | 'select'
-    | 'comicsTag'
+    | 'volumesTag'
     | 'dynamicSelect'
-    | 'comicsTypeSelect'
+    | 'volumesTypeSelect'
     | 'tag'
     | 'text'
     | 'textArea'

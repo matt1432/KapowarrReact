@@ -1,12 +1,12 @@
 import { type ModelBase } from 'App/ModelBase';
-import { type Comics } from 'Comics/Comics';
+import { type Volumes } from 'Volumes/Volumes';
 
 export interface Issue extends ModelBase {
-    comicsId: number;
+    volumesId: number;
     tvdbId: number;
-    episodeFileId: number;
+    issueFileId: number;
     seasonNumber: number;
-    episodeNumber: number;
+    issueNumber: number;
     airDate: string;
     airDateUtc?: string;
     lastSearchTime?: string;
@@ -17,11 +17,11 @@ export interface Issue extends ModelBase {
     sceneAbsoluteIssueNumber?: number;
     overview: string;
     title: string;
-    episodeFile?: object;
+    issueFile?: object;
     hasFile: boolean;
     monitored: boolean;
     grabbed?: boolean;
     unverifiedSceneNumbering: boolean;
-    comics?: Comics;
+    volumes?: Volumes;
     finaleType?: string;
 }
