@@ -20,7 +20,7 @@ from backend.internals.db import (
     setup_db_adapters_and_converters,
 )
 from backend.internals.settings import Settings
-from flask import Flask, render_template, request
+from flask import Flask
 from flask_socketio import SocketIO
 from waitress.server import create_server
 from waitress.task import ThreadedTaskDispatcher as TTD
@@ -148,12 +148,6 @@ class Server(metaclass=Singleton):
         )
 
         # Add error handlers
-        @app.errorhandler(404)
-        def not_found(e: Any) -> str | tuple[dict[str, Collection[str]], int]:
-            if request.path.startswith(self.api_prefix):
-                return {"error": "NotFound", "result": {}}, 404
-            return render_template("page_not_found.html")
-
         @app.errorhandler(400)
         def bad_request(e: Any) -> tuple[dict[str, Collection[str]], int]:
             return {"error": "BadRequest", "result": {}}, 400
