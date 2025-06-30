@@ -5,7 +5,7 @@ interface Window {
         apiKey: string;
         apiRoot: string;
         instanceName: string;
-        theme: string;
+        theme: 'light' | 'dark' | 'auto';
         urlBase: string;
         version: string;
     };

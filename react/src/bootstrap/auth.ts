@@ -1,8 +1,10 @@
-export default async function getApiKey(redirect = true) {
-    const key_data = JSON.parse(localStorage.getItem('kapowarr') ?? '');
+import getLocalStorage from 'Utilities/LocalStorage/getLocalStorage';
 
-    if (key_data.api_key === null || key_data.last_login < Date.now() / 1000 - 86400) {
-        return fetch(`${window.Kapowarr.apiRoot}/auth`, {
+export default async function getApiKey(): Promise<string | undefined> {
+    const localKapowarr = getLocalStorage();
+
+    if (!localKapowarr.apiKey || (localKapowarr.lastLogin ?? 0) < Date.now() / 1000 - 86400) {
+        await fetch(`${window.Kapowarr.apiRoot}/auth`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: '{}',
@@ -15,29 +17,17 @@ export default async function getApiKey(redirect = true) {
                 return response.json();
             })
             .then((json) => {
-                key_data.api_key = json.result.api_key;
-                key_data.last_login = Date.now() / 1000;
-                localStorage.setItem('kapowarr', JSON.stringify(key_data));
+                localKapowarr.apiKey = json.result.api_key;
+                localKapowarr.lastLogin = Date.now() / 1000;
+                localStorage.setItem('kapowarr', JSON.stringify(localKapowarr));
 
                 return json.result.api_key;
             })
             .catch((e) => {
-                if (e === 401) {
-                    if (redirect) {
-                        window.location.href = `${window.Kapowarr.urlBase}/login?redirect=${window.location.pathname}`;
-                    }
-                    else {
-                        return null;
-                    }
-                }
-                else {
-                    console.log(e);
-
-                    return null;
-                }
+                console.log(e);
             });
     }
     else {
-        return key_data.api_key;
+        return localKapowarr.apiKey;
     }
 }

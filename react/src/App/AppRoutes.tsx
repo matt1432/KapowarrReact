@@ -4,7 +4,7 @@ import getPathWithUrlBase from 'Utilities/getPathWithUrlBase';
 
 import Switch from 'Components/Router/Switch';
 
-import VolumesIndex from 'Volumes/Index/VolumesIndex';
+// import VolumesIndex from 'Volumes/Index/VolumesIndex';
 import NotFound from 'Components/NotFound';
 
 /*
@@ -46,8 +46,8 @@ function RedirectWithUrlBase() {
 function AppRoutes() {
     return (
         <Switch>
-            {/*Volumes*/}
-            <Route exact={true} path="/" component={VolumesIndex} />
+            {/*Volumes}
+            <Route exact={true} path="/" component={VolumesIndex} />*/}
 
             {window.Kapowarr.urlBase && (
                 <Route

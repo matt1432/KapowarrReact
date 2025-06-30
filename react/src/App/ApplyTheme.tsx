@@ -6,7 +6,7 @@ function ApplyTheme() {
     const theme = useTheme();
 
     const updateCSSVariables = useCallback(() => {
-        Object.entries(themes[theme].default).forEach(([key, value]) => {
+        Object.entries(themes[theme]).forEach(([key, value]) => {
             document.documentElement.style.setProperty(`--${key}`, value);
         });
     }, [theme]);
