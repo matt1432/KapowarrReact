@@ -1,9 +1,9 @@
 import getApiKey from 'bootstrap/auth';
 import setupLocalStorage from 'Utilities/LocalStorage/setupLocalStorage';
+import getLocalStorage from 'Utilities/LocalStorage/getLocalStorage';
 
 import 'Styles/globals.css';
 import './index.css';
-import getLocalStorage from 'Utilities/LocalStorage/getLocalStorage';
 
 // Init default values
 window.Kapowarr = {

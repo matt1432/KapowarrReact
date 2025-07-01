@@ -136,7 +136,13 @@
           preBuild = ''
             for dir in ${kapowarr-web}/share/kapowarr-web/*; do
                 if [[ "$dir" != "${kapowarr-web}/share/kapowarr-web" ]]; then
-                    cp $dir/* "./python/frontend/static/$(basename $dir)"
+                    target="./python/frontend/static/$(basename $dir)"
+
+                    if [[ -d "$target" ]]; then
+                        cp -r $dir/* "$target"
+                    else
+                        cp -r "$dir" "$target"
+                    fi
                 fi
             done
           '';

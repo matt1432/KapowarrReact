@@ -17,7 +17,7 @@ buildNpmPackage {
     runHook preInstall
 
     mkdir -p $out/share
-    cp -a dist/out $out/share/kapowarr-web
+    cp -a dist/static $out/share/kapowarr-web
 
     runHook postInstall
   '';

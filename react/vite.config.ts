@@ -13,9 +13,9 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 assetFileNames: (asset) => {
-                    return `out/${asset.names[0].split('.').at(-1)}/[name][extname]`;
+                    return `static/${asset.names[0].split('.').at(-1)}/[name][extname]`;
                 },
-                chunkFileNames: 'out/js/[name].js',
+                chunkFileNames: 'static/js/[name].js',
                 manualChunks: {
                     bootstrap: ['src/bootstrap/index.tsx'],
                     react: ['src/index.ts'],
