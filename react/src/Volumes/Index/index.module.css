@@ -31,6 +31,8 @@
     flex-grow: 1;
 }
 
+.overviewInnerContentBody {}
+
 .contentBodyContainer {
     display: flex;
     flex-direction: column;

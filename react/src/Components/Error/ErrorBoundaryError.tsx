@@ -44,7 +44,7 @@ function ErrorBoundaryError(props: ErrorBoundaryErrorProps) {
             <div className={styles.imageContainer}>
                 <img
                     className={styles.image}
-                    src={`${window.Kapowarr.urlBase}/Content/Images/error.png`}
+                    src={`${window.Kapowarr.urlBase}/static/img/error.png`}
                 />
             </div>
 

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch /*, useSelector*/ } from 'react-redux';
 import { SelectProvider } from 'App/SelectContext';
-import { type ClientSideCollectionAppState } from 'App/State/ClientSideCollectionAppState';
-import { type VolumesAppState, type VolumesIndexAppState } from 'App/State/VolumesAppState';
+// import { type ClientSideCollectionAppState } from 'App/State/ClientSideCollectionAppState';
+// import { type VolumesAppState, type VolumesIndexAppState } from 'App/State/VolumesAppState';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
@@ -28,8 +28,8 @@ import NoVolumes from 'Volumes/NoVolumes';
     setVolumesView,
 } from 'Store/Actions/volumesIndexActions';*/
 import scrollPositions from 'Store/scrollPositions';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-import createVolumesClientSideCollectionItemsSelector from 'Store/Selectors/createVolumesClientSideCollectionItemsSelector';
+// import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
+// import createVolumesClientSideCollectionItemsSelector from 'Store/Selectors/createVolumesClientSideCollectionItemsSelector';
 import translate from 'Utilities/String/translate';
 import VolumesIndexFilterMenu from './Menus/VolumesIndexFilterMenu';
 import VolumesIndexSortMenu from './Menus/VolumesIndexSortMenu';
@@ -47,7 +47,8 @@ import VolumesIndexFooter from './VolumesIndexFooter';
 import VolumesIndexRefreshVolumesButton from './VolumesIndexRefreshVolumesButton';
 import VolumesIndexTable from './Table/VolumesIndexTable';
 import VolumesIndexTableOptions from './Table/VolumesIndexTableOptions';
-import styles from './VolumesIndex.module.css';
+import styles from './index.module.css';
+import type { Volumes } from 'Volumes/Volumes';
 
 function getViewComponent(view: string) {
     if (view === 'posters') {
@@ -66,7 +67,26 @@ interface VolumesIndexProps {
 }
 
 const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
-    // @ts-expect-error TODO:
+    /*
+    const {
+        isFetching,
+        isPopulated,
+        error,
+        totalItems,
+        items,
+        columns,
+        selectedFilterKey,
+        filters,
+        customFilters,
+        sortKey,
+        sortDirection,
+        view: _view,
+    }: VolumesAppState & VolumesIndexAppState & ClientSideCollectionAppState = useSelector(
+        createVolumesClientSideCollectionItemsSelector('volumesIndex'),
+    );
+
+    const view = _view as 'overview' | 'posters' | 'table';
+    */
     const {
         isFetching,
         isPopulated,
@@ -80,11 +100,23 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
         sortKey,
         sortDirection,
         view,
-    }: VolumesAppState & VolumesIndexAppState & ClientSideCollectionAppState = useSelector(
-        createVolumesClientSideCollectionItemsSelector('volumesIndex'),
-    );
+    } = {
+        isFetching: true,
+        isPopulated: false,
+        error: undefined,
+        totalItems: 0,
+        items: [] as Volumes[],
+        columns: [],
+        selectedFilterKey: '',
+        filters: [],
+        customFilters: [],
+        sortKey: 'title',
+        sortDirection: 'ascending' as SortDirection,
+        view: 'overview' as 'overview' | 'posters' | 'table',
+    };
 
-    const { isSmallScreen } = useSelector(createDimensionsSelector());
+    // const { isSmallScreen } = useSelector(createDimensionsSelector());
+    const isSmallScreen = false;
     const dispatch = useDispatch();
     const scrollerRef = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>;
     const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
@@ -289,8 +321,6 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
                     <PageContentBody
                         ref={scrollerRef}
                         className={styles.contentBody}
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
                         innerClassName={styles[`${view}InnerContentBody`]}
                         initialScrollTop={props.initialScrollTop}
                         onScroll={onScroll}

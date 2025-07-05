@@ -4,6 +4,7 @@ interface CssExports {
     contentBody: string;
     contentBodyContainer: string;
     pageContentBodyWrapper: string;
+    overviewInnerContentBody: string;
     postersInnerContentBody: string;
     tableInnerContentBody: string;
 }

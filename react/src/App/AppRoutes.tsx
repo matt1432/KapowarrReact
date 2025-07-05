@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 
-// import VolumesIndex from 'Volumes/Index/VolumesIndex';
+import VolumesIndex from 'Volumes/Index';
 import NotFound from 'Components/NotFound';
 import type { History } from 'history';
 
@@ -36,12 +36,10 @@ import CutoffUnmet from 'Wanted/CutoffUnmet/CutoffUnmet';
 import Missing from 'Wanted/Missing/Missing';
 */
 
-// @ts-expect-error this is needed for VolumesIndex
-// eslint-disable-next-line
 function AppRoutes({ history }: { history: History }) {
     return (
         <Routes>
-            {/*Volumes}
+            {/*Volumes*/}
             <Route path="/" element={<VolumesIndex history={history} />} />
 
             {/*
