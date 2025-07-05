@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import LazyLoad from 'react-lazyload';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { type CoverType, type Image } from './Volumes';
 
 function findImage(images: Image[], coverType: CoverType) {
@@ -20,7 +20,7 @@ export interface VolumesImageProps {
     placeholder: string;
     size?: number;
     lazy?: boolean;
-    overflow?: boolean;
+    // overflow?: boolean;
     onError?: () => void;
     onLoad?: () => void;
 }
@@ -35,7 +35,7 @@ function VolumesImage({
     placeholder,
     size = 250,
     lazy = true,
-    overflow = false,
+    // overflow = false,
     onError,
     onLoad,
 }: VolumesImageProps) {
@@ -93,21 +93,18 @@ function VolumesImage({
 
     if (lazy) {
         return (
-            <LazyLoad
+            <LazyLoadImage
+                className={className}
+                style={style}
+                src={url}
+                rel="noreferrer"
+                onError={handleError}
+                onLoad={handleLoad}
                 height={size}
-                offset={100}
-                overflow={overflow}
+                threshold={100}
                 placeholder={<img className={className} style={style} src={placeholder} />}
-            >
-                <img
-                    className={className}
-                    style={style}
-                    src={url}
-                    rel="noreferrer"
-                    onError={handleError}
-                    onLoad={handleLoad}
-                />
-            </LazyLoad>
+                // overflow={true} FIXME: see if necessary
+            ></LazyLoadImage>
         );
     }
 

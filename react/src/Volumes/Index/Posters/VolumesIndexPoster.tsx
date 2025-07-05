@@ -185,7 +185,7 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
                         images={images}
                         size={250}
                         lazy={false}
-                        overflow={true}
+                        // overflow={true} FIXME: see if necessary
                         onError={onPosterLoadError}
                         onLoad={onPosterLoad}
                     />

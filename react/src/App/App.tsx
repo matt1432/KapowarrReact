@@ -1,5 +1,4 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Router } from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 import { Provider } from 'react-redux';
 import { type Store } from 'redux';
@@ -7,6 +6,7 @@ import Page from 'Components/Page/Page';
 import ApplyTheme from './ApplyTheme';
 import type { History } from 'history';
 import AppRoutes from './AppRoutes';
+import { HistoryRouter } from './HistoryRouter';
 
 interface AppProps {
     store: Store;
@@ -20,12 +20,12 @@ function App({ store, history }: AppProps) {
         <DocumentTitle title={window.Kapowarr.instanceName}>
             <QueryClientProvider client={queryClient}>
                 <Provider store={store}>
-                    <Router history={history}>
+                    <HistoryRouter history={history} basename={window.Kapowarr.urlBase}>
                         <ApplyTheme />
                         <Page>
-                            <AppRoutes />
+                            <AppRoutes history={history} />
                         </Page>
-                    </Router>
+                    </HistoryRouter>
                 </Provider>
             </QueryClientProvider>
         </DocumentTitle>

@@ -1,15 +1,18 @@
-import { Route } from 'react-router-dom';
-import Switch from 'Components/Router/Switch';
+import { Route, Routes } from 'react-router-dom';
 import ImportVolumes from './Import/ImportVolumes';
 import ImportVolumesSelectFolder from './SelectFolder/ImportVolumesSelectFolder';
 
 function ImportVolumesPage() {
     return (
-        <Switch>
-            <Route exact={true} path="/add/import" component={ImportVolumesSelectFolder} />
+        <Routes>
+            <Route path="/add/import">
+                <ImportVolumesSelectFolder />
+            </Route>
 
-            <Route path="/add/import/:rootFolderId" component={ImportVolumes} />
-        </Switch>
+            <Route path="/add/import/:rootFolderId">
+                <ImportVolumes />
+            </Route>
+        </Routes>
     );
 }
 

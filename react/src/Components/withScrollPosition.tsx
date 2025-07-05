@@ -1,15 +1,14 @@
 import React from 'react';
-import { type RouteComponentProps } from 'react-router-dom';
+import { useLocation, useMatch } from 'react-router-dom';
 import scrollPositions from 'Store/scrollPositions';
+import { type History } from 'history';
 
 interface WrappedComponentProps {
     initialScrollTop: number;
 }
 
 interface ScrollPositionProps {
-    history: RouteComponentProps['history'];
-    location: RouteComponentProps['location'];
-    match: RouteComponentProps['match'];
+    history: History;
 }
 
 function withScrollPosition(
@@ -17,11 +16,16 @@ function withScrollPosition(
     scrollPositionKey: string,
 ) {
     function ScrollPosition(props: ScrollPositionProps) {
-        const { history } = props;
+        const _props = {
+            location: useLocation(),
+            match: useMatch(window.location.pathname),
+            ...props,
+        };
 
-        const initialScrollTop = history.action === 'POP' ? scrollPositions[scrollPositionKey] : 0;
+        const initialScrollTop =
+            props.history.action === 'POP' ? scrollPositions[scrollPositionKey] : 0;
 
-        return <WrappedComponent {...props} initialScrollTop={initialScrollTop} />;
+        return <WrappedComponent {..._props} initialScrollTop={initialScrollTop} />;
     }
 
     return ScrollPosition;

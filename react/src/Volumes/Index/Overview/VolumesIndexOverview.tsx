@@ -1,7 +1,8 @@
 import classNames from 'classnames';
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import TextTruncate from 'react-text-truncate';
+// FIXME: find a replacement for react 19
+// import TextTruncate from 'react-text-truncate';
 // import { REFRESH_VOLUMES, VOLUMES_SEARCH } from 'Commands/commandNames';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
@@ -16,7 +17,7 @@ import { type Statistics } from 'Volumes/Volumes';
 import VolumesPoster from 'Volumes/VolumesPoster';
 // import { executeCommand } from 'Store/Actions/commandActions';
 import dimensions from 'Styles/Variables/dimensions';
-import fonts from 'Styles/Variables/fonts';
+// import fonts from 'Styles/Variables/fonts';
 import translate from 'Utilities/String/translate';
 import createVolumesIndexItemSelector from '../createVolumesIndexItemSelector';
 import selectOverviewOptions from './selectOverviewOptions';
@@ -25,8 +26,8 @@ import styles from './VolumesIndexOverview.module.css';
 
 const columnPadding = parseInt(dimensions.volumesIndexColumnPadding);
 const columnPaddingSmallScreen = parseInt(dimensions.volumesIndexColumnPaddingSmallScreen);
-const defaultFontSize = parseInt(fonts.defaultFontSize);
-const lineHeight = parseFloat(fonts.lineHeight);
+// const defaultFontSize = parseInt(fonts.defaultFontSize);
+// const lineHeight = parseFloat(fonts.lineHeight);
 
 // Hardcoded height based on line-height of 32 + bottom margin of 10.
 // Less side-effecty than using react-measure.
@@ -43,8 +44,15 @@ interface VolumesIndexOverviewProps {
 }
 
 function VolumesIndexOverview(props: VolumesIndexOverviewProps) {
-    const { volumesId, sortKey, posterWidth, posterHeight, rowHeight, isSelectMode, isSmallScreen } =
-        props;
+    const {
+        volumesId,
+        sortKey,
+        posterWidth,
+        posterHeight,
+        rowHeight,
+        isSelectMode,
+        isSmallScreen,
+    } = props;
 
     const { volumes, qualityProfile, isRefreshingVolumes, isSearchingVolumes } = useSelector(
         createVolumesIndexItemSelector(props.volumesId),
@@ -160,7 +168,7 @@ function VolumesIndexOverview(props: VolumesIndexOverviewProps) {
                                 images={images}
                                 size={250}
                                 lazy={false}
-                                overflow={true}
+                                // overflow={true} FIXME: see if necessary
                             />
                         </Link>
                     </div>
@@ -212,12 +220,15 @@ function VolumesIndexOverview(props: VolumesIndexOverviewProps) {
                     <div className={styles.details}>
                         <div className={styles.overviewContainer}>
                             <Link className={styles.overview} to={link}>
+                                {/*
                                 <TextTruncate
                                     line={Math.floor(
                                         overviewHeight / (defaultFontSize * lineHeight),
                                     )}
                                     text={overview}
                                 />
+                                */}
+                                {overview}
                             </Link>
 
                             {overviewOptions.showTags ? (

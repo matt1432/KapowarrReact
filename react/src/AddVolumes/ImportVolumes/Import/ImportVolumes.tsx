@@ -20,7 +20,7 @@ function ImportVolumes() {
     const { rootFolderId: rootFolderIdString } = useParams<{
         rootFolderId: string;
     }>();
-    const rootFolderId = parseInt(rootFolderIdString);
+    const rootFolderId = parseInt(rootFolderIdString!);
 
     const {
         isFetching: rootFoldersFetching,

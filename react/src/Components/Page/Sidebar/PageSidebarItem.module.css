@@ -15,7 +15,7 @@
 
     &:hover,
     &:focus {
-        color: var(--themeBlue);
+        color: var(--themeYellow);
         text-decoration: none;
     }
 }

@@ -1,11 +1,8 @@
-import { Redirect, Route } from 'react-router-dom';
-
-import getPathWithUrlBase from 'Utilities/getPathWithUrlBase';
-
-import Switch from 'Components/Router/Switch';
+import { Route, Routes } from 'react-router-dom';
 
 // import VolumesIndex from 'Volumes/Index/VolumesIndex';
 import NotFound from 'Components/NotFound';
+import type { History } from 'history';
 
 /*
 import Blocklist from 'Activity/Blocklist/Blocklist';
@@ -39,25 +36,13 @@ import CutoffUnmet from 'Wanted/CutoffUnmet/CutoffUnmet';
 import Missing from 'Wanted/Missing/Missing';
 */
 
-function RedirectWithUrlBase() {
-    return <Redirect to={getPathWithUrlBase('/')} />;
-}
-
-function AppRoutes() {
+// @ts-expect-error this is needed for VolumesIndex
+// eslint-disable-next-line
+function AppRoutes({ history }: { history: History }) {
     return (
-        <Switch>
+        <Routes>
             {/*Volumes}
-            <Route exact={true} path="/" component={VolumesIndex} />*/}
-
-            {window.Kapowarr.urlBase && (
-                <Route
-                    exact={true}
-                    path="/"
-                    // @ts-expect-error TODO: look into this
-                    addUrlBase={false}
-                    render={RedirectWithUrlBase}
-                />
-            )}
+            <Route path="/" element={<VolumesIndex history={history} />} />
 
             {/*
             <Route path="/add/new" component={AddNewVolumes} />
@@ -134,8 +119,8 @@ function AppRoutes() {
              */}
 
             {/*Not Found*/}
-            <Route path="*" component={NotFound} />
-        </Switch>
+            <Route path="*" element={<NotFound />} />
+        </Routes>
     );
 }
 

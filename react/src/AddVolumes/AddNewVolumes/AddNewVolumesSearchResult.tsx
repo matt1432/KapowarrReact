@@ -54,7 +54,9 @@ function AddNewVolumesSearchResult({ volumes }: AddNewVolumesSearchResultProps) 
         event.stopPropagation();
     }, []);
 
-    const linkProps = isExistingVolumes ? { to: `/volumes/${titleSlug}` } : { onPress: handlePress };
+    const linkProps = isExistingVolumes
+        ? { to: `/volumes/${titleSlug}` }
+        : { onPress: handlePress };
     let seasons = translate('OneSeason');
 
     if (seasonCount > 1) {
@@ -71,7 +73,7 @@ function AddNewVolumesSearchResult({ volumes }: AddNewVolumesSearchResultProps) 
                         className={styles.poster}
                         images={images}
                         size={250}
-                        overflow={true}
+                        // overflow={true} FIXME: see if necessary
                         lazy={false}
                     />
                 )}
