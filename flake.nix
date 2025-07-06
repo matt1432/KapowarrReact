@@ -61,6 +61,8 @@
               # nix build inputs
               buildPythonPackage,
               fetchPypi,
+              # python deps
+              setuptools,
               ...
             }: let
               pname = "bencoding";
@@ -68,6 +70,9 @@
             in
               buildPythonPackage {
                 inherit pname version;
+
+                pyproject = true;
+                build-system = [setuptools];
 
                 src = fetchPypi {
                   inherit pname version;
