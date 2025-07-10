@@ -1,6 +1,5 @@
 import { createReduxHistoryContext } from 'redux-first-history';
-import { combineReducers } from 'redux';
-import { enableBatching } from 'redux-batched-actions';
+import { combineReducers } from '@reduxjs/toolkit';
 import { type History } from 'history';
 
 export default function (history: History) {
@@ -11,10 +10,8 @@ export default function (history: History) {
         createReduxHistory,
         routerMiddleware,
         routerReducer,
-        reducers: enableBatching(
-            combineReducers({
-                router: routerReducer,
-            }),
-        ),
+        reducers: combineReducers({
+            router: routerReducer,
+        }),
     };
 }

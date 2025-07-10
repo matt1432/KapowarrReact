@@ -1,4 +1,3 @@
-import { cloneDeep } from 'lodash';
 import { useReducer } from 'react';
 import areAllSelected from 'Utilities/Table/areAllSelected';
 import selectAll from 'Utilities/Table/selectAll';
@@ -62,7 +61,7 @@ function selectReducer(state: SelectState, action: SelectAction): SelectState {
 
     switch (action.type) {
         case 'reset': {
-            return cloneDeep(initialState);
+            return structuredClone(initialState);
         }
         case 'selectAll': {
             return {

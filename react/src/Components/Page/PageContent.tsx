@@ -1,7 +1,7 @@
 import React from 'react';
-import DocumentTitle from 'react-document-title';
 import ErrorBoundary from 'Components/Error/ErrorBoundary';
 import PageContentError from './PageContentError';
+import { useTitle } from 'Helpers/Hooks/useTitle';
 import styles from './PageContent.module.css';
 
 interface PageContentProps {
@@ -11,17 +11,11 @@ interface PageContentProps {
 }
 
 function PageContent({ className = styles.content, title, children }: PageContentProps) {
+    useTitle(title ? `${title} - ${window.Kapowarr.instanceName}` : window.Kapowarr.instanceName);
+
     return (
         <ErrorBoundary errorComponent={PageContentError}>
-            <DocumentTitle
-                title={
-                    title
-                        ? `${title} - ${window.Kapowarr.instanceName}`
-                        : window.Kapowarr.instanceName
-                }
-            >
-                <div className={className}>{children}</div>
-            </DocumentTitle>
+            <div className={className}>{children}</div>
         </ErrorBoundary>
     );
 }

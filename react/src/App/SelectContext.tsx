@@ -1,4 +1,3 @@
-import { cloneDeep } from 'lodash';
 import React, { useCallback, useEffect } from 'react';
 import useSelectState, {
     type SelectState,
@@ -34,7 +33,7 @@ interface SelectProviderOptions<T extends SelectStateModel> {
 }
 
 const SelectContext = React.createContext<[SelectState, SelectDispatch] | undefined>(
-    cloneDeep(undefined),
+    structuredClone(undefined),
 );
 
 export function SelectProvider<T extends SelectStateModel>(props: SelectProviderOptions<T>) {

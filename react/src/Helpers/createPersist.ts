@@ -7,7 +7,8 @@ export const createPersist = <T>(
     state: StateCreator<T>,
     options: Omit<PersistOptions<T>, 'name' | 'storage'> = {},
 ) => {
-    const instanceName = window.Kapowarr.instanceName.toLowerCase().replace(/ /g, '_') ?? 'sonarr';
+    const instanceName =
+        window.Kapowarr.instanceName.toLowerCase().replace(/ /g, '_') ?? 'kapowarr';
 
     const finalName = `${instanceName}_${name}`;
 

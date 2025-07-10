@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import elementClass from 'element-class';
 import React, { type MouseEvent, useCallback, useEffect, useId, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import FocusLock from 'react-focus-lock';
@@ -118,10 +117,10 @@ function Modal({
                 if (isIOS()) {
                     setScrollLock(true);
                     bodyScrollTop.current = document.body.scrollTop;
-                    elementClass(document.body).add(styles.modalOpenIOS);
+                    document.body.classList.add(styles.modalOpenIOS);
                 }
                 else {
-                    elementClass(document.body).add(styles.modalOpen);
+                    document.body.classList.add(styles.modalOpen);
                 }
             }
         }
@@ -132,11 +131,11 @@ function Modal({
                 setScrollLock(false);
 
                 if (isIOS()) {
-                    elementClass(document.body).remove(styles.modalOpenIOS);
+                    document.body.classList.remove(styles.modalOpenIOS);
                     document.body.scrollTop = bodyScrollTop.current;
                 }
                 else {
-                    elementClass(document.body).remove(styles.modalOpen);
+                    document.body.classList.remove(styles.modalOpen);
                 }
             }
         }

@@ -1,4 +1,3 @@
-import { maxBy } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch /*, useSelector */ } from 'react-redux';
 // @ts-expect-error TODO:
@@ -127,7 +126,7 @@ function FilterBuilderModalContent<T>({
                 dispatchSetFilter({ selectedFilterKey: id });
             }
             else {
-                const last = maxBy(customFilters, 'id');
+                const last = customFilters.reduce((a, b) => a.id >= b.id ? a : b, {});
 
                 if (last) {
                     dispatchSetFilter({ selectedFilterKey: last.id });

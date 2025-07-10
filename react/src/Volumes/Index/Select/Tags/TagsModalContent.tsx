@@ -1,4 +1,3 @@
-import { uniq } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 // import { useSelector } from 'react-redux';
 // import { type Tag } from 'App/State/TagsAppState';
@@ -47,7 +46,7 @@ function TagsModalContent(props: TagsModalContentProps) {
             return acc;
         }, []);
 
-        return uniq(tags);
+        return [...new Set(tags)];
     }, [volumesIds, allVolumes]);
 
     const onTagsChange = useCallback(

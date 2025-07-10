@@ -1,5 +1,4 @@
 /*
-import { isEqual } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -136,7 +135,7 @@ function ProviderOptionSelectInput(
         const prevKey = getProviderDataKey(previousProviderData);
         const nextKey = getProviderDataKey(providerData);
 
-        if (!isEqual(prevKey, nextKey)) {
+        if (prevKey !== nextKey) {
             setIsRefetchRequired(true);
         }
     }, [providerData, previousProviderData, setIsRefetchRequired]);
