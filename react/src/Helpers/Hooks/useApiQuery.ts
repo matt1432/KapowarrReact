@@ -13,14 +13,15 @@ export interface QueryOptions<T> extends FetchJsonOptions<unknown> {
 
 const useApiQuery = <T>(options: QueryOptions<T>) => {
     const requestOptions = useMemo(() => {
+        const apiKey = { api_key: window.Kapowarr.apiKey };
+        Object.assign(options.queryParams ?? {}, apiKey);
         const { path: path, queryParams, ...otherOptions } = options;
 
         return {
             ...otherOptions,
-            path: getQueryPath(path) + getQueryString(queryParams),
+            path: getQueryPath(path) + getQueryString(queryParams ?? apiKey),
             headers: {
                 ...options.headers,
-                'X-Api-Key': window.Kapowarr.apiKey,
             },
         };
     }, [options]);
