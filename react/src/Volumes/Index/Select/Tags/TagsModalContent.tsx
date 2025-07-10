@@ -1,7 +1,7 @@
 import { uniq } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { type Tag } from 'App/State/TagsAppState';
+// import { useSelector } from 'react-redux';
+// import { type Tag } from 'App/State/TagsAppState';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -15,8 +15,8 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds, sizes } from 'Helpers/Props';
 import { type Volumes } from 'Volumes/Volumes';
-import createAllVolumesSelector from 'Store/Selectors/createAllVolumesSelector';
-import createTagsSelector from 'Store/Selectors/createTagsSelector';
+// import createAllVolumesSelector from 'Store/Selectors/createAllVolumesSelector';
+// import createTagsSelector from 'Store/Selectors/createTagsSelector';
 import translate from 'Utilities/String/translate';
 import styles from './TagsModalContent.module.css';
 
@@ -29,8 +29,9 @@ interface TagsModalContentProps {
 function TagsModalContent(props: TagsModalContentProps) {
     const { volumesIds, onModalClose, onApplyTagsPress } = props;
 
-    const allVolumes: Volumes[] = useSelector(createAllVolumesSelector());
-    const tagList: Tag[] = useSelector(createTagsSelector());
+    const allVolumes: Volumes[] = []; // useSelector(createAllVolumesSelector());
+    // @ts-expect-error TODO
+    const tagList: Tag[] = []; // useSelector(createTagsSelector());
 
     const [tags, setTags] = useState<number[]>([]);
     const [applyTags, setApplyTags] = useState('add');

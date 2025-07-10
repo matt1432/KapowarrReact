@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+/*import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import VolumesMonitorNewItemsOptionsPopoverContent from 'AddVolumes/VolumesMonitorNewItemsOptionsPopoverContent';
-import { type AppState } from 'App/State/AppState';
+// import { type AppState } from 'App/State/AppState';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputButton from 'Components/Form/FormInputButton';
@@ -18,25 +18,29 @@ import Popover from 'Components/Tooltip/Popover';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons, inputTypes, kinds, sizes, tooltipPositions } from 'Helpers/Props';
 import MoveVolumesModal from 'Volumes/MoveVolumes/MoveVolumesModal';
-import useVolumes from 'Volumes/useVolumes';
+// import useVolumes from 'Volumes/useVolumes';
 // import { saveVolumes, setVolumesValue } from 'Store/Actions/volumesActions';
-import selectSettings from 'Store/Selectors/selectSettings';
+// import selectSettings from 'Store/Selectors/selectSettings';
 import { type InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
 import RootFolderModal from './RootFolder/RootFolderModal';
 import { type RootFolderUpdated } from './RootFolder/RootFolderModalContent';
-import styles from './EditVolumesModalContent.module.css';
+import styles from './EditVolumesModalContent.module.css';*/
 
 export interface EditVolumesModalContentProps {
     volumesId: number;
     onModalClose: () => void;
     onDeleteVolumesPress: () => void;
 }
-function EditVolumesModalContent({
-    volumesId,
-    onModalClose,
-    onDeleteVolumesPress,
-}: EditVolumesModalContentProps) {
+function EditVolumesModalContent(
+    // eslint-disable-next-line
+    {
+        // volumesId,
+        // onModalClose,
+        // onDeleteVolumesPress,
+    }: EditVolumesModalContentProps,
+) {
+    /*
     const dispatch = useDispatch();
     const {
         title,
@@ -126,26 +130,24 @@ function EditVolumesModalContent({
         else {
             setIsConfirmMoveModalOpen(false);
 
-            /*
             dispatch(
                 saveVolumes({
                     id: volumesId,
                     moveFiles: false,
                 }),
-            );*/
+            );
         }
     }, [volumesId, isPathChanging, isConfirmMoveModalOpen, dispatch]);
 
     const handleMoveVolumesPress = useCallback(() => {
         setIsConfirmMoveModalOpen(false);
 
-        /*
         dispatch(
             saveVolumes({
                 id: volumesId,
                 moveFiles: true,
             }),
-        );*/
+        );
     }, [volumesId, dispatch]);
 
     useEffect(() => {
@@ -299,7 +301,8 @@ function EditVolumesModalContent({
                 onMoveVolumesPress={handleMoveVolumesPress}
             />
         </ModalContent>
-    );
+    );*/
+    return null;
 }
 
 export default EditVolumesModalContent;

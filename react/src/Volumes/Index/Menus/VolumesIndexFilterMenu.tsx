@@ -1,11 +1,13 @@
-import { type CustomFilter, type Filter } from 'App/State/AppState';
+// import { type CustomFilter, type Filter } from 'App/State/AppState';
 import FilterMenu from 'Components/Menu/FilterMenu';
 import VolumesIndexFilterModal from 'Volumes/Index/VolumesIndexFilterModal';
 
 interface VolumesIndexFilterMenuProps {
     selectedFilterKey: string | number;
-    filters: Filter[];
-    customFilters: CustomFilter[];
+    // eslint-disable-next-line
+    filters: any[]; // Filter[];
+    // eslint-disable-next-line
+    customFilters: any[]; // CustomFilter[];
     isDisabled: boolean;
     onFilterSelect: (filter: number | string) => void;
 }

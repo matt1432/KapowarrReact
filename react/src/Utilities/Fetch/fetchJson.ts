@@ -34,7 +34,7 @@ export interface FetchJsonOptions<TData> extends Omit<RequestInit, 'body'> {
 }
 
 export const urlBase = window.Kapowarr.urlBase;
-export const apiRoot = '/api/v5'; // window.Sonarr.apiRoot;
+export const apiRoot = window.Kapowarr.apiRoot;
 
 async function fetchJson<T, TData>({
     body,

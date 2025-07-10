@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+// import { useCallback, useEffect, useMemo, useState } from 'react';
+// import { useSelector } from 'react-redux';
 import { type AddVolumes } from 'AddVolumes/AddVolumes';
-import {
+/*import {
     type AddVolumesOptions,
     setAddVolumesOption,
     useAddVolumesOptions,
-} from 'AddVolumes/addVolumesOptionsStore';
+} from 'AddVolumes/addVolumesOptionsStore';*/
 import VolumesMonitoringOptionsPopoverContent from 'AddVolumes/VolumesMonitoringOptionsPopoverContent';
 import VolumesTypePopoverContent from 'AddVolumes/VolumesTypePopoverContent';
 import CheckInput from 'Components/Form/CheckInput';
@@ -23,10 +23,10 @@ import Popover from 'Components/Tooltip/Popover';
 import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
 import { type VolumesType } from 'Volumes/Volumes';
 import VolumesPoster from 'Volumes/VolumesPoster';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-import selectSettings from 'Store/Selectors/selectSettings';
-import useIsWindows from 'System/useIsWindows';
-import { type InputChanged } from 'typings/inputs';
+// import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
+// import selectSettings from 'Store/Selectors/selectSettings';
+// import useIsWindows from 'System/useIsWindows';
+// import { type InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
 import { useAddVolumes } from './useAddVolumes';
 import styles from './AddNewVolumesModalContent.module.css';
@@ -39,16 +39,18 @@ export interface AddNewVolumesModalContentProps {
 
 function AddNewVolumesModalContent({
     volumes,
-    initialVolumesType,
+    // initialVolumesType,
     onModalClose,
 }: AddNewVolumesModalContentProps) {
     const { title, year, overview, images, folder } = volumes;
-    const options = useAddVolumesOptions();
-    const { isSmallScreen } = useSelector(createDimensionsSelector());
-    const isWindows = useIsWindows();
+    // const options = useAddVolumesOptions();
+    // const { isSmallScreen } = useSelector(createDimensionsSelector());
+    const isSmallScreen = false;
+    const isWindows = false; // useIsWindows();
 
-    const { isPending: isAdding, error: addError, mutate: addVolumes } = useAddVolumes();
+    const { isPending: isAdding /*error: addError, mutate: addVolumes */ } = useAddVolumes();
 
+    /*
     const { settings, validationErrors, validationWarnings } = useMemo(() => {
         return selectSettings(options, {}, addError);
     }, [options, addError]);
@@ -106,7 +108,7 @@ function AddNewVolumesModalContent({
 
     useEffect(() => {
         setVolumesType(volumesTypeSetting.value);
-    }, [volumesTypeSetting]);
+    }, [volumesTypeSetting]);*/
 
     return (
         <ModalContent onModalClose={onModalClose}>
@@ -130,8 +132,8 @@ function AddNewVolumesModalContent({
                         {overview ? <div className={styles.overview}>{overview}</div> : null}
 
                         <Form
-                            validationErrors={validationErrors}
-                            validationWarnings={validationWarnings}
+                        // validationErrors={validationErrors}
+                        // validationWarnings={validationWarnings}
                         >
                             <FormGroup>
                                 <FormLabel>{translate('RootFolder')}</FormLabel>
@@ -150,8 +152,8 @@ function AddNewVolumesModalContent({
                                     helpText={translate('AddNewVolumesRootFolderHelpText', {
                                         folder,
                                     })}
-                                    onChange={handleInputChange}
-                                    {...rootFolderPath}
+                                    onChange={() => {} /*handleInputChange*/}
+                                    // {...rootFolderPath}
                                 />
                             </FormGroup>
 
@@ -172,8 +174,9 @@ function AddNewVolumesModalContent({
                                 <FormInputGroup
                                     type={inputTypes.MONITOR_ISSUES_SELECT}
                                     name="monitor"
-                                    onChange={handleInputChange}
-                                    {...monitor}
+                                    onChange={() => {} /*handleInputChange*/}
+                                    value={''}
+                                    // {...monitor}
                                 />
                             </FormGroup>
 
@@ -183,8 +186,9 @@ function AddNewVolumesModalContent({
                                 <FormInputGroup
                                     type={inputTypes.QUALITY_PROFILE_SELECT}
                                     name="qualityProfileId"
-                                    onChange={handleQualityProfileIdChange}
-                                    {...qualityProfileId}
+                                    onChange={() => {} /*handleQualityProfileIdChange*/}
+                                    value={''}
+                                    // {...qualityProfileId}
                                 />
                             </FormGroup>
 
@@ -205,9 +209,10 @@ function AddNewVolumesModalContent({
                                 <FormInputGroup
                                     type={inputTypes.VOLUMES_TYPE_SELECT}
                                     name="volumesType"
-                                    onChange={handleInputChange}
-                                    {...volumesTypeSetting}
-                                    value={volumesType}
+                                    onChange={() => {} /*handleInputChange*/}
+                                    // {...volumesTypeSetting}
+                                    // value={volumesType}
+                                    value={''}
                                     helpText={translate('VolumesTypesHelpText')}
                                 />
                             </FormGroup>
@@ -218,8 +223,8 @@ function AddNewVolumesModalContent({
                                 <FormInputGroup
                                     type={inputTypes.CHECK}
                                     name="seasonFolder"
-                                    onChange={handleInputChange}
-                                    {...seasonFolder}
+                                    onChange={() => {} /*handleInputChange*/}
+                                    // {...seasonFolder}
                                 />
                             </FormGroup>
 
@@ -229,8 +234,9 @@ function AddNewVolumesModalContent({
                                 <FormInputGroup
                                     type={inputTypes.TAG}
                                     name="tags"
-                                    onChange={handleInputChange}
-                                    {...tags}
+                                    onChange={() => {} /*handleInputChange*/}
+                                    value={''}
+                                    // {...tags}
                                 />
                             </FormGroup>
                         </Form>
@@ -249,8 +255,8 @@ function AddNewVolumesModalContent({
                             containerClassName={styles.searchInputContainer}
                             className={styles.searchInput}
                             name="searchForMissingIssues"
-                            onChange={handleInputChange}
-                            {...searchForMissingIssues}
+                            onChange={() => {} /*handleInputChange*/}
+                            // {...searchForMissingIssues}
                         />
                     </label>
 
@@ -263,8 +269,8 @@ function AddNewVolumesModalContent({
                             containerClassName={styles.searchInputContainer}
                             className={styles.searchInput}
                             name="searchForCutoffUnmetIssues"
-                            onChange={handleInputChange}
-                            {...searchForCutoffUnmetIssues}
+                            onChange={() => {} /*handleInputChange*/}
+                            // {...searchForCutoffUnmetIssues}
                         />
                     </label>
                 </div>
@@ -273,7 +279,7 @@ function AddNewVolumesModalContent({
                     className={styles.addButton}
                     kind={kinds.SUCCESS}
                     isSpinning={isAdding}
-                    onPress={handleAddVolumesPress}
+                    // onPress={handleAddVolumesPress}
                 >
                     {translate('AddVolumesWithTitle', { title })}
                 </SpinnerButton>

@@ -1,6 +1,6 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { type Error } from 'App/State/AppSectionState';
+// import { type Error } from 'App/State/AppSectionState';
 import fetchJson, { apiRoot, type FetchJsonOptions } from 'Utilities/Fetch/fetchJson';
 
 interface MutationOptions<T, TData> extends Omit<FetchJsonOptions<TData>, 'method'> {

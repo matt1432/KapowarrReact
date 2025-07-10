@@ -16,7 +16,7 @@ window.Kapowarr = {
 };
 
 window.Kapowarr.urlBase = (document.querySelector('#url_base') as HTMLButtonElement).dataset.value!;
-window.Kapowarr.apiRoot = `${window.Kapowarr.urlBase}/api`;
+window.Kapowarr.apiRoot = '/api';
 
 (async () => {
     // TODO: handle when apiKey is undefined

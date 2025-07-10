@@ -1,10 +1,10 @@
 import classNames from 'classnames';
 import { type KeyboardEvent, type SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { type ChangeEvent, type SuggestionsFetchRequestedParams } from 'react-autosuggest';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { type AppState } from 'App/State/AppState';
-import { type Path } from 'App/State/PathsAppState';
+import { useDispatch /*, useSelector */ } from 'react-redux';
+// import { createSelector } from 'reselect';
+// import { type AppState } from 'App/State/AppState';
+// import { type Path } from 'App/State/PathsAppState';
 import FileBrowserModal from 'Components/FileBrowser/FileBrowserModal';
 import Icon from 'Components/Icon';
 import usePrevious from 'Helpers/Hooks/usePrevious';
@@ -15,6 +15,9 @@ import { type InputChanged } from 'typings/inputs';
 import AutoSuggestInput from './AutoSuggestInput';
 import FormInputButton from './FormInputButton';
 import styles from './PathInput.module.css';
+
+// eslint-disable-next-line
+type Path = any;
 
 export interface PathInputProps {
     className?: string;
@@ -28,7 +31,8 @@ export interface PathInputProps {
 }
 
 interface PathInputInternalProps extends PathInputProps {
-    paths: Path[];
+    // eslint-disable-next-line
+    paths: any[]; // Path[];
     onFetchPaths: (path: string) => void;
     onClearPaths: () => void;
 }
@@ -38,6 +42,7 @@ function handleSuggestionsClearRequested() {
     // because we don't want to reset the paths after a path is selected.
 }
 
+/*
 function createPathsSelector() {
     return createSelector(
         (state: AppState) => state.paths,
@@ -52,13 +57,16 @@ function createPathsSelector() {
         },
     );
 }
+*/
 
 function PathInput(props: PathInputProps) {
     const { includeFiles } = props;
 
     const dispatch = useDispatch();
 
-    const paths = useSelector(createPathsSelector());
+    // const paths = useSelector(createPathsSelector());
+    // @ts-expect-error TODO:
+    const paths = [];
 
     const handleFetchPaths = useCallback(
         // @ts-expect-error TODO:
@@ -76,6 +84,7 @@ function PathInput(props: PathInputProps) {
     return (
         <PathInputInternal
             {...props}
+            // @ts-expect-error TODO:
             paths={paths}
             onFetchPaths={handleFetchPaths}
             onClearPaths={handleClearPaths}

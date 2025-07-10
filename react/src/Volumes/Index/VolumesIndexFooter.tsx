@@ -1,16 +1,18 @@
 import classNames from 'classnames';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
+// import { useSelector } from 'react-redux';
+// import { createSelector } from 'reselect';
 import { ColorImpairedConsumer } from 'App/ColorImpairedContext';
-import { type VolumesAppState } from 'App/State/VolumesAppState';
+// import { type VolumesAppState } from 'App/State/VolumesAppState';
 import DescriptionList from 'Components/DescriptionList/DescriptionList';
 import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem';
-import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
-import createDeepEqualSelector from 'Store/Selectors/createDeepEqualSelector';
+// import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
+// import createDeepEqualSelector from 'Store/Selectors/createDeepEqualSelector';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 import styles from './VolumesIndexFooter.module.css';
+import type { Volumes } from 'Volumes/Volumes';
 
+/*
 function createUnoptimizedSelector() {
     return createSelector(
         createClientSideCollectionSelector('volumes', 'volumesIndex'),
@@ -31,9 +33,11 @@ function createUnoptimizedSelector() {
 function createVolumesSelector() {
     return createDeepEqualSelector(createUnoptimizedSelector(), (volumes) => volumes);
 }
+*/
 
 export default function VolumesIndexFooter() {
-    const volumes = useSelector(createVolumesSelector());
+    // const volumes = useSelector(createVolumesSelector());
+    const volumes = [] as Volumes[];
     const count = volumes.length;
     let issues = 0;
     let issueFiles = 0;

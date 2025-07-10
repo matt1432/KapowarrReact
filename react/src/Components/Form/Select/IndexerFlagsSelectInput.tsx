@@ -1,10 +1,11 @@
 import { useCallback } from 'react';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { type AppState } from 'App/State/AppState';
+// import { useSelector } from 'react-redux';
+// import { createSelector } from 'reselect';
+// import { type AppState } from 'App/State/AppState';
 import { type EnhancedSelectInputChanged } from 'typings/inputs';
 import EnhancedSelectInput from './EnhancedSelectInput';
 
+/*
 const selectIndexerFlagsValues = (selectedFlags: number) =>
     createSelector(
         (state: AppState) => state.settings.indexerFlags,
@@ -28,6 +29,7 @@ const selectIndexerFlagsValues = (selectedFlags: number) =>
             };
         },
     );
+*/
 
 export interface IndexerFlagsSelectInputProps {
     name: string;
@@ -37,11 +39,13 @@ export interface IndexerFlagsSelectInputProps {
 
 function IndexerFlagsSelectInput({
     name,
-    indexerFlags,
+    // indexerFlags,
     onChange,
     ...otherProps
 }: IndexerFlagsSelectInputProps) {
-    const { value, values } = useSelector(selectIndexerFlagsValues(indexerFlags));
+    // const { value, values } = useSelector(selectIndexerFlagsValues(indexerFlags));
+    const value = [0];
+    const values = [{ value: '', key: 0 }];
 
     const handleChange = useCallback(
         (change: EnhancedSelectInputChanged<number[]>) => {

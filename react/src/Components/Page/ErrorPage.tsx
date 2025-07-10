@@ -1,4 +1,4 @@
-import { type Error } from 'App/State/AppSectionState';
+// import { type Error } from 'App/State/AppSectionState';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 import styles from './ErrorPage.module.css';

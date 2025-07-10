@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { type AppState } from 'App/State/AppState';
+import { useDispatch /*, useSelector*/ } from 'react-redux';
+// import { createSelector } from 'reselect';
+// import { type AppState } from 'App/State/AppState';
 import FormInputButton from 'Components/Form/FormInputButton';
 import Icon from 'Components/Icon';
 import { icons } from 'Helpers/Props';
@@ -27,6 +27,7 @@ export interface DeviceInputProps extends TagInputProps<DeviceTag> {
     onChange: (change: InputChanged<string[]>) => unknown;
 }
 
+/*
 function createDeviceTagsSelector(value: string[]) {
     return createSelector(
         (state: AppState) => state.providerOptions.devices, // || defaultState,
@@ -52,6 +53,7 @@ function createDeviceTagsSelector(value: string[]) {
         },
     );
 }
+*/
 
 function DeviceInput({
     className = styles.deviceInputWrapper,
@@ -64,7 +66,13 @@ function DeviceInput({
     onChange,
 }: DeviceInputProps) {
     const dispatch = useDispatch();
-    const { items, selectedDevices, isFetching } = useSelector(createDeviceTagsSelector(value));
+    // const { items, selectedDevices, isFetching } = useSelector(createDeviceTagsSelector(value));
+
+    // @ts-expect-error TODO:
+    const items = [];
+    // @ts-expect-error TODO:
+    const selectedDevices = [];
+    const isFetching = false;
 
     const handleRefreshPress = useCallback(() => {
         /*
@@ -128,7 +136,9 @@ function DeviceInput({
             <TagInput
                 inputContainerClassName={styles.input}
                 name={name}
+                // @ts-expect-error TODO:
                 tags={selectedDevices}
+                // @ts-expect-error TODO:
                 tagList={items}
                 allowNew={true}
                 minQueryLength={0}

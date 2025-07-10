@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { type FilterBuilderProp } from 'App/State/AppState';
+// import { type FilterBuilderProp } from 'App/State/AppState';
 import TagInput, { type TagBase } from 'Components/Form/Tag/TagInput';
 import { filterBuilderTypes, filterBuilderValueTypes, kinds } from 'Helpers/Props';
 import { type FilterType } from 'Helpers/Props/filterTypes';
@@ -12,6 +12,7 @@ export const NAME = 'value';
 
 function getTagDisplayValue<T>(
     value: string | number | boolean,
+    // @ts-expect-error TODO:
     selectedFilterBuilderProp: FilterBuilderProp<T>,
 ) {
     if (
@@ -26,6 +27,7 @@ function getTagDisplayValue<T>(
 
 function getValue<T>(
     input: string | number | boolean,
+    // @ts-expect-error TODO:
     selectedFilterBuilderProp: FilterBuilderProp<T>,
 ) {
     if (typeof input !== 'string') {
@@ -89,6 +91,7 @@ export interface FilterBuilderRowValueProps<T, V extends string | number | boole
     filterType: FilterType;
     filterValue: V[];
     sectionItems: T[];
+    // @ts-expect-error TODO:
     selectedFilterBuilderProp: FilterBuilderProp<T>;
     tagList: FilterBuilderTag<V>[];
     onChange: InputOnChange<V[]>;

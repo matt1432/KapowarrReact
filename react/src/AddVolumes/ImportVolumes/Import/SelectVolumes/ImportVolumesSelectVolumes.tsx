@@ -1,4 +1,4 @@
-import {
+/*import {
     autoUpdate,
     flip,
     FloatingPortal,
@@ -6,24 +6,24 @@ import {
     useDismiss,
     useFloating,
     useInteractions,
-} from '@floating-ui/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { type AppState } from 'App/State/AppState';
-import FormInputButton from 'Components/Form/FormInputButton';
-import TextInput from 'Components/Form/TextInput';
-import Icon from 'Components/Icon';
-import Link from 'Components/Link/Link';
-import LoadingIndicator from 'Components/Loading/LoadingIndicator';
-import { icons, kinds } from 'Helpers/Props';
+} from '@floating-ui/react';*/
+// import { useCallback, useEffect, useRef, useState } from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { type AppState } from 'App/State/AppState';
+// import FormInputButton from 'Components/Form/FormInputButton';
+// import TextInput from 'Components/Form/TextInput';
+// import Icon from 'Components/Icon';
+// import Link from 'Components/Link/Link';
+// import LoadingIndicator from 'Components/Loading/LoadingIndicator';
+// import { icons, kinds } from 'Helpers/Props';
 // import { queueLookupVolumes, setImportVolumesValue } from 'Store/Actions/importVolumesActions';
-import createImportVolumesItemSelector from 'Store/Selectors/createImportVolumesItemSelector';
+// import createImportVolumesItemSelector from 'Store/Selectors/createImportVolumesItemSelector';
 import { type InputChanged } from 'typings/inputs';
-import getErrorMessage from 'Utilities/Object/getErrorMessage';
-import translate from 'Utilities/String/translate';
-import ImportVolumesSearchResult from './ImportVolumesSearchResult';
-import ImportVolumesTitle from './ImportVolumesTitle';
-import styles from './ImportVolumesSelectVolumes.module.css';
+// import getErrorMessage from 'Utilities/Object/getErrorMessage';
+// import translate from 'Utilities/String/translate';
+// import ImportVolumesSearchResult from './ImportVolumesSearchResult';
+// import ImportVolumesTitle from './ImportVolumesTitle';
+// import styles from './ImportVolumesSelectVolumes.module.css';
 
 interface ImportVolumesSelectVolumesProps {
     id: string;
@@ -31,6 +31,8 @@ interface ImportVolumesSelectVolumesProps {
 }
 
 function ImportVolumesSelectVolumes({ id, onInputChange }: ImportVolumesSelectVolumesProps) {
+    console.log(id, onInputChange);
+    /*
     const dispatch = useDispatch();
     const isLookingUpVolumes = useSelector(
         (state: AppState) => state.importVolumes.isLookingUpVolumes,
@@ -68,7 +70,6 @@ function ImportVolumesSelectVolumes({ id, onInputChange }: ImportVolumesSelectVo
             setTerm(value);
 
             volumesLookupTimeout.current = setTimeout(() => {
-                /*
                 dispatch(
                     queueLookupVolumes({
                         name: id,
@@ -76,21 +77,19 @@ function ImportVolumesSelectVolumes({ id, onInputChange }: ImportVolumesSelectVo
                         topOfQueue: true,
                     }),
                 );
-                */
             }, 200);
         },
         [id, dispatch],
     );
 
     const handleRefreshPress = useCallback(() => {
-        /*
         dispatch(
             queueLookupVolumes({
                 name: id,
                 term,
                 topOfQueue: true,
             }),
-        );*/
+        );
     }, [id, term, dispatch]);
 
     const handleVolumesSelect = useCallback(
@@ -100,7 +99,7 @@ function ImportVolumesSelectVolumes({ id, onInputChange }: ImportVolumesSelectVo
             const selectedVolumes = items.find((item) => item.tvdbId === tvdbId)!;
 
             dispatch(
-                // @ts-expect-error - actions are not typed
+                // // @ts-expect-error - actions are not typed
                 setImportVolumesValue({
                     id,
                     selectedVolumes,
@@ -138,10 +137,11 @@ function ImportVolumesSelectVolumes({ id, onInputChange }: ImportVolumesSelectVo
     const dismiss = useDismiss(context);
 
     const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
+    */
 
     return (
         <>
-            <div ref={refs.setReference} {...getReferenceProps()}>
+            {/*<div ref={refs.setReference} {...getReferenceProps()}>
                 <Link className={styles.button} component="div" onPress={handlePress}>
                     {isLookingUpVolumes && isQueued && !isPopulated ? (
                         <LoadingIndicator className={styles.loading} size={20} />
@@ -193,8 +193,8 @@ function ImportVolumesSelectVolumes({ id, onInputChange }: ImportVolumesSelectVo
                         <Icon name={icons.CARET_DOWN} />
                     </div>
                 </Link>
-            </div>
-            {isOpen ? (
+            </div> */}
+            {/*isOpen ? (
                 <FloatingPortal id="portal-root">
                     <div
                         ref={refs.setFloating}
@@ -245,7 +245,7 @@ function ImportVolumesSelectVolumes({ id, onInputChange }: ImportVolumesSelectVo
                         ) : null}
                     </div>
                 </FloatingPortal>
-            ) : null}
+            ) : null*/}
         </>
     );
 }

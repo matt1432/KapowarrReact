@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { useEffect, useMemo, useRef } from 'react';
 // import { useDispatch } from 'react-redux';
-import { type MessageType } from 'App/State/MessagesAppState';
+// import { type MessageType } from 'App/State/MessagesAppState';
 import Icon, { type IconName } from 'Components/Icon';
 import { icons } from 'Helpers/Props';
 // import { hideMessage } from 'Store/Actions/appActions';
@@ -12,7 +12,7 @@ interface MessageProps {
     hideAfter: number;
     name: string;
     message: string;
-    type: Extract<MessageType, keyof typeof styles>;
+    type: keyof typeof styles; // Extract<MessageType, keyof typeof styles>;
 }
 
 function Message({ id, hideAfter, name, message, type }: MessageProps) {

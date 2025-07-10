@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+/*import classNames from 'classnames';
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // FIXME: find a replacement for react 19
@@ -15,12 +15,12 @@ import VolumesIndexProgressBar from 'Volumes/Index/ProgressBar/VolumesIndexProgr
 import VolumesIndexPosterSelect from 'Volumes/Index/Select/VolumesIndexPosterSelect';
 import { type Statistics } from 'Volumes/Volumes';
 import VolumesPoster from 'Volumes/VolumesPoster';
-// import { executeCommand } from 'Store/Actions/commandActions';
-import dimensions from 'Styles/Variables/dimensions';
+// import { executeCommand } from 'Store/Actions/commandActions';*/
+// import dimensions from 'Styles/Variables/dimensions';
 // import fonts from 'Styles/Variables/fonts';
-import translate from 'Utilities/String/translate';
-import createVolumesIndexItemSelector from '../createVolumesIndexItemSelector';
-import selectOverviewOptions from './selectOverviewOptions';
+/*import translate from 'Utilities/String/translate';
+// import createVolumesIndexItemSelector from '../createVolumesIndexItemSelector';
+// import selectOverviewOptions from './selectOverviewOptions';
 import VolumesIndexOverviewInfo from './VolumesIndexOverviewInfo';
 import styles from './VolumesIndexOverview.module.css';
 
@@ -31,7 +31,7 @@ const columnPaddingSmallScreen = parseInt(dimensions.volumesIndexColumnPaddingSm
 
 // Hardcoded height based on line-height of 32 + bottom margin of 10.
 // Less side-effecty than using react-measure.
-const TITLE_HEIGHT = 42;
+const TITLE_HEIGHT = 42;*/
 
 interface VolumesIndexOverviewProps {
     volumesId: number;
@@ -44,6 +44,8 @@ interface VolumesIndexOverviewProps {
 }
 
 function VolumesIndexOverview(props: VolumesIndexOverviewProps) {
+    console.log(props);
+    /*
     const {
         volumesId,
         sortKey,
@@ -89,23 +91,21 @@ function VolumesIndexOverview(props: VolumesIndexOverviewProps) {
     const [isDeleteVolumesModalOpen, setIsDeleteVolumesModalOpen] = useState(false);
 
     const onRefreshPress = useCallback(() => {
-        /*
         dispatch(
             executeCommand({
                 name: REFRESH_VOLUMES,
                 volumesIds: [volumesId],
             }),
-        );*/
+        );
     }, [volumesId, dispatch]);
 
     const onSearchPress = useCallback(() => {
-        /*
         dispatch(
             executeCommand({
                 name: VOLUMES_SEARCH,
                 volumesId,
             }),
-        );*/
+        );
     }, [volumesId, dispatch]);
 
     const onEditVolumesPress = useCallback(() => {
@@ -220,14 +220,12 @@ function VolumesIndexOverview(props: VolumesIndexOverviewProps) {
                     <div className={styles.details}>
                         <div className={styles.overviewContainer}>
                             <Link className={styles.overview} to={link}>
-                                {/*
                                 <TextTruncate
                                     line={Math.floor(
                                         overviewHeight / (defaultFontSize * lineHeight),
                                     )}
                                     text={overview}
                                 />
-                                */}
                                 {overview}
                             </Link>
 
@@ -269,6 +267,8 @@ function VolumesIndexOverview(props: VolumesIndexOverviewProps) {
             />
         </div>
     );
+        */
+    return null;
 }
 
 export default VolumesIndexOverview;

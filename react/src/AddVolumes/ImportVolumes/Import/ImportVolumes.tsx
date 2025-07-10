@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, type RefObject } from 'react';
+/*import { useEffect, useMemo, useRef, type RefObject } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { setAddVolumesOption, useAddVolumesOption } from 'AddVolumes/addVolumesOptionsStore';
 import { SelectProvider } from 'App/SelectContext';
-import { type AppState } from 'App/State/AppState';
+// import { type AppState } from 'App/State/AppState';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
@@ -14,8 +14,10 @@ import { kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import ImportVolumesFooter from './ImportVolumesFooter';
 import ImportVolumesTable from './ImportVolumesTable';
+*/
 
 function ImportVolumes() {
+    /*
     const dispatch = useDispatch();
     const { rootFolderId: rootFolderIdString } = useParams<{
         rootFolderId: string;
@@ -75,7 +77,6 @@ function ImportVolumes() {
             setAddVolumesOption('qualityProfileId', qualityProfiles[0].id);
         }
     }, [defaultQualityProfileId, qualityProfiles, dispatch]);
-
     return (
         <SelectProvider items={items}>
             <PageContent title={translate('ImportVolumes')}>
@@ -113,6 +114,8 @@ function ImportVolumes() {
             </PageContent>
         </SelectProvider>
     );
+    */
+    return null;
 }
 
 export default ImportVolumes;

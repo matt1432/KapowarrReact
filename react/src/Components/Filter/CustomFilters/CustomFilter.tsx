@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { type Error } from 'App/State/AppSectionState';
+// import { type Error } from 'App/State/AppSectionState';
 import IconButton from 'Components/Link/IconButton';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import usePrevious from 'Helpers/Hooks/usePrevious';

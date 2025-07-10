@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch /*, useSelector*/ } from 'react-redux';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -11,7 +11,7 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes } from 'Helpers/Props';
-import selectPosterOptions from 'Volumes/Index/Posters/selectPosterOptions';
+// import selectPosterOptions from 'Volumes/Index/Posters/selectPosterOptions';
 // import { setVolumesPosterOption } from 'Store/Actions/volumesIndexActions';
 import translate from 'Utilities/String/translate';
 
@@ -43,6 +43,7 @@ interface VolumesIndexPosterOptionsModalContentProps {
 function VolumesIndexPosterOptionsModalContent(props: VolumesIndexPosterOptionsModalContentProps) {
     const { onModalClose } = props;
 
+    /*
     const posterOptions = useSelector(selectPosterOptions);
 
     const {
@@ -54,6 +55,24 @@ function VolumesIndexPosterOptionsModalContent(props: VolumesIndexPosterOptionsM
         showTags,
         showSearchAction,
     } = posterOptions;
+    */
+    const {
+        detailedProgressBar,
+        size,
+        showTitle,
+        showMonitored,
+        showQualityProfile,
+        showTags,
+        showSearchAction,
+    } = {
+        detailedProgressBar: false,
+        size: 0,
+        showTitle: false,
+        showMonitored: false,
+        showQualityProfile: false,
+        showTags: false,
+        showSearchAction: false,
+    };
 
     const dispatch = useDispatch();
 

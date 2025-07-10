@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
+import { useDispatch /*, useSelector */ } from 'react-redux';
+// import { createSelector } from 'reselect';
 import { useSelect } from 'App/SelectContext';
-import { type AppState } from 'App/State/AppState';
-import { RENAME_VOLUMES } from 'Commands/commandNames';
+// import { type AppState } from 'App/State/AppState';
+// import { RENAME_VOLUMES } from 'Commands/commandNames';
 import SpinnerButton from 'Components/Link/SpinnerButton';
 import PageContentFooter from 'Components/Page/PageContentFooter';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { kinds } from 'Helpers/Props';
 // import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
 // import { saveVolumesEditor, updateVolumesMonitor } from 'Store/Actions/volumesActions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
+// import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import DeleteVolumesModal from './Delete/DeleteVolumesModal';
@@ -29,6 +29,7 @@ interface SavePayload {
     moveFiles?: boolean;
 }
 
+/*
 const volumesEditorSelector = createSelector(
     (state: AppState) => state.volumes,
     (volumes) => {
@@ -41,11 +42,17 @@ const volumesEditorSelector = createSelector(
         };
     },
 );
+*/
 
 function VolumesIndexSelectFooter() {
-    const { isSaving, isDeleting, deleteError } = useSelector(volumesEditorSelector);
+    // const { isSaving, isDeleting, deleteError } = useSelector(volumesEditorSelector);
 
-    const isOrganizingVolumes = useSelector(createCommandExecutingSelector(RENAME_VOLUMES));
+    // const isOrganizingVolumes = useSelector(createCommandExecutingSelector(RENAME_VOLUMES));
+
+    const isSaving = false;
+    const isDeleting = false;
+    const deleteError = undefined;
+    const isOrganizingVolumes = false;
 
     const dispatch = useDispatch();
 

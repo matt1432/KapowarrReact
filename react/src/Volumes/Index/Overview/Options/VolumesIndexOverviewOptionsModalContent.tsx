@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch /*, useSelector*/ } from 'react-redux';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -13,7 +13,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes } from 'Helpers/Props';
 // import { setVolumesOverviewOption } from 'Store/Actions/volumesIndexActions';
 import translate from 'Utilities/String/translate';
-import selectOverviewOptions from '../selectOverviewOptions';
+// import selectOverviewOptions from '../selectOverviewOptions';
 
 const posterSizeOptions: EnhancedSelectInputValue<string>[] = [
     {
@@ -58,7 +58,20 @@ function VolumesIndexOverviewOptionsModalContent(
         showSizeOnDisk,
         showTags,
         showSearchAction,
-    } = useSelector(selectOverviewOptions);
+    } = {
+        detailedProgressBar: false,
+        size: 'large',
+        showMonitored: false,
+        showNetwork: false,
+        showQualityProfile: false,
+        showPreviousAiring: false,
+        showAdded: false,
+        showSeasonCount: false,
+        showPath: false,
+        showSizeOnDisk: false,
+        showTags: false,
+        showSearchAction: false,
+    }; // useSelector(selectOverviewOptions);
 
     const dispatch = useDispatch();
 

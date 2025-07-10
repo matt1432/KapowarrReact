@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { type AppState } from 'App/State/AppState';
+import { useDispatch /*, useSelector */ } from 'react-redux';
+// import { type AppState } from 'App/State/AppState';
 import SpinnerErrorButton from 'Components/Link/SpinnerErrorButton';
 import { kinds } from 'Helpers/Props';
 // TODO:
@@ -25,7 +25,11 @@ function OAuthInput({
     onChange,
 }: OAuthInputProps) {
     const dispatch = useDispatch();
-    const { authorizing, error, result } = useSelector((state: AppState) => state.oAuth);
+    // const { authorizing, error, result } = useSelector((state: AppState) => state.oAuth);
+    const authorizing = true;
+    const error = undefined;
+    // eslint-disable-next-line
+    const result = {} as any;
 
     const handlePress = useCallback(() => {
         /*

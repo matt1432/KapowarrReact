@@ -1,13 +1,15 @@
 import { useCallback, useState } from 'react';
-import { type CustomFilter, type FilterBuilderProp } from 'App/State/AppState';
+// import { type CustomFilter, type FilterBuilderProp } from 'App/State/AppState';
 import Modal from 'Components/Modal/Modal';
 import FilterBuilderModalContent from './Builder/FilterBuilderModalContent';
 import CustomFiltersModalContent from './CustomFilters/CustomFiltersModalContent';
 
 export interface FilterModalProps<T> {
     isOpen: boolean;
+    // @ts-expect-error TODO:
     customFilters: CustomFilter[];
     customFilterType: string;
+    // @ts-expect-error TODO:
     filterBuilderProps: FilterBuilderProp<T>[];
     sectionItems: T[];
     dispatchSetFilter: (payload: { selectedFilterKey: string | number }) => void;

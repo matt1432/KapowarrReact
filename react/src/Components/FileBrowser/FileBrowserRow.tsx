@@ -1,12 +1,12 @@
 import { useCallback } from 'react';
-import { type PathType } from 'App/State/PathsAppState';
+// import { type PathType } from 'App/State/PathsAppState';
 import Icon from 'Components/Icon';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRowButton from 'Components/Table/TableRowButton';
 import { icons } from 'Helpers/Props';
 import styles from './FileBrowserRow.module.css';
 
-function getIconName(type: PathType) {
+function getIconName(type: string) {
     switch (type) {
         case 'computer':
             return icons.COMPUTER;
@@ -22,7 +22,7 @@ function getIconName(type: PathType) {
 }
 
 interface FileBrowserRowProps {
-    type: PathType;
+    type: string;
     name: string;
     path: string;
     onPress: (path: string) => void;

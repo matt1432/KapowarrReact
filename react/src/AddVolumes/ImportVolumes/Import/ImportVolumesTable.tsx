@@ -1,3 +1,4 @@
+/*
 import { type RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FixedSizeList, type ListChildComponentProps } from 'react-window';
@@ -61,14 +62,12 @@ function ImportVolumesTable({ unmappedFolders, scrollerRef }: ImportVolumesTable
     const allVolumes = useSelector(createAllVolumesSelector());
     const [selectState, selectDispatch] = useSelect();
 
-    /*
     const defaultValues = useRef({
         monitor,
         qualityProfileId,
         volumesType,
         seasonFolder,
     });
-    */
 
     const listRef = useRef<FixedSizeList<RowItemData>>(undefined) as RefObject<
         FixedSizeList<RowItemData>
@@ -112,7 +111,6 @@ function ImportVolumesTable({ unmappedFolders, scrollerRef }: ImportVolumesTable
         // @ts-expect-error TODO:
         // eslint-disable-next-line
         initialUnmappedFolders.current.forEach(({ name, path, relativePath }) => {
-            /*
             dispatch(
                 queueLookupVolumes({
                     name,
@@ -129,7 +127,6 @@ function ImportVolumesTable({ unmappedFolders, scrollerRef }: ImportVolumesTable
                     ...defaultValues.current,
                 }),
             );
-            */
         });
     }, [dispatch]);
 
@@ -205,5 +202,9 @@ function ImportVolumesTable({ unmappedFolders, scrollerRef }: ImportVolumesTable
         />
     );
 }
-
 export default ImportVolumesTable;
+*/
+
+// @ts-expect-error TODO
+// eslint-disable-next-line
+export default (props: any) => null;

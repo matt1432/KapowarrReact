@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+/*import classNames from 'classnames';
 import { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // import { REFRESH_VOLUMES, VOLUMES_SEARCH } from 'Commands/commandNames';
@@ -15,7 +15,7 @@ import VolumesIndexPosterSelect from 'Volumes/Index/Select/VolumesIndexPosterSel
 import { type Statistics } from 'Volumes/Volumes';
 import VolumesPoster from 'Volumes/VolumesPoster';
 // import { executeCommand } from 'Store/Actions/commandActions';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
+// import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import formatDateTime from 'Utilities/Date/formatDateTime';
 import getRelativeDate from 'Utilities/Date/getRelativeDate';
 import translate from 'Utilities/String/translate';
@@ -23,6 +23,7 @@ import createVolumesIndexItemSelector from '../createVolumesIndexItemSelector';
 import selectPosterOptions from './selectPosterOptions';
 import VolumesIndexPosterInfo from './VolumesIndexPosterInfo';
 import styles from './VolumesIndexPoster.module.css';
+*/
 
 interface VolumesIndexPosterProps {
     volumesId: number;
@@ -33,6 +34,8 @@ interface VolumesIndexPosterProps {
 }
 
 function VolumesIndexPoster(props: VolumesIndexPosterProps) {
+    console.log(props);
+    /*
     const { volumesId, sortKey, isSelectMode, posterWidth, posterHeight } = props;
 
     const { volumes, qualityProfile, isRefreshingVolumes, isSearchingVolumes } = useSelector(
@@ -82,23 +85,21 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
     const [isDeleteVolumesModalOpen, setIsDeleteVolumesModalOpen] = useState(false);
 
     const onRefreshPress = useCallback(() => {
-        /*
         dispatch(
             executeCommand({
                 name: REFRESH_VOLUMES,
                 volumesIds: [volumesId],
             }),
-        );*/
+        );
     }, [volumesId, dispatch]);
 
     const onSearchPress = useCallback(() => {
-        /*
         dispatch(
             executeCommand({
                 name: VOLUMES_SEARCH,
                 volumesId,
             }),
-        );*/
+        );
     }, [volumesId, dispatch]);
 
     const onPosterLoadError = useCallback(() => {
@@ -284,6 +285,8 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
             />
         </div>
     );
+        */
+    return null;
 }
 
 export default VolumesIndexPoster;

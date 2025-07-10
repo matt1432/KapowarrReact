@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 import { icons } from 'Helpers/Props';
-import createExistingVolumesSelector from 'Store/Selectors/createExistingVolumesSelector';
+// import createExistingVolumesSelector from 'Store/Selectors/createExistingVolumesSelector';
 import ImportVolumesTitle from './ImportVolumesTitle';
 import styles from './ImportVolumesSearchResult.module.css';
 
@@ -22,7 +22,8 @@ function ImportVolumesSearchResult({
     network,
     onPress,
 }: ImportVolumesSearchResultProps) {
-    const isExistingVolumes = useSelector(createExistingVolumesSelector(tvdbId));
+    // const isExistingVolumes = useSelector(createExistingVolumesSelector(tvdbId));
+    const isExistingVolumes = false;
 
     const handlePress = useCallback(() => {
         onPress(tvdbId);

@@ -1,4 +1,4 @@
-import { type Tag } from 'App/State/TagsAppState';
+// import { type Tag } from 'App/State/TagsAppState';
 import { kinds } from 'Helpers/Props';
 import sortByProp from 'Utilities/Array/sortByProp';
 import Label from './Label';
@@ -6,7 +6,8 @@ import styles from './TagList.module.css';
 
 interface TagListProps {
     tags: number[];
-    tagList: Tag[];
+    // eslint-disable-next-line
+    tagList: /*Tag*/ any[];
 }
 
 function TagList({ tags, tagList }: TagListProps) {

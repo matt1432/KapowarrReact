@@ -1,17 +1,19 @@
-import { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
+// import { useCallback, useMemo } from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { createSelector } from 'reselect';
 // TODO:
 // import { addTag } from 'Store/Actions/tagActions';
-import createTagsSelector from 'Store/Selectors/createTagsSelector';
+// import createTagsSelector from 'Store/Selectors/createTagsSelector';
 import { type InputChanged } from 'typings/inputs';
-import sortByProp from 'Utilities/Array/sortByProp';
-import TagInput, { type TagBase } from './TagInput';
+// import sortByProp from 'Utilities/Array/sortByProp';
+// import TagInput, { type TagBase } from './TagInput';
 
+/*
 interface VolumesTag extends TagBase {
     id: number;
     name: string;
 }
+*/
 
 export interface VolumesTagInputProps<V> {
     name: string;
@@ -19,6 +21,7 @@ export interface VolumesTagInputProps<V> {
     onChange: (change: InputChanged<V>) => void;
 }
 
+/*
 const VALID_TAG_REGEX = new RegExp('[^-_a-z0-9]', 'i');
 
 function isValidTag(tagName: string) {
@@ -29,7 +32,9 @@ function isValidTag(tagName: string) {
         return false;
     }
 }
+*/
 
+/*
 function createVolumesTagsSelector(tags: number[]) {
     return createSelector(createTagsSelector(), (tagList) => {
         const sortedTags = tagList.sort(sortByProp('label'));
@@ -60,12 +65,16 @@ function createVolumesTagsSelector(tags: number[]) {
         };
     });
 }
+*/
 
+// eslint-disable-next-line
 export default function VolumesTagInput<V extends number | number[]>({
-    name,
-    value,
-    onChange,
-}: VolumesTagInputProps<V>) {
+        // name,
+        // value,
+        // onChange,
+    }: VolumesTagInputProps<V>,
+) {
+    /*
     const dispatch = useDispatch();
     const isArray = Array.isArray(value);
 
@@ -77,7 +86,7 @@ export default function VolumesTagInput<V extends number | number[]>({
         return value === 0 ? [] : [value as number];
     }, [isArray, value]);
 
-    const { tags, tagList, allTags } = useSelector(createVolumesTagsSelector(arrayValue));
+    // const { tags, tagList, allTags } = useSelector(createVolumesTagsSelector(arrayValue));
 
     const handleTagCreated = useCallback(
         (tag: VolumesTag) => {
@@ -110,14 +119,12 @@ export default function VolumesTagInput<V extends number | number[]>({
             const existingTag = allTags.some((t) => t.label === newTag.name);
 
             if (isValidTag(newTag.name) && !existingTag) {
-                /*
                 dispatch(
                     addTag({
                         tag: { label: newTag.name },
                         onTagCreated: handleTagCreated,
                     }),
                 );
-                */
             }
         },
         [name, value, isArray, allTags, handleTagCreated, onChange, dispatch],
@@ -147,4 +154,6 @@ export default function VolumesTagInput<V extends number | number[]>({
             onTagDelete={handleTagDelete}
         />
     );
+    */
+    return null;
 }

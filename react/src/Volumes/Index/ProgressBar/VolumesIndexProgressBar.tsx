@@ -1,9 +1,9 @@
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import ProgressBar from 'Components/ProgressBar';
 import { sizes } from 'Helpers/Props';
-import createVolumesQueueItemsDetailsSelector, {
+/*import createVolumesQueueItemsDetailsSelector, {
     type VolumesQueueDetails,
-} from 'Volumes/Index/createVolumesQueueDetailsSelector';
+} from 'Volumes/Index/createVolumesQueueDetailsSelector';*/
 import { type VolumesStatus } from 'Volumes/Volumes';
 import getProgressBarKind from 'Utilities/Volumes/getProgressBarKind';
 import translate from 'Utilities/String/translate';
@@ -24,8 +24,8 @@ interface VolumesIndexProgressBarProps {
 
 function VolumesIndexProgressBar(props: VolumesIndexProgressBarProps) {
     const {
-        volumesId,
-        seasonNumber,
+        // volumesId,
+        // seasonNumber,
         monitored,
         status,
         issueCount,
@@ -36,11 +36,13 @@ function VolumesIndexProgressBar(props: VolumesIndexProgressBarProps) {
         isStandalone,
     } = props;
 
+    /*
     const queueDetails: VolumesQueueDetails = useSelector(
         createVolumesQueueItemsDetailsSelector(volumesId, seasonNumber),
     );
+    */
 
-    const newDownloads = queueDetails.count - queueDetails.issuesWithFiles;
+    const newDownloads = 0; // queueDetails.count - queueDetails.issuesWithFiles;
     const progress = issueCount ? (issueFileCount / issueCount) * 100 : 100;
     const text = newDownloads
         ? `${issueFileCount} + ${newDownloads} / ${issueCount}`
@@ -51,7 +53,7 @@ function VolumesIndexProgressBar(props: VolumesIndexProgressBarProps) {
             className={styles.progressBar}
             containerClassName={isStandalone ? undefined : styles.progress}
             progress={progress}
-            kind={getProgressBarKind(status, monitored, progress, queueDetails.count > 0)}
+            kind={getProgressBarKind(status, monitored, progress, false /*queueDetails.count > 0*/)}
             size={detailedProgressBar ? sizes.MEDIUM : sizes.SMALL}
             showText={detailedProgressBar}
             text={text}
@@ -59,7 +61,7 @@ function VolumesIndexProgressBar(props: VolumesIndexProgressBarProps) {
                 issueFileCount,
                 issueCount,
                 totalIssueCount,
-                downloadingCount: queueDetails.count,
+                downloadingCount: 0, // queueDetails.count,
             })}
             width={width}
         />

@@ -1,9 +1,10 @@
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { type AppState } from 'App/State/AppState';
-import sortByProp from 'Utilities/Array/sortByProp';
+// import { useSelector } from 'react-redux';
+// import { createSelector } from 'reselect';
+// import { type AppState } from 'App/State/AppState';
+// import sortByProp from 'Utilities/Array/sortByProp';
 import FilterBuilderRowValue, { type FilterBuilderRowValueProps } from './FilterBuilderRowValue';
 
+/*
 function createQualityProfilesSelector() {
     return createSelector(
         (state: AppState) => state.settings.qualityProfiles.items,
@@ -12,6 +13,7 @@ function createQualityProfilesSelector() {
         },
     );
 }
+*/
 
 type QualityProfileFilterBuilderRowValueProps<T> = Omit<
     FilterBuilderRowValueProps<T, number>,
@@ -21,10 +23,12 @@ type QualityProfileFilterBuilderRowValueProps<T> = Omit<
 function QualityProfileFilterBuilderRowValue<T>(
     props: QualityProfileFilterBuilderRowValueProps<T>,
 ) {
-    const qualityProfiles = useSelector(createQualityProfilesSelector());
+    // const qualityProfiles = useSelector(createQualityProfilesSelector());
 
-    const tagList = qualityProfiles.map(({ id, name }) => ({ id, name })).sort(sortByProp('name'));
+    // @ts-expect-error TODO:
+    const tagList = []; // qualityProfiles.map(({ id, name }) => ({ id, name })).sort(sortByProp('name'));
 
+    // @ts-expect-error TODO:
     return <FilterBuilderRowValue {...props} tagList={tagList} />;
 }
 

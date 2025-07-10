@@ -1,6 +1,6 @@
 import { orderBy } from 'lodash';
 import { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch /*, useSelector */ } from 'react-redux';
 // import { RENAME_VOLUMES } from 'Commands/commandNames';
 import Alert from 'Components/Alert';
 import Icon from 'Components/Icon';
@@ -12,7 +12,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import { icons, kinds } from 'Helpers/Props';
 import { type Volumes } from 'Volumes/Volumes';
 // import { executeCommand } from 'Store/Actions/commandActions';
-import createAllVolumesSelector from 'Store/Selectors/createAllVolumesSelector';
+// import createAllVolumesSelector from 'Store/Selectors/createAllVolumesSelector';
 import translate from 'Utilities/String/translate';
 import styles from './OrganizeVolumesModalContent.module.css';
 
@@ -24,7 +24,7 @@ interface OrganizeVolumesModalContentProps {
 function OrganizeVolumesModalContent(props: OrganizeVolumesModalContentProps) {
     const { volumesIds, onModalClose } = props;
 
-    const allVolumes: Volumes[] = useSelector(createAllVolumesSelector());
+    const allVolumes: Volumes[] = []; // useSelector(createAllVolumesSelector());
     const dispatch = useDispatch();
 
     const volumesTitles = useMemo(() => {

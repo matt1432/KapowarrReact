@@ -1,7 +1,9 @@
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 import EnhancedSelectInputSelectedValue from './EnhancedSelectInputSelectedValue';
-import { type RootFolderSelectInputValue } from './RootFolderSelectInput';
+// import { type RootFolderSelectInputValue } from './RootFolderSelectInput';
+// eslint-disable-next-line
+type RootFolderSelectInputValue = any;
 import styles from './RootFolderSelectInputSelectedValue.module.css';
 
 interface RootFolderSelectInputSelectedValueProps {

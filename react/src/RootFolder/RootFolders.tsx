@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch /*, useSelector*/ } from 'react-redux';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import { type Column } from 'Components/Table/Column';
@@ -7,7 +7,7 @@ import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import { kinds } from 'Helpers/Props';
 // import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
-import createRootFoldersSelector from 'Store/Selectors/createRootFoldersSelector';
+// import createRootFoldersSelector from 'Store/Selectors/createRootFoldersSelector';
 import translate from 'Utilities/String/translate';
 import RootFolderRow from './RootFolderRow';
 
@@ -35,7 +35,13 @@ const rootFolderColumns: Column[] = [
 ];
 
 function RootFolders() {
-    const { isFetching, isPopulated, error, items } = useSelector(createRootFoldersSelector());
+    // const { isFetching, isPopulated, error, items } = useSelector(createRootFoldersSelector());
+
+    const isFetching = false;
+    const isPopulated = false;
+    const error = undefined;
+    // @ts-expect-error TODO
+    const items = [];
 
     const dispatch = useDispatch();
 
@@ -54,6 +60,7 @@ function RootFolders() {
     return (
         <Table columns={rootFolderColumns}>
             <TableBody>
+                {/* @ts-expect-error TODO */}
                 {items.map((rootFolder) => {
                     return (
                         <RootFolderRow

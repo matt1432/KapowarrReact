@@ -1,16 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
+/*import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import FileBrowserModal from 'Components/FileBrowser/FileBrowserModal';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 // import { addRootFolder, fetchRootFolders } from 'Store/Actions/rootFolderActions';
-import createRootFoldersSelector from 'Store/Selectors/createRootFoldersSelector';
+// import createRootFoldersSelector from 'Store/Selectors/createRootFoldersSelector';
 import { type EnhancedSelectInputChanged, type InputChanged } from 'typings/inputs';
-import translate from 'Utilities/String/translate';
-import EnhancedSelectInput, {
+import translate from 'Utilities/String/translate';*/
+// import EnhancedSelectInput, {
+import {
     type EnhancedSelectInputProps,
     type EnhancedSelectInputValue,
 } from './EnhancedSelectInput';
+/*
 import RootFolderSelectInputOption from './RootFolderSelectInputOption';
 import RootFolderSelectInputSelectedValue from './RootFolderSelectInputSelectedValue';
 
@@ -20,6 +22,7 @@ export interface RootFolderSelectInputValue extends EnhancedSelectInputValue<str
     freeSpace?: number;
     isMissing?: boolean;
 }
+*/
 
 export interface RootFolderSelectInputProps
     extends Omit<
@@ -33,6 +36,7 @@ export interface RootFolderSelectInputProps
     includeNoChangeDisabled?: boolean;
 }
 
+/*
 function createRootFolderOptionsSelector(
     value: string | undefined,
     includeMissingValue: boolean,
@@ -90,16 +94,21 @@ function createRootFolderOptionsSelector(
         };
     });
 }
+*/
 
-function RootFolderSelectInput({
-    name,
-    value,
-    includeMissingValue = true,
-    includeNoChange = false,
-    includeNoChangeDisabled = true,
-    onChange,
-    ...otherProps
-}: RootFolderSelectInputProps) {
+function RootFolderSelectInput(
+    // eslint-disable-next-line
+    {
+        // name,
+        // value,
+        // includeMissingValue = true,
+        // includeNoChange = false,
+        // includeNoChangeDisabled = true,
+        // onChange,
+        // ...otherProps
+    }: RootFolderSelectInputProps,
+) {
+    /*
     const dispatch = useDispatch();
     const { values, isSaving, saveError } = useSelector(
         createRootFolderOptionsSelector(
@@ -196,6 +205,8 @@ function RootFolderSelectInput({
             />
         </>
     );
+        */
+    return null;
 }
 
 export default RootFolderSelectInput;

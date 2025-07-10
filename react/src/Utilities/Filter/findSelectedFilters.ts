@@ -1,15 +1,18 @@
-import type { CustomFilter, Filter } from 'App/State/AppState';
+// import type { CustomFilter, Filter } from 'App/State/AppState';
 
 export default function findSelectedFilters(
     selectedFilterKey: string | number,
-    filters: Filter[] = [],
-    customFilters: CustomFilter[] = [],
+    // eslint-disable-next-line
+    filters: any[] = [],
+    // eslint-disable-next-line
+    customFilters: any[] = [],
 ) {
     if (!selectedFilterKey) {
         return [];
     }
 
-    let selectedFilter: Filter | CustomFilter | undefined = filters.find(
+    // eslint-disable-next-line
+    let selectedFilter: any /*Filter | CustomFilter*/ | undefined = filters.find(
         (f) => f.key === selectedFilterKey,
     );
 

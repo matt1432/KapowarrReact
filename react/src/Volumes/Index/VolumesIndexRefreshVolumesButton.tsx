@@ -1,16 +1,17 @@
 import { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch /*, useSelector */ } from 'react-redux';
 import { useSelect } from 'App/SelectContext';
-import { type ClientSideCollectionAppState } from 'App/State/ClientSideCollectionAppState';
-import type { VolumesAppState, VolumesIndexAppState } from 'App/State/VolumesAppState';
-import { REFRESH_VOLUMES } from 'Commands/commandNames';
+// import { type ClientSideCollectionAppState } from 'App/State/ClientSideCollectionAppState';
+// import type { VolumesAppState, VolumesIndexAppState } from 'App/State/VolumesAppState';
+// import { REFRESH_VOLUMES } from 'Commands/commandNames';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import { icons } from 'Helpers/Props';
 // import { executeCommand } from 'Store/Actions/commandActions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
-import createVolumesClientSideCollectionItemsSelector from 'Store/Selectors/createVolumesClientSideCollectionItemsSelector';
+// import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
+// import createVolumesClientSideCollectionItemsSelector from 'Store/Selectors/createVolumesClientSideCollectionItemsSelector';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
+import type { Volumes } from 'Volumes/Volumes';
 
 interface VolumesIndexRefreshVolumesButtonProps {
     isSelectMode: boolean;
@@ -18,14 +19,19 @@ interface VolumesIndexRefreshVolumesButtonProps {
 }
 
 function VolumesIndexRefreshVolumesButton(props: VolumesIndexRefreshVolumesButtonProps) {
+    /*
     const isRefreshing = useSelector(createCommandExecutingSelector(REFRESH_VOLUMES));
-    // @ts-expect-error TODO:
+
     const {
         items,
         totalItems,
     }: VolumesAppState & VolumesIndexAppState & ClientSideCollectionAppState = useSelector(
         createVolumesClientSideCollectionItemsSelector('volumesIndex'),
     );
+    */
+    const isRefreshing = false;
+    const items = [] as Volumes[];
+    const totalItems = 0;
 
     const dispatch = useDispatch();
     const { isSelectMode, selectedFilterKey } = props;

@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch /*, useSelector*/ } from 'react-redux';
 import {
     type AddVolumesOptions,
     setAddVolumesOption,
     useAddVolumesOptions,
 } from 'AddVolumes/addVolumesOptionsStore';
 import { useSelect } from 'App/SelectContext';
-import { type AppState } from 'App/State/AppState';
+// import { type AppState } from 'App/State/AppState';
 import CheckInput from 'Components/Form/CheckInput';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import Icon from 'Components/Icon';
@@ -41,9 +41,14 @@ function ImportVolumesFooter() {
         seasonFolder: defaultSeasonFolder,
     } = useAddVolumesOptions();
 
-    const { isLookingUpVolumes, isImporting, items, importError } = useSelector(
+    /*const { isLookingUpVolumes, isImporting, items, importError } = useSelector(
         (state: AppState) => state.importVolumes,
-    );
+    );*/
+    const isLookingUpVolumes = false;
+    const isImporting = false;
+    // @ts-expect-error TODO
+    const items = [];
+    const importError = undefined;
 
     const [monitor, setMonitor] = useState<VolumesMonitor | MixedType>(defaultMonitor);
     const [qualityProfileId, setQualityProfileId] = useState<number | MixedType>(
@@ -71,6 +76,7 @@ function ImportVolumesFooter() {
         let isSeasonFolderMixed = false;
         let hasUnsearchedItems = false;
 
+        // @ts-expect-error TODO
         items.forEach((item) => {
             if (item.monitor !== defaultMonitor) {
                 isMonitorMixed = true;
@@ -105,6 +111,7 @@ function ImportVolumesFooter() {
         defaultQualityProfileId,
         defaultSeasonFolder,
         defaultVolumesType,
+        // @ts-expect-error TODO
         items,
         isLookingUpVolumes,
     ]);
@@ -292,6 +299,7 @@ function ImportVolumesFooter() {
                             }
                             title={translate('ImportErrors')}
                             body={
+                                <></> /*
                                 <ul>
                                     {Array.isArray(importError.responseJSON) ? (
                                         importError.responseJSON.map((error, index) => {
@@ -301,6 +309,7 @@ function ImportVolumesFooter() {
                                         <li>{JSON.stringify(importError.responseJSON)}</li>
                                     )}
                                 </ul>
+                            */
                             }
                             position={tooltipPositions.RIGHT}
                         />

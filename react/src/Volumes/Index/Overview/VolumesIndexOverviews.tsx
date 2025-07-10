@@ -1,12 +1,12 @@
 import { throttle } from 'lodash';
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import { FixedSizeList as List, type ListChildComponentProps } from 'react-window';
 import useMeasure from 'Helpers/Hooks/useMeasure';
 import { type Volumes } from 'Volumes/Volumes';
 import dimensions from 'Styles/Variables/dimensions';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
-import selectOverviewOptions from './selectOverviewOptions';
+// import selectOverviewOptions from './selectOverviewOptions';
 import VolumesIndexOverview from './VolumesIndexOverview';
 
 // Poster container dimensions
@@ -61,7 +61,10 @@ function getWindowScrollTopPosition() {
 function VolumesIndexOverviews(props: VolumesIndexOverviewsProps) {
     const { items, sortKey, jumpToCharacter, scrollerRef, isSelectMode, isSmallScreen } = props;
 
-    const { size: posterSize, detailedProgressBar } = useSelector(selectOverviewOptions);
+    // const { size: posterSize, detailedProgressBar } = useSelector(selectOverviewOptions);
+    const posterSize = 'large';
+    const detailedProgressBar = false;
+
     const listRef = useRef<List>(null);
     const [measureRef, bounds] = useMeasure();
     const [size, setSize] = useState({ width: 0, height: 0 });

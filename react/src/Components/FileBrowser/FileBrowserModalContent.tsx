@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch /*, useSelector*/ } from 'react-redux';
 import Alert from 'Components/Alert';
 import { PathInputInternal } from 'Components/Form/PathInput';
 import Button from 'Components/Link/Button';
@@ -19,7 +19,7 @@ import { kinds, scrollDirections } from 'Helpers/Props';
 // import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
 import { type InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
-import createPathsSelector from './createPathsSelector';
+// import createPathsSelector from './createPathsSelector';
 import FileBrowserRow from './FileBrowserRow';
 import styles from './FileBrowserModalContent.module.css';
 
@@ -52,8 +52,19 @@ function FileBrowserModalContent(props: FileBrowserModalContentProps) {
     const dispatch = useDispatch();
 
     // const { isWindows, mode } = useSelector(createSystemStatusSelector());
-    const { isFetching, isPopulated, error, parent, directories, files, paths } =
-        useSelector(createPathsSelector());
+    /*const { isFetching, isPopulated, error, parent, directories, files, paths } =
+        useSelector(createPathsSelector());*/
+
+    const isFetching = false;
+    const isPopulated = true;
+    const error = undefined;
+    // @ts-expect-error TODO
+    const paths = [];
+    // @ts-expect-error TODO
+    const directories = [];
+    // @ts-expect-error TODO
+    const files = [];
+    const parent = '';
 
     const [currentPath, setCurrentPath] = useState(value);
     const scrollerRef = useRef(null);
@@ -158,6 +169,7 @@ function FileBrowserModalContent(props: FileBrowserModalContentProps) {
                     placeholder={translate('FileBrowserPlaceholderText')}
                     hasFileBrowser={false}
                     includeFiles={includeFiles}
+                    // @ts-expect-error TODO
                     paths={paths}
                     name={name}
                     value={currentPath}
@@ -190,6 +202,7 @@ function FileBrowserModalContent(props: FileBrowserModalContentProps) {
                                     />
                                 ) : null}
 
+                                {/* @ts-expect-error TODO */}
                                 {directories.map((directory) => {
                                     return (
                                         <FileBrowserRow
@@ -202,6 +215,7 @@ function FileBrowserModalContent(props: FileBrowserModalContentProps) {
                                     );
                                 })}
 
+                                {/* @ts-expect-error TODO */}
                                 {files.map((file) => {
                                     return (
                                         <FileBrowserRow

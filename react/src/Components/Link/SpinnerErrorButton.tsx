@@ -4,10 +4,11 @@ import SpinnerButton, { type SpinnerButtonProps } from 'Components/Link/SpinnerB
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons } from 'Helpers/Props';
 import { type ValidationFailure } from 'typings/pending';
-import { type Error } from 'App/State/AppSectionState';
+// import { type Error } from 'App/State/AppSectionState';
 import styles from './SpinnerErrorButton.module.css';
 
-function getTestResult(error: Error | string | undefined) {
+// eslint-disable-next-line
+function getTestResult(error: any /*Error*/ | string | undefined) {
     if (!error) {
         return {
             wasSuccessful: true,

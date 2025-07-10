@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { type CustomFilter, type Filter } from 'App/State/AppState';
+// import { type CustomFilter, type Filter } from 'App/State/AppState';
 import { icons } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import FilterMenuContent from './FilterMenuContent';
@@ -12,7 +12,9 @@ interface FilterMenuProps {
     alignMenu: 'left' | 'right';
     isDisabled?: boolean;
     selectedFilterKey: string | number;
+    // @ts-expect-error TODO
     filters: Filter[];
+    // @ts-expect-error TODO
     customFilters: CustomFilter[];
     buttonComponent?: React.ElementType;
     filterModalConnectorComponent?: React.ElementType;

@@ -1,17 +1,18 @@
 import { useCallback, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { type QualityProfilesAppState } from 'App/State/SettingsAppState';
-import createSortedSectionSelector from 'Store/Selectors/createSortedSectionSelector';
+// import { useSelector } from 'react-redux';
+// import { createSelector } from 'reselect';
+// import { type QualityProfilesAppState } from 'App/State/SettingsAppState';
+// import createSortedSectionSelector from 'Store/Selectors/createSortedSectionSelector';
 import { type EnhancedSelectInputChanged } from 'typings/inputs';
-import { type QualityProfile } from 'typings/QualityProfile';
-import sortByProp from 'Utilities/Array/sortByProp';
-import translate from 'Utilities/String/translate';
+// import { type QualityProfile } from 'typings/QualityProfile';
+// import sortByProp from 'Utilities/Array/sortByProp';
+// import translate from 'Utilities/String/translate';
 import EnhancedSelectInput, {
     type EnhancedSelectInputProps,
     type EnhancedSelectInputValue,
 } from './EnhancedSelectInput';
 
+/*
 function createQualityProfilesSelector(
     includeNoChange: boolean,
     includeNoChangeDisabled: boolean,
@@ -56,6 +57,7 @@ function createQualityProfilesSelector(
         },
     );
 }
+*/
 
 export interface QualityProfileSelectInputProps
     extends Omit<
@@ -71,15 +73,18 @@ export interface QualityProfileSelectInputProps
 function QualityProfileSelectInput({
     name,
     value,
-    includeNoChange = false,
-    includeNoChangeDisabled = true,
-    includeMixed = false,
+    // includeNoChange = false,
+    // includeNoChangeDisabled = true,
+    // includeMixed = false,
     onChange,
     ...otherProps
 }: QualityProfileSelectInputProps) {
-    const values = useSelector(
-        createQualityProfilesSelector(includeNoChange, includeNoChangeDisabled, includeMixed),
-    );
+    // const values = useSelector(
+    //     createQualityProfilesSelector(includeNoChange, includeNoChangeDisabled, includeMixed),
+    // );
+
+    // @ts-expect-error TODO:
+    const values = [];
 
     const handleChange = useCallback(
         ({ value }: EnhancedSelectInputChanged<string | number>) => {
@@ -89,13 +94,16 @@ function QualityProfileSelectInput({
     );
 
     useEffect(() => {
+        // @ts-expect-error TODO:
         if (!value || !values.some((option) => option.key === value || option.key === value)) {
+            // @ts-expect-error TODO:
             const firstValue = values.find((option) => typeof option.key === 'number');
 
             if (firstValue) {
                 onChange({ name, value: firstValue.key });
             }
         }
+        // @ts-expect-error TODO:
     }, [name, value, values, onChange]);
 
     return (
@@ -103,6 +111,7 @@ function QualityProfileSelectInput({
             {...otherProps}
             name={name}
             value={value}
+            // @ts-expect-error TODO:
             values={values}
             onChange={handleChange}
         />

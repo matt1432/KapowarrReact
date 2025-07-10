@@ -1,9 +1,9 @@
 import { throttle } from 'lodash';
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import { FixedSizeGrid as Grid, type GridChildComponentProps } from 'react-window';
-import { createSelector } from 'reselect';
-import { type AppState } from 'App/State/AppState';
+// import { createSelector } from 'reselect';
+// import { type AppState } from 'App/State/AppState';
 import useMeasure from 'Helpers/Hooks/useMeasure';
 import { type SortDirection } from 'Helpers/Props/sortDirections';
 import VolumesIndexPoster from 'Volumes/Index/Posters/VolumesIndexPoster';
@@ -47,6 +47,7 @@ interface VolumesIndexPostersProps {
     isSmallScreen: boolean;
 }
 
+/*
 const volumesIndexSelector = createSelector(
     (state: AppState) => state.volumesIndex.posterOptions,
     (posterOptions) => {
@@ -55,6 +56,7 @@ const volumesIndexSelector = createSelector(
         };
     },
 );
+*/
 
 function Cell({ columnIndex, rowIndex, style, data }: GridChildComponentProps<CellItemData>) {
     const { layout, items, sortKey, isSelectMode } = data;
@@ -92,7 +94,7 @@ function getWindowScrollTopPosition() {
 export default function VolumesIndexPosters(props: VolumesIndexPostersProps) {
     const { scrollerRef, items, sortKey, jumpToCharacter, isSelectMode, isSmallScreen } = props;
 
-    const { posterOptions } = useSelector(volumesIndexSelector);
+    // const { posterOptions } = useSelector(volumesIndexSelector);
     const ref = useRef<Grid>(null);
     const [measureRef, bounds] = useMeasure();
     const [size, setSize] = useState({ width: 0, height: 0 });
@@ -104,8 +106,8 @@ export default function VolumesIndexPosters(props: VolumesIndexPostersProps) {
         const remainder = width % maximumColumnWidth;
         return remainder === 0
             ? maximumColumnWidth
-            : Math.floor(width / (columns + ADDITIONAL_COLUMN_COUNT[posterOptions.size]));
-    }, [isSmallScreen, posterOptions, size]);
+            : Math.floor(width / (columns + ADDITIONAL_COLUMN_COUNT[0 /*posterOptions.size*/]));
+    }, [isSmallScreen, /*posterOptions,*/ size]);
 
     const columnCount = useMemo(
         () => Math.max(Math.floor(size.width / columnWidth), 1),
@@ -116,8 +118,13 @@ export default function VolumesIndexPosters(props: VolumesIndexPostersProps) {
     const posterHeight = Math.ceil((250 / 170) * posterWidth);
 
     const rowHeight = useMemo(() => {
-        const { detailedProgressBar, showTitle, showMonitored, showQualityProfile, showTags } =
-            posterOptions;
+        // const { detailedProgressBar, showTitle, showMonitored, showQualityProfile, showTags } =
+        //    posterOptions;
+        const detailedProgressBar = false;
+        const showTitle = '';
+        const showMonitored = false;
+        const showQualityProfile = false;
+        const showTags = false;
 
         const nextAiringHeight = 19;
 
@@ -168,7 +175,7 @@ export default function VolumesIndexPosters(props: VolumesIndexPostersProps) {
         }
 
         return heights.reduce((acc, height) => acc + height, 0);
-    }, [isSmallScreen, posterOptions, sortKey, posterHeight]);
+    }, [isSmallScreen, /* posterOptions, */ sortKey, posterHeight]);
 
     useEffect(() => {
         const current = scrollerRef.current;

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import { type AddVolumes } from 'AddVolumes/AddVolumes';
 import HeartRating from 'Components/HeartRating';
 import Icon from 'Components/Icon';
@@ -10,8 +10,8 @@ import { icons, kinds, sizes } from 'Helpers/Props';
 import { type Statistics } from 'Volumes/Volumes';
 import VolumesGenres from 'Volumes/VolumesGenres';
 import VolumesPoster from 'Volumes/VolumesPoster';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-import createExistingVolumesSelector from 'Store/Selectors/createExistingVolumesSelector';
+// import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
+// import createExistingVolumesSelector from 'Store/Selectors/createExistingVolumesSelector';
 import translate from 'Utilities/String/translate';
 import AddNewVolumesModal from './AddNewVolumesModal';
 import styles from './AddNewVolumesSearchResult.module.css';
@@ -37,8 +37,10 @@ function AddNewVolumesSearchResult({ volumes }: AddNewVolumesSearchResultProps) 
         images,
     } = volumes;
 
-    const isExistingVolumes = useSelector(createExistingVolumesSelector(tvdbId));
-    const { isSmallScreen } = useSelector(createDimensionsSelector());
+    // const isExistingVolumes = useSelector(createExistingVolumesSelector(tvdbId));
+    // const { isSmallScreen } = useSelector(createDimensionsSelector());
+    const isExistingVolumes = false;
+    const isSmallScreen = false;
     const [isNewAddVolumesModalOpen, setIsNewAddVolumesModalOpen] = useState(false);
 
     const seasonCount = statistics.seasonCount;

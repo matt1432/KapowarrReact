@@ -1,7 +1,7 @@
-import { type PropertyFilter } from 'App/State/AppState';
+// import { type PropertyFilter } from 'App/State/AppState';
 
 export interface QueryParams {
-    [key: string]: string | number | boolean | PropertyFilter[] | undefined;
+    [key: string]: string | number | boolean | /*PropertyFilter[] |*/ undefined;
 }
 
 const getQueryString = (queryParams?: QueryParams) => {

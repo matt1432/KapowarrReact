@@ -1,8 +1,8 @@
 import { orderBy } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { type AppState } from 'App/State/AppState';
+import { useDispatch /* , useSelector */ } from 'react-redux';
+// import { createSelector } from 'reselect';
+// import { type AppState } from 'App/State/AppState';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
@@ -14,7 +14,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds } from 'Helpers/Props';
 import { type Volumes } from 'Volumes/Volumes';
 // import { bulkDeleteVolumes, setDeleteOption } from 'Store/Actions/volumesActions';
-import createAllVolumesSelector from 'Store/Selectors/createAllVolumesSelector';
+// import createAllVolumesSelector from 'Store/Selectors/createAllVolumesSelector';
 import { type InputChanged } from 'typings/inputs';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
@@ -25,16 +25,18 @@ interface DeleteVolumesModalContentProps {
     onModalClose(): void;
 }
 
+/*
 const selectDeleteOptions = createSelector(
     (state: AppState) => state.volumes.deleteOptions,
     (deleteOptions) => deleteOptions,
 );
+*/
 
 function DeleteVolumesModalContent(props: DeleteVolumesModalContentProps) {
     const { volumesIds, onModalClose } = props;
 
-    const { addImportListExclusion } = useSelector(selectDeleteOptions);
-    const allVolumes: Volumes[] = useSelector(createAllVolumesSelector());
+    // const { addImportListExclusion } = useSelector(selectDeleteOptions);
+    const allVolumes: Volumes[] = []; // useSelector(createAllVolumesSelector());
     const dispatch = useDispatch();
 
     const [deleteFiles, setDeleteFiles] = useState(false);
@@ -81,7 +83,13 @@ function DeleteVolumesModalContent(props: DeleteVolumesModalContentProps) {
         );*/
 
         onModalClose();
-    }, [volumesIds, deleteFiles, addImportListExclusion, setDeleteFiles, dispatch, onModalClose]);
+    }, [
+        volumesIds,
+        deleteFiles,
+        /* addImportListExclusion, */ setDeleteFiles,
+        dispatch,
+        onModalClose,
+    ]);
 
     const { totalIssueFileCount, totalSizeOnDisk } = useMemo(() => {
         return volumes.reduce(
@@ -112,7 +120,7 @@ function DeleteVolumesModalContent(props: DeleteVolumesModalContentProps) {
                         <FormInputGroup
                             type={inputTypes.CHECK}
                             name="addImportListExclusion"
-                            value={addImportListExclusion}
+                            value={'' /*addImportListExclusion*/}
                             helpText={translate('AddListExclusionVolumesHelpText')}
                             onChange={onDeleteOptionChange}
                         />

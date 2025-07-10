@@ -1,9 +1,10 @@
+/*
 import classNames from 'classnames';
 import { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSelect } from 'App/SelectContext';
+import { useSelect } from 'App/SelectContext';*/
 // import { REFRESH_VOLUMES, VOLUMES_SEARCH } from 'Commands/commandNames';
-import CheckInput from 'Components/Form/CheckInput';
+/*import CheckInput from 'Components/Form/CheckInput';
 import HeartRating from 'Components/HeartRating';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
@@ -11,12 +12,12 @@ import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import VolumesTagList from 'Components/VolumesTagList';
 import RelativeDateCell from 'Components/Table/Cells/RelativeDateCell';
 import VirtualTableRowCell from 'Components/Table/Cells/VirtualTableRowCell';
-import VirtualTableSelectCell from 'Components/Table/Cells/VirtualTableSelectCell';
+import VirtualTableSelectCell from 'Components/Table/Cells/VirtualTableSelectCell';*/
 import { type Column } from 'Components/Table/Column';
-import { icons } from 'Helpers/Props';
+/*import { icons } from 'Helpers/Props';
 import DeleteVolumesModal from 'Volumes/Delete/DeleteVolumesModal';
 import EditVolumesModal from 'Volumes/Edit/EditVolumesModal';
-import createVolumesIndexItemSelector from 'Volumes/Index/createVolumesIndexItemSelector';
+// import createVolumesIndexItemSelector from 'Volumes/Index/createVolumesIndexItemSelector';
 import { type Statistics } from 'Volumes/Volumes';
 import VolumesBanner from 'Volumes/VolumesBanner';
 import VolumesTitleLink from 'Volumes/VolumesTitleLink';
@@ -26,11 +27,12 @@ import formatBytes from 'Utilities/Number/formatBytes';
 import titleCase from 'Utilities/String/titleCase';
 import translate from 'Utilities/String/translate';
 import VolumesIndexProgressBar from '../ProgressBar/VolumesIndexProgressBar';
-import hasGrowableColumns from './hasGrowableColumns';
+// import hasGrowableColumns from './hasGrowableColumns';
 import SeasonsCell from './SeasonsCell';
-import selectTableOptions from './selectTableOptions';
+// import selectTableOptions from './selectTableOptions';
 import VolumesStatusCell from './VolumesStatusCell';
 import styles from './VolumesIndexRow.module.css';
+*/
 
 interface VolumesIndexRowProps {
     volumesId: number;
@@ -40,10 +42,12 @@ interface VolumesIndexRowProps {
 }
 
 function VolumesIndexRow(props: VolumesIndexRowProps) {
+    console.log(props);
+    /*
     const { volumesId, columns, isSelectMode } = props;
 
     const { volumes, qualityProfile, latestSeason, isRefreshingVolumes, isSearchingVolumes } =
-        useSelector(createVolumesIndexItemSelector(props.volumesId));
+         useSelector(createVolumesIndexItemSelector(props.volumesId));
 
     const { showBanners, showSearchAction } = useSelector(selectTableOptions);
 
@@ -89,23 +93,21 @@ function VolumesIndexRow(props: VolumesIndexRowProps) {
     const [selectState, selectDispatch] = useSelect();
 
     const onRefreshPress = useCallback(() => {
-        /*
         dispatch(
             executeCommand({
                 name: REFRESH_VOLUMES,
                 volumesIds: [volumesId],
             }),
-        );*/
+        );
     }, [volumesId, dispatch]);
 
     const onSearchPress = useCallback(() => {
-        /*
         dispatch(
             executeCommand({
                 name: VOLUMES_SEARCH,
                 volumesId,
             }),
-        );*/
+        );
     }, [volumesId, dispatch]);
 
     const onBannerLoadError = useCallback(() => {
@@ -503,6 +505,8 @@ function VolumesIndexRow(props: VolumesIndexRowProps) {
             />
         </>
     );
+    */
+    return null;
 }
 
 export default VolumesIndexRow;

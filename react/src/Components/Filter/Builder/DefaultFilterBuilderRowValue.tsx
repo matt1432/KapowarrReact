@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { type FilterBuilderPropOption } from 'App/State/AppState';
+// import { type FilterBuilderPropOption } from 'App/State/AppState';
 import { filterBuilderTypes } from 'Helpers/Props';
 import * as filterTypes from 'Helpers/Props/filterTypes';
 import sortByProp from 'Utilities/Array/sortByProp';
@@ -24,17 +24,19 @@ function DefaultFilterBuilderRowValue<T>({
             return [];
         }
 
+        // @ts-expect-error TODO:
         let items: FilterBuilderPropOption[] = [];
 
         if (selectedFilterBuilderProp.optionsSelector) {
-            items = selectedFilterBuilderProp
-                .optionsSelector(sectionItems)
-                .filter(
+            items = selectedFilterBuilderProp.optionsSelector(sectionItems).filter(
+                // @ts-expect-error TODO:
+                // eslint-disable-next-line
                     (value, index, array) => array.findIndex((v) => v.id === value.id) === index,
-                );
+            );
         }
         else {
             items = sectionItems
+                // @ts-expect-error TODO:
                 .reduce<FilterBuilderPropOption[]>((acc, item) => {
                     // @ts-expect-error - can't guarantee that the name property exists on the item
                     const name = item[selectedFilterBuilderProp.name];

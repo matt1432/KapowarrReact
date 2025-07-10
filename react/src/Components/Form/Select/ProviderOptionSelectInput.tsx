@@ -1,3 +1,4 @@
+/*
 import { isEqual } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,11 +12,14 @@ import usePrevious from 'Helpers/Hooks/usePrevious';
 // TODO:
 // import { clearOptions, fetchOptions } from 'Store/Actions/providerOptionActions';
 import { type FieldSelectOption } from 'typings/Field';
-import EnhancedSelectInput, {
+*/
+// import EnhancedSelectInput, {
+import {
     type EnhancedSelectInputProps,
     type EnhancedSelectInputValue,
 } from './EnhancedSelectInput';
 
+/*
 const importantFieldNames = ['baseUrl', 'apiPath', 'apiKey', 'authToken'];
 
 function getProviderDataKey(providerData: ProviderOptions) {
@@ -67,22 +71,27 @@ function createProviderOptionsSelector(
         },
     );
 }
+*/
 
 export interface ProviderOptionSelectInputProps
     extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<unknown>, unknown>, 'values'> {
     provider: string;
-    providerData: ProviderOptions;
+    providerData: object; // ProviderOptions;
     name: string;
     value: unknown;
-    selectOptionsProviderAction: keyof Omit<ProviderOptionsAppState, 'devices'>;
+    selectOptionsProviderAction: string; // keyof Omit<ProviderOptionsAppState, 'devices'>;
 }
 
-function ProviderOptionSelectInput({
-    provider,
-    providerData,
-    selectOptionsProviderAction,
-    ...otherProps
-}: ProviderOptionSelectInputProps) {
+function ProviderOptionSelectInput(
+    // eslint-disable-next-line
+    {
+        // provider,
+        // providerData,
+        // selectOptionsProviderAction,
+        // ...otherProps
+    }: ProviderOptionSelectInputProps,
+) {
+    /*
     const dispatch = useDispatch();
     const [isRefetchRequired, setIsRefetchRequired] = useState(false);
     const previousProviderData = usePrevious(providerData);
@@ -94,7 +103,6 @@ function ProviderOptionSelectInput({
         if (isRefetchRequired && selectOptionsProviderAction) {
             setIsRefetchRequired(false);
 
-            /*
             dispatch(
                 fetchOptions({
                     section: selectOptionsProviderAction,
@@ -103,13 +111,11 @@ function ProviderOptionSelectInput({
                     providerData,
                 }),
             );
-            */
         }
     }, [isRefetchRequired, provider, providerData, selectOptionsProviderAction, dispatch]);
 
     useEffect(() => {
         if (selectOptionsProviderAction) {
-            /*
             dispatch(
                 fetchOptions({
                     section: selectOptionsProviderAction,
@@ -118,7 +124,6 @@ function ProviderOptionSelectInput({
                     providerData,
                 }),
             );
-            */
         }
         // // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectOptionsProviderAction, dispatch]);
@@ -153,6 +158,8 @@ function ProviderOptionSelectInput({
             onOpen={handleOpen}
         />
     );
+        */
+    return null;
 }
 
 export default ProviderOptionSelectInput;

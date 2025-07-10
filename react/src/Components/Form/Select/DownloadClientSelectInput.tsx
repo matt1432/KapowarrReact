@@ -1,17 +1,18 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { type AppState } from 'App/State/AppState';
+import { useDispatch /*, useSelector */ } from 'react-redux';
+// import { createSelector } from 'reselect';
+// import { type AppState } from 'App/State/AppState';
 // import { fetchDownloadClients } from 'Store/Actions/settingsActions';
 import { type Protocol } from 'typings/DownloadClient';
 import { type EnhancedSelectInputChanged } from 'typings/inputs';
-import sortByProp from 'Utilities/Array/sortByProp';
-import translate from 'Utilities/String/translate';
+// import sortByProp from 'Utilities/Array/sortByProp';
+// import translate from 'Utilities/String/translate';
 import EnhancedSelectInput, {
     type EnhancedSelectInputProps,
     type EnhancedSelectInputValue,
 } from './EnhancedSelectInput';
 
+/*
 function createDownloadClientsSelector(includeAny: boolean, protocol: Protocol) {
     return createSelector(
         (state: AppState) => state.settings.downloadClients,
@@ -45,6 +46,7 @@ function createDownloadClientsSelector(includeAny: boolean, protocol: Protocol) 
         },
     );
 }
+*/
 
 export interface DownloadClientSelectInputProps
     extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<number>, number>, 'values'> {
@@ -56,14 +58,19 @@ export interface DownloadClientSelectInputProps
 }
 
 function DownloadClientSelectInput({
-    includeAny = false,
-    protocol = 'torrent',
+    // includeAny = false,
+    // protocol = 'torrent',
     ...otherProps
 }: DownloadClientSelectInputProps) {
     const dispatch = useDispatch();
-    const { isFetching, isPopulated, values } = useSelector(
-        createDownloadClientsSelector(includeAny, protocol),
-    );
+    // const { isFetching, isPopulated, values } = useSelector(
+    //     createDownloadClientsSelector(includeAny, protocol),
+    // );
+    const isFetching = false;
+    const isPopulated = false;
+
+    // @ts-expect-error TODO:
+    const values = [];
 
     useEffect(() => {
         if (!isPopulated) {
@@ -71,6 +78,7 @@ function DownloadClientSelectInput({
         }
     }, [isPopulated, dispatch]);
 
+    // @ts-expect-error TODO:
     return <EnhancedSelectInput {...otherProps} isFetching={isFetching} values={values} />;
 }
 

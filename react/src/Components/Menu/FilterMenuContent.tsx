@@ -1,4 +1,4 @@
-import { type CustomFilter, type Filter } from 'App/State/AppState';
+// import { type CustomFilter, type Filter } from 'App/State/AppState';
 import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
 import FilterMenuItem from './FilterMenuItem';
@@ -8,7 +8,9 @@ import MenuItemSeparator from './MenuItemSeparator';
 
 interface FilterMenuContentProps {
     selectedFilterKey: string | number;
+    // @ts-expect-error TODO
     filters: Filter[];
+    // @ts-expect-error TODO
     customFilters: CustomFilter[];
     showCustomFilters: boolean;
     onFilterSelect: (filter: number | string) => void;

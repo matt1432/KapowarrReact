@@ -12,7 +12,7 @@ import { icons } from 'Helpers/Props';
 import { type SortDirection } from 'Helpers/Props/sortDirections';
 // import { setVolumesSort, setVolumesTableOption } from 'Store/Actions/volumesIndexActions';
 import { type CheckInputChanged } from 'typings/inputs';
-import hasGrowableColumns from './hasGrowableColumns';
+// import hasGrowableColumns from './hasGrowableColumns';
 import VolumesIndexTableOptions from './VolumesIndexTableOptions';
 import styles from './VolumesIndexTableHeader.module.css';
 
@@ -102,7 +102,7 @@ function VolumesIndexTableHeader(props: VolumesIndexTableHeaderProps) {
                             name === 'sortTitle' && showBanners && styles.banner,
                             name === 'sortTitle' &&
                                 showBanners &&
-                                !hasGrowableColumns(columns) &&
+                                // !hasGrowableColumns(columns) &&
                                 styles.bannerGrow,
                         )}
                         name={name}

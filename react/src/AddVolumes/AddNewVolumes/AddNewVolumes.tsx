@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { type AppState } from 'App/State/AppState';
 import Alert from 'Components/Alert';
 import TextInput from 'Components/Form/TextInput';
 import Icon from 'Components/Icon';
@@ -22,7 +20,8 @@ import styles from './AddNewVolumes.module.css';
 function AddNewVolumes() {
     const { term: initialTerm = '' } = useQueryParams<{ term: string }>();
 
-    const volumesCount = useSelector((state: AppState) => state.volumes.items.length);
+    // const volumesCount = useSelector((state: AppState) => state.volumes.items.length);
+    const volumesCount = 0;
 
     const [term, setTerm] = useState(initialTerm);
     const [isFetching, setIsFetching] = useState(false);

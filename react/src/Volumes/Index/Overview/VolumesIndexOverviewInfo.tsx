@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import { type IconName } from 'Components/Icon';
 import { icons } from 'Helpers/Props';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
+// import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import dimensions from 'Styles/Variables/dimensions';
 import { type QualityProfile } from 'typings/QualityProfile';
 import { type UiSettings } from 'typings/Settings/UiSettings';
@@ -92,6 +92,8 @@ const rows = [
     },
 ];
 
+// @ts-expect-error TODO
+// eslint-disable-next-line
 function getInfoRowProps(
     row: RowProps,
     props: VolumesIndexOverviewInfoProps,
@@ -206,9 +208,13 @@ function getInfoRowProps(
 function VolumesIndexOverviewInfo(props: VolumesIndexOverviewInfoProps) {
     const { height, nextAiring } = props;
 
-    const uiSettings = useSelector(createUISettingsSelector());
+    // const uiSettings = useSelector(createUISettingsSelector());
 
-    const { shortDateFormat, showRelativeDates, longDateFormat, timeFormat } = uiSettings;
+    // const { shortDateFormat, showRelativeDates, longDateFormat, timeFormat } = uiSettings;
+    const shortDateFormat = '';
+    const showRelativeDates = true;
+    const longDateFormat = '';
+    const timeFormat = '';
 
     let shownRows = 1;
     const maxRows = Math.floor(height / (infoRowHeight + 4));
@@ -258,13 +264,19 @@ function VolumesIndexOverviewInfo(props: VolumesIndexOverviewInfoProps) {
 
                 shownRows++;
 
-                const infoRowProps = getInfoRowProps(row, props, uiSettings);
+                const infoRowProps = null; // getInfoRowProps(row, props, uiSettings);
 
                 if (infoRowProps == null) {
                     return null;
                 }
 
-                return <VolumesIndexOverviewInfoRow key={row.name} {...infoRowProps} />;
+                return (
+                    <VolumesIndexOverviewInfoRow
+                        iconName="cube"
+                        label=""
+                        key={row.name} // {...infoRowProps}
+                    />
+                );
             })}
         </div>
     );

@@ -1,7 +1,8 @@
-import { type Error } from 'App/State/AppSectionState';
+// import { type Error } from 'App/State/AppSectionState';
 import { ApiError } from 'Utilities/Fetch/fetchJson';
 
-function getErrorMessage(error: Error | ApiError | undefined, fallbackErrorMessage = '') {
+// eslint-disable-next-line
+function getErrorMessage(error: any | ApiError | undefined, fallbackErrorMessage = '') {
     if (!error) {
         return fallbackErrorMessage;
     }

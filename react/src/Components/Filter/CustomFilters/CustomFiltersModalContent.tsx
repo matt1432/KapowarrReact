@@ -1,5 +1,5 @@
-import { useSelector } from 'react-redux';
-import type { AppState, CustomFilter as CustomFilterModel } from 'App/State/AppState';
+// import { useSelector } from 'react-redux';
+// import type { AppState, CustomFilter as CustomFilterModel } from 'App/State/AppState';
 import Button from 'Components/Link/Button';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
@@ -11,6 +11,7 @@ import CustomFilter from './CustomFilter';
 import styles from './CustomFiltersModalContent.module.css';
 
 interface CustomFiltersModalContentProps {
+    // @ts-expect-error TODO:
     customFilters: CustomFilterModel[];
     dispatchSetFilter: (payload: { selectedFilterKey: string | number }) => void;
     onAddCustomFilter: () => void;
@@ -25,7 +26,9 @@ function CustomFiltersModalContent({
     onEditCustomFilter,
     onModalClose,
 }: CustomFiltersModalContentProps) {
-    const { isDeleting, deleteError } = useSelector((state: AppState) => state.customFilters);
+    // const { isDeleting, deleteError } = useSelector((state: AppState) => state.customFilters);
+    const isDeleting = false;
+    const deleteError = undefined;
 
     return (
         <ModalContent onModalClose={onModalClose}>

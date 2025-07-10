@@ -49,6 +49,9 @@ import VolumesIndexTable from './Table/VolumesIndexTable';
 import VolumesIndexTableOptions from './Table/VolumesIndexTableOptions';
 import styles from './index.module.css';
 import type { Volumes } from 'Volumes/Volumes';
+import useApiQuery from 'Helpers/Hooks/useApiQuery';
+
+type ViewType = 'overview' | 'posters' | 'table';
 
 function getViewComponent(view: string) {
     if (view === 'posters') {
@@ -88,9 +91,7 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
     const view = _view as 'overview' | 'posters' | 'table';
     */
     const {
-        isFetching,
         isPopulated,
-        error,
         totalItems,
         items,
         columns,
@@ -101,9 +102,7 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
         sortDirection,
         view,
     } = {
-        isFetching: true,
         isPopulated: false,
-        error: undefined,
         totalItems: 0,
         items: [] as Volumes[],
         columns: [],
@@ -112,8 +111,16 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
         customFilters: [],
         sortKey: 'title',
         sortDirection: 'ascending' as SortDirection,
-        view: 'overview' as 'overview' | 'posters' | 'table',
+        view: 'overview' as ViewType,
     };
+
+    const { isFetching, error, data } = useApiQuery<object>({
+        queryParams: {
+            sort: sortKey,
+            filter: selectedFilterKey,
+        },
+        path: `/volumes`,
+    });
 
     // const { isSmallScreen } = useSelector(createDimensionsSelector());
     const isSmallScreen = false;
@@ -124,9 +131,10 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
     const [isSelectMode, setIsSelectMode] = useState(false);
 
     useEffect(() => {
+        console.log(data);
         // dispatch(fetchVolumes());
         // dispatch(fetchQueueDetails({ all: true }));
-    }, [dispatch]);
+    }, [dispatch, data]);
 
     const onSelectModePress = useCallback(() => {
         setIsSelectMode(!isSelectMode);

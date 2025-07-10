@@ -1,14 +1,19 @@
-import { useEffect, useMemo } from 'react';
+/*import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { type AppState } from 'App/State/AppState';
 // TODO:
 // import { fetchQualityProfileSchema } from 'Store/Actions/settingsActions';
-import getQualities from 'Utilities/Quality/getQualities';
-import FilterBuilderRowValue, { type FilterBuilderRowValueProps } from './FilterBuilderRowValue';
+import getQualities from 'Utilities/Quality/getQualities';*/
+import {
+    /* FilterBuilderRowValue, */ type FilterBuilderRowValueProps,
+} from './FilterBuilderRowValue';
 
 type QualityFilterBuilderRowValueProps<T> = Omit<FilterBuilderRowValueProps<T, number>, 'tagList'>;
 
+// @ts-expect-error TODO:
+// eslint-disable-next-line
 function QualityFilterBuilderRowValue<T>(props: QualityFilterBuilderRowValueProps<T>) {
+    /*
     const dispatch = useDispatch();
 
     const { isSchemaPopulated, schema } = useSelector(
@@ -26,6 +31,8 @@ function QualityFilterBuilderRowValue<T>(props: QualityFilterBuilderRowValueProp
     }, [isSchemaPopulated, dispatch]);
 
     return <FilterBuilderRowValue {...props} tagList={tagList} />;
+        */
+    return null;
 }
 
 export default QualityFilterBuilderRowValue;

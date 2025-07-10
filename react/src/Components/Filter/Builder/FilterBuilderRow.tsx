@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+// @ts-expect-error TODO:
 import type { FilterBuilderProp, PropertyFilter } from 'App/State/AppState';
 import SelectInput from 'Components/Form/SelectInput';
 import IconButton from 'Components/Link/IconButton';
@@ -44,10 +45,12 @@ function getFilterTypeOptions<T>(
         return [];
     }
 
+    // @ts-expect-error TODO:
     return possibleFilterTypes[selectedFilterBuilderProp.type];
 }
 
 function getDefaultFilterType<T>(selectedFilterBuilderProp: FilterBuilderProp<T>) {
+    // @ts-expect-error TODO:
     return possibleFilterTypes[selectedFilterBuilderProp.type][0].key;
 }
 

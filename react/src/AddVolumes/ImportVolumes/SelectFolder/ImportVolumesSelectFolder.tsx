@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { type AppState } from 'App/State/AppState';
+import { useDispatch /*, useSelector*/ } from 'react-redux';
+// import { type AppState } from 'App/State/AppState';
 import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import FileBrowserModal from 'Components/FileBrowser/FileBrowserModal';
@@ -14,18 +14,26 @@ import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons, kinds, sizes } from 'Helpers/Props';
 import RootFolders from 'RootFolder/RootFolders';
 // import { addRootFolder, fetchRootFolders } from 'Store/Actions/rootFolderActions';
-import useIsWindows from 'System/useIsWindows';
+// import useIsWindows from 'System/useIsWindows';
 import { type InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
 import styles from './ImportVolumesSelectFolder.module.css';
 
 function ImportVolumesSelectFolder() {
     const dispatch = useDispatch();
-    const { isFetching, isPopulated, isSaving, error, saveError, items } = useSelector(
+    /*const { isFetching, isPopulated, isSaving, error, saveError, items } = useSelector(
         (state: AppState) => state.rootFolders,
-    );
+    );*/
+    const { isFetching, isPopulated, isSaving, error, saveError, items } = {
+        isFetching: false,
+        isPopulated: true,
+        isSaving: false,
+        error: undefined,
+        saveError: undefined,
+        items: [] as { id: number }[],
+    };
 
-    const isWindows = useIsWindows();
+    const isWindows = false; // useIsWindows();
 
     const [isAddNewRootFolderModalOpen, setIsAddNewRootFolderModalOpen] = useState(false);
 
@@ -118,13 +126,13 @@ function ImportVolumesSelectFolder() {
                                 {translate('AddRootFolderError')}
 
                                 <ul>
-                                    {Array.isArray(saveError.responseJSON) ? (
+                                    {/*Array.isArray(saveError.responseJSON) ? (
                                         saveError.responseJSON.map((e, index) => {
                                             return <li key={index}>{e.errorMessage}</li>;
                                         })
                                     ) : (
                                         <li>{JSON.stringify(saveError.responseJSON)}</li>
-                                    )}
+                                    )*/}
                                 </ul>
                             </Alert>
                         ) : null}

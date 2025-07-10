@@ -1,14 +1,14 @@
 import { type RefObject, useEffect, useMemo, useRef } from 'react';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import { FixedSizeList, type ListChildComponentProps } from 'react-window';
-import { createSelector } from 'reselect';
-import { type AppState } from 'App/State/AppState';
+// import { createSelector } from 'reselect';
+// import { type AppState } from 'App/State/AppState';
 import { type Column } from 'Components/Table/Column';
 import VirtualTable from 'Components/Table/VirtualTable';
 import { type SortDirection } from 'Helpers/Props/sortDirections';
 import { type Volumes } from 'Volumes/Volumes';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
-import selectTableOptions from './selectTableOptions';
+// import selectTableOptions from './selectTableOptions';
 import VolumesIndexRow from './VolumesIndexRow';
 import VolumesIndexTableHeader from './VolumesIndexTableHeader';
 import styles from './VolumesIndexTable.module.css';
@@ -31,10 +31,12 @@ interface VolumesIndexTableProps {
     isSmallScreen: boolean;
 }
 
+/*
 const columnsSelector = createSelector(
     (state: AppState) => state.volumesIndex.columns,
     (columns) => columns,
 );
+*/
 
 function Row({ index, style, data }: ListChildComponentProps<RowItemData>) {
     const { items, sortKey, columns, isSelectMode } = data;
@@ -75,8 +77,12 @@ function VolumesIndexTable(props: VolumesIndexTableProps) {
         scrollerRef,
     } = props;
 
-    const columns = useSelector(columnsSelector);
-    const { showBanners } = useSelector(selectTableOptions);
+    // const columns = useSelector(columnsSelector);
+    // const { showBanners } = useSelector(selectTableOptions);
+    const showBanners = true;
+    // @ts-expect-error TODO
+    const columns = [];
+
     const listRef = useRef<FixedSizeList<RowItemData>>(undefined) as RefObject<
         FixedSizeList<RowItemData>
     >;
@@ -111,6 +117,7 @@ function VolumesIndexTable(props: VolumesIndexTableProps) {
             Header={
                 <VolumesIndexTableHeader
                     showBanners={showBanners}
+                    // @ts-expect-error TODO
                     columns={columns}
                     sortKey={sortKey}
                     sortDirection={sortDirection}
@@ -121,6 +128,7 @@ function VolumesIndexTable(props: VolumesIndexTableProps) {
             itemData={{
                 items,
                 sortKey,
+                // @ts-expect-error TODO
                 columns,
                 isSelectMode,
             }}

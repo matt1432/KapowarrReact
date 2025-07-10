@@ -1,20 +1,21 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
+import { useDispatch /*, useSelector*/ } from 'react-redux';
+// import { createSelector } from 'reselect';
 import { useSelect } from 'App/SelectContext';
-import { type AppState } from 'App/State/AppState';
-import { type ImportVolumes } from 'App/State/ImportVolumesAppState';
+// import { type AppState } from 'App/State/AppState';
+// import { type ImportVolumes } from 'App/State/ImportVolumesAppState';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import VirtualTableRowCell from 'Components/Table/Cells/VirtualTableRowCell';
 import VirtualTableSelectCell from 'Components/Table/Cells/VirtualTableSelectCell';
 import { inputTypes } from 'Helpers/Props';
 // import { setImportVolumesValue } from 'Store/Actions/importVolumesActions';
-import createExistingVolumesSelector from 'Store/Selectors/createExistingVolumesSelector';
+// import createExistingVolumesSelector from 'Store/Selectors/createExistingVolumesSelector';
 import { type InputChanged } from 'typings/inputs';
 import { type SelectStateInputProps } from 'typings/props';
 import ImportVolumesSelectVolumes from './SelectVolumes/ImportVolumesSelectVolumes';
 import styles from './ImportVolumesRow.module.css';
 
+/*
 function createItemSelector(id: string) {
     return createSelector(
         (state: AppState) => state.importVolumes.items,
@@ -27,6 +28,7 @@ function createItemSelector(id: string) {
         },
     );
 }
+*/
 
 interface ImportVolumesRowProps {
     id: string;
@@ -35,10 +37,10 @@ interface ImportVolumesRowProps {
 function ImportVolumesRow({ id }: ImportVolumesRowProps) {
     const dispatch = useDispatch();
 
-    const { relativePath, monitor, qualityProfileId, seasonFolder, volumesType, selectedVolumes } =
-        useSelector(createItemSelector(id));
+    // const { relativePath, monitor, qualityProfileId, seasonFolder, volumesType, selectedVolumes } =
+    // useSelector(createItemSelector(id));
 
-    const isExistingVolumes = useSelector(createExistingVolumesSelector(selectedVolumes?.tvdbId));
+    const isExistingVolumes = false; // useSelector(createExistingVolumesSelector(selectedVolumes?.tvdbId));
 
     const [selectState, selectDispatch] = useSelect();
 
@@ -73,17 +75,17 @@ function ImportVolumesRow({ id }: ImportVolumesRowProps) {
                 inputClassName={styles.selectInput}
                 id={id}
                 isSelected={selectState.selectedState[id]}
-                isDisabled={!selectedVolumes || isExistingVolumes}
+                isDisabled={/*!selectedVolumes ||*/ isExistingVolumes}
                 onSelectedChange={handleSelectedChange}
             />
 
-            <VirtualTableRowCell className={styles.folder}>{relativePath}</VirtualTableRowCell>
+            <VirtualTableRowCell className={styles.folder}>{/*relativePath*/}</VirtualTableRowCell>
 
             <VirtualTableRowCell className={styles.monitor}>
                 <FormInputGroup
                     type={inputTypes.MONITOR_ISSUES_SELECT}
                     name="monitor"
-                    value={monitor}
+                    value={'' /*monitor*/}
                     onChange={handleInputChange}
                 />
             </VirtualTableRowCell>
@@ -92,7 +94,7 @@ function ImportVolumesRow({ id }: ImportVolumesRowProps) {
                 <FormInputGroup
                     type={inputTypes.QUALITY_PROFILE_SELECT}
                     name="qualityProfileId"
-                    value={qualityProfileId}
+                    value={'' /*qualityProfileId*/}
                     onChange={handleInputChange}
                 />
             </VirtualTableRowCell>
@@ -101,7 +103,7 @@ function ImportVolumesRow({ id }: ImportVolumesRowProps) {
                 <FormInputGroup
                     type={inputTypes.VOLUMES_TYPE_SELECT}
                     name="volumesType"
-                    value={volumesType}
+                    value={'' /*volumesType*/}
                     onChange={handleInputChange}
                 />
             </VirtualTableRowCell>
@@ -110,7 +112,7 @@ function ImportVolumesRow({ id }: ImportVolumesRowProps) {
                 <FormInputGroup
                     type={inputTypes.CHECK}
                     name="seasonFolder"
-                    value={seasonFolder}
+                    value={'' /*seasonFolder*/}
                     onChange={handleInputChange}
                 />
             </VirtualTableRowCell>

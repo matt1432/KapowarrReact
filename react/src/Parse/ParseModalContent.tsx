@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch /*, useSelector*/ } from 'react-redux';
 import TextInput from 'Components/Form/TextInput';
 import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
@@ -14,7 +14,7 @@ import { type InputChanged } from 'typings/inputs';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 import ParseResult from './ParseResult';
-import parseStateSelector from './parseStateSelector';
+// import parseStateSelector from './parseStateSelector';
 import styles from './ParseModalContent.module.css';
 
 interface ParseModalContentProps {
@@ -23,7 +23,11 @@ interface ParseModalContentProps {
 
 function ParseModalContent(props: ParseModalContentProps) {
     const { onModalClose } = props;
-    const { isFetching, error, item } = useSelector(parseStateSelector());
+    // const { isFetching, error, item } = useSelector(parseStateSelector());
+    const isFetching = false;
+    const error = undefined;
+    // eslint-disable-next-line
+    const item = {} as any;
 
     const [title, setTitle] = useState('');
     const dispatch = useDispatch();
@@ -92,7 +96,7 @@ function ParseModalContent(props: ParseModalContentProps) {
                     </div>
                 ) : null}
 
-                {!isFetching && title && !error && !item.parsedIssueInfo ? (
+                {!isFetching && title && !error && !item?.parsedIssueInfo ? (
                     <div className={styles.message}>{translate('ParseModalUnableToParse')}</div>
                 ) : null}
 

@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react';
+/*import { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { type AppState } from 'App/State/AppState';
+// import { type AppState } from 'App/State/AppState';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
@@ -13,19 +13,22 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { icons, inputTypes, kinds } from 'Helpers/Props';
 import { type Statistics } from 'Volumes/Volumes';
-import useVolumes from 'Volumes/useVolumes';
+// import useVolumes from 'Volumes/useVolumes';
 // import { deleteVolumes, setDeleteOption } from 'Store/Actions/volumesActions';
 import { type CheckInputChanged } from 'typings/inputs';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 import styles from './DeleteVolumesModalContent.module.css';
+*/
 
 export interface DeleteVolumesModalContentProps {
     volumesId: number;
     onModalClose: () => void;
 }
 
-function DeleteVolumesModalContent({ volumesId, onModalClose }: DeleteVolumesModalContentProps) {
+// eslint-disable-next-line
+function DeleteVolumesModalContent({} /* volumesId, onModalClose */ : DeleteVolumesModalContentProps) {
+    /*
     const dispatch = useDispatch();
     const { title, path, statistics = {} as Statistics } = useVolumes(volumesId)!;
     const { addImportListExclusion } = useSelector((state: AppState) => state.volumes.deleteOptions);
@@ -126,7 +129,8 @@ function DeleteVolumesModalContent({ volumesId, onModalClose }: DeleteVolumesMod
                 </Button>
             </ModalFooter>
         </ModalContent>
-    );
+    );*/
+    return null;
 }
 
 export default DeleteVolumesModalContent;

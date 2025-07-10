@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { type AppState } from 'App/State/AppState';
+import { useDispatch /*, useSelector */ } from 'react-redux';
+// import { createSelector } from 'reselect';
+// import { type AppState } from 'App/State/AppState';
 // import { fetchIndexers } from 'Store/Actions/settingsActions';
 import { type EnhancedSelectInputChanged } from 'typings/inputs';
-import sortByProp from 'Utilities/Array/sortByProp';
-import translate from 'Utilities/String/translate';
+// import sortByProp from 'Utilities/Array/sortByProp';
+// import translate from 'Utilities/String/translate';
 import EnhancedSelectInput from './EnhancedSelectInput';
 
+/*
 function createIndexersSelector(includeAny: boolean) {
     return createSelector(
         (state: AppState) => state.settings.indexers,
@@ -37,6 +38,7 @@ function createIndexersSelector(includeAny: boolean) {
         },
     );
 }
+*/
 
 export interface IndexerSelectInputProps {
     name: string;
@@ -48,11 +50,16 @@ export interface IndexerSelectInputProps {
 function IndexerSelectInput({
     name,
     value,
-    includeAny = false,
+    // includeAny = false,
     onChange,
 }: IndexerSelectInputProps) {
     const dispatch = useDispatch();
-    const { isFetching, isPopulated, values } = useSelector(createIndexersSelector(includeAny));
+    // const { isFetching, isPopulated, values } = useSelector(createIndexersSelector(includeAny));
+    const isFetching = false;
+    const isPopulated = false;
+
+    // @ts-expect-error TODO:
+    const values = [];
 
     useEffect(() => {
         if (!isPopulated) {
@@ -65,6 +72,7 @@ function IndexerSelectInput({
             name={name}
             value={value}
             isFetching={isFetching}
+            // @ts-expect-error TODO:
             values={values}
             onChange={onChange}
         />

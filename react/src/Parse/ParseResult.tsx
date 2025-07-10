@@ -1,4 +1,4 @@
-import { type ParseModel } from 'App/State/ParseAppState';
+// import { type ParseModel } from 'App/State/ParseAppState';
 import FieldSet from 'Components/FieldSet';
 import IssueFormats from 'Issue/IssueFormats';
 import VolumesTitleLink from 'Volumes/VolumesTitleLink';
@@ -7,7 +7,8 @@ import ParseResultItem from './ParseResultItem';
 import styles from './ParseResult.module.css';
 
 interface ParseResultProps {
-    item: ParseModel;
+    // eslint-disable-next-line
+    item: any; //ParseModel;
 }
 
 function ParseResult(props: ParseResultProps) {
@@ -155,6 +156,7 @@ function ParseResult(props: ParseResultProps) {
             <FieldSet legend={translate('Languages')}>
                 <ParseResultItem
                     title={translate('Languages')}
+                    // @ts-expect-error TODO
                     data={finalLanguages.map((l) => l.name).join(', ')}
                 />
             </FieldSet>
@@ -181,11 +183,13 @@ function ParseResult(props: ParseResultProps) {
                     data={
                         issues.length ? (
                             <div>
+                                {/* @ts-expect-error TODO */}
                                 {issues.map((e) => {
                                     return (
                                         <div key={e.id}>
                                             {e.issueNumber}
-                                            {volumes?.volumesType === 'anime' && e.absoluteIssueNumber
+                                            {volumes?.volumesType === 'anime' &&
+                                            e.absoluteIssueNumber
                                                 ? ` (${e.absoluteIssueNumber})`
                                                 : ''}{' '}
                                             {` - ${e.title}`}
