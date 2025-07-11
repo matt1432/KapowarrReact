@@ -49,7 +49,7 @@ import VolumesIndexTable from './Table/VolumesIndexTable';
 import VolumesIndexTableOptions from './Table/VolumesIndexTableOptions';
 import styles from './index.module.css';
 import type { Volumes } from 'Volumes/Volumes';
-import useApiQuery from 'Helpers/Hooks/useApiQuery';
+import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 
 type ViewType = 'overview' | 'posters' | 'table';
 
@@ -114,12 +114,9 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
         view: 'overview' as ViewType,
     };
 
-    const { isFetching, error, data } = useApiQuery<object>({
-        queryParams: {
-            sort: sortKey,
-            filter: selectedFilterKey,
-        },
-        path: `/volumes`,
+    const { isFetching, error, data } = useGetVolumesQuery({
+        sort: sortKey,
+        filter: selectedFilterKey,
     });
 
     // const { isSmallScreen } = useSelector(createDimensionsSelector());

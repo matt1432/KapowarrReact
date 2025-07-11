@@ -8,7 +8,6 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import useApiQuery from 'Helpers/Hooks/useApiQuery';
 import { inputTypes } from 'Helpers/Props';
 // import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
 import { type InputChanged } from 'typings/inputs';
@@ -31,15 +30,15 @@ interface VolumesFolder {
 }
 
 function RootFolderModalContent(props: RootFolderModalContentProps) {
-    const { volumesId, onSavePress, onModalClose } = props;
+    const { /* volumesId, */ onSavePress, onModalClose } = props;
     // const { isWindows } = useSelector(createSystemStatusSelector());
     const isWindows = false;
 
     const [rootFolderPath, setRootFolderPath] = useState(props.rootFolderPath);
 
-    const { isLoading, data } = useApiQuery<VolumesFolder>({
-        path: `/volumes/${volumesId}/folder`,
-    });
+    const { isLoading, data } = { isLoading: false, data: {} as VolumesFolder }; // useApiQuery<VolumesFolder>({
+    //     path: `/volumes/${volumesId}/folder`,
+    // });
 
     const onInputChange = useCallback(({ value }: InputChanged<string>) => {
         setRootFolderPath(value);

@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createBrowserHistory } from 'history';
 import createReducers from 'Store/createReducers';
+import { baseApi } from './createApiEndpoints';
 
 function createAppStore() {
     const initHistory = createBrowserHistory();
@@ -11,7 +12,8 @@ function createAppStore() {
         preloadedState: {
             router: initHistory,
         },
-        middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(routerMiddleware),
+        middleware: (getDefaultMiddleware) =>
+            getDefaultMiddleware().concat(routerMiddleware, baseApi.middleware),
     });
 
     return {

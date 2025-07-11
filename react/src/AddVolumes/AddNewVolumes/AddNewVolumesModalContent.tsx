@@ -28,7 +28,6 @@ import VolumesPoster from 'Volumes/VolumesPoster';
 // import useIsWindows from 'System/useIsWindows';
 // import { type InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
-import { useAddVolumes } from './useAddVolumes';
 import styles from './AddNewVolumesModalContent.module.css';
 
 export interface AddNewVolumesModalContentProps {
@@ -48,7 +47,7 @@ function AddNewVolumesModalContent({
     const isSmallScreen = false;
     const isWindows = false; // useIsWindows();
 
-    const { isPending: isAdding /*error: addError, mutate: addVolumes */ } = useAddVolumes();
+    const { isPending: isAdding /*error: addError, mutate: addVolumes */ } = { isPending: false }; // = useAddVolumes();
 
     /*
     const { settings, validationErrors, validationWarnings } = useMemo(() => {

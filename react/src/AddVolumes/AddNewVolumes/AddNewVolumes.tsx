@@ -7,14 +7,13 @@ import Link from 'Components/Link/Link';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
-import useDebounce from 'Helpers/Hooks/useDebounce';
+// import useDebounce from 'Helpers/Hooks/useDebounce';
 import useQueryParams from 'Helpers/Hooks/useQueryParams';
 import { icons, kinds } from 'Helpers/Props';
 import { type InputChanged } from 'typings/inputs';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 import AddNewVolumesSearchResult from './AddNewVolumesSearchResult';
-import { useLookupVolumes } from './useAddVolumes';
 import styles from './AddNewVolumes.module.css';
 
 function AddNewVolumes() {
@@ -25,7 +24,7 @@ function AddNewVolumes() {
 
     const [term, setTerm] = useState(initialTerm);
     const [isFetching, setIsFetching] = useState(false);
-    const query = useDebounce(term, term ? 300 : 0);
+    // const query = useDebounce(term, term ? 300 : 0);
 
     const handleSearchInputChange = useCallback(({ value }: InputChanged<string>) => {
         setTerm(value);
@@ -37,7 +36,11 @@ function AddNewVolumes() {
         setIsFetching(false);
     }, []);
 
-    const { isFetching: isFetchingApi, error, data = [] } = useLookupVolumes(query);
+    const {
+        isFetching: isFetchingApi,
+        error,
+        data = [],
+    } = { isFetching: false, error: undefined, data: [] }; // useLookupVolumes(query);
 
     useEffect(() => {
         setIsFetching(isFetchingApi);
@@ -85,6 +88,7 @@ function AddNewVolumes() {
                 {!isFetching && !error && !!data.length ? (
                     <div className={styles.searchResults}>
                         {data.map((item) => {
+                            // @ts-expect-error TODO:
                             return <AddNewVolumesSearchResult key={item.tvdbId} volumes={item} />;
                         })}
                     </div>
