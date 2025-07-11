@@ -1,4 +1,4 @@
-import type { MonitorNewItems, VolumesMonitor, VolumesType } from 'Volumes/Volumes';
+// import type { MonitorNewItems, VolumesMonitor, VolumesType } from 'Volumes/Volumes';
 import { type Provider } from './Provider';
 
 export interface ImportList extends Provider {
@@ -7,8 +7,11 @@ export interface ImportList extends Provider {
     searchForMissingIssues: boolean;
     qualityProfileId: number;
     rootFolderPath: string;
+    // @ts-expect-error TODO
     shouldMonitor: VolumesMonitor;
+    // @ts-expect-error TODO
     monitorNewItems: MonitorNewItems;
+    // @ts-expect-error TODO
     volumesType: VolumesType;
     seasonFolder: boolean;
     listType: string;

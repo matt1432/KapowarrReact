@@ -1,71 +1,43 @@
 import classNames from 'classnames';
-// import { useSelector } from 'react-redux';
-// import { createSelector } from 'reselect';
 import { ColorImpairedConsumer } from 'App/ColorImpairedContext';
-// import { type VolumesAppState } from 'App/State/VolumesAppState';
 import DescriptionList from 'Components/DescriptionList/DescriptionList';
 import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem';
-// import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
-// import createDeepEqualSelector from 'Store/Selectors/createDeepEqualSelector';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 import styles from './VolumesIndexFooter.module.css';
-import type { Volumes } from 'Volumes/Volumes';
-
-/*
-function createUnoptimizedSelector() {
-    return createSelector(
-        createClientSideCollectionSelector('volumes', 'volumesIndex'),
-        (volumes: VolumesAppState) => {
-            return volumes.items.map((s) => {
-                const { monitored, status, statistics } = s;
-
-                return {
-                    monitored,
-                    status,
-                    statistics,
-                };
-            });
-        },
-    );
-}
-
-function createVolumesSelector() {
-    return createDeepEqualSelector(createUnoptimizedSelector(), (volumes) => volumes);
-}
-*/
+import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 
 export default function VolumesIndexFooter() {
-    // const volumes = useSelector(createVolumesSelector());
-    const volumes = [] as Volumes[];
-    const count = volumes.length;
-    let issues = 0;
+    const { data: volumes } = useGetVolumesQuery();
+    const count = volumes?.length;
+    let issuesQty = 0;
     let issueFiles = 0;
-    let ended = 0;
-    let continuing = 0;
+    // let ended = 0;
+    // let continuing = 0;
     let monitored = 0;
     let totalFileSize = 0;
 
-    volumes.forEach((s) => {
-        const { statistics = { issueCount: 0, issueFileCount: 0, sizeOnDisk: 0 } } = s;
+    volumes?.forEach((v) => {
+        const { issues, total_size } = v;
 
-        const { issueCount = 0, issueFileCount = 0, sizeOnDisk = 0 } = statistics;
+        issuesQty += issues.length;
+        issueFiles += issues.reduce((acc, issue) => acc + issue.files.length, 0);
 
-        issues += issueCount;
-        issueFiles += issueFileCount;
-
-        if (s.status === 'ended') {
+        // TODO
+        /*
+        if (v.status === 'ended') {
             ended++;
         }
         else {
             continuing++;
         }
+        */
 
-        if (s.monitored) {
+        if (v.monitored) {
             monitored++;
         }
 
-        totalFileSize += sizeOnDisk;
+        totalFileSize += total_size;
     });
 
     return (
@@ -129,12 +101,14 @@ export default function VolumesIndexFooter() {
                             <DescriptionList>
                                 <DescriptionListItem title={translate('Volumes')} data={count} />
 
+                                {/*
                                 <DescriptionListItem title={translate('Ended')} data={ended} />
 
                                 <DescriptionListItem
                                     title={translate('Continuing')}
                                     data={continuing}
                                 />
+                                */}
                             </DescriptionList>
 
                             <DescriptionList>
@@ -143,14 +117,16 @@ export default function VolumesIndexFooter() {
                                     data={monitored}
                                 />
 
+                                {/*
                                 <DescriptionListItem
                                     title={translate('Unmonitored')}
                                     data={count - monitored}
                                 />
+                                */}
                             </DescriptionList>
 
                             <DescriptionList>
-                                <DescriptionListItem title={translate('Issues')} data={issues} />
+                                <DescriptionListItem title={translate('Issues')} data={issuesQty} />
 
                                 <DescriptionListItem title={translate('Files')} data={issueFiles} />
                             </DescriptionList>

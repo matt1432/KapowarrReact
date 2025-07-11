@@ -6,7 +6,7 @@ import { FixedSizeList, type ListChildComponentProps } from 'react-window';
 import { type Column } from 'Components/Table/Column';
 import VirtualTable from 'Components/Table/VirtualTable';
 import { type SortDirection } from 'Helpers/Props/sortDirections';
-import { type Volumes } from 'Volumes/Volumes';
+import { type Volume } from 'Volumes/Volumes';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
 // import selectTableOptions from './selectTableOptions';
 import VolumesIndexRow from './VolumesIndexRow';
@@ -14,14 +14,14 @@ import VolumesIndexTableHeader from './VolumesIndexTableHeader';
 import styles from './VolumesIndexTable.module.css';
 
 interface RowItemData {
-    items: Volumes[];
+    items: Volume[];
     sortKey: string;
     columns: Column[];
     isSelectMode: boolean;
 }
 
 interface VolumesIndexTableProps {
-    items: Volumes[];
+    items: Volume[];
     sortKey: string;
     sortDirection?: SortDirection;
     jumpToCharacter?: string;

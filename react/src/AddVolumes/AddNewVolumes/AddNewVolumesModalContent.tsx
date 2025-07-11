@@ -21,7 +21,7 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import Popover from 'Components/Tooltip/Popover';
 import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
-import { type VolumesType } from 'Volumes/Volumes';
+// import { type VolumesType } from 'Volumes/Volumes';
 import VolumesPoster from 'Volumes/VolumesPoster';
 // import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 // import selectSettings from 'Store/Selectors/selectSettings';
@@ -32,6 +32,7 @@ import styles from './AddNewVolumesModalContent.module.css';
 
 export interface AddNewVolumesModalContentProps {
     volumes: AddVolumes;
+    // @ts-expect-error TODO:
     initialVolumesType: VolumesType;
     onModalClose: () => void;
 }
@@ -41,7 +42,15 @@ function AddNewVolumesModalContent({
     // initialVolumesType,
     onModalClose,
 }: AddNewVolumesModalContentProps) {
-    const { title, year, overview, images, folder } = volumes;
+    const {
+        title,
+        year,
+        // @ts-expect-error TODO:
+        overview,
+        // @ts-expect-error TODO:
+        images,
+        folder,
+    } = volumes;
     // const options = useAddVolumesOptions();
     // const { isSmallScreen } = useSelector(createDimensionsSelector());
     const isSmallScreen = false;

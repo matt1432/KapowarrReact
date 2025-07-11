@@ -16,7 +16,7 @@ import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContentFooter from 'Components/Page/PageContentFooter';
 import Popover from 'Components/Tooltip/Popover';
 import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
-import type { VolumesMonitor, VolumesType } from 'Volumes/Volumes';
+// import type { VolumesMonitor, VolumesType } from 'Volumes/Volumes';
 /*
 import {
     cancelLookupVolumes,
@@ -50,11 +50,12 @@ function ImportVolumesFooter() {
     const items = [];
     const importError = undefined;
 
-    const [monitor, setMonitor] = useState<VolumesMonitor | MixedType>(defaultMonitor);
+    const [monitor, setMonitor] = useState<string /*VolumesMonitor | MixedType*/>(defaultMonitor);
     const [qualityProfileId, setQualityProfileId] = useState<number | MixedType>(
         defaultQualityProfileId,
     );
-    const [volumesType, setVolumesType] = useState<VolumesType | MixedType>(defaultVolumesType);
+    const [volumesType, setVolumesType] =
+        useState<string /*VolumesType | MixedType*/>(defaultVolumesType);
     const [seasonFolder, setSeasonFolder] = useState<boolean | MixedType>(defaultSeasonFolder);
 
     const [selectState] = useSelect();
@@ -119,13 +120,13 @@ function ImportVolumesFooter() {
     const handleInputChange = useCallback(
         ({ name, value }: InputChanged<string | number | boolean | number[]>) => {
             if (name === 'monitor') {
-                setMonitor(value as VolumesMonitor);
+                setMonitor(value as string); // as VolumesMonitor);
             }
             else if (name === 'qualityProfileId') {
                 setQualityProfileId(value as number);
             }
             else if (name === 'volumesType') {
-                setVolumesType(value as VolumesType);
+                setVolumesType(value as string); // as VolumesType);
             }
             else if (name === 'seasonFolder') {
                 setSeasonFolder(value as boolean);

@@ -1,107 +1,30 @@
 import { type ModelBase } from 'App/ModelBase';
-import { type Language } from 'Language/Language';
+import type { GeneralFileData, Issue } from 'Issue/Issue';
 
-export type VolumesType = 'anime' | 'daily' | 'standard';
-export type VolumesMonitor =
-    | 'all'
-    | 'future'
-    | 'missing'
-    | 'existing'
-    | 'recent'
-    | 'pilot'
-    | 'firstSeason'
-    | 'lastSeason'
-    | 'monitorSpecials'
-    | 'unmonitorSpecials'
-    | 'none';
-
-export type VolumesStatus = 'continuing' | 'ended' | 'upcoming' | 'deleted';
-
-export type MonitorNewItems = 'all' | 'none';
-
-export type CoverType = 'poster' | 'banner' | 'fanart' | 'season';
-
-export interface Image {
-    coverType: CoverType;
-    url: string;
-    remoteUrl: string;
-}
-
-export interface Statistics {
-    seasonCount: number;
-    issueCount: number;
-    issueFileCount: number;
-    percentOfIssues: number;
-    previousAiring?: Date;
-    releaseGroups: string[];
-    sizeOnDisk: number;
-    totalIssueCount: number;
-    lastAired?: string;
-}
-
-export interface Season {
-    monitored: boolean;
-    seasonNumber: number;
-    statistics: Statistics;
-    isSaving?: boolean;
-}
-
-export interface Ratings {
-    votes: number;
-    value: number;
-}
-
-export interface AlternateTitle {
-    seasonNumber: number;
-    sceneSeasonNumber?: number;
+export interface VolumePublicInfo extends ModelBase {
+    comicvine_id: number;
+    libgen_url: string | null;
     title: string;
-    sceneOrigin: 'unknown' | 'unknown:tvdb' | 'mixed' | 'tvdb';
-    comment?: string;
-}
-
-export interface VolumesAddOptions {
-    monitor: VolumesMonitor;
-    searchForMissingIssues: boolean;
-    searchForCutoffUnmetIssues: boolean;
-}
-
-export interface Volumes extends ModelBase {
-    added: string;
-    alternateTitles: AlternateTitle[];
-    certification: string;
-    cleanTitle: string;
-    ended: boolean;
-    firstAired: string;
-    genres: string[];
-    images: Image[];
-    imdbId?: string;
-    monitored: boolean;
-    monitorNewItems: MonitorNewItems;
-    network: string;
-    originalLanguage: Language;
-    overview: string;
-    path: string;
-    previousAiring?: string;
-    nextAiring?: string;
-    qualityProfileId: number;
-    ratings: Ratings;
-    rootFolderPath: string;
-    runtime: number;
-    seasonFolder: boolean;
-    seasons: Season[];
-    volumesType: VolumesType;
-    sortTitle: string;
-    statistics?: Statistics;
-    status: VolumesStatus;
-    tags: number[];
-    title: string;
-    titleSlug: string;
-    tvdbId: number;
-    tvMazeId: number;
-    tvRageId: number;
-    tmdbId: number;
-    useSceneNumbering: boolean;
+    alt_title: string | null;
     year: number;
-    isSaving?: boolean;
-    addOptions: VolumesAddOptions;
+    publisher: string;
+    volume_number: number;
+    description: string;
+    site_url: string;
+    monitored: boolean;
+    monitor_new_issues: boolean;
+    root_folder: string;
+    folder: string;
+    custom_folder: boolean;
+    special_version: string;
+    special_version_locked: boolean;
+    last_cv_fetch: number;
+    issue_count: number;
+    issues_downloaded: number;
+    total_size: number;
+    volume_folder: string;
+    issues: Issue[];
+    general_files: GeneralFileData[];
 }
+
+export type Volume = VolumePublicInfo;

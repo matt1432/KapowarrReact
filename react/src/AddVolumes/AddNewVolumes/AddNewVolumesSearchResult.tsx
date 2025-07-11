@@ -7,7 +7,7 @@ import Label from 'Components/Label';
 import Link from 'Components/Link/Link';
 import MetadataAttribution from 'Components/MetadataAttribution';
 import { icons, kinds, sizes } from 'Helpers/Props';
-import { type Statistics } from 'Volumes/Volumes';
+// import { type Statistics } from 'Volumes/Volumes';
 import VolumesGenres from 'Volumes/VolumesGenres';
 import VolumesPoster from 'Volumes/VolumesPoster';
 // import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
@@ -22,18 +22,29 @@ interface AddNewVolumesSearchResultProps {
 
 function AddNewVolumesSearchResult({ volumes }: AddNewVolumesSearchResultProps) {
     const {
+        // @ts-expect-error TODO:
         tvdbId,
+        // @ts-expect-error TODO:
         titleSlug,
         title,
         year,
+        // @ts-expect-error TODO:
         network,
+        // @ts-expect-error TODO:
         originalLanguage,
+        // @ts-expect-error TODO:
         genres = [],
+        // @ts-expect-error TODO:
         status,
+        // @ts-expect-error TODO:
         statistics = {} as Statistics,
+        // @ts-expect-error TODO:
         ratings,
+        // @ts-expect-error TODO:
         overview,
+        // @ts-expect-error TODO:
         volumesType,
+        // @ts-expect-error TODO:
         images,
     } = volumes;
 

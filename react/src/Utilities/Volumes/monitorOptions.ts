@@ -1,8 +1,8 @@
-import { type VolumesMonitor } from 'Volumes/Volumes';
+// import { type VolumesMonitor } from 'Volumes/Volumes';
 import translate from 'Utilities/String/translate';
 
 interface MonitorOption {
-    key: VolumesMonitor;
+    key: string; // VolumesMonitor;
     value: string;
 }
 

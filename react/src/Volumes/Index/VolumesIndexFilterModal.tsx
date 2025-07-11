@@ -3,7 +3,7 @@ import { useDispatch /*, useSelector*/ } from 'react-redux';
 // import { createSelector } from 'reselect';
 // import { type AppState } from 'App/State/AppState';
 import FilterModal, { type FilterModalProps } from 'Components/Filter/FilterModal';
-import { type Volumes } from 'Volumes/Volumes';
+import { type Volume } from 'Volumes/Volumes';
 // import { setVolumesFilter } from 'Store/Actions/volumesIndexActions';
 
 /*
@@ -26,7 +26,7 @@ function createFilterBuilderPropsSelector() {
 }
 */
 
-type VolumesIndexFilterModalProps = FilterModalProps<Volumes>;
+type VolumesIndexFilterModalProps = FilterModalProps<Volume>;
 
 export default function VolumesIndexFilterModal(props: VolumesIndexFilterModalProps) {
     // const sectionItems = useSelector(createVolumesSelector());

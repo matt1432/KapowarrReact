@@ -12,7 +12,7 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds } from 'Helpers/Props';
-import { type Volumes } from 'Volumes/Volumes';
+import { type Volume } from 'Volumes/Volumes';
 // import { bulkDeleteVolumes, setDeleteOption } from 'Store/Actions/volumesActions';
 // import createAllVolumesSelector from 'Store/Selectors/createAllVolumesSelector';
 import { type InputChanged } from 'typings/inputs';
@@ -36,15 +36,15 @@ function DeleteVolumesModalContent(props: DeleteVolumesModalContentProps) {
     const { volumesIds, onModalClose } = props;
 
     // const { addImportListExclusion } = useSelector(selectDeleteOptions);
-    const allVolumes: Volumes[] = []; // useSelector(createAllVolumesSelector());
+    const allVolumes: Volume[] = []; // useSelector(createAllVolumesSelector());
     const dispatch = useDispatch();
 
     const [deleteFiles, setDeleteFiles] = useState(false);
 
-    const volumes = useMemo((): Volumes[] => {
+    const volumes = useMemo((): Volume[] => {
         const volumesList = volumesIds.map((id) => {
             return allVolumes.find((s) => s.id === id);
-        }) as Volumes[];
+        }) as Volume[];
 
         return orderBy(volumesList, ['sortTitle']);
     }, [volumesIds, allVolumes]);
@@ -93,11 +93,12 @@ function DeleteVolumesModalContent(props: DeleteVolumesModalContentProps) {
 
     const { totalIssueFileCount, totalSizeOnDisk } = useMemo(() => {
         return volumes.reduce(
-            (acc, { statistics = {} }) => {
-                const { issueFileCount = 0, sizeOnDisk = 0 } = statistics;
-
-                acc.totalIssueFileCount += issueFileCount;
-                acc.totalSizeOnDisk += sizeOnDisk;
+            (acc, { total_size, issues }) => {
+                acc.totalIssueFileCount += issues.reduce(
+                    (acc, issue) => acc + issue.files.length,
+                    0,
+                );
+                acc.totalSizeOnDisk += total_size;
 
                 return acc;
             },
@@ -159,9 +160,11 @@ function DeleteVolumesModalContent(props: DeleteVolumesModalContentProps) {
                 </div>
 
                 <ul>
-                    {volumes.map(({ title, path, statistics = {} }) => {
-                        const { issueFileCount = 0, sizeOnDisk = 0 } = statistics;
-
+                    {volumes.map(({ title, folder, issues, total_size }) => {
+                        const issueFileCount = issues.reduce(
+                            (acc, issue) => acc + issue.files.length,
+                            0,
+                        );
                         return (
                             <li key={title}>
                                 <span>{title}</span>
@@ -169,7 +172,7 @@ function DeleteVolumesModalContent(props: DeleteVolumesModalContentProps) {
                                 {deleteFiles && (
                                     <span>
                                         <span className={styles.pathContainer}>
-                                            -<span className={styles.path}>{path}</span>
+                                            -<span className={styles.path}>{folder}</span>
                                         </span>
 
                                         {!!issueFileCount && (
@@ -177,7 +180,7 @@ function DeleteVolumesModalContent(props: DeleteVolumesModalContentProps) {
                                                 (
                                                 {translate('DeleteVolumesFolderIssueCount', {
                                                     issueFileCount,
-                                                    size: formatBytes(sizeOnDisk),
+                                                    size: formatBytes(total_size),
                                                 })}
                                                 )
                                             </span>

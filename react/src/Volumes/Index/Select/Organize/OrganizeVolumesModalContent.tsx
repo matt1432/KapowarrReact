@@ -10,7 +10,7 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { icons, kinds } from 'Helpers/Props';
-import { type Volumes } from 'Volumes/Volumes';
+import { type Volume } from 'Volumes/Volumes';
 // import { executeCommand } from 'Store/Actions/commandActions';
 // import createAllVolumesSelector from 'Store/Selectors/createAllVolumesSelector';
 import translate from 'Utilities/String/translate';
@@ -24,11 +24,11 @@ interface OrganizeVolumesModalContentProps {
 function OrganizeVolumesModalContent(props: OrganizeVolumesModalContentProps) {
     const { volumesIds, onModalClose } = props;
 
-    const allVolumes: Volumes[] = []; // useSelector(createAllVolumesSelector());
+    const allVolumes: Volume[] = []; // useSelector(createAllVolumesSelector());
     const dispatch = useDispatch();
 
     const volumesTitles = useMemo(() => {
-        const volumes = volumesIds.reduce((acc: Volumes[], id) => {
+        const volumes = volumesIds.reduce((acc: Volume[], id) => {
             const s = allVolumes.find((s) => s.id === id);
 
             if (s) {

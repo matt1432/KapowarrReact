@@ -4,7 +4,7 @@ import { sizes } from 'Helpers/Props';
 /*import createVolumesQueueItemsDetailsSelector, {
     type VolumesQueueDetails,
 } from 'Volumes/Index/createVolumesQueueDetailsSelector';*/
-import { type VolumesStatus } from 'Volumes/Volumes';
+// import { type VolumesStatus } from 'Volumes/Volumes';
 import getProgressBarKind from 'Utilities/Volumes/getProgressBarKind';
 import translate from 'Utilities/String/translate';
 import styles from './VolumesIndexProgressBar.module.css';
@@ -13,7 +13,7 @@ interface VolumesIndexProgressBarProps {
     volumesId: number;
     seasonNumber?: number;
     monitored: boolean;
-    status: VolumesStatus;
+    status: string; // VolumesStatus;
     issueCount: number;
     issueFileCount: number;
     totalIssueCount: number;

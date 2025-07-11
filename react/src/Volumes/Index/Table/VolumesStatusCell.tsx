@@ -4,7 +4,7 @@ import Icon from 'Components/Icon';
 import MonitorToggleButton from 'Components/MonitorToggleButton';
 import VirtualTableRowCell from 'Components/Table/Cells/TableRowCell';
 import { icons } from 'Helpers/Props';
-import { type VolumesStatus } from 'Volumes/Volumes';
+// import { type VolumesStatus } from 'Volumes/Volumes';
 import { getVolumesStatusDetails } from 'Volumes/VolumesStatus';
 // import { toggleVolumesMonitored } from 'Store/Actions/volumesActions';
 import translate from 'Utilities/String/translate';
@@ -14,7 +14,7 @@ interface VolumesStatusCellProps {
     className: string;
     volumesId: number;
     monitored: boolean;
-    status: VolumesStatus;
+    status: string; // VolumesStatus;
     isSelectMode: boolean;
     isSaving: boolean;
     component?: React.ElementType;

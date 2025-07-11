@@ -13,7 +13,7 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds, sizes } from 'Helpers/Props';
-import { type Volumes } from 'Volumes/Volumes';
+import { type Volume } from 'Volumes/Volumes';
 // import createAllVolumesSelector from 'Store/Selectors/createAllVolumesSelector';
 // import createTagsSelector from 'Store/Selectors/createTagsSelector';
 import translate from 'Utilities/String/translate';
@@ -28,7 +28,7 @@ interface TagsModalContentProps {
 function TagsModalContent(props: TagsModalContentProps) {
     const { volumesIds, onModalClose, onApplyTagsPress } = props;
 
-    const allVolumes: Volumes[] = []; // useSelector(createAllVolumesSelector());
+    const allVolumes: Volume[] = []; // useSelector(createAllVolumesSelector());
     // @ts-expect-error TODO
     const tagList: Tag[] = []; // useSelector(createTagsSelector());
 
@@ -40,6 +40,7 @@ function TagsModalContent(props: TagsModalContentProps) {
             const s = allVolumes.find((s) => s.id === id);
 
             if (s) {
+                // @ts-expect-error TODO:
                 acc.push(...s.tags);
             }
 

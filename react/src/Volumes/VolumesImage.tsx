@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { type CoverType, type Image } from './Volumes';
+// import { type CoverType, type Image } from './Volumes';
 
+// @ts-expect-error TODO
 function findImage(images: Image[], coverType: CoverType) {
     return images.find((image) => image.coverType === coverType);
 }
 
+// @ts-expect-error TODO
 function getUrl(image: Image, coverType: CoverType, size: number) {
     const imageUrl = image?.url;
 
@@ -15,7 +17,9 @@ function getUrl(image: Image, coverType: CoverType, size: number) {
 export interface VolumesImageProps {
     className?: string;
     style?: object;
+    // @ts-expect-error TODO
     images: Image[];
+    // @ts-expect-error TODO
     coverType: CoverType;
     placeholder: string;
     size?: number;
@@ -42,6 +46,7 @@ function VolumesImage({
     const [url, setUrl] = useState<string | null>(null);
     const [hasError, setHasError] = useState(false);
     const [isLoaded, setIsLoaded] = useState(true);
+    // @ts-expect-error TODO
     const image = useRef<Image | null>(null);
 
     const handleLoad = useCallback(() => {

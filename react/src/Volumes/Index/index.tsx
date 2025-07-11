@@ -48,7 +48,7 @@ import VolumesIndexRefreshVolumesButton from './VolumesIndexRefreshVolumesButton
 import VolumesIndexTable from './Table/VolumesIndexTable';
 import VolumesIndexTableOptions from './Table/VolumesIndexTableOptions';
 import styles from './index.module.css';
-import type { Volumes } from 'Volumes/Volumes';
+import type { Volume } from 'Volumes/Volumes';
 import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 
 type ViewType = 'overview' | 'posters' | 'table';
@@ -104,7 +104,7 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
     } = {
         isPopulated: false,
         totalItems: 0,
-        items: [] as Volumes[],
+        items: [] as Volume[],
         columns: [],
         selectedFilterKey: '',
         filters: [],
@@ -210,7 +210,7 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
         }
 
         const characters = items.reduce((acc: Record<string, number>, item) => {
-            let char = item.sortTitle.charAt(0);
+            let char = item.title.charAt(0);
 
             if (!isNaN(Number(char))) {
                 char = '#';

@@ -1,11 +1,11 @@
 import { createPersist } from 'Helpers/createPersist';
-import type { VolumesMonitor, VolumesType } from 'Volumes/Volumes';
+// import type { VolumesMonitor, VolumesType } from 'Volumes/Volumes';
 
 export interface AddVolumesOptions {
     rootFolderPath: string;
-    monitor: VolumesMonitor;
+    monitor: string; // VolumesMonitor;
     qualityProfileId: number;
-    volumesType: VolumesType;
+    volumesType: string; // VolumesType;
     seasonFolder: boolean;
     searchForMissingIssues: boolean;
     searchForCutoffUnmetIssues: boolean;

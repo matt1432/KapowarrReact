@@ -1,7 +1,7 @@
 import VirtualTableRowCell from 'Components/Table/Cells/VirtualTableRowCell';
 import Popover from 'Components/Tooltip/Popover';
 import SeasonDetails from 'Volumes/Index/Select/SeasonPass/SeasonDetails';
-import { type Season } from 'Volumes/Volumes';
+// import { type Season } from 'Volumes/Volumes';
 import translate from 'Utilities/String/translate';
 import styles from './SeasonsCell.module.css';
 
@@ -9,7 +9,8 @@ interface VolumesStatusCellProps {
     className: string;
     volumesId: number;
     seasonCount: number;
-    seasons: Season[];
+    // eslint-disable-next-line
+    seasons: any[]; // Season[];
     isSelectMode: boolean;
 }
 

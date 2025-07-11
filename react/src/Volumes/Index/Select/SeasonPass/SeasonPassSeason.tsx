@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import MonitorToggleButton from 'Components/MonitorToggleButton';
 import formatSeason from 'Season/formatSeason';
-import { type Statistics } from 'Volumes/Volumes';
+// import { type Statistics } from 'Volumes/Volumes';
 // import { toggleSeasonMonitored } from 'Store/Actions/volumesActions';
 import translate from 'Utilities/String/translate';
 import styles from './SeasonPassSeason.module.css';
@@ -12,6 +12,8 @@ interface SeasonPassSeasonProps {
     volumesId: number;
     seasonNumber: number;
     monitored: boolean;
+
+    // @ts-expect-error TODO:
     statistics: Statistics;
     isSaving: boolean;
 }

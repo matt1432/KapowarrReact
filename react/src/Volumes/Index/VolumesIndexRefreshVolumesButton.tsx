@@ -11,7 +11,7 @@ import { icons } from 'Helpers/Props';
 // import createVolumesClientSideCollectionItemsSelector from 'Store/Selectors/createVolumesClientSideCollectionItemsSelector';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
-import type { Volumes } from 'Volumes/Volumes';
+import type { Volume } from 'Volumes/Volumes';
 
 interface VolumesIndexRefreshVolumesButtonProps {
     isSelectMode: boolean;
@@ -30,7 +30,7 @@ function VolumesIndexRefreshVolumesButton(props: VolumesIndexRefreshVolumesButto
     );
     */
     const isRefreshing = false;
-    const items = [] as Volumes[];
+    const items = [] as Volume[];
     const totalItems = 0;
 
     const dispatch = useDispatch();

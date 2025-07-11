@@ -1,18 +1,23 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import getQueryString from 'Utilities/Fetch/getQueryString';
-import type { Volumes } from 'Volumes/Volumes';
+import type { Volume } from 'Volumes/Volumes';
+
+export type GetVolumesParams = { filter?: string; sort?: string } | undefined;
 
 export const baseApi = createApi({
     reducerPath: 'baseApi',
     baseQuery: fetchBaseQuery({ baseUrl: window.Kapowarr.urlBase + window.Kapowarr.apiRoot }),
     endpoints: (build) => ({
-        getVolumes: build.query<Volumes[], { filter: string; sort: string }>({
-            query: (params) =>
-                'volumes' + getQueryString({ ...params, api_key: window.Kapowarr.apiKey }),
+        getVolumes: build.query<Volume[], GetVolumesParams>({
+            query: ({ filter, sort } = {}) =>
+                'volumes' +
+                getQueryString({
+                    filter: filter ?? '',
+                    sort: sort ?? '',
+                    api_key: window.Kapowarr.apiKey,
+                }),
         }),
     }),
 });
 
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
-export const { useGetVolumesQuery } = baseApi;
+export const useGetVolumesQuery = (params?: GetVolumesParams) => baseApi.useGetVolumesQuery(params);

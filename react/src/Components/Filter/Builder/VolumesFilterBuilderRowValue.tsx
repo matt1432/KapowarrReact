@@ -1,5 +1,5 @@
 // import { useSelector } from 'react-redux';
-import { type Volumes } from 'Volumes/Volumes';
+import { type Volume } from 'Volumes/Volumes';
 // import createAllVolumesSelector from 'Store/Selectors/createAllVolumesSelector';
 import sortByProp from 'Utilities/Array/sortByProp';
 import FilterBuilderRowValue, { type FilterBuilderRowValueProps } from './FilterBuilderRowValue';
@@ -7,7 +7,7 @@ import FilterBuilderRowValue, { type FilterBuilderRowValueProps } from './Filter
 type VolumesFilterBuilderRowValueProps<T> = Omit<FilterBuilderRowValueProps<T, number>, 'tagList'>;
 
 function VolumesFilterBuilderRowValue<T>(props: VolumesFilterBuilderRowValueProps<T>) {
-    const allVolumes: Volumes[] = []; // useSelector(createAllVolumesSelector());
+    const allVolumes: Volume[] = []; // useSelector(createAllVolumesSelector());
 
     const tagList = allVolumes
         .map((volumes) => ({ id: volumes.id, name: volumes.title }))

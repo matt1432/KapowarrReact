@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
-import { type Season } from 'Volumes/Volumes';
+// import { type Season } from 'Volumes/Volumes';
 import translate from 'Utilities/String/translate';
 import SeasonPassSeason from './SeasonPassSeason';
 import styles from './SeasonDetails.module.css';
 
 interface SeasonDetailsProps {
     volumesId: number;
+    // @ts-expect-error TODO:
     seasons: Season[];
 }
 

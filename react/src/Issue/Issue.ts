@@ -1,27 +1,28 @@
 import { type ModelBase } from 'App/ModelBase';
-import { type Volumes } from 'Volumes/Volumes';
 
-export interface Issue extends ModelBase {
-    volumesId: number;
-    tvdbId: number;
-    issueFileId: number;
-    seasonNumber: number;
-    issueNumber: number;
-    airDate: string;
-    airDateUtc?: string;
-    lastSearchTime?: string;
-    runtime: number;
-    absoluteIssueNumber?: number;
-    sceneSeasonNumber?: number;
-    sceneIssueNumber?: number;
-    sceneAbsoluteIssueNumber?: number;
-    overview: string;
-    title: string;
-    issueFile?: object;
-    hasFile: boolean;
-    monitored: boolean;
-    grabbed?: boolean;
-    unverifiedSceneNumbering: boolean;
-    volumes?: Volumes;
-    finaleType?: string;
+export interface FileData extends ModelBase {
+    filepath: string;
+    size: number;
+    releaser: string;
+    scan_type: string;
+    resolution: string;
+    dpi: string;
 }
+
+export interface GeneralFileData extends FileData {
+    file_type: string;
+}
+
+export interface IssueData extends ModelBase {
+    volume_id: number;
+    comicvine_id: number;
+    issue_number: string;
+    calculated_issue_number: number;
+    title: string | null;
+    date: string | null;
+    description: string | null;
+    monitored: boolean;
+    files: FileData[];
+}
+
+export type Issue = IssueData;

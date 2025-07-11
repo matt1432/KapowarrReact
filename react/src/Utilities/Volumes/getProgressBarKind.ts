@@ -1,8 +1,8 @@
 import { kinds } from 'Helpers/Props';
-import { type VolumesStatus } from 'Volumes/Volumes';
+// import { type VolumesStatus } from 'Volumes/Volumes';
 
 function getProgressBarKind(
-    status: VolumesStatus,
+    status: string, // VolumesStatus,
     monitored: boolean,
     progress: number,
     isDownloading: boolean,

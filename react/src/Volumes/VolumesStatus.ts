@@ -1,8 +1,8 @@
 import { icons } from 'Helpers/Props';
-import { type VolumesStatus } from 'Volumes/Volumes';
+// import { type VolumesStatus } from 'Volumes/Volumes';
 import translate from 'Utilities/String/translate';
 
-export function getVolumesStatusDetails(status: VolumesStatus) {
+export function getVolumesStatusDetails(status: string /* VolumesStatus */) {
     let statusDetails = {
         icon: icons.VOLUMES_CONTINUING,
         title: translate('Continuing'),
