@@ -7,7 +7,7 @@ import { FixedSizeGrid as Grid, type GridChildComponentProps } from 'react-windo
 import useMeasure from 'Helpers/Hooks/useMeasure';
 import { type SortDirection } from 'Helpers/Props/sortDirections';
 import VolumesIndexPoster from 'Volumes/Index/Posters/VolumesIndexPoster';
-import { type Volume } from 'Volumes/Volumes';
+import { type VolumePublicInfo } from 'Volumes/Volumes';
 import dimensions from 'Styles/Variables/dimensions';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
 
@@ -31,13 +31,13 @@ interface CellItemData {
         posterWidth: number;
         posterHeight: number;
     };
-    items: Volume[];
+    items: VolumePublicInfo[];
     sortKey: string;
     isSelectMode: boolean;
 }
 
 interface VolumesIndexPostersProps {
-    items: Volume[];
+    items: VolumePublicInfo[];
     sortKey: string;
     sortDirection?: SortDirection;
     jumpToCharacter?: string;

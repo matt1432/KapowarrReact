@@ -3,7 +3,7 @@ import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
 // import { useSelector } from 'react-redux';
 import { FixedSizeList as List, type ListChildComponentProps } from 'react-window';
 import useMeasure from 'Helpers/Hooks/useMeasure';
-import { type Volume } from 'Volumes/Volumes';
+import { type VolumePublicInfo } from 'Volumes/Volumes';
 import dimensions from 'Styles/Variables/dimensions';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
 // import selectOverviewOptions from './selectOverviewOptions';
@@ -18,7 +18,7 @@ const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
 const bodyPaddingSmallScreen = parseInt(dimensions.pageContentBodyPaddingSmallScreen);
 
 interface RowItemData {
-    items: Volume[];
+    items: VolumePublicInfo[];
     sortKey: string;
     posterWidth: number;
     posterHeight: number;
@@ -28,7 +28,7 @@ interface RowItemData {
 }
 
 interface VolumesIndexOverviewsProps {
-    items: Volume[];
+    items: VolumePublicInfo[];
     sortKey: string;
     sortDirection?: string;
     jumpToCharacter?: string;

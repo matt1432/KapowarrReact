@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import MonitorToggleButton from 'Components/MonitorToggleButton';
-import formatSeason from 'Season/formatSeason';
+// import formatSeason from 'Season/formatSeason';
 // import { type Statistics } from 'Volumes/Volumes';
 // import { toggleSeasonMonitored } from 'Store/Actions/volumesActions';
 import translate from 'Utilities/String/translate';
@@ -47,7 +47,7 @@ function SeasonPassSeason(props: SeasonPassSeasonProps) {
                     onPress={onSeasonMonitoredPress}
                 />
 
-                <span>{formatSeason(seasonNumber, true)}</span>
+                {/*<span>{formatSeason(seasonNumber, true)}</span>*/}
             </div>
 
             <div

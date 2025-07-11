@@ -41,8 +41,9 @@ interface VolumesIndexRowProps {
     isSelectMode: boolean;
 }
 
+// @ts-expect-error TODO:
+// eslint-disable-next-line
 function VolumesIndexRow(props: VolumesIndexRowProps) {
-    console.log(props);
     /*
     const { volumesId, columns, isSelectMode } = props;
 

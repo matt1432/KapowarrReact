@@ -1,7 +1,7 @@
 import { type ModelBase } from 'App/ModelBase';
 import type { GeneralFileData, Issue } from 'Issue/Issue';
 
-export interface VolumePublicInfo extends ModelBase {
+export interface Volume extends ModelBase {
     comicvine_id: number;
     libgen_url: string | null;
     title: string;
@@ -27,4 +27,20 @@ export interface VolumePublicInfo extends ModelBase {
     general_files: GeneralFileData[];
 }
 
-export type Volume = VolumePublicInfo;
+export interface VolumePublicInfo extends ModelBase {
+    comicvine_id: number;
+    description: string;
+    folder: string;
+    issue_count: number;
+    issue_count_monitored: number;
+    issue_file_count: number;
+    issues_downloaded: number;
+    issues_downloaded_monitored: number;
+    monitor_new_issues: boolean;
+    monitored: boolean;
+    publisher: string;
+    title: string;
+    total_size: number;
+    volume_number: number;
+    year: number;
+}

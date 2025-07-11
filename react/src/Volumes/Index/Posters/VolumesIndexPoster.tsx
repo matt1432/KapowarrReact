@@ -33,8 +33,9 @@ interface VolumesIndexPosterProps {
     posterHeight: number;
 }
 
+// @ts-expect-error TODO:
+// eslint-disable-next-line
 function VolumesIndexPoster(props: VolumesIndexPosterProps) {
-    console.log(props);
     /*
     const { volumesId, sortKey, isSelectMode, posterWidth, posterHeight } = props;
 

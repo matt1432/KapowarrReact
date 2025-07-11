@@ -43,8 +43,9 @@ interface VolumesIndexOverviewProps {
     isSmallScreen: boolean;
 }
 
+// @ts-expect-error TODO:
+// eslint-disable-next-line
 function VolumesIndexOverview(props: VolumesIndexOverviewProps) {
-    console.log(props);
     /*
     const {
         volumesId,

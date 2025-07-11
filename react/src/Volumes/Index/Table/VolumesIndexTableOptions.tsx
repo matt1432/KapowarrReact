@@ -12,8 +12,9 @@ interface VolumesIndexTableOptionsProps {
     onTableOptionChange(...args: unknown[]): unknown;
 }
 
+// @ts-expect-error TODO:
+// eslint-disable-next-line
 function VolumesIndexTableOptions(props: VolumesIndexTableOptionsProps) {
-    console.log(props);
     // const { onTableOptionChange } = props;
 
     // const tableOptions = useSelector(selectTableOptions);

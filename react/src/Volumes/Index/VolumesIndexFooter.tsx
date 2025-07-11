@@ -10,7 +10,7 @@ import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 export default function VolumesIndexFooter() {
     const { data: volumes } = useGetVolumesQuery();
     const count = volumes?.length;
-    let issuesQty = 0;
+    let issues = 0;
     let issueFiles = 0;
     // let ended = 0;
     // let continuing = 0;
@@ -18,10 +18,10 @@ export default function VolumesIndexFooter() {
     let totalFileSize = 0;
 
     volumes?.forEach((v) => {
-        const { issues, total_size } = v;
+        const { issue_count, issue_file_count, total_size } = v;
 
-        issuesQty += issues.length;
-        issueFiles += issues.reduce((acc, issue) => acc + issue.files.length, 0);
+        issues += issue_count;
+        issueFiles += issue_file_count;
 
         // TODO
         /*
@@ -126,7 +126,7 @@ export default function VolumesIndexFooter() {
                             </DescriptionList>
 
                             <DescriptionList>
-                                <DescriptionListItem title={translate('Issues')} data={issuesQty} />
+                                <DescriptionListItem title={translate('Issues')} data={issues} />
 
                                 <DescriptionListItem title={translate('Files')} data={issueFiles} />
                             </DescriptionList>

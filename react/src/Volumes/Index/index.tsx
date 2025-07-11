@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { useDispatch /*, useSelector*/ } from 'react-redux';
 import { SelectProvider } from 'App/SelectContext';
-// import { type ClientSideCollectionAppState } from 'App/State/ClientSideCollectionAppState';
-// import { type VolumesAppState, type VolumesIndexAppState } from 'App/State/VolumesAppState';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
@@ -29,7 +27,6 @@ import NoVolumes from 'Volumes/NoVolumes';
 } from 'Store/Actions/volumesIndexActions';*/
 import scrollPositions from 'Store/scrollPositions';
 // import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-// import createVolumesClientSideCollectionItemsSelector from 'Store/Selectors/createVolumesClientSideCollectionItemsSelector';
 import translate from 'Utilities/String/translate';
 import VolumesIndexFilterMenu from './Menus/VolumesIndexFilterMenu';
 import VolumesIndexSortMenu from './Menus/VolumesIndexSortMenu';
@@ -48,8 +45,8 @@ import VolumesIndexRefreshVolumesButton from './VolumesIndexRefreshVolumesButton
 import VolumesIndexTable from './Table/VolumesIndexTable';
 import VolumesIndexTableOptions from './Table/VolumesIndexTableOptions';
 import styles from './index.module.css';
-import type { Volume } from 'Volumes/Volumes';
 import { useGetVolumesQuery } from 'Store/createApiEndpoints';
+import type { VolumePublicInfo } from 'Volumes/Volumes';
 
 type ViewType = 'overview' | 'posters' | 'table';
 
@@ -72,11 +69,6 @@ interface VolumesIndexProps {
 const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
     /*
     const {
-        isFetching,
-        isPopulated,
-        error,
-        totalItems,
-        items,
         columns,
         selectedFilterKey,
         filters,
@@ -90,21 +82,8 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
 
     const view = _view as 'overview' | 'posters' | 'table';
     */
-    const {
-        isPopulated,
-        totalItems,
-        items,
-        columns,
-        selectedFilterKey,
-        filters,
-        customFilters,
-        sortKey,
-        sortDirection,
-        view,
-    } = {
-        isPopulated: false,
-        totalItems: 0,
-        items: [] as Volume[],
+
+    const { columns, selectedFilterKey, filters, customFilters, sortKey, sortDirection, view } = {
         columns: [],
         selectedFilterKey: '',
         filters: [],
@@ -119,6 +98,15 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
         filter: selectedFilterKey,
     });
 
+    const [items, setItems] = useState<VolumePublicInfo[]>([]);
+
+    useEffect(() => {
+        setItems(data ?? []);
+    }, [data]);
+
+    const isPopulated = items !== undefined;
+    const totalItems = items.length;
+
     // const { isSmallScreen } = useSelector(createDimensionsSelector());
     const isSmallScreen = false;
     const dispatch = useDispatch();
@@ -128,10 +116,10 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
     const [isSelectMode, setIsSelectMode] = useState(false);
 
     useEffect(() => {
-        console.log(data);
+        console.log(items);
         // dispatch(fetchVolumes());
         // dispatch(fetchQueueDetails({ all: true }));
-    }, [dispatch, data]);
+    }, [dispatch, items]);
 
     const onSelectModePress = useCallback(() => {
         setIsSelectMode(!isSelectMode);

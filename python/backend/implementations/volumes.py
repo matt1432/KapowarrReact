@@ -822,6 +822,9 @@ class Library:
                 monitored, monitor_new_issues,
                 folder,
                 (
+                    SELECT COUNT(size) FROM (SELECT size FROM issues_to_files)
+                ) AS issue_file_count,
+                (
                     SELECT COUNT(id) FROM vol_issues
                 ) AS issue_count,
                 (
