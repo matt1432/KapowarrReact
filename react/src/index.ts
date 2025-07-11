@@ -19,8 +19,10 @@ window.Kapowarr.urlBase = (document.querySelector('#url_base') as HTMLButtonElem
 window.Kapowarr.apiRoot = '/api';
 
 (async () => {
+    const key = await getApiKey();
+
     // TODO: handle when apiKey is undefined
-    window.Kapowarr.apiKey = (await getApiKey()) ?? '';
+    window.Kapowarr.apiKey = key ?? '';
 
     setupLocalStorage();
 
