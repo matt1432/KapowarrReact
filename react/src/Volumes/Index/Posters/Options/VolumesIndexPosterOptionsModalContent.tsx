@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { useDispatch /*, useSelector*/ } from 'react-redux';
+import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
+import { setVolumesPosterOption, type VolumesIndexState } from 'Store/Slices/VolumesIndex';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -11,8 +12,6 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes } from 'Helpers/Props';
-// import selectPosterOptions from 'Volumes/Index/Posters/selectPosterOptions';
-// import { setVolumesPosterOption } from 'Store/Actions/volumesIndexActions';
 import translate from 'Utilities/String/translate';
 
 const posterSizeOptions: EnhancedSelectInputValue<string>[] = [
@@ -40,47 +39,20 @@ interface VolumesIndexPosterOptionsModalContentProps {
     onModalClose(...args: unknown[]): unknown;
 }
 
-function VolumesIndexPosterOptionsModalContent(props: VolumesIndexPosterOptionsModalContentProps) {
-    const { onModalClose } = props;
+function VolumesIndexPosterOptionsModalContent({
+    onModalClose,
+}: VolumesIndexPosterOptionsModalContentProps) {
+    const { detailedProgressBar, size, showTitle, showMonitored, showSearchAction } =
+        useRootSelector((state) => state.volumesIndex.posterOptions);
 
-    /*
-    const posterOptions = useSelector(selectPosterOptions);
-
-    const {
-        detailedProgressBar,
-        size,
-        showTitle,
-        showMonitored,
-        showQualityProfile,
-        showTags,
-        showSearchAction,
-    } = posterOptions;
-    */
-    const {
-        detailedProgressBar,
-        size,
-        showTitle,
-        showMonitored,
-        showQualityProfile,
-        showTags,
-        showSearchAction,
-    } = {
-        detailedProgressBar: false,
-        size: 0,
-        showTitle: false,
-        showMonitored: false,
-        showQualityProfile: false,
-        showTags: false,
-        showSearchAction: false,
-    };
-
-    const dispatch = useDispatch();
+    const dispatch = useRootDispatch();
 
     const onPosterOptionChange = useCallback(
-        // @ts-expect-error TODO:
-        // eslint-disable-next-line
         ({ name, value }: { name: string; value: unknown }) => {
-            // dispatch(setVolumesPosterOption({ [name]: value }));
+            const payload = {
+                [name]: value,
+            } as Partial<VolumesIndexState['posterOptions']>;
+            dispatch(setVolumesPosterOption(payload));
         },
         [dispatch],
     );
@@ -135,30 +107,6 @@ function VolumesIndexPosterOptionsModalContent(props: VolumesIndexPosterOptionsM
                             name="showMonitored"
                             value={showMonitored}
                             helpText={translate('ShowMonitoredHelpText')}
-                            onChange={onPosterOptionChange}
-                        />
-                    </FormGroup>
-
-                    <FormGroup>
-                        <FormLabel>{translate('ShowQualityProfile')}</FormLabel>
-
-                        <FormInputGroup
-                            type={inputTypes.CHECK}
-                            name="showQualityProfile"
-                            value={showQualityProfile}
-                            helpText={translate('ShowQualityProfileHelpText')}
-                            onChange={onPosterOptionChange}
-                        />
-                    </FormGroup>
-
-                    <FormGroup>
-                        <FormLabel>{translate('ShowTags')}</FormLabel>
-
-                        <FormInputGroup
-                            type={inputTypes.CHECK}
-                            name="showTags"
-                            value={showTags}
-                            helpText={translate('ShowTagsHelpText')}
                             onChange={onPosterOptionChange}
                         />
                     </FormGroup>

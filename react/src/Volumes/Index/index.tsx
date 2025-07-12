@@ -1,21 +1,10 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+
+// Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import { SelectProvider } from 'App/SelectContext';
-import Alert from 'Components/Alert';
-import LoadingIndicator from 'Components/Loading/LoadingIndicator';
-import PageContent from 'Components/Page/PageContent';
-import PageContentBody from 'Components/Page/PageContentBody';
-import PageJumpBar, { type PageJumpBarItems } from 'Components/Page/PageJumpBar';
-import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
-import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
-import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
-import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
-import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
-import withScrollPosition from 'Components/withScrollPosition';
-import { align, icons, kinds } from 'Helpers/Props';
-import { DESCENDING, type SortDirection } from 'Helpers/Props/sortDirections';
-import ParseToolbarButton from 'Parse/ParseToolbarButton';
-import NoVolumes from 'Volumes/NoVolumes';
 import {
     setVolumesFilter,
     setVolumesSort,
@@ -23,11 +12,37 @@ import {
     setVolumesTableOption,
     type VolumesIndexState,
 } from 'Store/Slices/VolumesIndex';
+
+import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 // TODO:
 // import { fetchQueueDetails } from 'Store/Actions/queueActions';
-// import { fetchVolumes } from 'Store/Actions/volumesActions';
+
+// Misc
+import { align, icons, kinds } from 'Helpers/Props';
+import { DESCENDING, type SortDirection } from 'Helpers/Props/sortDirections';
+
 import scrollPositions from 'Store/scrollPositions';
 import translate from 'Utilities/String/translate';
+
+// General Components
+import { SelectProvider } from 'App/SelectContext';
+
+import withScrollPosition from 'Components/withScrollPosition';
+
+import Alert from 'Components/Alert';
+import LoadingIndicator from 'Components/Loading/LoadingIndicator';
+import NoVolumes from 'Volumes/NoVolumes';
+import PageContent from 'Components/Page/PageContent';
+import PageContentBody from 'Components/Page/PageContentBody';
+import PageJumpBar, { type PageJumpBarItems } from 'Components/Page/PageJumpBar';
+import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
+import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
+import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
+import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
+import ParseToolbarButton from 'Parse/ParseToolbarButton';
+import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
+
+// Specific Components
 import VolumesIndexFilterMenu from './Menus/VolumesIndexFilterMenu';
 import VolumesIndexSortMenu from './Menus/VolumesIndexSortMenu';
 import VolumesIndexViewMenu from './Menus/VolumesIndexViewMenu';
@@ -41,8 +56,11 @@ import VolumesIndexSelectModeMenuItem from './Select/VolumesIndexSelectModeMenuI
 import VolumesIndexFooter from './VolumesIndexFooter';
 import VolumesIndexRefreshVolumesButton from './VolumesIndexRefreshVolumesButton';
 import VolumesIndexTableOptions from './Table/VolumesIndexTableOptions';
+
+// CSS
 import styles from './index.module.css';
-import { useGetVolumesQuery } from 'Store/createApiEndpoints';
+
+// Types
 import type { VolumePublicInfo } from 'Volumes/Volumes';
 
 export type IndexView = 'posters' | 'table';
@@ -51,14 +69,16 @@ export type IndexSort =
     | 'title'
     | 'volume_number'
     | 'year'
-    | 'recently_added'
-    | 'recently_released'
     | 'publisher'
-    | 'wanted';
+    | 'wanted'
+    | 'total_size'
+    | 'folder';
 
 interface VolumesIndexProps {
     initialScrollTop?: number;
 }
+
+// IMPLEMENTATIONS
 
 const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
     const { columns } = useRootSelector((state) => state.volumesIndex.tableOptions);
@@ -89,8 +109,6 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
     const [isSelectMode, setIsSelectMode] = useState(false);
 
     useEffect(() => {
-        console.log(items);
-        // dispatch(fetchVolumes());
         // dispatch(fetchQueueDetails({ all: true }));
     }, [dispatch, items]);
 
@@ -226,6 +244,7 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
                         />
 
                         <PageToolbarSeparator />
+
                         <ParseToolbarButton />
                     </PageToolbarSection>
 
@@ -272,6 +291,7 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
                         />
                     </PageToolbarSection>
                 </PageToolbar>
+
                 <div className={styles.pageContentBodyWrapper}>
                     <PageContentBody
                         ref={scrollerRef}
@@ -306,6 +326,7 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
                             <NoVolumes totalItems={totalItems} />
                         ) : null}
                     </PageContentBody>
+
                     {isLoaded && !!jumpBarItems.order.length ? (
                         <PageJumpBar items={jumpBarItems} onItemPress={onJumpBarItemPress} />
                     ) : null}

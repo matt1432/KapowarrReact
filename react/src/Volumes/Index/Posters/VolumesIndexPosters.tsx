@@ -108,12 +108,10 @@ export default function VolumesIndexPosters(props: VolumesIndexPostersProps) {
     const rowHeight = useMemo(() => {
         const { detailedProgressBar, showTitle, showMonitored } = posterOptions;
 
-        const nextAiringHeight = 19;
-
         const heights = [
             posterHeight,
             detailedProgressBar ? detailedProgressBarHeight : progressBarHeight,
-            nextAiringHeight,
+            19,
             isSmallScreen ? columnPaddingSmallScreen : columnPadding,
         ];
 
@@ -129,11 +127,9 @@ export default function VolumesIndexPosters(props: VolumesIndexPostersProps) {
         switch (sortKey) {
             case 'wanted':
             case 'title':
-            case 'year':
-            case 'volume_number':
+            case 'total_size':
+            case 'folder':
             case 'publisher':
-            case 'recently_added':
-            case 'recently_released':
                 heights.push(19);
                 break;
             default:

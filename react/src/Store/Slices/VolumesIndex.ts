@@ -40,9 +40,9 @@ const initialState = {
     filterKey: '', // equivalent to 'all'
 
     posterOptions: {
-        detailedProgressBar: false,
+        detailedProgressBar: true,
         size: 'large',
-        showTitle: false,
+        showTitle: true,
         showMonitored: true,
         showSearchAction: false,
     },
@@ -156,20 +156,14 @@ const volumesIndexSlice = createSlice({
             state,
             { payload }: PayloadAction<Partial<VolumesIndexState['tableOptions']>>,
         ) => {
-            state.tableOptions = {
-                ...payload,
-                ...state.tableOptions,
-            };
+            state.tableOptions = Object.assign(state.tableOptions, payload);
         },
 
         setVolumesPosterOption: (
             state,
             { payload }: PayloadAction<Partial<VolumesIndexState['posterOptions']>>,
         ) => {
-            state.posterOptions = {
-                ...payload,
-                ...state.posterOptions,
-            };
+            state.posterOptions = Object.assign(state.posterOptions, payload);
         },
     },
 });

@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { useCallback, useState } from 'react';
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
+import { useSearchVolumeQuery } from 'Store/createApiEndpoints';
 import Label from 'Components/Label';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
@@ -12,13 +13,10 @@ import VolumesIndexProgressBar from 'Volumes/Index/ProgressBar/VolumesIndexProgr
 import VolumesIndexPosterSelect from 'Volumes/Index/Select/VolumesIndexPosterSelect';
 import VolumesPoster from 'Volumes/VolumesPoster';
 // import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
-// import formatDateTime from 'Utilities/Date/formatDateTime';
-// import getRelativeDate from 'Utilities/Date/getRelativeDate';
 import translate from 'Utilities/String/translate';
 import VolumesIndexPosterInfo from './VolumesIndexPosterInfo';
 import type { IndexSort } from '..';
 import styles from './VolumesIndexPoster.module.css';
-import { useSearchVolumeQuery } from 'Store/createApiEndpoints';
 
 interface VolumesIndexPosterProps {
     volumeId: number;
@@ -29,7 +27,7 @@ interface VolumesIndexPosterProps {
 }
 
 function VolumesIndexPoster(props: VolumesIndexPosterProps) {
-    const { volumeId, isSelectMode, posterWidth, posterHeight } = props;
+    const { volumeId, isSelectMode, posterWidth, posterHeight, sortKey } = props;
 
     const {
         data: volume,
@@ -40,10 +38,6 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
     const { detailedProgressBar, showTitle, showMonitored, showSearchAction } = useRootSelector(
         (state) => state.volumesIndex.posterOptions,
     );
-
-    // const { showRelativeDates, shortDateFormat, longDateFormat, timeFormat } = useSelector(
-    //     createUISettingsSelector(),
-    // );
 
     const dispatch = useRootDispatch();
 
@@ -107,15 +101,13 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
     const {
         title,
         monitored,
-        // status,
-        // folder,
-        // publisher,
+        // status, TODO:
+        folder,
+        publisher,
         issue_count: issueCount,
-        general_files: files,
-        // total_size: sizeOnDisk,
+        issues_downloaded: issueFileCount,
+        total_size: sizeOnDisk,
     } = volume;
-
-    const issueFileCount = files.length;
 
     const link = `/volumes/${volumeId}`;
 
@@ -176,7 +168,6 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
                         style={elementStyle}
                         size={250}
                         lazy={false}
-                        // overflow={true} FIXME: see if necessary
                         onError={onPosterLoadError}
                         onLoad={onPosterLoad}
                     />
@@ -209,12 +200,10 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
             ) : null}
 
             <VolumesIndexPosterInfo
-            // sizeOnDisk={sizeOnDisk}
-            // showRelativeDates={showRelativeDates}
-            // sortKey={sortKey}
-            // shortDateFormat={shortDateFormat}
-            // longDateFormat={longDateFormat}
-            // timeFormat={timeFormat}
+                sortKey={sortKey}
+                sizeOnDisk={sizeOnDisk}
+                publisher={publisher}
+                folder={folder}
             />
 
             <EditVolumesModal

@@ -65,21 +65,21 @@ function VolumesIndexSortMenu(props: VolumesIndexSortMenuProps) {
                 </SortMenuItem>
 
                 <SortMenuItem
-                    name="recently_added"
+                    name="total_size"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
                 >
-                    {translate('RecentlyAdded')}
+                    {translate('SizeOnDisk')}
                 </SortMenuItem>
 
                 <SortMenuItem
-                    name="recently_released"
+                    name="folder"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
                 >
-                    {translate('RecentlyReleased')}
+                    {translate('FolderPath')}
                 </SortMenuItem>
             </MenuContent>
         </SortMenu>
