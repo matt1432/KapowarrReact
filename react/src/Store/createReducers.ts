@@ -21,7 +21,7 @@ export default function (history: History) {
 
             [baseApi.reducerPath]: baseApi.reducer,
 
-            ...Object.fromEntries([AppSlice].map((slice) => [slice.reducerPath, slice.reducer])),
+            [AppSlice.reducerPath]: AppSlice.reducer,
         }),
     };
 }

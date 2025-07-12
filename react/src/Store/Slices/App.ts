@@ -1,4 +1,4 @@
-import { createSlice, createSelector, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 interface Dimensions {
     width: number;
@@ -33,13 +33,10 @@ const initialState = {
 } satisfies AppState as AppState;
 
 const appSlice = createSlice({
-    name: 'counter',
+    name: 'app',
     initialState,
     selectors: {
-        selectDimensions: createSelector(
-            (state: AppState) => state.dimensions,
-            (dim) => dim,
-        ),
+        selectDimensions: (state) => state.dimensions,
         selectIsSidebarVisible: (state) => state.isSidebarVisible,
     },
     reducers: {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from 'Store/createAppStore';
 import { SelectProvider } from 'App/SelectContext';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
@@ -91,8 +91,8 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
     const isPopulated = items !== undefined;
     const totalItems = items.length;
 
-    const { isSmallScreen } = useSelector(selectDimensions);
-    const dispatch = useDispatch();
+    const { isSmallScreen } = useAppSelector(selectDimensions);
+    const dispatch = useAppDispatch();
     const scrollerRef = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>;
     const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
     const [jumpToCharacter, setJumpToCharacter] = useState<string | undefined>(undefined);

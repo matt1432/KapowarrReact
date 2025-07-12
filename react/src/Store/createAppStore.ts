@@ -3,6 +3,8 @@ import { createBrowserHistory } from 'history';
 import createReducers from 'Store/createReducers';
 import { baseApi } from './createApiEndpoints';
 
+import { useDispatch, useSelector } from 'react-redux';
+
 function createAppStore() {
     const initHistory = createBrowserHistory();
     const { createReduxHistory, reducers, routerMiddleware } = createReducers(initHistory);
@@ -22,4 +24,10 @@ function createAppStore() {
     };
 }
 
-export default createAppStore;
+export const { history, store } = createAppStore();
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
+export const useAppSelector = useSelector.withTypes<RootState>();
