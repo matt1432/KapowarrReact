@@ -13,6 +13,7 @@ export interface VolumesIndexState {
     view: IndexView;
     filterKey: IndexFilter;
 
+    // TODO: persist this state
     posterOptions: {
         detailedProgressBar: boolean;
         size: string;
@@ -21,14 +22,13 @@ export interface VolumesIndexState {
         showSearchAction: boolean;
     };
 
+    // TODO: persist this state
     tableOptions: {
         showBanners: boolean;
         showSearchAction: boolean;
         pageSize: number;
         columns: Column[];
     };
-
-    // TODO: predicates?
 }
 
 const initialState = {

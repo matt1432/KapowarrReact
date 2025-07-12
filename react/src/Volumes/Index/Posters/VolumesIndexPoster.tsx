@@ -11,7 +11,6 @@ import EditVolumesModal from 'Volumes/Edit/EditVolumesModal';
 import VolumesIndexProgressBar from 'Volumes/Index/ProgressBar/VolumesIndexProgressBar';
 import VolumesIndexPosterSelect from 'Volumes/Index/Select/VolumesIndexPosterSelect';
 import VolumesPoster from 'Volumes/VolumesPoster';
-// import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import translate from 'Utilities/String/translate';
 import VolumesIndexPosterInfo from './VolumesIndexPosterInfo';
 import type { IndexSort } from '..';

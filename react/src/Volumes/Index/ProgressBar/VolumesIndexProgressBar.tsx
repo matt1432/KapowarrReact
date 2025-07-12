@@ -1,12 +1,9 @@
-// import { useSelector } from 'react-redux';
 import ProgressBar from 'Components/ProgressBar';
 import { sizes } from 'Helpers/Props';
-/*import createVolumesQueueItemsDetailsSelector, {
-    type VolumesQueueDetails,
-} from 'Volumes/Index/createVolumesQueueDetailsSelector';*/
 import getProgressBarKind from 'Utilities/Volumes/getProgressBarKind';
 import translate from 'Utilities/String/translate';
 import styles from './VolumesIndexProgressBar.module.css';
+import { useFetchQueueDetails } from 'Store/createApiEndpoints';
 
 interface VolumesIndexProgressBarProps {
     volumeId: number;
@@ -20,7 +17,7 @@ interface VolumesIndexProgressBarProps {
 
 function VolumesIndexProgressBar(props: VolumesIndexProgressBarProps) {
     const {
-        // volumeId,
+        volumeId,
         monitored,
         issueCount,
         issueFileCount,
@@ -29,13 +26,13 @@ function VolumesIndexProgressBar(props: VolumesIndexProgressBarProps) {
         isStandalone,
     } = props;
 
-    /*
-    const queueDetails: VolumesQueueDetails = useSelector(
-        createVolumesQueueItemsDetailsSelector(volumesId, seasonNumber),
-    );
-    */
+    const { queue } = useFetchQueueDetails(volumeId);
 
-    const newDownloads = 0; // queueDetails.count - queueDetails.issuesWithFiles;
+    const newDownloads =
+        queue.length -
+        queue.filter((item) => ['failed', 'canceled', 'shutting down'].includes(item.status))
+            .length;
+
     const progress = issueCount ? (issueFileCount / issueCount) * 100 : 100;
     const text = newDownloads
         ? `${issueFileCount} + ${newDownloads} / ${issueCount}`
@@ -46,14 +43,14 @@ function VolumesIndexProgressBar(props: VolumesIndexProgressBarProps) {
             className={styles.progressBar}
             containerClassName={isStandalone ? undefined : styles.progress}
             progress={progress}
-            kind={getProgressBarKind(monitored, progress, false /*queueDetails.count > 0*/)}
+            kind={getProgressBarKind(monitored, progress, queue.length > 0)}
             size={detailedProgressBar ? sizes.MEDIUM : sizes.SMALL}
             showText={detailedProgressBar}
             text={text}
             title={translate('VolumesProgressBarText', {
                 issueFileCount,
                 issueCount,
-                downloadingCount: 0, // queueDetails.count,
+                downloadingCount: queue.length,
             })}
             width={width}
         />

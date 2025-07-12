@@ -14,8 +14,6 @@ import {
 } from 'Store/Slices/VolumesIndex';
 
 import { useGetVolumesQuery } from 'Store/createApiEndpoints';
-// TODO:
-// import { fetchQueueDetails } from 'Store/Actions/queueActions';
 
 // Misc
 import { align, icons, kinds } from 'Helpers/Props';
@@ -107,10 +105,6 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
     const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
     const [jumpToCharacter, setJumpToCharacter] = useState<string | undefined>(undefined);
     const [isSelectMode, setIsSelectMode] = useState(false);
-
-    useEffect(() => {
-        // dispatch(fetchQueueDetails({ all: true }));
-    }, [dispatch, items]);
 
     const onSelectModePress = useCallback(() => {
         setIsSelectMode(!isSelectMode);
@@ -251,6 +245,7 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
                     <PageToolbarSection alignContent={align.RIGHT} collapseButtons={false}>
                         {view === 'table' ? (
                             <TableOptionsModalWrapper
+                                // FIXME: still shows posters
                                 columns={columns}
                                 optionsComponent={VolumesIndexTableOptions}
                                 onTableOptionChange={onTableOptionChange}

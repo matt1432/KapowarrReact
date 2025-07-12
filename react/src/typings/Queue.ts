@@ -49,3 +49,23 @@ export interface Queue extends ModelBase {
     downloadClientHasPostImportCategory: boolean;
     issue?: Issue;
 }
+
+export interface DownloadItem extends ModelBase {
+    volume_id: number;
+    issue_id: number | null;
+    web_link: string | null;
+    web_title: string | null;
+    web_sub_title: string | null;
+    download_link: string;
+    pure_link: string;
+    source_type: string;
+    source_name: string;
+    type: string;
+    file: string;
+    title: string;
+    download_folder: string;
+    size: number;
+    status: string;
+    progress: number;
+    speed: number;
+}
