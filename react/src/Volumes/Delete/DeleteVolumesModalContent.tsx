@@ -22,12 +22,12 @@ import styles from './DeleteVolumesModalContent.module.css';
 */
 
 export interface DeleteVolumesModalContentProps {
-    volumesId: number;
+    volumeId: number;
     onModalClose: () => void;
 }
 
 // eslint-disable-next-line
-function DeleteVolumesModalContent({} /* volumesId, onModalClose */ : DeleteVolumesModalContentProps) {
+function DeleteVolumesModalContent({} /* volumeId, onModalClose */ : DeleteVolumesModalContentProps) {
     /*
     const dispatch = useDispatch();
     const { title, path, statistics = {} as Statistics } = useVolumes(volumesId)!;

@@ -12,7 +12,7 @@ function VolumesBanner({ size = 70, ...otherProps }: VolumesBannerProps) {
         <VolumesImage
             {...otherProps}
             size={size}
-            coverType="banner"
+            // coverType="banner"
             placeholder={bannerPlaceholder}
         />
     );

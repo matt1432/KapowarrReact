@@ -17,10 +17,10 @@ import AddNewVolumesModal from './AddNewVolumesModal';
 import styles from './AddNewVolumesSearchResult.module.css';
 
 interface AddNewVolumesSearchResultProps {
-    volumes: AddVolumes;
+    volume: AddVolumes;
 }
 
-function AddNewVolumesSearchResult({ volumes }: AddNewVolumesSearchResultProps) {
+function AddNewVolumesSearchResult({ volume }: AddNewVolumesSearchResultProps) {
     const {
         // @ts-expect-error TODO:
         tvdbId,
@@ -44,9 +44,8 @@ function AddNewVolumesSearchResult({ volumes }: AddNewVolumesSearchResultProps) 
         overview,
         // @ts-expect-error TODO:
         volumesType,
-        // @ts-expect-error TODO:
-        images,
-    } = volumes;
+        // images,
+    } = volume;
 
     // const isExistingVolumes = useSelector(createExistingVolumesSelector(tvdbId));
     // const { isSmallScreen } = useSelector(createDimensionsSelector());
@@ -83,8 +82,9 @@ function AddNewVolumesSearchResult({ volumes }: AddNewVolumesSearchResultProps) 
             <div className={styles.overlay}>
                 {isSmallScreen ? null : (
                     <VolumesPoster
+                        volume={volume}
                         className={styles.poster}
-                        images={images}
+                        // images={images}
                         size={250}
                         // overflow={true} FIXME: see if necessary
                         lazy={false}
@@ -184,7 +184,7 @@ function AddNewVolumesSearchResult({ volumes }: AddNewVolumesSearchResultProps) 
 
             <AddNewVolumesModal
                 isOpen={isNewAddVolumesModalOpen && !isExistingVolumes}
-                volumes={volumes}
+                volume={volume}
                 initialVolumesType={volumesType}
                 onModalClose={handleAddVolumesModalClose}
             />

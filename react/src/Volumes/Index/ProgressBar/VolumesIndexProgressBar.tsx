@@ -10,13 +10,11 @@ import translate from 'Utilities/String/translate';
 import styles from './VolumesIndexProgressBar.module.css';
 
 interface VolumesIndexProgressBarProps {
-    volumesId: number;
-    seasonNumber?: number;
+    volumeId: number;
     monitored: boolean;
     status: string; // VolumesStatus;
     issueCount: number;
     issueFileCount: number;
-    totalIssueCount: number;
     width: number;
     detailedProgressBar: boolean;
     isStandalone: boolean;
@@ -24,13 +22,11 @@ interface VolumesIndexProgressBarProps {
 
 function VolumesIndexProgressBar(props: VolumesIndexProgressBarProps) {
     const {
-        // volumesId,
-        // seasonNumber,
+        // volumeId,
         monitored,
         status,
         issueCount,
         issueFileCount,
-        totalIssueCount,
         width,
         detailedProgressBar,
         isStandalone,
@@ -60,7 +56,6 @@ function VolumesIndexProgressBar(props: VolumesIndexProgressBarProps) {
             title={translate('VolumesProgressBarText', {
                 issueFileCount,
                 issueCount,
-                totalIssueCount,
                 downloadingCount: 0, // queueDetails.count,
             })}
             width={width}

@@ -31,14 +31,14 @@ import translate from 'Utilities/String/translate';
 import styles from './AddNewVolumesModalContent.module.css';
 
 export interface AddNewVolumesModalContentProps {
-    volumes: AddVolumes;
+    volume: AddVolumes;
     // @ts-expect-error TODO:
     initialVolumesType: VolumesType;
     onModalClose: () => void;
 }
 
 function AddNewVolumesModalContent({
-    volumes,
+    volume,
     // initialVolumesType,
     onModalClose,
 }: AddNewVolumesModalContentProps) {
@@ -47,10 +47,9 @@ function AddNewVolumesModalContent({
         year,
         // @ts-expect-error TODO:
         overview,
-        // @ts-expect-error TODO:
-        images,
+        // images,
         folder,
-    } = volumes;
+    } = volume;
     // const options = useAddVolumesOptions();
     // const { isSmallScreen } = useSelector(createDimensionsSelector());
     const isSmallScreen = false;
@@ -132,7 +131,7 @@ function AddNewVolumesModalContent({
                 <div className={styles.container}>
                     {isSmallScreen ? null : (
                         <div className={styles.poster}>
-                            <VolumesPoster className={styles.poster} images={images} size={250} />
+                            <VolumesPoster volume={volume} className={styles.poster} size={250} />
                         </div>
                     )}
 

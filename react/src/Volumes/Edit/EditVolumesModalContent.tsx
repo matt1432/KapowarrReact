@@ -28,14 +28,14 @@ import { type RootFolderUpdated } from './RootFolder/RootFolderModalContent';
 import styles from './EditVolumesModalContent.module.css';*/
 
 export interface EditVolumesModalContentProps {
-    volumesId: number;
+    volumeId: number;
     onModalClose: () => void;
     onDeleteVolumesPress: () => void;
 }
 function EditVolumesModalContent(
     // eslint-disable-next-line
     {
-        // volumesId,
+        // volumeId,
         // onModalClose,
         // onDeleteVolumesPress,
     }: EditVolumesModalContentProps,

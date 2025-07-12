@@ -1,107 +1,77 @@
-/*import classNames from 'classnames';
+import classNames from 'classnames';
 import { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-// import { REFRESH_VOLUMES, VOLUMES_SEARCH } from 'Commands/commandNames';
+import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import Label from 'Components/Label';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
-import VolumesTagList from 'Components/VolumesTagList';
 import { icons } from 'Helpers/Props';
 import DeleteVolumesModal from 'Volumes/Delete/DeleteVolumesModal';
 import EditVolumesModal from 'Volumes/Edit/EditVolumesModal';
 import VolumesIndexProgressBar from 'Volumes/Index/ProgressBar/VolumesIndexProgressBar';
 import VolumesIndexPosterSelect from 'Volumes/Index/Select/VolumesIndexPosterSelect';
-import { type Statistics } from 'Volumes/Volumes';
 import VolumesPoster from 'Volumes/VolumesPoster';
-// import { executeCommand } from 'Store/Actions/commandActions';
 // import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
-import formatDateTime from 'Utilities/Date/formatDateTime';
-import getRelativeDate from 'Utilities/Date/getRelativeDate';
+// import formatDateTime from 'Utilities/Date/formatDateTime';
+// import getRelativeDate from 'Utilities/Date/getRelativeDate';
 import translate from 'Utilities/String/translate';
-import createVolumesIndexItemSelector from '../createVolumesIndexItemSelector';
-import selectPosterOptions from './selectPosterOptions';
 import VolumesIndexPosterInfo from './VolumesIndexPosterInfo';
+import type { IndexSort } from '..';
 import styles from './VolumesIndexPoster.module.css';
-*/
+import { useSearchVolumeQuery } from 'Store/createApiEndpoints';
 
 interface VolumesIndexPosterProps {
-    volumesId: number;
-    sortKey: string;
+    volumeId: number;
+    sortKey: IndexSort;
     isSelectMode: boolean;
     posterWidth: number;
     posterHeight: number;
 }
 
-// @ts-expect-error TODO:
-// eslint-disable-next-line
 function VolumesIndexPoster(props: VolumesIndexPosterProps) {
-    /*
-    const { volumesId, sortKey, isSelectMode, posterWidth, posterHeight } = props;
+    const { volumeId, isSelectMode, posterWidth, posterHeight } = props;
 
-    const { volumes, qualityProfile, isRefreshingVolumes, isSearchingVolumes } = useSelector(
-        createVolumesIndexItemSelector(props.volumesId),
+    const {
+        data: volume,
+        isFetching: isRefreshingVolume,
+        isLoading: isSearchingVolume,
+    } = useSearchVolumeQuery({ volumeId });
+
+    const { detailedProgressBar, showTitle, showMonitored, showSearchAction } = useRootSelector(
+        (state) => state.volumesIndex.posterOptions,
     );
 
-    const {
-        detailedProgressBar,
-        showTitle,
-        showMonitored,
-        showQualityProfile,
-        showTags,
-        showSearchAction,
-    } = useSelector(selectPosterOptions);
+    // const { showRelativeDates, shortDateFormat, longDateFormat, timeFormat } = useSelector(
+    //     createUISettingsSelector(),
+    // );
 
-    const { showRelativeDates, shortDateFormat, longDateFormat, timeFormat } = useSelector(
-        createUISettingsSelector(),
-    );
+    const dispatch = useRootDispatch();
 
-    const {
-        title,
-        monitored,
-        status,
-        path,
-        titleSlug,
-        originalLanguage,
-        network,
-        nextAiring,
-        previousAiring,
-        added,
-        statistics = {} as Statistics,
-        images,
-        tags,
-    } = volumes;
-
-    const {
-        seasonCount = 0,
-        issueCount = 0,
-        issueFileCount = 0,
-        totalIssueCount = 0,
-        sizeOnDisk = 0,
-    } = statistics;
-
-    const dispatch = useDispatch();
     const [hasPosterError, setHasPosterError] = useState(false);
     const [isEditVolumesModalOpen, setIsEditVolumesModalOpen] = useState(false);
     const [isDeleteVolumesModalOpen, setIsDeleteVolumesModalOpen] = useState(false);
 
     const onRefreshPress = useCallback(() => {
+        /*
         dispatch(
             executeCommand({
-                name: REFRESH_VOLUMES,
-                volumesIds: [volumesId],
+                name: REFRESH_VOLUME,
+                volumeIds: [volumeId],
             }),
         );
-    }, [volumesId, dispatch]);
+            */
+    }, [volumeId, dispatch]);
 
     const onSearchPress = useCallback(() => {
+        /*
         dispatch(
             executeCommand({
                 name: VOLUMES_SEARCH,
-                volumesId,
+                volumeId,
             }),
         );
-    }, [volumesId, dispatch]);
+            */
+    }, [volumeId, dispatch]);
 
     const onPosterLoadError = useCallback(() => {
         setHasPosterError(true);
@@ -111,7 +81,7 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
         setHasPosterError(false);
     }, [setHasPosterError]);
 
-    const onEditVolumesPress = useCallback(() => {
+    const onEditVolumePress = useCallback(() => {
         setIsEditVolumesModalOpen(true);
     }, [setIsEditVolumesModalOpen]);
 
@@ -128,7 +98,26 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
         setIsDeleteVolumesModalOpen(false);
     }, [setIsDeleteVolumesModalOpen]);
 
-    const link = `/volumes/${titleSlug}`;
+    if (!volume) {
+        return null;
+    }
+
+    const status = '' as string;
+
+    const {
+        title,
+        monitored,
+        // status,
+        // folder,
+        // publisher,
+        issue_count: issueCount,
+        general_files: files,
+        // total_size: sizeOnDisk,
+    } = volume;
+
+    const issueFileCount = files.length;
+
+    const link = `/volumes/${volumeId}`;
 
     const elementStyle = {
         width: `${posterWidth}px`,
@@ -138,14 +127,14 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
     return (
         <div className={styles.content}>
             <div className={styles.posterContainer} title={title}>
-                {isSelectMode ? <VolumesIndexPosterSelect volumesId={volumesId} /> : null}
+                {isSelectMode ? <VolumesIndexPosterSelect volumeId={volumeId} /> : null}
 
                 <Label className={styles.controls}>
                     <SpinnerIconButton
                         className={styles.action}
                         name={icons.REFRESH}
-                        title={translate('RefreshVolumes')}
-                        isSpinning={isRefreshingVolumes}
+                        title={translate('RefreshVolume')}
+                        isSpinning={isRefreshingVolume}
                         onPress={onRefreshPress}
                     />
 
@@ -154,7 +143,7 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
                             className={styles.action}
                             name={icons.SEARCH}
                             title={translate('SearchForMonitoredIssues')}
-                            isSpinning={isSearchingVolumes}
+                            isSpinning={isSearchingVolume}
                             onPress={onSearchPress}
                         />
                     ) : null}
@@ -162,8 +151,8 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
                     <IconButton
                         className={styles.action}
                         name={icons.EDIT}
-                        title={translate('EditVolumes')}
-                        onPress={onEditVolumesPress}
+                        title={translate('EditVolume')}
+                        onPress={onEditVolumePress}
                     />
                 </Label>
 
@@ -183,8 +172,8 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
 
                 <Link className={styles.link} style={elementStyle} to={link}>
                     <VolumesPoster
+                        volume={volume}
                         style={elementStyle}
-                        images={images}
                         size={250}
                         lazy={false}
                         // overflow={true} FIXME: see if necessary
@@ -197,12 +186,11 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
             </div>
 
             <VolumesIndexProgressBar
-                volumesId={volumesId}
+                volumeId={volumeId}
                 monitored={monitored}
                 status={status}
                 issueCount={issueCount}
                 issueFileCount={issueFileCount}
-                totalIssueCount={totalIssueCount}
                 width={posterWidth}
                 detailedProgressBar={detailedProgressBar}
                 isStandalone={false}
@@ -220,74 +208,29 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
                 </div>
             ) : null}
 
-            {showQualityProfile && !!qualityProfile?.name ? (
-                <div className={styles.title} title={translate('QualityProfile')}>
-                    {qualityProfile.name}
-                </div>
-            ) : null}
-
-            {nextAiring ? (
-                <div
-                    className={styles.nextAiring}
-                    title={`${translate('NextAiring')}: ${formatDateTime(
-                        nextAiring,
-                        longDateFormat,
-                        timeFormat,
-                    )}`}
-                >
-                    {getRelativeDate({
-                        date: nextAiring,
-                        shortDateFormat,
-                        showRelativeDates,
-                        timeFormat,
-                        timeForToday: true,
-                    })}
-                </div>
-            ) : null}
-
-            {showTags && tags.length ? (
-                <div className={styles.tags}>
-                    <div className={styles.tagsList}>
-                        <VolumesTagList tags={tags} />
-                    </div>
-                </div>
-            ) : null}
-
             <VolumesIndexPosterInfo
-                originalLanguage={originalLanguage}
-                network={network}
-                previousAiring={previousAiring}
-                added={added}
-                seasonCount={seasonCount}
-                sizeOnDisk={sizeOnDisk}
-                path={path}
-                qualityProfile={qualityProfile}
-                showQualityProfile={showQualityProfile}
-                showRelativeDates={showRelativeDates}
-                sortKey={sortKey}
-                shortDateFormat={shortDateFormat}
-                longDateFormat={longDateFormat}
-                timeFormat={timeFormat}
-                tags={tags}
-                showTags={showTags}
+            // sizeOnDisk={sizeOnDisk}
+            // showRelativeDates={showRelativeDates}
+            // sortKey={sortKey}
+            // shortDateFormat={shortDateFormat}
+            // longDateFormat={longDateFormat}
+            // timeFormat={timeFormat}
             />
 
             <EditVolumesModal
                 isOpen={isEditVolumesModalOpen}
-                volumesId={volumesId}
+                volumeId={volumeId}
                 onModalClose={onEditVolumesModalClose}
                 onDeleteVolumesPress={onDeleteVolumesPress}
             />
 
             <DeleteVolumesModal
                 isOpen={isDeleteVolumesModalOpen}
-                volumesId={volumesId}
+                volumeId={volumeId}
                 onModalClose={onDeleteVolumesModalClose}
             />
         </div>
     );
-        */
-    return null;
 }
 
 export default VolumesIndexPoster;

@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import getQueryString from 'Utilities/Fetch/getQueryString';
 import type { IndexFilter, IndexSort } from 'Volumes/Index';
-import type { VolumePublicInfo } from 'Volumes/Volumes';
+import type { Volume, VolumePublicInfo } from 'Volumes/Volumes';
 
 export type GetVolumesParams =
     | {
@@ -25,7 +25,21 @@ export const baseApi = createApi({
 
             transformResponse: (response: { result: VolumePublicInfo[] }) => response.result,
         }),
+
+        searchVolume: build.query<Volume, { volumeId: number }>({
+            query: ({ volumeId }) =>
+                `volumes/${volumeId}` +
+                getQueryString({
+                    api_key: window.Kapowarr.apiKey,
+                }),
+
+            transformResponse: (response: { result: Volume }) => response.result,
+        }),
     }),
 });
 
-export const useGetVolumesQuery = (params?: GetVolumesParams) => baseApi.useGetVolumesQuery(params);
+export const { useSearchVolumeQuery } = baseApi;
+
+// Add default value to params
+export const useGetVolumesQuery = (params: GetVolumesParams = {}) =>
+    baseApi.useGetVolumesQuery(params);

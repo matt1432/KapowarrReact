@@ -8,14 +8,7 @@ interface VolumesPosterProps extends Omit<VolumesImageProps, 'coverType' | 'plac
 }
 
 function VolumesPoster({ size = 250, ...otherProps }: VolumesPosterProps) {
-    return (
-        <VolumesImage
-            {...otherProps}
-            size={size}
-            coverType="poster"
-            placeholder={posterPlaceholder}
-        />
-    );
+    return <VolumesImage {...otherProps} size={size} placeholder={posterPlaceholder} />;
 }
 
 export default VolumesPoster;

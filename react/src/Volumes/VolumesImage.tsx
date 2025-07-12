@@ -1,26 +1,17 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-// import { type CoverType, type Image } from './Volumes';
 
-// @ts-expect-error TODO
-function findImage(images: Image[], coverType: CoverType) {
-    return images.find((image) => image.coverType === coverType);
-}
+import type { Volume } from './Volumes';
 
-// @ts-expect-error TODO
-function getUrl(image: Image, coverType: CoverType, size: number) {
-    const imageUrl = image?.url;
-
-    return imageUrl ? imageUrl.replace(`${coverType}.jpg`, `${coverType}-${size}.jpg`) : null;
+function getUrl(volume: Volume) {
+    const { apiKey, urlBase } = window.Kapowarr;
+    return `${urlBase}/api/volumes/${volume.id}/cover?api_key=${apiKey}`;
 }
 
 export interface VolumesImageProps {
+    volume: Volume;
     className?: string;
     style?: object;
-    // @ts-expect-error TODO
-    images: Image[];
-    // @ts-expect-error TODO
-    coverType: CoverType;
     placeholder: string;
     size?: number;
     lazy?: boolean;
@@ -29,13 +20,10 @@ export interface VolumesImageProps {
     onLoad?: () => void;
 }
 
-const pixelRatio = Math.max(Math.round(window.devicePixelRatio), 1);
-
 function VolumesImage({
+    volume,
     className,
     style,
-    images,
-    coverType,
     placeholder,
     size = 250,
     lazy = true,
@@ -43,11 +31,10 @@ function VolumesImage({
     onError,
     onLoad,
 }: VolumesImageProps) {
-    const [url, setUrl] = useState<string | null>(null);
+    const url = getUrl(volume);
+
     const [hasError, setHasError] = useState(false);
     const [isLoaded, setIsLoaded] = useState(true);
-    // @ts-expect-error TODO
-    const image = useRef<Image | null>(null);
 
     const handleLoad = useCallback(() => {
         setHasError(false);
@@ -60,37 +47,6 @@ function VolumesImage({
         setIsLoaded(false);
         onError?.();
     }, [setHasError, setIsLoaded, onError]);
-
-    useEffect(() => {
-        const nextImage = findImage(images, coverType);
-
-        if (nextImage && (!image.current || nextImage.url !== image.current.url)) {
-            // Don't reset isLoaded, as we want to immediately try to
-            // show the new image, whether an image was shown previously
-            // or the placeholder was shown.
-            image.current = nextImage;
-
-            setUrl(getUrl(nextImage, coverType, pixelRatio * size));
-            setHasError(false);
-        }
-        else if (!nextImage) {
-            if (image.current) {
-                image.current = null;
-                setUrl(placeholder);
-                setHasError(false);
-                onError?.();
-            }
-        }
-    }, [images, coverType, placeholder, size, onError]);
-
-    useEffect(() => {
-        if (!image.current) {
-            onError?.();
-        }
-        // This should only run once when the component mounts,
-        // so we don't need to include the other dependencies.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     if (hasError || !url) {
         return <img className={className} style={style} src={placeholder} />;

@@ -1,3 +1,4 @@
+/*
 import VolumesTagList from 'Components/VolumesTagList';
 import { type Language } from 'Language/Language';
 import { type QualityProfile } from 'typings/QualityProfile';
@@ -25,8 +26,13 @@ interface VolumesIndexPosterInfoProps {
     timeFormat: string;
     showTags: boolean;
 }
+*/
+type VolumesIndexPosterInfoProps = object;
 
+// @ts-expect-error TODO:
+// eslint-disable-next-line
 function VolumesIndexPosterInfo(props: VolumesIndexPosterInfoProps) {
+    /*
     const {
         originalLanguage,
         network,
@@ -145,6 +151,7 @@ function VolumesIndexPosterInfo(props: VolumesIndexPosterInfoProps) {
             </div>
         );
     }
+    */
 
     return null;
 }

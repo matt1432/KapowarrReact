@@ -6,13 +6,13 @@ import { icons } from 'Helpers/Props';
 import styles from './VolumesIndexPosterSelect.module.css';
 
 interface VolumesIndexPosterSelectProps {
-    volumesId: number;
+    volumeId: number;
 }
 
 function VolumesIndexPosterSelect(props: VolumesIndexPosterSelectProps) {
-    const { volumesId } = props;
+    const { volumeId } = props;
     const [selectState, selectDispatch] = useSelect();
-    const isSelected = selectState.selectedState[volumesId];
+    const isSelected = selectState.selectedState[volumeId];
 
     const onSelectPress = useCallback(
         (event: SyntheticEvent<HTMLElement, PointerEvent>) => {
@@ -20,12 +20,12 @@ function VolumesIndexPosterSelect(props: VolumesIndexPosterSelectProps) {
 
             selectDispatch({
                 type: 'toggleSelected',
-                id: volumesId,
+                id: volumeId,
                 isSelected: !isSelected,
                 shiftKey,
             });
         },
-        [volumesId, isSelected, selectDispatch],
+        [volumeId, isSelected, selectDispatch],
     );
 
     return (

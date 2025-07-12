@@ -1,15 +1,14 @@
 import { throttle } from 'lodash';
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
-// import { useSelector } from 'react-redux';
+import { useRootSelector } from 'Store/createAppStore';
 import { FixedSizeGrid as Grid, type GridChildComponentProps } from 'react-window';
-// import { createSelector } from 'reselect';
-// import { type AppState } from 'App/State/AppState';
 import useMeasure from 'Helpers/Hooks/useMeasure';
 import { type SortDirection } from 'Helpers/Props/sortDirections';
 import VolumesIndexPoster from 'Volumes/Index/Posters/VolumesIndexPoster';
 import { type VolumePublicInfo } from 'Volumes/Volumes';
 import dimensions from 'Styles/Variables/dimensions';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
+import type { IndexSort } from '..';
 
 const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
 const bodyPaddingSmallScreen = parseInt(dimensions.pageContentBodyPaddingSmallScreen);
@@ -32,13 +31,13 @@ interface CellItemData {
         posterHeight: number;
     };
     items: VolumePublicInfo[];
-    sortKey: string;
+    sortKey: IndexSort;
     isSelectMode: boolean;
 }
 
 interface VolumesIndexPostersProps {
     items: VolumePublicInfo[];
-    sortKey: string;
+    sortKey: IndexSort;
     sortDirection?: SortDirection;
     jumpToCharacter?: string;
     scrollTop?: number;
@@ -46,17 +45,6 @@ interface VolumesIndexPostersProps {
     isSelectMode: boolean;
     isSmallScreen: boolean;
 }
-
-/*
-const volumesIndexSelector = createSelector(
-    (state: AppState) => state.volumesIndex.posterOptions,
-    (posterOptions) => {
-        return {
-            posterOptions,
-        };
-    },
-);
-*/
 
 function Cell({ columnIndex, rowIndex, style, data }: GridChildComponentProps<CellItemData>) {
     const { layout, items, sortKey, isSelectMode } = data;
@@ -67,7 +55,7 @@ function Cell({ columnIndex, rowIndex, style, data }: GridChildComponentProps<Ce
         return null;
     }
 
-    const volumes = items[index];
+    const volume = items[index];
 
     return (
         <div
@@ -77,7 +65,7 @@ function Cell({ columnIndex, rowIndex, style, data }: GridChildComponentProps<Ce
             }}
         >
             <VolumesIndexPoster
-                volumesId={volumes.id}
+                volumeId={volume.id}
                 sortKey={sortKey}
                 isSelectMode={isSelectMode}
                 posterWidth={posterWidth}
@@ -94,7 +82,7 @@ function getWindowScrollTopPosition() {
 export default function VolumesIndexPosters(props: VolumesIndexPostersProps) {
     const { scrollerRef, items, sortKey, jumpToCharacter, isSelectMode, isSmallScreen } = props;
 
-    // const { posterOptions } = useSelector(volumesIndexSelector);
+    const { posterOptions } = useRootSelector((state) => state.volumesIndex);
     const ref = useRef<Grid>(null);
     const [measureRef, bounds] = useMeasure();
     const [size, setSize] = useState({ width: 0, height: 0 });
@@ -106,8 +94,8 @@ export default function VolumesIndexPosters(props: VolumesIndexPostersProps) {
         const remainder = width % maximumColumnWidth;
         return remainder === 0
             ? maximumColumnWidth
-            : Math.floor(width / (columns + ADDITIONAL_COLUMN_COUNT[0 /*posterOptions.size*/]));
-    }, [isSmallScreen, /*posterOptions,*/ size]);
+            : Math.floor(width / (columns + ADDITIONAL_COLUMN_COUNT[posterOptions.size]));
+    }, [isSmallScreen, posterOptions, size]);
 
     const columnCount = useMemo(
         () => Math.max(Math.floor(size.width / columnWidth), 1),
@@ -118,13 +106,7 @@ export default function VolumesIndexPosters(props: VolumesIndexPostersProps) {
     const posterHeight = Math.ceil((250 / 170) * posterWidth);
 
     const rowHeight = useMemo(() => {
-        // const { detailedProgressBar, showTitle, showMonitored, showQualityProfile, showTags } =
-        //    posterOptions;
-        const detailedProgressBar = false;
-        const showTitle = '';
-        const showMonitored = false;
-        const showQualityProfile = false;
-        const showTags = false;
+        const { detailedProgressBar, showTitle, showMonitored } = posterOptions;
 
         const nextAiringHeight = 19;
 
@@ -143,39 +125,23 @@ export default function VolumesIndexPosters(props: VolumesIndexPostersProps) {
             heights.push(19);
         }
 
-        if (showQualityProfile) {
-            heights.push(19);
-        }
-
-        if (showTags) {
-            heights.push(21);
-        }
-
+        // TODO: figure this out
         switch (sortKey) {
-            case 'network':
-            case 'seasons':
-            case 'previousAiring':
-            case 'added':
-            case 'path':
-            case 'sizeOnDisk':
+            case 'wanted':
+            case 'title':
+            case 'year':
+            case 'volume_number':
+            case 'publisher':
+            case 'recently_added':
+            case 'recently_released':
                 heights.push(19);
-                break;
-            case 'qualityProfileId':
-                if (!showQualityProfile) {
-                    heights.push(19);
-                }
-                break;
-            case 'tags':
-                if (!showTags) {
-                    heights.push(21);
-                }
                 break;
             default:
             // No need to add a height of 0
         }
 
         return heights.reduce((acc, height) => acc + height, 0);
-    }, [isSmallScreen, /* posterOptions, */ sortKey, posterHeight]);
+    }, [isSmallScreen, posterOptions, sortKey, posterHeight]);
 
     useEffect(() => {
         const current = scrollerRef.current;
