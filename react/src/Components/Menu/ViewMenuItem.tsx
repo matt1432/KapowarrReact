@@ -1,11 +1,12 @@
 import React from 'react';
 import SelectedMenuItem, { type SelectedMenuItemProps } from './SelectedMenuItem';
+import type { IndexView } from 'Volumes/Index';
 
-interface ViewMenuItemProps extends Omit<SelectedMenuItemProps, 'isSelected'> {
-    name?: string;
-    selectedView: string;
+interface ViewMenuItemProps extends Omit<SelectedMenuItemProps<IndexView>, 'isSelected'> {
+    name?: IndexView;
+    selectedView: IndexView;
     children: React.ReactNode;
-    onPress: (view: string) => void;
+    onPress: (view: IndexView) => void;
 }
 
 function ViewMenuItem({ name, selectedView, ...otherProps }: ViewMenuItemProps) {

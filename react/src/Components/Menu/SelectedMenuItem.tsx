@@ -4,24 +4,24 @@ import { icons } from 'Helpers/Props';
 import MenuItem, { type MenuItemProps } from './MenuItem';
 import styles from './SelectedMenuItem.module.css';
 
-export interface SelectedMenuItemProps extends Omit<MenuItemProps, 'onPress'> {
-    name?: string;
+export interface SelectedMenuItemProps<T> extends Omit<MenuItemProps, 'onPress' | 'name'> {
+    name?: T;
     children: React.ReactNode;
     selectedIconName?: IconName;
     isSelected: boolean;
-    onPress: (name: string) => void;
+    onPress: (name: T) => void;
 }
 
-function SelectedMenuItem({
+function SelectedMenuItem<T>({
     children,
     name,
     selectedIconName = icons.CHECK,
     isSelected,
     onPress,
     ...otherProps
-}: SelectedMenuItemProps) {
+}: SelectedMenuItemProps<T>) {
     const handlePress = useCallback(() => {
-        onPress(name ?? '');
+        onPress(name ?? ('' as T));
     }, [name, onPress]);
 
     return (

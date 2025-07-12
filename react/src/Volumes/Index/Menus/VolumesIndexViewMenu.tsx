@@ -3,11 +3,12 @@ import ViewMenu from 'Components/Menu/ViewMenu';
 import ViewMenuItem from 'Components/Menu/ViewMenuItem';
 import { align } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
+import type { IndexView } from '..';
 
 interface VolumesIndexViewMenuProps {
-    view: string;
+    view: IndexView;
     isDisabled: boolean;
-    onViewSelect(value: string): void;
+    onViewSelect(value: IndexView): void;
 }
 
 function VolumesIndexViewMenu(props: VolumesIndexViewMenuProps) {
@@ -22,10 +23,6 @@ function VolumesIndexViewMenu(props: VolumesIndexViewMenuProps) {
 
                 <ViewMenuItem name="posters" selectedView={view} onPress={onViewSelect}>
                     {translate('Posters')}
-                </ViewMenuItem>
-
-                <ViewMenuItem name="overview" selectedView={view} onPress={onViewSelect}>
-                    {translate('Overview')}
                 </ViewMenuItem>
             </MenuContent>
         </ViewMenu>

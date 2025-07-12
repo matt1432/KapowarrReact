@@ -1,30 +1,37 @@
-// import { type CustomFilter, type Filter } from 'App/State/AppState';
+import MenuContent from 'Components/Menu/MenuContent';
 import FilterMenu from 'Components/Menu/FilterMenu';
-import VolumesIndexFilterModal from 'Volumes/Index/VolumesIndexFilterModal';
+import FilterMenuItem from 'Components/Menu/FilterMenuItem';
+import { align } from 'Helpers/Props';
+import translate from 'Utilities/String/translate';
+import type { IndexFilter } from '..';
 
 interface VolumesIndexFilterMenuProps {
-    selectedFilterKey: string | number;
-    // eslint-disable-next-line
-    filters: any[]; // Filter[];
-    // eslint-disable-next-line
-    customFilters: any[]; // CustomFilter[];
+    filterKey: IndexFilter;
     isDisabled: boolean;
-    onFilterSelect: (filter: number | string) => void;
+    onFilterSelect(value: IndexFilter): void;
 }
 
-function VolumesIndexFilterMenu(props: VolumesIndexFilterMenuProps) {
-    const { selectedFilterKey, filters, customFilters, isDisabled, onFilterSelect } = props;
-
+function VolumesIndexFilterMenu({
+    filterKey,
+    isDisabled,
+    onFilterSelect,
+}: VolumesIndexFilterMenuProps) {
     return (
-        <FilterMenu
-            alignMenu="right"
-            isDisabled={isDisabled}
-            selectedFilterKey={selectedFilterKey}
-            filters={filters}
-            customFilters={customFilters}
-            filterModalConnectorComponent={VolumesIndexFilterModal}
-            onFilterSelect={onFilterSelect}
-        />
+        <FilterMenu isDisabled={isDisabled} alignMenu={align.RIGHT}>
+            <MenuContent>
+                <FilterMenuItem name="" filterKey={filterKey} onPress={onFilterSelect}>
+                    {translate('')}
+                </FilterMenuItem>
+
+                <FilterMenuItem name="wanted" filterKey={filterKey} onPress={onFilterSelect}>
+                    {translate('Wanted')}
+                </FilterMenuItem>
+
+                <FilterMenuItem name="monitored" filterKey={filterKey} onPress={onFilterSelect}>
+                    {translate('Monitored')}
+                </FilterMenuItem>
+            </MenuContent>
+        </FilterMenu>
     );
 }
 

@@ -1,8 +1,14 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import getQueryString from 'Utilities/Fetch/getQueryString';
+import type { IndexFilter, IndexSort } from 'Volumes/Index';
 import type { VolumePublicInfo } from 'Volumes/Volumes';
 
-export type GetVolumesParams = { filter?: string; sort?: string } | undefined;
+export type GetVolumesParams =
+    | {
+          filter?: IndexFilter;
+          sort?: IndexSort;
+      }
+    | undefined;
 
 export const baseApi = createApi({
     reducerPath: 'baseApi',

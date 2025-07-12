@@ -1,83 +1,25 @@
-import React, { useCallback, useState } from 'react';
-// import { type CustomFilter, type Filter } from 'App/State/AppState';
+import React from 'react';
+import Menu from 'Components/Menu/Menu';
+import ToolbarMenuButton, { type ToolbarMenuButtonProps } from 'Components/Menu/ToolbarMenuButton';
 import { icons } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
-import FilterMenuContent from './FilterMenuContent';
-import Menu from './Menu';
-import ToolbarMenuButton from './ToolbarMenuButton';
-import styles from './FilterMenu.module.css';
 
-interface FilterMenuProps {
-    className?: string;
-    alignMenu: 'left' | 'right';
+interface FilterMenuProps extends Omit<ToolbarMenuButtonProps, 'iconName'> {
+    children: React.ReactNode;
     isDisabled?: boolean;
-    selectedFilterKey: string | number;
-    // @ts-expect-error TODO
-    filters: Filter[];
-    // @ts-expect-error TODO
-    customFilters: CustomFilter[];
-    buttonComponent?: React.ElementType;
-    filterModalConnectorComponent?: React.ElementType;
-    filterModalConnectorComponentProps?: object;
-    onFilterSelect: (filter: number | string) => void;
+    alignMenu?: 'left' | 'right';
 }
 
-function FilterMenu({
-    className = styles.filterMenu,
-    isDisabled = false,
-    selectedFilterKey,
-    filters,
-    customFilters,
-    buttonComponent: ButtonComponent = ToolbarMenuButton,
-    filterModalConnectorComponent: FilterModalConnectorComponent,
-    filterModalConnectorComponentProps,
-    onFilterSelect,
-    ...otherProps
-}: FilterMenuProps) {
-    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-
-    const showCustomFilters = !!FilterModalConnectorComponent;
-
-    const handleCustomFiltersPress = useCallback(() => {
-        setIsFilterModalOpen(true);
-    }, []);
-
-    const handleFiltersModalClose = useCallback(() => {
-        setIsFilterModalOpen(false);
-    }, []);
-
+function FilterMenu({ children, isDisabled = false, ...otherProps }: FilterMenuProps) {
     return (
-        <div>
-            <Menu className={className} {...otherProps}>
-                <ButtonComponent
-                    iconName={icons.FILTER}
-                    showIndicator={selectedFilterKey !== 'all'}
-                    text={translate('Filter')}
-                    isDisabled={isDisabled}
-                />
-
-                <FilterMenuContent
-                    selectedFilterKey={selectedFilterKey}
-                    filters={filters}
-                    customFilters={customFilters}
-                    showCustomFilters={showCustomFilters}
-                    onFilterSelect={onFilterSelect}
-                    onCustomFiltersPress={handleCustomFiltersPress}
-                />
-            </Menu>
-
-            {showCustomFilters ? (
-                <FilterModalConnectorComponent
-                    {...filterModalConnectorComponentProps}
-                    isOpen={isFilterModalOpen}
-                    selectedFilterKey={selectedFilterKey}
-                    filters={filters}
-                    customFilters={customFilters}
-                    onFilterSelect={onFilterSelect}
-                    onModalClose={handleFiltersModalClose}
-                />
-            ) : null}
-        </div>
+        <Menu {...otherProps}>
+            <ToolbarMenuButton
+                iconName={icons.VIEW}
+                text={translate('View')}
+                isDisabled={isDisabled}
+            />
+            {children}
+        </Menu>
     );
 }
 

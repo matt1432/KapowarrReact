@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
-import { useDispatch /*, useSelector*/ } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SelectProvider } from 'App/SelectContext';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
@@ -26,13 +26,11 @@ import NoVolumes from 'Volumes/NoVolumes';
     setVolumesView,
 } from 'Store/Actions/volumesIndexActions';*/
 import scrollPositions from 'Store/scrollPositions';
-// import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
+import { selectDimensions } from 'Store/Slices/App';
 import translate from 'Utilities/String/translate';
 import VolumesIndexFilterMenu from './Menus/VolumesIndexFilterMenu';
 import VolumesIndexSortMenu from './Menus/VolumesIndexSortMenu';
 import VolumesIndexViewMenu from './Menus/VolumesIndexViewMenu';
-import VolumesIndexOverviewOptionsModal from './Overview/Options/VolumesIndexOverviewOptionsModal';
-import VolumesIndexOverviews from './Overview/VolumesIndexOverviews';
 import VolumesIndexPosterOptionsModal from './Posters/Options/VolumesIndexPosterOptionsModal';
 import VolumesIndexPosters from './Posters/VolumesIndexPosters';
 import VolumesIndexSelectAllButton from './Select/VolumesIndexSelectAllButton';
@@ -42,25 +40,21 @@ import VolumesIndexSelectModeButton from './Select/VolumesIndexSelectModeButton'
 import VolumesIndexSelectModeMenuItem from './Select/VolumesIndexSelectModeMenuItem';
 import VolumesIndexFooter from './VolumesIndexFooter';
 import VolumesIndexRefreshVolumesButton from './VolumesIndexRefreshVolumesButton';
-import VolumesIndexTable from './Table/VolumesIndexTable';
 import VolumesIndexTableOptions from './Table/VolumesIndexTableOptions';
 import styles from './index.module.css';
 import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 import type { VolumePublicInfo } from 'Volumes/Volumes';
 
-type ViewType = 'overview' | 'posters' | 'table';
-
-function getViewComponent(view: string) {
-    if (view === 'posters') {
-        return VolumesIndexPosters;
-    }
-
-    if (view === 'overview') {
-        return VolumesIndexOverviews;
-    }
-
-    return VolumesIndexTable;
-}
+export type IndexView = 'posters' | 'table';
+export type IndexFilter = '' | 'wanted' | 'monitored';
+export type IndexSort =
+    | 'title'
+    | 'volume_number'
+    | 'year'
+    | 'recently_added'
+    | 'recently_released'
+    | 'publisher'
+    | 'wanted';
 
 interface VolumesIndexProps {
     initialScrollTop?: number;
@@ -70,35 +64,25 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
     /*
     const {
         columns,
-        selectedFilterKey,
-        filters,
-        customFilters,
-        sortKey,
-        sortDirection,
-        view: _view,
     }: VolumesAppState & VolumesIndexAppState & ClientSideCollectionAppState = useSelector(
         createVolumesClientSideCollectionItemsSelector('volumesIndex'),
     );
-
-    const view = _view as 'overview' | 'posters' | 'table';
     */
+    // TODO: put this in the store?
+    const [view, setView] = useState<IndexView>('posters');
+    const [items, setItems] = useState<VolumePublicInfo[]>([]);
+    const [sortKey, setSortKey] = useState<IndexSort>('title');
+    const [filterKey, setFilterKey] = useState<IndexFilter>('');
+    const [sortDirection /*, setSortDirection*/] = useState<SortDirection>('ascending');
 
-    const { columns, selectedFilterKey, filters, customFilters, sortKey, sortDirection, view } = {
+    const { columns } = {
         columns: [],
-        selectedFilterKey: '',
-        filters: [],
-        customFilters: [],
-        sortKey: 'title',
-        sortDirection: 'ascending' as SortDirection,
-        view: 'overview' as ViewType,
     };
 
     const { isFetching, error, data } = useGetVolumesQuery({
         sort: sortKey,
-        filter: selectedFilterKey,
+        filter: filterKey,
     });
-
-    const [items, setItems] = useState<VolumePublicInfo[]>([]);
 
     useEffect(() => {
         setItems(data ?? []);
@@ -107,8 +91,7 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
     const isPopulated = items !== undefined;
     const totalItems = items.length;
 
-    // const { isSmallScreen } = useSelector(createDimensionsSelector());
-    const isSmallScreen = false;
+    const { isSmallScreen } = useSelector(selectDimensions);
     const dispatch = useDispatch();
     const scrollerRef = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>;
     const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
@@ -130,37 +113,6 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
         // eslint-disable-next-line
         (payload: unknown) => {
             // dispatch(setVolumesTableOption(payload));
-        },
-        [dispatch],
-    );
-
-    const onViewSelect = useCallback(
-        // @ts-expect-error TODO:
-        // eslint-disable-next-line
-        (value: string) => {
-            // dispatch(setVolumesView({ view: value }));
-
-            if (scrollerRef.current) {
-                scrollerRef.current.scrollTo(0, 0);
-            }
-        },
-        [scrollerRef, dispatch],
-    );
-
-    const onSortSelect = useCallback(
-        // @ts-expect-error TODO:
-        // eslint-disable-next-line
-        (value: string) => {
-            // dispatch(setVolumesSort({ sortKey: value }));
-        },
-        [dispatch],
-    );
-
-    const onFilterSelect = useCallback(
-        // @ts-expect-error TODO:
-        // eslint-disable-next-line
-        (value: string | number) => {
-            // dispatch(setVolumesFilter({ selectedFilterKey: value }));
         },
         [dispatch],
     );
@@ -189,8 +141,8 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
     );
 
     const jumpBarItems: PageJumpBarItems = useMemo(() => {
-        // Reset if not sorting by sortTitle
-        if (sortKey !== 'sortTitle') {
+        // Reset if not sorting by title
+        if (sortKey !== 'title') {
             return {
                 characters: {},
                 order: [],
@@ -226,7 +178,6 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
             order,
         };
     }, [items, sortKey, sortDirection]);
-    const ViewComponent = useMemo(() => getViewComponent(view), [view]);
 
     const isLoaded = !!(!error && isPopulated && items.length);
     const hasNoVolumes = !totalItems;
@@ -238,7 +189,7 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
                     <PageToolbarSection>
                         <VolumesIndexRefreshVolumesButton
                             isSelectMode={isSelectMode}
-                            selectedFilterKey={selectedFilterKey}
+                            filterKey={filterKey}
                         />
 
                         <PageToolbarSeparator />
@@ -291,22 +242,26 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
                         <VolumesIndexViewMenu
                             view={view}
                             isDisabled={hasNoVolumes}
-                            onViewSelect={onViewSelect}
+                            onViewSelect={(value: IndexView) => {
+                                setView(value);
+
+                                if (scrollerRef.current) {
+                                    scrollerRef.current.scrollTo(0, 0);
+                                }
+                            }}
                         />
 
                         <VolumesIndexSortMenu
                             sortKey={sortKey}
                             sortDirection={sortDirection}
                             isDisabled={hasNoVolumes}
-                            onSortSelect={onSortSelect}
+                            onSortSelect={(value: IndexSort) => setSortKey(value)}
                         />
 
                         <VolumesIndexFilterMenu
-                            selectedFilterKey={selectedFilterKey}
-                            filters={filters}
-                            customFilters={customFilters}
+                            filterKey={filterKey}
                             isDisabled={hasNoVolumes}
-                            onFilterSelect={onFilterSelect}
+                            onFilterSelect={(value: IndexFilter) => setFilterKey(value)}
                         />
                     </PageToolbarSection>
                 </PageToolbar>
@@ -326,7 +281,7 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
 
                         {isLoaded ? (
                             <div className={styles.contentBodyContainer}>
-                                <ViewComponent
+                                <VolumesIndexPosters
                                     scrollerRef={scrollerRef}
                                     items={items}
                                     sortKey={sortKey}
@@ -353,12 +308,6 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
 
                 {view === 'posters' ? (
                     <VolumesIndexPosterOptionsModal
-                        isOpen={isOptionsModalOpen}
-                        onModalClose={onOptionsModalClose}
-                    />
-                ) : null}
-                {view === 'overview' ? (
-                    <VolumesIndexOverviewOptionsModal
                         isOpen={isOptionsModalOpen}
                         onModalClose={onOptionsModalClose}
                     />

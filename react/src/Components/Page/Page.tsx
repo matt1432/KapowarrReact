@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-// import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import AppUpdatedModal from 'App/AppUpdatedModal';
 // import ColorImpairedContext from 'App/ColorImpairedContext';
 import ConnectionLostModal from 'App/ConnectionLostModal';
@@ -9,8 +9,7 @@ import ConnectionLostModal from 'App/ConnectionLostModal';
 // import SignalRListener from 'Components/SignalRListener';
 import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
 import useAppPage from 'Helpers/Hooks/useAppPage';
-// import { saveDimensions } from 'Store/Actions/appActions';
-// import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
+import { selectDimensions, saveDimensions, selectIsSidebarVisible } from 'Store/Slices/App';
 // import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
 // import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import ErrorPage from './ErrorPage';
@@ -24,45 +23,45 @@ interface PageProps {
 }
 
 function Page({ children = [] }: PageProps) {
-    // const dispatch = useDispatch();
+    const dispatch = useDispatch();
     const { hasError, errors, isPopulated, isLocalStorageSupported } = useAppPage();
     const [isUpdatedModalOpen, setIsUpdatedModalOpen] = useState(false);
     const [isConnectionLostModalOpen, setIsConnectionLostModalOpen] = useState(false);
 
     // const { enableColorImpairedMode } = useSelector(createUISettingsSelector());
-    // const { isSmallScreen } = useSelector(createDimensionsSelector());
+    const { isSmallScreen } = useSelector(selectDimensions);
     // const { authentication } = useSelector(createSystemStatusSelector());
     // const authenticationEnabled = authentication !== 'none';
+
+    const isSidebarVisible = useSelector(selectIsSidebarVisible);
 
     // TODO: implement this
     // const { isSidebarVisible, isUpdated, isDisconnected, version } = useSelector(
     //     (state: AppState) => state.app,
     // );
-    const isSidebarVisible = true;
     const isUpdated = false;
     const isDisconnected = false;
-    const version = '2.0.0a3';
 
     const handleUpdatedModalClose = useCallback(() => {
         setIsUpdatedModalOpen(false);
     }, []);
 
-    // const handleResize = useCallback(() => {
-    //     dispatch(
-    //         saveDimensions({
-    //             width: window.innerWidth,
-    //             height: window.innerHeight,
-    //         }),
-    //     );
-    // }, [dispatch]);
+    const handleResize = useCallback(() => {
+        dispatch(
+            saveDimensions({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            }),
+        );
+    }, [dispatch]);
 
-    // useEffect(() => {
-    //     window.addEventListener('resize', handleResize);
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
 
-    //     return () => {
-    //         window.removeEventListener('resize', handleResize);
-    //     };
-    // }, [handleResize]);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [handleResize]);
 
     useEffect(() => {
         if (isDisconnected) {
@@ -80,7 +79,7 @@ function Page({ children = [] }: PageProps) {
         return (
             <ErrorPage
                 {...errors}
-                version={version}
+                version={window.Kapowarr.version}
                 isLocalStorageSupported={isLocalStorageSupported}
             />
         );
@@ -98,10 +97,7 @@ function Page({ children = [] }: PageProps) {
             <PageHeader />
 
             <div className={styles.main}>
-                <PageSidebar
-                    isSmallScreen={false /* isSmallScreen */}
-                    isSidebarVisible={isSidebarVisible}
-                />
+                <PageSidebar isSmallScreen={isSmallScreen} isSidebarVisible={isSidebarVisible} />
 
                 {children}
             </div>

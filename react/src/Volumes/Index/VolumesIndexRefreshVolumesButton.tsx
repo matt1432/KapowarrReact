@@ -15,7 +15,7 @@ import type { Volume } from 'Volumes/Volumes';
 
 interface VolumesIndexRefreshVolumesButtonProps {
     isSelectMode: boolean;
-    selectedFilterKey: string;
+    filterKey: string;
 }
 
 function VolumesIndexRefreshVolumesButton(props: VolumesIndexRefreshVolumesButtonProps) {
@@ -34,7 +34,7 @@ function VolumesIndexRefreshVolumesButton(props: VolumesIndexRefreshVolumesButto
     const totalItems = 0;
 
     const dispatch = useDispatch();
-    const { isSelectMode, selectedFilterKey } = props;
+    const { isSelectMode, filterKey } = props;
     const [selectState] = useSelect();
     const { selectedState } = selectState;
 
@@ -50,7 +50,7 @@ function VolumesIndexRefreshVolumesButton(props: VolumesIndexRefreshVolumesButto
     if (selectedVolumesIds.length > 0) {
         refreshLabel = translate('UpdateSelected');
     }
-    else if (selectedFilterKey !== 'all') {
+    else if (filterKey !== 'all') {
         refreshLabel = translate('UpdateFiltered');
     }
 

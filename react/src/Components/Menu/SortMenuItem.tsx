@@ -1,14 +1,16 @@
 import React from 'react';
 import { icons } from 'Helpers/Props';
 import { type SortDirection } from 'Helpers/Props/sortDirections';
-import SelectedMenuItem from './SelectedMenuItem';
+import SelectedMenuItem, { type SelectedMenuItemProps } from './SelectedMenuItem';
+import type { IndexSort } from 'Volumes/Index';
 
-interface SortMenuItemProps {
-    name?: string;
-    sortKey?: string;
+interface SortMenuItemProps
+    extends Omit<SelectedMenuItemProps<IndexSort>, 'isSelected' | 'onPress'> {
+    name?: IndexSort;
+    sortKey?: IndexSort;
     sortDirection?: SortDirection;
     children: string | React.ReactNode;
-    onPress: (sortKey: string) => void;
+    onPress: (sortKey: IndexSort) => void;
 }
 
 function SortMenuItem({ name, sortKey, sortDirection, ...otherProps }: SortMenuItemProps) {

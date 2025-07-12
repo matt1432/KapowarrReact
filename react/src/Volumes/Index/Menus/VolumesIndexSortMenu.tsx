@@ -4,12 +4,13 @@ import SortMenuItem from 'Components/Menu/SortMenuItem';
 import { align } from 'Helpers/Props';
 import { type SortDirection } from 'Helpers/Props/sortDirections';
 import translate from 'Utilities/String/translate';
+import type { IndexSort } from '..';
 
 interface VolumesIndexSortMenuProps {
-    sortKey?: string;
+    sortKey?: IndexSort;
     sortDirection?: SortDirection;
     isDisabled: boolean;
-    onSortSelect(sortKey: string): void;
+    onSortSelect(sortKey: IndexSort): void;
 }
 
 function VolumesIndexSortMenu(props: VolumesIndexSortMenuProps) {
@@ -19,7 +20,7 @@ function VolumesIndexSortMenu(props: VolumesIndexSortMenuProps) {
         <SortMenu isDisabled={isDisabled} alignMenu={align.RIGHT}>
             <MenuContent>
                 <SortMenuItem
-                    name="status"
+                    name="wanted"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
@@ -28,7 +29,7 @@ function VolumesIndexSortMenu(props: VolumesIndexSortMenuProps) {
                 </SortMenuItem>
 
                 <SortMenuItem
-                    name="sortTitle"
+                    name="title"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
@@ -37,129 +38,48 @@ function VolumesIndexSortMenu(props: VolumesIndexSortMenuProps) {
                 </SortMenuItem>
 
                 <SortMenuItem
-                    name="network"
+                    name="year"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
                 >
-                    {translate('Network')}
+                    {translate('Year')}
                 </SortMenuItem>
 
                 <SortMenuItem
-                    name="originalLanguage"
+                    name="publisher"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
                 >
-                    {translate('OriginalLanguage')}
+                    {translate('Publisher')}
                 </SortMenuItem>
 
                 <SortMenuItem
-                    name="qualityProfileId"
+                    name="volume_number"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
                 >
-                    {translate('QualityProfile')}
+                    {translate('VolumeNumber')}
                 </SortMenuItem>
 
                 <SortMenuItem
-                    name="nextAiring"
+                    name="recently_added"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
                 >
-                    {translate('NextAiring')}
+                    {translate('RecentlyAdded')}
                 </SortMenuItem>
 
                 <SortMenuItem
-                    name="previousAiring"
+                    name="recently_released"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
                 >
-                    {translate('PreviousAiring')}
-                </SortMenuItem>
-
-                <SortMenuItem
-                    name="added"
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
-                    onPress={onSortSelect}
-                >
-                    {translate('Added')}
-                </SortMenuItem>
-
-                <SortMenuItem
-                    name="seasonCount"
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
-                    onPress={onSortSelect}
-                >
-                    {translate('Seasons')}
-                </SortMenuItem>
-
-                <SortMenuItem
-                    name="issueProgress"
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
-                    onPress={onSortSelect}
-                >
-                    {translate('Issues')}
-                </SortMenuItem>
-
-                <SortMenuItem
-                    name="issueCount"
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
-                    onPress={onSortSelect}
-                >
-                    {translate('IssueCount')}
-                </SortMenuItem>
-
-                <SortMenuItem
-                    name="latestSeason"
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
-                    onPress={onSortSelect}
-                >
-                    {translate('LatestSeason')}
-                </SortMenuItem>
-
-                <SortMenuItem
-                    name="path"
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
-                    onPress={onSortSelect}
-                >
-                    {translate('Path')}
-                </SortMenuItem>
-
-                <SortMenuItem
-                    name="sizeOnDisk"
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
-                    onPress={onSortSelect}
-                >
-                    {translate('SizeOnDisk')}
-                </SortMenuItem>
-
-                <SortMenuItem
-                    name="tags"
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
-                    onPress={onSortSelect}
-                >
-                    {translate('Tags')}
-                </SortMenuItem>
-
-                <SortMenuItem
-                    name="ratings"
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
-                    onPress={onSortSelect}
-                >
-                    {translate('Rating')}
+                    {translate('RecentlyReleased')}
                 </SortMenuItem>
             </MenuContent>
         </SortMenu>

@@ -1,28 +1,27 @@
 import { useCallback, useEffect, useState } from 'react';
-// import { useDispatch, useSelector } from 'react-redux';
-// import AppState from 'App/State/AppState';
+import { useDispatch, useSelector } from 'react-redux';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
 import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 import { icons } from 'Helpers/Props';
-// import { setIsSidebarVisible } from 'Store/Actions/appActions';
+import { selectIsSidebarVisible, setIsSidebarVisible } from 'Store/Slices/App';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import PageHeaderActionsMenu from './PageHeaderActionsMenu';
 // import VolumesSearchInput from './VolumesSearchInput';
 import styles from './PageHeader.module.css';
 
 function PageHeader() {
-    // const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
-    // const { isSidebarVisible } = useSelector((state: AppState) => state.app);
+    const isSidebarVisible = useSelector(selectIsSidebarVisible);
 
     const [isKeyboardShortcutsModalOpen, setIsKeyboardShortcutsModalOpen] = useState(false);
 
     const { bindShortcut, unbindShortcut } = useKeyboardShortcuts();
 
-    // const handleSidebarToggle = useCallback(() => {
-    //     dispatch(setIsSidebarVisible({ isSidebarVisible: !isSidebarVisible }));
-    // }, [isSidebarVisible, dispatch]);
+    const handleSidebarToggle = useCallback(() => {
+        dispatch(setIsSidebarVisible(!isSidebarVisible));
+    }, [isSidebarVisible, dispatch]);
 
     const handleOpenKeyboardShortcutsModal = useCallback(() => {
         setIsKeyboardShortcutsModalOpen(true);
@@ -53,8 +52,11 @@ function PageHeader() {
             </div>
 
             <div className={styles.sidebarToggleContainer}>
-                <IconButton id="sidebar-toggle-button" name={icons.NAVBAR_COLLAPSE} />
-                {/* onPress={handleSidebarToggle} */}
+                <IconButton
+                    id="sidebar-toggle-button"
+                    name={icons.NAVBAR_COLLAPSE}
+                    onPress={handleSidebarToggle}
+                />
             </div>
 
             {/*<VolumesSearchInput />*/}
