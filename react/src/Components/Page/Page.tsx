@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from 'Store/createAppStore';
 import AppUpdatedModal from 'App/AppUpdatedModal';
 // import ColorImpairedContext from 'App/ColorImpairedContext';
 import ConnectionLostModal from 'App/ConnectionLostModal';
@@ -23,17 +23,17 @@ interface PageProps {
 }
 
 function Page({ children = [] }: PageProps) {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const { hasError, errors, isPopulated, isLocalStorageSupported } = useAppPage();
     const [isUpdatedModalOpen, setIsUpdatedModalOpen] = useState(false);
     const [isConnectionLostModalOpen, setIsConnectionLostModalOpen] = useState(false);
 
     // const { enableColorImpairedMode } = useSelector(createUISettingsSelector());
-    const { isSmallScreen } = useSelector(selectDimensions);
+    const { isSmallScreen } = useAppSelector(selectDimensions);
     // const { authentication } = useSelector(createSystemStatusSelector());
     // const authenticationEnabled = authentication !== 'none';
 
-    const isSidebarVisible = useSelector(selectIsSidebarVisible);
+    const isSidebarVisible = useAppSelector(selectIsSidebarVisible);
 
     // TODO: implement this
     // const { isSidebarVisible, isUpdated, isDisconnected, version } = useSelector(

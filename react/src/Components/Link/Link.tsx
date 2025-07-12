@@ -50,7 +50,7 @@ export default function Link<C extends ElementType = 'button'>({
 
         return (
             <a
-                href={to}
+                href={window.Kapowarr.urlBase + to}
                 target={target || (toLink ? '_blank' : '_self')}
                 rel={toLink ? 'noreferrer' : undefined}
                 className={linkClass}

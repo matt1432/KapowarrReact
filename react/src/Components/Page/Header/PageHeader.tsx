@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from 'Store/createAppStore';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
 import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
@@ -11,9 +11,9 @@ import PageHeaderActionsMenu from './PageHeaderActionsMenu';
 import styles from './PageHeader.module.css';
 
 function PageHeader() {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
-    const isSidebarVisible = useSelector(selectIsSidebarVisible);
+    const isSidebarVisible = useAppSelector(selectIsSidebarVisible);
 
     const [isKeyboardShortcutsModalOpen, setIsKeyboardShortcutsModalOpen] = useState(false);
 

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from 'Store/createAppStore';
 // import QueueStatus from 'Activity/Queue/Status/QueueStatus';
 import { type IconName } from 'Components/Icon';
 import OverlayScroller from 'Components/Scroller/OverlayScroller';
@@ -208,7 +208,7 @@ interface PageSidebarProps {
 }
 
 function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSidebarProps) {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const sidebarRef = useRef<HTMLDivElement | null>(null);
     const touchStartX = useRef<number | null>(null);
     const touchStartY = useRef<number | null>(undefined);
