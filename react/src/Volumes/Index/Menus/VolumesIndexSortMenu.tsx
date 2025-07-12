@@ -20,15 +20,6 @@ function VolumesIndexSortMenu(props: VolumesIndexSortMenuProps) {
         <SortMenu isDisabled={isDisabled} alignMenu={align.RIGHT}>
             <MenuContent>
                 <SortMenuItem
-                    name="wanted"
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
-                    onPress={onSortSelect}
-                >
-                    {translate('MonitoredStatus')}
-                </SortMenuItem>
-
-                <SortMenuItem
                     name="title"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
@@ -47,6 +38,15 @@ function VolumesIndexSortMenu(props: VolumesIndexSortMenuProps) {
                 </SortMenuItem>
 
                 <SortMenuItem
+                    name="volume_number"
+                    sortKey={sortKey}
+                    sortDirection={sortDirection}
+                    onPress={onSortSelect}
+                >
+                    {translate('VolumeNumber')}
+                </SortMenuItem>
+
+                <SortMenuItem
                     name="publisher"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
@@ -56,12 +56,12 @@ function VolumesIndexSortMenu(props: VolumesIndexSortMenuProps) {
                 </SortMenuItem>
 
                 <SortMenuItem
-                    name="volume_number"
+                    name="wanted"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
                 >
-                    {translate('VolumeNumber')}
+                    {translate('MonitoredStatus')}
                 </SortMenuItem>
 
                 <SortMenuItem

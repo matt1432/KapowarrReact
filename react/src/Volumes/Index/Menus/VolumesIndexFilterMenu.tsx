@@ -20,7 +20,7 @@ function VolumesIndexFilterMenu({
         <FilterMenu isDisabled={isDisabled} alignMenu={align.RIGHT}>
             <MenuContent>
                 <FilterMenuItem name="" filterKey={filterKey} onPress={onFilterSelect}>
-                    {translate('')}
+                    {translate('All')}
                 </FilterMenuItem>
 
                 <FilterMenuItem name="wanted" filterKey={filterKey} onPress={onFilterSelect}>

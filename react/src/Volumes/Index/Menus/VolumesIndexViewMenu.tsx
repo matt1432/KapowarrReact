@@ -17,12 +17,12 @@ function VolumesIndexViewMenu(props: VolumesIndexViewMenuProps) {
     return (
         <ViewMenu isDisabled={isDisabled} alignMenu={align.RIGHT}>
             <MenuContent>
-                <ViewMenuItem name="table" selectedView={view} onPress={onViewSelect}>
-                    {translate('Table')}
-                </ViewMenuItem>
-
                 <ViewMenuItem name="posters" selectedView={view} onPress={onViewSelect}>
                     {translate('Posters')}
+                </ViewMenuItem>
+
+                <ViewMenuItem name="table" selectedView={view} onPress={onViewSelect}>
+                    {translate('Table')}
                 </ViewMenuItem>
             </MenuContent>
         </ViewMenu>

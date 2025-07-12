@@ -14,8 +14,8 @@ function FilterMenu({ children, isDisabled = false, ...otherProps }: FilterMenuP
     return (
         <Menu {...otherProps}>
             <ToolbarMenuButton
-                iconName={icons.VIEW}
-                text={translate('View')}
+                iconName={icons.FILTER}
+                text={translate('Filter')}
                 isDisabled={isDisabled}
             />
             {children}
