@@ -15,7 +15,6 @@ export interface VolumesImageProps {
     placeholder: string;
     size?: number;
     lazy?: boolean;
-    // overflow?: boolean;
     onError?: () => void;
     onLoad?: () => void;
 }
@@ -27,7 +26,6 @@ function VolumesImage({
     placeholder,
     size = 250,
     lazy = true,
-    // overflow = false,
     onError,
     onLoad,
 }: VolumesImageProps) {
@@ -64,7 +62,6 @@ function VolumesImage({
                 height={size}
                 threshold={100}
                 placeholder={<img className={className} style={style} src={placeholder} />}
-                // overflow={true} FIXME: see if necessary
             ></LazyLoadImage>
         );
     }

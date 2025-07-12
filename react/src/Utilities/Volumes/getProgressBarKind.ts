@@ -1,18 +1,12 @@
 import { kinds } from 'Helpers/Props';
-// import { type VolumesStatus } from 'Volumes/Volumes';
 
-function getProgressBarKind(
-    status: string, // VolumesStatus,
-    monitored: boolean,
-    progress: number,
-    isDownloading: boolean,
-) {
+function getProgressBarKind(monitored: boolean, progress: number, isDownloading: boolean) {
     if (isDownloading) {
         return kinds.PURPLE;
     }
 
     if (progress === 100) {
-        return status === 'ended' ? kinds.SUCCESS : kinds.PRIMARY;
+        return kinds.SUCCESS;
     }
 
     if (monitored) {

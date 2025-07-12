@@ -8,7 +8,6 @@ import Link from 'Components/Link/Link';
 import MetadataAttribution from 'Components/MetadataAttribution';
 import { icons, kinds, sizes } from 'Helpers/Props';
 // import { type Statistics } from 'Volumes/Volumes';
-import VolumesGenres from 'Volumes/VolumesGenres';
 import VolumesPoster from 'Volumes/VolumesPoster';
 // import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 // import createExistingVolumesSelector from 'Store/Selectors/createExistingVolumesSelector';
@@ -32,8 +31,6 @@ function AddNewVolumesSearchResult({ volume }: AddNewVolumesSearchResultProps) {
         network,
         // @ts-expect-error TODO:
         originalLanguage,
-        // @ts-expect-error TODO:
-        genres = [],
         // @ts-expect-error TODO:
         status,
         // @ts-expect-error TODO:
@@ -84,9 +81,7 @@ function AddNewVolumesSearchResult({ volume }: AddNewVolumesSearchResultProps) {
                     <VolumesPoster
                         volume={volume}
                         className={styles.poster}
-                        // images={images}
                         size={250}
-                        // overflow={true} FIXME: see if necessary
                         lazy={false}
                     />
                 )}
@@ -151,13 +146,6 @@ function AddNewVolumesSearchResult({ volume }: AddNewVolumesSearchResultProps) {
                                 <Icon name={icons.NETWORK} size={13} />
 
                                 <span className={styles.network}>{network}</span>
-                            </Label>
-                        ) : null}
-
-                        {genres.length > 0 ? (
-                            <Label size={sizes.LARGE}>
-                                <Icon name={icons.GENRE} size={13} />
-                                <VolumesGenres className={styles.genres} genres={genres} />
                             </Label>
                         ) : null}
 

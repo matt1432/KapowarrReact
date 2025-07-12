@@ -4,7 +4,6 @@ import { sizes } from 'Helpers/Props';
 /*import createVolumesQueueItemsDetailsSelector, {
     type VolumesQueueDetails,
 } from 'Volumes/Index/createVolumesQueueDetailsSelector';*/
-// import { type VolumesStatus } from 'Volumes/Volumes';
 import getProgressBarKind from 'Utilities/Volumes/getProgressBarKind';
 import translate from 'Utilities/String/translate';
 import styles from './VolumesIndexProgressBar.module.css';
@@ -12,7 +11,6 @@ import styles from './VolumesIndexProgressBar.module.css';
 interface VolumesIndexProgressBarProps {
     volumeId: number;
     monitored: boolean;
-    status: string; // VolumesStatus;
     issueCount: number;
     issueFileCount: number;
     width: number;
@@ -24,7 +22,6 @@ function VolumesIndexProgressBar(props: VolumesIndexProgressBarProps) {
     const {
         // volumeId,
         monitored,
-        status,
         issueCount,
         issueFileCount,
         width,
@@ -49,7 +46,7 @@ function VolumesIndexProgressBar(props: VolumesIndexProgressBarProps) {
             className={styles.progressBar}
             containerClassName={isStandalone ? undefined : styles.progress}
             progress={progress}
-            kind={getProgressBarKind(status, monitored, progress, false /*queueDetails.count > 0*/)}
+            kind={getProgressBarKind(monitored, progress, false /*queueDetails.count > 0*/)}
             size={detailedProgressBar ? sizes.MEDIUM : sizes.SMALL}
             showText={detailedProgressBar}
             text={text}

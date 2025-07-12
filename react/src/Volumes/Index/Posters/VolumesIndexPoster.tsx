@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import { useCallback, useState } from 'react';
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { useSearchVolumeQuery } from 'Store/createApiEndpoints';
@@ -96,12 +95,9 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
         return null;
     }
 
-    const status = '' as string;
-
     const {
         title,
         monitored,
-        // status, TODO:
         folder,
         publisher,
         issue_count: issueCount,
@@ -148,20 +144,6 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
                     />
                 </Label>
 
-                {status === 'ended' ? (
-                    <div
-                        className={classNames(styles.status, styles.ended)}
-                        title={translate('Ended')}
-                    />
-                ) : null}
-
-                {status === 'deleted' ? (
-                    <div
-                        className={classNames(styles.status, styles.deleted)}
-                        title={translate('Deleted')}
-                    />
-                ) : null}
-
                 <Link className={styles.link} style={elementStyle} to={link}>
                     <VolumesPoster
                         volume={volume}
@@ -179,7 +161,6 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
             <VolumesIndexProgressBar
                 volumeId={volumeId}
                 monitored={monitored}
-                status={status}
                 issueCount={issueCount}
                 issueFileCount={issueFileCount}
                 width={posterWidth}
