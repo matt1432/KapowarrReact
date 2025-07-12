@@ -12,8 +12,6 @@ export default function VolumesIndexFooter() {
     const count = volumes?.length;
     let issues = 0;
     let issueFiles = 0;
-    // let ended = 0;
-    // let continuing = 0;
     let monitored = 0;
     let totalFileSize = 0;
 
@@ -22,16 +20,6 @@ export default function VolumesIndexFooter() {
 
         issues += issue_count;
         issueFiles += issue_file_count;
-
-        // TODO
-        /*
-        if (v.status === 'ended') {
-            ended++;
-        }
-        else {
-            continuing++;
-        }
-        */
 
         if (v.monitored) {
             monitored++;
@@ -100,15 +88,6 @@ export default function VolumesIndexFooter() {
                         <div className={styles.statistics}>
                             <DescriptionList>
                                 <DescriptionListItem title={translate('Volumes')} data={count} />
-
-                                {/*
-                                <DescriptionListItem title={translate('Ended')} data={ended} />
-
-                                <DescriptionListItem
-                                    title={translate('Continuing')}
-                                    data={continuing}
-                                />
-                                */}
                             </DescriptionList>
 
                             <DescriptionList>
@@ -116,13 +95,6 @@ export default function VolumesIndexFooter() {
                                     title={translate('Monitored')}
                                     data={monitored}
                                 />
-
-                                {/*
-                                <DescriptionListItem
-                                    title={translate('Unmonitored')}
-                                    data={count - monitored}
-                                />
-                                */}
                             </DescriptionList>
 
                             <DescriptionList>
