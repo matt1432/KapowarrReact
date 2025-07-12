@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from 'Store/createAppStore';
+import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
 import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 import { icons } from 'Helpers/Props';
-import { selectIsSidebarVisible, setIsSidebarVisible } from 'Store/Slices/App';
+import { setIsSidebarVisible } from 'Store/Slices/App';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import PageHeaderActionsMenu from './PageHeaderActionsMenu';
 // import VolumesSearchInput from './VolumesSearchInput';
 import styles from './PageHeader.module.css';
 
 function PageHeader() {
-    const dispatch = useAppDispatch();
+    const dispatch = useRootDispatch();
 
-    const isSidebarVisible = useAppSelector(selectIsSidebarVisible);
+    const isSidebarVisible = useRootSelector((state) => state.app.isSidebarVisible);
 
     const [isKeyboardShortcutsModalOpen, setIsKeyboardShortcutsModalOpen] = useState(false);
 

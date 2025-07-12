@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-interface Dimensions {
+export interface Dimensions {
     width: number;
     height: number;
     isExtraSmallScreen: boolean;
@@ -9,7 +9,7 @@ interface Dimensions {
     isLargeScreen: boolean;
 }
 
-interface AppState {
+export interface AppState {
     dimensions: Dimensions;
     isSidebarVisible: boolean;
 }
@@ -35,10 +35,6 @@ const initialState = {
 const appSlice = createSlice({
     name: 'app',
     initialState,
-    selectors: {
-        selectDimensions: (state) => state.dimensions,
-        selectIsSidebarVisible: (state) => state.isSidebarVisible,
-    },
     reducers: {
         saveDimensions(state, { payload }: PayloadAction<Pick<Dimensions, 'width' | 'height'>>) {
             const { width, height } = payload;
@@ -52,6 +48,5 @@ const appSlice = createSlice({
     },
 });
 
-export const { selectDimensions, selectIsSidebarVisible } = appSlice.selectors;
 export const { saveDimensions, setIsSidebarVisible } = appSlice.actions;
 export default appSlice;

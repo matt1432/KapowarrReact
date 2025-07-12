@@ -27,7 +27,7 @@ function createAppStore() {
 export const { history, store } = createAppStore();
 
 export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type RootDispatch = typeof store.dispatch;
 
-export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
-export const useAppSelector = useSelector.withTypes<RootState>();
+export const useRootDispatch = useDispatch.withTypes<RootDispatch>();
+export const useRootSelector = useSelector.withTypes<RootState>();

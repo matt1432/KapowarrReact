@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useAppDispatch } from 'Store/createAppStore';
+import { useRootDispatch } from 'Store/createAppStore';
 // import QueueStatus from 'Activity/Queue/Status/QueueStatus';
 import { type IconName } from 'Components/Icon';
 import OverlayScroller from 'Components/Scroller/OverlayScroller';
@@ -208,7 +208,7 @@ interface PageSidebarProps {
 }
 
 function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSidebarProps) {
-    const dispatch = useAppDispatch();
+    const dispatch = useRootDispatch();
     const sidebarRef = useRef<HTMLDivElement | null>(null);
     const touchStartX = useRef<number | null>(null);
     const touchStartY = useRef<number | null>(undefined);
@@ -227,7 +227,9 @@ function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSidebarProps) {
     });
 
     const urlBase = window.Kapowarr.urlBase;
-    const pathname = urlBase ? location.pathname.substr(urlBase.length) || '/' : location.pathname;
+    const pathname = urlBase
+        ? location.pathname.substring(urlBase.length) || '/'
+        : location.pathname;
 
     const activeParent = useMemo(() => {
         return (

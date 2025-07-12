@@ -14,11 +14,11 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes } from 'Helpers/Props';
 import { type CheckInputChanged, type InputChanged } from 'typings/inputs';
-import { type TableOptionsChangePayload } from 'typings/Table';
 import translate from 'Utilities/String/translate';
 import { type Column } from '../Column';
 import TableOptionsColumn from './TableOptionsColumn';
 import styles from './TableOptionsModal.module.css';
+import type { VolumesIndexState } from 'Store/Slices/VolumesIndex';
 
 export interface TableOptionsModalProps {
     isOpen: boolean;
@@ -27,7 +27,7 @@ export interface TableOptionsModalProps {
     maxPageSize?: number;
     canModifyColumns?: boolean;
     optionsComponent?: React.ElementType;
-    onTableOptionChange: (payload: TableOptionsChangePayload) => void;
+    onTableOptionChange: (payload: Partial<VolumesIndexState['tableOptions']>) => void;
     onModalClose: () => void;
 }
 

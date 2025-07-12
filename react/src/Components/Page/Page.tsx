@@ -1,15 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from 'Store/createAppStore';
+import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import AppUpdatedModal from 'App/AppUpdatedModal';
 // import ColorImpairedContext from 'App/ColorImpairedContext';
 import ConnectionLostModal from 'App/ConnectionLostModal';
-// import AppState from 'App/State/AppState';
 
 // https://github.com/Sonarr/Sonarr/blob/v5-develop/frontend/src/Components/SignalRListener.tsx
 // import SignalRListener from 'Components/SignalRListener';
 import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
 import useAppPage from 'Helpers/Hooks/useAppPage';
-import { selectDimensions, saveDimensions, selectIsSidebarVisible } from 'Store/Slices/App';
+import { saveDimensions } from 'Store/Slices/App';
 // import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
 // import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import ErrorPage from './ErrorPage';
@@ -23,22 +22,21 @@ interface PageProps {
 }
 
 function Page({ children = [] }: PageProps) {
-    const dispatch = useAppDispatch();
+    const dispatch = useRootDispatch();
     const { hasError, errors, isPopulated, isLocalStorageSupported } = useAppPage();
     const [isUpdatedModalOpen, setIsUpdatedModalOpen] = useState(false);
     const [isConnectionLostModalOpen, setIsConnectionLostModalOpen] = useState(false);
 
     // const { enableColorImpairedMode } = useSelector(createUISettingsSelector());
-    const { isSmallScreen } = useAppSelector(selectDimensions);
+    const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
     // const { authentication } = useSelector(createSystemStatusSelector());
     // const authenticationEnabled = authentication !== 'none';
-
-    const isSidebarVisible = useAppSelector(selectIsSidebarVisible);
 
     // TODO: implement this
     // const { isSidebarVisible, isUpdated, isDisconnected, version } = useSelector(
     //     (state: AppState) => state.app,
     // );
+    const isSidebarVisible = useRootSelector((state) => state.app.isSidebarVisible);
     const isUpdated = false;
     const isDisconnected = false;
 
@@ -92,8 +90,6 @@ function Page({ children = [] }: PageProps) {
     // <ColorImpairedContext.Provider value={enableColorImpairedMode}>
     return (
         <div className={styles.page}>
-            {/*<SignalRListener />*/}
-
             <PageHeader />
 
             <div className={styles.main}>
