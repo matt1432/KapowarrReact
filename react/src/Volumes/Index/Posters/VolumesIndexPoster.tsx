@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import { useSearchVolumeQuery } from 'Store/createApiEndpoints';
+import { useRootSelector } from 'Store/createAppStore';
+import { useExecuteCommandMutation, useSearchVolumeQuery } from 'Store/createApiEndpoints';
 import Label from 'Components/Label';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
@@ -37,33 +37,25 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
         (state) => state.volumesIndex.posterOptions,
     );
 
-    const dispatch = useRootDispatch();
-
     const [hasPosterError, setHasPosterError] = useState(false);
     const [isEditVolumesModalOpen, setIsEditVolumesModalOpen] = useState(false);
     const [isDeleteVolumesModalOpen, setIsDeleteVolumesModalOpen] = useState(false);
 
+    const [executeCommand] = useExecuteCommandMutation();
+
     const onRefreshPress = useCallback(() => {
-        /*
-        dispatch(
-            executeCommand({
-                name: REFRESH_VOLUME,
-                volumeIds: [volumeId],
-            }),
-        );
-            */
-    }, [volumeId, dispatch]);
+        executeCommand({
+            cmd: 'refresh_and_scan',
+            volume_id: volumeId.toString(),
+        });
+    }, [executeCommand, volumeId]);
 
     const onSearchPress = useCallback(() => {
-        /*
-        dispatch(
-            executeCommand({
-                name: VOLUMES_SEARCH,
-                volumeId,
-            }),
-        );
-            */
-    }, [volumeId, dispatch]);
+        executeCommand({
+            cmd: 'auto_search',
+            volume_id: volumeId.toString(),
+        });
+    }, [executeCommand, volumeId]);
 
     const onPosterLoadError = useCallback(() => {
         setHasPosterError(true);

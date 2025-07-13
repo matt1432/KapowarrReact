@@ -11,10 +11,16 @@ export type GetVolumesParams =
       }
     | undefined;
 
+export type ExecuteCommandParams = {
+    cmd: string;
+    [key: string]: string;
+};
+
 export const baseApi = createApi({
     reducerPath: 'baseApi',
     baseQuery: fetchBaseQuery({ baseUrl: window.Kapowarr.urlBase + window.Kapowarr.apiRoot }),
     endpoints: (build) => ({
+        // GET
         getVolumes: build.query<VolumePublicInfo[], GetVolumesParams>({
             query: ({ filter, sort } = {}) =>
                 'volumes' +
@@ -46,10 +52,23 @@ export const baseApi = createApi({
 
             transformResponse: (response: { result: DownloadItem[] }) => response.result,
         }),
+
+        // POST
+        executeCommand: build.mutation<void, ExecuteCommandParams>({
+            query: (params) => ({
+                url:
+                    'system/tasks' +
+                    getQueryString({
+                        ...params,
+                        api_key: window.Kapowarr.apiKey,
+                    }),
+                method: 'POST',
+            }),
+        }),
     }),
 });
 
-export const { useSearchVolumeQuery } = baseApi;
+export const { useExecuteCommandMutation, useSearchVolumeQuery } = baseApi;
 
 // Add default value to params
 export const useGetVolumesQuery = (params: GetVolumesParams = {}) =>

@@ -33,6 +33,7 @@ function VolumesIndexProgressBar(props: VolumesIndexProgressBarProps) {
         queue.filter((item) => ['failed', 'canceled', 'shutting down'].includes(item.status))
             .length;
 
+    // FIXME: handle when there are more files than monitored issues
     const progress = issueCount ? (issueFileCount / issueCount) * 100 : 100;
     const text = newDownloads
         ? `${issueFileCount} + ${newDownloads} / ${issueCount}`
