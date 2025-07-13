@@ -7,8 +7,8 @@ export interface Notification extends Provider {
     onUpgrade: boolean;
     onImportComplete: boolean;
     onRename: boolean;
-    onVolumesAdd: boolean;
-    onVolumesDelete: boolean;
+    onVolumeAdd: boolean;
+    onVolumeDelete: boolean;
     onIssueFileDelete: boolean;
     onIssueFileDeleteForUpgrade: boolean;
     onHealthIssue: boolean;
@@ -21,8 +21,8 @@ export interface Notification extends Provider {
     supportsOnUpgrade: boolean;
     supportsOnImportComplete: boolean;
     supportsOnRename: boolean;
-    supportsOnVolumesAdd: boolean;
-    supportsOnVolumesDelete: boolean;
+    supportsOnVolumeAdd: boolean;
+    supportsOnVolumeDelete: boolean;
     supportsOnIssueFileDelete: boolean;
     supportsOnIssueFileDeleteForUpgrade: boolean;
     supportsOnHealthIssue: boolean;

@@ -18,7 +18,7 @@ import translate from 'Utilities/String/translate';
 import { type Column } from '../Column';
 import TableOptionsColumn from './TableOptionsColumn';
 import styles from './TableOptionsModal.module.css';
-import type { VolumesIndexState } from 'Store/Slices/VolumesIndex';
+import type { VolumeIndexState } from 'Store/Slices/VolumeIndex';
 
 export interface TableOptionsModalProps {
     isOpen: boolean;
@@ -27,7 +27,7 @@ export interface TableOptionsModalProps {
     maxPageSize?: number;
     canModifyColumns?: boolean;
     optionsComponent?: React.ElementType;
-    onTableOptionChange: (payload: Partial<VolumesIndexState['tableOptions']>) => void;
+    onTableOptionChange: (payload: Partial<VolumeIndexState['tableOptions']>) => void;
     onModalClose: () => void;
 }
 

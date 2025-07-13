@@ -222,10 +222,10 @@ export default {
     tableRowHoverBackgroundColor: 'rgba(255, 255, 255, 0.08)',
 
     //
-    // Volumes
+    // Volume
 
-    addVolumesBackgroundColor: '#2a2a2a',
-    volumesBackgroundColor: '#2a2a2a',
+    addVolumeBackgroundColor: '#2a2a2a',
+    volumeBackgroundColor: '#2a2a2a',
     searchIconContainerBackgroundColor: '#2b2b2b',
     collapseButtonBackgroundColor: '#2a2a2a',
 

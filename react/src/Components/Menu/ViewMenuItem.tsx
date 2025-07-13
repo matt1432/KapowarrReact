@@ -1,6 +1,6 @@
 import React from 'react';
 import SelectedMenuItem, { type SelectedMenuItemProps } from './SelectedMenuItem';
-import type { IndexView } from 'Volumes/Index';
+import type { IndexView } from 'Volume/Index';
 
 interface ViewMenuItemProps extends Omit<SelectedMenuItemProps<IndexView>, 'isSelected'> {
     name?: IndexView;

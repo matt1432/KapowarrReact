@@ -1,6 +1,6 @@
 import React from 'react';
 import SelectedMenuItem, { type SelectedMenuItemProps } from './SelectedMenuItem';
-import type { IndexFilter } from 'Volumes/Index';
+import type { IndexFilter } from 'Volume/Index';
 
 interface FilterMenuItemProps
     extends Omit<SelectedMenuItemProps<IndexFilter>, 'isSelected' | 'onPress'> {

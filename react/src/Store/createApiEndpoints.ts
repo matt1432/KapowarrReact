@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { DownloadItem } from 'typings/Queue';
 import getQueryString from 'Utilities/Fetch/getQueryString';
-import type { IndexFilter, IndexSort } from 'Volumes/Index';
-import type { Volume, VolumePublicInfo } from 'Volumes/Volumes';
+import type { IndexFilter, IndexSort } from 'Volume/Index';
+import type { Volume, VolumePublicInfo } from 'Volume/Volume';
 
-export type GetVolumesParams =
+export type GetVolumeParams =
     | {
           filter?: IndexFilter;
           sort?: IndexSort;
@@ -21,7 +21,7 @@ export const baseApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: window.Kapowarr.urlBase + window.Kapowarr.apiRoot }),
     endpoints: (build) => ({
         // GET
-        getVolumes: build.query<VolumePublicInfo[], GetVolumesParams>({
+        getVolume: build.query<VolumePublicInfo[], GetVolumeParams>({
             query: ({ filter, sort } = {}) =>
                 'volumes' +
                 getQueryString({
@@ -71,8 +71,8 @@ export const baseApi = createApi({
 export const { useExecuteCommandMutation, useSearchVolumeQuery } = baseApi;
 
 // Add default value to params
-export const useGetVolumesQuery = (params: GetVolumesParams = {}) =>
-    baseApi.useGetVolumesQuery(params);
+export const useGetVolumeQuery = (params: GetVolumeParams = {}) =>
+    baseApi.useGetVolumeQuery(params);
 
 export const useFetchQueueDetails = (volumeId?: number) => {
     return baseApi.useFetchQueueDetailsQuery(undefined, {

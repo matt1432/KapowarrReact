@@ -11,7 +11,7 @@ interface RootFolderSelectInputOptionProps extends EnhancedSelectInputOptionProp
     value: string;
     freeSpace?: number;
     isMissing?: boolean;
-    volumesFolder?: string;
+    volumeFolder?: string;
     isMobile: boolean;
     isWindows?: boolean;
 }
@@ -21,7 +21,7 @@ function RootFolderSelectInputOption({
     value,
     freeSpace,
     isMissing,
-    volumesFolder,
+    volumeFolder,
     isMobile,
     isWindows,
     ...otherProps
@@ -34,10 +34,10 @@ function RootFolderSelectInputOption({
                 <div className={styles.value}>
                     {value}
 
-                    {volumesFolder && id !== 'addNew' ? (
-                        <div className={styles.volumesFolder}>
+                    {volumeFolder && id !== 'addNew' ? (
+                        <div className={styles.volumeFolder}>
                             {slashCharacter}
-                            {volumesFolder}
+                            {volumeFolder}
                         </div>
                     ) : null}
                 </div>

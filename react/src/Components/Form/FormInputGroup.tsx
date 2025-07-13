@@ -37,12 +37,12 @@ import QualityProfileSelectInput, {
 import RootFolderSelectInput, {
     type RootFolderSelectInputProps,
 } from './Select/RootFolderSelectInput';
-import VolumesTypeSelectInput, {
-    type VolumesTypeSelectInputProps,
-} from './Select/VolumesTypeSelectInput';
+import VolumeTypeSelectInput, {
+    type VolumeTypeSelectInputProps,
+} from './Select/VolumeTypeSelectInput';
 import UMaskInput, { type UMaskInputProps } from './Select/UMaskInput';
 import DeviceInput, { type DeviceInputProps } from './Tag/DeviceInput';
-import VolumesTagInput, { type VolumesTagInputProps } from './Tag/VolumesTagInput';
+import VolumeTagInput, { type VolumeTagInputProps } from './Tag/VolumeTagInput';
 import TagSelectInput, { type TagSelectInputProps } from './Tag/TagSelectInput';
 import TextTagInput, { type TextTagInputProps } from './Tag/TextTagInput';
 import TextArea, { type TextAreaProps } from './TextArea';
@@ -71,9 +71,8 @@ const componentMap: Record<InputType, ElementType> = {
     qualityProfileSelect: QualityProfileSelectInput,
     rootFolderSelect: RootFolderSelectInput,
     select: EnhancedSelectInput,
-    volumesTag: VolumesTagInput,
-    volumesTypeSelect: VolumesTypeSelectInput,
-    tag: VolumesTagInput,
+    volumeTypeSelect: VolumeTypeSelectInput,
+    tag: VolumeTagInput,
     tagSelect: TagSelectInput,
     text: TextInput,
     textArea: TextArea,
@@ -126,23 +125,21 @@ type PickProps<V, C extends InputType> = C extends 'text'
                                             : C extends 'select'
                                               ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                                 EnhancedSelectInputProps<any, V>
-                                              : C extends 'volumesTag'
-                                                ? VolumesTagInputProps<V>
-                                                : C extends 'volumesTypeSelect'
-                                                  ? VolumesTypeSelectInputProps
-                                                  : C extends 'tag'
-                                                    ? VolumesTagInputProps<V>
-                                                    : C extends 'tagSelect'
-                                                      ? TagSelectInputProps
-                                                      : C extends 'text'
-                                                        ? TextInputProps
-                                                        : C extends 'textArea'
-                                                          ? TextAreaProps
-                                                          : C extends 'textTag'
-                                                            ? TextTagInputProps
-                                                            : C extends 'umask'
-                                                              ? UMaskInputProps
-                                                              : never;
+                                              : C extends 'volumeTypeSelect'
+                                                ? VolumeTypeSelectInputProps
+                                                : C extends 'tag'
+                                                  ? VolumeTagInputProps<V>
+                                                  : C extends 'tagSelect'
+                                                    ? TagSelectInputProps
+                                                    : C extends 'text'
+                                                      ? TextInputProps
+                                                      : C extends 'textArea'
+                                                        ? TextAreaProps
+                                                        : C extends 'textTag'
+                                                          ? TextTagInputProps
+                                                          : C extends 'umask'
+                                                            ? UMaskInputProps
+                                                            : never;
 
 export interface FormInputGroupValues<T> {
     key: T;

@@ -17,7 +17,7 @@
     display: flex;
 }
 
-.volumesFolder {
+.volumeFolder {
     flex: 0 0 auto;
     color: var(--disabledColor);
 }

@@ -1,7 +1,4 @@
 import * as align from './align';
-import * as filterBuilderTypes from './filterBuilderTypes';
-import * as filterBuilderValueTypes from './filterBuilderValueTypes';
-import * as filterTypes from './filterTypes';
 import * as icons from './icons';
 import * as inputTypes from './inputTypes';
 import * as kinds from './kinds';
@@ -14,9 +11,6 @@ import * as tooltipPositions from './tooltipPositions';
 export {
     align,
     inputTypes,
-    filterBuilderTypes,
-    filterBuilderValueTypes,
-    filterTypes,
     icons,
     kinds,
     messageTypes,

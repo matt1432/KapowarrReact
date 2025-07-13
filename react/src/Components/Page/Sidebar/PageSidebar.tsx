@@ -37,8 +37,8 @@ interface SidebarItem {
 
 const LINKS: SidebarItem[] = [
     {
-        iconName: icons.VOLUMES_CONTINUING,
-        title: () => translate('Volumes'),
+        iconName: icons.VOLUME_CONTINUING,
+        title: () => translate('Volume'),
         to: '/',
         alias: '/volumes',
         children: [

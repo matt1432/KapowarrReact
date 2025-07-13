@@ -6,7 +6,7 @@ interface CssExports {
     path: string;
     pathContainer: string;
     selectedValue: string;
-    volumesFolder: string;
+    volumeFolder: string;
 }
 export const cssExports: CssExports;
 export default cssExports;

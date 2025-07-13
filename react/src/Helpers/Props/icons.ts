@@ -42,9 +42,7 @@ import {
     faChevronCircleUp as fasChevronCircleUp,
     faCircle as fasCircle,
     faCircleDown as fasCircleDown,
-    faCirclePause as fasCirclePause,
     faCirclePlay as fasCirclePlay,
-    faCircleStop as fasCircleStop,
     faCloud as fasCloud,
     faCloudDownloadAlt as fasCloudDownloadAlt,
     faCog as fasCog,
@@ -157,8 +155,6 @@ export const FATAL = fasTimesCircle;
 export const FILE = farFile;
 export const FILE_MISSING = fasFileCircleQuestion;
 export const FILTER = fasFilter;
-export const FINALE_SEASON = fasCirclePause;
-export const FINALE_VOLUMES = fasCircleStop;
 export const FLAG = fasFlag;
 export const FOOTNOTE = fasAsterisk;
 export const FOLDER = farFolder;
@@ -211,9 +207,9 @@ export const SCENE_MAPPING = fasSitemap;
 export const SCHEDULED = farClock;
 export const SCORE = fasUserPlus;
 export const SEARCH = fasSearch;
-export const VOLUMES_CONTINUING = fasPlay;
-export const VOLUMES_ENDED = fasStop;
-export const VOLUMES_DELETED = fasExclamationTriangle;
+export const VOLUME_CONTINUING = fasPlay;
+export const VOLUME_ENDED = fasStop;
+export const VOLUME_DELETED = fasExclamationTriangle;
 export const SETTINGS = fasCogs;
 export const SHUTDOWN = fasPowerOff;
 export const SORT = fasSort;

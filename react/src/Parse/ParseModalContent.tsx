@@ -77,7 +77,7 @@ function ParseModalContent(props: ParseModalContentProps) {
                         className={styles.input}
                         name="title"
                         value={title}
-                        placeholder="eg. Volumes.Title.S01E05.720p.HDTV-RlsGroup"
+                        placeholder="eg. Volume.Title.S01E05.720p.HDTV-RlsGroup"
                         autoFocus={true}
                         onChange={onInputChange}
                     />

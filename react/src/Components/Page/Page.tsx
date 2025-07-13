@@ -4,8 +4,6 @@ import AppUpdatedModal from 'App/AppUpdatedModal';
 // import ColorImpairedContext from 'App/ColorImpairedContext';
 import ConnectionLostModal from 'App/ConnectionLostModal';
 
-// https://github.com/Sonarr/Sonarr/blob/v5-develop/frontend/src/Components/SignalRListener.tsx
-// import SignalRListener from 'Components/SignalRListener';
 import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
 import useAppPage from 'Helpers/Hooks/useAppPage';
 import { saveDimensions } from 'Store/Slices/App';

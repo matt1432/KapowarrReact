@@ -5,5 +5,5 @@ export interface NamingConfig {
     customColonReplacementFormat: string;
     multiIssueStyle: number;
     standardIssueFormat: string;
-    volumesFolderFormat: string;
+    volumeFolderFormat: string;
 }

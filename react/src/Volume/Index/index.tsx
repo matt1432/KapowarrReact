@@ -1,0 +1,341 @@
+// IMPORTS
+
+// React
+import { useCallback, useMemo, useRef, useState, type RefObject } from 'react';
+
+// Redux
+import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
+import {
+    setVolumeFilter,
+    setVolumeSort,
+    setVolumeView,
+    setVolumeTableOption,
+    type VolumeIndexState,
+} from 'Store/Slices/VolumeIndex';
+
+import { useGetVolumeQuery } from 'Store/createApiEndpoints';
+
+// Misc
+import { align, icons, kinds } from 'Helpers/Props';
+import { DESCENDING, type SortDirection } from 'Helpers/Props/sortDirections';
+
+import scrollPositions from 'Store/scrollPositions';
+import translate from 'Utilities/String/translate';
+
+// General Components
+import { SelectProvider } from 'App/SelectContext';
+
+import withScrollPosition from 'Components/withScrollPosition';
+
+import Alert from 'Components/Alert';
+import LoadingIndicator from 'Components/Loading/LoadingIndicator';
+import NoVolume from 'Volume/NoVolume';
+import PageContent from 'Components/Page/PageContent';
+import PageContentBody from 'Components/Page/PageContentBody';
+import PageJumpBar, { type PageJumpBarItems } from 'Components/Page/PageJumpBar';
+import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
+import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
+import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
+import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
+import ParseToolbarButton from 'Parse/ParseToolbarButton';
+import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
+
+// Specific Components
+import VolumeIndexFilterMenu from './Menus/VolumeIndexFilterMenu';
+import VolumeIndexSortMenu from './Menus/VolumeIndexSortMenu';
+import VolumeIndexViewMenu from './Menus/VolumeIndexViewMenu';
+import VolumeIndexPosterOptionsModal from './Posters/Options/VolumeIndexPosterOptionsModal';
+import VolumeIndexPosters from './Posters/VolumeIndexPosters';
+import VolumeIndexSelectAllButton from './Select/VolumeIndexSelectAllButton';
+import VolumeIndexSelectAllMenuItem from './Select/VolumeIndexSelectAllMenuItem';
+import VolumeIndexSelectFooter from './Select/VolumeIndexSelectFooter';
+import VolumeIndexSelectModeButton from './Select/VolumeIndexSelectModeButton';
+import VolumeIndexSelectModeMenuItem from './Select/VolumeIndexSelectModeMenuItem';
+import VolumeIndexFooter from './VolumeIndexFooter';
+import VolumeIndexRefreshVolumeButton from './VolumeIndexRefreshVolumeButton';
+import VolumeIndexTableOptions from './Table/VolumeIndexTableOptions';
+
+// CSS
+import styles from './index.module.css';
+
+// Types
+export type IndexView = 'posters' | 'table';
+export type IndexFilter = '' | 'wanted' | 'monitored';
+export type IndexSort =
+    | 'title'
+    | 'volume_number'
+    | 'year'
+    | 'publisher'
+    | 'wanted'
+    | 'total_size'
+    | 'folder';
+
+interface VolumeIndexProps {
+    initialScrollTop?: number;
+}
+
+// IMPLEMENTATIONS
+
+const VolumeIndex = withScrollPosition((props: VolumeIndexProps) => {
+    const { columns } = useRootSelector((state) => state.volumeIndex.tableOptions);
+
+    const { filterKey, sortDirection, sortKey, view } = useRootSelector(
+        (state) => state.volumeIndex,
+    );
+
+    const {
+        isFetching,
+        isSuccess,
+        error,
+        data: items,
+    } = useGetVolumeQuery({
+        sort: sortKey,
+        filter: filterKey,
+    });
+
+    const isPopulated = items && isSuccess;
+    const totalItems = items?.length ?? 0;
+
+    const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
+    const dispatch = useRootDispatch();
+    const scrollerRef = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>;
+    const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
+    const [jumpToCharacter, setJumpToCharacter] = useState<string | undefined>(undefined);
+    const [isSelectMode, setIsSelectMode] = useState(false);
+
+    const onSelectModePress = useCallback(() => {
+        setIsSelectMode(!isSelectMode);
+    }, [isSelectMode, setIsSelectMode]);
+
+    const onTableOptionChange = useCallback(
+        (payload: Partial<VolumeIndexState['tableOptions']>) => {
+            dispatch(setVolumeTableOption(payload));
+        },
+        [dispatch],
+    );
+
+    const onViewSelect = useCallback(
+        (value: IndexView) => {
+            dispatch(setVolumeView(value));
+
+            if (scrollerRef.current) {
+                scrollerRef.current.scrollTo(0, 0);
+            }
+        },
+        [scrollerRef, dispatch],
+    );
+
+    const onSortSelect = useCallback(
+        (value: IndexSort) => {
+            dispatch(setVolumeSort(value));
+        },
+        [dispatch],
+    );
+
+    const onFilterSelect = useCallback(
+        (value: IndexFilter) => {
+            dispatch(setVolumeFilter(value));
+        },
+        [dispatch],
+    );
+
+    const onOptionsPress = useCallback(() => {
+        setIsOptionsModalOpen(true);
+    }, [setIsOptionsModalOpen]);
+
+    const onOptionsModalClose = useCallback(() => {
+        setIsOptionsModalOpen(false);
+    }, [setIsOptionsModalOpen]);
+
+    const onJumpBarItemPress = useCallback(
+        (character: string) => {
+            setJumpToCharacter(character);
+        },
+        [setJumpToCharacter],
+    );
+
+    const onScroll = useCallback(
+        ({ scrollTop }: { scrollTop: number }) => {
+            setJumpToCharacter(undefined);
+            scrollPositions.volumeIndex = scrollTop;
+        },
+        [setJumpToCharacter],
+    );
+
+    const jumpBarItems: PageJumpBarItems = useMemo(() => {
+        // Reset if not sorting by title
+        if (sortKey !== 'title') {
+            return {
+                characters: {},
+                order: [],
+            };
+        }
+
+        const characters =
+            items?.reduce((acc: Record<string, number>, item) => {
+                let char = item.title.charAt(0);
+
+                if (!isNaN(Number(char))) {
+                    char = '#';
+                }
+
+                if (char in acc) {
+                    acc[char] = acc[char] + 1;
+                }
+                else {
+                    acc[char] = 1;
+                }
+
+                return acc;
+            }, {}) ?? {};
+
+        const order = Object.keys(characters).sort();
+
+        // Reverse if sorting descending
+        if ((sortDirection as SortDirection) === DESCENDING) {
+            order.reverse();
+        }
+
+        return {
+            characters,
+            order,
+        };
+    }, [items, sortKey, sortDirection]);
+
+    const isLoaded = !!(!error && isPopulated && items.length);
+    const hasNoVolume = !totalItems;
+
+    return (
+        <SelectProvider items={items ?? []}>
+            <PageContent>
+                <PageToolbar>
+                    <PageToolbarSection>
+                        <VolumeIndexRefreshVolumeButton
+                            isSelectMode={isSelectMode}
+                            filterKey={filterKey}
+                        />
+
+                        <PageToolbarSeparator />
+
+                        <VolumeIndexSelectModeButton
+                            label={
+                                isSelectMode
+                                    ? translate('StopSelecting')
+                                    : translate('SelectVolume')
+                            }
+                            iconName={isSelectMode ? icons.VOLUME_ENDED : icons.CHECK}
+                            isSelectMode={isSelectMode}
+                            overflowComponent={VolumeIndexSelectModeMenuItem}
+                            onPress={onSelectModePress}
+                        />
+
+                        <VolumeIndexSelectAllButton
+                            label="SelectAll"
+                            isSelectMode={isSelectMode}
+                            overflowComponent={VolumeIndexSelectAllMenuItem}
+                        />
+
+                        <PageToolbarSeparator />
+
+                        <ParseToolbarButton />
+                    </PageToolbarSection>
+
+                    <PageToolbarSection alignContent={align.RIGHT} collapseButtons={false}>
+                        {view === 'table' ? (
+                            <TableOptionsModalWrapper
+                                // FIXME: still shows posters
+                                columns={columns}
+                                optionsComponent={VolumeIndexTableOptions}
+                                onTableOptionChange={onTableOptionChange}
+                            >
+                                <PageToolbarButton
+                                    label={translate('Options')}
+                                    iconName={icons.TABLE}
+                                />
+                            </TableOptionsModalWrapper>
+                        ) : (
+                            <PageToolbarButton
+                                label={translate('Options')}
+                                iconName={view === 'posters' ? icons.POSTER : icons.OVERVIEW}
+                                isDisabled={hasNoVolume}
+                                onPress={onOptionsPress}
+                            />
+                        )}
+
+                        <PageToolbarSeparator />
+
+                        <VolumeIndexViewMenu
+                            view={view}
+                            isDisabled={hasNoVolume}
+                            onViewSelect={onViewSelect}
+                        />
+
+                        <VolumeIndexSortMenu
+                            sortKey={sortKey}
+                            sortDirection={sortDirection}
+                            isDisabled={hasNoVolume}
+                            onSortSelect={onSortSelect}
+                        />
+
+                        <VolumeIndexFilterMenu
+                            filterKey={filterKey}
+                            isDisabled={hasNoVolume}
+                            onFilterSelect={onFilterSelect}
+                        />
+                    </PageToolbarSection>
+                </PageToolbar>
+
+                <div className={styles.pageContentBodyWrapper}>
+                    <PageContentBody
+                        ref={scrollerRef}
+                        className={styles.contentBody}
+                        innerClassName={styles[`${view}InnerContentBody`]}
+                        initialScrollTop={props.initialScrollTop}
+                        onScroll={onScroll}
+                    >
+                        {isFetching && !isPopulated ? <LoadingIndicator /> : null}
+
+                        {!isFetching && !!error ? (
+                            <Alert kind={kinds.DANGER}>{translate('VolumeLoadError')}</Alert>
+                        ) : null}
+
+                        {isLoaded ? (
+                            <div className={styles.contentBodyContainer}>
+                                <VolumeIndexPosters
+                                    scrollerRef={scrollerRef}
+                                    items={items}
+                                    sortKey={sortKey}
+                                    sortDirection={sortDirection}
+                                    jumpToCharacter={jumpToCharacter}
+                                    isSelectMode={isSelectMode}
+                                    isSmallScreen={isSmallScreen}
+                                />
+
+                                <VolumeIndexFooter />
+                            </div>
+                        ) : null}
+
+                        {!error && isPopulated && !items.length ? (
+                            <NoVolume totalItems={totalItems} />
+                        ) : null}
+                    </PageContentBody>
+
+                    {isLoaded && !!jumpBarItems.order.length ? (
+                        <PageJumpBar items={jumpBarItems} onItemPress={onJumpBarItemPress} />
+                    ) : null}
+                </div>
+
+                {isSelectMode ? <VolumeIndexSelectFooter /> : null}
+
+                {view === 'posters' ? (
+                    <VolumeIndexPosterOptionsModal
+                        isOpen={isOptionsModalOpen}
+                        onModalClose={onOptionsModalClose}
+                    />
+                ) : null}
+            </PageContent>
+        </SelectProvider>
+    );
+}, 'volumeIndex');
+
+export default VolumeIndex;

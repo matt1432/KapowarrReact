@@ -1,4 +1,4 @@
-import { type VolumePublicInfo } from 'Volumes/Volumes';
+import { type VolumePublicInfo } from 'Volume/Volume';
 
 const STARTS_WITH_NUMBER_REGEX = /^\d/;
 

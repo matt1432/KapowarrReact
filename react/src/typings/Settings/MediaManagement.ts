@@ -3,7 +3,7 @@ export interface MediaManagement {
     recycleBin: string;
     recycleBinCleanupDays: number;
     downloadPropersAndRepacks: string;
-    createEmptyVolumesFolders: boolean;
+    createEmptyVolumeFolders: boolean;
     deleteEmptyFolders: boolean;
     fileDate: string;
     rescanAfterRefresh: string;

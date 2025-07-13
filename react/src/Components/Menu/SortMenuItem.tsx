@@ -2,7 +2,7 @@ import React from 'react';
 import { icons } from 'Helpers/Props';
 import { type SortDirection } from 'Helpers/Props/sortDirections';
 import SelectedMenuItem, { type SelectedMenuItemProps } from './SelectedMenuItem';
-import type { IndexSort } from 'Volumes/Index';
+import type { IndexSort } from 'Volume/Index';
 
 interface SortMenuItemProps
     extends Omit<SelectedMenuItemProps<IndexSort>, 'isSelected' | 'onPress'> {

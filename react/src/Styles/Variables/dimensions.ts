@@ -46,8 +46,8 @@ export default {
     // Modal
     modalBodyPadding: '30px',
 
-    // Volumes
-    volumesIndexColumnPadding: '10px',
-    volumesIndexColumnPaddingSmallScreen: '5px',
-    volumesIndexOverviewInfoRowHeight: '21px',
+    // Volume
+    volumeIndexColumnPadding: '10px',
+    volumeIndexColumnPaddingSmallScreen: '5px',
+    volumeIndexOverviewInfoRowHeight: '21px',
 };

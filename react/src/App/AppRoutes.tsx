@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 
-import VolumesIndex from 'Volumes/Index';
+import VolumeIndex from 'Volume/Index';
 import NotFound from 'Components/NotFound';
 import type { History } from 'history';
 
@@ -8,10 +8,10 @@ import type { History } from 'history';
 import Blocklist from 'Activity/Blocklist/Blocklist';
 import History from 'Activity/History/History';
 import Queue from 'Activity/Queue/Queue';
-import AddNewVolumes from 'AddVolumes/AddNewVolumes/AddNewVolumes';
-import ImportVolumesPage from 'AddVolumes/ImportVolumes/ImportVolumesPage';
+import AddNewVolume from 'AddVolume/AddNewVolume/AddNewVolume';
+import ImportVolumePage from 'AddVolume/ImportVolume/ImportVolumePage';
 import CalendarPage from 'Calendar/CalendarPage';
-import VolumesDetailsPage from 'Volumes/Details/VolumesDetailsPage';
+import VolumeDetailsPage from 'Volume/Details/VolumeDetailsPage';
 import CustomFormatSettingsPage from 'Settings/CustomFormats/CustomFormatSettingsPage';
 import DownloadClientSettings from 'Settings/DownloadClients/DownloadClientSettings';
 import GeneralSettings from 'Settings/General/GeneralSettings';
@@ -39,19 +39,19 @@ import Missing from 'Wanted/Missing/Missing';
 function AppRoutes({ history }: { history: History }) {
     return (
         <Routes>
-            {/*Volumes*/}
-            <Route path="/" element={<VolumesIndex history={history} />} />
+            {/*Volume*/}
+            <Route path="/" element={<VolumeIndex history={history} />} />
 
             {/*
-            <Route path="/add/new" component={AddNewVolumes} />
+            <Route path="/add/new" component={AddNewVolume} />
 
-            <Route path="/add/import" component={ImportVolumesPage} />
+            <Route path="/add/import" component={ImportVolumePage} />
 
             <Route path="/volumeseditor" exact={true} render={RedirectWithUrlBase} />
 
             <Route path="/seasonpass" exact={true} render={RedirectWithUrlBase} />
 
-            <Route path="/volumes/:titleSlug" component={VolumesDetailsPage} />
+            <Route path="/volumes/:titleSlug" component={VolumeDetailsPage} />
 
             {/*Calendar*/
             /*}

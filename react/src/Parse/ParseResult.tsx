@@ -1,7 +1,7 @@
 // import { type ParseModel } from 'App/State/ParseAppState';
 import FieldSet from 'Components/FieldSet';
 import IssueFormats from 'Issue/IssueFormats';
-import VolumesTitleLink from 'Volumes/VolumesTitleLink';
+import VolumeTitleLink from 'Volume/VolumeTitleLink';
 import translate from 'Utilities/String/translate';
 import ParseResultItem from './ParseResultItem';
 import styles from './ParseResult.module.css';
@@ -13,12 +13,12 @@ interface ParseResultProps {
 
 function ParseResult(props: ParseResultProps) {
     const { item } = props;
-    const { customFormats, customFormatScore, issues, languages, parsedIssueInfo, volumes } = item;
+    const { customFormats, customFormatScore, issues, languages, parsedIssueInfo, volume } = item;
 
     const {
         releaseTitle,
-        volumesTitle,
-        volumesTitleInfo,
+        volumeTitle,
+        volumeTitleInfo,
         releaseGroup,
         releaseHash,
         seasonNumber,
@@ -40,18 +40,18 @@ function ParseResult(props: ParseResultProps) {
             <FieldSet legend={translate('Release')}>
                 <ParseResultItem title={translate('ReleaseTitle')} data={releaseTitle} />
 
-                <ParseResultItem title={translate('VolumesTitle')} data={volumesTitle} />
+                <ParseResultItem title={translate('VolumeTitle')} data={volumeTitle} />
 
                 <ParseResultItem
                     title={translate('Year')}
-                    data={volumesTitleInfo.year > 0 ? volumesTitleInfo.year : '-'}
+                    data={volumeTitleInfo.year > 0 ? volumeTitleInfo.year : '-'}
                 />
 
                 <ParseResultItem
                     title={translate('AllTitles')}
                     data={
-                        volumesTitleInfo.allTitles?.length > 0
-                            ? volumesTitleInfo.allTitles.join(', ')
+                        volumeTitleInfo.allTitles?.length > 0
+                            ? volumeTitleInfo.allTitles.join(', ')
                             : '-'
                     }
                 />
@@ -163,10 +163,10 @@ function ParseResult(props: ParseResultProps) {
 
             <FieldSet legend={translate('Details')}>
                 <ParseResultItem
-                    title={translate('MatchedToVolumes')}
+                    title={translate('MatchedToVolume')}
                     data={
-                        volumes ? (
-                            <VolumesTitleLink titleSlug={volumes.titleSlug} title={volumes.title} />
+                        volume ? (
+                            <VolumeTitleLink titleSlug={volume.titleSlug} title={volume.title} />
                         ) : (
                             '-'
                         )
@@ -188,8 +188,7 @@ function ParseResult(props: ParseResultProps) {
                                     return (
                                         <div key={e.id}>
                                             {e.issueNumber}
-                                            {volumes?.volumesType === 'anime' &&
-                                            e.absoluteIssueNumber
+                                            {volume?.volumeType === 'anime' && e.absoluteIssueNumber
                                                 ? ` (${e.absoluteIssueNumber})`
                                                 : ''}{' '}
                                             {` - ${e.title}`}

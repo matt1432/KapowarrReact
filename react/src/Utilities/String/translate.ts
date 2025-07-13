@@ -3,7 +3,7 @@ export default function translate(
     key: string,
     tokens: Record<string, string | number | boolean> = {},
 ) {
-    tokens.appName = 'Sonarr';
+    tokens.appName = 'Kapowarr';
 
     return key;
 }

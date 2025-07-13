@@ -1,4 +1,4 @@
-import monitorNewItemsOptions from 'Utilities/Volumes/monitorNewItemsOptions';
+import monitorNewItemsOptions from 'Utilities/Volume/monitorNewItemsOptions';
 import EnhancedSelectInput, {
     type EnhancedSelectInputProps,
     type EnhancedSelectInputValue,

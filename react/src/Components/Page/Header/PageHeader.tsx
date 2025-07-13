@@ -7,7 +7,7 @@ import { icons } from 'Helpers/Props';
 import { setIsSidebarVisible } from 'Store/Slices/App';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import PageHeaderActionsMenu from './PageHeaderActionsMenu';
-// import VolumesSearchInput from './VolumesSearchInput';
+// import VolumeSearchInput from './VolumeSearchInput';
 import styles from './PageHeader.module.css';
 
 function PageHeader() {
@@ -59,7 +59,7 @@ function PageHeader() {
                 />
             </div>
 
-            {/*<VolumesSearchInput />*/}
+            {/*<VolumeSearchInput />*/}
 
             <div className={styles.right}>
                 <PageHeaderActionsMenu

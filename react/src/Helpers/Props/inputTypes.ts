@@ -16,9 +16,8 @@ export const LANGUAGE_SELECT = 'languageSelect';
 export const DOWNLOAD_CLIENT_SELECT = 'downloadClientSelect';
 export const ROOT_FOLDER_SELECT = 'rootFolderSelect';
 export const SELECT = 'select';
-export const VOLUMES_TAG = 'volumesTag';
 export const DYNAMIC_SELECT = 'dynamicSelect';
-export const VOLUMES_TYPE_SELECT = 'volumesTypeSelect';
+export const VOLUME_TYPE_SELECT = 'volumeTypeSelect';
 export const TAG = 'tag';
 export const TEXT = 'text';
 export const TEXT_AREA = 'textArea';
@@ -44,9 +43,8 @@ export const all = [
     ROOT_FOLDER_SELECT,
     LANGUAGE_SELECT,
     SELECT,
-    VOLUMES_TAG,
     DYNAMIC_SELECT,
-    VOLUMES_TYPE_SELECT,
+    VOLUME_TYPE_SELECT,
     TAG,
     TEXT,
     TEXT_AREA,
@@ -76,9 +74,8 @@ export type InputType =
     | 'downloadClientSelect'
     | 'rootFolderSelect'
     | 'select'
-    | 'volumesTag'
     | 'dynamicSelect'
-    | 'volumesTypeSelect'
+    | 'volumeTypeSelect'
     | 'tag'
     | 'text'
     | 'textArea'

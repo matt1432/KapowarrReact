@@ -1,4 +1,4 @@
-import monitorOptions from 'Utilities/Volumes/monitorOptions';
+import monitorOptions from 'Utilities/Volume/monitorOptions';
 import translate from 'Utilities/String/translate';
 import EnhancedSelectInput, {
     type EnhancedSelectInputProps,

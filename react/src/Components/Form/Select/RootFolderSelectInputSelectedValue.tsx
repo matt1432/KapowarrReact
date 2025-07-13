@@ -9,7 +9,7 @@ import styles from './RootFolderSelectInputSelectedValue.module.css';
 interface RootFolderSelectInputSelectedValueProps {
     selectedValue: string;
     values: RootFolderSelectInputValue[];
-    volumesFolder?: string;
+    volumeFolder?: string;
     isWindows?: boolean;
     includeFreeSpace?: boolean;
 }
@@ -17,7 +17,7 @@ interface RootFolderSelectInputSelectedValueProps {
 function RootFolderSelectInputSelectedValue({
     selectedValue,
     values,
-    volumesFolder,
+    volumeFolder,
     includeFreeSpace = true,
     isWindows,
     ...otherProps
@@ -31,10 +31,10 @@ function RootFolderSelectInputSelectedValue({
             <div className={styles.pathContainer}>
                 <div className={styles.path}>{value}</div>
 
-                {volumesFolder ? (
-                    <div className={styles.volumesFolder}>
+                {volumeFolder ? (
+                    <div className={styles.volumeFolder}>
                         {slashCharacter}
-                        {volumesFolder}
+                        {volumeFolder}
                     </div>
                 ) : null}
             </div>

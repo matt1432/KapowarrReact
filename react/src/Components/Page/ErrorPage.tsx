@@ -28,7 +28,7 @@ function ErrorPage(props: ErrorPageProps) {
         systemStatusError,
     } = props;
 
-    let errorMessage = translate('FailedToLoadSonarr');
+    let errorMessage = translate('FailedToLoadKapowarr');
 
     if (!isLocalStorageSupported) {
         errorMessage = translate('LocalStorageIsNotSupported');
@@ -40,7 +40,7 @@ function ErrorPage(props: ErrorPageProps) {
         );
     }
     else if (volumesError) {
-        errorMessage = getErrorMessage(volumesError, translate('FailedToLoadVolumesFromApi'));
+        errorMessage = getErrorMessage(volumesError, translate('FailedToLoadVolumeFromApi'));
     }
     else if (customFiltersError) {
         errorMessage = getErrorMessage(

@@ -1,0 +1,19 @@
+import { Route, Routes } from 'react-router-dom';
+import ImportVolume from './Import/ImportVolume';
+import ImportVolumeSelectFolder from './SelectFolder/ImportVolumeSelectFolder';
+
+function ImportVolumePage() {
+    return (
+        <Routes>
+            <Route path="/add/import">
+                <ImportVolumeSelectFolder />
+            </Route>
+
+            <Route path="/add/import/:rootFolderId">
+                <ImportVolume />
+            </Route>
+        </Routes>
+    );
+}
+
+export default ImportVolumePage;
