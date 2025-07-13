@@ -1,12 +1,20 @@
+import { fileURLToPath, URL } from 'node:url';
+import { readdirSync } from 'node:fs';
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 import { patchCssModules } from 'vite-css-modules';
 import postcss from './vite.postcss';
 
+// Emulate `"paths": { "*": [ "src/*" ] }` in vite
+const resolve = (dir: string) => fileURLToPath(new URL(dir, import.meta.url));
+const srcAliases = Object.fromEntries(
+    readdirSync(resolve('./src')).map((dir) => [dir, resolve(`./src/${dir}`)]),
+);
+
 export default defineConfig({
-    plugins: [react(), tsconfigPaths(), patchCssModules()],
+    plugins: [patchCssModules(), react()],
     build: {
         minify: false,
         chunkSizeWarningLimit: 750,
@@ -31,6 +39,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
+            ...srcAliases,
             '~normalize.css': 'normalize.css',
         },
     },

@@ -1,5 +1,5 @@
 .inputContainer {
-    composes: input from '../../Components/Form/Input.module.css';
+    composes: input from 'Components/Form/Input.module.css';
 
     position: relative;
     min-height: 35px;
@@ -13,9 +13,9 @@
 }
 
 .hasError {
-    composes: hasError from '../../Components/Form/Input.module.css';
+    composes: hasError from 'Components/Form/Input.module.css';
 }
 
 .hasWarning {
-    composes: hasWarning from '../../Components/Form/Input.module.css';
+    composes: hasWarning from 'Components/Form/Input.module.css';
 }

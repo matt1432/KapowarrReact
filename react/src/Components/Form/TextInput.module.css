@@ -1,5 +1,5 @@
 .input {
-    composes: input from '../../Components/Form/Input.module.css';
+    composes: input from 'Components/Form/Input.module.css';
 }
 
 .readOnly {
@@ -7,13 +7,13 @@
 }
 
 .hasError {
-    composes: hasError from '../../Components/Form/Input.module.css';
+    composes: hasError from 'Components/Form/Input.module.css';
 }
 
 .hasWarning {
-    composes: hasWarning from '../../Components/Form/Input.module.css';
+    composes: hasWarning from 'Components/Form/Input.module.css';
 }
 
 .hasButton {
-    composes: hasButton from '../../Components/Form/Input.module.css';
+    composes: hasButton from 'Components/Form/Input.module.css';
 }

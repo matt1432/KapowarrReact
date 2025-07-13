@@ -80,7 +80,7 @@
 }
 
 .tvdbLink {
-    composes: link from '../../Components/Link/Link.module.css';
+    composes: link from 'Components/Link/Link.module.css';
 
     margin-top: -4px;
     margin-left: auto;

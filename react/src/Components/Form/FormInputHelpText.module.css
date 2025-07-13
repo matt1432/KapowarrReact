@@ -33,7 +33,7 @@
 }
 
 .link {
-    composes: link from '../../Components/Link/Link.module.css';
+    composes: link from 'Components/Link/Link.module.css';
 
     margin-left: 5px;
 }

@@ -1,44 +1,44 @@
 .selectInput {
-    composes: input from '../../../Components/Form/CheckInput.module.css';
+    composes: input from 'Components/Form/CheckInput.module.css';
 }
 
 .folder {
-    composes: cell from '../../../Components/Table/Cells/VirtualTableRowCell.module.css';
+    composes: cell from 'Components/Table/Cells/VirtualTableRowCell.module.css';
 
     flex: 1 0 200px;
     line-height: 36px;
 }
 
 .monitor {
-    composes: cell from '../../../Components/Table/Cells/VirtualTableRowCell.module.css';
+    composes: cell from 'Components/Table/Cells/VirtualTableRowCell.module.css';
 
     flex: 0 1 200px;
     min-width: 185px;
 }
 
 .qualityProfile {
-    composes: cell from '../../../Components/Table/Cells/VirtualTableRowCell.module.css';
+    composes: cell from 'Components/Table/Cells/VirtualTableRowCell.module.css';
 
     flex: 0 1 250px;
     min-width: 170px;
 }
 
 .volumeType {
-    composes: cell from '../../../Components/Table/Cells/VirtualTableRowCell.module.css';
+    composes: cell from 'Components/Table/Cells/VirtualTableRowCell.module.css';
 
     flex: 0 1 200px;
     min-width: 120px;
 }
 
 .seasonFolder {
-    composes: cell from '../../../Components/Table/Cells/VirtualTableRowCell.module.css';
+    composes: cell from 'Components/Table/Cells/VirtualTableRowCell.module.css';
 
     flex: 0 1 150px;
     min-width: 120px;
 }
 
 .volume {
-    composes: cell from '../../../Components/Table/Cells/VirtualTableRowCell.module.css';
+    composes: cell from 'Components/Table/Cells/VirtualTableRowCell.module.css';
 
     flex: 0 1 400px;
     min-width: 300px;

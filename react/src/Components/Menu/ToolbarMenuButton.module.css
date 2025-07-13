@@ -14,9 +14,9 @@
 }
 
 .labelContainer {
-    composes: labelContainer from '../../Components/Page/Toolbar/PageToolbarButton.module.css';
+    composes: labelContainer from 'Components/Page/Toolbar/PageToolbarButton.module.css';
 }
 
 .label {
-    composes: label from '../../Components/Page/Toolbar/PageToolbarButton.module.css';
+    composes: label from 'Components/Page/Toolbar/PageToolbarButton.module.css';
 }

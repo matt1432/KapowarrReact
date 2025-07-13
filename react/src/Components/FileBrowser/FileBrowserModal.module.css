@@ -1,5 +1,5 @@
 .modal {
-    composes: modal from '../../Components/Modal/Modal.module.css';
+    composes: modal from 'Components/Modal/Modal.module.css';
 
     height: 600px;
 }

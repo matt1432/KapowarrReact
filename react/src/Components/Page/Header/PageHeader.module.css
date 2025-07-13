@@ -38,7 +38,7 @@
 }
 
 .donate {
-    composes: link from '../../Link/Link.module.css';
+    composes: link from 'Components/Link/Link.module.css';
 
     width: 30px;
     color: var(--themeRed);

@@ -1,5 +1,5 @@
 .cell {
-    composes: cell from '../../../Components/Table/Cells/VirtualTableRowCell.module.css';
+    composes: cell from 'Components/Table/Cells/VirtualTableRowCell.module.css';
 
     display: flex;
     align-items: center;
@@ -32,7 +32,7 @@
 }
 
 .link {
-    composes: link from '../../../Components/Link/Link.module.css';
+    composes: link from 'Components/Link/Link.module.css';
 
     position: relative;
     display: block;
@@ -131,7 +131,7 @@
 }
 
 .ratings {
-    composes: cell from '../../../Components/Table/Cells/VirtualTableRowCell.module.css';
+    composes: cell from 'Components/Table/Cells/VirtualTableRowCell.module.css';
 
     flex: 0 0 80px;
 }
@@ -162,7 +162,7 @@
 }
 
 .checkInput {
-    composes: input from '../../../Components/Form/CheckInput.module.css';
+    composes: input from 'Components/Form/CheckInput.module.css';
 
     margin-top: 0;
 }

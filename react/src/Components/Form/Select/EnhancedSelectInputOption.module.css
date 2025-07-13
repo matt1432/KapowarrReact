@@ -16,13 +16,13 @@
 }
 
 .optionCheck {
-    composes: container from '../../../Components/Form/CheckInput.module.css';
+    composes: container from 'Components/Form/CheckInput.module.css';
 
     flex: 0 0 0;
 }
 
 .optionCheckInput {
-    composes: input from '../../../Components/Form/CheckInput.module.css';
+    composes: input from 'Components/Form/CheckInput.module.css';
 
     margin-top: 0;
 }

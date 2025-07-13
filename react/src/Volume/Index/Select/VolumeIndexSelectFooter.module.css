@@ -1,5 +1,5 @@
 .footer {
-    composes: contentFooter from '../../../Components/Page/PageContentFooter.module.css';
+    composes: contentFooter from 'Components/Page/PageContentFooter.module.css';
 
     align-items: center;
 }

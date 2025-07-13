@@ -37,24 +37,24 @@
 }
 
 .searchInputContainer {
-    composes: container from '../../Components/Form/CheckInput.module.css';
+    composes: container from 'Components/Form/CheckInput.module.css';
 
     flex: 0 1 0;
 }
 
 .searchInput {
-    composes: input from '../../Components/Form/CheckInput.module.css';
+    composes: input from 'Components/Form/CheckInput.module.css';
 
     margin-top: 0;
 }
 
 .modalFooter {
-    composes: modalFooter from '../../Components/Modal/ModalFooter.module.css';
+    composes: modalFooter from 'Components/Modal/ModalFooter.module.css';
 }
 
 .addButton {
     @add-mixin truncate;
-    composes: button from '../../Components/Link/SpinnerButton.module.css';
+    composes: button from 'Components/Link/SpinnerButton.module.css';
 }
 
 @media only screen and (max-width: $breakpointSmall) {
