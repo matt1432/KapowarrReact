@@ -1,10 +1,13 @@
-// TODO: https://github.com/Sonarr/Sonarr/blob/v5-develop/frontend/src/Helpers/Hooks/useAppPage.ts
 import { useMemo } from 'react';
+import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 
 const useAppPage = () => {
-    const isPopulated = true;
+    const queries = [useGetVolumesQuery()];
 
-    const hasError = false;
+    const erroredQueries = queries.filter(({ isError }) => isError);
+
+    const isPopulated = queries.every(({ data, isSuccess }) => data && isSuccess);
+    const hasError = erroredQueries.length > 0;
 
     const isLocalStorageSupported = useMemo(() => {
         const key = 'kapowarrTest';
@@ -21,8 +24,13 @@ const useAppPage = () => {
     }, []);
 
     return useMemo(() => {
-        return { errors: [], hasError, isLocalStorageSupported, isPopulated };
-    }, [hasError, isLocalStorageSupported, isPopulated]);
+        return {
+            errors: erroredQueries.map(({ error }) => error),
+            hasError,
+            isLocalStorageSupported,
+            isPopulated,
+        };
+    }, [erroredQueries, hasError, isLocalStorageSupported, isPopulated]);
 };
 
 export default useAppPage;

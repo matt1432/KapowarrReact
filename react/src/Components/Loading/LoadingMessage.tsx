@@ -1,24 +1,17 @@
 import styles from './LoadingMessage.module.css';
 
 const messages = [
-    'Downloading more RAM',
-    'Now in Technicolor',
-    'Previously on Sonarr...',
-    'Bleep Bloop.',
-    'Locating the required gigapixels to render...',
-    'Spinning up the hamster wheel...',
-    "At least you're not on hold",
-    'Hum something loud while others stare',
-    'Loading humorous message... Please Wait',
-    "I could've been faster in Python",
-    "Don't forget to rewind your issues",
-    'Congratulations! You are the 1000th visitor.',
-    "HELP! I'm being held hostage and forced to write these stupid lines!",
-    'RE-calibrating the internet...',
-    "I'll be here all week",
-    "Don't forget to tip your waitress",
-    'Apply directly to the forehead',
-    'Loading Battlestation',
+    'Upgrading Windows, your PC will restart several times. Sit back and relax.',
+    '(Insert quarter)',
+    'Do you come here often?',
+    'What do you call 8 Hobbits? A Hobbyte.',
+    'Should have used a compiled language...',
+    'I think I am, therefore, I am. I think.',
+    'Proving P=NP...',
+    'Switching to the latest JS framework...',
+    'Alt-F4 speeds things up.',
+    'Everything in this universe is either a potato or not a potato',
+    'Reading Terms and Conditions for you.',
 ];
 
 let message: string | null = null;
