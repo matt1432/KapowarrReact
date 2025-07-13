@@ -99,10 +99,12 @@ function VolumesIndexPoster(props: VolumesIndexPosterProps) {
         monitored,
         folder,
         publisher,
-        issue_count: issueCount,
+        issues,
         issues_downloaded: issueFileCount,
         total_size: sizeOnDisk,
     } = volume;
+
+    const issueCount = issues.filter((issue) => issue.monitored).length;
 
     const link = `/volumes/${volumeId}`;
 
