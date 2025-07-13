@@ -201,7 +201,6 @@ function VolumesIndexRow(props: VolumesIndexRowProps) {
                                         className={styles.bannerImage}
                                         images={images}
                                         lazy={false}
-                                        // overflow={true} FIXME: see if necessary
                                         onError={onBannerLoadError}
                                         onLoad={onBannerLoad}
                                     />

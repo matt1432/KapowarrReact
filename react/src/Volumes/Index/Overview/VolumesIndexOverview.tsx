@@ -169,7 +169,6 @@ function VolumesIndexOverview(props: VolumesIndexOverviewProps) {
                                 images={images}
                                 size={250}
                                 lazy={false}
-                                // overflow={true} FIXME: see if necessary
                             />
                         </Link>
                     </div>

@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { useCallback, useMemo, useRef, useState, type RefObject } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -59,8 +59,6 @@ import VolumesIndexTableOptions from './Table/VolumesIndexTableOptions';
 import styles from './index.module.css';
 
 // Types
-import type { VolumePublicInfo } from 'Volumes/Volumes';
-
 export type IndexView = 'posters' | 'table';
 export type IndexFilter = '' | 'wanted' | 'monitored';
 export type IndexSort =
@@ -85,19 +83,18 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
         (state) => state.volumesIndex,
     );
 
-    const { isFetching, error, data } = useGetVolumesQuery({
+    const {
+        isFetching,
+        isSuccess,
+        error,
+        data: items,
+    } = useGetVolumesQuery({
         sort: sortKey,
         filter: filterKey,
     });
 
-    const [items, setItems] = useState<VolumePublicInfo[]>([]);
-
-    useEffect(() => {
-        setItems(data ?? []);
-    }, [data]);
-
-    const isPopulated = items !== undefined;
-    const totalItems = items.length;
+    const isPopulated = items && isSuccess;
+    const totalItems = items?.length ?? 0;
 
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
     const dispatch = useRootDispatch();
@@ -174,22 +171,23 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
             };
         }
 
-        const characters = items.reduce((acc: Record<string, number>, item) => {
-            let char = item.title.charAt(0);
+        const characters =
+            items?.reduce((acc: Record<string, number>, item) => {
+                let char = item.title.charAt(0);
 
-            if (!isNaN(Number(char))) {
-                char = '#';
-            }
+                if (!isNaN(Number(char))) {
+                    char = '#';
+                }
 
-            if (char in acc) {
-                acc[char] = acc[char] + 1;
-            }
-            else {
-                acc[char] = 1;
-            }
+                if (char in acc) {
+                    acc[char] = acc[char] + 1;
+                }
+                else {
+                    acc[char] = 1;
+                }
 
-            return acc;
-        }, {});
+                return acc;
+            }, {}) ?? {};
 
         const order = Object.keys(characters).sort();
 
@@ -208,7 +206,7 @@ const VolumesIndex = withScrollPosition((props: VolumesIndexProps) => {
     const hasNoVolumes = !totalItems;
 
     return (
-        <SelectProvider items={items}>
+        <SelectProvider items={items ?? []}>
             <PageContent>
                 <PageToolbar>
                     <PageToolbarSection>
