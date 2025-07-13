@@ -1,10 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch /*, useSelector*/ } from 'react-redux';
-import {
-    type AddVolumeOptions,
-    setAddVolumeOption,
-    useAddVolumeOptions,
-} from 'AddVolume/addVolumeOptionsStore';
 import { useSelect } from 'App/SelectContext';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import Icon from 'Components/Icon';
@@ -36,7 +31,11 @@ function ImportVolumeFooter() {
         monitor: defaultMonitor,
         qualityProfileId: defaultQualityProfileId,
         volumeType: defaultVolumeType,
-    } = useAddVolumeOptions();
+    } = {
+        monitor: '',
+        qualityProfileId: 0,
+        volumeType: '',
+    }; // useAddVolumeOptions();
 
     /*const { isLookingUpVolume, isImporting, items, importError } = useSelector(
         (state: AppState) => state.importVolume,
@@ -113,7 +112,7 @@ function ImportVolumeFooter() {
                 setVolumeType(value as string); // as VolumeType);
             }
 
-            setAddVolumeOption(name as keyof AddVolumeOptions, value);
+            // setAddVolumeOption(name as keyof AddVolumeOptions, value);
 
             selectedIds.forEach((id) => {
                 dispatch(
