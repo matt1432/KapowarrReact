@@ -8,5 +8,7 @@ export default function translate(
 ) {
     tokens.appName = 'Kapowarr';
 
-    return english[key];
+    return english[key].replace(/\{([a-z0-9]+?)\}/gi, (match, tokenMatch) =>
+        String(tokens[tokenMatch] ?? match),
+    );
 }
