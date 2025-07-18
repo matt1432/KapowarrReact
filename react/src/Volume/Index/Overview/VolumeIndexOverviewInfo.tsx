@@ -43,7 +43,7 @@ interface RowInfoProps {
 
 interface VolumeIndexOverviewInfoProps {
     height: number;
-    showNetwork: boolean;
+    showPublisher: boolean;
     showMonitored: boolean;
     showQualityProfile: boolean;
     showPreviousAiring: boolean;
@@ -75,7 +75,7 @@ const rows = [
     },
     {
         name: 'network',
-        showProp: 'showNetwork',
+        showProp: 'showPublisher',
         valueProp: 'network',
     },
     {
@@ -131,7 +131,7 @@ function getInfoRowProps(
 
     if (name === 'network') {
         return {
-            title: translate('Network'),
+            title: translate('Publisher'),
             iconName: icons.NETWORK,
             label: props.network ?? '',
         };
@@ -204,7 +204,7 @@ function getInfoRowProps(
 
     if (name === 'path') {
         return {
-            title: translate('Path'),
+            title: translate('FolderPath'),
             iconName: icons.FOLDER,
             label: props.path,
         };

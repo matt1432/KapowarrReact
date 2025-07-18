@@ -62,7 +62,7 @@ function VolumeIndexOverviewOptionsModalContent(
         detailedProgressBar,
         size,
         showMonitored,
-        showNetwork,
+        showPublisher,
         showQualityProfile,
         showPreviousAiring,
         showAdded,
@@ -75,7 +75,7 @@ function VolumeIndexOverviewOptionsModalContent(
         detailedProgressBar: false,
         size: 'large',
         showMonitored: false,
-        showNetwork: false,
+        showPublisher: false,
         showQualityProfile: false,
         showPreviousAiring: false,
         showAdded: false,
@@ -139,12 +139,12 @@ function VolumeIndexOverviewOptionsModalContent(
                     </FormGroup>
 
                     <FormGroup>
-                        <FormLabel>{translate('ShowNetwork')}</FormLabel>
+                        <FormLabel>{translate('ShowPublisher')}</FormLabel>
 
                         <FormInputGroup
                             type={inputTypes.CHECK}
-                            name="showNetwork"
-                            value={showNetwork}
+                            name="showPublisher"
+                            value={showPublisher}
                             onChange={onOverviewOptionChange}
                         />
                     </FormGroup>

@@ -83,7 +83,7 @@ function ParseResult(props: ParseResultProps) {
                 <div className={styles.container}>
                     <div className={styles.column}>
                         <ParseResultItem
-                            title={translate('SeasonNumber')}
+                            title={translate('VolumeNumber')}
                             data={
                                 seasonNumber === 0 && absoluteIssueNumbers.length
                                     ? '-'

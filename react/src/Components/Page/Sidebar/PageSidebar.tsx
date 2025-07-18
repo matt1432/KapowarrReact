@@ -59,7 +59,7 @@ const SIDEBAR_WIDTH = parseInt(dimensions.sidebarWidth);
 const LINKS: SidebarItem[] = [
     {
         iconName: icons.VOLUME_CONTINUING,
-        title: () => translate('Volume'),
+        title: () => translate('Volumes'),
         to: '/',
         alias: '/volumes',
         children: [

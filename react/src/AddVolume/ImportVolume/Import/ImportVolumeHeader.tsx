@@ -78,7 +78,7 @@ function ImportVolumeHeader({
             </VirtualTableHeaderCell>
 
             <VirtualTableHeaderCell className={styles.volume} name="volume">
-                {translate('Volume')}
+                {translate('Volumes')}
             </VirtualTableHeaderCell>
         </VirtualTableHeader>
     );
