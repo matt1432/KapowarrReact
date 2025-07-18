@@ -1,19 +1,39 @@
+// IMPORTS
+
+// React
 import { useCallback } from 'react';
+
+// Redux
 import { useDispatch /*, useSelector*/ } from 'react-redux';
 // import { createSelector } from 'reselect';
+// import { setImportVolumeValue } from 'Store/Actions/importVolumeActions';
+// import createExistingVolumeSelector from 'Store/Selectors/createExistingVolumeSelector';
+
+// Misc
+import { inputTypes } from 'Helpers/Props';
+
+// General Components
 import { useSelect } from 'App/SelectContext';
-// import { type AppState } from 'App/State/AppState';
-// import { type ImportVolume } from 'App/State/ImportVolumeAppState';
+
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import VirtualTableRowCell from 'Components/Table/Cells/VirtualTableRowCell';
 import VirtualTableSelectCell from 'Components/Table/Cells/VirtualTableSelectCell';
-import { inputTypes } from 'Helpers/Props';
-// import { setImportVolumeValue } from 'Store/Actions/importVolumeActions';
-// import createExistingVolumeSelector from 'Store/Selectors/createExistingVolumeSelector';
-import { type InputChanged } from 'typings/inputs';
-import { type SelectStateInputProps } from 'typings/props';
+
+// Specific Components
 import ImportVolumeSelectVolume from './SelectVolume/ImportVolumeSelectVolume';
+
+// CSS
 import styles from './ImportVolumeRow.module.css';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
+import type { SelectStateInputProps } from 'typings/props';
+
+interface ImportVolumeRowProps {
+    id: string;
+}
+
+// IMPLEMENTATIONS
 
 /*
 function createItemSelector(id: string) {
@@ -29,10 +49,6 @@ function createItemSelector(id: string) {
     );
 }
 */
-
-interface ImportVolumeRowProps {
-    id: string;
-}
 
 function ImportVolumeRow({ id }: ImportVolumeRowProps) {
     const dispatch = useDispatch();

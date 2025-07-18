@@ -1,9 +1,20 @@
+// IMPORTS
+
+// Misc
+import translate from 'Utilities/String/translate';
+
+// General Components
 import ErrorBoundaryError, {
     type ErrorBoundaryErrorProps,
 } from 'Components/Error/ErrorBoundaryError';
-import translate from 'Utilities/String/translate';
+
+// Specific Components
 import PageContentBody from './PageContentBody';
+
+// CSS
 import styles from './PageContentError.module.css';
+
+// IMPLEMENTATIONS
 
 function PageContentError(props: ErrorBoundaryErrorProps) {
     return (

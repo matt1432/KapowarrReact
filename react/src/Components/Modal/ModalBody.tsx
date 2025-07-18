@@ -1,7 +1,16 @@
+// IMPORTS
+
+// React
 import React from 'react';
+
+// General Components
 import Scroller from 'Components/Scroller/Scroller';
-import { type ScrollDirection } from 'Helpers/Props/scrollDirections';
+
+// CSS
 import styles from './ModalBody.module.css';
+
+// Types
+import type { ScrollDirection } from 'Helpers/Props/scrollDirections';
 
 interface ModalBodyProps {
     className?: string;
@@ -9,6 +18,8 @@ interface ModalBodyProps {
     children?: React.ReactNode;
     scrollDirection?: ScrollDirection;
 }
+
+// IMPLEMENTATIONS
 
 function ModalBody({
     innerClassName = styles.innerModalBody,

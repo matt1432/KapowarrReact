@@ -1,15 +1,45 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import React, { type MouseEvent, useCallback, useEffect, useId, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import FocusLock from 'react-focus-lock';
-import ErrorBoundary from 'Components/Error/ErrorBoundary';
-import usePrevious from 'Helpers/Hooks/usePrevious';
-import { type Size } from 'Helpers/Props/sizes';
+
+// Redux
+
+// Misc
 import { isIOS } from 'Utilities/browser';
-import * as keyCodes from 'Utilities/Constants/keyCodes';
 import { setScrollLock } from 'Utilities/scrollLock';
+
+import * as keyCodes from 'Utilities/Constants/keyCodes';
+
+import classNames from 'classnames';
+import usePrevious from 'Helpers/Hooks/usePrevious';
+
+// General Components
+import ErrorBoundary from 'Components/Error/ErrorBoundary';
+
+// Specific Components
 import ModalError from './ModalError';
+
+// CSS
 import styles from './Modal.module.css';
+
+// Types
+import type { Size } from 'Helpers/Props/sizes';
+
+export interface ModalProps {
+    className?: string;
+    style?: object;
+    backdropClassName?: string;
+    size?: Extract<Size, keyof typeof styles>;
+    children?: React.ReactNode;
+    isOpen: boolean;
+    closeOnBackgroundClick?: boolean;
+    onModalClose: () => void;
+}
+
+// IMPLEMENTATIONS
 
 const openModals: string[] = [];
 const node = document.getElementById('portal-root');
@@ -38,17 +68,6 @@ function findEventTarget(event: TouchEvent | MouseEvent) {
     }
 
     return event.target;
-}
-
-export interface ModalProps {
-    className?: string;
-    style?: object;
-    backdropClassName?: string;
-    size?: Extract<Size, keyof typeof styles>;
-    children?: React.ReactNode;
-    isOpen: boolean;
-    closeOnBackgroundClick?: boolean;
-    onModalClose: () => void;
 }
 
 function Modal({

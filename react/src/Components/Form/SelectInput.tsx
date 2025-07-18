@@ -1,7 +1,16 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import { type ChangeEvent, type ComponentProps, type SyntheticEvent, useCallback } from 'react';
-import { type InputChanged } from 'typings/inputs';
+
+// Misc
+import classNames from 'classnames';
+
+// CSS
 import styles from './SelectInput.module.css';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
 
 export interface SelectInputOption extends Pick<ComponentProps<'option'>, 'disabled'> {
     key: string | number;
@@ -21,6 +30,8 @@ interface SelectInputProps<T> {
     onChange: (change: InputChanged<T>) => void;
     onBlur?: (event: SyntheticEvent) => void;
 }
+
+// IMPLEMENTATIONS
 
 function SelectInput<T>({
     className = styles.select,

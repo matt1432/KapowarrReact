@@ -1,7 +1,26 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+// Misc
 import usePrevious from 'Helpers/Hooks/usePrevious';
-import { type InputChanged } from 'typings/inputs';
+
+// Specific Components
 import TextInput, { type TextInputProps } from './TextInput';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
+
+export interface NumberInputProps extends Omit<TextInputProps, 'value' | 'onChange'> {
+    value?: number | null;
+    min?: number;
+    max?: number;
+    isFloat?: boolean;
+    onChange: (input: InputChanged<number | null>) => void;
+}
+
+// IMPLEMENTATIONS
 
 function parseValue(
     value: string | null | undefined,
@@ -23,14 +42,6 @@ function parseValue(
     }
 
     return newValue;
-}
-
-export interface NumberInputProps extends Omit<TextInputProps, 'value' | 'onChange'> {
-    value?: number | null;
-    min?: number;
-    max?: number;
-    isFloat?: boolean;
-    onChange: (input: InputChanged<number | null>) => void;
 }
 
 function NumberInput({

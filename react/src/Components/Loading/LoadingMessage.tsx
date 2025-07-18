@@ -1,4 +1,9 @@
+// IMPORTS
+
+// CSS
 import styles from './LoadingMessage.module.css';
+
+// IMPLEMENTATIONS
 
 const messages = [
     'Upgrading Windows, your PC will restart several times. Sit back and relax.',

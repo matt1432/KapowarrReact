@@ -13,7 +13,7 @@ import DeleteVolumeModal from 'Volume/Delete/DeleteVolumeModal';
 import EditVolumeModal from 'Volume/Edit/EditVolumeModal';
 import VolumeIndexProgressBar from 'Volume/Index/ProgressBar/VolumeIndexProgressBar';
 import VolumeIndexPosterSelect from 'Volume/Index/Select/VolumeIndexPosterSelect';
-import { type Statistics } from 'Volume/Volume';
+import type { Statistics } from 'Volume/Volume';
 import VolumePoster from 'Volume/VolumePoster';
 // import { executeCommand } from 'Store/Actions/commandActions';*/
 // import dimensions from 'Styles/Variables/dimensions';

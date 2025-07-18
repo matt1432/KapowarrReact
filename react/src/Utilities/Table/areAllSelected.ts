@@ -1,4 +1,4 @@
-import { type SelectedState } from 'Helpers/Hooks/useSelectState';
+import type { SelectedState } from 'Helpers/Hooks/useSelectState';
 
 export default function areAllSelected(selectedState: SelectedState) {
     let allSelected = true;

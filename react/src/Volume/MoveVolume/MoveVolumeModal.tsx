@@ -1,13 +1,28 @@
+// IMPORTS
+
+// React
+
+// Redux
+
+// Misc
+import { kinds, sizes } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Button from 'Components/Link/Button';
 import Modal from 'Components/Modal/Modal';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import { kinds, sizes } from 'Helpers/Props';
-import translate from 'Utilities/String/translate';
+
+// Specific Components
+
+// CSS
 import styles from './MoveVolumeModal.module.css';
 
+// Types
 interface MoveVolumeModalProps {
     originalPath?: string;
     destinationPath?: string;
@@ -17,6 +32,8 @@ interface MoveVolumeModalProps {
     onSavePress: () => void;
     onMoveVolumePress: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function MoveVolumeModal({
     originalPath,

@@ -1,5 +1,5 @@
 // import type { MonitorNewItems, VolumeMonitor, VolumeType } from 'Volume/Volume';
-import { type Provider } from './Provider';
+import type { Provider } from './Provider';
 
 export interface ImportList extends Provider {
     enable: boolean;

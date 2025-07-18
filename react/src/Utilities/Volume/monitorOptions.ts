@@ -1,4 +1,4 @@
-// import { type VolumeMonitor } from 'Volume/Volume';
+// import type { VolumeMonitor } from 'Volume/Volume';
 import translate from 'Utilities/String/translate';
 
 interface MonitorOption {

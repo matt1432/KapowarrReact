@@ -1,9 +1,14 @@
+// IMPORTS
+
+// Misc
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 
-import type { IndexSort } from '..';
-
+// CSS
 import styles from './VolumeIndexPosterInfo.module.css';
+
+// Types
+import type { IndexSort } from '..';
 
 interface VolumeIndexPosterInfoProps {
     publisher?: string;
@@ -11,6 +16,8 @@ interface VolumeIndexPosterInfoProps {
     sizeOnDisk?: number;
     sortKey: IndexSort;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeIndexPosterInfo(props: VolumeIndexPosterInfoProps) {
     const { publisher, folder, sizeOnDisk = 0, sortKey } = props;

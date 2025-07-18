@@ -1,6 +1,6 @@
-import { type ModelBase } from 'App/ModelBase';
-import { type Kind } from 'Helpers/Props/kinds';
-import { type Field } from './Field';
+import type { ModelBase } from 'App/ModelBase';
+import type { Kind } from 'Helpers/Props/kinds';
+import type { Field } from './Field';
 
 export interface ProviderMessage {
     message: string;

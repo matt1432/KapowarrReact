@@ -1,23 +1,38 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import AppUpdatedModal from 'App/AppUpdatedModal';
-// import ColorImpairedContext from 'App/ColorImpairedContext';
-import ConnectionLostModal from 'App/ConnectionLostModal';
+// IMPORTS
 
-import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
-import useAppPage from 'Helpers/Hooks/useAppPage';
+// React
+import React, { useCallback, useEffect, useState } from 'react';
+
+// Redux
+import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { saveDimensions } from 'Store/Slices/App';
 // import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
 // import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
+
+// Misc
+import useAppPage from 'Helpers/Hooks/useAppPage';
+
+// General Components
+import AppUpdatedModal from 'App/AppUpdatedModal';
+// import ColorImpairedContext from 'App/ColorImpairedContext';
+import ConnectionLostModal from 'App/ConnectionLostModal';
+import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
+
+// Specific Components
 import ErrorPage from './ErrorPage';
 import PageHeader from './Header/PageHeader';
 import LoadingPage from './LoadingPage';
 import PageSidebar from './Sidebar/PageSidebar';
+
+// CSS
 import styles from './Page.module.css';
 
+// Types
 interface PageProps {
     children?: React.ReactNode;
 }
+
+// IMPLEMENTATIONS
 
 function Page({ children = [] }: PageProps) {
     const dispatch = useRootDispatch();

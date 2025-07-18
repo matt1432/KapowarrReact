@@ -1,8 +1,15 @@
-import { type SyntheticEvent } from 'react';
-import { type IconName } from 'Components/Icon';
+// IMPORTS
+
+// General Components
 import MenuItem from 'Components/Menu/MenuItem';
 import SpinnerIcon from 'Components/SpinnerIcon';
+
+// CSS
 import styles from './PageToolbarOverflowMenuItem.module.css';
+
+// Types
+import type { SyntheticEvent } from 'react';
+import type { IconName } from 'Components/Icon';
 
 interface PageToolbarOverflowMenuItemProps {
     iconName: IconName;
@@ -14,6 +21,8 @@ interface PageToolbarOverflowMenuItemProps {
     text?: string;
     onPress?: (event: SyntheticEvent<Element, Event>) => void;
 }
+
+// IMPLEMENTATIONS
 
 function PageToolbarOverflowMenuItem(props: PageToolbarOverflowMenuItemProps) {
     const { iconName, spinningName, label, isDisabled, isSpinning = false, ...otherProps } = props;

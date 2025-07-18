@@ -1,11 +1,19 @@
+// IMPORTS
+
+// Specific Components
 import HintedSelectInputSelectedValue from './HintedSelectInputSelectedValue';
-import { type IVolumeTypeOption } from './VolumeTypeSelectInput';
+
+// Types
+import type { IVolumeTypeOption } from './VolumeTypeSelectInput';
 
 interface VolumeTypeSelectInputOptionProps {
     selectedValue: string;
     values: IVolumeTypeOption[];
     format: string;
 }
+
+// IMPLEMENTATIONS
+
 function VolumeTypeSelectInputSelectedValue(props: VolumeTypeSelectInputOptionProps) {
     const { selectedValue, values, ...otherProps } = props;
     const format = values.find((v) => v.key === selectedValue)?.format;

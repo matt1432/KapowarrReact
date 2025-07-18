@@ -1,14 +1,24 @@
-import Label from 'Components/Label';
+// IMPORTS
+
+// Misc
 import { kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
+
+// General Components
+import Label from 'Components/Label';
+
+// CSS
 import styles from './ImportVolumeTitle.module.css';
 
+// Types
 interface ImportVolumeTitleProps {
     title: string;
     year: number;
     network?: string;
     isExistingVolume: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function ImportVolumeTitle({ title, year, network, isExistingVolume }: ImportVolumeTitleProps) {
     return (

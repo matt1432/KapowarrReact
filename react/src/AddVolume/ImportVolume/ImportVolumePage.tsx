@@ -1,6 +1,13 @@
+// IMPORTS
+
+// React
 import { Route, Routes } from 'react-router-dom';
+
+// Specific Components
 import ImportVolume from './Import/ImportVolume';
 import ImportVolumeSelectFolder from './SelectFolder/ImportVolumeSelectFolder';
+
+// IMPLEMENTATIONS
 
 function ImportVolumePage() {
     return (

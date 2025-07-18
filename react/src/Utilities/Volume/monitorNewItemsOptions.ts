@@ -1,4 +1,4 @@
-import { type EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
+import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 import translate from 'Utilities/String/translate';
 
 const monitorNewItemsOptions: EnhancedSelectInputValue<string>[] = [

@@ -1,12 +1,26 @@
+// IMPORTS
+
+// React
 import { useCallback } from 'react';
+
+// Redux
 // import { useSelector } from 'react-redux';
+// import createExistingVolumeSelector from 'Store/Selectors/createExistingVolumeSelector';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+// General Components
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
-import { icons } from 'Helpers/Props';
-// import createExistingVolumeSelector from 'Store/Selectors/createExistingVolumeSelector';
+
+// Specific Components
 import ImportVolumeTitle from './ImportVolumeTitle';
+
+// CSS
 import styles from './ImportVolumeSearchResult.module.css';
 
+// Types
 interface ImportVolumeSearchResultProps {
     tvdbId: number;
     title: string;
@@ -14,6 +28,8 @@ interface ImportVolumeSearchResultProps {
     network?: string;
     onPress: (tvdbId: number) => void;
 }
+
+// IMPLEMENTATIONS
 
 function ImportVolumeSearchResult({
     tvdbId,

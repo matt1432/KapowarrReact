@@ -1,7 +1,22 @@
-// import { type Error } from 'App/State/AppSectionState';
+// IMPORTS
+
+// React
+
+// Redux
+
+// Misc
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
+
+// General Components
+
+// Specific Components
+
+// CSS
 import styles from './ErrorPage.module.css';
+
+// Types
+// import type { Error } from 'App/State/AppSectionState';
 
 interface ErrorPageProps {
     version: string;
@@ -14,6 +29,8 @@ interface ErrorPageProps {
     uiSettingsError?: Error;
     systemStatusError?: Error;
 }
+
+// IMPLEMENTATIONS
 
 function ErrorPage(props: ErrorPageProps) {
     const {

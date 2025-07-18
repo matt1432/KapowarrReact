@@ -1,3 +1,7 @@
+// IMPORTS
+
+// React
+import React, { type ReactElement, useCallback, useEffect, useId, useState } from 'react';
 import {
     autoUpdate,
     flip,
@@ -8,15 +12,19 @@ import {
     useFloating,
     useInteractions,
 } from '@floating-ui/react';
-import React, { type ReactElement, useCallback, useEffect, useId, useState } from 'react';
+
+// CSS
 import styles from './Menu.module.css';
 
+// Types
 interface MenuProps {
     className?: string;
     children: React.ReactNode;
     alignMenu?: 'left' | 'right';
     enforceMaxHeight?: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function Menu({
     className = styles.menu,

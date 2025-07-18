@@ -1,19 +1,36 @@
+// IMPORTS
+
+// React
 import { useCallback } from 'react';
+
+// Redux
 import { useDispatch /*, useSelector*/ } from 'react-redux';
+// import selectOverviewOptions from '../selectOverviewOptions';
+// import { setVolumeOverviewOption } from 'Store/Actions/volumeIndexActions';
+
+// Misc
+import { inputTypes } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
-import { type EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
+import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 import Button from 'Components/Link/Button';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import { inputTypes } from 'Helpers/Props';
-// import { setVolumeOverviewOption } from 'Store/Actions/volumeIndexActions';
-import translate from 'Utilities/String/translate';
-// import selectOverviewOptions from '../selectOverviewOptions';
+
+// Types
+interface VolumeIndexOverviewOptionsModalContentProps {
+    onModalClose(...args: unknown[]): void;
+}
+
+// IMPLEMENTATIONS
 
 const posterSizeOptions: EnhancedSelectInputValue<string>[] = [
     {
@@ -35,10 +52,6 @@ const posterSizeOptions: EnhancedSelectInputValue<string>[] = [
         },
     },
 ];
-
-interface VolumeIndexOverviewOptionsModalContentProps {
-    onModalClose(...args: unknown[]): void;
-}
 
 function VolumeIndexOverviewOptionsModalContent(
     props: VolumeIndexOverviewOptionsModalContentProps,

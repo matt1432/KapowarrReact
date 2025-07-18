@@ -1,13 +1,23 @@
-import Modal from 'Components/Modal/Modal';
+// IMPORTS
+
+// Misc
 import { sizes } from 'Helpers/Props';
+
+// General Components
+import Modal from 'Components/Modal/Modal';
+
+// Specific Components
 import AuthenticationRequiredModalContent from './AuthenticationRequiredModalContent';
+
+// Types
+interface AuthenticationRequiredModalProps {
+    isOpen: boolean;
+}
+
+// IMPLEMENTATIONS
 
 function onModalClose() {
     // No-op
-}
-
-interface AuthenticationRequiredModalProps {
-    isOpen: boolean;
 }
 
 export default function AuthenticationRequiredModal({ isOpen }: AuthenticationRequiredModalProps) {

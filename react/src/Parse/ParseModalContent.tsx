@@ -1,5 +1,20 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect, useState } from 'react';
+
+// Redux
 import { useDispatch /*, useSelector*/ } from 'react-redux';
+// import parseStateSelector from './parseStateSelector';
+// import { clear, fetch } from 'Store/Actions/parseActions';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+import getErrorMessage from 'Utilities/Object/getErrorMessage';
+import translate from 'Utilities/String/translate';
+
+// General Components
 import TextInput from 'Components/Form/TextInput';
 import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
@@ -8,18 +23,21 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import { icons } from 'Helpers/Props';
-// import { clear, fetch } from 'Store/Actions/parseActions';
-import { type InputChanged } from 'typings/inputs';
-import getErrorMessage from 'Utilities/Object/getErrorMessage';
-import translate from 'Utilities/String/translate';
+
+// Specific Components
 import ParseResult from './ParseResult';
-// import parseStateSelector from './parseStateSelector';
+
+// CSS
 import styles from './ParseModalContent.module.css';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
 
 interface ParseModalContentProps {
     onModalClose: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function ParseModalContent(props: ParseModalContentProps) {
     const { onModalClose } = props;

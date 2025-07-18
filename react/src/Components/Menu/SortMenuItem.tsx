@@ -1,7 +1,16 @@
+// IMPORTS
+
+// React
 import React from 'react';
+
+// Misc
 import { icons } from 'Helpers/Props';
-import { type SortDirection } from 'Helpers/Props/sortDirections';
+
+// Specific Components
 import SelectedMenuItem, { type SelectedMenuItemProps } from './SelectedMenuItem';
+
+// Types
+import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { IndexSort } from 'Volume/Index';
 
 interface SortMenuItemProps
@@ -12,6 +21,8 @@ interface SortMenuItemProps
     children: string | React.ReactNode;
     onPress: (sortKey: IndexSort) => void;
 }
+
+// IMPLEMENTATIONS
 
 function SortMenuItem({ name, sortKey, sortDirection, ...otherProps }: SortMenuItemProps) {
     const isSelected = name === sortKey;

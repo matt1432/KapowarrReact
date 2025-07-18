@@ -1,15 +1,23 @@
+// IMPORTS
+
+// Misc
 import monitorNewItemsOptions from 'Utilities/Volume/monitorNewItemsOptions';
+
+// Specific Components
 import EnhancedSelectInput, {
     type EnhancedSelectInputProps,
     type EnhancedSelectInputValue,
 } from './EnhancedSelectInput';
 
+// Types
 export interface MonitorNewItemsSelectInputProps
     extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<string>, string>, 'values'> {
     includeNoChange?: boolean;
     includeNoChangeDisabled?: boolean;
     includeMixed?: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function MonitorNewItemsSelectInput(props: MonitorNewItemsSelectInputProps) {
     const {

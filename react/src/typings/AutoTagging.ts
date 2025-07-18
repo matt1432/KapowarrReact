@@ -1,5 +1,5 @@
-import { type ModelBase } from 'App/ModelBase';
-import { type Field } from './Field';
+import type { ModelBase } from 'App/ModelBase';
+import type { Field } from './Field';
 
 export interface AutoTaggingSpecification {
     id: number;

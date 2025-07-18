@@ -1,9 +1,24 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect, useRef } from 'react';
+
+// Redux
+
+// Misc
+
+// General Components
 import CheckInput from 'Components/Form/CheckInput';
-import { type CheckInputChanged } from 'typings/inputs';
-import { type SelectStateInputProps } from 'typings/props';
+
+// Specific Components
 import TableRowCell, { type TableRowCellProps } from './TableRowCell';
+
+// CSS
 import styles from './TableSelectCell.module.css';
+
+// Types
+import type { CheckInputChanged } from 'typings/inputs';
+import type { SelectStateInputProps } from 'typings/props';
 
 interface TableSelectCellProps extends Omit<TableRowCellProps, 'id'> {
     className?: string;
@@ -11,6 +26,8 @@ interface TableSelectCellProps extends Omit<TableRowCellProps, 'id'> {
     isSelected?: boolean;
     onSelectedChange: (options: SelectStateInputProps) => void;
 }
+
+// IMPLEMENTATIONS
 
 function TableSelectCell({
     className = styles.selectCell,

@@ -1,3 +1,7 @@
+// IMPORTS
+
+// React
+import React, { useRef, useState } from 'react';
 import {
     arrow,
     autoUpdate,
@@ -14,13 +18,19 @@ import {
     useHover,
     useInteractions,
 } from '@floating-ui/react';
-import classNames from 'classnames';
-import React, { useRef, useState } from 'react';
-import { useThemeColor } from 'Helpers/Hooks/useTheme';
-import { kinds } from 'Helpers/Props';
-import { type Kind } from 'Helpers/Props/kinds';
+
+// Misc
 import { isMobile } from 'Utilities/browser';
+import { kinds } from 'Helpers/Props';
+import { useThemeColor } from 'Helpers/Hooks/useTheme';
+
+import classNames from 'classnames';
+
+// CSS
 import styles from './Tooltip.module.css';
+
+// Types
+import type { Kind } from 'Helpers/Props/kinds';
 
 export interface TooltipProps {
     className?: string;
@@ -31,6 +41,9 @@ export interface TooltipProps {
     position?: Placement;
     canFlip?: boolean;
 }
+
+// IMPLEMENTATIONS
+
 function Tooltip(props: TooltipProps) {
     const {
         className,

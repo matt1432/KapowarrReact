@@ -1,4 +1,4 @@
-// import { type Error } from 'App/State/AppSectionState';
+// import type { Error } from 'App/State/AppSectionState';
 import { ApiError } from 'Utilities/Fetch/fetchJson';
 
 // eslint-disable-next-line

@@ -1,5 +1,12 @@
-import { type SyntheticEvent } from 'react';
+// IMPORTS
+
+// Specific Components
 import TextInput, { type TextInputProps } from './TextInput';
+
+// Types
+import type { SyntheticEvent } from 'react';
+
+// IMPLEMENTATIONS
 
 // Prevent a user from copying (or cutting) the password from the input
 function onCopy(e: SyntheticEvent) {

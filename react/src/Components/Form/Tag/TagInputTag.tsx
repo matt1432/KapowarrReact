@@ -1,11 +1,22 @@
+// IMPORTS
+
+// React
 import { useCallback } from 'react';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+// General Components
 import Label, { type LabelProps } from 'Components/Label';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
 import MiddleTruncate from 'Components/MiddleTruncate';
-import { icons } from 'Helpers/Props';
-import { type TagBase } from './TagInput';
+
+// CSS
 import styles from './TagInputTag.module.css';
+
+// Types
+import type { TagBase } from './TagInput';
 
 export interface DeletedTag<T extends TagBase> {
     index: number;
@@ -26,6 +37,8 @@ export interface TagInputTagProps<T extends TagBase> {
     onDelete: (deletedTag: DeletedTag<T>) => void;
     onEdit: (editedTag: EditedTag<T>) => void;
 }
+
+// IMPLEMENTATIONS
 
 function TagInputTag<T extends TagBase>({
     tag,

@@ -1,16 +1,27 @@
+// IMPORTS
+
+// React
 import { useCallback } from 'react';
+
+// Misc
+import { kinds } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Button from 'Components/Link/Button';
 import InlineMarkdown from 'Components/Markdown/InlineMarkdown';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import { kinds } from 'Helpers/Props';
-import translate from 'Utilities/String/translate';
 
+// Types
 interface AppUpdatedModalContentProps {
     onModalClose: () => void;
 }
+
+// IMPLEMENTATIONS
 
 // TODO: https://github.com/Sonarr/Sonarr/blob/v5-develop/frontend/src/App/AppUpdatedModalContent.tsx
 function AppUpdatedModalContent(props: AppUpdatedModalContentProps) {

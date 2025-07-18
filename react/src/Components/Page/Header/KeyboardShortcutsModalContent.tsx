@@ -1,13 +1,30 @@
+// IMPORTS
+
+// Redux
 // import { useSelector } from 'react-redux';
+// import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
+
+// Misc
 import { type Shortcut, shortcuts } from 'Components/keyboardShortcuts';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Button from 'Components/Link/Button';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-// import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
-import translate from 'Utilities/String/translate';
+
+// CSS
 import styles from './KeyboardShortcutsModalContent.module.css';
+
+// Types
+interface KeyboardShortcutsModalContentProps {
+    onModalClose: () => void;
+}
+
+// IMPLEMENTATIONS
 
 function getShortcuts() {
     const allShortcuts: Shortcut[] = [];
@@ -35,10 +52,6 @@ function getShortcutKey(combo: string, isOsx: boolean) {
     }
 
     return `${osModifier} + ${key}`;
-}
-
-interface KeyboardShortcutsModalContentProps {
-    onModalClose: () => void;
 }
 
 function KeyboardShortcutsModalContent({ onModalClose }: KeyboardShortcutsModalContentProps) {

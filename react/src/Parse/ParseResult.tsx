@@ -1,15 +1,30 @@
-// import { type ParseModel } from 'App/State/ParseAppState';
+// IMPORTS
+
+// React
+
+// Redux
+
+// Misc
+import translate from 'Utilities/String/translate';
+
+// General Components
 import FieldSet from 'Components/FieldSet';
 import IssueFormats from 'Issue/IssueFormats';
 import VolumeTitleLink from 'Volume/VolumeTitleLink';
-import translate from 'Utilities/String/translate';
+
+// Specific Components
 import ParseResultItem from './ParseResultItem';
+
+// CSS
 import styles from './ParseResult.module.css';
 
+// Types
 interface ParseResultProps {
     // eslint-disable-next-line
     item: any; //ParseModel;
 }
+
+// IMPLEMENTATIONS
 
 function ParseResult(props: ParseResultProps) {
     const { item } = props;

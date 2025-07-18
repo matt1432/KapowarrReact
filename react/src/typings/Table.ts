@@ -1,4 +1,4 @@
-import { type Column } from 'Components/Table/Column';
+import type { Column } from 'Components/Table/Column';
 
 export interface TableOptionsChangePayload {
     pageSize?: number;

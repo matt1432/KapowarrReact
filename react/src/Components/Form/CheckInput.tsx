@@ -1,11 +1,25 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import { type SyntheticEvent, useCallback, useEffect, useRef } from 'react';
-import Icon from 'Components/Icon';
+
+// Misc
+import classNames from 'classnames';
+
 import { icons } from 'Helpers/Props';
-import { type Kind } from 'Helpers/Props/kinds';
-import { type CheckInputChanged } from 'typings/inputs';
+
+// General Components
+import Icon from 'Components/Icon';
+
+// Specific Components
 import FormInputHelpText from './FormInputHelpText';
+
+// CSS
 import styles from './CheckInput.module.css';
+
+// Types
+import type { Kind } from 'Helpers/Props/kinds';
+import type { CheckInputChanged } from 'typings/inputs';
 
 interface ChangeEvent<T = Element> extends SyntheticEvent<T, MouseEvent> {
     target: EventTarget & T;
@@ -24,6 +38,8 @@ export interface CheckInputProps {
     kind?: Extract<Kind, keyof typeof styles>;
     onChange: (changes: CheckInputChanged) => void;
 }
+
+// IMPLEMENTATIONS
 
 function CheckInput(props: CheckInputProps) {
     const {

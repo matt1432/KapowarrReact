@@ -1,13 +1,30 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import { useRef } from 'react';
 import { type DragSourceMonitor, useDrag, useDrop, type XYCoord } from 'react-dnd';
+
+// Redux
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+import classNames from 'classnames';
+
+import DragType from 'Helpers/DragType';
+
+// General Components
 import CheckInput from 'Components/Form/CheckInput';
 import Icon from 'Components/Icon';
-import DragType from 'Helpers/DragType';
-import { icons } from 'Helpers/Props';
-import { type CheckInputChanged } from 'typings/inputs';
-import { type Column } from '../Column';
+
+// Specific Components
+
+// CSS
 import styles from './TableOptionsColumn.module.css';
+
+// Types
+import type { CheckInputChanged } from 'typings/inputs';
+import type { Column } from '../Column';
 
 interface DragItem {
     name: string;
@@ -26,6 +43,8 @@ interface TableOptionsColumnProps {
     onColumnDragEnd: (didDrop: boolean) => void;
     onColumnDragMove: (dragIndex: number, hoverIndex: number) => void;
 }
+
+// IMPLEMENTATIONS
 
 function TableOptionsColumn({
     name,

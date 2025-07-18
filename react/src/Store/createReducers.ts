@@ -6,7 +6,7 @@ import { baseApi } from './createApiEndpoints';
 import AppSlice from './Slices/App';
 import VolumeIndexSlice from './Slices/VolumeIndex';
 
-import { type History } from 'history';
+import type { History } from 'history';
 
 export default function (history: History) {
     const { createReduxHistory, routerMiddleware, routerReducer } = createReduxHistoryContext({

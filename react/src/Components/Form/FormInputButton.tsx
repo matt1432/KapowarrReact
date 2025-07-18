@@ -1,9 +1,25 @@
+// IMPORTS
+
+// React
+
+// Redux
+
+// Misc
+import { kinds } from 'Helpers/Props';
+
 import classNames from 'classnames';
-import { type IconName } from 'Components/Icon';
+
+// General Components
 import Button, { type ButtonProps } from 'Components/Link/Button';
 import SpinnerButton from 'Components/Link/SpinnerButton';
-import { kinds } from 'Helpers/Props';
+
+// Specific Components
+
+// CSS
 import styles from './FormInputButton.module.css';
+
+// Types
+import type { IconName } from 'Components/Icon';
 
 export interface FormInputButtonProps extends ButtonProps {
     canSpin?: boolean;
@@ -11,6 +27,8 @@ export interface FormInputButtonProps extends ButtonProps {
     isSpinning?: boolean;
     spinnerIcon?: IconName;
 }
+
+// IMPLEMENTATIONS
 
 function FormInputButton({
     className = styles.button,

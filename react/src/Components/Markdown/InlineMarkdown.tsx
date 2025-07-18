@@ -1,11 +1,18 @@
-import { type ReactElement } from 'react';
+// IMPORTS
+
+// General Components
 import Link from 'Components/Link/Link';
+
+// Types
+import type { ReactElement } from 'react';
 
 interface InlineMarkdownProps {
     className?: string;
     data?: string;
     blockClassName?: string;
 }
+
+// IMPLEMENTATIONS
 
 function InlineMarkdown(props: InlineMarkdownProps) {
     const { className, data, blockClassName } = props;
@@ -21,7 +28,7 @@ function InlineMarkdown(props: InlineMarkdownProps) {
 
         while ((match = linkRegex.exec(data)) !== null) {
             if (match.index > endIndex) {
-                markdownBlocks.push(data.substr(endIndex, match.index - endIndex));
+                markdownBlocks.push(data.substring(endIndex, match.index));
             }
 
             markdownBlocks.push(
@@ -33,7 +40,7 @@ function InlineMarkdown(props: InlineMarkdownProps) {
         }
 
         if (endIndex !== data.length && markdownBlocks.length > 0) {
-            markdownBlocks.push(data.substr(endIndex, data.length - endIndex));
+            markdownBlocks.push(data.substring(endIndex, data.length));
         }
 
         const codeRegex = RegExp(/(?=`)`(?!`)[^`]*(?=`)`(?!`)/g);
@@ -46,7 +53,7 @@ function InlineMarkdown(props: InlineMarkdownProps) {
             matchedCode = true;
 
             if (match.index > endIndex) {
-                markdownBlocks.push(data.substr(endIndex, match.index - endIndex));
+                markdownBlocks.push(data.substring(endIndex, match.index));
             }
 
             markdownBlocks.push(
@@ -58,7 +65,7 @@ function InlineMarkdown(props: InlineMarkdownProps) {
         }
 
         if (endIndex !== data.length && markdownBlocks.length > 0 && matchedCode) {
-            markdownBlocks.push(data.substr(endIndex, data.length - endIndex));
+            markdownBlocks.push(data.substring(endIndex, data.length));
         }
 
         if (markdownBlocks.length === 0) {

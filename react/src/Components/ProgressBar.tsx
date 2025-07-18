@@ -1,9 +1,24 @@
+// IMPORTS
+
+// React
+
+// Redux
+
+// Misc
 import classNames from 'classnames';
-import { ColorImpairedConsumer } from 'App/ColorImpairedContext';
-import { type Kind } from 'Helpers/Props/kinds';
-import { type Size } from 'Helpers/Props/sizes';
 import translate from 'Utilities/String/translate';
+
+// General Components
+import { ColorImpairedConsumer } from 'App/ColorImpairedContext';
+
+// Specific Components
+
+// CSS
 import styles from './ProgressBar.module.css';
+
+// Types
+import type { Kind } from 'Helpers/Props/kinds';
+import type { Size } from 'Helpers/Props/sizes';
 
 interface ProgressBarProps {
     className?: string;
@@ -17,6 +32,8 @@ interface ProgressBarProps {
     size?: Extract<Size, keyof typeof styles>;
     width?: number;
 }
+
+// IMPLEMENTATIONS
 
 function ProgressBar({
     className = styles.progressBar,

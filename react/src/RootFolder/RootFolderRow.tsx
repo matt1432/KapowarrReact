@@ -1,17 +1,30 @@
+// IMPORTS
+
+// React
 import { useCallback, useState } from 'react';
+
+// Redux
 import { useDispatch } from 'react-redux';
+// import { deleteRootFolder } from 'Store/Actions/rootFolderActions';
+
+// Misc
+import { icons, kinds } from 'Helpers/Props';
+
+import formatBytes from 'Utilities/Number/formatBytes';
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Label from 'Components/Label';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
-import { icons, kinds } from 'Helpers/Props';
-// import { deleteRootFolder } from 'Store/Actions/rootFolderActions';
-import formatBytes from 'Utilities/Number/formatBytes';
-import translate from 'Utilities/String/translate';
+
+// CSS
 import styles from './RootFolderRow.module.css';
 
+// Types
 interface RootFolderRowProps {
     id: number;
     path: string;
@@ -19,6 +32,8 @@ interface RootFolderRowProps {
     freeSpace?: number;
     unmappedFolders: object[];
 }
+
+// IMPLEMENTATIONS
 
 function RootFolderRow(props: RootFolderRowProps) {
     const { id, path, accessible, freeSpace = 0, unmappedFolders = [] } = props;

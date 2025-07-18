@@ -1,8 +1,15 @@
+// IMPORTS
+
+// React
 import React, { type MouseEvent, type Ref, useCallback } from 'react';
-import { type Kind } from 'Helpers/Props/kinds';
-import { type TagBase } from './TagInput';
-import { type TagInputTagProps } from './TagInputTag';
+
+// CSS
 import styles from './TagInputInput.module.css';
+
+// Types
+import type { Kind } from 'Helpers/Props/kinds';
+import type { TagBase } from './TagInput';
+import type { TagInputTagProps } from './TagInputTag';
 
 interface TagInputInputProps<T extends TagBase> {
     forwardedRef?: Ref<HTMLDivElement>;
@@ -17,6 +24,8 @@ interface TagInputInputProps<T extends TagBase> {
     onTagEdit: TagInputTagProps<T>['onEdit'];
     onInputContainerPress: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function TagInputInput<T extends TagBase>(props: TagInputInputProps<T>) {
     const {

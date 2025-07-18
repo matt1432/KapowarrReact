@@ -1,20 +1,33 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import { type KeyboardEvent, type SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import { type ChangeEvent, type SuggestionsFetchRequestedParams } from 'react-autosuggest';
+
+// Redux
 import { useDispatch /*, useSelector */ } from 'react-redux';
 // import { createSelector } from 'reselect';
-// import { type AppState } from 'App/State/AppState';
-// import { type Path } from 'App/State/PathsAppState';
+// import { clearPaths, fetchPaths } from 'Store/Actions/pathActions';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+import classNames from 'classnames';
+import usePrevious from 'Helpers/Hooks/usePrevious';
+
+// General Components
 import FileBrowserModal from 'Components/FileBrowser/FileBrowserModal';
 import Icon from 'Components/Icon';
-import usePrevious from 'Helpers/Hooks/usePrevious';
-import { icons } from 'Helpers/Props';
-// TODO:
-// import { clearPaths, fetchPaths } from 'Store/Actions/pathActions';
-import { type InputChanged } from 'typings/inputs';
+
+// Specific Components
 import AutoSuggestInput from './AutoSuggestInput';
 import FormInputButton from './FormInputButton';
+
+// CSS
 import styles from './PathInput.module.css';
+
+// Types
+import type { ChangeEvent, SuggestionsFetchRequestedParams } from 'react-autosuggest';
+import type { InputChanged } from 'typings/inputs';
 
 // eslint-disable-next-line
 type Path = any;
@@ -36,6 +49,8 @@ interface PathInputInternalProps extends PathInputProps {
     onFetchPaths: (path: string) => void;
     onClearPaths: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function handleSuggestionsClearRequested() {
     // Required because props aren't always rendered, but no-op

@@ -1,10 +1,17 @@
-import { type ReactNode } from 'react';
+// IMPORTS
+
+// CSS
 import styles from './DescriptionListItemTitle.module.css';
+
+// Types
+import type { ReactNode } from 'react';
 
 export interface DescriptionListItemTitleProps {
     className?: string;
     children?: ReactNode;
 }
+
+// IMPLEMENTATIONS
 
 function DescriptionListItemTitle(props: DescriptionListItemTitleProps) {
     const { className = styles.title, children } = props;

@@ -1,3 +1,9 @@
+// IMPORTS
+
+// Misc
+import translate from 'Utilities/String/translate';
+
+// General Components
 import ErrorBoundaryError, {
     type ErrorBoundaryErrorProps,
 } from 'Components/Error/ErrorBoundaryError';
@@ -6,12 +12,16 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import translate from 'Utilities/String/translate';
+
+// CSS
 import styles from './ModalError.module.css';
 
+// Types
 interface ModalErrorProps extends ErrorBoundaryErrorProps {
     onModalClose: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function ModalError({ onModalClose, ...otherProps }: ModalErrorProps) {
     return (

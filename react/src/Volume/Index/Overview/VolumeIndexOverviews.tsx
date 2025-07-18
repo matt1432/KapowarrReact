@@ -1,21 +1,29 @@
-import { throttle } from 'lodash';
+// IMPORTS
+
+// React
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
-// import { useSelector } from 'react-redux';
 import { FixedSizeList as List, type ListChildComponentProps } from 'react-window';
-import useMeasure from 'Helpers/Hooks/useMeasure';
-import { type VolumePublicInfo } from 'Volume/Volume';
-import dimensions from 'Styles/Variables/dimensions';
-import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
+
+// Redux
+// import { useSelector } from 'react-redux';
 // import selectOverviewOptions from './selectOverviewOptions';
+
+// Misc
+import { throttle } from 'lodash';
+
+import useMeasure from 'Helpers/Hooks/useMeasure';
+import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
+
+// General Components
+
+// Specific Components
 import VolumeIndexOverview from './VolumeIndexOverview';
 
-// Poster container dimensions
-const columnPadding = parseInt(dimensions.volumeIndexColumnPadding);
-const columnPaddingSmallScreen = parseInt(dimensions.volumeIndexColumnPaddingSmallScreen);
-const progressBarHeight = parseInt(dimensions.progressBarSmallHeight);
-const detailedProgressBarHeight = parseInt(dimensions.progressBarMediumHeight);
-const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
-const bodyPaddingSmallScreen = parseInt(dimensions.pageContentBodyPaddingSmallScreen);
+// CSS
+import dimensions from 'Styles/Variables/dimensions';
+
+// Types
+import type { VolumePublicInfo } from 'Volume/Volume';
 
 interface RowItemData {
     items: VolumePublicInfo[];
@@ -37,6 +45,16 @@ interface VolumeIndexOverviewsProps {
     isSelectMode: boolean;
     isSmallScreen: boolean;
 }
+
+// IMPLEMENTATIONS
+
+// Poster container dimensions
+const columnPadding = parseInt(dimensions.volumeIndexColumnPadding);
+const columnPaddingSmallScreen = parseInt(dimensions.volumeIndexColumnPaddingSmallScreen);
+const progressBarHeight = parseInt(dimensions.progressBarSmallHeight);
+const detailedProgressBarHeight = parseInt(dimensions.progressBarMediumHeight);
+const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
+const bodyPaddingSmallScreen = parseInt(dimensions.pageContentBodyPaddingSmallScreen);
 
 function Row({ index, style, data }: ListChildComponentProps<RowItemData>) {
     const { items, ...otherData } = data;

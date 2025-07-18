@@ -1,7 +1,16 @@
+// IMPORTS
+
+// React
 import { useCallback, useMemo } from 'react';
-import { type InputChanged } from 'typings/inputs';
+
+// Misc
 import split from 'Utilities/String/split';
+
+// Specific Components
 import TagInput, { type ReplacementTag, type TagBase, type TagInputProps } from './TagInput';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
 
 interface TextTag extends TagBase {
     id: string;
@@ -14,6 +23,8 @@ export interface TextTagInputProps
     value: string | string[];
     onChange: (change: InputChanged<string[]>) => unknown;
 }
+
+// IMPLEMENTATIONS
 
 function TextTagInput({ name, value, onChange, ...otherProps }: TextTagInputProps) {
     const { tags, tagList, valueArray } = useMemo(() => {

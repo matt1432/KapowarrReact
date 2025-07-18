@@ -1,6 +1,15 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect } from 'react';
+
+// Misc
 import useTheme from 'Helpers/Hooks/useTheme';
+
+// CSS
 import themes from 'Styles/Themes';
+
+// IMPLEMENTATIONS
 
 function ApplyTheme() {
     const theme = useTheme();

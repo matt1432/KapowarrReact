@@ -1,11 +1,21 @@
+// IMPORTS
+
+// React
 import React from 'react';
+
+// General Components
 import Tooltip, { type TooltipProps } from './Tooltip';
+
+// CSS
 import styles from './Popover.module.css';
 
+// Types
 interface PopoverProps extends Omit<TooltipProps, 'tooltip' | 'bodyClassName'> {
     title: string;
     body: React.ReactNode;
 }
+
+// IMPLEMENTATIONS
 
 function Popover({ title, body, ...otherProps }: PopoverProps) {
     return (

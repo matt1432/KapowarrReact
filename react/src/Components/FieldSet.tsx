@@ -1,14 +1,26 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import React, { type ComponentProps } from 'react';
+
+// Misc
 import { sizes } from 'Helpers/Props';
-import { type Size } from 'Helpers/Props/sizes';
+
+import classNames from 'classnames';
+
+// CSS
 import styles from './FieldSet.module.css';
+
+// Types
+import type { Size } from 'Helpers/Props/sizes';
 
 interface FieldSetProps {
     size?: Size;
     legend?: ComponentProps<'legend'>['children'];
     children?: React.ReactNode;
 }
+
+// IMPLEMENTATIONS
 
 function FieldSet({ size = sizes.MEDIUM, legend, children }: FieldSetProps) {
     return (

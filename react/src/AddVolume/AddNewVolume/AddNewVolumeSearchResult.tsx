@@ -1,23 +1,41 @@
+// IMPORTS
+
+// React
 import React, { useCallback, useState } from 'react';
+
+// Redux
 // import { useSelector } from 'react-redux';
-import { type AddVolume } from 'AddVolume/AddVolume';
+// import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
+// import createExistingVolumeSelector from 'Store/Selectors/createExistingVolumeSelector';
+
+// Misc
+import { icons, kinds, sizes } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import HeartRating from 'Components/HeartRating';
 import Icon from 'Components/Icon';
 import Label from 'Components/Label';
 import Link from 'Components/Link/Link';
 import MetadataAttribution from 'Components/MetadataAttribution';
-import { icons, kinds, sizes } from 'Helpers/Props';
-// import { type Statistics } from 'Volume/Volume';
 import VolumePoster from 'Volume/VolumePoster';
-// import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-// import createExistingVolumeSelector from 'Store/Selectors/createExistingVolumeSelector';
-import translate from 'Utilities/String/translate';
+
+// Specific Components
 import AddNewVolumeModal from './AddNewVolumeModal';
+
+// CSS
 import styles from './AddNewVolumeSearchResult.module.css';
+
+// Types
+import type { AddVolume } from 'AddVolume/AddVolume';
+// import type { Statistics } from 'Volume/Volume';
 
 interface AddNewVolumeSearchResultProps {
     volume: AddVolume;
 }
+
+// IMPLEMENTATIONS
 
 function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
     const {

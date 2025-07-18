@@ -1,4 +1,17 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect, useState } from 'react';
+
+// Misc
+import { icons, kinds } from 'Helpers/Props';
+
+import getErrorMessage from 'Utilities/Object/getErrorMessage';
+// import useDebounce from 'Helpers/Hooks/useDebounce';
+import useQueryParams from 'Helpers/Hooks/useQueryParams';
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Alert from 'Components/Alert';
 import TextInput from 'Components/Form/TextInput';
 import Icon from 'Components/Icon';
@@ -7,14 +20,17 @@ import Link from 'Components/Link/Link';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
-// import useDebounce from 'Helpers/Hooks/useDebounce';
-import useQueryParams from 'Helpers/Hooks/useQueryParams';
-import { icons, kinds } from 'Helpers/Props';
-import { type InputChanged } from 'typings/inputs';
-import getErrorMessage from 'Utilities/Object/getErrorMessage';
-import translate from 'Utilities/String/translate';
+
+// Specific Components
 import AddNewVolumeSearchResult from './AddNewVolumeSearchResult';
+
+// CSS
 import styles from './AddNewVolume.module.css';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
+
+// IMPLEMENTATIONS
 
 function AddNewVolume() {
     const { term: initialTerm = '' } = useQueryParams<{ term: string }>();

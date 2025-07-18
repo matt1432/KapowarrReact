@@ -1,10 +1,18 @@
+// IMPORTS
+
+// General Components
 import InlineMarkdown from 'Components/Markdown/InlineMarkdown';
+
+// CSS
 import styles from './UpdateChanges.module.css';
 
+// Types
 interface UpdateChangesProps {
     title: string;
     changes: string[];
 }
+
+// IMPLEMENTATIONS
 
 function UpdateChanges(props: UpdateChangesProps) {
     const { title, changes } = props;

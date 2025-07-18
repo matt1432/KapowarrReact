@@ -1,13 +1,24 @@
 // TODO: https://github.com/Sonarr/Sonarr/blob/v5-develop/frontend/src/FirstRun/AuthenticationRequiredModalContent.tsx
+
+// IMPORTS
+
+// Misc
+import { kinds } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Alert from 'Components/Alert';
 import SpinnerButton from 'Components/Link/SpinnerButton';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import { kinds } from 'Helpers/Props';
-import translate from 'Utilities/String/translate';
+
+// CSS
 import styles from './AuthenticationRequiredModalContent.module.css';
+
+// IMPLEMENTATIONS
 
 function onModalClose() {
     // No-op

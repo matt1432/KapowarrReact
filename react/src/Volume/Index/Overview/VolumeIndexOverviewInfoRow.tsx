@@ -1,11 +1,19 @@
+// IMPORTS
+
+// General Components
 import Icon, { type IconName } from 'Components/Icon';
+
+// CSS
 import styles from './VolumeIndexOverviewInfoRow.module.css';
 
+// Types
 interface VolumeIndexOverviewInfoRowProps {
     title?: string;
     iconName: IconName;
     label: string | null;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeIndexOverviewInfoRow(props: VolumeIndexOverviewInfoRowProps) {
     const { title, iconName, label } = props;

@@ -1,6 +1,13 @@
+// IMPORTS
+
+// General Components
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import LoadingMessage from 'Components/Loading/LoadingMessage';
+
+// CSS
 import styles from './LoadingPage.module.css';
+
+// IMPLEMENTATIONS
 
 function LoadingPage() {
     return (

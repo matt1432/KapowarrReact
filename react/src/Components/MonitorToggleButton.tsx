@@ -1,10 +1,21 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import { type SyntheticEvent, useCallback, useMemo } from 'react';
-import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
+
+// Misc
 import { icons } from 'Helpers/Props';
+
+import classNames from 'classnames';
 import translate from 'Utilities/String/translate';
+
+// General Components
+import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
+
+// CSS
 import styles from './MonitorToggleButton.module.css';
 
+// Types
 interface MonitorToggleButtonProps {
     className?: string;
     monitored: boolean;
@@ -13,6 +24,8 @@ interface MonitorToggleButtonProps {
     isSaving?: boolean;
     onPress: (value: boolean, options: { shiftKey: boolean }) => unknown;
 }
+
+// IMPLEMENTATIONS
 
 function MonitorToggleButton(props: MonitorToggleButtonProps) {
     const {

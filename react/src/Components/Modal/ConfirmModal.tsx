@@ -1,4 +1,12 @@
+// IMPORTS
+
+// React
 import React, { useEffect } from 'react';
+
+// Misc
+import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
+
+// General Components
 import Button from 'Components/Link/Button';
 import SpinnerButton, { type SpinnerButtonProps } from 'Components/Link/SpinnerButton';
 import Modal, { type ModalProps } from 'Components/Modal/Modal';
@@ -6,8 +14,8 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 
+// Types
 interface ConfirmModalProps extends Omit<ModalProps, 'onModalClose'> {
     kind?: SpinnerButtonProps['kind'];
     title: string;
@@ -19,6 +27,8 @@ interface ConfirmModalProps extends Omit<ModalProps, 'onModalClose'> {
     onConfirm: () => void;
     onCancel: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function ConfirmModal({
     isOpen,

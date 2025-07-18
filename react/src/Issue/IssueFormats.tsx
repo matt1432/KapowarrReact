@@ -1,10 +1,19 @@
-import Label from 'Components/Label';
+// IMPORTS
+
+// Misc
 import { kinds } from 'Helpers/Props';
-import { type CustomFormat } from 'typings/CustomFormat';
+
+// General Components
+import Label from 'Components/Label';
+
+// Types
+import type { CustomFormat } from 'typings/CustomFormat';
 
 interface IssueFormatsProps {
     formats: CustomFormat[];
 }
+
+// IMPLEMENTATIONS
 
 function IssueFormats({ formats }: IssueFormatsProps) {
     return (

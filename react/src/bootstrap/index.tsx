@@ -1,8 +1,15 @@
+// IMPORTS
+
+// React
 import { createRoot } from 'react-dom/client';
 
+// Redux
 import { history, store } from 'Store/createAppStore';
 
+// General Components
 import App from 'App/App';
+
+// IMPLEMENTATIONS
 
 const container = document.getElementById('root');
 

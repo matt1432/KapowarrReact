@@ -1,12 +1,24 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import { useEffect, useMemo, useRef } from 'react';
+
+// Redux
 // import { useDispatch } from 'react-redux';
-// import { type MessageType } from 'App/State/MessagesAppState';
-import Icon, { type IconName } from 'Components/Icon';
-import { icons } from 'Helpers/Props';
 // import { hideMessage } from 'Store/Actions/appActions';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+import classNames from 'classnames';
+
+// General Components
+import Icon, { type IconName } from 'Components/Icon';
+
+// CSS
 import styles from './Message.module.css';
 
+// Types
 interface MessageProps {
     id: number;
     hideAfter: number;
@@ -14,6 +26,8 @@ interface MessageProps {
     message: string;
     type: keyof typeof styles; // Extract<MessageType, keyof typeof styles>;
 }
+
+// IMPLEMENTATIONS
 
 function Message({ id, hideAfter, name, message, type }: MessageProps) {
     // const dispatch = useDispatch();

@@ -1,12 +1,11 @@
+// IMPORTS
+
+// React
 import { useCallback, useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
+// Types
 import type { Volume } from './Volume';
-
-function getUrl(volume: Volume) {
-    const { apiKey, urlBase } = window.Kapowarr;
-    return `${urlBase}/api/volumes/${volume.id}/cover?api_key=${apiKey}`;
-}
 
 export interface VolumeImageProps {
     volume: Volume;
@@ -17,6 +16,13 @@ export interface VolumeImageProps {
     lazy?: boolean;
     onError?: () => void;
     onLoad?: () => void;
+}
+
+// IMPLEMENTATIONS
+
+function getUrl(volume: Volume) {
+    const { apiKey, urlBase } = window.Kapowarr;
+    return `${urlBase}/api/volumes/${volume.id}/cover?api_key=${apiKey}`;
 }
 
 function VolumeImage({

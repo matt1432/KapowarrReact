@@ -1,9 +1,25 @@
+// IMPORTS
+
+// React
 import { useCallback } from 'react';
+
+// Redux
 // import { useSelector } from 'react-redux';
 // import { createSelector } from 'reselect';
-// import { type AppState } from 'App/State/AppState';
-import { type EnhancedSelectInputChanged } from 'typings/inputs';
+
+// Specific Components
 import EnhancedSelectInput from './EnhancedSelectInput';
+
+// Types
+import type { EnhancedSelectInputChanged } from 'typings/inputs';
+
+export interface IndexerFlagsSelectInputProps {
+    name: string;
+    indexerFlags: number;
+    onChange(payload: EnhancedSelectInputChanged<number>): void;
+}
+
+// IMPLEMENTATIONS
 
 /*
 const selectIndexerFlagsValues = (selectedFlags: number) =>
@@ -30,12 +46,6 @@ const selectIndexerFlagsValues = (selectedFlags: number) =>
         },
     );
 */
-
-export interface IndexerFlagsSelectInputProps {
-    name: string;
-    indexerFlags: number;
-    onChange(payload: EnhancedSelectInputChanged<number>): void;
-}
 
 function IndexerFlagsSelectInput({
     name,

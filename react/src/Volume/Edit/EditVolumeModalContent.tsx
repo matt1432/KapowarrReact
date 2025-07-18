@@ -1,7 +1,7 @@
 /*import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import VolumeMonitorNewItemsOptionsPopoverContent from 'AddVolume/VolumeMonitorNewItemsOptionsPopoverContent';
-// import { type AppState } from 'App/State/AppState';
+// import type { AppState } from 'App/State/AppState';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputButton from 'Components/Form/FormInputButton';
@@ -21,10 +21,10 @@ import MoveVolumeModal from 'Volume/MoveVolume/MoveVolumeModal';
 // import useVolume from 'Volume/useVolume';
 // import { saveVolume, setVolumeValue } from 'Store/Actions/volumeActions';
 // import selectSettings from 'Store/Selectors/selectSettings';
-import { type InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
 import RootFolderModal from './RootFolder/RootFolderModal';
-import { type RootFolderUpdated } from './RootFolder/RootFolderModalContent';
+import type { RootFolderUpdated } from './RootFolder/RootFolderModalContent';
 import styles from './EditVolumeModalContent.module.css';*/
 
 export interface EditVolumeModalContentProps {

@@ -1,9 +1,20 @@
+// IMPORTS
+
+// React
 import React, { useCallback } from 'react';
+
+// Misc
+import { icons, sortDirections } from 'Helpers/Props';
+
+// General Components
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
-import { icons, sortDirections } from 'Helpers/Props';
-import { type SortDirection } from 'Helpers/Props/sortDirections';
+
+// CSS
 import styles from './VirtualTableHeaderCell.module.css';
+
+// Types
+import type { SortDirection } from 'Helpers/Props/sortDirections';
 
 interface VirtualTableHeaderCellProps {
     className?: string;
@@ -15,6 +26,8 @@ interface VirtualTableHeaderCellProps {
     children?: React.ReactNode;
     onSortPress?: (name: string, sortDirection?: SortDirection) => void;
 }
+
+// IMPLEMENTATIONS
 
 function VirtualTableHeaderCell({
     className = styles.headerCell,

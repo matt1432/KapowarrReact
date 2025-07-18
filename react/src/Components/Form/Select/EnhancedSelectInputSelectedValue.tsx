@@ -1,12 +1,21 @@
+// IMPORTS
+
+// Misc
 import classNames from 'classnames';
-import { type ReactNode } from 'react';
+
+// CSS
 import styles from './EnhancedSelectInputSelectedValue.module.css';
+
+// Types
+import type { ReactNode } from 'react';
 
 interface EnhancedSelectInputSelectedValueProps {
     className?: string;
     children: ReactNode;
     isDisabled?: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function EnhancedSelectInputSelectedValue({
     className = styles.selectedValue,

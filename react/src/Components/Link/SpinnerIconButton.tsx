@@ -1,10 +1,19 @@
-import { type IconName } from 'Components/Icon';
+// IMPORTS
+
+// Misc
 import { icons } from 'Helpers/Props';
+
+// Specific Components
 import IconButton, { type IconButtonProps } from './IconButton';
+
+// Types
+import type { IconName } from 'Components/Icon';
 
 interface SpinnerIconButtonProps extends IconButtonProps {
     spinningName?: IconName;
 }
+
+// IMPLEMENTATIONS
 
 function SpinnerIconButton({
     name,

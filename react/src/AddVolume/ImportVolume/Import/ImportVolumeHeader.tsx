@@ -1,20 +1,34 @@
-import VolumeMonitoringOptionsPopoverContent from 'AddVolume/VolumeMonitoringOptionsPopoverContent';
-import VolumeTypePopoverContent from 'AddVolume/VolumeTypePopoverContent';
+// IMPORTS
+
+// Misc
+import { icons, tooltipPositions } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Icon from 'Components/Icon';
+import Popover from 'Components/Tooltip/Popover';
 import VirtualTableHeader from 'Components/Table/VirtualTableHeader';
 import VirtualTableHeaderCell from 'Components/Table/VirtualTableHeaderCell';
 import VirtualTableSelectAllHeaderCell from 'Components/Table/VirtualTableSelectAllHeaderCell';
-import Popover from 'Components/Tooltip/Popover';
-import { icons, tooltipPositions } from 'Helpers/Props';
-import { type CheckInputChanged } from 'typings/inputs';
-import translate from 'Utilities/String/translate';
+
+// Specific Components
+import VolumeMonitoringOptionsPopoverContent from 'AddVolume/VolumeMonitoringOptionsPopoverContent';
+import VolumeTypePopoverContent from 'AddVolume/VolumeTypePopoverContent';
+
+// CSS
 import styles from './ImportVolumeHeader.module.css';
+
+// Types
+import type { CheckInputChanged } from 'typings/inputs';
 
 interface ImportVolumeHeaderProps {
     allSelected: boolean;
     allUnselected: boolean;
     onSelectAllChange: (change: CheckInputChanged) => void;
 }
+
+// IMPLEMENTATIONS
 
 function ImportVolumeHeader({
     allSelected,

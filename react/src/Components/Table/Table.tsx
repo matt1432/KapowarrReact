@@ -1,17 +1,33 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import React from 'react';
+
+// Redux
+
+// Misc
+import { icons, scrollDirections } from 'Helpers/Props';
+
+import classNames from 'classnames';
+
+// General Components
 import IconButton from 'Components/Link/IconButton';
 import Scroller from 'Components/Scroller/Scroller';
 import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
-import { icons, scrollDirections } from 'Helpers/Props';
-import { type SortDirection } from 'Helpers/Props/sortDirections';
-import { type CheckInputChanged } from 'typings/inputs';
-import { type TableOptionsChangePayload } from 'typings/Table';
-import { type Column } from './Column';
+
+// Specific Components
 import TableHeader from './TableHeader';
 import TableHeaderCell from './TableHeaderCell';
 import TableSelectAllHeaderCell from './TableSelectAllHeaderCell';
+
+// CSS
 import styles from './Table.module.css';
+
+// Types
+import type { SortDirection } from 'Helpers/Props/sortDirections';
+import type { CheckInputChanged } from 'typings/inputs';
+import type { TableOptionsChangePayload } from 'typings/Table';
+import type { Column } from './Column';
 
 interface TableProps {
     className?: string;
@@ -30,6 +46,8 @@ interface TableProps {
     onTableOptionChange?: (payload: TableOptionsChangePayload) => void;
     onSelectAllChange?: (change: CheckInputChanged) => void;
 }
+
+// IMPLEMENTATIONS
 
 function Table({
     className = styles.table,

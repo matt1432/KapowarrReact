@@ -1,10 +1,16 @@
+// IMPORTS
+
+// CSS
 import styles from './LoadingIndicator.module.css';
 
+// Types
 interface LoadingIndicatorProps {
     className?: string;
     rippleClassName?: string;
     size?: number;
 }
+
+// IMPLEMENTATIONS
 
 function LoadingIndicator({
     className = styles.loading,

@@ -1,7 +1,14 @@
+// IMPORTS
+
+// Misc
 import classNames from 'classnames';
-import { type ReactNode } from 'react';
-import { type Size } from 'Helpers/Props/sizes';
+
+// CSS
 import styles from './FormLabel.module.css';
+
+// Types
+import type { ReactNode } from 'react';
+import type { Size } from 'Helpers/Props/sizes';
 
 interface FormLabelProps {
     children: ReactNode;
@@ -12,6 +19,8 @@ interface FormLabelProps {
     hasError?: boolean;
     isAdvanced?: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function FormLabel(props: FormLabelProps) {
     const {

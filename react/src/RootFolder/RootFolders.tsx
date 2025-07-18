@@ -1,15 +1,31 @@
+// IMPORTS
+
+// React
 import { useEffect } from 'react';
+
+// Redux
 import { useDispatch /*, useSelector*/ } from 'react-redux';
-import Alert from 'Components/Alert';
-import LoadingIndicator from 'Components/Loading/LoadingIndicator';
-import { type Column } from 'Components/Table/Column';
-import Table from 'Components/Table/Table';
-import TableBody from 'Components/Table/TableBody';
-import { kinds } from 'Helpers/Props';
 // import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
 // import createRootFoldersSelector from 'Store/Selectors/createRootFoldersSelector';
+
+// Misc
+import { kinds } from 'Helpers/Props';
+
 import translate from 'Utilities/String/translate';
+
+// General Components
+import Alert from 'Components/Alert';
+import LoadingIndicator from 'Components/Loading/LoadingIndicator';
+import Table from 'Components/Table/Table';
+import TableBody from 'Components/Table/TableBody';
+
+// Specific Components
 import RootFolderRow from './RootFolderRow';
+
+// Types
+import type { Column } from 'Components/Table/Column';
+
+// IMPLEMENTATIONS
 
 const rootFolderColumns: Column[] = [
     {

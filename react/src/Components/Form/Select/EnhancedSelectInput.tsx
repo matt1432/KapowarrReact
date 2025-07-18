@@ -1,3 +1,15 @@
+// IMPORTS
+
+// React
+import {
+    type ElementType,
+    type KeyboardEvent,
+    type ReactNode,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import {
     autoUpdate,
     flip,
@@ -8,31 +20,67 @@ import {
     useFloating,
     useInteractions,
 } from '@floating-ui/react';
+
+// Redux
+
+// Misc
+import { icons } from 'Helpers/Props';
+import { isMobile as isMobileUtil } from 'Utilities/browser';
+
+import * as keyCodes from 'Utilities/Constants/keyCodes';
+
 import classNames from 'classnames';
-import {
-    type ElementType,
-    type KeyboardEvent,
-    type ReactNode,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+
+// General Components
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import Modal from 'Components/Modal/Modal';
 import ModalBody from 'Components/Modal/ModalBody';
 import Scroller from 'Components/Scroller/Scroller';
-import { icons } from 'Helpers/Props';
-import { type ArrayElement } from 'typings/Helpers/ArrayElement';
-import { type EnhancedSelectInputChanged, type InputChanged } from 'typings/inputs';
-import { isMobile as isMobileUtil } from 'Utilities/browser';
-import * as keyCodes from 'Utilities/Constants/keyCodes';
+
+// Specific Components
 import TextInput from '../TextInput';
 import HintedSelectInputOption from './HintedSelectInputOption';
 import HintedSelectInputSelectedValue from './HintedSelectInputSelectedValue';
+
+// CSS
 import styles from './EnhancedSelectInput.module.css';
+
+// Types
+import type { ArrayElement } from 'typings/Helpers/ArrayElement';
+import type { EnhancedSelectInputChanged, InputChanged } from 'typings/inputs';
+
+export interface EnhancedSelectInputValue<V> {
+    key: ArrayElement<V>;
+    value: string;
+    hint?: ReactNode;
+    isDisabled?: boolean;
+    isHidden?: boolean;
+    parentKey?: V;
+    additionalProperties?: object;
+}
+
+export interface EnhancedSelectInputProps<T extends EnhancedSelectInputValue<V>, V> {
+    className?: string;
+    disabledClassName?: string;
+    name: string;
+    value: V;
+    values: T[];
+    isDisabled?: boolean;
+    isFetching?: boolean;
+    isEditable?: boolean;
+    hasError?: boolean;
+    hasWarning?: boolean;
+    valueOptions?: object;
+    selectedValueOptions?: object;
+    selectedValueComponent?: string | ElementType;
+    optionComponent?: ElementType;
+    onOpen?: () => void;
+    onChange: (change: EnhancedSelectInputChanged<V>) => void;
+}
+
+// IMPLEMENTATIONS
 
 function isArrowKey(keyCode: number) {
     return keyCode === keyCodes.UP_ARROW || keyCode === keyCodes.DOWN_ARROW;
@@ -104,35 +152,6 @@ function isSelectedItem<T extends EnhancedSelectInputValue<V>, V>(
     }
 
     return values[index].key === value;
-}
-
-export interface EnhancedSelectInputValue<V> {
-    key: ArrayElement<V>;
-    value: string;
-    hint?: ReactNode;
-    isDisabled?: boolean;
-    isHidden?: boolean;
-    parentKey?: V;
-    additionalProperties?: object;
-}
-
-export interface EnhancedSelectInputProps<T extends EnhancedSelectInputValue<V>, V> {
-    className?: string;
-    disabledClassName?: string;
-    name: string;
-    value: V;
-    values: T[];
-    isDisabled?: boolean;
-    isFetching?: boolean;
-    isEditable?: boolean;
-    hasError?: boolean;
-    hasWarning?: boolean;
-    valueOptions?: object;
-    selectedValueOptions?: object;
-    selectedValueComponent?: string | ElementType;
-    optionComponent?: ElementType;
-    onOpen?: () => void;
-    onChange: (change: EnhancedSelectInputChanged<V>) => void;
 }
 
 function EnhancedSelectInput<T extends EnhancedSelectInputValue<V>, V>(

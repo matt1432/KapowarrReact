@@ -1,8 +1,20 @@
+// IMPORTS
+
+// React
 import { useCallback, useState } from 'react';
-import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
+
+// Misc
 import { icons } from 'Helpers/Props';
-import ParseModal from 'Parse/ParseModal';
+
 import translate from 'Utilities/String/translate';
+
+// General Components
+import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
+
+// Specific Components
+import ParseModal from 'Parse/ParseModal';
+
+// IMPLEMENTATIONS
 
 function ParseToolbarButton() {
     const [isParseModalOpen, setIsParseModalOpen] = useState(false);

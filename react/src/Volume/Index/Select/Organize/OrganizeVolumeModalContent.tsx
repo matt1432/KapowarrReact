@@ -1,7 +1,18 @@
-import { orderBy } from 'lodash';
+// IMPORTS
+
+// Redux
 import { useCallback, useMemo } from 'react';
 import { useDispatch /*, useSelector */ } from 'react-redux';
-// import { RENAME_VOLUMES } from 'Commands/commandNames';
+// import { executeCommand } from 'Store/Actions/commandActions';
+// import createAllVolumeSelector from 'Store/Selectors/createAllVolumeSelector';
+
+// Misc
+import { orderBy } from 'lodash';
+import { icons, kinds } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Alert from 'Components/Alert';
 import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
@@ -9,17 +20,19 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import { icons, kinds } from 'Helpers/Props';
-import { type Volume } from 'Volume/Volume';
-// import { executeCommand } from 'Store/Actions/commandActions';
-// import createAllVolumeSelector from 'Store/Selectors/createAllVolumeSelector';
-import translate from 'Utilities/String/translate';
+
+// CSS
 import styles from './OrganizeVolumeModalContent.module.css';
+
+// Types
+import type { Volume } from 'Volume/Volume';
 
 interface OrganizeVolumeModalContentProps {
     volumeIds: number[];
     onModalClose: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function OrganizeVolumeModalContent(props: OrganizeVolumeModalContentProps) {
     const { volumeIds, onModalClose } = props;

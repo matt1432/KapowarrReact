@@ -1,8 +1,22 @@
+// IMPORTS
+
+// React
 import { type ForwardedRef, forwardRef, type ReactNode, useCallback } from 'react';
-import Scroller, { type OnScroll } from 'Components/Scroller/Scroller';
+
+// Redux
+
+// Misc
 import { isLocked } from 'Utilities/scrollLock';
+
+// General Components
+import Scroller, { type OnScroll } from 'Components/Scroller/Scroller';
+
+// Specific Components
+
+// CSS
 import styles from './PageContentBody.module.css';
 
+// Types
 interface PageContentBodyProps {
     className?: string;
     innerClassName?: string;
@@ -10,6 +24,8 @@ interface PageContentBodyProps {
     initialScrollTop?: number;
     onScroll?: (payload: OnScroll) => void;
 }
+
+// IMPLEMENTATIONS
 
 const PageContentBody = forwardRef(
     (props: PageContentBodyProps, ref: ForwardedRef<HTMLDivElement>) => {

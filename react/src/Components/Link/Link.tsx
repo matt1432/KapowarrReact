@@ -1,12 +1,20 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import {
     type ComponentPropsWithoutRef,
     type ElementType,
     type SyntheticEvent,
     useCallback,
 } from 'react';
+
+// Misc
+import classNames from 'classnames';
+
+// CSS
 import styles from './Link.module.css';
 
+// Types
 export type LinkProps<C extends ElementType = 'button'> = ComponentPropsWithoutRef<C> & {
     component?: C;
     to?: string;
@@ -14,6 +22,8 @@ export type LinkProps<C extends ElementType = 'button'> = ComponentPropsWithoutR
     isDisabled?: LinkProps<C>['disabled'];
     onPress?(event: SyntheticEvent): void;
 };
+
+// IMPLEMENTATIONS
 
 export default function Link<C extends ElementType = 'button'>({
     className,

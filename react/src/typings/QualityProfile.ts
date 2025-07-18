@@ -1,5 +1,5 @@
-import { type Quality } from 'Quality/Quality';
-import { type QualityProfileFormatItem } from './CustomFormat';
+import type { Quality } from 'Quality/Quality';
+import type { QualityProfileFormatItem } from './CustomFormat';
 
 export interface QualityProfileQualityItem {
     quality: Quality;

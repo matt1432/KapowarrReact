@@ -1,22 +1,33 @@
+// IMPORTS
+
+// React
 import { useCallback, useMemo } from 'react';
+
+// Redux
 import { useDispatch /*, useSelector */ } from 'react-redux';
-import { useSelect } from 'App/SelectContext';
-// import { type ClientSideCollectionAppState } from 'App/State/ClientSideCollectionAppState';
-// import type { VolumeAppState, VolumeIndexAppState } from 'App/State/VolumeAppState';
-// import { REFRESH_VOLUME } from 'Commands/commandNames';
-import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
-import { icons } from 'Helpers/Props';
 // import { executeCommand } from 'Store/Actions/commandActions';
 // import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 // import createVolumeClientSideCollectionItemsSelector from 'Store/Selectors/createVolumeClientSideCollectionItemsSelector';
+
+// Misc
+import { useSelect } from 'App/SelectContext';
+import { icons } from 'Helpers/Props';
+
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
+
+// General Components
+import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
+
+// Types
 import type { Volume } from 'Volume/Volume';
 
 interface VolumeIndexRefreshVolumeButtonProps {
     isSelectMode: boolean;
     filterKey: string;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeIndexRefreshVolumeButton(props: VolumeIndexRefreshVolumeButtonProps) {
     /*

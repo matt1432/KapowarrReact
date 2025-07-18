@@ -1,11 +1,31 @@
+// IMPORTS
+
+// React
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Icon, { type IconKind, type IconName } from 'Components/Icon';
-import SpinnerButton, { type SpinnerButtonProps } from 'Components/Link/SpinnerButton';
+
+// Misc
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons } from 'Helpers/Props';
-import { type ValidationFailure } from 'typings/pending';
-// import { type Error } from 'App/State/AppSectionState';
+
+// General Components
+import Icon, { type IconKind, type IconName } from 'Components/Icon';
+
+// Specific Components
+import SpinnerButton, { type SpinnerButtonProps } from 'Components/Link/SpinnerButton';
+
+// CSS
 import styles from './SpinnerErrorButton.module.css';
+
+// Types
+import type { ValidationFailure } from 'typings/pending';
+
+interface SpinnerErrorButtonProps extends SpinnerButtonProps {
+    isSpinning: boolean;
+    error?: Error | string;
+    children: React.ReactNode;
+}
+
+// IMPLEMENTATIONS
 
 // eslint-disable-next-line
 function getTestResult(error: any /*Error*/ | string | undefined) {
@@ -46,12 +66,6 @@ function getTestResult(error: any /*Error*/ | string | undefined) {
         hasWarning,
         hasError,
     };
-}
-
-interface SpinnerErrorButtonProps extends SpinnerButtonProps {
-    isSpinning: boolean;
-    error?: Error | string;
-    children: React.ReactNode;
 }
 
 function SpinnerErrorButton({

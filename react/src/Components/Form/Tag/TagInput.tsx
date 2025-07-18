@@ -1,4 +1,6 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import React, {
     type KeyboardEvent,
     type Ref,
@@ -14,18 +16,56 @@ import {
     type RenderSuggestion,
     type SuggestionsFetchRequestedParams,
 } from 'react-autosuggest';
+
+// Misc
 import { useDebouncedCallback } from 'use-debounce';
-import { type Kind } from 'Helpers/Props/kinds';
-import { type InputChanged } from 'typings/inputs';
+
+import classNames from 'classnames';
+
+// Specific Components
 import AutoSuggestInput from '../AutoSuggestInput';
 import TagInputInput from './TagInputInput';
 import TagInputTag, { type EditedTag, type TagInputTagProps } from './TagInputTag';
+
+// CSS
 import styles from './TagInput.module.css';
+
+// Types
+import type { Kind } from 'Helpers/Props/kinds';
+import type { InputChanged } from 'typings/inputs';
 
 export interface TagBase {
     id: boolean | number | string | null;
     name: string | number;
 }
+
+export interface ReplacementTag<T extends TagBase> {
+    index: number;
+    id: T['id'];
+}
+
+export interface TagInputProps<T extends TagBase> {
+    className?: string;
+    inputContainerClassName?: string;
+    name: string;
+    tags: T[];
+    tagList: T[];
+    allowNew?: boolean;
+    kind?: Kind;
+    placeholder?: string;
+    delimiters?: string[];
+    minQueryLength?: number;
+    canEdit?: boolean;
+    hasError?: boolean;
+    hasWarning?: boolean;
+    tagComponent?: React.ElementType;
+    onChange?: (change: InputChanged<T['id'][]>) => void;
+    onTagAdd: (newTag: T) => void;
+    onTagDelete: TagInputTagProps<T>['onDelete'];
+    onTagReplace?: (tagToReplace: ReplacementTag<T>, newTagName: T['name']) => void;
+}
+
+// IMPLEMENTATIONS
 
 function getTag<T extends { id: T['id']; name: T['name'] }>(
     value: string,
@@ -53,32 +93,6 @@ function getTag<T extends { id: T['id']; name: T['name'] }>(
 function handleSuggestionsClearRequested() {
     // Required because props aren't always rendered, but no-op
     // because we don't want to reset the paths after a path is selected.
-}
-
-export interface ReplacementTag<T extends TagBase> {
-    index: number;
-    id: T['id'];
-}
-
-export interface TagInputProps<T extends TagBase> {
-    className?: string;
-    inputContainerClassName?: string;
-    name: string;
-    tags: T[];
-    tagList: T[];
-    allowNew?: boolean;
-    kind?: Kind;
-    placeholder?: string;
-    delimiters?: string[];
-    minQueryLength?: number;
-    canEdit?: boolean;
-    hasError?: boolean;
-    hasWarning?: boolean;
-    tagComponent?: React.ElementType;
-    onChange?: (change: InputChanged<T['id'][]>) => void;
-    onTagAdd: (newTag: T) => void;
-    onTagDelete: TagInputTagProps<T>['onDelete'];
-    onTagReplace?: (tagToReplace: ReplacementTag<T>, newTagName: T['name']) => void;
 }
 
 function TagInput<T extends TagBase>({

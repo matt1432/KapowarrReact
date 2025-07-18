@@ -1,15 +1,23 @@
+// IMPORTS
+
+// Misc
 import monitorOptions from 'Utilities/Volume/monitorOptions';
 import translate from 'Utilities/String/translate';
+
+// Specific Components
 import EnhancedSelectInput, {
     type EnhancedSelectInputProps,
     type EnhancedSelectInputValue,
 } from './EnhancedSelectInput';
 
+// Types
 export interface MonitorIssuesSelectInputProps
     extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<string>, string>, 'values'> {
     includeNoChange?: boolean;
     includeMixed?: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function MonitorIssuesSelectInput(props: MonitorIssuesSelectInputProps) {
     const { includeNoChange = false, includeMixed = false, ...otherProps } = props;

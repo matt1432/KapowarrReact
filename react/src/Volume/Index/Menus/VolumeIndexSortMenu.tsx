@@ -1,9 +1,16 @@
+// IMPORTS
+
+// Misc
+import { align } from 'Helpers/Props';
+import translate from 'Utilities/String/translate';
+
+// General Components
 import MenuContent from 'Components/Menu/MenuContent';
 import SortMenu from 'Components/Menu/SortMenu';
 import SortMenuItem from 'Components/Menu/SortMenuItem';
-import { align } from 'Helpers/Props';
-import { type SortDirection } from 'Helpers/Props/sortDirections';
-import translate from 'Utilities/String/translate';
+
+// Types
+import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { IndexSort } from '..';
 
 interface VolumeIndexSortMenuProps {
@@ -12,6 +19,8 @@ interface VolumeIndexSortMenuProps {
     isDisabled: boolean;
     onSortSelect(sortKey: IndexSort): void;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeIndexSortMenu(props: VolumeIndexSortMenuProps) {
     const { sortKey, sortDirection, isDisabled, onSortSelect } = props;

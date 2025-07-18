@@ -1,5 +1,9 @@
+// IMPORTS
+
+// React
 import React, { Component, type ErrorInfo } from 'react';
 
+// Types
 interface ErrorBoundaryProps {
     children: React.ReactNode;
     errorComponent: React.ElementType;
@@ -10,6 +14,8 @@ interface ErrorBoundaryState {
     error: Error | null;
     info: ErrorInfo | null;
 }
+
+// IMPLEMENTATIONS
 
 // Class component until componentDidCatch is supported in functional components
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {

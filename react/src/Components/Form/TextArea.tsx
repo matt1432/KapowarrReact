@@ -1,7 +1,16 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import { type ChangeEvent, type SyntheticEvent, useCallback, useEffect, useRef } from 'react';
-import { type InputChanged } from 'typings/inputs';
+
+// Misc
+import classNames from 'classnames';
+
+// CSS
 import styles from './TextArea.module.css';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
 
 export interface TextAreaProps {
     className?: string;
@@ -17,6 +26,8 @@ export interface TextAreaProps {
     onBlur?: (event: SyntheticEvent) => void;
     onSelectionChange?: (start: number | null, end: number | null) => void;
 }
+
+// IMPLEMENTATIONS
 
 function TextArea({
     className = styles.input,

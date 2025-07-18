@@ -1,10 +1,30 @@
+// IMPORTS
+
+// React
 import { useCallback } from 'react';
-// import { type PathType } from 'App/State/PathsAppState';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+// General Components
 import Icon from 'Components/Icon';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRowButton from 'Components/Table/TableRowButton';
-import { icons } from 'Helpers/Props';
+
+// CSS
 import styles from './FileBrowserRow.module.css';
+
+// Types
+// import type { PathType } from 'App/State/PathsAppState';
+
+interface FileBrowserRowProps {
+    type: string;
+    name: string;
+    path: string;
+    onPress: (path: string) => void;
+}
+
+// IMPLEMENTATIONS
 
 function getIconName(type: string) {
     switch (type) {
@@ -19,13 +39,6 @@ function getIconName(type: string) {
         default:
             return icons.FOLDER;
     }
-}
-
-interface FileBrowserRowProps {
-    type: string;
-    name: string;
-    path: string;
-    onPress: (path: string) => void;
 }
 
 function FileBrowserRow(props: FileBrowserRowProps) {

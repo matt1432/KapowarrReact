@@ -1,9 +1,23 @@
+// IMPORTS
+
+// React
 import React, { useCallback } from 'react';
-import Icon, { type IconName } from 'Components/Icon';
+
+// Redux
+
+// Misc
 import { icons } from 'Helpers/Props';
+
+// General Components
+import Icon, { type IconName } from 'Components/Icon';
+
+// Specific Components
 import MenuItem, { type MenuItemProps } from './MenuItem';
+
+// CSS
 import styles from './SelectedMenuItem.module.css';
 
+// Types
 export interface SelectedMenuItemProps<T> extends Omit<MenuItemProps, 'onPress' | 'name'> {
     name?: T;
     children: React.ReactNode;
@@ -11,6 +25,8 @@ export interface SelectedMenuItemProps<T> extends Omit<MenuItemProps, 'onPress' 
     isSelected: boolean;
     onPress: (name: T) => void;
 }
+
+// IMPLEMENTATIONS
 
 function SelectedMenuItem<T>({
     children,

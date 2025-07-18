@@ -1,7 +1,16 @@
+// IMPORTS
+
+// React
 import { useCallback } from 'react';
+
+// Misc
 import { useSelect } from 'App/SelectContext';
-import { type IconName } from 'Components/Icon';
+
+// General Components
 import PageToolbarOverflowMenuItem from 'Components/Page/Toolbar/PageToolbarOverflowMenuItem';
+
+// Types
+import type { IconName } from 'Components/Icon';
 
 interface VolumeIndexSelectModeMenuItemProps {
     label: string;
@@ -9,6 +18,8 @@ interface VolumeIndexSelectModeMenuItemProps {
     isSelectMode: boolean;
     onPress: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeIndexSelectModeMenuItem(props: VolumeIndexSelectModeMenuItemProps) {
     const { label, iconName, isSelectMode, onPress } = props;

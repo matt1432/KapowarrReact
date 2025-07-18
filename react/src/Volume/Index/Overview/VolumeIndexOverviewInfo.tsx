@@ -1,17 +1,33 @@
+// IMPORTS
+
+// React
 import { useMemo } from 'react';
+
+// Redux
 // import { useSelector } from 'react-redux';
-import { type IconName } from 'Components/Icon';
-import { icons } from 'Helpers/Props';
 // import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
-import dimensions from 'Styles/Variables/dimensions';
-import { type QualityProfile } from 'typings/QualityProfile';
-import { type UiSettings } from 'typings/Settings/UiSettings';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
 import formatDateTime from 'Utilities/Date/formatDateTime';
 import getRelativeDate from 'Utilities/Date/getRelativeDate';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
+
+// General Components
+
+// Specific Components
 import VolumeIndexOverviewInfoRow from './VolumeIndexOverviewInfoRow';
+
+// CSS
+import dimensions from 'Styles/Variables/dimensions';
 import styles from './VolumeIndexOverviewInfo.module.css';
+
+// Types
+import type { IconName } from 'Components/Icon';
+import type { QualityProfile } from 'typings/QualityProfile';
+import type { UiSettings } from 'typings/Settings/UiSettings';
 
 interface RowProps {
     name: string;
@@ -46,6 +62,8 @@ interface VolumeIndexOverviewInfoProps {
     sizeOnDisk?: number;
     sortKey: string;
 }
+
+// IMPLEMENTATIONS
 
 const infoRowHeight = parseInt(dimensions.volumeIndexOverviewInfoRowHeight);
 

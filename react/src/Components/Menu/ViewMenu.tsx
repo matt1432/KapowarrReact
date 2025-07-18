@@ -1,14 +1,25 @@
+// IMPORTS
+
+// React
 import React from 'react';
-import Menu from 'Components/Menu/Menu';
-import ToolbarMenuButton, { type ToolbarMenuButtonProps } from 'Components/Menu/ToolbarMenuButton';
+
+// Misc
 import { icons } from 'Helpers/Props';
+
 import translate from 'Utilities/String/translate';
 
+// General Components
+import Menu from 'Components/Menu/Menu';
+import ToolbarMenuButton, { type ToolbarMenuButtonProps } from 'Components/Menu/ToolbarMenuButton';
+
+// Types
 interface ViewMenuProps extends Omit<ToolbarMenuButtonProps, 'iconName'> {
     children: React.ReactNode;
     isDisabled?: boolean;
     alignMenu?: 'left' | 'right';
 }
+
+// IMPLEMENTATIONS
 
 function ViewMenu({ children, isDisabled = false, ...otherProps }: ViewMenuProps) {
     return (

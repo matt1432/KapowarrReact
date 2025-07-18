@@ -1,5 +1,6 @@
-import classNames from 'classnames';
-import { throttle } from 'lodash';
+// IMPORTS
+
+// React
 import {
     type ComponentProps,
     type ForwardedRef,
@@ -9,8 +10,23 @@ import {
     useImperativeHandle,
     useRef,
 } from 'react';
-import { type ScrollDirection } from 'Helpers/Props/scrollDirections';
+
+// Redux
+
+// Misc
+import { throttle } from 'lodash';
+
+import classNames from 'classnames';
+
+// General Components
+
+// Specific Components
+
+// CSS
 import styles from './Scroller.module.css';
+
+// Types
+import type { ScrollDirection } from 'Helpers/Props/scrollDirections';
 
 export interface OnScroll {
     scrollLeft: number;
@@ -28,6 +44,8 @@ interface ScrollerProps {
     style?: ComponentProps<'div'>['style'];
     onScroll?: (payload: OnScroll) => void;
 }
+
+// IMPLEMENTATIONS
 
 const Scroller = forwardRef((props: ScrollerProps, ref: ForwardedRef<HTMLDivElement>) => {
     const {

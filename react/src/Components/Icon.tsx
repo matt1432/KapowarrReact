@@ -1,9 +1,17 @@
-import { FontAwesomeIcon, type FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
-import classNames from 'classnames';
-import { type ComponentProps } from 'react';
+// IMPORTS
+
+// Misc
 import { kinds } from 'Helpers/Props';
-import { type Kind } from 'Helpers/Props/kinds';
+import { FontAwesomeIcon, type FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
+
+import classNames from 'classnames';
+
+// CSS
 import styles from './Icon.module.css';
+
+// Types
+import type { ComponentProps } from 'react';
+import type { Kind } from 'Helpers/Props/kinds';
 
 export type IconName = FontAwesomeIconProps['icon'];
 export type IconKind = Extract<Kind, keyof typeof styles>;
@@ -17,6 +25,8 @@ export interface IconProps
     isSpinning?: FontAwesomeIconProps['spin'];
     title?: string | (() => string) | null;
 }
+
+// IMPLEMENTATIONS
 
 export default function Icon({
     containerClassName,

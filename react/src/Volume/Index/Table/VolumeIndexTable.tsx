@@ -1,17 +1,31 @@
+// IMPORTS
+
+// React
 import { type RefObject, useEffect, useMemo, useRef } from 'react';
-// import { useSelector } from 'react-redux';
 import { FixedSizeList, type ListChildComponentProps } from 'react-window';
+
+// Redux
+// import { useSelector } from 'react-redux';
 // import { createSelector } from 'reselect';
-// import { type AppState } from 'App/State/AppState';
-import { type Column } from 'Components/Table/Column';
-import VirtualTable from 'Components/Table/VirtualTable';
-import { type SortDirection } from 'Helpers/Props/sortDirections';
-import { type VolumePublicInfo } from 'Volume/Volume';
-import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
 // import selectTableOptions from './selectTableOptions';
+
+// Misc
+import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
+
+// General Components
+import VirtualTable from 'Components/Table/VirtualTable';
+
+// Specific Components
 import VolumeIndexRow from './VolumeIndexRow';
 import VolumeIndexTableHeader from './VolumeIndexTableHeader';
+
+// CSS
 import styles from './VolumeIndexTable.module.css';
+
+// Types
+import type { Column } from 'Components/Table/Column';
+import type { SortDirection } from 'Helpers/Props/sortDirections';
+import type { VolumePublicInfo } from 'Volume/Volume';
 
 interface RowItemData {
     items: VolumePublicInfo[];
@@ -30,6 +44,8 @@ interface VolumeIndexTableProps {
     isSelectMode: boolean;
     isSmallScreen: boolean;
 }
+
+// IMPLEMENTATIONS
 
 /*
 const columnsSelector = createSelector(

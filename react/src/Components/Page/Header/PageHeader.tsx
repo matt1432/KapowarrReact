@@ -1,14 +1,30 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect, useState } from 'react';
+
+// Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
+import { setIsSidebarVisible } from 'Store/Slices/App';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
+
+// General Components
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
-import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
-import { icons } from 'Helpers/Props';
-import { setIsSidebarVisible } from 'Store/Slices/App';
+
+// Specific Components
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import PageHeaderActionsMenu from './PageHeaderActionsMenu';
 // import VolumeSearchInput from './VolumeSearchInput';
+
+// CSS
 import styles from './PageHeader.module.css';
+
+// IMPLEMENTATIONS
 
 function PageHeader() {
     const dispatch = useRootDispatch();

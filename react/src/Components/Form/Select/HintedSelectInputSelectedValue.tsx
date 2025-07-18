@@ -1,9 +1,20 @@
+// IMPORTS
+
+// React
 import { type ReactNode, useMemo } from 'react';
+
+// General Components
 import Label from 'Components/Label';
-import { type ArrayElement } from 'typings/Helpers/ArrayElement';
-import { type EnhancedSelectInputValue } from './EnhancedSelectInput';
+
+// Specific Components
 import EnhancedSelectInputSelectedValue from './EnhancedSelectInputSelectedValue';
+
+// CSS
 import styles from './HintedSelectInputSelectedValue.module.css';
+
+// Types
+import type { ArrayElement } from 'typings/Helpers/ArrayElement';
+import type { EnhancedSelectInputValue } from './EnhancedSelectInput';
 
 interface HintedSelectInputSelectedValueProps<T, V> {
     selectedValue: V;
@@ -12,6 +23,8 @@ interface HintedSelectInputSelectedValueProps<T, V> {
     isMultiSelect?: boolean;
     includeHint?: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function HintedSelectInputSelectedValue<
     T extends EnhancedSelectInputValue<V>,

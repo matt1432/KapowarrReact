@@ -1,10 +1,25 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import React from 'react';
+
+// Redux
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+import classNames from 'classnames';
+
+// General Components
 import Icon, { type IconName } from 'Components/Icon';
 import Link, { type LinkProps } from 'Components/Link/Link';
-import { icons } from 'Helpers/Props';
+
+// Specific Components
+
+// CSS
 import styles from './PageToolbarButton.module.css';
 
+// Types
 export interface PageToolbarButtonProps extends LinkProps {
     label: string;
     iconName: IconName;
@@ -14,6 +29,8 @@ export interface PageToolbarButtonProps extends LinkProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     overflowComponent?: React.ComponentType<any>;
 }
+
+// IMPLEMENTATIONS
 
 function PageToolbarButton({
     label,

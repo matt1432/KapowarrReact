@@ -1,14 +1,31 @@
+// IMPORTS
+
+// React
 import { useMemo } from 'react';
+
+// Redux
+
+// Misc
+
+// General Components
 import CheckInput from 'Components/Form/CheckInput';
-import { type CheckInputChanged } from 'typings/inputs';
+
+// Specific Components
 import VirtualTableHeaderCell from './TableHeaderCell';
+
+// CSS
 import styles from './TableSelectAllHeaderCell.module.css';
+
+// Types
+import type { CheckInputChanged } from 'typings/inputs';
 
 interface TableSelectAllHeaderCellProps {
     allSelected: boolean;
     allUnselected: boolean;
     onSelectAllChange: (change: CheckInputChanged) => void;
 }
+
+// IMPLEMENTATIONS
 
 function TableSelectAllHeaderCell({
     allSelected,

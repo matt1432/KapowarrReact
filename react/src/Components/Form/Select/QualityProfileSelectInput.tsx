@@ -1,16 +1,38 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect } from 'react';
+
+// Redux
 // import { useSelector } from 'react-redux';
 // import { createSelector } from 'reselect';
-// import { type QualityProfilesAppState } from 'App/State/SettingsAppState';
 // import createSortedSectionSelector from 'Store/Selectors/createSortedSectionSelector';
-import { type EnhancedSelectInputChanged } from 'typings/inputs';
-// import { type QualityProfile } from 'typings/QualityProfile';
+
+// Misc
 // import sortByProp from 'Utilities/Array/sortByProp';
 // import translate from 'Utilities/String/translate';
+
+// Specific Components
 import EnhancedSelectInput, {
     type EnhancedSelectInputProps,
     type EnhancedSelectInputValue,
 } from './EnhancedSelectInput';
+
+// Types
+import type { EnhancedSelectInputChanged } from 'typings/inputs';
+
+export interface QualityProfileSelectInputProps
+    extends Omit<
+        EnhancedSelectInputProps<EnhancedSelectInputValue<number | string>, number | string>,
+        'values'
+    > {
+    name: string;
+    includeNoChange?: boolean;
+    includeNoChangeDisabled?: boolean;
+    includeMixed?: boolean;
+}
+
+// IMPLEMENTATIONS
 
 /*
 function createQualityProfilesSelector(
@@ -58,17 +80,6 @@ function createQualityProfilesSelector(
     );
 }
 */
-
-export interface QualityProfileSelectInputProps
-    extends Omit<
-        EnhancedSelectInputProps<EnhancedSelectInputValue<number | string>, number | string>,
-        'values'
-    > {
-    name: string;
-    includeNoChange?: boolean;
-    includeNoChangeDisabled?: boolean;
-    includeMixed?: boolean;
-}
 
 function QualityProfileSelectInput({
     name,

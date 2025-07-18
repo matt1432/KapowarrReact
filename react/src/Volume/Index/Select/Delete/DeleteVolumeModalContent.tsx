@@ -1,8 +1,22 @@
-import { orderBy } from 'lodash';
+// IMPORTS
+
+// React
 import { useCallback, useMemo, useState } from 'react';
+
+// Redux
 import { useDispatch /* , useSelector */ } from 'react-redux';
 // import { createSelector } from 'reselect';
-// import { type AppState } from 'App/State/AppState';
+// import { bulkDeleteVolume, setDeleteOption } from 'Store/Actions/volumeActions';
+// import createAllVolumeSelector from 'Store/Selectors/createAllVolumeSelector';
+
+// Misc
+import { orderBy } from 'lodash';
+import { inputTypes, kinds } from 'Helpers/Props';
+
+import formatBytes from 'Utilities/Number/formatBytes';
+import translate from 'Utilities/String/translate';
+
+// General Components
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
@@ -11,19 +25,20 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import { inputTypes, kinds } from 'Helpers/Props';
-import { type Volume } from 'Volume/Volume';
-// import { bulkDeleteVolume, setDeleteOption } from 'Store/Actions/volumeActions';
-// import createAllVolumeSelector from 'Store/Selectors/createAllVolumeSelector';
-import { type InputChanged } from 'typings/inputs';
-import formatBytes from 'Utilities/Number/formatBytes';
-import translate from 'Utilities/String/translate';
+
+// CSS
 import styles from './DeleteVolumeModalContent.module.css';
+
+// Types
+import type { Volume } from 'Volume/Volume';
+import type { InputChanged } from 'typings/inputs';
 
 interface DeleteVolumeModalContentProps {
     volumeIds: number[];
     onModalClose(): void;
 }
+
+// IMPLEMENTATIONS
 
 /*
 const selectDeleteOptions = createSelector(

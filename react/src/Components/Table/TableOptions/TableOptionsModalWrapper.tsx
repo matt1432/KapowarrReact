@@ -1,13 +1,22 @@
+// IMPORTS
+
+// React
 import React, { type ReactElement, useCallback, useState } from 'react';
-import { type LinkProps } from 'Components/Link/Link';
-import { type Column } from '../Column';
+
+// Specific Components
 import TableOptionsModal, { type TableOptionsModalProps } from './TableOptionsModal';
+
+// Types
+import type { LinkProps } from 'Components/Link/Link';
+import type { Column } from '../Column';
 
 interface TableOptionsModalWrapperProps
     extends Omit<TableOptionsModalProps, 'isOpen' | 'onModalClose'> {
     columns: Column[];
     children: ReactElement<LinkProps>;
 }
+
+// IMPLEMENTATIONS
 
 function TableOptionsModalWrapper({
     columns,

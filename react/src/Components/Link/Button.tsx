@@ -1,10 +1,20 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// Misc
 import { kinds, sizes } from 'Helpers/Props';
-import { type Align } from 'Helpers/Props/align';
-import { type Kind } from 'Helpers/Props/kinds';
-import { type Size } from 'Helpers/Props/sizes';
+
+import classNames from 'classnames';
+
+// Specific Components
 import Link, { type LinkProps } from './Link';
+
+// CSS
 import styles from './Button.module.css';
+
+// Types
+import type { Align } from 'Helpers/Props/align';
+import type { Kind } from 'Helpers/Props/kinds';
+import type { Size } from 'Helpers/Props/sizes';
 
 export interface ButtonProps extends Omit<LinkProps, 'children' | 'size'> {
     buttonGroupPosition?: Extract<Align, keyof typeof styles>;
@@ -12,6 +22,8 @@ export interface ButtonProps extends Omit<LinkProps, 'children' | 'size'> {
     size?: Extract<Size, keyof typeof styles>;
     children: Required<LinkProps['children']>;
 }
+
+// IMPLEMENTATIONS
 
 export default function Button({
     className = styles.button,

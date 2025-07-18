@@ -1,16 +1,34 @@
+// IMPORTS
+
+// React
 // import { useCallback } from 'react';
-// import { useSelector } from 'react-redux';
+
+// Redux
+// import { useSelector } from 'react-redux'
+// import selectTableOptions from './selectTableOptions';
+
+// Misc
+import { inputTypes } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
-import { inputTypes } from 'Helpers/Props';
-// import { type InputChanged } from 'typings/inputs';
-import translate from 'Utilities/String/translate';
-// import selectTableOptions from './selectTableOptions';
+
+// Specific Components
+
+// CSS
+
+// Types
+// import type { InputChanged } from 'typings/inputs';
 
 interface VolumeIndexTableOptionsProps {
     onTableOptionChange(...args: unknown[]): unknown;
 }
+
+// IMPLEMENTATIONS
 
 // @ts-expect-error TODO:
 // eslint-disable-next-line

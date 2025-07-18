@@ -1,10 +1,21 @@
-import ProgressBar from 'Components/ProgressBar';
-import { sizes } from 'Helpers/Props';
-import getProgressBarKind from 'Utilities/Volume/getProgressBarKind';
-import translate from 'Utilities/String/translate';
-import styles from './VolumeIndexProgressBar.module.css';
+// IMPORTS
+
+// Redux
 import { useFetchQueueDetails } from 'Store/createApiEndpoints';
 
+// Misc
+import { sizes } from 'Helpers/Props';
+
+import getProgressBarKind from 'Utilities/Volume/getProgressBarKind';
+import translate from 'Utilities/String/translate';
+
+// General Components
+import ProgressBar from 'Components/ProgressBar';
+
+// CSS
+import styles from './VolumeIndexProgressBar.module.css';
+
+// Types
 interface VolumeIndexProgressBarProps {
     volumeId: number;
     monitored: boolean;
@@ -14,6 +25,8 @@ interface VolumeIndexProgressBarProps {
     detailedProgressBar: boolean;
     isStandalone: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeIndexProgressBar(props: VolumeIndexProgressBarProps) {
     const {

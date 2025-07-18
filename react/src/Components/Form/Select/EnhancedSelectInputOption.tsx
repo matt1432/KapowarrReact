@@ -1,15 +1,24 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import React, { type SyntheticEvent, useCallback } from 'react';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+import classNames from 'classnames';
+
+// General Components
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
-import { icons } from 'Helpers/Props';
+
+// Specific Components
 import CheckInput from '../CheckInput';
+
+// CSS
 import styles from './EnhancedSelectInputOption.module.css';
 
-function handleCheckPress() {
-    // CheckInput requires a handler. Swallow the change event because onPress will already handle it via event propagation.
-}
-
+// Types
 export interface EnhancedSelectInputOptionProps {
     className?: string;
     id: string | number;
@@ -21,6 +30,12 @@ export interface EnhancedSelectInputOptionProps {
     isMobile: boolean;
     children: React.ReactNode;
     onSelect: (...args: unknown[]) => unknown;
+}
+
+// IMPLEMENTATIONS
+
+function handleCheckPress() {
+    // CheckInput requires a handler. Swallow the change event because onPress will already handle it via event propagation.
 }
 
 function EnhancedSelectInputOption({

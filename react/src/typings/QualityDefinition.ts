@@ -1,4 +1,4 @@
-import { type Quality } from 'Quality/Quality';
+import type { Quality } from 'Quality/Quality';
 
 export interface QualityDefinition {
     id: number;

@@ -1,12 +1,18 @@
+// IMPORTS
+
+// React
 // import { useCallback, useMemo } from 'react';
+
+// Redux
 // import { useDispatch, useSelector } from 'react-redux';
 // import { createSelector } from 'reselect';
-// TODO:
-// import { addTag } from 'Store/Actions/tagActions';
-// import createTagsSelector from 'Store/Selectors/createTagsSelector';
-import { type InputChanged } from 'typings/inputs';
+
+// Misc
 // import sortByProp from 'Utilities/Array/sortByProp';
 // import TagInput, { type TagBase } from './TagInput';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
 
 /*
 interface VolumeTag extends TagBase {
@@ -20,6 +26,8 @@ export interface VolumeTagInputProps<V> {
     value: V;
     onChange: (change: InputChanged<V>) => void;
 }
+
+// IMPLEMENTATIONS
 
 /*
 const VALID_TAG_REGEX = new RegExp('[^-_a-z0-9]', 'i');

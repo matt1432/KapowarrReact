@@ -1,4 +1,4 @@
-import { type ModelBase } from 'App/ModelBase';
+import type { ModelBase } from 'App/ModelBase';
 
 export interface Task extends ModelBase {
     name: string;

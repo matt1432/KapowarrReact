@@ -1,4 +1,4 @@
-import { type ModelBase } from 'App/ModelBase';
+import type { ModelBase } from 'App/ModelBase';
 
 export type BackupType = 'manual' | 'scheduled' | 'update';
 

@@ -1,5 +1,5 @@
-import { type ModelBase } from 'App/ModelBase';
-import { type CustomFormatSpecification } from './CustomFormatSpecification';
+import type { ModelBase } from 'App/ModelBase';
+import type { CustomFormatSpecification } from './CustomFormatSpecification';
 
 export interface QualityProfileFormatItem {
     format: number;

@@ -1,4 +1,4 @@
-import { type SelectedState } from 'Helpers/Hooks/useSelectState';
+import type { SelectedState } from 'Helpers/Hooks/useSelectState';
 
 function selectAll(selectedState: SelectedState, selected: boolean) {
     const newSelectedState = Object.keys(selectedState).reduce<Record<number | string, boolean>>(

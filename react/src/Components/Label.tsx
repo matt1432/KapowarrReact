@@ -1,9 +1,17 @@
-import classNames from 'classnames';
-import { type ComponentProps, type ReactNode } from 'react';
+// IMPORTS
+
+// Misc
 import { kinds, sizes } from 'Helpers/Props';
-import { type Kind } from 'Helpers/Props/kinds';
-import { type Size } from 'Helpers/Props/sizes';
+
+import classNames from 'classnames';
+
+// CSS
 import styles from './Label.module.css';
+
+// Types
+import type { ComponentProps, ReactNode } from 'react';
+import type { Kind } from 'Helpers/Props/kinds';
+import type { Size } from 'Helpers/Props/sizes';
 
 export interface LabelProps extends ComponentProps<'span'> {
     kind?: Extract<Kind, keyof typeof styles>;
@@ -11,6 +19,8 @@ export interface LabelProps extends ComponentProps<'span'> {
     outline?: boolean;
     children: ReactNode;
 }
+
+// IMPLEMENTATIONS
 
 export default function Label({
     className = styles.label,

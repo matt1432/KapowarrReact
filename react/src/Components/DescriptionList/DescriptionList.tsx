@@ -1,5 +1,12 @@
+// IMPORTS
+
+// React
 import React from 'react';
+
+// CSS
 import styles from './DescriptionList.module.css';
+
+// IMPLEMENTATIONS
 
 interface DescriptionListProps {
     className?: string;

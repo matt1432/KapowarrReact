@@ -1,14 +1,24 @@
-import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import Modal from 'Components/Modal/Modal';
-// import { clearPendingChanges } from 'Store/Actions/baseActions';
-import EditVolumeModalContent, {
-    type EditVolumeModalContentProps,
-} from './EditVolumeModalContent';
+// IMPORTS
 
+// React
+import { useCallback } from 'react';
+
+// Redux
+import { useDispatch } from 'react-redux';
+// import { clearPendingChanges } from 'Store/Actions/baseActions';
+
+// General Components
+import Modal from 'Components/Modal/Modal';
+
+// Specific Components
+import EditVolumeModalContent, { type EditVolumeModalContentProps } from './EditVolumeModalContent';
+
+// Types
 interface EditVolumeModalProps extends EditVolumeModalContentProps {
     isOpen: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function EditVolumeModal({ isOpen, onModalClose, ...otherProps }: EditVolumeModalProps) {
     const dispatch = useDispatch();

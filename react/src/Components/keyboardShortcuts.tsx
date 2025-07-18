@@ -1,7 +1,13 @@
-import Mousetrap, { type MousetrapInstance } from 'mousetrap';
+// IMPORTS
+
+// React
 import { Component, type ComponentType } from 'react';
+
+// Misc
+import Mousetrap, { type MousetrapInstance } from 'mousetrap';
 import translate from 'Utilities/String/translate';
 
+// Types
 export interface Shortcut {
     key: string;
     name: string;
@@ -19,6 +25,8 @@ interface KeyboardShortcutsProps {
     ) => void;
     unbindShortcut: (key: string) => void;
 }
+
+// IMPLEMENTATIONS
 
 export const shortcuts: Record<string, Shortcut> = {
     OPEN_KEYBOARD_SHORTCUTS_MODAL: {

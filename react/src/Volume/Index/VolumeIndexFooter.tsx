@@ -1,11 +1,29 @@
+// IMPORTS
+
+// React
+
+// Redux
+import { useGetVolumeQuery } from 'Store/createApiEndpoints';
+
+// Misc
 import classNames from 'classnames';
-import { ColorImpairedConsumer } from 'App/ColorImpairedContext';
-import DescriptionList from 'Components/DescriptionList/DescriptionList';
-import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
+
+// General Components
+import { ColorImpairedConsumer } from 'App/ColorImpairedContext';
+
+import DescriptionList from 'Components/DescriptionList/DescriptionList';
+import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem';
+
+// Specific Components
+
+// CSS
 import styles from './VolumeIndexFooter.module.css';
-import { useGetVolumeQuery } from 'Store/createApiEndpoints';
+
+// Types
+
+// IMPLEMENTATIONS
 
 export default function VolumeIndexFooter() {
     const { data: volumes } = useGetVolumeQuery();

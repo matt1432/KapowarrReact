@@ -1,34 +1,50 @@
+// IMPORTS
+
+// React
 // import { useCallback, useEffect, useMemo, useState } from 'react';
+
+// Redux
 // import { useSelector } from 'react-redux';
-import { type AddVolume } from 'AddVolume/AddVolume';
+// import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
+// import selectSettings from 'Store/Selectors/selectSettings';
+
+// Misc
 /*import {
     type AddVolumeOptions,
     setAddVolumeOption,
     useAddVolumeOptions,
 } from 'AddVolume/addVolumeOptionsStore';*/
-import VolumeMonitoringOptionsPopoverContent from 'AddVolume/VolumeMonitoringOptionsPopoverContent';
-import VolumeTypePopoverContent from 'AddVolume/VolumeTypePopoverContent';
+import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+// import useIsWindows from 'System/useIsWindows';
+
+// General Components
 import CheckInput from 'Components/Form/CheckInput';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
 import Icon from 'Components/Icon';
-import SpinnerButton from 'Components/Link/SpinnerButton';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import Popover from 'Components/Tooltip/Popover';
-import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
-// import { type VolumeType } from 'Volume/Volume';
+import SpinnerButton from 'Components/Link/SpinnerButton';
+import VolumeMonitoringOptionsPopoverContent from 'AddVolume/VolumeMonitoringOptionsPopoverContent';
 import VolumePoster from 'Volume/VolumePoster';
-// import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-// import selectSettings from 'Store/Selectors/selectSettings';
-// import useIsWindows from 'System/useIsWindows';
-// import { type InputChanged } from 'typings/inputs';
-import translate from 'Utilities/String/translate';
+import VolumeTypePopoverContent from 'AddVolume/VolumeTypePopoverContent';
+
+// Specific Components
+
+// CSS
 import styles from './AddNewVolumeModalContent.module.css';
+
+// Types
+import type { AddVolume } from 'AddVolume/AddVolume';
+// import type { VolumeType } from 'Volume/Volume';
+// import type { InputChanged } from 'typings/inputs';
 
 export interface AddNewVolumeModalContentProps {
     volume: AddVolume;
@@ -36,6 +52,8 @@ export interface AddNewVolumeModalContentProps {
     initialVolumeType: VolumeType;
     onModalClose: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function AddNewVolumeModalContent({
     volume,

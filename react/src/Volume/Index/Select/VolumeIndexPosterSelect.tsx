@@ -1,13 +1,25 @@
+// IMPORTS
+
+// React
 import { type SyntheticEvent, useCallback } from 'react';
+
+// Misc
 import { useSelect } from 'App/SelectContext';
+import { icons } from 'Helpers/Props';
+
+// General Components
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
-import { icons } from 'Helpers/Props';
+
+// CSS
 import styles from './VolumeIndexPosterSelect.module.css';
 
+// Types
 interface VolumeIndexPosterSelectProps {
     volumeId: number;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeIndexPosterSelect(props: VolumeIndexPosterSelectProps) {
     const { volumeId } = props;

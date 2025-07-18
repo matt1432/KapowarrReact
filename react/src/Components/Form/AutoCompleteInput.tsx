@@ -1,8 +1,17 @@
-import jdu from 'jdu';
+// IMPORTS
+
+// React
 import { type SyntheticEvent, useCallback, useState } from 'react';
-import { type ChangeEvent, type SuggestionsFetchRequestedParams } from 'react-autosuggest';
-import { type InputChanged } from 'typings/inputs';
+
+// Misc
+import jdu from 'jdu';
+
+// Specific Components
 import AutoSuggestInput from './AutoSuggestInput';
+
+// Types
+import type { ChangeEvent, SuggestionsFetchRequestedParams } from 'react-autosuggest';
+import type { InputChanged } from 'typings/inputs';
 
 export interface AutoCompleteInputProps {
     name: string;
@@ -11,6 +20,8 @@ export interface AutoCompleteInputProps {
     values: string[];
     onChange: (change: InputChanged<string>) => unknown;
 }
+
+// IMPLEMENTATIONS
 
 function AutoCompleteInput({
     name,

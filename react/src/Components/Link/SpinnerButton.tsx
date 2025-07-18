@@ -1,14 +1,27 @@
-import classNames from 'classnames';
-import Icon, { type IconName } from 'Components/Icon';
+// IMPORTS
+
+// Misc
 import { icons } from 'Helpers/Props';
+
+import classNames from 'classnames';
+
+// General Components
+import Icon, { type IconName } from 'Components/Icon';
+
+// Specific Components
 import Button, { type ButtonProps } from './Button';
+
+// CSS
 import styles from './SpinnerButton.module.css';
 
+// Types
 export interface SpinnerButtonProps extends ButtonProps {
     isSpinning: boolean;
     isDisabled?: boolean;
     spinnerIcon?: IconName;
 }
+
+// IMPLEMENTATIONS
 
 function SpinnerButton({
     className = styles.button,

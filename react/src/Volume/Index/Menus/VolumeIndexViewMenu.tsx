@@ -1,8 +1,16 @@
+// IMPORTS
+
+// Misc
+import { align } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import MenuContent from 'Components/Menu/MenuContent';
 import ViewMenu from 'Components/Menu/ViewMenu';
 import ViewMenuItem from 'Components/Menu/ViewMenuItem';
-import { align } from 'Helpers/Props';
-import translate from 'Utilities/String/translate';
+
+// Types
 import type { IndexView } from '..';
 
 interface VolumeIndexViewMenuProps {
@@ -10,6 +18,8 @@ interface VolumeIndexViewMenuProps {
     isDisabled: boolean;
     onViewSelect(value: IndexView): void;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeIndexViewMenu(props: VolumeIndexViewMenuProps) {
     const { view, isDisabled, onViewSelect } = props;

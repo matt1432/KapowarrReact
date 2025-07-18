@@ -1,4 +1,4 @@
-import { type Provider } from './Provider';
+import type { Provider } from './Provider';
 
 export interface Notification extends Provider {
     enable: boolean;

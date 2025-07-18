@@ -1,16 +1,37 @@
+// IMPORTS
+
+// React
 import { useEffect } from 'react';
+
+// Redux
 import { useDispatch /*, useSelector */ } from 'react-redux';
 // import { createSelector } from 'reselect';
-// import { type AppState } from 'App/State/AppState';
 // import { fetchDownloadClients } from 'Store/Actions/settingsActions';
-import { type Protocol } from 'typings/DownloadClient';
-import { type EnhancedSelectInputChanged } from 'typings/inputs';
+
+// Misc
 // import sortByProp from 'Utilities/Array/sortByProp';
 // import translate from 'Utilities/String/translate';
+
+// Specific Components
 import EnhancedSelectInput, {
     type EnhancedSelectInputProps,
     type EnhancedSelectInputValue,
 } from './EnhancedSelectInput';
+
+// Types
+import type { Protocol } from 'typings/DownloadClient';
+import type { EnhancedSelectInputChanged } from 'typings/inputs';
+
+export interface DownloadClientSelectInputProps
+    extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<number>, number>, 'values'> {
+    name: string;
+    value: number;
+    includeAny?: boolean;
+    protocol?: Protocol;
+    onChange: (change: EnhancedSelectInputChanged<number>) => void;
+}
+
+// IMPLEMENTATIONS
 
 /*
 function createDownloadClientsSelector(includeAny: boolean, protocol: Protocol) {
@@ -47,15 +68,6 @@ function createDownloadClientsSelector(includeAny: boolean, protocol: Protocol) 
     );
 }
 */
-
-export interface DownloadClientSelectInputProps
-    extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<number>, number>, 'values'> {
-    name: string;
-    value: number;
-    includeAny?: boolean;
-    protocol?: Protocol;
-    onChange: (change: EnhancedSelectInputChanged<number>) => void;
-}
 
 function DownloadClientSelectInput({
     // includeAny = false,

@@ -1,12 +1,31 @@
+// IMPORTS
+
+// React
 import { useEffect } from 'react';
+
+// Redux
 import { useDispatch /*, useSelector */ } from 'react-redux';
 // import { createSelector } from 'reselect';
-// import { type AppState } from 'App/State/AppState';
 // import { fetchIndexers } from 'Store/Actions/settingsActions';
-import { type EnhancedSelectInputChanged } from 'typings/inputs';
+
+// Misc
 // import sortByProp from 'Utilities/Array/sortByProp';
 // import translate from 'Utilities/String/translate';
+
+// Specific Components
 import EnhancedSelectInput from './EnhancedSelectInput';
+
+export interface IndexerSelectInputProps {
+    name: string;
+    value: number;
+    includeAny?: boolean;
+    onChange: (change: EnhancedSelectInputChanged<number>) => void;
+}
+
+// Types
+import type { EnhancedSelectInputChanged } from 'typings/inputs';
+
+// IMPLEMENTATIONS
 
 /*
 function createIndexersSelector(includeAny: boolean) {
@@ -39,13 +58,6 @@ function createIndexersSelector(includeAny: boolean) {
     );
 }
 */
-
-export interface IndexerSelectInputProps {
-    name: string;
-    value: number;
-    includeAny?: boolean;
-    onChange: (change: EnhancedSelectInputChanged<number>) => void;
-}
 
 function IndexerSelectInput({
     name,

@@ -1,14 +1,26 @@
+// IMPORTS
+
+// Misc
 import classNames from 'classnames';
-import Icon, { type IconProps } from 'Components/Icon';
 import translate from 'Utilities/String/translate';
+
+// General Components
+import Icon, { type IconProps } from 'Components/Icon';
+
+// Specific Components
 import Link, { type LinkProps } from './Link';
+
+// CSS
 import styles from './IconButton.module.css';
 
+// Types
 export interface IconButtonProps
     extends Omit<LinkProps, 'name' | 'kind'>,
         Pick<IconProps, 'name' | 'kind' | 'size' | 'isSpinning'> {
     iconClassName?: IconProps['className'];
 }
+
+// IMPLEMENTATIONS
 
 export default function IconButton({
     className = styles.button,

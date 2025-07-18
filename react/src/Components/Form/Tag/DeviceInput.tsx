@@ -1,15 +1,28 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect } from 'react';
+
+// Redux
 import { useDispatch /*, useSelector*/ } from 'react-redux';
 // import { createSelector } from 'reselect';
-// import { type AppState } from 'App/State/AppState';
+// import { clearOptions, defaultState, fetchOptions } from 'Store/Actions/providerOptionActions';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+// General Components
 import FormInputButton from 'Components/Form/FormInputButton';
 import Icon from 'Components/Icon';
-import { icons } from 'Helpers/Props';
-// TODO:
-// import { clearOptions, defaultState, fetchOptions } from 'Store/Actions/providerOptionActions';
-import { type InputChanged } from 'typings/inputs';
+
+// Specific Components
 import TagInput, { type TagInputProps } from './TagInput';
+
+// CSS
 import styles from './DeviceInput.module.css';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
 
 interface DeviceTag {
     id: string;
@@ -26,6 +39,8 @@ export interface DeviceInputProps extends TagInputProps<DeviceTag> {
     providerData: object;
     onChange: (change: InputChanged<string[]>) => unknown;
 }
+
+// IMPLEMENTATIONS
 
 /*
 function createDeviceTagsSelector(value: string[]) {

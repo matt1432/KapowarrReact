@@ -1,3 +1,7 @@
+// IMPORTS
+
+// React
+// import { useCallback, useEffect, useRef, useState } from 'react';
 /*import {
     autoUpdate,
     flip,
@@ -7,28 +11,42 @@
     useFloating,
     useInteractions,
 } from '@floating-ui/react';*/
-// import { useCallback, useEffect, useRef, useState } from 'react';
+
+// Redux
 // import { useDispatch, useSelector } from 'react-redux';
-// import { type AppState } from 'App/State/AppState';
+// import { queueLookupVolume, setImportVolumeValue } from 'Store/Actions/importVolumeActions';
+
+// import createImportVolumeItemSelector from 'Store/Selectors/createImportVolumeItemSelector';
+
+// Misc
+// import { icons, kinds } from 'Helpers/Props';
+
+// import getErrorMessage from 'Utilities/Object/getErrorMessage';
+// import translate from 'Utilities/String/translate';
+
+// General Components
 // import FormInputButton from 'Components/Form/FormInputButton';
 // import TextInput from 'Components/Form/TextInput';
 // import Icon from 'Components/Icon';
 // import Link from 'Components/Link/Link';
 // import LoadingIndicator from 'Components/Loading/LoadingIndicator';
-// import { icons, kinds } from 'Helpers/Props';
-// import { queueLookupVolume, setImportVolumeValue } from 'Store/Actions/importVolumeActions';
-// import createImportVolumeItemSelector from 'Store/Selectors/createImportVolumeItemSelector';
-import { type InputChanged } from 'typings/inputs';
-// import getErrorMessage from 'Utilities/Object/getErrorMessage';
-// import translate from 'Utilities/String/translate';
+
+// Specific Components
 // import ImportVolumeSearchResult from './ImportVolumeSearchResult';
 // import ImportVolumeTitle from './ImportVolumeTitle';
+
+// CSS
 // import styles from './ImportVolumeSelectVolume.module.css';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
 
 interface ImportVolumeSelectVolumeProps {
     id: string;
     onInputChange: (input: InputChanged) => void;
 }
+
+// IMPLEMENTATIONS
 
 function ImportVolumeSelectVolume({ id, onInputChange }: ImportVolumeSelectVolumeProps) {
     console.log(id, onInputChange);

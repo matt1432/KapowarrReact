@@ -1,22 +1,33 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+// Redux
 import { useRootDispatch } from 'Store/createAppStore';
-// import QueueStatus from 'Activity/Queue/Status/QueueStatus';
-import { type IconName } from 'Components/Icon';
+import { setIsSidebarVisible } from 'Store/Slices/App';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+import classNames from 'classnames';
+import usePrevious from 'Helpers/Hooks/usePrevious';
+import translate from 'Utilities/String/translate';
+
+// General Components
 import OverlayScroller from 'Components/Scroller/OverlayScroller';
 import Scroller from 'Components/Scroller/Scroller';
-import usePrevious from 'Helpers/Hooks/usePrevious';
-import { icons } from 'Helpers/Props';
-import { setIsSidebarVisible } from 'Store/Slices/App';
-import dimensions from 'Styles/Variables/dimensions';
-// import HealthStatus from 'System/Status/Health/HealthStatus';
-import translate from 'Utilities/String/translate';
+
+// Specific Components
 import Messages from './Messages/Messages';
 import PageSidebarItem from './PageSidebarItem';
+
+// CSS
+import dimensions from 'Styles/Variables/dimensions';
 import styles from './PageSidebar.module.css';
 
-const HEADER_HEIGHT = parseInt(dimensions.headerHeight);
-const SIDEBAR_WIDTH = parseInt(dimensions.sidebarWidth);
+// Types
+import type { IconName } from 'Components/Icon';
 
 interface SidebarItem {
     iconName?: IconName;
@@ -34,6 +45,16 @@ interface SidebarItem {
         statusComponent?: React.ElementType;
     }[];
 }
+
+interface PageSidebarProps {
+    isSmallScreen: boolean;
+    isSidebarVisible: boolean;
+}
+
+// IMPLEMENTATIONS
+
+const HEADER_HEIGHT = parseInt(dimensions.headerHeight);
+const SIDEBAR_WIDTH = parseInt(dimensions.sidebarWidth);
 
 const LINKS: SidebarItem[] = [
     {
@@ -200,11 +221,6 @@ function hasActiveChildLink(link: SidebarItem, pathname: string) {
     return children.some((child) => {
         return child.to === pathname;
     });
-}
-
-interface PageSidebarProps {
-    isSmallScreen: boolean;
-    isSidebarVisible: boolean;
 }
 
 function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSidebarProps) {

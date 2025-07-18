@@ -1,6 +1,13 @@
+// IMPORTS
+
+// React
 import { useCallback, useMemo } from 'react';
-import { type InputChanged } from 'typings/inputs';
+
+// General Components
 import TagInput, { type TagBase, type TagInputProps } from './TagInput';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
 
 interface SelectTag extends TagBase {
     id: number;
@@ -19,6 +26,8 @@ export interface TagSelectInputProps extends TagInputProps<SelectTag> {
     values: TagSelectValue[];
     onChange: (change: InputChanged<number | number[]>) => unknown;
 }
+
+// IMPLEMENTATIONS
 
 function TagSelectInput({ name, value, values, onChange, ...otherProps }: TagSelectInputProps) {
     const { tags, tagList, allTags } = useMemo(() => {

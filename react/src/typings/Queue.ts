@@ -1,9 +1,9 @@
-import { type ModelBase } from 'App/ModelBase';
-import { type DownloadProtocol } from 'DownloadClient/DownloadProtocol';
-import { type Issue } from 'Issue/Issue';
-import { type Language } from 'Language/Language';
-import { type QualityModel } from 'Quality/Quality';
-import { type CustomFormat } from 'typings/CustomFormat';
+import type { ModelBase } from 'App/ModelBase';
+import type { DownloadProtocol } from 'DownloadClient/DownloadProtocol';
+import type { Issue } from 'Issue/Issue';
+import type { Language } from 'Language/Language';
+import type { QualityModel } from 'Quality/Quality';
+import type { CustomFormat } from 'typings/CustomFormat';
 
 export type QueueTrackedDownloadStatus = 'ok' | 'warning' | 'error';
 

@@ -1,16 +1,34 @@
-import copy from 'copy-to-clipboard';
+// IMPORTS
+
+// React
 import { useCallback, useEffect, useState } from 'react';
+
+// Redux
+
+// Misc
+import { icons, kinds } from 'Helpers/Props';
+
+import copy from 'copy-to-clipboard';
+
+// General Components
 import FormInputButton from 'Components/Form/FormInputButton';
 import Icon from 'Components/Icon';
-import { icons, kinds } from 'Helpers/Props';
-import { type ButtonProps } from './Button';
+
+// Specific Components
+
+// CSS
 import styles from './ClipboardButton.module.css';
+
+// Types
+import type { ButtonProps } from './Button';
 
 export interface ClipboardButtonProps extends Omit<ButtonProps, 'children'> {
     value: string;
 }
 
 export type ClipboardState = 'success' | 'error' | null;
+
+// IMPLEMENTATIONS
 
 export default function ClipboardButton({
     value,

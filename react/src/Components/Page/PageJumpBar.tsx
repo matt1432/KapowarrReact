@@ -1,11 +1,19 @@
+// IMPORTS
+
+// React
 import { useMemo } from 'react';
+
+// Misc
 import useMeasure from 'Helpers/Hooks/useMeasure';
-import dimensions from 'Styles/Variables/dimensions';
+
+// Specific Components
 import PageJumpBarItem, { type PageJumpBarItemProps } from './PageJumpBarItem';
+
+// CSS
+import dimensions from 'Styles/Variables/dimensions';
 import styles from './PageJumpBar.module.css';
 
-const ITEM_HEIGHT = parseInt(dimensions.jumpBarItemHeight);
-
+// Types
 export interface PageJumpBarItems {
     characters: Record<string, number>;
     order: string[];
@@ -16,6 +24,10 @@ interface PageJumpBarProps {
     minimumItems?: number;
     onItemPress: PageJumpBarItemProps['onItemPress'];
 }
+
+// IMPLEMENTATIONS
+
+const ITEM_HEIGHT = parseInt(dimensions.jumpBarItemHeight);
 
 function PageJumpBar({ items, minimumItems = 5, onItemPress }: PageJumpBarProps) {
     const [jumpBarRef, { height }] = useMeasure();

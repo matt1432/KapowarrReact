@@ -1,4 +1,4 @@
-import { type Field } from './Field';
+import type { Field } from './Field';
 
 export interface ValidationFailure {
     isWarning: boolean;

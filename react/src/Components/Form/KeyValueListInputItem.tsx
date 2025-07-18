@@ -1,9 +1,21 @@
+// IMPORTS
+
+// React
 import { type JSX, useCallback } from 'react';
-import IconButton from 'Components/Link/IconButton';
+
+// Misc
 import { icons } from 'Helpers/Props';
+
+// General Components
+import IconButton from 'Components/Link/IconButton';
+
+// Specific Components
 import TextInput from './TextInput';
+
+// CSS
 import styles from './KeyValueListInputItem.module.css';
 
+// Types
 interface KeyValueListInputItemProps {
     index: number;
     keyValue: string;
@@ -16,6 +28,8 @@ interface KeyValueListInputItemProps {
     onFocus: () => void;
     onBlur: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function KeyValueListInputItem({
     index,

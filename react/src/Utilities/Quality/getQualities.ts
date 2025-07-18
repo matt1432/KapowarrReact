@@ -1,5 +1,5 @@
-import { type Quality } from 'Quality/Quality';
-import { type QualityProfileItems } from 'typings/QualityProfile';
+import type { Quality } from 'Quality/Quality';
+import type { QualityProfileItems } from 'typings/QualityProfile';
 
 export default function getQualities(qualities?: QualityProfileItems) {
     if (!qualities) {

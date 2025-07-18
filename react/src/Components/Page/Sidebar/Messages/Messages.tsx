@@ -1,9 +1,18 @@
+// IMPORTS
+
+// React
 // import { useMemo } from 'react';
+
+// Redux
 // import { useSelector } from 'react-redux';
-// import AppState from 'App/State/AppState';
-// import { type Message as MessageModel } from 'App/State/MessagesAppState';
+
+// Specific Components
 // import Message from './Message';
+
+// CSS
 import styles from './Messages.module.css';
+
+// IMPLEMENTATIONS
 
 function Messages() {
     /* const items = useSelector((state: AppState) => state.app.messages.items);

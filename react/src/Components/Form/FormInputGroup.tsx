@@ -1,12 +1,19 @@
+// IMPORTS
+
+// React
 import React, { type ElementType, type ReactNode } from 'react';
-import Link from 'Components/Link/Link';
+
+// Misc
 import { inputTypes } from 'Helpers/Props';
-import { type InputType } from 'Helpers/Props/inputTypes';
-import { type Failure, type ValidationError, type ValidationWarning } from 'typings/pending';
+
 import translate from 'Utilities/String/translate';
+
+// General Components
+import Link from 'Components/Link/Link';
+
+// Specific Components
 import AutoCompleteInput, { type AutoCompleteInputProps } from './AutoCompleteInput';
 import CheckInput, { type CheckInputProps } from './CheckInput';
-import { type FormInputButtonProps } from './FormInputButton';
 import FormInputHelpText from './FormInputHelpText';
 import KeyValueListInput, { type KeyValueListInputProps } from './KeyValueListInput';
 import NumberInput, { type NumberInputProps } from './NumberInput';
@@ -47,38 +54,14 @@ import TagSelectInput, { type TagSelectInputProps } from './Tag/TagSelectInput';
 import TextTagInput, { type TextTagInputProps } from './Tag/TextTagInput';
 import TextArea, { type TextAreaProps } from './TextArea';
 import TextInput, { type TextInputProps } from './TextInput';
+
+// CSS
 import styles from './FormInputGroup.module.css';
 
-const componentMap: Record<InputType, ElementType> = {
-    autoComplete: AutoCompleteInput,
-    check: CheckInput,
-    date: TextInput,
-    device: DeviceInput,
-    downloadClientSelect: DownloadClientSelectInput,
-    dynamicSelect: ProviderDataSelectInput,
-    file: TextInput,
-    float: NumberInput,
-    indexerFlagsSelect: IndexerFlagsSelectInput,
-    indexerSelect: IndexerSelectInput,
-    keyValueList: KeyValueListInput,
-    languageSelect: LanguageSelectInput,
-    monitorIssuesSelect: MonitorIssuesSelectInput,
-    monitorNewItemsSelect: MonitorNewItemsSelectInput,
-    number: NumberInput,
-    oauth: OAuthInput,
-    password: PasswordInput,
-    path: PathInput,
-    qualityProfileSelect: QualityProfileSelectInput,
-    rootFolderSelect: RootFolderSelectInput,
-    select: EnhancedSelectInput,
-    volumeTypeSelect: VolumeTypeSelectInput,
-    tag: VolumeTagInput,
-    tagSelect: TagSelectInput,
-    text: TextInput,
-    textArea: TextArea,
-    textTag: TextTagInput,
-    umask: UMaskInput,
-} as const;
+// Types
+import type { InputType } from 'Helpers/Props/inputTypes';
+import type { Failure, ValidationError, ValidationWarning } from 'typings/pending';
+import type { FormInputButtonProps } from './FormInputButton';
 
 type PickProps<V, C extends InputType> = C extends 'text'
     ? TextInputProps
@@ -171,6 +154,39 @@ export type FormInputGroupProps<V, C extends InputType> = Omit<PickProps<V, C>, 
     errors?: (ValidationMessage | ValidationError | Failure)[];
     warnings?: (ValidationMessage | ValidationWarning | Failure)[];
 };
+
+// IMPLEMENTATIONS
+
+const componentMap: Record<InputType, ElementType> = {
+    autoComplete: AutoCompleteInput,
+    check: CheckInput,
+    date: TextInput,
+    device: DeviceInput,
+    downloadClientSelect: DownloadClientSelectInput,
+    dynamicSelect: ProviderDataSelectInput,
+    file: TextInput,
+    float: NumberInput,
+    indexerFlagsSelect: IndexerFlagsSelectInput,
+    indexerSelect: IndexerSelectInput,
+    keyValueList: KeyValueListInput,
+    languageSelect: LanguageSelectInput,
+    monitorIssuesSelect: MonitorIssuesSelectInput,
+    monitorNewItemsSelect: MonitorNewItemsSelectInput,
+    number: NumberInput,
+    oauth: OAuthInput,
+    password: PasswordInput,
+    path: PathInput,
+    qualityProfileSelect: QualityProfileSelectInput,
+    rootFolderSelect: RootFolderSelectInput,
+    select: EnhancedSelectInput,
+    volumeTypeSelect: VolumeTypeSelectInput,
+    tag: VolumeTagInput,
+    tagSelect: TagSelectInput,
+    text: TextInput,
+    textArea: TextArea,
+    textTag: TextTagInput,
+    umask: UMaskInput,
+} as const;
 
 function FormInputGroup<T, C extends InputType>(props: FormInputGroupProps<T, C>) {
     const {

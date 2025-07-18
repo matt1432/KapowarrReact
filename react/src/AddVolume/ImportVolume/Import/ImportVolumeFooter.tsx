@@ -1,15 +1,10 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
+// Redux
 import { useDispatch /*, useSelector*/ } from 'react-redux';
-import { useSelect } from 'App/SelectContext';
-import FormInputGroup from 'Components/Form/FormInputGroup';
-import Icon from 'Components/Icon';
-import Button from 'Components/Link/Button';
-import SpinnerButton from 'Components/Link/SpinnerButton';
-import LoadingIndicator from 'Components/Loading/LoadingIndicator';
-import PageContentFooter from 'Components/Page/PageContentFooter';
-import Popover from 'Components/Tooltip/Popover';
-import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
-// import type { VolumeMonitor, VolumeType } from 'Volume/Volume';
 /*
 import {
     cancelLookupVolume,
@@ -18,12 +13,36 @@ import {
     setImportVolumeValue,
 } from 'Store/Actions/importVolumeActions';
 */
-import { type InputChanged } from 'typings/inputs';
+
+// Misc
+import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
+
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
+
+// General Components
+import { useSelect } from 'App/SelectContext';
+
+import FormInputGroup from 'Components/Form/FormInputGroup';
+import Icon from 'Components/Icon';
+import Button from 'Components/Link/Button';
+import SpinnerButton from 'Components/Link/SpinnerButton';
+import LoadingIndicator from 'Components/Loading/LoadingIndicator';
+import PageContentFooter from 'Components/Page/PageContentFooter';
+import Popover from 'Components/Tooltip/Popover';
+
+// Specific Components
+
+// CSS
 import styles from './ImportVolumeFooter.module.css';
 
+// Types
+// import type { VolumeMonitor, VolumeType } from 'Volume/Volume';
+import type { InputChanged } from 'typings/inputs';
+
 type MixedType = 'mixed';
+
+// IMPLEMENTATIONS
 
 function ImportVolumeFooter() {
     const dispatch = useDispatch();

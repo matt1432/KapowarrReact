@@ -1,20 +1,32 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import React, { type ReactElement, useMemo } from 'react';
+
+// Redux
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+import classNames from 'classnames';
+import useMeasure from 'Helpers/Hooks/useMeasure';
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Menu from 'Components/Menu/Menu';
 import MenuContent from 'Components/Menu/MenuContent';
 import ToolbarMenuButton from 'Components/Menu/ToolbarMenuButton';
-import useMeasure from 'Helpers/Hooks/useMeasure';
-import { icons } from 'Helpers/Props';
-import { type Align } from 'Helpers/Props/align';
-import dimensions from 'Styles/Variables/dimensions';
-import translate from 'Utilities/String/translate';
-import { type PageToolbarButtonProps } from './PageToolbarButton';
+
+// Specific Components
 import PageToolbarOverflowMenuItem from './PageToolbarOverflowMenuItem';
+
+// CSS
+import dimensions from 'Styles/Variables/dimensions';
 import styles from './PageToolbarSection.module.css';
 
-const BUTTON_WIDTH = parseInt(dimensions.toolbarButtonWidth);
-const SEPARATOR_MARGIN = parseInt(dimensions.toolbarSeparatorMargin);
-const SEPARATOR_WIDTH = 2 * SEPARATOR_MARGIN + 1;
+// Types
+import type { Align } from 'Helpers/Props/align';
+import type { PageToolbarButtonProps } from './PageToolbarButton';
 
 export interface PageToolbarSectionProps {
     children?:
@@ -23,6 +35,12 @@ export interface PageToolbarSectionProps {
     alignContent?: Extract<Align, keyof typeof styles>;
     collapseButtons?: boolean;
 }
+
+// IMPLEMENTATIONS
+
+const BUTTON_WIDTH = parseInt(dimensions.toolbarButtonWidth);
+const SEPARATOR_MARGIN = parseInt(dimensions.toolbarSeparatorMargin);
+const SEPARATOR_WIDTH = 2 * SEPARATOR_MARGIN + 1;
 
 function PageToolbarSection({
     children,

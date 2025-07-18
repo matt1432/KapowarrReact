@@ -1,5 +1,20 @@
+// IMPORTS
+
+// React
 import React from 'react';
-import { type SortDirection } from 'Helpers/Props/sortDirections';
+
+// Redux
+
+// Misc
+
+// General Components
+
+// Specific Components
+
+// CSS
+
+// Types
+import type { SortDirection } from 'Helpers/Props/sortDirections';
 
 type PropertyFunction<T> = () => T;
 

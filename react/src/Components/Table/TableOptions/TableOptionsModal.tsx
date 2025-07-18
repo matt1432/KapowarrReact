@@ -1,6 +1,18 @@
-import { HTML5toTouch } from 'rdndmb-html5-to-touch';
+// IMPORTS
+
+// React
 import React, { useCallback, useEffect, useState } from 'react';
+import { HTML5toTouch } from 'rdndmb-html5-to-touch';
 import { DndProvider } from 'react-dnd-multi-backend';
+
+// Redux
+import type { VolumeIndexState } from 'Store/Slices/VolumeIndex';
+
+// Misc
+import { inputTypes } from 'Helpers/Props';
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -12,13 +24,16 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import { inputTypes } from 'Helpers/Props';
-import { type CheckInputChanged, type InputChanged } from 'typings/inputs';
-import translate from 'Utilities/String/translate';
-import { type Column } from '../Column';
+
+// Specific Components
 import TableOptionsColumn from './TableOptionsColumn';
+
+// CSS
 import styles from './TableOptionsModal.module.css';
-import type { VolumeIndexState } from 'Store/Slices/VolumeIndex';
+
+// Types
+import type { CheckInputChanged, InputChanged } from 'typings/inputs';
+import type { Column } from '../Column';
 
 export interface TableOptionsModalProps {
     isOpen: boolean;
@@ -30,6 +45,8 @@ export interface TableOptionsModalProps {
     onTableOptionChange: (payload: Partial<VolumeIndexState['tableOptions']>) => void;
     onModalClose: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function TableOptionsModal({
     isOpen,

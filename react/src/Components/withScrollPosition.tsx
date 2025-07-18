@@ -1,7 +1,14 @@
+// IMPORTS
+
+// React
 import React from 'react';
 import { useLocation, useMatch } from 'react-router-dom';
+
+// Redux
 import scrollPositions from 'Store/scrollPositions';
-import { type History } from 'history';
+
+// Types
+import type { History } from 'history';
 
 interface WrappedComponentProps {
     initialScrollTop: number;
@@ -10,6 +17,8 @@ interface WrappedComponentProps {
 interface ScrollPositionProps {
     history: History;
 }
+
+// IMPLEMENTATIONS
 
 function withScrollPosition(
     WrappedComponent: React.FC<WrappedComponentProps>,

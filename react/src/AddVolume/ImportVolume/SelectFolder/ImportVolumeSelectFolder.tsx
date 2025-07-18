@@ -1,6 +1,21 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect, useState } from 'react';
+
+// Redux
 import { useDispatch /*, useSelector*/ } from 'react-redux';
-// import { type AppState } from 'App/State/AppState';
+// import { addRootFolder, fetchRootFolders } from 'Store/Actions/rootFolderActions';
+
+// Misc
+import { icons, kinds, sizes } from 'Helpers/Props';
+
+import RootFolders from 'RootFolder/RootFolders';
+import usePrevious from 'Helpers/Hooks/usePrevious';
+// import useIsWindows from 'System/useIsWindows';
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import FileBrowserModal from 'Components/FileBrowser/FileBrowserModal';
@@ -10,14 +25,14 @@ import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import InlineMarkdown from 'Components/Markdown/InlineMarkdown';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
-import usePrevious from 'Helpers/Hooks/usePrevious';
-import { icons, kinds, sizes } from 'Helpers/Props';
-import RootFolders from 'RootFolder/RootFolders';
-// import { addRootFolder, fetchRootFolders } from 'Store/Actions/rootFolderActions';
-// import useIsWindows from 'System/useIsWindows';
-import { type InputChanged } from 'typings/inputs';
-import translate from 'Utilities/String/translate';
+
+// CSS
 import styles from './ImportVolumeSelectFolder.module.css';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
+
+// IMPLEMENTATIONS
 
 function ImportVolumeSelectFolder() {
     const dispatch = useDispatch();

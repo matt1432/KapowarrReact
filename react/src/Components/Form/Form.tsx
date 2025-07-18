@@ -1,8 +1,17 @@
-import { type ReactNode } from 'react';
-import Alert from 'Components/Alert';
+// IMPORTS
+
+// Misc
 import { kinds } from 'Helpers/Props';
-import { type ValidationError, type ValidationWarning } from 'typings/pending';
+
+// General Components
+import Alert from 'Components/Alert';
+
+// CSS
 import styles from './Form.module.css';
+
+// Types
+import type { ReactNode } from 'react';
+import type { ValidationError, ValidationWarning } from 'typings/pending';
 
 export interface FormProps {
     id?: string;
@@ -10,6 +19,8 @@ export interface FormProps {
     validationErrors?: ValidationError[];
     validationWarnings?: ValidationWarning[];
 }
+
+// IMPLEMENTATIONS
 
 function Form({ id, children, validationErrors = [], validationWarnings = [] }: FormProps) {
     return (

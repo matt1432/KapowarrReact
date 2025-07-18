@@ -1,4 +1,4 @@
-import { type Quality } from './Quality';
+import type { Quality } from './Quality';
 
 export default interface QualityDefinition {
     quality: Quality;

@@ -1,4 +1,4 @@
-import { type SelectState, type SelectStateModel } from 'Helpers/Hooks/useSelectState';
+import type { SelectState, SelectStateModel } from 'Helpers/Hooks/useSelectState';
 import areAllSelected from './areAllSelected';
 import getToggledRange from './getToggledRange';
 

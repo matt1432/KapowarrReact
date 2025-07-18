@@ -1,9 +1,19 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import React, { Children, useCallback } from 'react';
+
+// Misc
+import classNames from 'classnames';
+
+// General Components
 import Icon, { type IconName } from 'Components/Icon';
 import Link from 'Components/Link/Link';
+
+// CSS
 import styles from './PageSidebarItem.module.css';
 
+// Types
 export interface PageSidebarItemProps {
     iconName?: IconName;
     title: string | (() => string);
@@ -16,6 +26,8 @@ export interface PageSidebarItemProps {
     children?: React.ReactNode;
     onPress?: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function PageSidebarItem({
     iconName,

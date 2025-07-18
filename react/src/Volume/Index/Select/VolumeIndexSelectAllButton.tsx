@@ -1,14 +1,25 @@
+// IMPORTS
+
+// React
 import { useCallback } from 'react';
+
+// Misc
 import { useSelect } from 'App/SelectContext';
+import { icons } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import PageToolbarButton, {
     type PageToolbarButtonProps,
 } from 'Components/Page/Toolbar/PageToolbarButton';
-import { icons } from 'Helpers/Props';
-import translate from 'Utilities/String/translate';
 
+// Types
 interface VolumeIndexSelectAllButtonProps extends Omit<PageToolbarButtonProps, 'iconName'> {
     isSelectMode: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeIndexSelectAllButton(props: VolumeIndexSelectAllButtonProps) {
     const { isSelectMode, overflowComponent } = props;

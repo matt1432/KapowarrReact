@@ -1,16 +1,29 @@
+// IMPORTS
+
+// React
 import React from 'react';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
-import { icons } from 'Helpers/Props';
-import translate from 'Utilities/String/translate';
+
+// CSS
 import styles from './ModalContent.module.css';
 
+// Types
 interface ModalContentProps extends React.HTMLAttributes<HTMLDivElement> {
     className?: string;
     children?: React.ReactNode;
     showCloseButton?: boolean;
     onModalClose: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function ModalContent({
     className = styles.modalContent,

@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { type AppState } from 'App/State/AppState';
+import type { AppState } from 'App/State/AppState';
 import {
     type ProviderOptionsAppState,
     type ProviderOptions,
@@ -10,7 +10,7 @@ import {
 import usePrevious from 'Helpers/Hooks/usePrevious';
 // TODO:
 // import { clearOptions, fetchOptions } from 'Store/Actions/providerOptionActions';
-import { type FieldSelectOption } from 'typings/Field';
+import type { FieldSelectOption } from 'typings/Field';
 */
 // import EnhancedSelectInput, {
 import {

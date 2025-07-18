@@ -3,7 +3,7 @@ import useSelectState, {
     type SelectState,
     type SelectStateModel,
 } from 'Helpers/Hooks/useSelectState';
-import { type ModelBase } from './ModelBase';
+import type { ModelBase } from './ModelBase';
 
 export type SelectContextAction =
     | { type: 'reset' }

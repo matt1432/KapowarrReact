@@ -1,8 +1,17 @@
+// IMPORTS
+
+// React
 import { useEffect, useState } from 'react';
+
+// Misc
 import StackTrace from 'stacktrace-js';
+
 import translate from 'Utilities/String/translate';
+
+// CSS
 import styles from './ErrorBoundaryError.module.css';
 
+// Types
 export interface ErrorBoundaryErrorProps {
     className: string;
     messageClassName: string;
@@ -13,6 +22,8 @@ export interface ErrorBoundaryErrorProps {
         componentStack: string;
     };
 }
+
+// IMPLEMENTATIONS
 
 function ErrorBoundaryError(props: ErrorBoundaryErrorProps) {
     const {

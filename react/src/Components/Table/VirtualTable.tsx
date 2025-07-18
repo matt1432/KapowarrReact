@@ -1,14 +1,22 @@
-import { throttle } from 'lodash';
+// IMPORTS
+
+// React
 import React, { type RefObject, useEffect, useState } from 'react';
 import { FixedSizeList, type ListChildComponentProps } from 'react-window';
-import Scroller from 'Components/Scroller/Scroller';
+
+// Misc
+import { throttle } from 'lodash';
+
 import useMeasure from 'Helpers/Hooks/useMeasure';
+
+// General Components
+import Scroller from 'Components/Scroller/Scroller';
+
+// CSS
 import dimensions from 'Styles/Variables/dimensions';
 import styles from './VirtualTable.module.css';
 
-const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
-const bodyPaddingSmallScreen = parseInt(dimensions.pageContentBodyPaddingSmallScreen);
-
+// Types
 interface VirtualTableProps<T> {
     Header: React.JSX.Element;
     itemCount: number;
@@ -19,6 +27,11 @@ interface VirtualTableProps<T> {
     Row({ index, style, data }: ListChildComponentProps<T>): React.JSX.Element | null;
     scrollerRef: RefObject<HTMLElement>;
 }
+
+// IMPLEMENTATIONS
+
+const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
+const bodyPaddingSmallScreen = parseInt(dimensions.pageContentBodyPaddingSmallScreen);
 
 function getWindowScrollTopPosition() {
     return document.documentElement.scrollTop || document.body.scrollTop || 0;

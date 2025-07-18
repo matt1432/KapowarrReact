@@ -1,9 +1,20 @@
+// IMPORTS
+
+// React
 import { useCallback } from 'react';
+
+// General Components
 import CheckInput from 'Components/Form/CheckInput';
-import { type CheckInputChanged } from 'typings/inputs';
-import { type SelectStateInputProps } from 'typings/props';
+
+// Specific Components
 import VirtualTableRowCell, { type VirtualTableRowCellProps } from './VirtualTableRowCell';
+
+// CSS
 import styles from './VirtualTableSelectCell.module.css';
+
+// Types
+import type { CheckInputChanged } from 'typings/inputs';
+import type { SelectStateInputProps } from 'typings/props';
 
 interface VirtualTableSelectCellProps extends VirtualTableRowCellProps {
     inputClassName?: string;
@@ -12,6 +23,8 @@ interface VirtualTableSelectCellProps extends VirtualTableRowCellProps {
     isDisabled: boolean;
     onSelectedChange: (options: SelectStateInputProps) => void;
 }
+
+// IMPLEMENTATIONS
 
 function VirtualTableSelectCell({
     inputClassName = styles.input,

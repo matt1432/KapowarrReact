@@ -1,3 +1,6 @@
+// IMPORTS
+
+// Specific Components
 import DescriptionListItemDescription, {
     type DescriptionListItemDescriptionProps,
 } from './DescriptionListItemDescription';
@@ -5,6 +8,7 @@ import DescriptionListItemTitle, {
     type DescriptionListItemTitleProps,
 } from './DescriptionListItemTitle';
 
+// Types
 interface DescriptionListItemProps {
     className?: string;
     titleClassName?: DescriptionListItemTitleProps['className'];
@@ -12,6 +16,8 @@ interface DescriptionListItemProps {
     title?: DescriptionListItemTitleProps['children'];
     data?: DescriptionListItemDescriptionProps['children'];
 }
+
+// IMPLEMENTATIONS
 
 function DescriptionListItem(props: DescriptionListItemProps) {
     const { className, titleClassName, descriptionClassName, title, data } = props;

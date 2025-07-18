@@ -1,11 +1,23 @@
+// IMPORTS
+
+// React
 import React from 'react';
+
+// Redux
 // import { useSelector } from 'react-redux';
 // import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
+
+// Misc
 import formatDateTime from 'Utilities/Date/formatDateTime';
 import getRelativeDate from 'Utilities/Date/getRelativeDate';
+
+// Specific Components
 import TableRowCell from './TableRowCell';
+
+// CSS
 import styles from './RelativeDateCell.module.css';
 
+// Types
 interface RelativeDateCellProps {
     className?: string;
     date?: string;
@@ -13,6 +25,8 @@ interface RelativeDateCellProps {
     includeTime?: boolean;
     component?: React.ElementType;
 }
+
+// IMPLEMENTATIONS
 
 function RelativeDateCell(props: RelativeDateCellProps) {
     const {

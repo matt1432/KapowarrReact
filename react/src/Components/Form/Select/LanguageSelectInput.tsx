@@ -1,9 +1,20 @@
+// IMPORTS
+
+// React
 // import { useCallback, useMemo } from 'react';
+
+// Redux
 // import { useSelector } from 'react-redux';
-import { type Language } from 'Language/Language';
 // import createLanguagesSelector from 'Store/Selectors/createLanguagesSelector';
+
+// Misc
 // import translate from 'Utilities/String/translate';
+
+// Specific Components
 // import EnhancedSelectInput, { type EnhancedSelectInputValue } from './EnhancedSelectInput';
+
+// Types
+import type { Language } from 'Language/Language';
 
 export interface LanguageSelectInputOnChangeProps {
     name: string;
@@ -20,6 +31,8 @@ export interface LanguageSelectInputProps {
     isDisabled?: boolean;
     onChange: (payload: LanguageSelectInputOnChangeProps) => void;
 }
+
+// IMPLEMENTATIONS
 
 export default function LanguageSelectInput(
     // eslint-disable-next-line

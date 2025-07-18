@@ -1,15 +1,26 @@
+// IMPORTS
+
+// Misc
+import { icons } from 'Helpers/Props';
+
 import classNames from 'classnames';
+
+// General Components
 import Icon, { type IconName } from 'Components/Icon';
 import MenuButton, { type MenuButtonProps } from 'Components/Menu/MenuButton';
-import { icons } from 'Helpers/Props';
+
+// CSS
 import styles from './ToolbarMenuButton.module.css';
 
+// Types
 export interface ToolbarMenuButtonProps extends Omit<MenuButtonProps, 'children'> {
     className?: string;
     iconName: IconName;
     showIndicator?: boolean;
     text?: string;
 }
+
+// IMPLEMENTATIONS
 
 function ToolbarMenuButton({
     iconName,

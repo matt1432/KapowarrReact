@@ -1,8 +1,19 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import { type JSX, useCallback, useState } from 'react';
-import { type InputOnChange } from 'typings/inputs';
+
+// Misc
+import classNames from 'classnames';
+
+// Specific Components
 import KeyValueListInputItem from './KeyValueListInputItem';
+
+// CSS
 import styles from './KeyValueListInput.module.css';
+
+// Types
+import type { InputOnChange } from 'typings/inputs';
 
 interface KeyValue {
     key: string;
@@ -19,6 +30,8 @@ export interface KeyValueListInputProps {
     valuePlaceholder?: string;
     onChange: InputOnChange<KeyValue[]>;
 }
+
+// IMPLEMENTATIONS
 
 function KeyValueListInput({
     className = styles.inputContainer,

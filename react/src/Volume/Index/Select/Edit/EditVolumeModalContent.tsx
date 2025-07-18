@@ -1,18 +1,32 @@
+// IMPORTS
+
+// React
 import { useCallback, useState } from 'react';
+
+// Misc
+import { inputTypes } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
-import { type EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 import Button from 'Components/Link/Button';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import { inputTypes } from 'Helpers/Props';
+
+// Specific Components
 import MoveVolumeModal from 'Volume/MoveVolume/MoveVolumeModal';
-import { type InputChanged } from 'typings/inputs';
-import translate from 'Utilities/String/translate';
+
+// CSS
 import styles from './EditVolumeModalContent.module.css';
+
+// Types
+import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
+import type { InputChanged } from 'typings/inputs';
 
 interface SavePayload {
     monitored?: boolean;
@@ -28,6 +42,8 @@ interface EditVolumeModalContentProps {
     onSavePress(payload: object): void;
     onModalClose(): void;
 }
+
+// IMPLEMENTATIONS
 
 const NO_CHANGE = 'noChange';
 

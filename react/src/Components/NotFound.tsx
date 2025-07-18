@@ -1,10 +1,20 @@
-import PageContent from 'Components/Page/PageContent';
+// IMPORTS
+
+// Misc
 import translate from 'Utilities/String/translate';
+
+// General Components
+import PageContent from 'Components/Page/PageContent';
+
+// CSS
 import styles from './NotFound.module.css';
 
+// Types
 interface NotFoundProps {
     message?: string;
 }
+
+// IMPLEMENTATIONS
 
 function NotFound(props: NotFoundProps) {
     const { message = translate('DefaultNotFoundMessage') } = props;

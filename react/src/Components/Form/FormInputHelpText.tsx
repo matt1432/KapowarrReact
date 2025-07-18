@@ -1,9 +1,18 @@
+// IMPORTS
+
+// Misc
+import { icons } from 'Helpers/Props';
+
 import classNames from 'classnames';
+
+// General Components
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
-import { icons } from 'Helpers/Props';
+
+// CSS
 import styles from './FormInputHelpText.module.css';
 
+// Types
 interface FormInputHelpTextProps {
     className?: string;
     text: string;
@@ -13,6 +22,8 @@ interface FormInputHelpTextProps {
     isWarning?: boolean;
     isCheckInput?: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function FormInputHelpText({
     className = styles.helpText,

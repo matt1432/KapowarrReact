@@ -1,20 +1,36 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import { useCallback } from 'react';
+
+// Redux
 import { useDispatch } from 'react-redux';
+// import { setVolumeSort, setVolumeTableOption } from 'Store/Actions/volumeIndexActions';
+// import hasGrowableColumns from './hasGrowableColumns';
+
+// Misc
 import { useSelect } from 'App/SelectContext';
+import { icons } from 'Helpers/Props';
+
+import classNames from 'classnames';
+
+// General Components
 import IconButton from 'Components/Link/IconButton';
-import { type Column } from 'Components/Table/Column';
 import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
 import VirtualTableHeader from 'Components/Table/VirtualTableHeader';
 import VirtualTableHeaderCell from 'Components/Table/VirtualTableHeaderCell';
 import VirtualTableSelectAllHeaderCell from 'Components/Table/VirtualTableSelectAllHeaderCell';
-import { icons } from 'Helpers/Props';
-import { type SortDirection } from 'Helpers/Props/sortDirections';
-// import { setVolumeSort, setVolumeTableOption } from 'Store/Actions/volumeIndexActions';
-import { type CheckInputChanged } from 'typings/inputs';
-// import hasGrowableColumns from './hasGrowableColumns';
+
+// Specific Components
 import VolumeIndexTableOptions from './VolumeIndexTableOptions';
+
+// CSS
 import styles from './VolumeIndexTableHeader.module.css';
+
+// Types
+import type { Column } from 'Components/Table/Column';
+import type { SortDirection } from 'Helpers/Props/sortDirections';
+import type { CheckInputChanged } from 'typings/inputs';
 
 interface VolumeIndexTableHeaderProps {
     showBanners: boolean;
@@ -23,6 +39,8 @@ interface VolumeIndexTableHeaderProps {
     sortDirection?: SortDirection;
     isSelectMode: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeIndexTableHeader(props: VolumeIndexTableHeaderProps) {
     const { showBanners, columns, sortKey, sortDirection, isSelectMode } = props;

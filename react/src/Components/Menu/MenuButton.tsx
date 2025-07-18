@@ -1,14 +1,26 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import React from 'react';
+
+// Misc
+import classNames from 'classnames';
+
+// General Components
 import Link from 'Components/Link/Link';
+
+// CSS
 import styles from './MenuButton.module.css';
 
+// Types
 export interface MenuButtonProps {
     className?: string;
     children: React.ReactNode;
     isDisabled?: boolean;
     onPress?: () => void;
 }
+
+// IMPLEMENTATIONS
 
 function MenuButton({
     className = styles.menuButton,

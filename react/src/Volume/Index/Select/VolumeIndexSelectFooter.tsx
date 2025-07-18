@@ -1,23 +1,36 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
+// Redux
 import { useDispatch /*, useSelector */ } from 'react-redux';
 // import { createSelector } from 'reselect';
-import { useSelect } from 'App/SelectContext';
-// import { type AppState } from 'App/State/AppState';
-// import { RENAME_VOLUMES } from 'Commands/commandNames';
-import SpinnerButton from 'Components/Link/SpinnerButton';
-import PageContentFooter from 'Components/Page/PageContentFooter';
-import usePrevious from 'Helpers/Hooks/usePrevious';
-import { kinds } from 'Helpers/Props';
 // import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
 // import { saveVolumeEditor, updateVolumeMonitor } from 'Store/Actions/volumeActions';
 // import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
+
+// Misc
+import { useSelect } from 'App/SelectContext';
+import { kinds } from 'Helpers/Props';
+
+import usePrevious from 'Helpers/Hooks/usePrevious';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
+
+// General Components
+import SpinnerButton from 'Components/Link/SpinnerButton';
+import PageContentFooter from 'Components/Page/PageContentFooter';
+
+// Specific Components
 import DeleteVolumeModal from './Delete/DeleteVolumeModal';
 import EditVolumeModal from './Edit/EditVolumeModal';
 import OrganizeVolumeModal from './Organize/OrganizeVolumeModal';
+
+// CSS
 import styles from './VolumeIndexSelectFooter.module.css';
 
+// Types
 interface SavePayload {
     monitored?: boolean;
     qualityProfileId?: number;
@@ -26,6 +39,8 @@ interface SavePayload {
     rootFolderPath?: string;
     moveFiles?: boolean;
 }
+
+// IMPLEMENTATIONS
 
 /*
 const volumeEditorSelector = createSelector(

@@ -1,7 +1,16 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import React, { Children, type ComponentPropsWithoutRef, type ReactNode } from 'react';
-import { type Size } from 'Helpers/Props/sizes';
+
+// Misc
+import classNames from 'classnames';
+
+// CSS
 import styles from './FormGroup.module.css';
+
+// Types
+import type { Size } from 'Helpers/Props/sizes';
 
 interface FormGroupProps extends ComponentPropsWithoutRef<'div'> {
     className?: string;
@@ -10,6 +19,8 @@ interface FormGroupProps extends ComponentPropsWithoutRef<'div'> {
     advancedSettings?: boolean;
     isAdvanced?: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function FormGroup(props: FormGroupProps) {
     const {

@@ -1,5 +1,6 @@
-import { autoUpdate, flip, size, useFloating } from '@floating-ui/react-dom';
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import {
     type FocusEvent,
     type FormEvent,
@@ -20,9 +21,17 @@ import Autosuggest, {
     type RenderInputComponentProps,
     type RenderSuggestionsContainerParams,
 } from 'react-autosuggest';
+import { autoUpdate, flip, size, useFloating } from '@floating-ui/react-dom';
+
+// Misc
+import classNames from 'classnames';
 import usePrevious from 'Helpers/Hooks/usePrevious';
-import { type InputChanged } from 'typings/inputs';
+
+// CSS
 import styles from './AutoSuggestInput.module.css';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
 
 interface AutoSuggestInputProps<T>
     extends Omit<AutosuggestPropsBase<T>, 'renderInputComponent' | 'inputProps'> {
@@ -47,6 +56,8 @@ interface AutoSuggestInputProps<T>
     onInputBlur: (event: FocusEvent<HTMLElement>, params?: BlurEvent<T>) => unknown;
     onChange?: (change: InputChanged<T>) => unknown;
 }
+
+// IMPLEMENTATIONS
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function AutoSuggestInput<T = any>(props: AutoSuggestInputProps<T>) {

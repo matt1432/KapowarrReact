@@ -1,9 +1,25 @@
+// IMPORTS
+
+// React
 import { useEffect, useRef, useState } from 'react';
+
+// Redux
+
+// Misc
 import useMeasure from 'Helpers/Hooks/useMeasure';
 
+// General Components
+
+// Specific Components
+
+// CSS
+
+// Types
 interface MiddleTruncateProps {
     text: string;
 }
+
+// IMPLEMENTATIONS
 
 function getTruncatedText(text: string, length: number) {
     return `${text.slice(0, length)}...${text.slice(text.length - length)}`;

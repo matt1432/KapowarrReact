@@ -1,5 +1,12 @@
+// IMPORTS
+
+// React
 import React from 'react';
+
+// Specific Components
 import SelectedMenuItem, { type SelectedMenuItemProps } from './SelectedMenuItem';
+
+// Types
 import type { IndexView } from 'Volume/Index';
 
 interface ViewMenuItemProps extends Omit<SelectedMenuItemProps<IndexView>, 'isSelected'> {
@@ -8,6 +15,8 @@ interface ViewMenuItemProps extends Omit<SelectedMenuItemProps<IndexView>, 'isSe
     children: React.ReactNode;
     onPress: (view: IndexView) => void;
 }
+
+// IMPLEMENTATIONS
 
 function ViewMenuItem({ name, selectedView, ...otherProps }: ViewMenuItemProps) {
     const isSelected = name === selectedView;

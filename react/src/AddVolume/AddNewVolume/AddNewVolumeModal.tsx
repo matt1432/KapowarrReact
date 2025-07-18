@@ -1,4 +1,9 @@
+// IMPORTS
+
+// General Components
 import Modal from 'Components/Modal/Modal';
+
+// Types
 import AddNewVolumeModalContent, {
     type AddNewVolumeModalContentProps,
 } from './AddNewVolumeModalContent';
@@ -6,6 +11,8 @@ import AddNewVolumeModalContent, {
 interface AddNewVolumeModalProps extends AddNewVolumeModalContentProps {
     isOpen: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function AddNewVolumeModal({ isOpen, onModalClose, ...otherProps }: AddNewVolumeModalProps) {
     return (

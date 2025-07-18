@@ -1,11 +1,28 @@
-import Button from 'Components/Link/Button';
+// IMPORTS
+
+// React
+
+// Redux
+
+// Misc
 import { kinds } from 'Helpers/Props';
+
 import translate from 'Utilities/String/translate';
+
+// General Components
+import Button from 'Components/Link/Button';
+
+// Specific Components
+
+// CSS
 import styles from './NoVolume.module.css';
 
+// Types
 interface NoVolumeProps {
     totalItems: number;
 }
+
+// IMPLEMENTATIONS
 
 function NoVolume(props: NoVolumeProps) {
     const { totalItems } = props;

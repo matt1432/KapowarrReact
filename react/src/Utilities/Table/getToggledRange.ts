@@ -1,4 +1,4 @@
-import { type SelectStateModel } from 'Helpers/Hooks/useSelectState';
+import type { SelectStateModel } from 'Helpers/Hooks/useSelectState';
 
 function getToggledRange<T extends SelectStateModel>(
     items: T[],

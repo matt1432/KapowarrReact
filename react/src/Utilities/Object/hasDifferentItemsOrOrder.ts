@@ -1,4 +1,4 @@
-import { type ModelBase } from 'App/ModelBase';
+import type { ModelBase } from 'App/ModelBase';
 
 function hasDifferentItemsOrOrder<T extends ModelBase>(
     prevItems: T[],

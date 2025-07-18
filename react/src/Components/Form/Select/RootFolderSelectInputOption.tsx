@@ -1,11 +1,19 @@
+// IMPORTS
+
+// Misc
 import classNames from 'classnames';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
+
+// Specific Components
 import EnhancedSelectInputOption, {
     type EnhancedSelectInputOptionProps,
 } from './EnhancedSelectInputOption';
+
+// CSS
 import styles from './RootFolderSelectInputOption.module.css';
 
+// Types
 interface RootFolderSelectInputOptionProps extends EnhancedSelectInputOptionProps {
     id: string;
     value: string;
@@ -15,6 +23,8 @@ interface RootFolderSelectInputOptionProps extends EnhancedSelectInputOptionProp
     isMobile: boolean;
     isWindows?: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function RootFolderSelectInputOption({
     id,

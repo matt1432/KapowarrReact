@@ -1,6 +1,13 @@
+// IMPORTS
+
+// Misc
+import translate from 'Utilities/String/translate';
+
+// General Components
 import DescriptionList from 'Components/DescriptionList/DescriptionList';
 import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem';
-import translate from 'Utilities/String/translate';
+
+// IMPLEMENTATIONS
 
 function VolumeTypePopoverContent() {
     return (

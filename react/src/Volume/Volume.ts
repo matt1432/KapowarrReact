@@ -1,4 +1,4 @@
-import { type ModelBase } from 'App/ModelBase';
+import type { ModelBase } from 'App/ModelBase';
 import type { GeneralFileData, Issue } from 'Issue/Issue';
 
 export interface Volume extends ModelBase {

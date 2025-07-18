@@ -5,7 +5,7 @@ import FileBrowserModal from 'Components/FileBrowser/FileBrowserModal';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 // import { addRootFolder, fetchRootFolders } from 'Store/Actions/rootFolderActions';
 // import createRootFoldersSelector from 'Store/Selectors/createRootFoldersSelector';
-import { type EnhancedSelectInputChanged, type InputChanged } from 'typings/inputs';
+import type { EnhancedSelectInputChanged, type InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';*/
 // import EnhancedSelectInput, {
 import {

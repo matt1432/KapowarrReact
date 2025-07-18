@@ -1,20 +1,36 @@
+// IMPORTS
+
+// React
 // import { useCallback } from 'react';
+
+// Redux
 // import { useDispatch, useSelector } from 'react-redux';
-// import AppState from 'App/State/AppState';
+// import { restart, shutdown } from 'Store/Actions/systemActions';
+
+// Misc
+import { align, icons, kinds } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Icon from 'Components/Icon';
 import Menu from 'Components/Menu/Menu';
 import MenuButton from 'Components/Menu/MenuButton';
 import MenuContent from 'Components/Menu/MenuContent';
 import MenuItem from 'Components/Menu/MenuItem';
 import MenuItemSeparator from 'Components/Menu/MenuItemSeparator';
-import { align, icons, kinds } from 'Helpers/Props';
-// import { restart, shutdown } from 'Store/Actions/systemActions';
-import translate from 'Utilities/String/translate';
+
+// Specific Components
+
+// CSS
 import styles from './PageHeaderActionsMenu.module.css';
 
+// Types
 interface PageHeaderActionsMenuProps {
     onKeyboardShortcutsPress(): void;
 }
+
+// IMPLEMENTATIONS
 
 function PageHeaderActionsMenu(props: PageHeaderActionsMenuProps) {
     const { onKeyboardShortcutsPress } = props;

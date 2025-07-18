@@ -1,5 +1,5 @@
-import { type DownloadProtocol } from 'DownloadClient/DownloadProtocol';
-import { type Provider } from './Provider';
+import type { DownloadProtocol } from 'DownloadClient/DownloadProtocol';
+import type { Provider } from './Provider';
 
 export interface Indexer extends Provider {
     enableRss: boolean;

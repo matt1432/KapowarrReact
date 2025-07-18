@@ -1,4 +1,4 @@
-import { type StringKey } from 'typings/Helpers/KeysMatching';
+import type { StringKey } from 'typings/Helpers/KeysMatching';
 
 export function sortByProp<T extends Record<K, string>, K extends StringKey<T>>(sortKey: K) {
     return (a: T, b: T) => {

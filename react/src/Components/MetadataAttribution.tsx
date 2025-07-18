@@ -1,6 +1,15 @@
-import Link from 'Components/Link/Link';
+// IMPORTS
+
+// Misc
 import translate from 'Utilities/String/translate';
+
+// General Components
+import Link from 'Components/Link/Link';
+
+// CSS
 import styles from './MetadataAttribution.module.css';
+
+// IMPLEMENTATIONS
 
 export default function MetadataAttribution() {
     return (

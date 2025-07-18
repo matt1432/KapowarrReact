@@ -1,7 +1,13 @@
+// IMPORTS
+
+// React
 import { Route, Routes } from 'react-router-dom';
 
+// Components
 import VolumeIndex from 'Volume/Index';
 import NotFound from 'Components/NotFound';
+
+// Types
 import type { History } from 'history';
 
 /*
@@ -35,6 +41,8 @@ import Updates from 'System/Updates/Updates';
 import CutoffUnmet from 'Wanted/CutoffUnmet/CutoffUnmet';
 import Missing from 'Wanted/Missing/Missing';
 */
+
+// IMPLEMENTATIONS
 
 function AppRoutes({ history }: { history: History }) {
     return (

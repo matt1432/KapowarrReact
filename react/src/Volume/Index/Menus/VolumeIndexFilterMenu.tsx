@@ -1,8 +1,16 @@
+// IMPORTS
+
+// Misc
+import { align } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import MenuContent from 'Components/Menu/MenuContent';
 import FilterMenu from 'Components/Menu/FilterMenu';
 import FilterMenuItem from 'Components/Menu/FilterMenuItem';
-import { align } from 'Helpers/Props';
-import translate from 'Utilities/String/translate';
+
+// Types
 import type { IndexFilter } from '..';
 
 interface VolumeIndexFilterMenuProps {
@@ -10,6 +18,8 @@ interface VolumeIndexFilterMenuProps {
     isDisabled: boolean;
     onFilterSelect(value: IndexFilter): void;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeIndexFilterMenu({
     filterKey,

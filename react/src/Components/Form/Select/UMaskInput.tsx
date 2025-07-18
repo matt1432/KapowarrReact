@@ -1,8 +1,29 @@
-import { type SyntheticEvent } from 'react';
-import { type InputChanged } from 'typings/inputs';
+// IMPORTS
+
+// Misc
 import translate from 'Utilities/String/translate';
+
+// Specific Components
 import EnhancedSelectInput, { type EnhancedSelectInputValue } from './EnhancedSelectInput';
+
+// CSS
 import styles from './UMaskInput.module.css';
+
+// Types
+import type { SyntheticEvent } from 'react';
+import type { InputChanged } from 'typings/inputs';
+
+export interface UMaskInputProps {
+    name: string;
+    value: string;
+    hasError?: boolean;
+    hasWarning?: boolean;
+    onChange: (change: InputChanged) => void;
+    onFocus?: (event: SyntheticEvent) => void;
+    onBlur?: (event: SyntheticEvent) => void;
+}
+
+// IMPLEMENTATIONS
 
 const umaskOptions: EnhancedSelectInputValue<string>[] = [
     {
@@ -65,16 +86,6 @@ function formatPermissions(permissions: number) {
     }
 
     return result;
-}
-
-export interface UMaskInputProps {
-    name: string;
-    value: string;
-    hasError?: boolean;
-    hasWarning?: boolean;
-    onChange: (change: InputChanged) => void;
-    onFocus?: (event: SyntheticEvent) => void;
-    onBlur?: (event: SyntheticEvent) => void;
 }
 
 function UMaskInput({ name, value, onChange }: UMaskInputProps) {

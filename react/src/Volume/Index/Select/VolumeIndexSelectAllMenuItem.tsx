@@ -1,13 +1,24 @@
+// IMPORTS
+
+// React
 import { useCallback } from 'react';
+
+// Misc
 import { useSelect } from 'App/SelectContext';
-import PageToolbarOverflowMenuItem from 'Components/Page/Toolbar/PageToolbarOverflowMenuItem';
 import { icons } from 'Helpers/Props';
+
 import translate from 'Utilities/String/translate';
 
+// General Components
+import PageToolbarOverflowMenuItem from 'Components/Page/Toolbar/PageToolbarOverflowMenuItem';
+
+// Types
 interface VolumeIndexSelectAllMenuItemProps {
     label: string;
     isSelectMode: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeIndexSelectAllMenuItem(props: VolumeIndexSelectAllMenuItemProps) {
     const { isSelectMode } = props;

@@ -1,20 +1,36 @@
+// IMPORTS
+
+// React
 import { useCallback, useState } from 'react';
+
+// Redux
 import { useRootSelector } from 'Store/createAppStore';
 import { useExecuteCommandMutation, useSearchVolumeQuery } from 'Store/createApiEndpoints';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Label from 'Components/Label';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
-import { icons } from 'Helpers/Props';
+
+// Specific Components
 import DeleteVolumeModal from 'Volume/Delete/DeleteVolumeModal';
 import EditVolumeModal from 'Volume/Edit/EditVolumeModal';
 import VolumeIndexProgressBar from 'Volume/Index/ProgressBar/VolumeIndexProgressBar';
 import VolumeIndexPosterSelect from 'Volume/Index/Select/VolumeIndexPosterSelect';
 import VolumePoster from 'Volume/VolumePoster';
-import translate from 'Utilities/String/translate';
 import VolumeIndexPosterInfo from './VolumeIndexPosterInfo';
-import type { IndexSort } from '..';
+
+// CSS
 import styles from './VolumeIndexPoster.module.css';
+
+// Types
+import type { IndexSort } from '..';
 
 interface VolumeIndexPosterProps {
     volumeId: number;
@@ -23,6 +39,8 @@ interface VolumeIndexPosterProps {
     posterWidth: number;
     posterHeight: number;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeIndexPoster(props: VolumeIndexPosterProps) {
     const { volumeId, isSelectMode, posterWidth, posterHeight, sortKey } = props;

@@ -1,4 +1,6 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import {
     type JSX,
     type ChangeEvent,
@@ -8,8 +10,15 @@ import {
     useEffect,
     useRef,
 } from 'react';
-import { type FileInputChanged, type InputChanged } from 'typings/inputs';
+
+// Misc
+import classNames from 'classnames';
+
+// CSS
 import styles from './TextInput.module.css';
+
+// Types
+import type { FileInputChanged, InputChanged } from 'typings/inputs';
 
 export interface CommonTextInputProps {
     className?: string;
@@ -39,6 +48,8 @@ export interface FileInputProps extends CommonTextInputProps {
     type: 'file';
     onChange: (change: FileInputChanged) => void;
 }
+
+// IMPLEMENTATIONS
 
 function TextInput({
     className = styles.input,

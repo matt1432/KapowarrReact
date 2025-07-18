@@ -1,11 +1,20 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect } from 'react';
+
+// Redux
 import { useDispatch /*, useSelector */ } from 'react-redux';
-// import { type AppState } from 'App/State/AppState';
-import SpinnerErrorButton from 'Components/Link/SpinnerErrorButton';
-import { kinds } from 'Helpers/Props';
-// TODO:
 // import { resetOAuth, startOAuth } from 'Store/Actions/oAuthActions';
-import { type InputOnChange } from 'typings/inputs';
+
+// Misc
+import { kinds } from 'Helpers/Props';
+
+// General Components
+import SpinnerErrorButton from 'Components/Link/SpinnerErrorButton';
+
+// Types
+import type { InputOnChange } from 'typings/inputs';
 
 export interface OAuthInputProps {
     label?: string;
@@ -15,6 +24,8 @@ export interface OAuthInputProps {
     section: string;
     onChange: InputOnChange<unknown>;
 }
+
+// IMPLEMENTATIONS
 
 function OAuthInput({
     label = 'Start OAuth',

@@ -1,18 +1,35 @@
+// IMPORTS
+
+// React
 import { useCallback } from 'react';
+
+// Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { setVolumePosterOption, type VolumeIndexState } from 'Store/Slices/VolumeIndex';
+
+// Misc
+import { inputTypes } from 'Helpers/Props';
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
-import { type EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 import Button from 'Components/Link/Button';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import { inputTypes } from 'Helpers/Props';
-import translate from 'Utilities/String/translate';
+
+// Types
+import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
+
+interface VolumeIndexPosterOptionsModalContentProps {
+    onModalClose(...args: unknown[]): unknown;
+}
+
+// IMPLEMENTATIONS
 
 const posterSizeOptions: EnhancedSelectInputValue<string>[] = [
     {
@@ -34,10 +51,6 @@ const posterSizeOptions: EnhancedSelectInputValue<string>[] = [
         },
     },
 ];
-
-interface VolumeIndexPosterOptionsModalContentProps {
-    onModalClose(...args: unknown[]): unknown;
-}
 
 function VolumeIndexPosterOptionsModalContent({
     onModalClose,

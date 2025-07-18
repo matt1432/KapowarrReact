@@ -1,27 +1,30 @@
-import { throttle } from 'lodash';
+// IMPORTS
+
+// React
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
-import { useRootSelector } from 'Store/createAppStore';
 import { FixedSizeGrid as Grid, type GridChildComponentProps } from 'react-window';
+
+// Redux
+import { useRootSelector } from 'Store/createAppStore';
+
+// Misc
+import { throttle } from 'lodash';
+
 import useMeasure from 'Helpers/Hooks/useMeasure';
-import { type SortDirection } from 'Helpers/Props/sortDirections';
-import VolumeIndexPoster from 'Volume/Index/Posters/VolumeIndexPoster';
-import { type VolumePublicInfo } from 'Volume/Volume';
-import dimensions from 'Styles/Variables/dimensions';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
+
+// General Components
+
+// Specific Components
+import VolumeIndexPoster from 'Volume/Index/Posters/VolumeIndexPoster';
+
+// CSS
+import dimensions from 'Styles/Variables/dimensions';
+
+// Types
+import type { SortDirection } from 'Helpers/Props/sortDirections';
+import type { VolumePublicInfo } from 'Volume/Volume';
 import type { IndexSort } from '..';
-
-const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
-const bodyPaddingSmallScreen = parseInt(dimensions.pageContentBodyPaddingSmallScreen);
-const columnPadding = parseInt(dimensions.volumeIndexColumnPadding);
-const columnPaddingSmallScreen = parseInt(dimensions.volumeIndexColumnPaddingSmallScreen);
-const progressBarHeight = parseInt(dimensions.progressBarSmallHeight);
-const detailedProgressBarHeight = parseInt(dimensions.progressBarMediumHeight);
-
-const ADDITIONAL_COLUMN_COUNT: Record<string, number> = {
-    small: 3,
-    medium: 2,
-    large: 1,
-};
 
 interface CellItemData {
     layout: {
@@ -45,6 +48,21 @@ interface VolumeIndexPostersProps {
     isSelectMode: boolean;
     isSmallScreen: boolean;
 }
+
+// IMPLEMENTATIONS
+
+const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
+const bodyPaddingSmallScreen = parseInt(dimensions.pageContentBodyPaddingSmallScreen);
+const columnPadding = parseInt(dimensions.volumeIndexColumnPadding);
+const columnPaddingSmallScreen = parseInt(dimensions.volumeIndexColumnPaddingSmallScreen);
+const progressBarHeight = parseInt(dimensions.progressBarSmallHeight);
+const detailedProgressBarHeight = parseInt(dimensions.progressBarMediumHeight);
+
+const ADDITIONAL_COLUMN_COUNT: Record<string, number> = {
+    small: 3,
+    medium: 2,
+    large: 1,
+};
 
 function Cell({ columnIndex, rowIndex, style, data }: GridChildComponentProps<CellItemData>) {
     const { layout, items, sortKey, isSelectMode } = data;

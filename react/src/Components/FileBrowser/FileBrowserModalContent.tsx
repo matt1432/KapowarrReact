@@ -1,7 +1,24 @@
+// IMPORTS
+
+// React
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+// Redux
 import { useDispatch /*, useSelector*/ } from 'react-redux';
-import Alert from 'Components/Alert';
+// import { clearPaths, fetchPaths } from 'Store/Actions/pathActions';
+// import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
+// import createPathsSelector from './createPathsSelector';
+
+// Misc
+import { kinds, scrollDirections } from 'Helpers/Props';
+
+import usePrevious from 'Helpers/Hooks/usePrevious';
+import translate from 'Utilities/String/translate';
+
+// General Components
 import { PathInputInternal } from 'Components/Form/PathInput';
+
+import Alert from 'Components/Alert';
 import Button from 'Components/Link/Button';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import InlineMarkdown from 'Components/Markdown/InlineMarkdown';
@@ -10,18 +27,28 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import Scroller from 'Components/Scroller/Scroller';
-import { type Column } from 'Components/Table/Column';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
-import usePrevious from 'Helpers/Hooks/usePrevious';
-import { kinds, scrollDirections } from 'Helpers/Props';
-// import { clearPaths, fetchPaths } from 'Store/Actions/pathActions';
-// import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
-import { type InputChanged } from 'typings/inputs';
-import translate from 'Utilities/String/translate';
-// import createPathsSelector from './createPathsSelector';
+
+// Specific Components
 import FileBrowserRow from './FileBrowserRow';
+
+// CSS
 import styles from './FileBrowserModalContent.module.css';
+
+// Types
+import type { Column } from 'Components/Table/Column';
+import type { InputChanged } from 'typings/inputs';
+
+export interface FileBrowserModalContentProps {
+    name: string;
+    value: string;
+    includeFiles?: boolean;
+    onChange: (args: InputChanged<string>) => unknown;
+    onModalClose: () => void;
+}
+
+// IMPLEMENTATIONS
 
 const columns: Column[] = [
     {
@@ -37,14 +64,6 @@ const columns: Column[] = [
 ];
 
 const handleClearPaths = () => {};
-
-export interface FileBrowserModalContentProps {
-    name: string;
-    value: string;
-    includeFiles?: boolean;
-    onChange: (args: InputChanged<string>) => unknown;
-    onModalClose: () => void;
-}
 
 function FileBrowserModalContent(props: FileBrowserModalContentProps) {
     const { name, value, includeFiles = true, onChange, onModalClose } = props;

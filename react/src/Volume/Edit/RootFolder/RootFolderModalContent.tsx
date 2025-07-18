@@ -1,5 +1,18 @@
+// IMPORTS
+
+// React
 import { useCallback, useState } from 'react';
+
+// Redux
 // import { useSelector } from 'react-redux';
+// import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
+
+// Misc
+import { inputTypes } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
@@ -8,10 +21,9 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import { inputTypes } from 'Helpers/Props';
-// import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
-import { type InputChanged } from 'typings/inputs';
-import translate from 'Utilities/String/translate';
+
+// Types
+import type { InputChanged } from 'typings/inputs';
 
 export interface RootFolderUpdated {
     path: string;
@@ -28,6 +40,8 @@ export interface RootFolderModalContentProps {
 interface VolumeFolder {
     folder: string;
 }
+
+// IMPLEMENTATIONS
 
 function RootFolderModalContent(props: RootFolderModalContentProps) {
     const { /* volumeId, */ onSavePress, onModalClose } = props;

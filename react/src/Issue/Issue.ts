@@ -1,4 +1,4 @@
-import { type ModelBase } from 'App/ModelBase';
+import type { ModelBase } from 'App/ModelBase';
 
 export interface FileData extends ModelBase {
     filepath: string;

@@ -1,9 +1,26 @@
 // TODO: https://github.com/Sonarr/Sonarr/blob/v5-develop/frontend/src/System/Updates/Updates.tsx
+// IMPORTS
+
+// React
+
+// Redux
+
+// Misc
+import { kinds } from 'Helpers/Props';
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Alert from 'Components/Alert';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
-import { kinds } from 'Helpers/Props';
-import translate from 'Utilities/String/translate';
+
+// Specific Components
+
+// CSS
+
+// Types
+
+// IMPLEMENTATIONS
 
 function Updates() {
     return (

@@ -1,6 +1,14 @@
+// IMPORTS
+
+// React
 import { useMemo } from 'react';
-import * as volumeTypes from 'Utilities/Volume/volumeTypes';
+
+// Misc
 import translate from 'Utilities/String/translate';
+
+import * as volumeTypes from 'Utilities/Volume/volumeTypes';
+
+// Specific Components
 import EnhancedSelectInput, {
     type EnhancedSelectInputProps,
     type EnhancedSelectInputValue,
@@ -8,6 +16,7 @@ import EnhancedSelectInput, {
 import VolumeTypeSelectInputOption from './VolumeTypeSelectInputOption';
 import VolumeTypeSelectInputSelectedValue from './VolumeTypeSelectInputSelectedValue';
 
+// Types
 export interface VolumeTypeSelectInputProps
     extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<string>, string>, 'values'> {
     includeNoChange?: boolean;
@@ -21,6 +30,8 @@ export interface IVolumeTypeOption {
     format?: string;
     isDisabled?: boolean;
 }
+
+// IMPLEMENTATIONS
 
 const volumeTypeOptions: IVolumeTypeOption[] = [
     {
