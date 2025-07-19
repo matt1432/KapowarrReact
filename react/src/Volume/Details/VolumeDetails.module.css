@@ -146,7 +146,7 @@
     margin-top: 8px;
     min-height: 0;
     text-wrap: balance;
-    font-size: $intermediateFontSize;
+    font-size: 20px;
 }
 
 .contentContainer {

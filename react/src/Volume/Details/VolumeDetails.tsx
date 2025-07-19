@@ -13,6 +13,8 @@ import {
 } from 'Store/createApiEndpoints';
 
 // Misc
+import DOMPurify from 'dompurify';
+import parse from 'html-react-parser';
 import { icons, kinds, sizes, /*sortDirections,*/ tooltipPositions } from 'Helpers/Props';
 
 import usePrevious from 'Helpers/Hooks/usePrevious';
@@ -448,7 +450,13 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                 />
                             </div>
 
-                            <div className={styles.overview}>{description}</div>
+                            <div className={styles.overview}>
+                                {parse(
+                                    DOMPurify.sanitize(description, {
+                                        USE_PROFILES: { html: true },
+                                    }),
+                                )}
+                            </div>
 
                             <MetadataAttribution />
                         </div>
