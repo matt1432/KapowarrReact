@@ -15,7 +15,13 @@ import {
 // Misc
 import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
-import { icons, kinds, sizes, /*sortDirections,*/ tooltipPositions } from 'Helpers/Props';
+import {
+    icons,
+    kinds,
+    scrollDirections,
+    sizes,
+    /*sortDirections,*/ tooltipPositions,
+} from 'Helpers/Props';
 
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import sortByProp from 'Utilities/Array/sortByProp';
@@ -49,6 +55,7 @@ import VolumeProgressLabel from './VolumeProgressLabel';
 
 // CSS
 import styles from './VolumeDetails.module.css';
+import Scroller from 'Components/Scroller/Scroller';
 
 // Types
 interface VolumeDetailsProps {
@@ -450,13 +457,17 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                 />
                             </div>
 
-                            <div className={styles.overview}>
+                            <Scroller
+                                className={styles.overview}
+                                scrollDirection={scrollDirections.VERTICAL}
+                                autoFocus={false}
+                            >
                                 {parse(
                                     DOMPurify.sanitize(description, {
                                         USE_PROFILES: { html: true },
                                     }),
                                 )}
-                            </div>
+                            </Scroller>
 
                             <MetadataAttribution />
                         </div>
