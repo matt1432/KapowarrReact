@@ -8,6 +8,8 @@ import {
     useCallback,
 } from 'react';
 
+import { Link as RouterLink } from 'react-router';
+
 // Misc
 import classNames from 'classnames';
 
@@ -59,8 +61,8 @@ export default function Link<C extends ElementType = 'button'>({
         const toLink = /\w+?:\/\//.test(to);
 
         return (
-            <a
-                href={window.Kapowarr.urlBase + to}
+            <RouterLink
+                to={to}
                 target={target || (toLink ? '_blank' : '_self')}
                 rel={toLink ? 'noreferrer' : undefined}
                 className={linkClass}
