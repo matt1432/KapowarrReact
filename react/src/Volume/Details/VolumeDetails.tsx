@@ -353,7 +353,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                             title={translate('VolumeDetailsGoTo', {
                                                 title: previousVolume.title,
                                             })}
-                                            to={`/volume/${previousVolume.titleSlug}`}
+                                            to={`/volumes/${previousVolume.titleSlug}`}
                                         />
                                     ) : null}
 
@@ -365,7 +365,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                             title={translate('VolumeDetailsGoTo', {
                                                 title: nextVolume.title,
                                             })}
-                                            to={`/volume/${nextVolume.titleSlug}`}
+                                            to={`/volumes/${nextVolume.titleSlug}`}
                                         />
                                     ) : null}
                                 </div>

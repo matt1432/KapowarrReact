@@ -81,7 +81,7 @@ function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
         event.stopPropagation();
     }, []);
 
-    const linkProps = isExistingVolume ? { to: `/volume/${titleSlug}` } : { onPress: handlePress };
+    const linkProps = isExistingVolume ? { to: `/volumes/${titleSlug}` } : { onPress: handlePress };
     let seasons = translate('OneSeason');
 
     if (seasonCount > 1) {

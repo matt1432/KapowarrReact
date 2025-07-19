@@ -196,7 +196,7 @@ function VolumeIndexRow(props: VolumeIndexRowProps) {
                             )}
                         >
                             {showBanners ? (
-                                <Link className={styles.link} to={`/volume/${titleSlug}`}>
+                                <Link className={styles.link} to={`/volumes/${titleSlug}`}>
                                     <VolumeBanner
                                         className={styles.bannerImage}
                                         images={images}

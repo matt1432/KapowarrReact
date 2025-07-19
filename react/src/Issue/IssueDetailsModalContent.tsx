@@ -107,7 +107,7 @@ function IssueDetailsModalContent({
         ],
     );
 
-    const volumeLink = `/volume/${titleSlug}`;
+    const volumeLink = `/volumes/${titleSlug}`;
 
     return (
         <ModalContent onModalClose={onModalClose}>
