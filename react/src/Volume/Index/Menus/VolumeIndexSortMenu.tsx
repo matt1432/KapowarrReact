@@ -88,7 +88,7 @@ function VolumeIndexSortMenu(props: VolumeIndexSortMenuProps) {
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
                 >
-                    {translate('FolderPath')}
+                    {translate('Path')}
                 </SortMenuItem>
             </MenuContent>
         </SortMenu>

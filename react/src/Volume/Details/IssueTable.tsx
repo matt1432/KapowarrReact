@@ -25,8 +25,13 @@ import styles from './IssueTable.module.css';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { TableOptionsChangePayload } from 'typings/Table';
 
-// TODO: complete this
-export type IssueTableSort = 'issueNumber' | 'title' | 'size';
+export type IssueTableSort =
+    | 'issueNumber'
+    | 'title'
+    | 'size'
+    | 'releaseGroup'
+    | 'path'
+    | 'relativePath';
 
 interface IssueTableProps {
     volumeId: number;

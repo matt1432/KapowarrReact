@@ -528,6 +528,8 @@ def extract_filename_data(
             "special_version": special_version,
             "issue_number": calculated_issue_number,
             "annual": annual,
+            "is_metadata_file": is_metadata_file,
+            "is_image_file": is_image_file,
         }
     )
 

@@ -25,6 +25,7 @@ from backend.base.definitions import (
     GeneralFileData,
     GeneralFileType,
     IssueData,
+    IssueFileData,
     LibraryFilters,
     LibrarySorting,
     MonitorScheme,
@@ -452,7 +453,19 @@ class Volume:
                     }
                 )
 
-        result = [IssueData(**i, files=file_mapping.get(i["id"], [])) for i in issues]
+        result = []
+
+        for i in issues:
+            final_files = file_mapping.get(i["id"]) or []
+
+            final_files_data = [
+                IssueFileData({
+                    **file,
+                    **extract_filename_data(file["filepath"]),
+                }) for file in final_files
+            ]
+            result.append(IssueData(**i, files=final_files_data))
+
         return result
 
     def get_issues_in_range(

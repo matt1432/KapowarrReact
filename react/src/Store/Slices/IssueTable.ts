@@ -39,7 +39,13 @@ const initialState = {
         },
         {
             name: 'path',
-            label: () => translate('FolderPath'),
+            label: () => translate('Path'),
+            isVisible: false,
+            isSortable: true,
+        },
+        {
+            name: 'relativePath',
+            label: () => translate('RelativePath'),
             isVisible: false,
             isSortable: true,
         },

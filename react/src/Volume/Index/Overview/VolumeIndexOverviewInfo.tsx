@@ -204,7 +204,7 @@ function getInfoRowProps(
 
     if (name === 'path') {
         return {
-            title: translate('FolderPath'),
+            title: translate('Path'),
             iconName: icons.FOLDER,
             label: props.path,
         };

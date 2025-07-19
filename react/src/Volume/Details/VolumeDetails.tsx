@@ -470,10 +470,6 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                         <Alert kind={kinds.DANGER}>{translate('IssuesLoadError')}</Alert>
                     ) : null}
 
-                    {!isFetching ? (
-                        <Alert kind={kinds.DANGER}>{translate('IssueFilesLoadError')}</Alert>
-                    ) : null}
-
                     <IssueTable volumeId={volumeId} />
                 </div>
 

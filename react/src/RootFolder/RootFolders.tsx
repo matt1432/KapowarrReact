@@ -30,7 +30,7 @@ import type { Column } from 'Components/Table/Column';
 const rootFolderColumns: Column[] = [
     {
         name: 'path',
-        label: () => translate('FolderPath'),
+        label: () => translate('Path'),
         isVisible: true,
     },
     {

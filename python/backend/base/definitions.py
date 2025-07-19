@@ -440,6 +440,8 @@ class FilenameData(TypedDict):
     special_version: str | None
     issue_number: float | tuple[float, float] | None
     annual: bool
+    is_metadata_file: bool
+    is_image_file: bool
 
 
 class SearchResultData(FilenameData):
@@ -590,6 +592,9 @@ class IssueNamingKeys(SVNamingKeys):
     issue_release_year: int | None
 
 
+class IssueFileData(FileData, FilenameData):
+    pass
+
 @dataclass
 class IssueData:
     id: int
@@ -601,7 +606,7 @@ class IssueData:
     date: str | None
     description: str | None
     monitored: bool
-    files: list[FileData]
+    files: list[IssueFileData]
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)

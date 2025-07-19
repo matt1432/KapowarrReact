@@ -51,16 +51,16 @@ function IssueRow({
     columns,
     onMonitorIssuePress,
 }: IssueRowProps) {
-    const { volumeMonitored, issue } = useSearchVolumeQuery(
+    const { volumeFolder, volumeMonitored, issue, issueFile } = useSearchVolumeQuery(
         { volumeId },
         {
             selectFromResult: ({ data }) => ({
+                volumeFolder: data?.folder,
                 volumeMonitored: Boolean(data?.monitored),
-                volumeType: data?.special_version,
-                alternateTitles: data?.alt_title ? [data.alt_title] : [],
                 issue: data?.issues.find((issue) => issue.id === id),
-                // TODO:
-                issueFiles: data?.issues.find((issue) => issue.id === id)?.files,
+                issueFile: data?.issues
+                    ?.find((issue) => issue.id === id)
+                    ?.files?.find((file) => !file.is_image_file && !file.is_metadata_file),
             }),
         },
     );
@@ -115,15 +115,18 @@ function IssueRow({
                     );
                 }
 
-                /*
                 if (name === 'path') {
-                    return <TableRowCell key={name}>{issueFile?.path}</TableRowCell>;
+                    return <TableRowCell key={name}>{issueFile?.filepath}</TableRowCell>;
                 }
 
                 if (name === 'relativePath') {
-                    return <TableRowCell key={name}>{issueFile?.relativePath}</TableRowCell>;
+                    return (
+                        <TableRowCell key={name}>
+                            {volumeFolder &&
+                                issueFile?.filepath?.replace(volumeFolder, '')?.slice(1)}
+                        </TableRowCell>
+                    );
                 }
-                */
 
                 if (name === 'size') {
                     return (
