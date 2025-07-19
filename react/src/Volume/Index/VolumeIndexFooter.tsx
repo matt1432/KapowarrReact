@@ -3,7 +3,7 @@
 // React
 
 // Redux
-import { useGetVolumeQuery } from 'Store/createApiEndpoints';
+import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 
 // Misc
 import classNames from 'classnames';
@@ -26,7 +26,7 @@ import styles from './VolumeIndexFooter.module.css';
 // IMPLEMENTATIONS
 
 export default function VolumeIndexFooter() {
-    const { data: volumes } = useGetVolumeQuery();
+    const { data: volumes } = useGetVolumesQuery();
     const count = volumes?.length;
     let issues = 0;
     let issueFiles = 0;

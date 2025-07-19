@@ -13,7 +13,7 @@ import {
     type VolumeIndexState,
 } from 'Store/Slices/VolumeIndex';
 
-import { useGetVolumeQuery } from 'Store/createApiEndpoints';
+import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 
 // Misc
 import { align, icons, kinds } from 'Helpers/Props';
@@ -88,7 +88,7 @@ const VolumeIndex = withScrollPosition((props: VolumeIndexProps) => {
         isSuccess,
         error,
         data: items,
-    } = useGetVolumeQuery({
+    } = useGetVolumesQuery({
         sort: sortKey,
         filter: filterKey,
     });

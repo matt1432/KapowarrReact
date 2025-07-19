@@ -4,6 +4,7 @@
 import { Route, Routes } from 'react-router-dom';
 
 // Components
+import VolumeDetailsPage from 'Volume/Details/VolumeDetailsPage';
 import VolumeIndex from 'Volume/Index';
 import NotFound from 'Components/NotFound';
 
@@ -17,7 +18,6 @@ import Queue from 'Activity/Queue/Queue';
 import AddNewVolume from 'AddVolume/AddNewVolume/AddNewVolume';
 import ImportVolumePage from 'AddVolume/ImportVolume/ImportVolumePage';
 import CalendarPage from 'Calendar/CalendarPage';
-import VolumeDetailsPage from 'Volume/Details/VolumeDetailsPage';
 import CustomFormatSettingsPage from 'Settings/CustomFormats/CustomFormatSettingsPage';
 import DownloadClientSettings from 'Settings/DownloadClients/DownloadClientSettings';
 import GeneralSettings from 'Settings/General/GeneralSettings';
@@ -50,6 +50,8 @@ function AppRoutes({ history }: { history: History }) {
             {/*Volume*/}
             <Route path="/" element={<VolumeIndex history={history} />} />
 
+            <Route path="/volumes/:titleSlug" element={<VolumeDetailsPage />} />
+
             {/*
             <Route path="/add/new" component={AddNewVolume} />
 
@@ -58,8 +60,6 @@ function AppRoutes({ history }: { history: History }) {
             <Route path="/volumeseditor" exact={true} render={RedirectWithUrlBase} />
 
             <Route path="/seasonpass" exact={true} render={RedirectWithUrlBase} />
-
-            <Route path="/volumes/:titleSlug" component={VolumeDetailsPage} />
 
             {/*Calendar*/
             /*}

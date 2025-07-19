@@ -4,7 +4,7 @@ import getQueryString from 'Utilities/Fetch/getQueryString';
 import type { IndexFilter, IndexSort } from 'Volume/Index';
 import type { Volume, VolumePublicInfo } from 'Volume/Volume';
 
-export type GetVolumeParams =
+export type GetVolumesParams =
     | {
           filter?: IndexFilter;
           sort?: IndexSort;
@@ -21,7 +21,7 @@ export const baseApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: window.Kapowarr.urlBase + window.Kapowarr.apiRoot }),
     endpoints: (build) => ({
         // GET
-        getVolume: build.query<VolumePublicInfo[], GetVolumeParams>({
+        getVolumes: build.query<VolumePublicInfo[], GetVolumesParams>({
             query: ({ filter, sort } = {}) =>
                 'volumes' +
                 getQueryString({
@@ -65,14 +65,42 @@ export const baseApi = createApi({
                 method: 'POST',
             }),
         }),
+
+        // PUT
+        toggleIssueMonitored: build.mutation<void, { issueId: number; monitored: boolean }>({
+            query: ({ issueId, monitored }) => ({
+                url:
+                    `/volumes/${issueId}` +
+                    getQueryString({
+                        monitored,
+                        api_key: window.Kapowarr.apiKey,
+                    }),
+            }),
+        }),
+
+        toggleVolumeMonitored: build.mutation<void, { volumeId: number; monitored: boolean }>({
+            query: ({ volumeId, monitored }) => ({
+                url:
+                    `/volumes/${volumeId}` +
+                    getQueryString({
+                        monitored,
+                        api_key: window.Kapowarr.apiKey,
+                    }),
+            }),
+        }),
     }),
 });
 
-export const { useExecuteCommandMutation, useSearchVolumeQuery } = baseApi;
+export const {
+    useExecuteCommandMutation,
+    useSearchVolumeQuery,
+    useToggleIssueMonitoredMutation,
+    useToggleVolumeMonitoredMutation,
+} = baseApi;
 
 // Add default value to params
-export const useGetVolumeQuery = (params: GetVolumeParams = {}) =>
-    baseApi.useGetVolumeQuery(params);
+export const useGetVolumesQuery = (params: GetVolumesParams = {}) =>
+    baseApi.useGetVolumesQuery(params);
 
 export const useFetchQueueDetails = (volumeId?: number) => {
     return baseApi.useFetchQueueDetailsQuery(undefined, {
