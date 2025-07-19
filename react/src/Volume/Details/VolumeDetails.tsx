@@ -102,7 +102,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const [executeCommand, executeCommandState] = useExecuteCommandMutation();
     const [toggleVolumeMonitored] = useToggleVolumeMonitoredMutation();
-    const { refetch: refetchQueueDetails } = useFetchQueueDetails(volumeId);
+    const { refetch: refetchQueueDetails } = useFetchQueueDetails({ volumeId });
 
     const { isRefreshing, isRenaming, isSearching } = useMemo(() => {
         const isRunning = (cmd: string) =>

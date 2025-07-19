@@ -61,6 +61,11 @@ const initialState = {
             isVisible: false,
         },
         {
+            name: 'status',
+            label: () => translate('Status'),
+            isVisible: true,
+        },
+        {
             name: 'actions',
             // columnLabel: () => translate('Actions'),
             label: () => translate('Actions'),

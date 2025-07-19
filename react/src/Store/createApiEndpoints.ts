@@ -102,10 +102,28 @@ export const {
 export const useGetVolumesQuery = (params: GetVolumesParams = {}) =>
     baseApi.useGetVolumesQuery(params);
 
-export const useFetchQueueDetails = (volumeId?: number) => {
+export const useFetchQueueDetails = ({
+    volumeId,
+    issueId,
+}: {
+    volumeId?: number;
+    issueId?: number;
+} = {}) => {
     return baseApi.useFetchQueueDetailsQuery(undefined, {
-        selectFromResult: ({ data }) => ({
-            queue: data?.filter((item) => item.volume_id === volumeId) ?? [],
-        }),
+        selectFromResult: ({ data, ...rest }) => {
+            let queue = data ?? [];
+
+            if (volumeId) {
+                queue = queue.filter((item) => item.volume_id === volumeId);
+            }
+            if (issueId) {
+                queue = queue.filter((item) => item.issue_id === issueId);
+            }
+
+            return {
+                queue,
+                ...rest,
+            };
+        },
     });
 };

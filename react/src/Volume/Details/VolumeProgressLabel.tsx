@@ -65,7 +65,7 @@ function VolumeProgressLabel({
     issueFileCount,
 }: VolumeProgressLabelProps) {
     const { issues } = useIssuesSelector(volumeId);
-    const { queue } = useFetchQueueDetails(volumeId);
+    const { queue } = useFetchQueueDetails({ volumeId });
 
     const newDownloads =
         queue.length -

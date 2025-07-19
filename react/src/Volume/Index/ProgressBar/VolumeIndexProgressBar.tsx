@@ -39,7 +39,7 @@ function VolumeIndexProgressBar(props: VolumeIndexProgressBarProps) {
         isStandalone,
     } = props;
 
-    const { queue } = useFetchQueueDetails(volumeId);
+    const { queue } = useFetchQueueDetails({ volumeId });
 
     const newDownloads =
         queue.length -

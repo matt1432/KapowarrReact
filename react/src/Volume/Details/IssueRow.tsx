@@ -17,6 +17,7 @@ import TableRow from 'Components/Table/TableRow';
 // Specific Components
 import IssueSearchCell from 'Issue/IssueSearchCell';
 import IssueTitleLink from 'Issue/IssueTitleLink';
+import IssueStatus from 'Issue/IssueStatus';
 
 // CSS
 import styles from './IssueRow.module.css';
@@ -143,6 +144,14 @@ function IssueRow({
                     return (
                         <TableRowCell key={name} className={styles.releaseGroup}>
                             {issue?.files.find((f) => f.releaser)?.releaser ?? ''}
+                        </TableRowCell>
+                    );
+                }
+
+                if (name === 'status') {
+                    return (
+                        <TableRowCell key={name} className={styles.status}>
+                            <IssueStatus issue={issue!} issueFile={issueFile} />
                         </TableRowCell>
                     );
                 }
