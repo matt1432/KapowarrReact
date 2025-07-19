@@ -159,7 +159,7 @@ function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
 
                         {network ? (
                             <Label size={sizes.LARGE}>
-                                <Icon name={icons.NETWORK} size={13} />
+                                <Icon name={icons.PUBLISHER} size={13} />
 
                                 <span className={styles.network}>{network}</span>
                             </Label>

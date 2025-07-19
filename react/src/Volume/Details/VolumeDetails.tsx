@@ -417,7 +417,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                         size={sizes.LARGE}
                                     >
                                         <div>
-                                            <Icon name={icons.NETWORK} size={17} />
+                                            <Icon name={icons.PUBLISHER} size={17} />
                                             <span className={styles.network}>{publisher}</span>
                                         </div>
                                     </Label>

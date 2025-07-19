@@ -132,7 +132,7 @@ function getInfoRowProps(
     if (name === 'network') {
         return {
             title: translate('Publisher'),
-            iconName: icons.NETWORK,
+            iconName: icons.PUBLISHER,
             label: props.network ?? '',
         };
     }
