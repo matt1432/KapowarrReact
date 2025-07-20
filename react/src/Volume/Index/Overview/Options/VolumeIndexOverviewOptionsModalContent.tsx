@@ -66,7 +66,6 @@ function VolumeIndexOverviewOptionsModalContent(
         showQualityProfile,
         showPreviousAiring,
         showAdded,
-        showSeasonCount,
         showPath,
         showSizeOnDisk,
         showTags,
@@ -79,7 +78,6 @@ function VolumeIndexOverviewOptionsModalContent(
         showQualityProfile: false,
         showPreviousAiring: false,
         showAdded: false,
-        showSeasonCount: false,
         showPath: false,
         showSizeOnDisk: false,
         showTags: false,
@@ -178,17 +176,6 @@ function VolumeIndexOverviewOptionsModalContent(
                             type={inputTypes.CHECK}
                             name="showAdded"
                             value={showAdded}
-                            onChange={onOverviewOptionChange}
-                        />
-                    </FormGroup>
-
-                    <FormGroup>
-                        <FormLabel>{translate('ShowSeasonCount')}</FormLabel>
-
-                        <FormInputGroup
-                            type={inputTypes.CHECK}
-                            name="showSeasonCount"
-                            value={showSeasonCount}
                             onChange={onOverviewOptionChange}
                         />
                     </FormGroup>

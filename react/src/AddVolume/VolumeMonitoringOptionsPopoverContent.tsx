@@ -38,21 +38,6 @@ function VolumeMonitoringOptionsPopoverContent() {
             />
 
             <DescriptionListItem
-                title={translate('MonitorPilotIssue')}
-                data={translate('MonitorPilotIssueDescription')}
-            />
-
-            <DescriptionListItem
-                title={translate('MonitorFirstSeason')}
-                data={translate('MonitorFirstSeasonDescription')}
-            />
-
-            <DescriptionListItem
-                title={translate('MonitorLastSeason')}
-                data={translate('MonitorLastSeasonDescription')}
-            />
-
-            <DescriptionListItem
                 title={translate('MonitorSpecialIssues')}
                 data={translate('MonitorSpecialIssuesDescription')}
             />

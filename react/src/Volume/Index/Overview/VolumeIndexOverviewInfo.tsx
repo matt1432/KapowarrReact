@@ -57,7 +57,6 @@ interface VolumeIndexOverviewInfoProps {
     qualityProfile?: QualityProfile;
     previousAiring?: string;
     added?: string;
-    seasonCount: number;
     path: string;
     sizeOnDisk?: number;
     sortKey: string;
@@ -92,11 +91,6 @@ const rows = [
         name: 'added',
         showProp: 'showAdded',
         valueProp: 'added',
-    },
-    {
-        name: 'seasonCount',
-        showProp: 'showSeasonCount',
-        valueProp: 'seasonCount',
     },
     {
         name: 'path',
@@ -181,24 +175,6 @@ function getInfoRowProps(
                     timeFormat,
                     timeForToday: true,
                 }) ?? '',
-        };
-    }
-
-    if (name === 'seasonCount') {
-        const { seasonCount } = props;
-        let seasons = translate('OneSeason');
-
-        if (seasonCount === 0) {
-            seasons = translate('NoSeasons');
-        }
-        else if (seasonCount > 1) {
-            seasons = translate('CountSeasons', { count: seasonCount });
-        }
-
-        return {
-            title: translate('SeasonCount'),
-            iconName: icons.CIRCLE,
-            label: seasons,
         };
     }
 

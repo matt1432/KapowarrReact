@@ -9,7 +9,7 @@ import {
     useFetchQueueDetails,
     useGetVolumesQuery,
     useSearchVolumeQuery,
-    useToggleVolumeMonitoredMutation,
+    useUpdateVolumeMutation,
 } from 'Store/createApiEndpoints';
 
 // Misc
@@ -67,7 +67,7 @@ interface VolumeDetailsProps {
 // TODO:
 // import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
 // import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
-// import MonitoringOptionsModal from 'Volume/MonitoringOptions/MonitoringOptionsModal';
+import MonitoringOptionsModal from 'Volume/MonitoringOptions/MonitoringOptionsModal';
 
 function useIssuesSelector(volumeId: number) {
     const { error, issues, isFetching, isUninitialized, refetch } = useSearchVolumeQuery(
@@ -101,7 +101,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         useIssuesSelector(volumeId);
 
     const [executeCommand, executeCommandState] = useExecuteCommandMutation();
-    const [toggleVolumeMonitored] = useToggleVolumeMonitoredMutation();
+    const [toggleVolumeMonitored] = useUpdateVolumeMutation();
     const { refetch: refetchQueueDetails } = useFetchQueueDetails({ volumeId });
 
     const { isRefreshing, isRenaming, isSearching } = useMemo(() => {
@@ -147,7 +147,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     // const [isManageIssuesOpen, setIsManageIssuesOpen] = useState(false);
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
     const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);
-    // const [isMonitorOptionsModalOpen, setIsMonitorOptionsModalOpen] = useState(false);
+    const [isMonitorOptionsModalOpen, setIsMonitorOptionsModalOpen] = useState(false);
     const wasRefreshing = usePrevious(isRefreshing);
     const wasRenaming = usePrevious(isRenaming);
 
@@ -189,14 +189,12 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     }, []);
 
     const handleMonitorOptionsPress = useCallback(() => {
-        // setIsMonitorOptionsModalOpen(true);
+        setIsMonitorOptionsModalOpen(true);
     }, []);
 
-    /*
     const handleMonitorOptionsClose = useCallback(() => {
         setIsMonitorOptionsModalOpen(false);
     }, []);
-    */
 
     const handleMonitorTogglePress = useCallback(
         (value: boolean) => {
@@ -520,13 +518,11 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                     onModalClose={handleDeleteVolumeModalClose}
                 />
 
-                {/*
                 <MonitoringOptionsModal
                     isOpen={isMonitorOptionsModalOpen}
                     volumeId={volumeId}
                     onModalClose={handleMonitorOptionsClose}
                 />
-                */}
             </PageContentBody>
         </PageContent>
     );

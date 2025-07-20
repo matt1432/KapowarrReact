@@ -16,6 +16,18 @@ export type ExecuteCommandParams = {
     [key: string]: string;
 };
 
+export interface UpdateVolumeParams {
+    monitored?: boolean;
+    monitor_new_issues?: boolean;
+    monitoring_scheme?: '' | 'all' | 'missing' | 'none';
+    special_version_locked?: boolean;
+    special_version?: '' | 'auto' | 'tpb' | 'one-shot' | 'hard-cover' | 'volume-as-issue';
+    root_folder?: number;
+    volume_folder?: string;
+    libgen_url?: string;
+    volumeId: number;
+}
+
 export const baseApi = createApi({
     reducerPath: 'baseApi',
     baseQuery: fetchBaseQuery({ baseUrl: window.Kapowarr.urlBase + window.Kapowarr.apiRoot }),
@@ -75,17 +87,19 @@ export const baseApi = createApi({
                         monitored,
                         api_key: window.Kapowarr.apiKey,
                     }),
+                method: 'PUT',
             }),
         }),
 
-        toggleVolumeMonitored: build.mutation<void, { volumeId: number; monitored: boolean }>({
-            query: ({ volumeId, monitored }) => ({
+        updateVolume: build.mutation<void, UpdateVolumeParams>({
+            query: ({ volumeId, ...rest }) => ({
                 url:
                     `/volumes/${volumeId}` +
                     getQueryString({
-                        monitored,
+                        ...rest,
                         api_key: window.Kapowarr.apiKey,
                     }),
+                method: 'PUT',
             }),
         }),
     }),
@@ -95,13 +109,14 @@ export const {
     useExecuteCommandMutation,
     useSearchVolumeQuery,
     useToggleIssueMonitoredMutation,
-    useToggleVolumeMonitoredMutation,
+    useUpdateVolumeMutation,
 } = baseApi;
 
 // Add default value to params
 export const useGetVolumesQuery = (params: GetVolumesParams = {}) =>
     baseApi.useGetVolumesQuery(params);
 
+// Abstract some logic
 export const useFetchQueueDetails = ({
     volumeId,
     issueId,

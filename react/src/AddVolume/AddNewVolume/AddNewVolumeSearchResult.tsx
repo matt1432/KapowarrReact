@@ -52,8 +52,6 @@ function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
         // @ts-expect-error TODO:
         status,
         // @ts-expect-error TODO:
-        statistics = {} as Statistics,
-        // @ts-expect-error TODO:
         ratings,
         // @ts-expect-error TODO:
         overview,
@@ -68,7 +66,6 @@ function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
     const isSmallScreen = false;
     const [isNewAddVolumeModalOpen, setIsNewAddVolumeModalOpen] = useState(false);
 
-    const seasonCount = statistics.seasonCount;
     const handlePress = useCallback(() => {
         setIsNewAddVolumeModalOpen(true);
     }, []);
@@ -82,11 +79,6 @@ function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
     }, []);
 
     const linkProps = isExistingVolume ? { to: `/volumes/${titleSlug}` } : { onPress: handlePress };
-    let seasons = translate('OneSeason');
-
-    if (seasonCount > 1) {
-        seasons = translate('CountSeasons', { count: seasonCount });
-    }
 
     return (
         <div className={styles.searchResult}>
@@ -164,8 +156,6 @@ function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
                                 <span className={styles.network}>{network}</span>
                             </Label>
                         ) : null}
-
-                        {seasonCount ? <Label size={sizes.LARGE}>{seasons}</Label> : null}
 
                         {status === 'ended' ? (
                             <Label kind={kinds.DANGER} size={sizes.LARGE}>

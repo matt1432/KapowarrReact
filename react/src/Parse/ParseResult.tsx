@@ -40,9 +40,6 @@ function ParseResult(props: ParseResultProps) {
         issueNumbers,
         absoluteIssueNumbers,
         special,
-        fullSeason,
-        isMultiSeason,
-        isPartialSeason,
         isDaily,
         airDate,
         quality,
@@ -116,21 +113,6 @@ function ParseResult(props: ParseResultProps) {
                             title={translate('Special')}
                             data={special ? translate('True') : translate('False')}
                         />
-
-                        <ParseResultItem
-                            title={translate('FullSeason')}
-                            data={fullSeason ? translate('True') : translate('False')}
-                        />
-
-                        <ParseResultItem
-                            title={translate('MultiSeason')}
-                            data={isMultiSeason ? translate('True') : translate('False')}
-                        />
-
-                        <ParseResultItem
-                            title={translate('PartialSeason')}
-                            data={isPartialSeason ? translate('True') : translate('False')}
-                        />
                     </div>
                 </div>
             </FieldSet>
@@ -186,11 +168,6 @@ function ParseResult(props: ParseResultProps) {
                             '-'
                         )
                     }
-                />
-
-                <ParseResultItem
-                    title={translate('MatchedToSeason')}
-                    data={issues.length ? issues[0].seasonNumber : '-'}
                 />
 
                 <ParseResultItem

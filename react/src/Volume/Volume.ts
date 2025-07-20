@@ -1,6 +1,8 @@
 import type { ModelBase } from 'App/ModelBase';
 import type { GeneralFileData, Issue } from 'Issue/Issue';
 
+export type VolumeMonitor = 'all' | 'missing' | 'none';
+
 export interface Volume extends ModelBase {
     comicvine_id: number;
     libgen_url: string | null;

@@ -243,17 +243,6 @@ function AddNewVolumeModalContent({
                             </FormGroup>
 
                             <FormGroup>
-                                <FormLabel>{translate('SeasonFolder')}</FormLabel>
-
-                                <FormInputGroup
-                                    type={inputTypes.CHECK}
-                                    name="seasonFolder"
-                                    onChange={() => {} /*handleInputChange*/}
-                                    // {...seasonFolder}
-                                />
-                            </FormGroup>
-
-                            <FormGroup>
                                 <FormLabel>{translate('Tags')}</FormLabel>
 
                                 <FormInputGroup

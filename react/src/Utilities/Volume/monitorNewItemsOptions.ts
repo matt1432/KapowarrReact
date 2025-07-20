@@ -5,13 +5,13 @@ const monitorNewItemsOptions: EnhancedSelectInputValue<string>[] = [
     {
         key: 'all',
         get value() {
-            return translate('MonitorAllSeasons');
+            return translate('MonitorFutureIssues');
         },
     },
     {
         key: 'none',
         get value() {
-            return translate('MonitorNoNewSeasons');
+            return translate('MonitorNoFutureIssues');
         },
     },
 ];

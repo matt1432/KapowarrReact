@@ -73,10 +73,6 @@ function ImportVolumeHeader({
                 />
             </VirtualTableHeaderCell>
 
-            <VirtualTableHeaderCell className={styles.seasonFolder} name="seasonFolder">
-                {translate('SeasonFolder')}
-            </VirtualTableHeaderCell>
-
             <VirtualTableHeaderCell className={styles.volume} name="volume">
                 {translate('Volumes')}
             </VirtualTableHeaderCell>
