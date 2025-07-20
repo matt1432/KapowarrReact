@@ -42,6 +42,7 @@ import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
+import Scroller from 'Components/Scroller/Scroller';
 import Tooltip from 'Components/Tooltip/Tooltip';
 
 // Specific Components
@@ -55,7 +56,6 @@ import VolumeProgressLabel from './VolumeProgressLabel';
 
 // CSS
 import styles from './VolumeDetails.module.css';
-import Scroller from 'Components/Scroller/Scroller';
 
 // Types
 interface VolumeDetailsProps {
@@ -246,7 +246,6 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         publisher,
         site_url,
         description,
-        issue_count: issueCount,
         issues_downloaded: issueFileCount,
         total_size: sizeOnDisk,
     } = volume;
@@ -448,10 +447,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
                                 <VolumeProgressLabel
                                     className={styles.volumeProgressLabel}
-                                    volumeId={volumeId}
-                                    monitored={monitored}
-                                    issueCount={issueCount}
-                                    issueFileCount={issueFileCount}
+                                    volume={volume}
                                 />
                             </div>
 

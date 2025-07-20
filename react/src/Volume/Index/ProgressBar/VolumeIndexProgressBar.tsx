@@ -6,7 +6,7 @@ import { useFetchQueueDetails } from 'Store/createApiEndpoints';
 // Misc
 import { sizes } from 'Helpers/Props';
 
-import getProgressBarKind from 'Utilities/Volume/getProgressBarKind';
+import getDownloadedIssuesProgress from 'Utilities/Volume/getDownloadedIssuesProgress';
 import translate from 'Utilities/String/translate';
 
 // General Components
@@ -16,11 +16,10 @@ import ProgressBar from 'Components/ProgressBar';
 import styles from './VolumeIndexProgressBar.module.css';
 
 // Types
+import type { Volume } from 'Volume/Volume';
+
 interface VolumeIndexProgressBarProps {
-    volumeId: number;
-    monitored: boolean;
-    issueCount: number;
-    issueFileCount: number;
+    volume: Volume;
     width: number;
     detailedProgressBar: boolean;
     isStandalone: boolean;
@@ -28,36 +27,25 @@ interface VolumeIndexProgressBarProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexProgressBar(props: VolumeIndexProgressBarProps) {
-    const {
-        volumeId,
-        monitored,
-        issueCount,
-        issueFileCount,
-        width,
-        detailedProgressBar,
-        isStandalone,
-    } = props;
+function VolumeIndexProgressBar({
+    volume,
+    width,
+    detailedProgressBar,
+    isStandalone,
+}: VolumeIndexProgressBarProps) {
+    const { queue } = useFetchQueueDetails({ volumeId: volume.id });
 
-    const { queue } = useFetchQueueDetails({ volumeId });
-
-    const newDownloads =
-        queue.length -
-        queue.filter((item) => ['failed', 'canceled', 'shutting down'].includes(item.status))
-            .length;
-
-    // FIXME: handle when there are more files than monitored issues
-    const progress = issueCount ? (issueFileCount / issueCount) * 100 : 100;
-    const text = newDownloads
-        ? `${issueFileCount} + ${newDownloads} / ${issueCount}`
-        : `${issueFileCount} / ${issueCount}`;
+    const { issueCount, issueFileCount, kind, progress, text } = getDownloadedIssuesProgress({
+        queue,
+        volume,
+    });
 
     return (
         <ProgressBar
             className={styles.progressBar}
             containerClassName={isStandalone ? undefined : styles.progress}
             progress={progress}
-            kind={getProgressBarKind(monitored, progress, queue.length > 0)}
+            kind={kind}
             size={detailedProgressBar ? sizes.MEDIUM : sizes.SMALL}
             showText={detailedProgressBar}
             text={text}

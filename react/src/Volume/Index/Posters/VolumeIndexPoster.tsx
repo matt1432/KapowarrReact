@@ -104,17 +104,7 @@ function VolumeIndexPoster(props: VolumeIndexPosterProps) {
         return null;
     }
 
-    const {
-        title,
-        monitored,
-        folder,
-        publisher,
-        issues,
-        issues_downloaded: issueFileCount,
-        total_size: sizeOnDisk,
-    } = volume;
-
-    const issueCount = issues.filter((issue) => issue.monitored).length;
+    const { title, monitored, folder, publisher, total_size: sizeOnDisk } = volume;
 
     const link = `/volumes/${volumeId}`;
 
@@ -170,10 +160,7 @@ function VolumeIndexPoster(props: VolumeIndexPosterProps) {
             </div>
 
             <VolumeIndexProgressBar
-                volumeId={volumeId}
-                monitored={monitored}
-                issueCount={issueCount}
-                issueFileCount={issueFileCount}
+                volume={volume}
                 width={posterWidth}
                 detailedProgressBar={detailedProgressBar}
                 isStandalone={false}
