@@ -1,38 +1,48 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <meta id="url_base" data-value="{{url_base}}">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <link rel="manifest" href="{{url_base}}/manifest.json">
+    <meta id="url_base" data-value="{{url_base}}">
 
-        <link rel="stylesheet" href="{{ url_for('static', filename='fonts/fonts.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/react.css') }}">
+    <link rel="manifest" href="{{url_base}}/manifest.json">
 
-        <style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/fonts.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/react.css') }}">
+
+    <style>
+        body {
+            overflow: hidden;
+            /* Spare dark mode users' eyes */
+            background-color: var(--pageBackground, #202020);
+        }
+
+        .root {
+            overflow: hidden;
+            height: 100%;
+            /* needed for proper layout */
+        }
+
+        @media only screen and (max-width: 768px) {
             .root {
-                overflow: hidden;
-                height: 100%; /* needed for proper layout */
+                display: flex;
+                flex-direction: column;
+                min-height: 100%;
+                height: auto;
             }
+        }
+    </style>
 
-            @media only screen and (max-width: 768px) {
-                .root {
-                    display: flex;
-                    flex-direction: column;
-                    min-height: 100%;
-                    height: auto;
-                }
-            }
-        </style>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/x-icon">
+</head>
 
-        <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/x-icon">
-    </head>
-    <body>
-        <div id="portal-root"></div>
-        <div id="root" class="root"></div>
-        <script type="module" src="{{ url_for('static', filename='js/react.js') }}" defer></script>
-    </body>
+<body>
+    <div id="portal-root"></div>
+    <div id="root" class="root"></div>
+    <script type="module" src="{{ url_for('static', filename='js/react.js') }}" defer></script>
+</body>
+
 </html>

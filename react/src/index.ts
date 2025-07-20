@@ -5,30 +5,24 @@ import getLocalStorage from 'Utilities/LocalStorage/getLocalStorage';
 import 'Styles/globals.css';
 import './index.css';
 
-// Init default values
+setupLocalStorage();
+const localKapowarr = getLocalStorage();
+
 window.Kapowarr = {
     apiKey: '',
-    apiRoot: '',
+    apiRoot: '/api',
     instanceName: '',
-    theme: 'light',
-    urlBase: '/',
+    theme: localKapowarr.theme,
+    urlBase: (document.querySelector('#url_base') as HTMLButtonElement).dataset.value!,
     version: '',
 };
 
-window.Kapowarr.urlBase = (document.querySelector('#url_base') as HTMLButtonElement).dataset.value!;
-window.Kapowarr.apiRoot = '/api';
-
 (async () => {
-    const key = await getApiKey();
+    const { urlBase, apiRoot } = window.Kapowarr;
+    const key = await getApiKey(urlBase, apiRoot);
 
     // TODO: handle when apiKey is undefined
     window.Kapowarr.apiKey = key ?? '';
-
-    setupLocalStorage();
-
-    const localKapowarr = getLocalStorage();
-
-    window.Kapowarr.theme = localKapowarr.theme;
 
     await import(`${window.Kapowarr.urlBase}/static/js/bootstrap.js`);
 })();

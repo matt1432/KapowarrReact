@@ -1,10 +1,13 @@
 import getLocalStorage from 'Utilities/LocalStorage/getLocalStorage';
 
-export default async function getApiKey(): Promise<string | undefined> {
+export default async function getApiKey(
+    urlBase: string,
+    apiRoot: string,
+): Promise<string | undefined> {
     const localKapowarr = getLocalStorage();
 
     if (!localKapowarr.apiKey || (localKapowarr.lastLogin ?? 0) < Date.now() / 1000 - 86400) {
-        await fetch(`${window.Kapowarr.urlBase}${window.Kapowarr.apiRoot}/auth`, {
+        await fetch(`${urlBase}${apiRoot}/auth`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: '{}',
