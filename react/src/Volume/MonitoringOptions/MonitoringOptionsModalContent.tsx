@@ -33,10 +33,35 @@ import styles from './MonitoringOptionsModalContent.module.css';
 
 // Types
 import type { InputChanged } from 'typings/inputs';
+import type { Volume } from 'Volume/Volume';
+import type {
+    BaseQueryFn,
+    FetchArgs,
+    FetchBaseQueryError,
+    FetchBaseQueryMeta,
+    QueryActionCreatorResult,
+    QueryDefinition,
+} from '@reduxjs/toolkit/query';
 
 export interface MonitoringOptionsModalContentProps {
     volumeId: number;
     onModalClose: () => void;
+    refetchVolume: () => QueryActionCreatorResult<
+        QueryDefinition<
+            { volumeId: number },
+            BaseQueryFn<
+                string | FetchArgs,
+                unknown,
+                FetchBaseQueryError,
+                object,
+                FetchBaseQueryMeta
+            >,
+            never,
+            Volume,
+            'baseApi',
+            unknown
+        >
+    >;
 }
 
 type Monitor = NonNullable<UpdateVolumeParams['monitoring_scheme']>;
@@ -48,8 +73,15 @@ const NO_CHANGE = 'noChange';
 function MonitoringOptionsModalContent({
     volumeId,
     onModalClose,
+    refetchVolume,
 }: MonitoringOptionsModalContentProps) {
     const [updateVolumeMonitor, updateVolumeMonitorState] = useUpdateVolumeMutation();
+
+    useEffect(() => {
+        if (updateVolumeMonitorState.isSuccess) {
+            refetchVolume();
+        }
+    }, [refetchVolume, updateVolumeMonitorState]);
 
     const { isLoading: isSaving, error: saveError } = updateVolumeMonitorState;
 
@@ -62,6 +94,7 @@ function MonitoringOptionsModalContent({
 
     const handleSavePress = useCallback(() => {
         if (monitor === NO_CHANGE) {
+            onModalClose();
             return;
         }
 
@@ -69,7 +102,7 @@ function MonitoringOptionsModalContent({
             volumeId,
             monitoring_scheme: monitor,
         });
-    }, [monitor, volumeId, updateVolumeMonitor]);
+    }, [monitor, onModalClose, volumeId, updateVolumeMonitor]);
 
     useEffect(() => {
         if (!isSaving && wasSaving && !saveError) {

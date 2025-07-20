@@ -56,17 +56,24 @@ function IssueDetailsModalContent({
     onTabChange,
     onModalClose,
 }: IssueDetailsModalContentProps) {
-    const { volume, issue } = useSearchVolumeQuery(
+    const { volume, issue, refetch } = useSearchVolumeQuery(
         { volumeId },
         {
-            selectFromResult: ({ data }) => ({
+            selectFromResult: ({ data, ...rest }) => ({
                 volume: data,
                 issue: data?.issues.find((issue) => issue.id === issueId),
+                ...rest,
             }),
         },
     );
 
-    const [toggleIssueMonitored] = useToggleIssueMonitoredMutation();
+    const [toggleIssueMonitored, toggleIssueMonitoredState] = useToggleIssueMonitoredMutation();
+
+    useEffect(() => {
+        if (toggleIssueMonitoredState.isSuccess) {
+            refetch();
+        }
+    }, [refetch, toggleIssueMonitoredState]);
 
     const [currentlySelectedTab, setCurrentlySelectedTab] = useState(selectedTab);
 

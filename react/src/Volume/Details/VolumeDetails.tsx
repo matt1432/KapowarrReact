@@ -94,14 +94,22 @@ function useIssuesSelector(volumeId: number) {
 }
 
 function VolumeDetails({ volumeId }: VolumeDetailsProps) {
-    const { data: volume } = useSearchVolumeQuery({ volumeId });
+    const { data: volume, refetch: refetchVolume } = useSearchVolumeQuery({ volumeId });
     const { data: allVolumes } = useGetVolumesQuery();
 
     const { isFetching, isPopulated, issuesError, hasIssues, hasMonitoredIssues, refetchIssues } =
         useIssuesSelector(volumeId);
 
     const [executeCommand, executeCommandState] = useExecuteCommandMutation();
-    const [toggleVolumeMonitored] = useUpdateVolumeMutation();
+
+    const [toggleVolumeMonitored, toggleVolumeMonitoredState] = useUpdateVolumeMutation();
+
+    useEffect(() => {
+        if (toggleVolumeMonitoredState.isSuccess) {
+            refetchVolume();
+        }
+    }, [refetchVolume, toggleVolumeMonitoredState]);
+
     const { refetch: refetchQueueDetails } = useFetchQueueDetails({ volumeId });
 
     const { isRefreshing, isRenaming, isSearching } = useMemo(() => {
@@ -518,6 +526,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                     isOpen={isMonitorOptionsModalOpen}
                     volumeId={volumeId}
                     onModalClose={handleMonitorOptionsClose}
+                    refetchVolume={refetchVolume}
                 />
             </PageContentBody>
         </PageContent>

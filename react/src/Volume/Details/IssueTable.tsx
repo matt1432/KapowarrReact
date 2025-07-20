@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -40,7 +40,7 @@ interface IssueTableProps {
 // IMPLEMENTATIONS
 
 function useIssuesSelector(volumeId: number) {
-    const { issues } = useSearchVolumeQuery(
+    const { issues, refetch } = useSearchVolumeQuery(
         { volumeId },
         {
             selectFromResult: ({ data, ...rest }) => ({
@@ -52,16 +52,23 @@ function useIssuesSelector(volumeId: number) {
 
     return {
         issues,
+        refetch,
     };
 }
 
 function IssueTable({ volumeId }: IssueTableProps) {
     const dispatch = useRootDispatch();
 
-    const { issues } = useIssuesSelector(volumeId);
+    const { issues, refetch } = useIssuesSelector(volumeId);
     const { columns, sortKey, sortDirection } = useRootSelector((state) => state.issueTable);
 
-    const [toggleIssueMonitored] = useToggleIssueMonitoredMutation();
+    const [toggleIssueMonitored, toggleIssueMonitoredState] = useToggleIssueMonitoredMutation();
+
+    useEffect(() => {
+        if (toggleIssueMonitoredState.isSuccess) {
+            refetch();
+        }
+    }, [refetch, toggleIssueMonitoredState]);
 
     const lastToggledIssue = useRef<number | null>(null);
 

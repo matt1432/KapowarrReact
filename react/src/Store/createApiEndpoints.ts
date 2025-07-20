@@ -68,38 +68,38 @@ export const baseApi = createApi({
         // POST
         executeCommand: build.mutation<void, ExecuteCommandParams>({
             query: (params) => ({
+                method: 'POST',
                 url:
                     'system/tasks' +
                     getQueryString({
                         ...params,
                         api_key: window.Kapowarr.apiKey,
                     }),
-                method: 'POST',
             }),
         }),
 
         // PUT
         toggleIssueMonitored: build.mutation<void, { issueId: number; monitored: boolean }>({
-            query: ({ issueId, monitored }) => ({
+            query: ({ issueId, ...body }) => ({
+                method: 'PUT',
                 url:
-                    `/volumes/${issueId}` +
+                    `/issues/${issueId}` +
                     getQueryString({
-                        monitored,
                         api_key: window.Kapowarr.apiKey,
                     }),
-                method: 'PUT',
+                body,
             }),
         }),
 
         updateVolume: build.mutation<void, UpdateVolumeParams>({
-            query: ({ volumeId, ...rest }) => ({
+            query: ({ volumeId, ...body }) => ({
+                method: 'PUT',
                 url:
                     `/volumes/${volumeId}` +
                     getQueryString({
-                        ...rest,
                         api_key: window.Kapowarr.apiKey,
                     }),
-                method: 'PUT',
+                body,
             }),
         }),
     }),
