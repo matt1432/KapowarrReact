@@ -24,7 +24,6 @@ export interface VolumeIndexState {
 
     // TODO: persist this state
     tableOptions: {
-        showBanners: boolean;
         showSearchAction: boolean;
         pageSize: number;
         columns: Column[];
@@ -48,7 +47,6 @@ const initialState = {
     },
 
     tableOptions: {
-        showBanners: false,
         showSearchAction: false,
         pageSize: 20,
 

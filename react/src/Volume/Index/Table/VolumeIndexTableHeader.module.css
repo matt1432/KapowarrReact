@@ -4,7 +4,7 @@
     flex: 0 0 60px;
 }
 
-.sortTitle {
+.title {
     composes: headerCell from 'Components/Table/VirtualTableHeaderCell.module.css';
 
     flex: 4 0 110px;
@@ -24,44 +24,20 @@
     flex: 0 0 100px;
 }
 
-.network {
+.publisher {
     composes: headerCell from 'Components/Table/VirtualTableHeaderCell.module.css';
 
     flex: 2 0 90px;
 }
 
-.originalLanguage,
-.qualityProfileId {
-    composes: headerCell from 'Components/Table/VirtualTableHeaderCell.module.css';
-
-    flex: 1 0 125px;
-}
-
 .releaseGroups,
-.nextAiring,
-.previousAiring,
-.added,
-.genres {
+.added {
     composes: headerCell from 'Components/Table/VirtualTableHeaderCell.module.css';
 
     flex: 0 0 180px;
 }
 
-.seasonCount,
-.certification {
-    composes: headerCell from 'Components/Table/VirtualTableHeaderCell.module.css';
-
-    flex: 0 0 100px;
-}
-
-.seasonFolder {
-    composes: headerCell from 'Components/Table/VirtualTableHeaderCell.module.css';
-
-    flex: 0 0 150px;
-}
-
-.issueProgress,
-.latestSeason {
+.issueProgress {
     composes: headerCell from 'Components/Table/VirtualTableHeaderCell.module.css';
 
     flex: 0 0 150px;
@@ -79,7 +55,7 @@
     flex: 0 0 80px;
 }
 
-.path {
+.folder {
     composes: headerCell from 'Components/Table/VirtualTableHeaderCell.module.css';
 
     flex: 1 0 150px;
@@ -89,24 +65,6 @@
     composes: headerCell from 'Components/Table/VirtualTableHeaderCell.module.css';
 
     flex: 0 0 120px;
-}
-
-.ratings {
-    composes: headerCell from 'Components/Table/VirtualTableHeaderCell.module.css';
-
-    flex: 0 0 80px;
-}
-
-.tags {
-    composes: headerCell from 'Components/Table/VirtualTableHeaderCell.module.css';
-
-    flex: 1 0 60px;
-}
-
-.useSceneNumbering {
-    composes: headerCell from 'Components/Table/VirtualTableHeaderCell.module.css';
-
-    flex: 0 0 145px;
 }
 
 .monitorNewItems {

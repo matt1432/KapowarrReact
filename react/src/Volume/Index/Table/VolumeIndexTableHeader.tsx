@@ -4,9 +4,8 @@
 import { useCallback } from 'react';
 
 // Redux
-import { useDispatch } from 'react-redux';
-// import { setVolumeSort, setVolumeTableOption } from 'Store/Actions/volumeIndexActions';
-// import hasGrowableColumns from './hasGrowableColumns';
+import { useRootDispatch } from 'Store/createAppStore';
+import { setVolumeSort, setVolumeTableOption } from 'Store/Slices/VolumeIndex';
 
 // Misc
 import { useSelect } from 'App/SelectContext';
@@ -31,9 +30,10 @@ import styles from './VolumeIndexTableHeader.module.css';
 import type { Column } from 'Components/Table/Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { CheckInputChanged } from 'typings/inputs';
+import type { IndexSort } from '..';
+import type { TableOptionsChangePayload } from 'typings/Table';
 
 interface VolumeIndexTableHeaderProps {
-    showBanners: boolean;
     columns: Column[];
     sortKey?: string;
     sortDirection?: SortDirection;
@@ -42,25 +42,25 @@ interface VolumeIndexTableHeaderProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexTableHeader(props: VolumeIndexTableHeaderProps) {
-    const { showBanners, columns, sortKey, sortDirection, isSelectMode } = props;
-    const dispatch = useDispatch();
+function VolumeIndexTableHeader({
+    columns,
+    sortKey,
+    sortDirection,
+    isSelectMode,
+}: VolumeIndexTableHeaderProps) {
+    const dispatch = useRootDispatch();
     const [selectState, selectDispatch] = useSelect();
 
     const onSortPress = useCallback(
-        // @ts-expect-error TODO:
-        // eslint-disable-next-line
         (value: string) => {
-            // dispatch(setVolumeSort({ sortKey: value }));
+            dispatch(setVolumeSort(value as IndexSort));
         },
         [dispatch],
     );
 
     const onTableOptionChange = useCallback(
-        // @ts-expect-error TODO:
-        // eslint-disable-next-line
-        (payload: unknown) => {
-            // dispatch(setVolumeTableOption(payload));
+        (payload: TableOptionsChangePayload) => {
+            dispatch(setVolumeTableOption(payload));
         },
         [dispatch],
     );
@@ -113,16 +113,7 @@ function VolumeIndexTableHeader(props: VolumeIndexTableHeaderProps) {
                 return (
                     <VirtualTableHeaderCell
                         key={name}
-                        className={classNames(
-                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            // @ts-ignore
-                            styles[name],
-                            name === 'sortTitle' && showBanners && styles.banner,
-                            name === 'sortTitle' &&
-                                showBanners &&
-                                // !hasGrowableColumns(columns) &&
-                                styles.bannerGrow,
-                        )}
+                        className={classNames(styles[name as keyof typeof styles])}
                         name={name}
                         sortKey={sortKey}
                         sortDirection={sortDirection}

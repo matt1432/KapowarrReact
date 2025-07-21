@@ -1,13 +1,11 @@
 // IMPORTS
 
 // React
-import { type RefObject, useEffect, useMemo, useRef } from 'react';
+import { type RefObject, useEffect, useRef } from 'react';
 import { FixedSizeList, type ListChildComponentProps } from 'react-window';
 
 // Redux
-// import { useSelector } from 'react-redux';
-// import { createSelector } from 'reselect';
-// import selectTableOptions from './selectTableOptions';
+import { useRootSelector } from 'Store/createAppStore';
 
 // Misc
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
@@ -47,13 +45,6 @@ interface VolumeIndexTableProps {
 
 // IMPLEMENTATIONS
 
-/*
-const columnsSelector = createSelector(
-    (state: AppState) => state.volumeIndex.columns,
-    (columns) => columns,
-);
-*/
-
 function Row({ index, style, data }: ListChildComponentProps<RowItemData>) {
     const { items, sortKey, columns, isSelectMode } = data;
 
@@ -82,37 +73,27 @@ function Row({ index, style, data }: ListChildComponentProps<RowItemData>) {
     );
 }
 
-function VolumeIndexTable(props: VolumeIndexTableProps) {
-    const {
-        items,
-        sortKey,
-        sortDirection,
-        jumpToCharacter,
-        isSelectMode,
-        isSmallScreen,
-        scrollerRef,
-    } = props;
-
-    // const columns = useSelector(columnsSelector);
-    // const { showBanners } = useSelector(selectTableOptions);
-    const showBanners = true;
-    // @ts-expect-error TODO
-    const columns = [];
+function VolumeIndexTable({
+    items,
+    sortKey,
+    sortDirection,
+    jumpToCharacter,
+    isSelectMode,
+    isSmallScreen,
+    scrollerRef,
+}: VolumeIndexTableProps) {
+    const { columns } = useRootSelector((state) => state.volumeIndex.tableOptions);
 
     const listRef = useRef<FixedSizeList<RowItemData>>(undefined) as RefObject<
         FixedSizeList<RowItemData>
     >;
-
-    const rowHeight = useMemo(() => {
-        return showBanners ? 70 : 38;
-    }, [showBanners]);
 
     useEffect(() => {
         if (jumpToCharacter) {
             const index = getIndexOfFirstCharacter(items, jumpToCharacter);
 
             if (index != null) {
-                let scrollTop = index * rowHeight;
+                let scrollTop = index * 38;
 
                 // If the offset is zero go to the top, otherwise offset
                 // by the approximate size of the header + padding (37 + 20).
@@ -126,14 +107,12 @@ function VolumeIndexTable(props: VolumeIndexTableProps) {
                 scrollerRef?.current?.scrollTo(0, scrollTop);
             }
         }
-    }, [jumpToCharacter, rowHeight, items, scrollerRef, listRef]);
+    }, [jumpToCharacter, items, scrollerRef, listRef]);
 
     return (
         <VirtualTable
             Header={
                 <VolumeIndexTableHeader
-                    showBanners={showBanners}
-                    // @ts-expect-error TODO
                     columns={columns}
                     sortKey={sortKey}
                     sortDirection={sortDirection}
@@ -144,13 +123,12 @@ function VolumeIndexTable(props: VolumeIndexTableProps) {
             itemData={{
                 items,
                 sortKey,
-                // @ts-expect-error TODO
                 columns,
                 isSelectMode,
             }}
             isSmallScreen={isSmallScreen}
             listRef={listRef}
-            rowHeight={rowHeight}
+            rowHeight={38}
             Row={Row}
             scrollerRef={scrollerRef}
         />

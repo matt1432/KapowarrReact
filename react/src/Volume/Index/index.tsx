@@ -57,6 +57,7 @@ import VolumeIndexTableOptions from './Table/VolumeIndexTableOptions';
 
 // CSS
 import styles from './index.module.css';
+import VolumeIndexTable from './Table/VolumeIndexTable';
 
 // Types
 export type IndexView = 'posters' | 'table';
@@ -202,6 +203,11 @@ const VolumeIndex = withScrollPosition((props: VolumeIndexProps) => {
         };
     }, [items, sortKey, sortDirection]);
 
+    const ViewComponent = useMemo(
+        () => (view === 'posters' ? VolumeIndexPosters : VolumeIndexTable),
+        [view],
+    );
+
     const isLoaded = !!(!error && isPopulated && items.length);
     const hasNoVolume = !totalItems;
 
@@ -243,7 +249,6 @@ const VolumeIndex = withScrollPosition((props: VolumeIndexProps) => {
                     <PageToolbarSection alignContent={align.RIGHT} collapseButtons={false}>
                         {view === 'table' ? (
                             <TableOptionsModalWrapper
-                                // FIXME: still shows posters
                                 columns={columns}
                                 optionsComponent={VolumeIndexTableOptions}
                                 onTableOptionChange={onTableOptionChange}
@@ -301,7 +306,7 @@ const VolumeIndex = withScrollPosition((props: VolumeIndexProps) => {
 
                         {isLoaded ? (
                             <div className={styles.contentBodyContainer}>
-                                <VolumeIndexPosters
+                                <ViewComponent
                                     scrollerRef={scrollerRef}
                                     items={items}
                                     sortKey={sortKey}

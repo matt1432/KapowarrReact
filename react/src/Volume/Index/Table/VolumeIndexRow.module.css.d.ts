@@ -15,7 +15,7 @@ interface CssExports {
     latestSeason: string;
     link: string;
     monitorNewItems: string;
-    network: string;
+    publisher: string;
     nextAiring: string;
     originalLanguage: string;
     overlayTitle: string;
@@ -28,7 +28,7 @@ interface CssExports {
     seasonFolder: string;
     volumeType: string;
     sizeOnDisk: string;
-    sortTitle: string;
+    title: string;
     status: string;
     tags: string;
     useSceneNumbering: string;

@@ -1,38 +1,40 @@
-/*
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useSelect } from 'App/SelectContext';*/
-// import { REFRESH_VOLUMES, VOLUMES_SEARCH } from 'Commands/commandNames';
-/*import CheckInput from 'Components/Form/CheckInput';
-import HeartRating from 'Components/HeartRating';
-import IconButton from 'Components/Link/IconButton';
-import Link from 'Components/Link/Link';
-import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
-import VolumeTagList from 'Components/VolumeTagList';
-import RelativeDateCell from 'Components/Table/Cells/RelativeDateCell';
-import VirtualTableRowCell from 'Components/Table/Cells/VirtualTableRowCell';
-import VirtualTableSelectCell from 'Components/Table/Cells/VirtualTableSelectCell';*/
-import type { Column } from 'Components/Table/Column';
-/*import { icons } from 'Helpers/Props';
-import DeleteVolumeModal from 'Volume/Delete/DeleteVolumeModal';
-import EditVolumeModal from 'Volume/Edit/EditVolumeModal';
-// import createVolumeIndexItemSelector from 'Volume/Index/createVolumeIndexItemSelector';
-import type { Statistics } from 'Volume/Volume';
-import VolumeBanner from 'Volume/VolumeBanner';
-import VolumeTitleLink from 'Volume/VolumeTitleLink';
-// import { executeCommand } from 'Store/Actions/commandActions';
-import type { SelectStateInputProps } from 'typings/props';
+
+// Redux
+import { useRootSelector } from 'Store/createAppStore';
+import { useExecuteCommandMutation, useSearchVolumeQuery } from 'Store/createApiEndpoints';
+
+// Misc
+import { icons } from 'Helpers/Props';
+import { useSelect } from 'App/SelectContext';
+
+import classNames from 'classnames';
 import formatBytes from 'Utilities/Number/formatBytes';
 import titleCase from 'Utilities/String/titleCase';
 import translate from 'Utilities/String/translate';
+
+// General Components
+import IconButton from 'Components/Link/IconButton';
+import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
+import VirtualTableRowCell from 'Components/Table/Cells/VirtualTableRowCell';
+import VirtualTableSelectCell from 'Components/Table/Cells/VirtualTableSelectCell';
+
+// Specific Components
+import DeleteVolumeModal from 'Volume/Delete/DeleteVolumeModal';
+import EditVolumeModal from 'Volume/Edit/EditVolumeModal';
+import VolumeTitleLink from 'Volume/VolumeTitleLink';
+
 import VolumeIndexProgressBar from '../ProgressBar/VolumeIndexProgressBar';
-// import hasGrowableColumns from './hasGrowableColumns';
-import SeasonsCell from './SeasonsCell';
-// import selectTableOptions from './selectTableOptions';
-import VolumeStatusCell from './VolumeStatusCell';
+
+// CSS
 import styles from './VolumeIndexRow.module.css';
-*/
+
+// Types
+import type { Column } from 'Components/Table/Column';
+import type { SelectStateInputProps } from 'typings/props';
 
 interface VolumeIndexRowProps {
     volumeId: number;
@@ -41,83 +43,36 @@ interface VolumeIndexRowProps {
     isSelectMode: boolean;
 }
 
-// @ts-expect-error TODO:
-// eslint-disable-next-line
-function VolumeIndexRow(props: VolumeIndexRowProps) {
-    /*
-    const { volumeId, columns, isSelectMode } = props;
+// IMPLEMENTATIONS
 
-    const { volume, qualityProfile, latestSeason, isRefreshingVolume, isSearchingVolume } =
-         useSelector(createVolumeIndexItemSelector(props.volumeId));
-
-    const { showBanners, showSearchAction } = useSelector(selectTableOptions);
-
+function VolumeIndexRow({ volumeId, columns, isSelectMode }: VolumeIndexRowProps) {
     const {
-        title,
-        monitored,
-        monitorNewItems,
-        status,
-        path,
-        titleSlug,
-        nextAiring,
-        previousAiring,
-        added,
-        statistics = {} as Statistics,
-        seasonFolder,
-        images,
-        volumeType,
-        network,
-        originalLanguage,
-        certification,
-        year,
-        useSceneNumbering,
-        genres = [],
-        ratings,
-        seasons = [],
-        tags = [],
-        isSaving = false,
-    } = volume;
+        data: volume,
+        isFetching: isRefreshingVolume,
+        isLoading: isSearchingVolume,
+    } = useSearchVolumeQuery({ volumeId });
 
-    const {
-        seasonCount = 0,
-        issueCount = 0,
-        issueFileCount = 0,
-        totalIssueCount = 0,
-        sizeOnDisk = 0,
-        releaseGroups = [],
-    } = statistics;
+    const { showSearchAction } = useRootSelector((state) => state.volumeIndex.tableOptions);
 
-    const dispatch = useDispatch();
-    const [hasBannerError, setHasBannerError] = useState(false);
+    const [executeCommand] = useExecuteCommandMutation();
+
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
     const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);
     const [selectState, selectDispatch] = useSelect();
 
     const onRefreshPress = useCallback(() => {
-        dispatch(
-            executeCommand({
-                name: REFRESH_VOLUMES,
-                volumeIds: [volumeId],
-            }),
-        );
-    }, [volumeId, dispatch]);
+        executeCommand({
+            cmd: 'refresh_and_scan',
+            volumeId: volumeId.toString(),
+        });
+    }, [executeCommand, volumeId]);
 
     const onSearchPress = useCallback(() => {
-        dispatch(
-            executeCommand({
-                name: VOLUMES_SEARCH,
-                volumeId,
-            }),
-        );
-    }, [volumeId, dispatch]);
-
-    const onBannerLoadError = useCallback(() => {
-        setHasBannerError(true);
-    }, [setHasBannerError]);
-
-    const onBannerLoad = useCallback(() => {
-        setHasBannerError(false);
-    }, [setHasBannerError]);
+        executeCommand({
+            cmd: 'auto_search',
+            volumeId: volumeId.toString(),
+        });
+    }, [executeCommand, volumeId]);
 
     const onEditVolumePress = useCallback(() => {
         setIsEditVolumeModalOpen(true);
@@ -136,10 +91,6 @@ function VolumeIndexRow(props: VolumeIndexRowProps) {
         setIsDeleteVolumeModalOpen(false);
     }, [setIsDeleteVolumeModalOpen]);
 
-    const checkInputCallback = useCallback(() => {
-        // Mock handler to satisfy `onChange` being required for `CheckInput`.
-    }, []);
-
     const onSelectedChange = useCallback(
         ({ id, value, shiftKey }: SelectStateInputProps) => {
             selectDispatch({
@@ -151,6 +102,29 @@ function VolumeIndexRow(props: VolumeIndexRowProps) {
         },
         [selectDispatch],
     );
+
+    if (!volume) {
+        return null;
+    }
+
+    const {
+        title,
+        monitor_new_issues: monitorNewItems,
+        folder: path,
+        id: titleSlug,
+        special_version: volumeType,
+        publisher,
+        year,
+        total_size: sizeOnDisk = 0,
+        issues,
+    } = volume;
+
+    const totalIssueCount = issues.length;
+
+    const releaseGroups = issues
+        .map((is) => is.files.map((f) => f.releaser ?? ''))
+        .flat()
+        .filter((r) => r !== '');
 
     return (
         <>
@@ -170,48 +144,13 @@ function VolumeIndexRow(props: VolumeIndexRowProps) {
                     return null;
                 }
 
-                if (name === 'status') {
-                    return (
-                        <VolumeStatusCell
-                            key={name}
-                            className={styles[name]}
-                            volumeId={volumeId}
-                            monitored={monitored}
-                            status={status}
-                            isSelectMode={isSelectMode}
-                            isSaving={isSaving}
-                            component={VirtualTableRowCell}
-                        />
-                    );
-                }
-
-                if (name === 'sortTitle') {
+                if (name === 'title') {
                     return (
                         <VirtualTableRowCell
                             key={name}
-                            className={classNames(
-                                styles[name],
-                                showBanners && styles.banner,
-                                showBanners && !hasGrowableColumns(columns) && styles.bannerGrow,
-                            )}
+                            className={classNames(styles[name as keyof typeof styles])}
                         >
-                            {showBanners ? (
-                                <Link className={styles.link} to={`/volumes/${titleSlug}`}>
-                                    <VolumeBanner
-                                        className={styles.bannerImage}
-                                        images={images}
-                                        lazy={false}
-                                        onError={onBannerLoadError}
-                                        onLoad={onBannerLoad}
-                                    />
-
-                                    {hasBannerError && (
-                                        <div className={styles.overlayTitle}>{title}</div>
-                                    )}
-                                </Link>
-                            ) : (
-                                <VolumeTitleLink titleSlug={titleSlug} title={title} />
-                            )}
+                            <VolumeTitleLink titleSlug={titleSlug.toString()} title={title} />
                         </VirtualTableRowCell>
                     );
                 }
@@ -224,91 +163,13 @@ function VolumeIndexRow(props: VolumeIndexRowProps) {
                     );
                 }
 
-                if (name === 'network') {
+                if (name === 'publisher') {
                     return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
-                            {network}
-                        </VirtualTableRowCell>
-                    );
-                }
-
-                if (name === 'originalLanguage') {
-                    return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
-                            {originalLanguage.name}
-                        </VirtualTableRowCell>
-                    );
-                }
-
-                if (name === 'qualityProfileId') {
-                    return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
-                            {qualityProfile?.name ?? ''}
-                        </VirtualTableRowCell>
-                    );
-                }
-
-                if (name === 'nextAiring') {
-                    return (
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore ts(2739)
-                        <RelativeDateCell
+                        <VirtualTableRowCell
                             key={name}
-                            className={styles[name]}
-                            date={nextAiring}
-                            component={VirtualTableRowCell}
-                        />
-                    );
-                }
-
-                if (name === 'previousAiring') {
-                    return (
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore ts(2739)
-                        <RelativeDateCell
-                            key={name}
-                            className={styles[name]}
-                            date={previousAiring}
-                            component={VirtualTableRowCell}
-                        />
-                    );
-                }
-
-                if (name === 'added') {
-                    return (
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore ts(2739)
-                        <RelativeDateCell
-                            key={name}
-                            className={styles[name]}
-                            date={added}
-                            component={VirtualTableRowCell}
-                        />
-                    );
-                }
-
-                if (name === 'seasonCount') {
-                    return (
-                        <SeasonsCell
-                            key={name}
-                            className={styles[name]}
-                            volumeId={volumeId}
-                            seasonCount={seasonCount}
-                            seasons={seasons}
-                            isSelectMode={isSelectMode}
-                        />
-                    );
-                }
-
-                if (name === 'seasonFolder') {
-                    return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
-                            <CheckInput
-                                name="seasonFolder"
-                                value={seasonFolder}
-                                isDisabled={true}
-                                onChange={checkInputCallback}
-                            />
+                            className={styles[name as keyof typeof styles]}
+                        >
+                            {publisher}
                         </VirtualTableRowCell>
                     );
                 }
@@ -317,37 +178,7 @@ function VolumeIndexRow(props: VolumeIndexRowProps) {
                     return (
                         <VirtualTableRowCell key={name} className={styles[name]}>
                             <VolumeIndexProgressBar
-                                volumeId={volumeId}
-                                monitored={monitored}
-                                status={status}
-                                issueCount={issueCount}
-                                issueFileCount={issueFileCount}
-                                totalIssueCount={totalIssueCount}
-                                width={125}
-                                detailedProgressBar={true}
-                                isStandalone={true}
-                            />
-                        </VirtualTableRowCell>
-                    );
-                }
-
-                if (name === 'latestSeason') {
-                    if (!latestSeason) {
-                        return <VirtualTableRowCell key={name} className={styles[name]} />;
-                    }
-
-                    const seasonStatistics = latestSeason.statistics || {};
-
-                    return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
-                            <VolumeIndexProgressBar
-                                volumeId={volumeId}
-                                seasonNumber={latestSeason.seasonNumber}
-                                monitored={monitored}
-                                status={status}
-                                issueCount={seasonStatistics.issueCount}
-                                issueFileCount={seasonStatistics.issueFileCount}
-                                totalIssueCount={seasonStatistics.totalIssueCount}
+                                volume={volume!}
                                 width={125}
                                 detailedProgressBar={true}
                                 isStandalone={true}
@@ -388,32 +219,6 @@ function VolumeIndexRow(props: VolumeIndexRowProps) {
                     );
                 }
 
-                if (name === 'genres') {
-                    const joinedGenres = genres.join(', ');
-
-                    return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
-                            <span title={joinedGenres}>{joinedGenres}</span>
-                        </VirtualTableRowCell>
-                    );
-                }
-
-                if (name === 'ratings') {
-                    return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
-                            <HeartRating rating={ratings.value} votes={ratings.votes} />
-                        </VirtualTableRowCell>
-                    );
-                }
-
-                if (name === 'certification') {
-                    return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
-                            {certification}
-                        </VirtualTableRowCell>
-                    );
-                }
-
                 if (name === 'releaseGroups') {
                     const joinedReleaseGroups = releaseGroups.join(', ');
                     const truncatedReleaseGroups =
@@ -428,34 +233,12 @@ function VolumeIndexRow(props: VolumeIndexRowProps) {
                     );
                 }
 
-                if (name === 'tags') {
-                    return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
-                            <VolumeTagList tags={tags} />
-                        </VirtualTableRowCell>
-                    );
-                }
-
-                if (name === 'useSceneNumbering') {
-                    return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
-                            <CheckInput
-                                className={styles.checkInput}
-                                name="useSceneNumbering"
-                                value={useSceneNumbering}
-                                isDisabled={true}
-                                onChange={checkInputCallback}
-                            />
-                        </VirtualTableRowCell>
-                    );
-                }
-
                 if (name === 'monitorNewItems') {
                     return (
                         <VirtualTableRowCell key={name} className={styles[name]}>
-                            {monitorNewItems === 'all'
-                                ? translate('SeasonsMonitoredAll')
-                                : translate('SeasonsMonitoredNone')}
+                            {monitorNewItems
+                                ? translate('MonitorFutureIssues')
+                                : translate('MonitorNoFutureIssues')}
                         </VirtualTableRowCell>
                     );
                 }
@@ -505,8 +288,6 @@ function VolumeIndexRow(props: VolumeIndexRowProps) {
             />
         </>
     );
-    */
-    return null;
 }
 
 export default VolumeIndexRow;

@@ -1,11 +1,10 @@
 // IMPORTS
 
 // React
-// import { useCallback } from 'react';
+import { useCallback } from 'react';
 
 // Redux
-// import { useSelector } from 'react-redux'
-// import selectTableOptions from './selectTableOptions';
+import { useRootSelector } from 'Store/createAppStore';
 
 // Misc
 import { inputTypes } from 'Helpers/Props';
@@ -17,12 +16,8 @@ import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
 
-// Specific Components
-
-// CSS
-
 // Types
-// import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/inputs';
 
 interface VolumeIndexTableOptionsProps {
     onTableOptionChange(...args: unknown[]): unknown;
@@ -30,16 +25,11 @@ interface VolumeIndexTableOptionsProps {
 
 // IMPLEMENTATIONS
 
-// @ts-expect-error TODO:
-// eslint-disable-next-line
-function VolumeIndexTableOptions(props: VolumeIndexTableOptionsProps) {
-    // const { onTableOptionChange } = props;
+function VolumeIndexTableOptions({ onTableOptionChange }: VolumeIndexTableOptionsProps) {
+    const { tableOptions } = useRootSelector((state) => state.volumeIndex);
 
-    // const tableOptions = useSelector(selectTableOptions);
+    const { showSearchAction } = tableOptions;
 
-    // const { showBanners, showSearchAction } = tableOptions;
-
-    /*
     const onTableOptionChangeWrapper = useCallback(
         ({ name, value }: InputChanged<boolean>) => {
             onTableOptionChange({
@@ -51,31 +41,18 @@ function VolumeIndexTableOptions(props: VolumeIndexTableOptionsProps) {
         },
         [tableOptions, onTableOptionChange],
     );
-    */
 
     return (
         <>
-            <FormGroup>
-                <FormLabel>{translate('ShowBanners')}</FormLabel>
-
-                <FormInputGroup
-                    type={inputTypes.CHECK}
-                    name="showBanners"
-                    value={'' /*showBanners*/}
-                    helpText={translate('ShowBannersHelpText')}
-                    onChange={() => {} /*onTableOptionChangeWrapper*/}
-                />
-            </FormGroup>
-
             <FormGroup>
                 <FormLabel>{translate('ShowSearch')}</FormLabel>
 
                 <FormInputGroup
                     type={inputTypes.CHECK}
                     name="showSearchAction"
-                    value={'' /*showSearchAction*/}
+                    value={showSearchAction}
                     helpText={translate('ShowSearchHelpText')}
-                    onChange={() => {} /*onTableOptionChangeWrapper*/}
+                    onChange={onTableOptionChangeWrapper}
                 />
             </FormGroup>
         </>
