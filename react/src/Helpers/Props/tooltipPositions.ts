@@ -1,8 +1,18 @@
-export const TOP = 'top';
-export const RIGHT = 'right';
-export const BOTTOM = 'bottom';
-export const LEFT = 'left';
-
-export const all = [TOP, RIGHT, BOTTOM, LEFT];
-
 export type TooltipPosition = 'top' | 'right' | 'bottom' | 'left';
+
+const TOP: TooltipPosition = 'top';
+const RIGHT: TooltipPosition = 'right';
+const BOTTOM: TooltipPosition = 'bottom';
+const LEFT: TooltipPosition = 'left';
+
+const all: TooltipPosition[] = [TOP, RIGHT, BOTTOM, LEFT];
+
+export const tooltipPositions = {
+    TOP,
+    RIGHT,
+    BOTTOM,
+    LEFT,
+    all,
+};
+
+export default tooltipPositions;

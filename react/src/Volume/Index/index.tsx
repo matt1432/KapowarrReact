@@ -16,8 +16,7 @@ import {
 import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 
 // Misc
-import { align, icons, kinds } from 'Helpers/Props';
-import { DESCENDING, type SortDirection } from 'Helpers/Props/sortDirections';
+import { align, icons, kinds, sortDirections } from 'Helpers/Props';
 
 import scrollPositions from 'Store/scrollPositions';
 import translate from 'Utilities/String/translate';
@@ -54,12 +53,14 @@ import VolumeIndexSelectModeMenuItem from './Select/VolumeIndexSelectModeMenuIte
 import VolumeIndexFooter from './VolumeIndexFooter';
 import VolumeIndexRefreshVolumeButton from './VolumeIndexRefreshVolumeButton';
 import VolumeIndexTableOptions from './Table/VolumeIndexTableOptions';
+import VolumeIndexTable from './Table/VolumeIndexTable';
 
 // CSS
 import styles from './index.module.css';
-import VolumeIndexTable from './Table/VolumeIndexTable';
 
 // Types
+import { type SortDirection } from 'Helpers/Props/sortDirections';
+
 export type IndexView = 'posters' | 'table';
 export type IndexFilter = '' | 'wanted' | 'monitored';
 export type IndexSort =
@@ -193,7 +194,7 @@ const VolumeIndex = withScrollPosition((props: VolumeIndexProps) => {
         const order = Object.keys(characters).sort();
 
         // Reverse if sorting descending
-        if ((sortDirection as SortDirection) === DESCENDING) {
+        if ((sortDirection as SortDirection) === sortDirections.DESCENDING) {
             order.reverse();
         }
 

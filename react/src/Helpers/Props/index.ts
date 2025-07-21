@@ -1,21 +1,23 @@
-import * as align from './align';
-import * as icons from './icons';
-import * as inputTypes from './inputTypes';
-import * as kinds from './kinds';
-import * as messageTypes from './messageTypes';
-import * as scrollDirections from './scrollDirections';
-import * as sizes from './sizes';
-import * as sortDirections from './sortDirections';
-import * as tooltipPositions from './tooltipPositions';
+import align from './align';
+import commandNames from './commandNames';
+import icons from './icons';
+import inputTypes from './inputTypes';
+import kinds from './kinds';
+import messageTypes from './messageTypes';
+import scrollDirections from './scrollDirections';
+import sizes from './sizes';
+import sortDirections from './sortDirections';
+import tooltipPositions from './tooltipPositions';
 
 export {
     align,
-    inputTypes,
+    commandNames,
     icons,
+    inputTypes,
     kinds,
     messageTypes,
-    sizes,
     scrollDirections,
+    sizes,
     sortDirections,
     tooltipPositions,
 };

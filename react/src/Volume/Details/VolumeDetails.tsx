@@ -16,6 +16,7 @@ import {
 import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
 import {
+    commandNames,
     icons,
     kinds,
     scrollDirections,
@@ -115,7 +116,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     const { isRefreshing, isRenaming, isSearching } = useMemo(() => {
         const isRunning = (cmd: string) =>
             executeCommandState.originalArgs?.cmd === cmd &&
-            executeCommandState.originalArgs?.volumeId === volumeId.toString();
+            executeCommandState.originalArgs?.volumeId === volumeId;
 
         return {
             isRefreshing: isRunning('refresh_and_scan'),
@@ -216,15 +217,15 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const handleRefreshPress = useCallback(() => {
         executeCommand({
-            cmd: 'refresh_and_scan',
-            volumeId: volumeId.toString(),
+            cmd: commandNames.REFRESH_VOLUME,
+            volumeId,
         });
     }, [volumeId, executeCommand]);
 
     const handleSearchPress = useCallback(() => {
         executeCommand({
-            cmd: 'auto_search',
-            volumeId: volumeId.toString(),
+            cmd: commandNames.VOLUME_SEARCH,
+            volumeId,
         });
     }, [volumeId, executeCommand]);
 

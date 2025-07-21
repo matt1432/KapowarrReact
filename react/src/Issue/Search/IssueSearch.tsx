@@ -7,7 +7,7 @@ import { useCallback, useState } from 'react';
 import { useExecuteCommandMutation } from 'Store/createApiEndpoints';
 
 // Misc
-import { icons, kinds, sizes } from 'Helpers/Props';
+import { commandNames, icons, kinds, sizes } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
@@ -47,9 +47,9 @@ function IssueSearch({
 
     const handleQuickSearchPress = useCallback(() => {
         executeCommand({
-            cmd: '/system/tasks',
-            volumeId: volumeId.toString(),
-            issueId: issueId.toString(),
+            cmd: commandNames.ISSUE_SEARCH,
+            volumeId,
+            issueId,
         });
 
         onModalClose();

@@ -7,7 +7,7 @@ import { useCallback } from 'react';
 import { useExecuteCommandMutation } from 'Store/createApiEndpoints';
 
 // Misc
-import { icons } from 'Helpers/Props';
+import { commandNames, icons } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 import useModalOpenState from 'Helpers/Hooks/useModalOpenState';
@@ -48,10 +48,11 @@ function IssueSearchCell({
 
     const handleSearchPress = useCallback(() => {
         executeCommand({
-            cmd: '/system/tasks',
-            issueId: issueId.toString(),
+            cmd: commandNames.ISSUE_SEARCH,
+            volumeId,
+            issueId,
         });
-    }, [issueId, executeCommand]);
+    }, [issueId, volumeId, executeCommand]);
 
     return (
         <TableRowCell className={styles.issueSearchCell}>

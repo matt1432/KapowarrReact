@@ -8,7 +8,7 @@ import { useRootSelector } from 'Store/createAppStore';
 import { useExecuteCommandMutation, useSearchVolumeQuery } from 'Store/createApiEndpoints';
 
 // Misc
-import { icons } from 'Helpers/Props';
+import { commandNames, icons } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
@@ -63,15 +63,15 @@ function VolumeIndexPoster(props: VolumeIndexPosterProps) {
 
     const onRefreshPress = useCallback(() => {
         executeCommand({
-            cmd: 'refresh_and_scan',
-            volume_id: volumeId.toString(),
+            cmd: commandNames.REFRESH_VOLUME,
+            volumeId,
         });
     }, [executeCommand, volumeId]);
 
     const onSearchPress = useCallback(() => {
         executeCommand({
-            cmd: 'auto_search',
-            volume_id: volumeId.toString(),
+            cmd: commandNames.VOLUME_SEARCH,
+            volumeId,
         });
     }, [executeCommand, volumeId]);
 

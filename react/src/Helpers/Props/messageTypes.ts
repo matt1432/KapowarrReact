@@ -1,8 +1,18 @@
-export const ERROR = 'error';
-export const INFO = 'info';
-export const SUCCESS = 'success';
-export const WARNING = 'warning';
-
-export const all = [ERROR, INFO, SUCCESS, WARNING];
-
 export type MessageType = 'error' | 'info' | 'success' | 'warning';
+
+const ERROR: MessageType = 'error';
+const INFO: MessageType = 'info';
+const SUCCESS: MessageType = 'success';
+const WARNING: MessageType = 'warning';
+
+const all: MessageType[] = [ERROR, INFO, SUCCESS, WARNING];
+
+export const messageTypes = {
+    ERROR,
+    INFO,
+    SUCCESS,
+    WARNING,
+    all,
+};
+
+export default messageTypes;

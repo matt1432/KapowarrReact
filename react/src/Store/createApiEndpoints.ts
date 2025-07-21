@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { DownloadItem } from 'typings/Queue';
 import getQueryString from 'Utilities/Fetch/getQueryString';
+
+import type { CommandName } from 'Helpers/Props/commandNames';
+import type { DownloadItem } from 'typings/Queue';
 import type { IndexFilter, IndexSort } from 'Volume/Index';
 import type { Volume, VolumePublicInfo } from 'Volume/Volume';
 
@@ -12,8 +14,10 @@ export type GetVolumesParams =
     | undefined;
 
 export type ExecuteCommandParams = {
-    cmd: string;
-    [key: string]: string;
+    cmd: CommandName;
+    volumeId?: number;
+    issueId?: number;
+    [key: string]: string | number | undefined;
 };
 
 export interface UpdateVolumeParams {

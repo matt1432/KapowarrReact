@@ -1,7 +1,16 @@
-export const LEFT = 'left';
-export const CENTER = 'center';
-export const RIGHT = 'right';
-
-export const all = [LEFT, CENTER, RIGHT];
-
 export type Align = 'left' | 'center' | 'right';
+
+const LEFT: Align = 'left';
+const CENTER: Align = 'center';
+const RIGHT: Align = 'right';
+
+const all: Align[] = [LEFT, CENTER, RIGHT] as const;
+
+export const align = {
+    LEFT,
+    CENTER,
+    RIGHT,
+    all,
+};
+
+export default align;

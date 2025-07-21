@@ -1,58 +1,3 @@
-export const AUTO_COMPLETE = 'autoComplete';
-export const CHECK = 'check';
-export const DEVICE = 'device';
-export const KEY_VALUE_LIST = 'keyValueList';
-export const MONITOR_ISSUES_SELECT = 'monitorIssuesSelect';
-export const MONITOR_NEW_ITEMS_SELECT = 'monitorNewItemsSelect';
-export const FLOAT = 'float';
-export const NUMBER = 'number';
-export const OAUTH = 'oauth';
-export const PASSWORD = 'password';
-export const PATH = 'path';
-export const QUALITY_PROFILE_SELECT = 'qualityProfileSelect';
-export const INDEXER_SELECT = 'indexerSelect';
-export const INDEXER_FLAGS_SELECT = 'indexerFlagsSelect';
-export const LANGUAGE_SELECT = 'languageSelect';
-export const DOWNLOAD_CLIENT_SELECT = 'downloadClientSelect';
-export const ROOT_FOLDER_SELECT = 'rootFolderSelect';
-export const SELECT = 'select';
-export const DYNAMIC_SELECT = 'dynamicSelect';
-export const VOLUME_TYPE_SELECT = 'volumeTypeSelect';
-export const TAG = 'tag';
-export const TEXT = 'text';
-export const TEXT_AREA = 'textArea';
-export const TEXT_TAG = 'textTag';
-export const TAG_SELECT = 'tagSelect';
-export const UMASK = 'umask';
-
-export const all = [
-    AUTO_COMPLETE,
-    CHECK,
-    DEVICE,
-    KEY_VALUE_LIST,
-    MONITOR_ISSUES_SELECT,
-    MONITOR_NEW_ITEMS_SELECT,
-    FLOAT,
-    NUMBER,
-    OAUTH,
-    PASSWORD,
-    PATH,
-    QUALITY_PROFILE_SELECT,
-    INDEXER_SELECT,
-    DOWNLOAD_CLIENT_SELECT,
-    ROOT_FOLDER_SELECT,
-    LANGUAGE_SELECT,
-    SELECT,
-    DYNAMIC_SELECT,
-    VOLUME_TYPE_SELECT,
-    TAG,
-    TEXT,
-    TEXT_AREA,
-    TEXT_TAG,
-    TAG_SELECT,
-    UMASK,
-];
-
 export type InputType =
     | 'autoComplete'
     | 'check'
@@ -82,3 +27,88 @@ export type InputType =
     | 'textTag'
     | 'tagSelect'
     | 'umask';
+
+const AUTO_COMPLETE: InputType = 'autoComplete';
+const CHECK: InputType = 'check';
+const DEVICE: InputType = 'device';
+const KEY_VALUE_LIST: InputType = 'keyValueList';
+const MONITOR_ISSUES_SELECT: InputType = 'monitorIssuesSelect';
+const MONITOR_NEW_ITEMS_SELECT: InputType = 'monitorNewItemsSelect';
+const FLOAT: InputType = 'float';
+const NUMBER: InputType = 'number';
+const OAUTH: InputType = 'oauth';
+const PASSWORD: InputType = 'password';
+const PATH: InputType = 'path';
+const QUALITY_PROFILE_SELECT: InputType = 'qualityProfileSelect';
+const INDEXER_SELECT: InputType = 'indexerSelect';
+const LANGUAGE_SELECT: InputType = 'languageSelect';
+const DOWNLOAD_CLIENT_SELECT: InputType = 'downloadClientSelect';
+const ROOT_FOLDER_SELECT: InputType = 'rootFolderSelect';
+const SELECT: InputType = 'select';
+const DYNAMIC_SELECT: InputType = 'dynamicSelect';
+const VOLUME_TYPE_SELECT: InputType = 'volumeTypeSelect';
+const TAG: InputType = 'tag';
+const TEXT: InputType = 'text';
+const TEXT_AREA: InputType = 'textArea';
+const TEXT_TAG: InputType = 'textTag';
+const TAG_SELECT: InputType = 'tagSelect';
+const UMASK: InputType = 'umask';
+
+const all = [
+    AUTO_COMPLETE,
+    CHECK,
+    DEVICE,
+    KEY_VALUE_LIST,
+    MONITOR_ISSUES_SELECT,
+    MONITOR_NEW_ITEMS_SELECT,
+    FLOAT,
+    NUMBER,
+    OAUTH,
+    PASSWORD,
+    PATH,
+    QUALITY_PROFILE_SELECT,
+    INDEXER_SELECT,
+    DOWNLOAD_CLIENT_SELECT,
+    ROOT_FOLDER_SELECT,
+    LANGUAGE_SELECT,
+    SELECT,
+    DYNAMIC_SELECT,
+    VOLUME_TYPE_SELECT,
+    TAG,
+    TEXT,
+    TEXT_AREA,
+    TEXT_TAG,
+    TAG_SELECT,
+    UMASK,
+] as const;
+
+export const inputTypes = {
+    AUTO_COMPLETE,
+    CHECK,
+    DEVICE,
+    KEY_VALUE_LIST,
+    MONITOR_ISSUES_SELECT,
+    MONITOR_NEW_ITEMS_SELECT,
+    FLOAT,
+    NUMBER,
+    OAUTH,
+    PASSWORD,
+    PATH,
+    QUALITY_PROFILE_SELECT,
+    INDEXER_SELECT,
+    DOWNLOAD_CLIENT_SELECT,
+    ROOT_FOLDER_SELECT,
+    LANGUAGE_SELECT,
+    SELECT,
+    DYNAMIC_SELECT,
+    VOLUME_TYPE_SELECT,
+    TAG,
+    TEXT,
+    TEXT_AREA,
+    TEXT_TAG,
+    TAG_SELECT,
+    UMASK,
+    all,
+};
+
+export default inputTypes;
