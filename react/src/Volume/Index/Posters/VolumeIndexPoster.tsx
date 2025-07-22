@@ -104,7 +104,7 @@ function VolumeIndexPoster(props: VolumeIndexPosterProps) {
         return null;
     }
 
-    const { title, monitored, folder, publisher, total_size: sizeOnDisk } = volume;
+    const { title, monitored, folder, publisher, totalSize } = volume;
 
     const link = `/volumes/${volumeId}`;
 
@@ -180,7 +180,7 @@ function VolumeIndexPoster(props: VolumeIndexPosterProps) {
 
             <VolumeIndexPosterInfo
                 sortKey={sortKey}
-                sizeOnDisk={sizeOnDisk}
+                sizeOnDisk={totalSize}
                 publisher={publisher}
                 folder={folder}
             />

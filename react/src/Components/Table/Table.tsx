@@ -29,13 +29,13 @@ import type { CheckInputChanged } from 'typings/inputs';
 import type { TableOptionsChangePayload } from 'typings/Table';
 import type { Column } from './Column';
 
-interface TableProps {
+interface TableProps<T extends string> {
     className?: string;
     horizontalScroll?: boolean;
     selectAll?: boolean;
     allSelected?: boolean;
     allUnselected?: boolean;
-    columns: Column[];
+    columns: Column<T>[];
     optionsComponent?: React.ElementType;
     pageSize?: number;
     canModifyColumns?: boolean;
@@ -43,13 +43,13 @@ interface TableProps {
     sortDirection?: SortDirection;
     children?: React.ReactNode;
     onSortPress?: (name: string, sortDirection?: SortDirection) => void;
-    onTableOptionChange?: (payload: TableOptionsChangePayload) => void;
+    onTableOptionChange?: (payload: TableOptionsChangePayload<T>) => void;
     onSelectAllChange?: (change: CheckInputChanged) => void;
 }
 
 // IMPLEMENTATIONS
 
-function Table({
+function Table<T extends string>({
     className = styles.table,
     horizontalScroll = true,
     selectAll = false,
@@ -65,7 +65,7 @@ function Table({
     onSortPress,
     onTableOptionChange,
     onSelectAllChange,
-}: TableProps) {
+}: TableProps<T>) {
     return (
         <Scroller
             className={classNames(

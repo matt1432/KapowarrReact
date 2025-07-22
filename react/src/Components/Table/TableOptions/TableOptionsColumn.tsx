@@ -31,9 +31,9 @@ interface DragItem {
     index: number;
 }
 
-interface TableOptionsColumnProps {
+interface TableOptionsColumnProps<T extends string> {
     name: string;
-    label: Column['label'];
+    label: Column<T>['label'];
     isDraggingDown: boolean;
     isDraggingUp: boolean;
     isVisible: boolean;
@@ -46,7 +46,7 @@ interface TableOptionsColumnProps {
 
 // IMPLEMENTATIONS
 
-function TableOptionsColumn({
+function TableOptionsColumn<T extends string>({
     name,
     label,
     index,
@@ -57,7 +57,7 @@ function TableOptionsColumn({
     onVisibleChange,
     onColumnDragEnd,
     onColumnDragMove,
-}: TableOptionsColumnProps) {
+}: TableOptionsColumnProps<T>) {
     const ref = useRef<HTMLDivElement | null>(null);
     const dragRef = useRef<HTMLDivElement | null>(null);
 

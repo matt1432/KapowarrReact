@@ -34,16 +34,16 @@ export default function VolumeIndexFooter() {
     let totalFileSize = 0;
 
     volumes?.forEach((v) => {
-        const { issue_count, issue_file_count, total_size } = v;
+        const { issueCount, issueFileCount, totalSize } = v;
 
-        issues += issue_count;
-        issueFiles += issue_file_count;
+        issues += issueCount;
+        issueFiles += issueFileCount;
 
         if (v.monitored) {
             monitored++;
         }
 
-        totalFileSize += total_size;
+        totalFileSize += totalSize;
     });
 
     return (

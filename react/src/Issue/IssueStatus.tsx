@@ -26,7 +26,7 @@ interface IssueStatusProps {
 // IMPLEMENTATIONS
 
 function IssueStatus({ issue, issueFile }: IssueStatusProps) {
-    const { queue } = useFetchQueueDetails({ volumeId: issue.volume_id, issueId: issue.id });
+    const { queue } = useFetchQueueDetails({ volumeId: issue.volumeId, issueId: issue.id });
 
     const hasIssueFile = Boolean(issueFile);
     const isQueued = queue.length !== 0;

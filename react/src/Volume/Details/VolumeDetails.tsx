@@ -8,9 +8,10 @@ import {
     useExecuteCommandMutation,
     useFetchQueueDetails,
     useGetVolumesQuery,
-    useSearchVolumeQuery,
     useUpdateVolumeMutation,
 } from 'Store/createApiEndpoints';
+
+import useVolume from 'Volume/useVolume';
 
 // Misc
 import DOMPurify from 'dompurify';
@@ -70,36 +71,11 @@ interface VolumeDetailsProps {
 // import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
 import MonitoringOptionsModal from 'Volume/MonitoringOptions/MonitoringOptionsModal';
 
-function useIssuesSelector(volumeId: number) {
-    const { error, issues, isFetching, isUninitialized, refetch } = useSearchVolumeQuery(
-        { volumeId },
-        {
-            selectFromResult: ({ data, ...rest }) => ({
-                issues: data?.issues ?? [],
-                ...rest,
-            }),
-        },
-    );
-
-    const hasIssues = Boolean(issues.length);
-    const hasMonitoredIssues = issues.some((e) => e.monitored);
-
-    return {
-        isFetching,
-        isPopulated: !isUninitialized,
-        issuesError: error,
-        hasIssues,
-        hasMonitoredIssues,
-        refetchIssues: refetch,
-    };
-}
-
 function VolumeDetails({ volumeId }: VolumeDetailsProps) {
-    const { data: volume, refetch: refetchVolume } = useSearchVolumeQuery({ volumeId });
     const { data: allVolumes } = useGetVolumesQuery();
 
-    const { isFetching, isPopulated, issuesError, hasIssues, hasMonitoredIssues, refetchIssues } =
-        useIssuesSelector(volumeId);
+    const { volume, refetch, isFetching, isPopulated, error, hasIssues, hasMonitoredIssues } =
+        useVolume(volumeId);
 
     const [executeCommand, executeCommandState] = useExecuteCommandMutation();
 
@@ -107,9 +83,9 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     useEffect(() => {
         if (toggleVolumeMonitoredState.isSuccess) {
-            refetchVolume();
+            refetch();
         }
-    }, [refetchVolume, toggleVolumeMonitoredState]);
+    }, [refetch, toggleVolumeMonitoredState]);
 
     const { refetch: refetchQueueDetails } = useFetchQueueDetails({ volumeId });
 
@@ -230,9 +206,9 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     }, [volumeId, executeCommand]);
 
     const populate = useCallback(() => {
-        refetchIssues();
+        refetch();
         refetchQueueDetails();
-    }, [refetchIssues, refetchQueueDetails]);
+    }, [refetch, refetchQueueDetails]);
 
     useEffect(() => {
         populate();
@@ -248,16 +224,8 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         return null;
     }
 
-    const {
-        title,
-        folder,
-        monitored,
-        publisher,
-        site_url,
-        description,
-        issues_downloaded: issueFileCount,
-        total_size: sizeOnDisk,
-    } = volume;
+    const { title, folder, monitored, publisher, siteUrl, description, issueFileCount, totalSize } =
+        volume;
 
     let issueFilesCountMessage = translate('VolumeDetailsNoIssueFiles');
 
@@ -401,7 +369,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                                 <Icon name={icons.DRIVE} size={17} />
 
                                                 <span className={styles.sizeOnDisk}>
-                                                    {formatBytes(sizeOnDisk)}
+                                                    {formatBytes(totalSize)}
                                                 </span>
                                             </div>
                                         </Label>
@@ -449,7 +417,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                             </div>
                                         </Label>
                                     }
-                                    tooltip={<VolumeDetailsLinks site_url={site_url} />}
+                                    tooltip={<VolumeDetailsLinks siteUrl={siteUrl} />}
                                     kind={kinds.INVERSE}
                                     position={tooltipPositions.BOTTOM}
                                 />
@@ -478,9 +446,9 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                 </div>
 
                 <div className={styles.contentContainer}>
-                    {!isPopulated && !issuesError ? <LoadingIndicator /> : null}
+                    {!isPopulated && !error ? <LoadingIndicator /> : null}
 
-                    {!isFetching && issuesError ? (
+                    {!isFetching && error ? (
                         <Alert kind={kinds.DANGER}>{translate('IssuesLoadError')}</Alert>
                     ) : null}
 
@@ -527,7 +495,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                     isOpen={isMonitorOptionsModalOpen}
                     volumeId={volumeId}
                     onModalClose={handleMonitorOptionsClose}
-                    refetchVolume={refetchVolume}
+                    refetch={refetch}
                 />
             </PageContentBody>
         </PageContent>

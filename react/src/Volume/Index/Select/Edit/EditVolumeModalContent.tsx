@@ -208,19 +208,6 @@ function EditVolumeModalContent(props: EditVolumeModalContentProps) {
                 </FormGroup>
 
                 <FormGroup>
-                    <FormLabel>{translate('QualityProfile')}</FormLabel>
-
-                    <FormInputGroup
-                        type={inputTypes.QUALITY_PROFILE_SELECT}
-                        name="qualityProfileId"
-                        value={qualityProfileId}
-                        includeNoChange={true}
-                        includeNoChangeDisabled={false}
-                        onChange={onInputChange}
-                    />
-                </FormGroup>
-
-                <FormGroup>
                     <FormLabel>{translate('VolumeType')}</FormLabel>
 
                     <FormInputGroup

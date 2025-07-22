@@ -1,9 +1,33 @@
+import type { CamelCasedProperties } from 'type-fest';
+
 import type { ModelBase } from 'App/ModelBase';
-import type { GeneralFileData, Issue } from 'Issue/Issue';
+import type { GeneralFileData, Issue, RawIssue } from 'Issue/Issue';
 
-export type VolumeMonitor = 'all' | 'missing' | 'none';
+export type VolumeColumnName =
+    | 'wanted'
+    | 'title'
+    | 'specialVersion'
+    | 'year'
+    | 'publisher'
+    | 'issueProgress'
+    | 'issueCount'
+    | 'path'
+    | 'sizeOnDisk'
+    | 'releaseGroups'
+    | 'monitorNewItems'
+    | 'actions';
 
-export interface Volume extends ModelBase {
+export type MonitoringScheme = 'all' | 'missing' | 'none';
+export type SpecialVersion =
+    | 'tpb'
+    | 'one-shot'
+    | 'hard-cover'
+    | 'volume-as-issue'
+    | 'cover'
+    | 'metadata'
+    | null;
+
+export type RawVolume = ModelBase & {
     comicvine_id: number;
     libgen_url: string | null;
     title: string;
@@ -18,31 +42,40 @@ export interface Volume extends ModelBase {
     root_folder: string;
     folder: string;
     custom_folder: boolean;
-    special_version: string;
+    special_version: SpecialVersion;
     special_version_locked: boolean;
     last_cv_fetch: number;
     issue_count: number;
     issues_downloaded: number;
     total_size: number;
     volume_folder: string;
-    issues: Issue[];
+    issues: RawIssue[];
     general_files: GeneralFileData[];
-}
+};
 
-export interface VolumePublicInfo extends ModelBase {
-    comicvine_id: number;
-    description: string;
-    folder: string;
-    issue_count: number;
+export type Volume = Omit<CamelCasedProperties<RawVolume>, 'issues'> & {
+    issues: Issue[];
+};
+
+export type RawVolumePublicInfo = Pick<
+    RawVolume,
+    | 'id'
+    | 'comicvine_id'
+    | 'description'
+    | 'folder'
+    | 'issue_count'
+    | 'issues_downloaded'
+    | 'monitor_new_issues'
+    | 'monitored'
+    | 'publisher'
+    | 'title'
+    | 'total_size'
+    | 'volume_number'
+    | 'year'
+> & {
     issue_count_monitored: number;
     issue_file_count: number;
-    issues_downloaded: number;
     issues_downloaded_monitored: number;
-    monitor_new_issues: boolean;
-    monitored: boolean;
-    publisher: string;
-    title: string;
-    total_size: number;
-    volume_number: number;
-    year: number;
-}
+};
+
+export type VolumePublicInfo = CamelCasedProperties<RawVolumePublicInfo>;

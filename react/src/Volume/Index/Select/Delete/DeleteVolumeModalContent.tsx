@@ -108,12 +108,12 @@ function DeleteVolumeModalContent(props: DeleteVolumeModalContentProps) {
 
     const { totalIssueFileCount, totalSizeOnDisk } = useMemo(() => {
         return volumes.reduce(
-            (acc, { total_size, issues }) => {
+            (acc, { totalSize, issues }) => {
                 acc.totalIssueFileCount += issues.reduce(
                     (acc, issue) => acc + issue.files.length,
                     0,
                 );
-                acc.totalSizeOnDisk += total_size;
+                acc.totalSizeOnDisk += totalSize;
 
                 return acc;
             },
@@ -175,7 +175,7 @@ function DeleteVolumeModalContent(props: DeleteVolumeModalContentProps) {
                 </div>
 
                 <ul>
-                    {volumes.map(({ title, folder, issues, total_size }) => {
+                    {volumes.map(({ title, folder, issues, totalSize }) => {
                         const issueFileCount = issues.reduce(
                             (acc, issue) => acc + issue.files.length,
                             0,
@@ -195,7 +195,7 @@ function DeleteVolumeModalContent(props: DeleteVolumeModalContentProps) {
                                                 (
                                                 {translate('DeleteVolumeFolderIssueCount', {
                                                     issueFileCount,
-                                                    size: formatBytes(total_size),
+                                                    size: formatBytes(totalSize),
                                                 })}
                                                 )
                                             </span>

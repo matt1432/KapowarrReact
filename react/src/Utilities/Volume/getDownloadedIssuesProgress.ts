@@ -20,11 +20,10 @@ export function getDownloadedIssuesProgress({
     queue,
     volume,
 }: GetDownloadedIssuesProgressParams): GetDownloadedIssuesProgressReturn {
-    const { issues, issues_downloaded: issueFileCount } = volume;
+    const { issues, issuesDownloaded: issueFileCount } = volume;
 
     const issueCount = issues.filter(
-        (issue) =>
-            issue.monitored || issue.files.some((f) => !f.is_metadata_file && !f.is_image_file),
+        (issue) => issue.monitored || issue.files.some((f) => !f.isMetadataFile && !f.isImageFile),
     ).length;
 
     const newDownloads =

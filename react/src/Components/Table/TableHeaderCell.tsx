@@ -16,9 +16,9 @@ import styles from './TableHeaderCell.module.css';
 // Types
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 
-interface TableHeaderCellProps {
+interface TableHeaderCellProps<T extends string> {
     className?: string;
-    name: string;
+    name: T;
     label?: string | (() => string) | React.ReactNode;
     columnLabel?: string | (() => string);
     isSortable?: boolean;
@@ -33,7 +33,7 @@ interface TableHeaderCellProps {
 
 // IMPLEMENTATIONS
 
-function TableHeaderCell({
+function TableHeaderCell<T extends string>({
     className = styles.headerCell,
     name,
     columnLabel,
@@ -44,7 +44,7 @@ function TableHeaderCell({
     children,
     onSortPress,
     ...otherProps
-}: TableHeaderCellProps) {
+}: TableHeaderCellProps<T>) {
     const isSorting = isSortable && sortKey === name;
     const sortIcon =
         sortDirection === sortDirections.ASCENDING ? icons.SORT_ASCENDING : icons.SORT_DESCENDING;

@@ -24,6 +24,7 @@ import styles from './IssueRow.module.css';
 
 // Types
 import type { Column } from 'Components/Table/Column';
+import type { IssueColumnName } from 'Issue/Issue';
 
 interface IssueRowProps {
     id: number;
@@ -32,7 +33,7 @@ interface IssueRowProps {
     issueNumber: number;
     title: string;
     isSaving?: boolean;
-    columns: Column[];
+    columns: Column<IssueColumnName>[];
     onMonitorIssuePress: (
         issueId: number,
         value: boolean,
@@ -61,7 +62,7 @@ function IssueRow({
                 issue: data?.issues.find((issue) => issue.id === id),
                 issueFile: data?.issues
                     ?.find((issue) => issue.id === id)
-                    ?.files?.find((file) => !file.is_image_file && !file.is_metadata_file),
+                    ?.files?.find((file) => !file.isImageFile && !file.isMetadataFile),
             }),
         },
     );

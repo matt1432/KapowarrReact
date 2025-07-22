@@ -1,8 +1,8 @@
-import type { VolumeMonitor } from 'Volume/Volume';
+import type { MonitoringScheme } from 'Volume/Volume';
 import translate from 'Utilities/String/translate';
 
 interface MonitorOption {
-    key: VolumeMonitor;
+    key: MonitoringScheme;
     value: string;
 }
 

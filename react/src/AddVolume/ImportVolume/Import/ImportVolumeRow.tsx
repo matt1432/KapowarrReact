@@ -106,15 +106,6 @@ function ImportVolumeRow({ id }: ImportVolumeRowProps) {
                 />
             </VirtualTableRowCell>
 
-            <VirtualTableRowCell className={styles.qualityProfile}>
-                <FormInputGroup
-                    type={inputTypes.QUALITY_PROFILE_SELECT}
-                    name="qualityProfileId"
-                    value={'' /*qualityProfileId*/}
-                    onChange={handleInputChange}
-                />
-            </VirtualTableRowCell>
-
             <VirtualTableRowCell className={styles.volumeType}>
                 <FormInputGroup
                     type={inputTypes.VOLUME_TYPE_SELECT}

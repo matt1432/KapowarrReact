@@ -5,9 +5,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { HTML5toTouch } from 'rdndmb-html5-to-touch';
 import { DndProvider } from 'react-dnd-multi-backend';
 
-// Redux
-import type { VolumeIndexState } from 'Store/Slices/VolumeIndex';
-
 // Misc
 import { inputTypes } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
@@ -34,21 +31,22 @@ import styles from './TableOptionsModal.module.css';
 // Types
 import type { CheckInputChanged, InputChanged } from 'typings/inputs';
 import type { Column } from '../Column';
+import type { TableOptionsChangePayload } from 'typings/Table';
 
-export interface TableOptionsModalProps {
+export interface TableOptionsModalProps<T extends string> {
     isOpen: boolean;
-    columns: Column[];
+    columns: Column<T>[];
     pageSize?: number;
     maxPageSize?: number;
     canModifyColumns?: boolean;
     optionsComponent?: React.ElementType;
-    onTableOptionChange: (payload: Partial<VolumeIndexState['tableOptions']>) => void;
+    onTableOptionChange: (payload: TableOptionsChangePayload<T>) => void;
     onModalClose: () => void;
 }
 
 // IMPLEMENTATIONS
 
-function TableOptionsModal({
+function TableOptionsModal<T extends string>({
     isOpen,
     columns,
     canModifyColumns = true,
@@ -57,7 +55,7 @@ function TableOptionsModal({
     maxPageSize = 250,
     onTableOptionChange,
     onModalClose,
-}: TableOptionsModalProps) {
+}: TableOptionsModalProps<T>) {
     const [pageSize, setPageSize] = useState(propsPageSize);
     const [pageSizeError, setPageSizeError] = useState<string | null>(null);
     const [dragIndex, setDragIndex] = useState<number | null>(null);

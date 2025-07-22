@@ -24,6 +24,7 @@ import styles from './IssueTable.module.css';
 // Types
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { TableOptionsChangePayload } from 'typings/Table';
+import type { IssueColumnName } from 'Issue/Issue';
 
 export type IssueTableSort =
     | 'issueNumber'
@@ -110,7 +111,7 @@ function IssueTable({ volumeId }: IssueTableProps) {
     );
 
     const handleTableOptionChange = useCallback(
-        (payload: TableOptionsChangePayload) => {
+        (payload: TableOptionsChangePayload<IssueColumnName>) => {
             dispatch(setIssuesTableOption(payload));
         },
         [dispatch],
@@ -132,7 +133,7 @@ function IssueTable({ volumeId }: IssueTableProps) {
                                 key={issue.id}
                                 id={issue.id}
                                 title={issue.title ?? ''}
-                                issueNumber={issue.calculated_issue_number}
+                                issueNumber={issue.calculatedIssueNumber}
                                 volumeId={volumeId}
                                 columns={columns}
                                 monitored={issue.monitored}

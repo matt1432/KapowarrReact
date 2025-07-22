@@ -203,19 +203,6 @@ function ImportVolumeFooter() {
             </div>
 
             <div className={styles.inputContainer}>
-                <div className={styles.label}>{translate('QualityProfile')}</div>
-
-                <FormInputGroup
-                    type={inputTypes.QUALITY_PROFILE_SELECT}
-                    name="qualityProfileId"
-                    value={qualityProfileId}
-                    isDisabled={!selectedCount}
-                    includeMixed={isQualityProfileIdMixed}
-                    onChange={handleInputChange}
-                />
-            </div>
-
-            <div className={styles.inputContainer}>
                 <div className={styles.label}>{translate('VolumeType')}</div>
 
                 <FormInputGroup

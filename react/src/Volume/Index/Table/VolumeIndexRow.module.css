@@ -17,7 +17,7 @@
     flex: 4 0 110px;
 }
 
-.volumeType {
+.specialVersion {
     composes: cell;
 
     flex: 0 0 100px;

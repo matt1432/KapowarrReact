@@ -26,7 +26,7 @@ interface CssExports {
     releaseGroups: string;
     seasonCount: string;
     seasonFolder: string;
-    volumeType: string;
+    specialVersion: string;
     sizeOnDisk: string;
     title: string;
     status: string;

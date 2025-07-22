@@ -21,8 +21,6 @@ import {
     useInteractions,
 } from '@floating-ui/react';
 
-// Redux
-
 // Misc
 import { icons } from 'Helpers/Props';
 import { isMobile as isMobileUtil } from 'Utilities/browser';
@@ -53,7 +51,7 @@ import type { EnhancedSelectInputChanged, InputChanged } from 'typings/inputs';
 
 export interface EnhancedSelectInputValue<V> {
     key: ArrayElement<V>;
-    value: string;
+    value: V;
     hint?: ReactNode;
     isDisabled?: boolean;
     isHidden?: boolean;

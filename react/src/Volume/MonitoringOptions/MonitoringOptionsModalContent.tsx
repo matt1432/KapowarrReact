@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 // Redux
-import { useUpdateVolumeMutation, type UpdateVolumeParams } from 'Store/createApiEndpoints';
+import { useUpdateVolumeMutation } from 'Store/createApiEndpoints';
 
 // Misc
 import { icons, kinds, tooltipPositions } from 'Helpers/Props';
@@ -33,38 +33,13 @@ import styles from './MonitoringOptionsModalContent.module.css';
 
 // Types
 import type { InputChanged } from 'typings/inputs';
-import type { Volume } from 'Volume/Volume';
-import type {
-    BaseQueryFn,
-    FetchArgs,
-    FetchBaseQueryError,
-    FetchBaseQueryMeta,
-    QueryActionCreatorResult,
-    QueryDefinition,
-} from '@reduxjs/toolkit/query';
+import type { MonitoringScheme } from 'Volume/Volume';
 
 export interface MonitoringOptionsModalContentProps {
     volumeId: number;
     onModalClose: () => void;
-    refetchVolume: () => QueryActionCreatorResult<
-        QueryDefinition<
-            { volumeId: number },
-            BaseQueryFn<
-                string | FetchArgs,
-                unknown,
-                FetchBaseQueryError,
-                object,
-                FetchBaseQueryMeta
-            >,
-            never,
-            Volume,
-            'baseApi',
-            unknown
-        >
-    >;
+    refetch: () => void;
 }
-
-type Monitor = NonNullable<UpdateVolumeParams['monitoring_scheme']>;
 
 // IMPLEMENTATIONS
 
@@ -73,36 +48,39 @@ const NO_CHANGE = 'noChange';
 function MonitoringOptionsModalContent({
     volumeId,
     onModalClose,
-    refetchVolume,
+    refetch,
 }: MonitoringOptionsModalContentProps) {
-    const [updateVolumeMonitor, updateVolumeMonitorState] = useUpdateVolumeMutation();
+    const [updateVolumeMonitoringScheme, updateVolumeMonitoringSchemeState] =
+        useUpdateVolumeMutation();
 
     useEffect(() => {
-        if (updateVolumeMonitorState.isSuccess) {
-            refetchVolume();
+        if (updateVolumeMonitoringSchemeState.isSuccess) {
+            refetch();
         }
-    }, [refetchVolume, updateVolumeMonitorState]);
+    }, [refetch, updateVolumeMonitoringSchemeState]);
 
-    const { isLoading: isSaving, error: saveError } = updateVolumeMonitorState;
+    const { isLoading: isSaving, error: saveError } = updateVolumeMonitoringSchemeState;
 
-    const [monitor, setMonitor] = useState<Monitor | typeof NO_CHANGE>(NO_CHANGE);
+    const [monitoringScheme, setMonitoringScheme] = useState<MonitoringScheme | typeof NO_CHANGE>(
+        NO_CHANGE,
+    );
     const wasSaving = usePrevious(isSaving);
 
     const handleMonitorChange = useCallback(({ value }: InputChanged<string>) => {
-        setMonitor(value as Monitor);
+        setMonitoringScheme(value as MonitoringScheme);
     }, []);
 
     const handleSavePress = useCallback(() => {
-        if (monitor === NO_CHANGE) {
+        if (monitoringScheme === NO_CHANGE) {
             onModalClose();
             return;
         }
 
-        updateVolumeMonitor({
+        updateVolumeMonitoringScheme({
             volumeId,
-            monitoring_scheme: monitor,
+            monitoringScheme,
         });
-    }, [monitor, onModalClose, volumeId, updateVolumeMonitor]);
+    }, [monitoringScheme, onModalClose, volumeId, updateVolumeMonitoringScheme]);
 
     useEffect(() => {
         if (!isSaving && wasSaving && !saveError) {
@@ -134,7 +112,7 @@ function MonitoringOptionsModalContent({
                         <FormInputGroup
                             type="monitorIssuesSelect"
                             name="monitor"
-                            value={monitor}
+                            value={monitoringScheme}
                             includeNoChange={true}
                             onChange={handleMonitorChange}
                         />

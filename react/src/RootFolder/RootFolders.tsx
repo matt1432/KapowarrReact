@@ -27,7 +27,8 @@ import type { Column } from 'Components/Table/Column';
 
 // IMPLEMENTATIONS
 
-const rootFolderColumns: Column[] = [
+// FIXME: set a better type
+const rootFolderColumns: Column<string>[] = [
     {
         name: 'path',
         label: () => translate('Path'),

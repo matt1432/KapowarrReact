@@ -13,16 +13,14 @@ import styles from './VolumeDetailsLinks.module.css';
 // Types
 import type { Volume } from 'Volume/Volume';
 
-type VolumeDetailsLinksProps = Pick<Volume, 'site_url'>;
+type VolumeDetailsLinksProps = Pick<Volume, 'siteUrl'>;
 
 // IMPLEMENTATIONS
 
-function VolumeDetailsLinks(props: VolumeDetailsLinksProps) {
-    const { site_url } = props;
-
+function VolumeDetailsLinks({ siteUrl }: VolumeDetailsLinksProps) {
     return (
         <div className={styles.links}>
-            <Link className={styles.link} to={site_url}>
+            <Link className={styles.link} to={siteUrl}>
                 <Label className={styles.linkLabel} kind={kinds.INFO} size={sizes.LARGE}>
                     ComicVine
                 </Label>

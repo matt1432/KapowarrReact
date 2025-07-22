@@ -1,6 +1,7 @@
 import type { ModelBase } from 'App/ModelBase';
+import type { CamelCasedProperties } from 'type-fest';
 
-export interface FileData extends ModelBase {
+export interface RawFileData extends ModelBase {
     filepath: string;
     size: number;
     releaser: string;
@@ -9,11 +10,15 @@ export interface FileData extends ModelBase {
     dpi: string;
 }
 
-export interface GeneralFileData extends FileData {
+export type FileData = CamelCasedProperties<RawFileData>;
+
+export interface RawGeneralFileData extends RawFileData {
     file_type: string;
 }
 
-export interface IssueFileData extends FileData {
+export type GeneralFileData = CamelCasedProperties<RawGeneralFileData>;
+
+export interface RawIssueFileData extends RawFileData {
     series: string;
     year?: number;
     volume_number?: number | [number, number];
@@ -24,7 +29,9 @@ export interface IssueFileData extends FileData {
     is_image_file: boolean;
 }
 
-export interface IssueData extends ModelBase {
+export type IssueFileData = CamelCasedProperties<RawIssueFileData>;
+
+export interface RawIssueData extends ModelBase {
     volume_id: number;
     comicvine_id: number;
     issue_number: string;
@@ -33,7 +40,24 @@ export interface IssueData extends ModelBase {
     date: string | null;
     description: string | null;
     monitored: boolean;
-    files: IssueFileData[];
+    files: RawIssueFileData[];
 }
 
+export type IssueData = Omit<CamelCasedProperties<RawIssueData>, 'files'> & {
+    files: IssueFileData[];
+};
+
+export type RawIssue = RawIssueData;
+
 export type Issue = IssueData;
+
+export type IssueColumnName =
+    | 'monitored'
+    | 'issueNumber'
+    | 'title'
+    | 'path'
+    | 'relativePath'
+    | 'size'
+    | 'releaseGroup'
+    | 'status'
+    | 'actions';

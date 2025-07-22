@@ -1,10 +1,19 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import getQueryString from 'Utilities/Fetch/getQueryString';
+import camelize from 'Utilities/Object/camelize';
+import snakeify from 'Utilities/Object/snakeify';
 
 import type { CommandName } from 'Helpers/Props/commandNames';
 import type { DownloadItem } from 'typings/Queue';
 import type { IndexFilter, IndexSort } from 'Volume/Index';
-import type { Volume, VolumePublicInfo } from 'Volume/Volume';
+import type {
+    MonitoringScheme,
+    RawVolume,
+    RawVolumePublicInfo,
+    SpecialVersion,
+    Volume,
+    VolumePublicInfo,
+} from 'Volume/Volume';
 
 export type GetVolumesParams =
     | {
@@ -22,13 +31,13 @@ export type ExecuteCommandParams = {
 
 export interface UpdateVolumeParams {
     monitored?: boolean;
-    monitor_new_issues?: boolean;
-    monitoring_scheme?: '' | 'all' | 'missing' | 'none';
-    special_version_locked?: boolean;
-    special_version?: '' | 'auto' | 'tpb' | 'one-shot' | 'hard-cover' | 'volume-as-issue';
-    root_folder?: number;
-    volume_folder?: string;
-    libgen_url?: string;
+    monitorNewIssues?: boolean;
+    monitoringScheme?: '' | MonitoringScheme;
+    specialVersionLocked?: boolean;
+    specialVersion?: '' | SpecialVersion;
+    rootFolder?: number;
+    volumeFolder?: string;
+    libgenUrl?: string;
     volumeId: number;
 }
 
@@ -46,7 +55,8 @@ export const baseApi = createApi({
                     api_key: window.Kapowarr.apiKey,
                 }),
 
-            transformResponse: (response: { result: VolumePublicInfo[] }) => response.result,
+            transformResponse: (response: { result: RawVolumePublicInfo[] }) =>
+                response.result.map(camelize),
         }),
 
         searchVolume: build.query<Volume, { volumeId: number }>({
@@ -56,7 +66,7 @@ export const baseApi = createApi({
                     api_key: window.Kapowarr.apiKey,
                 }),
 
-            transformResponse: (response: { result: Volume }) => response.result,
+            transformResponse: (response: { result: RawVolume }) => camelize(response.result),
         }),
 
         fetchQueueDetails: build.query<DownloadItem[], undefined>({
@@ -76,7 +86,7 @@ export const baseApi = createApi({
                 url:
                     'system/tasks' +
                     getQueryString({
-                        ...params,
+                        ...snakeify(params),
                         api_key: window.Kapowarr.apiKey,
                     }),
             }),
@@ -103,7 +113,7 @@ export const baseApi = createApi({
                     getQueryString({
                         api_key: window.Kapowarr.apiKey,
                     }),
-                body,
+                body: snakeify(body),
             }),
         }),
     }),
@@ -117,10 +127,23 @@ export const {
 } = baseApi;
 
 // Add default value to params
-export const useGetVolumesQuery = (params: GetVolumesParams = {}) =>
-    baseApi.useGetVolumesQuery(params);
+export const useGetVolumesQuery = (params: GetVolumesParams = {}) => {
+    return baseApi.useGetVolumesQuery(params);
+};
 
 // Abstract some logic
+export const useGetVolumeQuery = (volumeId: number) => {
+    return baseApi.useGetVolumesQuery(
+        {},
+        {
+            selectFromResult: ({ data, ...rest }) => ({
+                volume: data?.find((v) => v.id === volumeId),
+                ...rest,
+            }),
+        },
+    );
+};
+
 export const useFetchQueueDetails = ({
     volumeId,
     issueId,

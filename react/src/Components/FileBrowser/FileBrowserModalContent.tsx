@@ -50,7 +50,8 @@ export interface FileBrowserModalContentProps {
 
 // IMPLEMENTATIONS
 
-const columns: Column[] = [
+// FIXME: set the right type
+const columns: Column<string>[] = [
     {
         name: 'type',
         label: () => translate('Type'),

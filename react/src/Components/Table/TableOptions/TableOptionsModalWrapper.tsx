@@ -10,19 +10,19 @@ import TableOptionsModal, { type TableOptionsModalProps } from './TableOptionsMo
 import type { LinkProps } from 'Components/Link/Link';
 import type { Column } from '../Column';
 
-interface TableOptionsModalWrapperProps
-    extends Omit<TableOptionsModalProps, 'isOpen' | 'onModalClose'> {
-    columns: Column[];
+interface TableOptionsModalWrapperProps<T extends string>
+    extends Omit<TableOptionsModalProps<T>, 'isOpen' | 'onModalClose'> {
+    columns: Column<T>[];
     children: ReactElement<LinkProps>;
 }
 
 // IMPLEMENTATIONS
 
-function TableOptionsModalWrapper({
+function TableOptionsModalWrapper<T extends string>({
     columns,
     children,
     ...otherProps
-}: TableOptionsModalWrapperProps) {
+}: TableOptionsModalWrapperProps<T>) {
     const [isTableOptionsModalOpen, setIsTableOptionsModalOpen] = useState(false);
 
     const handleTableOptionsPress = useCallback(() => {

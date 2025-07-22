@@ -35,11 +35,12 @@ import styles from './VolumeIndexRow.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { SelectStateInputProps } from 'typings/props';
+import type { VolumeColumnName } from 'Volume/Volume';
 
 interface VolumeIndexRowProps {
     volumeId: number;
     sortKey: string;
-    columns: Column[];
+    columns: Column<VolumeColumnName>[];
     isSelectMode: boolean;
 }
 
@@ -109,13 +110,13 @@ function VolumeIndexRow({ volumeId, columns, isSelectMode }: VolumeIndexRowProps
 
     const {
         title,
-        monitor_new_issues: monitorNewItems,
+        monitorNewIssues: monitorNewItems,
         folder: path,
         id: titleSlug,
-        special_version: volumeType,
+        specialVersion,
         publisher,
         year,
-        total_size: sizeOnDisk = 0,
+        totalSize: sizeOnDisk,
         issues,
     } = volume;
 
@@ -155,10 +156,10 @@ function VolumeIndexRow({ volumeId, columns, isSelectMode }: VolumeIndexRowProps
                     );
                 }
 
-                if (name === 'volumeType') {
+                if (name === 'specialVersion') {
                     return (
                         <VirtualTableRowCell key={name} className={styles[name]}>
-                            {titleCase(volumeType)}
+                            {titleCase(specialVersion ?? '')}
                         </VirtualTableRowCell>
                     );
                 }

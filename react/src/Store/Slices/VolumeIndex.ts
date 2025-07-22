@@ -2,8 +2,10 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { Column } from 'Components/Table/Column';
 import { sortDirections } from 'Helpers/Props';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
+import type { TableOptionsChangePayload } from 'typings/Table';
 import translate from 'Utilities/String/translate';
 import type { IndexFilter, IndexSort, IndexView } from 'Volume/Index';
+import type { VolumeColumnName } from 'Volume/Volume';
 
 export interface VolumeIndexState {
     sortKey: IndexSort;
@@ -26,7 +28,7 @@ export interface VolumeIndexState {
     tableOptions: {
         showSearchAction: boolean;
         pageSize: number;
-        columns: Column[];
+        columns: Column<VolumeColumnName>[];
     };
 }
 
@@ -53,8 +55,7 @@ const initialState = {
         columns: [
             {
                 name: 'wanted',
-                // columnLabel: () => translate('Status'),
-                label: () => translate('Status'),
+                columnLabel: () => translate('Status'),
                 isSortable: true,
                 isVisible: true,
                 isModifiable: false,
@@ -65,6 +66,12 @@ const initialState = {
                 isSortable: true,
                 isVisible: true,
                 isModifiable: false,
+            },
+            {
+                name: 'specialVersion',
+                label: () => translate('SpecialVersion'),
+                isSortable: true,
+                isVisible: true,
             },
             {
                 name: 'year',
@@ -79,56 +86,47 @@ const initialState = {
                 isVisible: true,
             },
             {
-                name: 'recently_added',
-                label: () => translate('RecentlyAdded'),
+                name: 'issueProgress',
+                label: () => translate('Issues'),
                 isSortable: true,
                 isVisible: true,
             },
             {
-                name: 'recently_released',
-                label: () => translate('RecentlyReleased'),
+                name: 'issueCount',
+                label: () => translate('IssueCount'),
                 isSortable: true,
                 isVisible: false,
             },
-            // TODO: check how to implement these columns
-            /*
-        {
-            name: 'episodeProgress',
-            label: () => translate('Episodes'),
-            isSortable: true,
-            isVisible: true,
-        },
-        {
-            name: 'episodeCount',
-            label: () => translate('EpisodeCount'),
-            isSortable: true,
-            isVisible: false,
-        },
-        {
-            name: 'path',
-            label: () => translate('Path'),
-            isSortable: true,
-            isVisible: false,
-        },
-        {
-            name: 'sizeOnDisk',
-            label: () => translate('SizeOnDisk'),
-            isSortable: true,
-            isVisible: false,
-        },
-        {
-            name: 'monitorNewItems',
-            label: () => translate('MonitorNewSeasons'),
-            isSortable: true,
-            isVisible: false,
-        },
-        {
-            name: 'actions',
-            columnLabel: () => translate('Actions'),
-            isVisible: true,
-            isModifiable: false,
-        },
-        */
+            {
+                name: 'path',
+                label: () => translate('Path'),
+                isSortable: true,
+                isVisible: false,
+            },
+            {
+                name: 'sizeOnDisk',
+                label: () => translate('SizeOnDisk'),
+                isSortable: true,
+                isVisible: false,
+            },
+            {
+                name: 'releaseGroups',
+                label: () => translate('ReleaseGroups'),
+                isSortable: true,
+                isVisible: false,
+            },
+            {
+                name: 'monitorNewItems',
+                label: () => translate('MonitorNewItems'),
+                isSortable: true,
+                isVisible: false,
+            },
+            {
+                name: 'actions',
+                columnLabel: () => translate('Actions'),
+                isVisible: true,
+                isModifiable: false,
+            },
         ],
     },
 } satisfies VolumeIndexState as VolumeIndexState;
@@ -152,14 +150,14 @@ const volumeIndexSlice = createSlice({
 
         setVolumeTableOption: (
             state,
-            { payload }: PayloadAction<Partial<VolumeIndexState['tableOptions']>>,
+            { payload }: PayloadAction<TableOptionsChangePayload<VolumeColumnName>>,
         ) => {
             state.tableOptions = Object.assign(state.tableOptions, payload);
         },
 
         setVolumePosterOption: (
             state,
-            { payload }: PayloadAction<Partial<VolumeIndexState['posterOptions']>>,
+            { payload }: PayloadAction<TableOptionsChangePayload<VolumeColumnName>>,
         ) => {
             state.posterOptions = Object.assign(state.posterOptions, payload);
         },

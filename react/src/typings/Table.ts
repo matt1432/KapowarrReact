@@ -1,6 +1,6 @@
 import type { Column } from 'Components/Table/Column';
 
-export interface TableOptionsChangePayload {
+export interface TableOptionsChangePayload<T extends string> {
     pageSize?: number;
-    columns?: Column[];
+    columns?: Column<T>[];
 }

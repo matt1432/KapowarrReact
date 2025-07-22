@@ -23,12 +23,12 @@ import styles from './VolumeIndexTable.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
-import type { VolumePublicInfo } from 'Volume/Volume';
+import type { VolumeColumnName, VolumePublicInfo } from 'Volume/Volume';
 
 interface RowItemData {
     items: VolumePublicInfo[];
     sortKey: string;
-    columns: Column[];
+    columns: Column<VolumeColumnName>[];
     isSelectMode: boolean;
 }
 

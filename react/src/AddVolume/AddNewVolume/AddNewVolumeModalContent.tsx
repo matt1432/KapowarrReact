@@ -206,18 +206,6 @@ function AddNewVolumeModalContent({
                             </FormGroup>
 
                             <FormGroup>
-                                <FormLabel>{translate('QualityProfile')}</FormLabel>
-
-                                <FormInputGroup
-                                    type={inputTypes.QUALITY_PROFILE_SELECT}
-                                    name="qualityProfileId"
-                                    onChange={() => {} /*handleQualityProfileIdChange*/}
-                                    value={''}
-                                    // {...qualityProfileId}
-                                />
-                            </FormGroup>
-
-                            <FormGroup>
                                 <FormLabel>
                                     {translate('VolumeType')}
 
@@ -239,18 +227,6 @@ function AddNewVolumeModalContent({
                                     // value={volumeType}
                                     value={''}
                                     helpText={translate('VolumeTypesHelpText')}
-                                />
-                            </FormGroup>
-
-                            <FormGroup>
-                                <FormLabel>{translate('Tags')}</FormLabel>
-
-                                <FormInputGroup
-                                    type={inputTypes.TAG}
-                                    name="tags"
-                                    onChange={() => {} /*handleInputChange*/}
-                                    value={''}
-                                    // {...tags}
                                 />
                             </FormGroup>
                         </Form>

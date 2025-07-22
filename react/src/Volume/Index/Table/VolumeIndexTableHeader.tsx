@@ -32,9 +32,10 @@ import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { CheckInputChanged } from 'typings/inputs';
 import type { IndexSort } from '..';
 import type { TableOptionsChangePayload } from 'typings/Table';
+import type { VolumeColumnName } from 'Volume/Volume';
 
 interface VolumeIndexTableHeaderProps {
-    columns: Column[];
+    columns: Column<VolumeColumnName>[];
     sortKey?: string;
     sortDirection?: SortDirection;
     isSelectMode: boolean;
@@ -59,7 +60,7 @@ function VolumeIndexTableHeader({
     );
 
     const onTableOptionChange = useCallback(
-        (payload: TableOptionsChangePayload) => {
+        (payload: TableOptionsChangePayload<VolumeColumnName>) => {
             dispatch(setVolumeTableOption(payload));
         },
         [dispatch],

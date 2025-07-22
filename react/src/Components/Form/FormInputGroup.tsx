@@ -20,40 +20,32 @@ import NumberInput, { type NumberInputProps } from './NumberInput';
 import OAuthInput, { type OAuthInputProps } from './OAuthInput';
 import PasswordInput from './PasswordInput';
 import PathInput, { type PathInputProps } from './PathInput';
-import DownloadClientSelectInput, {
-    type DownloadClientSelectInputProps,
-} from './Select/DownloadClientSelectInput';
-import EnhancedSelectInput, { type EnhancedSelectInputProps } from './Select/EnhancedSelectInput';
-import IndexerFlagsSelectInput, {
-    type IndexerFlagsSelectInputProps,
-} from './Select/IndexerFlagsSelectInput';
-import IndexerSelectInput, { type IndexerSelectInputProps } from './Select/IndexerSelectInput';
-import LanguageSelectInput, { type LanguageSelectInputProps } from './Select/LanguageSelectInput';
-import MonitorIssuesSelectInput, {
-    type MonitorIssuesSelectInputProps,
-} from './Select/MonitorIssuesSelectInput';
-import MonitorNewItemsSelectInput, {
-    type MonitorNewItemsSelectInputProps,
-} from './Select/MonitorNewItemsSelectInput';
-import ProviderDataSelectInput, {
-    type ProviderOptionSelectInputProps,
-} from './Select/ProviderOptionSelectInput';
-import QualityProfileSelectInput, {
-    type QualityProfileSelectInputProps,
-} from './Select/QualityProfileSelectInput';
-import RootFolderSelectInput, {
-    type RootFolderSelectInputProps,
-} from './Select/RootFolderSelectInput';
-import VolumeTypeSelectInput, {
-    type VolumeTypeSelectInputProps,
-} from './Select/VolumeTypeSelectInput';
-import UMaskInput, { type UMaskInputProps } from './Select/UMaskInput';
-import DeviceInput, { type DeviceInputProps } from './Tag/DeviceInput';
-import VolumeTagInput, { type VolumeTagInputProps } from './Tag/VolumeTagInput';
-import TagSelectInput, { type TagSelectInputProps } from './Tag/TagSelectInput';
-import TextTagInput, { type TextTagInputProps } from './Tag/TextTagInput';
 import TextArea, { type TextAreaProps } from './TextArea';
 import TextInput, { type TextInputProps } from './TextInput';
+
+import DownloadClientSelectInput from './Select/DownloadClientSelectInput';
+import type { DownloadClientSelectInputProps } from './Select/DownloadClientSelectInput';
+
+import EnhancedSelectInput from './Select/EnhancedSelectInput';
+import type { EnhancedSelectInputProps } from './Select/EnhancedSelectInput';
+
+import MonitorIssuesSelectInput from './Select/MonitorIssuesSelectInput';
+import type { MonitorIssuesSelectInputProps } from './Select/MonitorIssuesSelectInput';
+
+import MonitorNewItemsSelectInput from './Select/MonitorNewItemsSelectInput';
+import type { MonitorNewItemsSelectInputProps } from './Select/MonitorNewItemsSelectInput';
+
+import ProviderDataSelectInput from './Select/ProviderOptionSelectInput';
+import type { ProviderOptionSelectInputProps } from './Select/ProviderOptionSelectInput';
+
+import RootFolderSelectInput from './Select/RootFolderSelectInput';
+import type { RootFolderSelectInputProps } from './Select/RootFolderSelectInput';
+
+import VolumeTypeSelectInput from './Select/VolumeTypeSelectInput';
+import type { VolumeTypeSelectInputProps } from './Select/VolumeTypeSelectInput';
+
+import UMaskInput from './Select/UMaskInput';
+import type { UMaskInputProps } from './Select/UMaskInput';
 
 // CSS
 import styles from './FormInputGroup.module.css';
@@ -71,58 +63,42 @@ type PickProps<V, C extends InputType> = C extends 'text'
         ? CheckInputProps
         : C extends 'date'
           ? TextInputProps
-          : C extends 'device'
-            ? DeviceInputProps
-            : C extends 'downloadClientSelect'
-              ? DownloadClientSelectInputProps
-              : C extends 'dynamicSelect'
-                ? ProviderOptionSelectInputProps
-                : C extends 'file'
+          : C extends 'downloadClientSelect'
+            ? DownloadClientSelectInputProps
+            : C extends 'dynamicSelect'
+              ? ProviderOptionSelectInputProps
+              : C extends 'file'
+                ? TextInputProps
+                : C extends 'float'
                   ? TextInputProps
-                  : C extends 'float'
-                    ? TextInputProps
-                    : C extends 'indexerFlagsSelect'
-                      ? IndexerFlagsSelectInputProps
-                      : C extends 'indexerSelect'
-                        ? IndexerSelectInputProps
-                        : C extends 'keyValueList'
-                          ? KeyValueListInputProps
-                          : C extends 'languageSelect'
-                            ? LanguageSelectInputProps
-                            : C extends 'monitorIssuesSelect'
-                              ? MonitorIssuesSelectInputProps
-                              : C extends 'monitorNewItemsSelect'
-                                ? MonitorNewItemsSelectInputProps
-                                : C extends 'number'
-                                  ? NumberInputProps
-                                  : C extends 'oauth'
-                                    ? OAuthInputProps
-                                    : C extends 'password'
-                                      ? TextInputProps
-                                      : C extends 'path'
-                                        ? PathInputProps
-                                        : C extends 'qualityProfileSelect'
-                                          ? QualityProfileSelectInputProps
-                                          : C extends 'rootFolderSelect'
-                                            ? RootFolderSelectInputProps
-                                            : C extends 'select'
-                                              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                EnhancedSelectInputProps<any, V>
-                                              : C extends 'volumeTypeSelect'
-                                                ? VolumeTypeSelectInputProps
-                                                : C extends 'tag'
-                                                  ? VolumeTagInputProps<V>
-                                                  : C extends 'tagSelect'
-                                                    ? TagSelectInputProps
-                                                    : C extends 'text'
-                                                      ? TextInputProps
-                                                      : C extends 'textArea'
-                                                        ? TextAreaProps
-                                                        : C extends 'textTag'
-                                                          ? TextTagInputProps
-                                                          : C extends 'umask'
-                                                            ? UMaskInputProps
-                                                            : never;
+                  : C extends 'keyValueList'
+                    ? KeyValueListInputProps
+                    : C extends 'monitorIssuesSelect'
+                      ? MonitorIssuesSelectInputProps
+                      : C extends 'monitorNewItemsSelect'
+                        ? MonitorNewItemsSelectInputProps
+                        : C extends 'number'
+                          ? NumberInputProps
+                          : C extends 'oauth'
+                            ? OAuthInputProps
+                            : C extends 'password'
+                              ? TextInputProps
+                              : C extends 'path'
+                                ? PathInputProps
+                                : C extends 'rootFolderSelect'
+                                  ? RootFolderSelectInputProps
+                                  : C extends 'select'
+                                    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                      EnhancedSelectInputProps<any, V>
+                                    : C extends 'volumeTypeSelect'
+                                      ? VolumeTypeSelectInputProps
+                                      : C extends 'text'
+                                        ? TextInputProps
+                                        : C extends 'textArea'
+                                          ? TextAreaProps
+                                          : C extends 'umask'
+                                            ? UMaskInputProps
+                                            : never;
 
 export interface FormInputGroupValues<T> {
     key: T;
@@ -161,30 +137,22 @@ const componentMap: Record<InputType, ElementType> = {
     autoComplete: AutoCompleteInput,
     check: CheckInput,
     date: TextInput,
-    device: DeviceInput,
     downloadClientSelect: DownloadClientSelectInput,
     dynamicSelect: ProviderDataSelectInput,
     file: TextInput,
     float: NumberInput,
-    indexerFlagsSelect: IndexerFlagsSelectInput,
-    indexerSelect: IndexerSelectInput,
     keyValueList: KeyValueListInput,
-    languageSelect: LanguageSelectInput,
     monitorIssuesSelect: MonitorIssuesSelectInput,
     monitorNewItemsSelect: MonitorNewItemsSelectInput,
     number: NumberInput,
     oauth: OAuthInput,
     password: PasswordInput,
     path: PathInput,
-    qualityProfileSelect: QualityProfileSelectInput,
     rootFolderSelect: RootFolderSelectInput,
     select: EnhancedSelectInput,
     volumeTypeSelect: VolumeTypeSelectInput,
-    tag: VolumeTagInput,
-    tagSelect: TagSelectInput,
     text: TextInput,
     textArea: TextArea,
-    textTag: TextTagInput,
     umask: UMaskInput,
 } as const;
 

@@ -2,6 +2,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { Column } from 'Components/Table/Column';
 import { sortDirections } from 'Helpers/Props';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
+import type { IssueColumnName } from 'Issue/Issue';
 import type { TableOptionsChangePayload } from 'typings/Table';
 import translate from 'Utilities/String/translate';
 import type { IssueTableSort } from 'Volume/Details/IssueTable';
@@ -10,7 +11,7 @@ import type { IssueTableSort } from 'Volume/Details/IssueTable';
 export interface IssueTableState {
     sortKey: IssueTableSort;
     sortDirection: SortDirection;
-    columns: Column[];
+    columns: Column<IssueColumnName>[];
 }
 
 const initialState = {
@@ -20,8 +21,7 @@ const initialState = {
     columns: [
         {
             name: 'monitored',
-            // columnLabel: () => translate('Monitored'),
-            label: () => translate('Monitored'),
+            columnLabel: () => translate('Monitored'),
             isVisible: true,
             isModifiable: false,
         },
@@ -67,8 +67,7 @@ const initialState = {
         },
         {
             name: 'actions',
-            // columnLabel: () => translate('Actions'),
-            label: () => translate('Actions'),
+            columnLabel: () => translate('Actions'),
             isVisible: true,
             isModifiable: false,
         },
@@ -89,7 +88,10 @@ const issueTableSlice = createSlice({
             state = Object.assign(state, payload);
         },
 
-        setIssuesTableOption: (state, { payload }: PayloadAction<TableOptionsChangePayload>) => {
+        setIssuesTableOption: (
+            state,
+            { payload }: PayloadAction<TableOptionsChangePayload<IssueColumnName>>,
+        ) => {
             state = Object.assign(state, payload);
         },
     },
