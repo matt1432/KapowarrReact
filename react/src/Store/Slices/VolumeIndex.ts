@@ -70,7 +70,7 @@ const initialState = {
             {
                 name: 'specialVersion',
                 label: () => translate('SpecialVersion'),
-                isSortable: true,
+                isSortable: false,
                 isVisible: true,
             },
             {

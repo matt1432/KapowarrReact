@@ -81,14 +81,14 @@ export const baseApi = createApi({
 
         // POST
         executeCommand: build.mutation<void, ExecuteCommandParams>({
-            query: (params) => ({
+            query: (body) => ({
                 method: 'POST',
                 url:
                     'system/tasks' +
                     getQueryString({
-                        ...snakeify(params),
                         api_key: window.Kapowarr.apiKey,
                     }),
+                body: snakeify(body),
             }),
         }),
 
@@ -101,7 +101,7 @@ export const baseApi = createApi({
                     getQueryString({
                         api_key: window.Kapowarr.apiKey,
                     }),
-                body,
+                body: snakeify(body),
             }),
         }),
 

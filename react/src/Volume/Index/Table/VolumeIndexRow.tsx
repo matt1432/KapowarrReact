@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -47,15 +47,21 @@ interface VolumeIndexRowProps {
 // IMPLEMENTATIONS
 
 function VolumeIndexRow({ volumeId, columns, isSelectMode }: VolumeIndexRowProps) {
-    const {
-        data: volume,
-        isFetching: isRefreshingVolume,
-        isLoading: isSearchingVolume,
-    } = useSearchVolumeQuery({ volumeId });
+    const { data: volume } = useSearchVolumeQuery({ volumeId });
 
     const { showSearchAction } = useRootSelector((state) => state.volumeIndex.tableOptions);
 
-    const [executeCommand] = useExecuteCommandMutation();
+    const [executeCommand, executeCommandState] = useExecuteCommandMutation();
+
+    const { isRefreshingVolume, isSearchingVolume } = useMemo(() => {
+        const isRunning = (cmd: string) =>
+            executeCommandState.originalArgs?.cmd === cmd && executeCommandState.isLoading;
+
+        return {
+            isRefreshingVolume: isRunning(commandNames.REFRESH_VOLUME),
+            isSearchingVolume: isRunning(commandNames.VOLUME_SEARCH),
+        };
+    }, [executeCommandState]);
 
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
     const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);

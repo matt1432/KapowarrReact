@@ -91,13 +91,12 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const { isRefreshing, isRenaming, isSearching } = useMemo(() => {
         const isRunning = (cmd: string) =>
-            executeCommandState.originalArgs?.cmd === cmd &&
-            executeCommandState.originalArgs?.volumeId === volumeId;
+            executeCommandState.originalArgs?.cmd === cmd && executeCommandState.isLoading;
 
         return {
-            isRefreshing: isRunning('refresh_and_scan'),
+            isRefreshing: isRunning(commandNames.REFRESH_VOLUME),
             isRenaming: isRunning(`/volumes/${volumeId}/rename`),
-            isSearching: isRunning('auto_search'),
+            isSearching: isRunning(commandNames.VOLUME_SEARCH),
         };
     }, [volumeId, executeCommandState]);
 
