@@ -12,34 +12,21 @@ import NotFound from 'Components/NotFound';
 import type { History } from 'history';
 
 /*
-import Blocklist from 'Activity/Blocklist/Blocklist';
-import History from 'Activity/History/History';
-import Queue from 'Activity/Queue/Queue';
 import AddNewVolume from 'AddVolume/AddNewVolume/AddNewVolume';
 import ImportVolumePage from 'AddVolume/ImportVolume/ImportVolumePage';
-import CalendarPage from 'Calendar/CalendarPage';
-import CustomFormatSettingsPage from 'Settings/CustomFormats/CustomFormatSettingsPage';
+
+import Queue from 'Activity/Queue/Queue';
+import History from 'Activity/History/History';
+import Blocklist from 'Activity/Blocklist/Blocklist';
+
+import Settings from 'Settings/Settings';
+import MediaManagement from 'Settings/MediaManagement/MediaManagement';
 import DownloadClientSettings from 'Settings/DownloadClients/DownloadClientSettings';
 import GeneralSettings from 'Settings/General/GeneralSettings';
-import ImportListSettings from 'Settings/ImportLists/ImportListSettings';
-import IndexerSettings from 'Settings/Indexers/IndexerSettings';
-import MediaManagement from 'Settings/MediaManagement/MediaManagement';
-import MetadataSettings from 'Settings/Metadata/MetadataSettings';
-import MetadataSourceSettings from 'Settings/MetadataSource/MetadataSourceSettings';
-import NotificationSettings from 'Settings/Notifications/NotificationSettings';
-import Profiles from 'Settings/Profiles/Profiles';
-import Quality from 'Settings/Quality/Quality';
-import Settings from 'Settings/Settings';
-import TagSettings from 'Settings/Tags/TagSettings';
 import UISettings from 'Settings/UI/UISettings';
-import Backups from 'System/Backup/Backups';
-import LogsTable from 'System/Events/LogsTable';
-import Logs from 'System/Logs/Logs';
+
 import Status from 'System/Status/Status';
 import Tasks from 'System/Tasks/Tasks';
-import Updates from 'System/Updates/Updates';
-import CutoffUnmet from 'Wanted/CutoffUnmet/CutoffUnmet';
-import Missing from 'Wanted/Missing/Missing';
 */
 
 // IMPLEMENTATIONS
@@ -53,75 +40,35 @@ function AppRoutes({ history }: { history: History }) {
             <Route path="/volumes/:titleSlug" element={<VolumeDetailsPage />} />
 
             {/*
-            <Route path="/add/new" component={AddNewVolume} />
+            <Route path="/add/new" element={<AddNewVolume />} />
 
-            <Route path="/add/import" component={ImportVolumePage} />
-
-            <Route path="/volumeseditor" exact={true} render={RedirectWithUrlBase} />
-
-            <Route path="/seasonpass" exact={true} render={RedirectWithUrlBase} />
-
-            {/*Calendar*/
-            /*}
-            <Route path="/calendar" component={CalendarPage} />
+            <Route path="/add/import" element={<ImportVolumePage />} />
 
             {/*Activity*/
             /*}
-            <Route path="/activity/history" component={History} />
+            <Route path="/activity/queue" element={<Queue />} />
 
-            <Route path="/activity/queue" component={Queue} />
+            <Route path="/activity/history" element={<History />} />
 
-            <Route path="/activity/blocklist" component={Blocklist} />
-
-            {/*Wanted*/
-            /*}
-            <Route path="/wanted/missing" component={Missing} />
-
-            <Route path="/wanted/cutoffunmet" component={CutoffUnmet} />
+            <Route path="/activity/blocklist" element={<Blocklist />} />
 
             {/*Settings*/
             /*}
-            <Route exact={true} path="/settings" component={Settings} />
+            <Route exact={true} path="/settings" element={<Settings />} />
 
-            <Route path="/settings/mediamanagement" component={MediaManagement} />
+            <Route path="/settings/mediamanagement" element={<MediaManagement />} />
 
-            <Route path="/settings/profiles" component={Profiles} />
+            <Route path="/settings/downloadclients" element={<DownloadClientSettings />} />
 
-            <Route path="/settings/quality" component={Quality} />
+            <Route path="/settings/general" element={<GeneralSettings />} />
 
-            <Route path="/settings/customformats" component={CustomFormatSettingsPage} />
-
-            <Route path="/settings/indexers" component={IndexerSettings} />
-
-            <Route path="/settings/downloadclients" component={DownloadClientSettings} />
-
-            <Route path="/settings/importlists" component={ImportListSettings} />
-
-            <Route path="/settings/connect" component={NotificationSettings} />
-
-            <Route path="/settings/metadata" component={MetadataSettings} />
-
-            <Route path="/settings/metadatasource" component={MetadataSourceSettings} />
-
-            <Route path="/settings/tags" component={TagSettings} />
-
-            <Route path="/settings/general" component={GeneralSettings} />
-
-            <Route path="/settings/ui" component={UISettings} />
+            <Route path="/settings/ui" element={<UISettings />} />
 
             {/*System*/
             /*}
-            <Route path="/system/status" component={Status} />
+            <Route path="/system/status" element={<Status />} />
 
-            <Route path="/system/tasks" component={Tasks} />
-
-            <Route path="/system/backup" component={Backups} />
-
-            <Route path="/system/updates" component={Updates} />
-
-            <Route path="/system/events" component={LogsTable} />
-
-            <Route path="/system/logs/files" component={Logs} />
+            <Route path="/system/tasks" element={<Tasks />} />
              */}
 
             {/*Not Found*/}
