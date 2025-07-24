@@ -5,7 +5,11 @@ import { useCallback, useMemo } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
-import { useAddVolumeMutation, useGetRootFoldersQuery } from 'Store/createApiEndpoints';
+import {
+    useAddVolumeMutation,
+    useGetRootFoldersQuery,
+    useGetVolumesQuery,
+} from 'Store/createApiEndpoints';
 import { setAddVolumeOption, useAddVolumeOptions } from 'AddVolume/addVolumeOptionsStore';
 
 // Misc
@@ -36,6 +40,7 @@ import styles from './AddNewVolumeModalContent.module.css';
 import type { AddVolume } from 'AddVolume/AddVolume';
 import type { InputChanged } from 'typings/inputs';
 import type { MonitoringScheme, SpecialVersion } from 'Volume/Volume';
+import InnerHTML from 'Components/InnerHTML';
 
 export interface AddNewVolumeModalContentProps {
     volume: AddVolume;
@@ -50,6 +55,7 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
 
     const { data: rootFolders } = useGetRootFoldersQuery(undefined);
+    const { refetch } = useGetVolumesQuery(undefined);
 
     const { monitoringScheme, rootFolder, specialVersion } = useAddVolumeOptions();
     const [addVolume, addVolumeState] = useAddVolumeMutation();
@@ -77,6 +83,11 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
         setAddVolumeOption('specialVersion', value as SpecialVersion);
     }, []);
 
+    const handleAddVolumeSuccess = useCallback(() => {
+        refetch();
+        onModalClose();
+    }, [onModalClose, refetch]);
+
     const handleAddVolumePress = useCallback(() => {
         addVolume({
             ...volume,
@@ -84,8 +95,8 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
             monitoringScheme,
             monitor: monitoringScheme !== 'none',
             specialVersion,
-        });
-    }, [volume, specialVersion, monitoringScheme, addVolume, rootFolder]);
+        }).then(() => handleAddVolumeSuccess());
+    }, [volume, specialVersion, monitoringScheme, addVolume, rootFolder, handleAddVolumeSuccess]);
 
     return (
         <ModalContent onModalClose={onModalClose}>
@@ -107,7 +118,9 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
 
                     <div className={styles.info}>
                         {description ? (
-                            <div className={styles.description}>{description}</div>
+                            <div className={styles.description}>
+                                <InnerHTML innerHTML={description} />
+                            </div>
                         ) : null}
 
                         <Form>

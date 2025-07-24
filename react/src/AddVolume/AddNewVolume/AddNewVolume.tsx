@@ -43,8 +43,10 @@ function AddNewVolume() {
     const { volumeCount } = useGetVolumesQuery(
         {},
         {
-            selectFromResult: ({ data }) => ({
+            selectFromResult: ({ data, ...rest }) => ({
+                data,
                 volumeCount: data?.length ?? 0,
+                ...rest,
             }),
         },
     );
