@@ -1,6 +1,19 @@
-/*import { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-// import type { AppState } from 'App/State/AppState';
+// IMPORTS
+
+// React
+import { useCallback, useState } from 'react';
+
+// Redux
+import { useDeleteVolumeMutation } from 'Store/createApiEndpoints';
+import useVolume from 'Volume/useVolume';
+
+// Misc
+import { icons, inputTypes, kinds } from 'Helpers/Props';
+
+import formatBytes from 'Utilities/Number/formatBytes';
+import translate from 'Utilities/String/translate';
+
+// General Components
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
@@ -11,29 +24,25 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import { icons, inputTypes, kinds } from 'Helpers/Props';
-import type { Statistics } from 'Volume/Volume';
-// import useVolume from 'Volume/useVolume';
-// import { deleteVolume, setDeleteOption } from 'Store/Actions/volumeActions';
-import type { CheckInputChanged } from 'typings/inputs';
-import formatBytes from 'Utilities/Number/formatBytes';
-import translate from 'Utilities/String/translate';
+
+// CSS
 import styles from './DeleteVolumeModalContent.module.css';
-*/
+
+// Types
+import type { CheckInputChanged } from 'typings/inputs';
+
+// IMPLEMENTATIONS
 
 export interface DeleteVolumeModalContentProps {
     volumeId: number;
     onModalClose: () => void;
 }
 
-// eslint-disable-next-line
-function DeleteVolumeModalContent({} /* volumeId, onModalClose */ : DeleteVolumeModalContentProps) {
-    /*
-    const dispatch = useDispatch();
-    const { title, path, statistics = {} as Statistics } = useVolume(volumeId)!;
-    const { addImportListExclusion } = useSelector((state: AppState) => state.volumes.deleteOptions);
+function DeleteVolumeModalContent({ volumeId, onModalClose }: DeleteVolumeModalContentProps) {
+    const { volume } = useVolume(volumeId);
+    const { title, issueFileCount, totalSize: sizeOnDisk, folder: path } = volume!;
 
-    const { issueFileCount = 0, sizeOnDisk = 0 } = statistics;
+    const [deleteVolume] = useDeleteVolumeMutation();
 
     const [deleteFiles, setDeleteFiles] = useState(false);
 
@@ -42,19 +51,10 @@ function DeleteVolumeModalContent({} /* volumeId, onModalClose */ : DeleteVolume
     }, []);
 
     const handleDeleteVolumeConfirmed = useCallback(() => {
-        // dispatch(deleteVolume({ id: volumeId, deleteFiles, addImportListExclusion }));
+        deleteVolume({ volumeId, deleteFolder: deleteFiles });
 
         onModalClose();
-    }, [volumeId, addImportListExclusion, deleteFiles, dispatch, onModalClose]);
-
-    const handleDeleteOptionChange = useCallback(
-        // @ts-expect-error TODO:
-        // eslint-disable-next-line
-        ({ name, value }: CheckInputChanged) => {
-            // dispatch(setDeleteOption({ [name]: value }));
-        },
-        [dispatch],
-    );
+    }, [volumeId, deleteFiles, deleteVolume, onModalClose]);
 
     return (
         <ModalContent onModalClose={onModalClose}>
@@ -66,18 +66,6 @@ function DeleteVolumeModalContent({} /* volumeId, onModalClose */ : DeleteVolume
 
                     {path}
                 </div>
-
-                <FormGroup>
-                    <FormLabel>{translate('AddListExclusion')}</FormLabel>
-
-                    <FormInputGroup
-                        type={inputTypes.CHECK}
-                        name="addImportListExclusion"
-                        value={addImportListExclusion}
-                        helpText={translate('AddListExclusionVolumeHelpText')}
-                        onChange={handleDeleteOptionChange}
-                    />
-                </FormGroup>
 
                 <FormGroup>
                     <FormLabel>
@@ -129,8 +117,7 @@ function DeleteVolumeModalContent({} /* volumeId, onModalClose */ : DeleteVolume
                 </Button>
             </ModalFooter>
         </ModalContent>
-    );*/
-    return null;
+    );
 }
 
 export default DeleteVolumeModalContent;

@@ -54,6 +54,11 @@ export interface AddVolumeParams {
     autoSearch?: boolean;
 }
 
+export interface DeleteVolumeParams {
+    volumeId: number;
+    deleteFolder: boolean;
+}
+
 export const baseApi = createApi({
     reducerPath: 'baseApi',
     baseQuery: fetchBaseQuery({ baseUrl: window.Kapowarr.urlBase + window.Kapowarr.apiRoot }),
@@ -166,11 +171,25 @@ export const baseApi = createApi({
                 body: snakeify(body),
             }),
         }),
+
+        // DELETE
+        deleteVolume: build.mutation<void, DeleteVolumeParams>({
+            query: ({ volumeId, ...body }) => ({
+                method: 'DELETE',
+                url:
+                    `/volumes/${volumeId}` +
+                    getQueryString({
+                        api_key: window.Kapowarr.apiKey,
+                        ...snakeify(body),
+                    }),
+            }),
+        }),
     }),
 });
 
 export const {
     useAddVolumeMutation,
+    useDeleteVolumeMutation,
     useExecuteCommandMutation,
     useGetRootFoldersQuery,
     useGetVolumesQuery,
