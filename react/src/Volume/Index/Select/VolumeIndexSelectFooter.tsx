@@ -34,7 +34,7 @@ import styles from './VolumeIndexSelectFooter.module.css';
 interface SavePayload {
     monitored?: boolean;
     qualityProfileId?: number;
-    volumeType?: string;
+    specialVersion?: string;
     seasonFolder?: boolean;
     rootFolderPath?: string;
     moveFiles?: boolean;

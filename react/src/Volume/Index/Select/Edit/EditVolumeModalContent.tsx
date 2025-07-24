@@ -32,7 +32,7 @@ interface SavePayload {
     monitored?: boolean;
     monitorNewItems?: string;
     qualityProfileId?: number;
-    volumeType?: string;
+    specialVersion?: string;
     rootFolderPath?: string;
     moveFiles?: boolean;
 }
@@ -75,7 +75,7 @@ function EditVolumeModalContent(props: EditVolumeModalContentProps) {
     const [monitored, setMonitored] = useState(NO_CHANGE);
     const [monitorNewItems, setMonitorNewItems] = useState(NO_CHANGE);
     const [qualityProfileId, setQualityProfileId] = useState<string | number>(NO_CHANGE);
-    const [volumeType, setVolumeType] = useState(NO_CHANGE);
+    const [specialVersion, setSpecialVersion] = useState(NO_CHANGE);
     const [rootFolderPath, setRootFolderPath] = useState(NO_CHANGE);
     const [isConfirmMoveModalOpen, setIsConfirmMoveModalOpen] = useState(false);
 
@@ -99,9 +99,9 @@ function EditVolumeModalContent(props: EditVolumeModalContentProps) {
                 payload.qualityProfileId = qualityProfileId as number;
             }
 
-            if (volumeType !== NO_CHANGE) {
+            if (specialVersion !== NO_CHANGE) {
                 hasChanges = true;
-                payload.volumeType = volumeType;
+                payload.specialVersion = specialVersion;
             }
 
             if (rootFolderPath !== NO_CHANGE) {
@@ -120,7 +120,7 @@ function EditVolumeModalContent(props: EditVolumeModalContentProps) {
             monitored,
             monitorNewItems,
             qualityProfileId,
-            volumeType,
+            specialVersion,
             rootFolderPath,
             onSavePress,
             onModalClose,
@@ -139,8 +139,8 @@ function EditVolumeModalContent(props: EditVolumeModalContentProps) {
                 case 'qualityProfileId':
                     setQualityProfileId(value as string);
                     break;
-                case 'volumeType':
-                    setVolumeType(value as string);
+                case 'specialVersion':
+                    setSpecialVersion(value as string);
                     break;
                 case 'rootFolderPath':
                     setRootFolderPath(value as string);
@@ -208,15 +208,15 @@ function EditVolumeModalContent(props: EditVolumeModalContentProps) {
                 </FormGroup>
 
                 <FormGroup>
-                    <FormLabel>{translate('VolumeType')}</FormLabel>
+                    <FormLabel>{translate('SpecialVersion')}</FormLabel>
 
                     <FormInputGroup
                         type={inputTypes.VOLUME_TYPE_SELECT}
-                        name="volumeType"
-                        value={volumeType}
+                        name="specialVersion"
+                        value={specialVersion}
                         includeNoChange={true}
                         includeNoChangeDisabled={false}
-                        helpText={translate('VolumeTypesHelpText')}
+                        helpText={translate('SpecialVersionsHelpText')}
                         onChange={onInputChange}
                     />
                 </FormGroup>
@@ -227,9 +227,6 @@ function EditVolumeModalContent(props: EditVolumeModalContentProps) {
                     <FormInputGroup
                         type={inputTypes.ROOT_FOLDER_SELECT}
                         name="rootFolderPath"
-                        value={rootFolderPath}
-                        includeNoChange={true}
-                        includeNoChangeDisabled={false}
                         selectedValueOptions={{ includeFreeSpace: false }}
                         helpText={translate('VolumeEditRootFolderHelpText')}
                         onChange={onInputChange}

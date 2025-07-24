@@ -37,7 +37,7 @@ import Popover from 'Components/Tooltip/Popover';
 import styles from './ImportVolumeFooter.module.css';
 
 // Types
-// import type { VolumeMonitor, VolumeType } from 'Volume/Volume';
+// import type { VolumeMonitor, SpecialVersion } from 'Volume/Volume';
 import type { InputChanged } from 'typings/inputs';
 
 type MixedType = 'mixed';
@@ -49,11 +49,11 @@ function ImportVolumeFooter() {
     const {
         monitor: defaultMonitor,
         qualityProfileId: defaultQualityProfileId,
-        volumeType: defaultVolumeType,
+        specialVersion: defaultSpecialVersion,
     } = {
         monitor: '',
         qualityProfileId: 0,
-        volumeType: '',
+        specialVersion: '',
     }; // useAddVolumeOptions();
 
     /*const { isLookingUpVolume, isImporting, items, importError } = useSelector(
@@ -69,8 +69,8 @@ function ImportVolumeFooter() {
     const [qualityProfileId, setQualityProfileId] = useState<number | MixedType>(
         defaultQualityProfileId,
     );
-    const [volumeType, setVolumeType] =
-        useState<string /*VolumeType | MixedType*/>(defaultVolumeType);
+    const [specialVersion, setSpecialVersion] =
+        useState<string /*SpecialVersion | MixedType*/>(defaultSpecialVersion);
 
     const [selectState] = useSelect();
 
@@ -78,11 +78,11 @@ function ImportVolumeFooter() {
         return getSelectedIds(selectState.selectedState, (id) => id);
     }, [selectState.selectedState]);
 
-    const { hasUnsearchedItems, isMonitorMixed, isQualityProfileIdMixed, isVolumeTypeMixed } =
+    const { hasUnsearchedItems, isMonitorMixed, isQualityProfileIdMixed, isSpecialVersionMixed } =
         useMemo(() => {
             let isMonitorMixed = false;
             let isQualityProfileIdMixed = false;
-            let isVolumeTypeMixed = false;
+            let isSpecialVersionMixed = false;
             let hasUnsearchedItems = false;
 
             // @ts-expect-error TODO
@@ -95,8 +95,8 @@ function ImportVolumeFooter() {
                     isQualityProfileIdMixed = true;
                 }
 
-                if (item.volumeType !== defaultVolumeType) {
-                    isVolumeTypeMixed = true;
+                if (item.specialVersion !== defaultSpecialVersion) {
+                    isSpecialVersionMixed = true;
                 }
 
                 if (!item.isPopulated) {
@@ -108,12 +108,12 @@ function ImportVolumeFooter() {
                 hasUnsearchedItems: !isLookingUpVolume && hasUnsearchedItems,
                 isMonitorMixed,
                 isQualityProfileIdMixed,
-                isVolumeTypeMixed,
+                isSpecialVersionMixed,
             };
         }, [
             defaultMonitor,
             defaultQualityProfileId,
-            defaultVolumeType,
+            defaultSpecialVersion,
             // @ts-expect-error TODO
             items,
             isLookingUpVolume,
@@ -127,8 +127,8 @@ function ImportVolumeFooter() {
             else if (name === 'qualityProfileId') {
                 setQualityProfileId(value as number);
             }
-            else if (name === 'volumeType') {
-                setVolumeType(value as string); // as VolumeType);
+            else if (name === 'specialVersion') {
+                setSpecialVersion(value as string); // as SpecialVersion);
             }
 
             // setAddVolumeOption(name as keyof AddVolumeOptions, value);
@@ -177,13 +177,13 @@ function ImportVolumeFooter() {
     }, [defaultQualityProfileId, isQualityProfileIdMixed, qualityProfileId]);
 
     useEffect(() => {
-        if (isVolumeTypeMixed && volumeType !== 'mixed') {
-            setVolumeType('mixed');
+        if (isSpecialVersionMixed && specialVersion !== 'mixed') {
+            setSpecialVersion('mixed');
         }
-        else if (!isVolumeTypeMixed && volumeType !== defaultVolumeType) {
-            setVolumeType(defaultVolumeType);
+        else if (!isSpecialVersionMixed && specialVersion !== defaultSpecialVersion) {
+            setSpecialVersion(defaultSpecialVersion);
         }
-    }, [defaultVolumeType, isVolumeTypeMixed, volumeType]);
+    }, [defaultSpecialVersion, isSpecialVersionMixed, specialVersion]);
 
     const selectedCount = selectedIds.length;
 
@@ -203,14 +203,14 @@ function ImportVolumeFooter() {
             </div>
 
             <div className={styles.inputContainer}>
-                <div className={styles.label}>{translate('VolumeType')}</div>
+                <div className={styles.label}>{translate('SpecialVersion')}</div>
 
                 <FormInputGroup
                     type={inputTypes.VOLUME_TYPE_SELECT}
-                    name="volumeType"
-                    value={volumeType}
+                    name="specialVersion"
+                    value={specialVersion}
                     isDisabled={!selectedCount}
-                    includeMixed={isVolumeTypeMixed}
+                    includeMixed={isSpecialVersionMixed}
                     onChange={handleInputChange}
                 />
             </div>

@@ -33,10 +33,9 @@ function RootFolderSelectInputOption({
     isMissing,
     volumeFolder,
     isMobile,
-    isWindows,
     ...otherProps
 }: RootFolderSelectInputOptionProps) {
-    const slashCharacter = isWindows ? '\\' : '/';
+    const slashCharacter = '/';
 
     return (
         <EnhancedSelectInputOption id={id} isMobile={isMobile} {...otherProps}>

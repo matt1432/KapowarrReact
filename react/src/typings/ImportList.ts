@@ -1,4 +1,4 @@
-// import type { MonitorNewItems, VolumeMonitor, VolumeType } from 'Volume/Volume';
+// import type { MonitorNewItems, VolumeMonitor, SpecialVersion } from 'Volume/Volume';
 import type { Provider } from './Provider';
 
 export interface ImportList extends Provider {
@@ -12,7 +12,7 @@ export interface ImportList extends Provider {
     // @ts-expect-error TODO
     monitorNewItems: MonitorNewItems;
     // @ts-expect-error TODO
-    volumeType: VolumeType;
+    specialVersion: SpecialVersion;
     seasonFolder: boolean;
     listType: string;
     listOrder: number;

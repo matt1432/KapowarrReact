@@ -53,10 +53,10 @@ function createItemSelector(id: string) {
 function ImportVolumeRow({ id }: ImportVolumeRowProps) {
     const dispatch = useDispatch();
 
-    // const { relativePath, monitor, qualityProfileId, volumeType, selectedVolume } =
+    // const { relativePath, monitor, qualityProfileId, specialVersion, selectedVolume } =
     // useSelector(createItemSelector(id));
 
-    const isExistingVolume = false; // useSelector(createExistingVolumeSelector(selectedVolume?.tvdbId));
+    const isExistingVolume = false; // useSelector(createExistingVolumeSelector(selectedVolume?.comicvineId));
 
     const [selectState, selectDispatch] = useSelect();
 
@@ -106,11 +106,11 @@ function ImportVolumeRow({ id }: ImportVolumeRowProps) {
                 />
             </VirtualTableRowCell>
 
-            <VirtualTableRowCell className={styles.volumeType}>
+            <VirtualTableRowCell className={styles.specialVersion}>
                 <FormInputGroup
                     type={inputTypes.VOLUME_TYPE_SELECT}
-                    name="volumeType"
-                    value={'' /*volumeType*/}
+                    name="specialVersion"
+                    value={'' /*specialVersion*/}
                     onChange={handleInputChange}
                 />
             </VirtualTableRowCell>

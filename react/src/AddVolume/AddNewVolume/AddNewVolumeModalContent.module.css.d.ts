@@ -6,7 +6,7 @@ interface CssExports {
     info: string;
     labelIcon: string;
     modalFooter: string;
-    overview: string;
+    description: string;
     poster: string;
     searchInput: string;
     searchInputContainer: string;

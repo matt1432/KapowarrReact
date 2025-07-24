@@ -111,10 +111,10 @@ function ImportVolumeSelectVolume({ id, onInputChange }: ImportVolumeSelectVolum
     }, [id, term, dispatch]);
 
     const handleVolumeSelect = useCallback(
-        (tvdbId: number) => {
+        (comicvineId: number) => {
             setIsOpen(false);
 
-            const selectedVolume = items.find((item) => item.tvdbId === tvdbId)!;
+            const selectedVolume = items.find((item) => item.comicvineId === comicvineId)!;
 
             dispatch(
                 // // @ts-expect-error - actions are not typed
@@ -124,10 +124,10 @@ function ImportVolumeSelectVolume({ id, onInputChange }: ImportVolumeSelectVolum
                 }),
             );
 
-            if (selectedVolume.volumeType !== 'standard') {
+            if (selectedVolume.specialVersion !== 'standard') {
                 onInputChange({
-                    name: 'volumeType',
-                    value: selectedVolume.volumeType,
+                    name: 'specialVersion',
+                    value: selectedVolume.specialVersion,
                 });
             }
         },
@@ -249,8 +249,8 @@ function ImportVolumeSelectVolume({ id, onInputChange }: ImportVolumeSelectVolum
                                     {items.map((item) => {
                                         return (
                                             <ImportVolumeSearchResult
-                                                key={item.tvdbId}
-                                                tvdbId={item.tvdbId}
+                                                key={item.comicvineId}
+                                                comicvineId={item.comicvineId}
                                                 title={item.title}
                                                 year={item.year}
                                                 network={item.network}

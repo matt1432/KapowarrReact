@@ -41,8 +41,8 @@ import type { ProviderOptionSelectInputProps } from './Select/ProviderOptionSele
 import RootFolderSelectInput from './Select/RootFolderSelectInput';
 import type { RootFolderSelectInputProps } from './Select/RootFolderSelectInput';
 
-import VolumeTypeSelectInput from './Select/VolumeTypeSelectInput';
-import type { VolumeTypeSelectInputProps } from './Select/VolumeTypeSelectInput';
+import SpecialVersionSelectInput from './Select/SpecialVersionSelectInput';
+import type { SpecialVersionSelectInputProps } from './Select/SpecialVersionSelectInput';
 
 import UMaskInput from './Select/UMaskInput';
 import type { UMaskInputProps } from './Select/UMaskInput';
@@ -90,8 +90,8 @@ type PickProps<V, C extends InputType> = C extends 'text'
                                   : C extends 'select'
                                     ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                       EnhancedSelectInputProps<any, V>
-                                    : C extends 'volumeTypeSelect'
-                                      ? VolumeTypeSelectInputProps
+                                    : C extends 'specialVersionSelect'
+                                      ? SpecialVersionSelectInputProps
                                       : C extends 'text'
                                         ? TextInputProps
                                         : C extends 'textArea'
@@ -150,7 +150,7 @@ const componentMap: Record<InputType, ElementType> = {
     path: PathInput,
     rootFolderSelect: RootFolderSelectInput,
     select: EnhancedSelectInput,
-    volumeTypeSelect: VolumeTypeSelectInput,
+    specialVersionSelect: SpecialVersionSelectInput,
     text: TextInput,
     textArea: TextArea,
     umask: UMaskInput,

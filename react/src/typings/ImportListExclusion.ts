@@ -1,6 +1,6 @@
 import type { ModelBase } from 'App/ModelBase';
 
 export interface ImportListExclusion extends ModelBase {
-    tvdbId: number;
+    comicvineId: number;
     title: string;
 }

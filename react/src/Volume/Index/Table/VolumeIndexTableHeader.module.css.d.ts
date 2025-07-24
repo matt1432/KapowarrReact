@@ -11,7 +11,7 @@ interface CssExports {
     publisher: string;
     folder: string;
     releaseGroups: string;
-    volumeType: string;
+    specialVersion: string;
     sizeOnDisk: string;
     title: string;
     status: string;

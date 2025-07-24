@@ -6,9 +6,10 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 // Types
 import type { Volume } from './Volume';
+import type { AddVolume } from 'AddVolume/AddVolume';
 
 export interface VolumeImageProps {
-    volume: Volume;
+    volume: Volume | AddVolume;
     className?: string;
     style?: object;
     placeholder: string;
@@ -20,9 +21,11 @@ export interface VolumeImageProps {
 
 // IMPLEMENTATIONS
 
-function getUrl(volume: Volume) {
+function getUrl(volume: Volume | AddVolume) {
     const { apiKey, urlBase } = window.Kapowarr;
-    return `${urlBase}/api/volumes/${volume.id}/cover?api_key=${apiKey}`;
+    return 'id' in volume
+        ? `${urlBase}/api/volumes/${volume.id}/cover?api_key=${apiKey}`
+        : volume.coverLink;
 }
 
 function VolumeImage({

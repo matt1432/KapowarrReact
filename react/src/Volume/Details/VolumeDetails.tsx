@@ -72,7 +72,7 @@ interface VolumeDetailsProps {
 import MonitoringOptionsModal from 'Volume/MonitoringOptions/MonitoringOptionsModal';
 
 function VolumeDetails({ volumeId }: VolumeDetailsProps) {
-    const { data: allVolumes } = useGetVolumesQuery();
+    const { data: allVolumes } = useGetVolumesQuery(undefined);
 
     const { volume, refetch, isFetching, isPopulated, error, hasIssues, hasMonitoredIssues } =
         useVolume(volumeId);

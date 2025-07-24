@@ -22,28 +22,28 @@ import styles from './ImportVolumeSearchResult.module.css';
 
 // Types
 interface ImportVolumeSearchResultProps {
-    tvdbId: number;
+    comicvineId: number;
     title: string;
     year: number;
     network?: string;
-    onPress: (tvdbId: number) => void;
+    onPress: (comicvineId: number) => void;
 }
 
 // IMPLEMENTATIONS
 
 function ImportVolumeSearchResult({
-    tvdbId,
+    comicvineId,
     title,
     year,
     network,
     onPress,
 }: ImportVolumeSearchResultProps) {
-    // const isExistingVolume = useSelector(createExistingVolumeSelector(tvdbId));
+    // const isExistingVolume = useSelector(createExistingVolumeSelector(comicvineId));
     const isExistingVolume = false;
 
     const handlePress = useCallback(() => {
-        onPress(tvdbId);
-    }, [tvdbId, onPress]);
+        onPress(comicvineId);
+    }, [comicvineId, onPress]);
 
     return (
         <div className={styles.container}>
@@ -58,7 +58,7 @@ function ImportVolumeSearchResult({
 
             <Link
                 className={styles.tvdbLink}
-                to={`https://www.thetvdb.com/?tab=series&id=${tvdbId}`}
+                to={`https://www.thetvdb.com/?tab=series&id=${comicvineId}`}
             >
                 <Icon className={styles.tvdbLinkIcon} name={icons.EXTERNAL_LINK} size={16} />
             </Link>

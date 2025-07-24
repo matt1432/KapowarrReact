@@ -55,7 +55,7 @@ function Row({ index, style, data }: ListChildComponentProps<RowItemData>) {
 function ImportVolumeTable({ unmappedFolders, scrollerRef }: ImportVolumeTableProps) {
     const dispatch = useDispatch();
 
-    // const { monitor, qualityProfileId, volumeType, seasonFolder } = useAddVolumeOptions();
+    // const { monitor, qualityProfileId, specialVersion, seasonFolder } = useAddVolumeOptions();
 
     const items = useSelector((state: AppState) => state.importVolume.items);
     const { isSmallScreen } = useSelector(createDimensionsSelector());
@@ -65,7 +65,7 @@ function ImportVolumeTable({ unmappedFolders, scrollerRef }: ImportVolumeTablePr
     const defaultValues = useRef({
         monitor,
         qualityProfileId,
-        volumeType,
+        specialVersion,
         seasonFolder,
     });
 
@@ -145,7 +145,7 @@ function ImportVolumeTable({ unmappedFolders, scrollerRef }: ImportVolumeTablePr
             const isSelected = selectedState[id];
 
             const isExistingVolume =
-                !!selectedVolume && allVolume.some((s) => s.tvdbId === selectedVolume.tvdbId);
+                !!selectedVolume && allVolume.some((s) => s.comicvineId === selectedVolume.comicvineId);
 
             if (
                 (!selectedVolume && prevItem.selectedVolume) ||

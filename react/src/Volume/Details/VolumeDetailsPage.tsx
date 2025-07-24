@@ -21,7 +21,7 @@ import VolumeDetails from './VolumeDetails';
 // IMPLEMENTATIONS
 
 function VolumeDetailsPage() {
-    const { data: allVolumes } = useGetVolumesQuery();
+    const { data: allVolumes } = useGetVolumesQuery(undefined);
     const { titleSlug } = useParams<{ titleSlug: string }>();
 
     const volumeIndex = allVolumes?.findIndex((volume) => volume.id.toString() === titleSlug) ?? -1;

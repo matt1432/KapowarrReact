@@ -4,15 +4,17 @@
 import { Route, Routes } from 'react-router-dom';
 
 // Components
-import VolumeDetailsPage from 'Volume/Details/VolumeDetailsPage';
 import VolumeIndex from 'Volume/Index';
+import VolumeDetailsPage from 'Volume/Details/VolumeDetailsPage';
+
+import AddNewVolume from 'AddVolume/AddNewVolume/AddNewVolume';
+
 import NotFound from 'Components/NotFound';
 
 // Types
 import type { History } from 'history';
 
 /*
-import AddNewVolume from 'AddVolume/AddNewVolume/AddNewVolume';
 import ImportVolumePage from 'AddVolume/ImportVolume/ImportVolumePage';
 
 import Queue from 'Activity/Queue/Queue';
@@ -39,9 +41,9 @@ function AppRoutes({ history }: { history: History }) {
 
             <Route path="/volumes/:titleSlug" element={<VolumeDetailsPage />} />
 
-            {/*
             <Route path="/add/new" element={<AddNewVolume />} />
 
+            {/*
             <Route path="/add/import" element={<ImportVolumePage />} />
 
             {/*Activity*/

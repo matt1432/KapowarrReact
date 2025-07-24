@@ -4,28 +4,25 @@
 import HintedSelectInputSelectedValue from './HintedSelectInputSelectedValue';
 
 // Types
-import type { IVolumeTypeOption } from './VolumeTypeSelectInput';
+import type { ISpecialVersionOption } from './SpecialVersionSelectInput';
 
-interface VolumeTypeSelectInputOptionProps {
+interface SpecialVersionSelectInputOptionProps {
     selectedValue: string;
-    values: IVolumeTypeOption[];
-    format: string;
+    values: ISpecialVersionOption[];
 }
 
 // IMPLEMENTATIONS
 
-function VolumeTypeSelectInputSelectedValue(props: VolumeTypeSelectInputOptionProps) {
+function SpecialVersionSelectInputSelectedValue(props: SpecialVersionSelectInputOptionProps) {
     const { selectedValue, values, ...otherProps } = props;
-    const format = values.find((v) => v.key === selectedValue)?.format;
 
     return (
         <HintedSelectInputSelectedValue
             {...otherProps}
             selectedValue={selectedValue}
             values={values}
-            hint={format}
         />
     );
 }
 
-export default VolumeTypeSelectInputSelectedValue;
+export default SpecialVersionSelectInputSelectedValue;

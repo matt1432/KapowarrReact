@@ -3,11 +3,13 @@
 // React
 import { useCallback, useEffect, useState } from 'react';
 
+// Redux
+import { useGetVolumesQuery, useLazyLookupVolumeQuery } from 'Store/createApiEndpoints';
+
 // Misc
 import { icons, kinds } from 'Helpers/Props';
 
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
-// import useDebounce from 'Helpers/Hooks/useDebounce';
 import useQueryParams from 'Helpers/Hooks/useQueryParams';
 import translate from 'Utilities/String/translate';
 
@@ -16,7 +18,6 @@ import Alert from 'Components/Alert';
 import TextInput from 'Components/Form/TextInput';
 import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
-import Link from 'Components/Link/Link';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
@@ -29,38 +30,52 @@ import styles from './AddNewVolume.module.css';
 
 // Types
 import type { InputChanged } from 'typings/inputs';
+import type { AddVolume } from 'AddVolume/AddVolume';
 
 // IMPLEMENTATIONS
 
 function AddNewVolume() {
     const { term: initialTerm = '' } = useQueryParams<{ term: string }>();
 
-    // const volumeCount = useSelector((state: AppState) => state.volumes.items.length);
-    const volumeCount = 0;
+    const { volumeCount } = useGetVolumesQuery(
+        {},
+        {
+            selectFromResult: ({ data }) => ({
+                volumeCount: data?.length ?? 0,
+            }),
+        },
+    );
 
+    const [_term, _setTerm] = useState(initialTerm);
     const [term, setTerm] = useState(initialTerm);
-    const [isFetching, setIsFetching] = useState(false);
-    // const query = useDebounce(term, term ? 300 : 0);
+    const [searchResults, setSearchResults] = useState<AddVolume[]>([]);
 
     const handleSearchInputChange = useCallback(({ value }: InputChanged<string>) => {
-        setTerm(value);
-        setIsFetching(!!value.trim());
+        _setTerm(value);
     }, []);
 
     const handleClearVolumeLookupPress = useCallback(() => {
+        _setTerm('');
         setTerm('');
-        setIsFetching(false);
+        setSearchResults([]);
     }, []);
 
-    const {
-        isFetching: isFetchingApi,
-        error,
-        data = [],
-    } = { isFetching: false, error: undefined, data: [] }; // useLookupVolume(query);
+    const [lookupVolume, { isFetching, error, data = [] }] = useLazyLookupVolumeQuery();
 
     useEffect(() => {
-        setIsFetching(isFetchingApi);
-    }, [isFetchingApi]);
+        setSearchResults(data);
+    }, [data]);
+
+    const handleSubmit = useCallback(() => {
+        setTerm(_term);
+
+        if (_term !== '') {
+            lookupVolume({ query: _term });
+        }
+        else {
+            setSearchResults([]);
+        }
+    }, [lookupVolume, _term]);
 
     useEffect(() => {
         setTerm(initialTerm);
@@ -70,17 +85,18 @@ function AddNewVolume() {
         <PageContent title={translate('AddNewVolume')}>
             <PageContentBody>
                 <div className={styles.searchContainer}>
-                    <div className={styles.searchIconContainer}>
+                    <Button className={styles.searchIconContainer} onPress={handleSubmit}>
                         <Icon name={icons.SEARCH} size={20} />
-                    </div>
+                    </Button>
 
                     <TextInput
                         className={styles.searchInput}
                         name="volumeLookup"
-                        value={term}
-                        placeholder="eg. Breaking Bad, tvdb:####"
+                        value={_term}
+                        placeholder="eg. Avengers, cv:4050-2127"
                         autoFocus={true}
                         onChange={handleSearchInputChange}
+                        onSubmit={handleSubmit}
                     />
 
                     <Button
@@ -93,7 +109,7 @@ function AddNewVolume() {
 
                 {isFetching ? <LoadingIndicator /> : null}
 
-                {!isFetching && !!error ? (
+                {!isFetching && error ? (
                     <div className={styles.message}>
                         <div className={styles.helpText}>{translate('AddNewVolumeError')}</div>
 
@@ -101,11 +117,12 @@ function AddNewVolume() {
                     </div>
                 ) : null}
 
-                {!isFetching && !error && !!data.length ? (
+                {!isFetching && !error && searchResults.length ? (
                     <div className={styles.searchResults}>
-                        {data.map((item) => {
-                            // @ts-expect-error TODO:
-                            return <AddNewVolumeSearchResult key={item.tvdbId} volume={item} />;
+                        {searchResults.map((item) => {
+                            return (
+                                <AddNewVolumeSearchResult key={item.comicvineId} volume={item} />
+                            );
                         })}
                     </div>
                 ) : null}
@@ -115,19 +132,15 @@ function AddNewVolume() {
                         <div className={styles.noResults}>
                             {translate('CouldNotFindResults', { term })}
                         </div>
-                        <div>{translate('SearchByTvdbId')}</div>
-                        <div>
-                            <Link to="https://wiki.servarr.com/sonarr/faq#why-cant-i-add-a-new-volumes-when-i-know-the-tvdb-id">
-                                {translate('WhyCantIFindMyShow')}
-                            </Link>
-                        </div>
+                        <div>{translate('SearchByComicVineId')}</div>
+                        <div>{translate('WhyCantIFindMyVolume')}</div>
                     </div>
                 ) : null}
 
                 {term ? null : (
                     <div className={styles.message}>
                         <div className={styles.helpText}>{translate('AddNewVolumeHelpText')}</div>
-                        <div>{translate('SearchByTvdbId')}</div>
+                        <div>{translate('SearchByComicVineId')}</div>
                     </div>
                 )}
 

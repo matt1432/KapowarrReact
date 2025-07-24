@@ -78,7 +78,7 @@ function RootFolderModalContent(props: RootFolderModalContentProps) {
                     <FormInputGroup
                         type={inputTypes.ROOT_FOLDER_SELECT}
                         name="rootFolderPath"
-                        value={rootFolderPath}
+                        // value={rootFolderPath}
                         valueOptions={{
                             volumeFolder: data?.folder,
                             isWindows,

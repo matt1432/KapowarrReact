@@ -18,7 +18,7 @@
     min-width: 170px;
 }
 
-.volumeType {
+.specialVersion {
     composes: headerCell from 'Components/Table/VirtualTableHeaderCell.module.css';
 
     flex: 0 1 200px;

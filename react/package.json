@@ -43,7 +43,8 @@
         "react-window": "1.8.11",
         "redux-first-history": "5.2.0",
         "stacktrace-js": "2.0.2",
-        "use-debounce": "10.0.5"
+        "use-debounce": "10.0.5",
+        "zustand": "^5.0.6"
     },
     "devDependencies": {
         "@types/lodash": "4.17.20",

@@ -23,7 +23,7 @@
     min-width: 170px;
 }
 
-.volumeType {
+.specialVersion {
     composes: cell from 'Components/Table/Cells/VirtualTableRowCell.module.css';
 
     flex: 0 1 200px;

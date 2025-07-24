@@ -7,7 +7,7 @@ interface CssExports {
     seasonFolder: string;
     selectInput: string;
     volume: string;
-    volumeType: string;
+    specialVersion: string;
 }
 export const cssExports: CssExports;
 export default cssExports;

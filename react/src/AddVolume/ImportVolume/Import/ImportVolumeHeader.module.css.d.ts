@@ -7,7 +7,7 @@ interface CssExports {
     qualityProfile: string;
     seasonFolder: string;
     volume: string;
-    volumeType: string;
+    specialVersion: string;
 }
 export const cssExports: CssExports;
 export default cssExports;

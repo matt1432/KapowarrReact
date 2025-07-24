@@ -6,62 +6,56 @@ import { useMemo } from 'react';
 // Misc
 import translate from 'Utilities/String/translate';
 
-import * as volumeTypes from 'Utilities/Volume/volumeTypes';
+import * as specialVersions from 'Utilities/Volume/specialVersions';
 
 // Specific Components
 import EnhancedSelectInput, {
     type EnhancedSelectInputProps,
     type EnhancedSelectInputValue,
 } from './EnhancedSelectInput';
-import VolumeTypeSelectInputOption from './VolumeTypeSelectInputOption';
-import VolumeTypeSelectInputSelectedValue from './VolumeTypeSelectInputSelectedValue';
+import SpecialVersionSelectInputOption from './SpecialVersionSelectInputOption';
+import SpecialVersionSelectInputSelectedValue from './SpecialVersionSelectInputSelectedValue';
 
 // Types
-export interface VolumeTypeSelectInputProps
+export interface SpecialVersionSelectInputProps
     extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<string>, string>, 'values'> {
     includeNoChange?: boolean;
     includeNoChangeDisabled?: boolean;
     includeMixed?: boolean;
 }
 
-export interface IVolumeTypeOption {
+export interface ISpecialVersionOption {
     key: string;
     value: string;
-    format?: string;
     isDisabled?: boolean;
 }
 
 // IMPLEMENTATIONS
 
-const volumeTypeOptions: IVolumeTypeOption[] = [
+const specialVersionOptions: ISpecialVersionOption[] = [
     {
-        key: volumeTypes.STANDARD,
-        value: 'Standard',
-        get format() {
-            return translate('StandardIssueTypeFormat', { format: 'S01E05' });
-        },
+        key: specialVersions.TPB,
+        value: 'Trade Paperback',
     },
     {
-        key: volumeTypes.DAILY,
-        value: 'Daily / Date',
-        get format() {
-            return translate('DailyIssueTypeFormat', { format: '2020-05-25' });
-        },
+        key: specialVersions.ONE_SHOT,
+        value: 'Oneshot',
     },
     {
-        key: volumeTypes.ANIME,
-        value: 'Anime / Absolute',
-        get format() {
-            return translate('AnimeIssueTypeFormat', { format: '005' });
-        },
+        key: specialVersions.HARD_COVER,
+        value: 'Hard Cover',
+    },
+    {
+        key: specialVersions.VOL_AS_ISSUE,
+        value: 'Volume as Issue',
     },
 ];
 
-function VolumeTypeSelectInput(props: VolumeTypeSelectInputProps) {
+function SpecialVersionSelectInput(props: SpecialVersionSelectInputProps) {
     const { includeNoChange = false, includeNoChangeDisabled = true, includeMixed = false } = props;
 
     const values = useMemo(() => {
-        const result = [...volumeTypeOptions];
+        const result = [...specialVersionOptions];
 
         if (includeNoChange) {
             result.unshift({
@@ -86,10 +80,10 @@ function VolumeTypeSelectInput(props: VolumeTypeSelectInputProps) {
         <EnhancedSelectInput
             {...props}
             values={values}
-            optionComponent={VolumeTypeSelectInputOption}
-            selectedValueComponent={VolumeTypeSelectInputSelectedValue}
+            optionComponent={SpecialVersionSelectInputOption}
+            selectedValueComponent={SpecialVersionSelectInputSelectedValue}
         />
     );
 }
 
-export default VolumeTypeSelectInput;
+export default SpecialVersionSelectInput;

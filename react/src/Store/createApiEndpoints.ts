@@ -14,6 +14,8 @@ import type {
     Volume,
     VolumePublicInfo,
 } from 'Volume/Volume';
+import type { RawVolumeMetadata, VolumeMetadata } from 'AddVolume/AddVolume';
+import type { RootFolder } from 'typings/RootFolder';
 
 export type GetVolumesParams =
     | {
@@ -39,6 +41,17 @@ export interface UpdateVolumeParams {
     volumeFolder?: string;
     libgenUrl?: string;
     volumeId: number;
+}
+
+export interface AddVolumeParams {
+    comicvineId: number;
+    rootFolderId: number;
+    monitor: boolean;
+    monitoringScheme?: MonitoringScheme;
+    monitorNewIssues?: boolean;
+    volumeFolder?: string;
+    specialVersion?: '' | SpecialVersion;
+    autoSearch?: boolean;
 }
 
 export const baseApi = createApi({
@@ -69,6 +82,18 @@ export const baseApi = createApi({
             transformResponse: (response: { result: RawVolume }) => camelize(response.result),
         }),
 
+        lookupVolume: build.query<VolumeMetadata[], { query: string }>({
+            query: ({ query }) =>
+                `volumes/search` +
+                getQueryString({
+                    query,
+                    api_key: window.Kapowarr.apiKey,
+                }),
+
+            transformResponse: (response: { result: RawVolumeMetadata[] }) =>
+                camelize(response.result),
+        }),
+
         fetchQueueDetails: build.query<DownloadItem[], undefined>({
             query: () =>
                 'activity/queue' +
@@ -79,7 +104,32 @@ export const baseApi = createApi({
             transformResponse: (response: { result: DownloadItem[] }) => response.result,
         }),
 
+        getRootFolders: build.query<RootFolder[], undefined>({
+            query: () =>
+                'rootfolder' +
+                getQueryString({
+                    api_key: window.Kapowarr.apiKey,
+                }),
+
+            transformResponse: (response: { result: RootFolder[] }) => response.result,
+        }),
+
         // POST
+        addVolume: build.mutation<VolumePublicInfo, AddVolumeParams>({
+            query: (body) => ({
+                method: 'POST',
+                url:
+                    'volumes' +
+                    getQueryString({
+                        api_key: window.Kapowarr.apiKey,
+                    }),
+                body: snakeify(body),
+            }),
+
+            transformResponse: (response: { result: RawVolumePublicInfo }) =>
+                camelize(response.result),
+        }),
+
         executeCommand: build.mutation<void, ExecuteCommandParams>({
             query: (body) => ({
                 method: 'POST',
@@ -120,16 +170,15 @@ export const baseApi = createApi({
 });
 
 export const {
+    useAddVolumeMutation,
     useExecuteCommandMutation,
+    useGetRootFoldersQuery,
+    useGetVolumesQuery,
+    useLazyLookupVolumeQuery,
     useSearchVolumeQuery,
     useToggleIssueMonitoredMutation,
     useUpdateVolumeMutation,
 } = baseApi;
-
-// Add default value to params
-export const useGetVolumesQuery = (params: GetVolumesParams = {}) => {
-    return baseApi.useGetVolumesQuery(params);
-};
 
 // Abstract some logic
 export const useGetVolumeQuery = (volumeId: number) => {

@@ -4,17 +4,15 @@
 import React, { useCallback, useState } from 'react';
 
 // Redux
-// import { useSelector } from 'react-redux';
-// import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-// import createExistingVolumeSelector from 'Store/Selectors/createExistingVolumeSelector';
+import { useRootSelector } from 'Store/createAppStore';
+import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 
 // Misc
-import { icons, kinds, sizes } from 'Helpers/Props';
+import { icons, sizes } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
 // General Components
-import HeartRating from 'Components/HeartRating';
 import Icon from 'Components/Icon';
 import Label from 'Components/Label';
 import Link from 'Components/Link/Link';
@@ -29,7 +27,6 @@ import styles from './AddNewVolumeSearchResult.module.css';
 
 // Types
 import type { AddVolume } from 'AddVolume/AddVolume';
-// import type { Statistics } from 'Volume/Volume';
 
 interface AddNewVolumeSearchResultProps {
     volume: AddVolume;
@@ -38,32 +35,27 @@ interface AddNewVolumeSearchResultProps {
 // IMPLEMENTATIONS
 
 function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
-    const {
-        // @ts-expect-error TODO:
-        tvdbId,
-        // @ts-expect-error TODO:
-        titleSlug,
-        title,
-        year,
-        // @ts-expect-error TODO:
-        network,
-        // @ts-expect-error TODO:
-        originalLanguage,
-        // @ts-expect-error TODO:
-        status,
-        // @ts-expect-error TODO:
-        ratings,
-        // @ts-expect-error TODO:
-        overview,
-        // @ts-expect-error TODO:
-        volumeType,
-        // images,
-    } = volume;
+    const { comicvineId, title, description, publisher, year, siteUrl } = volume;
 
-    // const isExistingVolume = useSelector(createExistingVolumeSelector(tvdbId));
-    // const { isSmallScreen } = useSelector(createDimensionsSelector());
-    const isExistingVolume = false;
-    const isSmallScreen = false;
+    const { isExistingVolume, titleSlug } = useGetVolumesQuery(undefined, {
+        selectFromResult: ({ data }) => {
+            const existingVolume = data?.find((v) => v.comicvineId === comicvineId);
+
+            if (!existingVolume) {
+                return {
+                    isExistingVolume: false,
+                    titleSlug: undefined,
+                };
+            }
+
+            return {
+                isExistingVolume: true,
+                titleSlug: existingVolume.id,
+            };
+        },
+    });
+
+    const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
     const [isNewAddVolumeModalOpen, setIsNewAddVolumeModalOpen] = useState(false);
 
     const handlePress = useCallback(() => {
@@ -118,7 +110,7 @@ function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
 
                             <Link
                                 className={styles.tvdbLink}
-                                to={`https://www.thetvdb.com/?tab=volume&id=${tvdbId}`}
+                                to={siteUrl}
                                 onPress={handleTvdbLinkPress}
                             >
                                 <Icon
@@ -131,46 +123,16 @@ function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
                     </div>
 
                     <div>
-                        <Label size={sizes.LARGE}>
-                            <HeartRating
-                                rating={ratings.value}
-                                votes={ratings.votes}
-                                iconSize={13}
-                            />
-                        </Label>
-
-                        {originalLanguage?.name ? (
-                            <Label size={sizes.LARGE}>
-                                <Icon name={icons.LANGUAGE} size={13} />
-
-                                <span className={styles.originalLanguageName}>
-                                    {originalLanguage.name}
-                                </span>
-                            </Label>
-                        ) : null}
-
-                        {network ? (
+                        {publisher ? (
                             <Label size={sizes.LARGE}>
                                 <Icon name={icons.PUBLISHER} size={13} />
 
-                                <span className={styles.network}>{network}</span>
-                            </Label>
-                        ) : null}
-
-                        {status === 'ended' ? (
-                            <Label kind={kinds.DANGER} size={sizes.LARGE}>
-                                {translate('Ended')}
-                            </Label>
-                        ) : null}
-
-                        {status === 'upcoming' ? (
-                            <Label kind={kinds.INFO} size={sizes.LARGE}>
-                                {translate('Upcoming')}
+                                <span className={styles.network}>{publisher}</span>
                             </Label>
                         ) : null}
                     </div>
 
-                    <div className={styles.overview}>{overview}</div>
+                    <div className={styles.overview}>{description}</div>
 
                     <MetadataAttribution />
                 </div>
@@ -179,7 +141,6 @@ function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
             <AddNewVolumeModal
                 isOpen={isNewAddVolumeModalOpen && !isExistingVolume}
                 volume={volume}
-                initialVolumeType={volumeType}
                 onModalClose={handleAddVolumeModalClose}
             />
         </div>

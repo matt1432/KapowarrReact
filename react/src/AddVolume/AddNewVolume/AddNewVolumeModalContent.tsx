@@ -1,26 +1,19 @@
 // IMPORTS
 
 // React
-// import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 // Redux
-// import { useSelector } from 'react-redux';
-// import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-// import selectSettings from 'Store/Selectors/selectSettings';
+import { useRootSelector } from 'Store/createAppStore';
+import { useAddVolumeMutation, useGetRootFoldersQuery } from 'Store/createApiEndpoints';
+import { setAddVolumeOption, useAddVolumeOptions } from 'AddVolume/addVolumeOptionsStore';
 
 // Misc
-/*import {
-    type AddVolumeOptions,
-    setAddVolumeOption,
-    useAddVolumeOptions,
-} from 'AddVolume/addVolumeOptionsStore';*/
 import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
-// import useIsWindows from 'System/useIsWindows';
 
 // General Components
-import CheckInput from 'Components/Form/CheckInput';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -34,106 +27,65 @@ import Popover from 'Components/Tooltip/Popover';
 import SpinnerButton from 'Components/Link/SpinnerButton';
 import VolumeMonitoringOptionsPopoverContent from 'AddVolume/VolumeMonitoringOptionsPopoverContent';
 import VolumePoster from 'Volume/VolumePoster';
-import VolumeTypePopoverContent from 'AddVolume/VolumeTypePopoverContent';
-
-// Specific Components
+import SpecialVersionPopoverContent from 'AddVolume/SpecialVersionPopoverContent';
 
 // CSS
 import styles from './AddNewVolumeModalContent.module.css';
 
 // Types
 import type { AddVolume } from 'AddVolume/AddVolume';
-// import type { VolumeType } from 'Volume/Volume';
-// import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/inputs';
+import type { MonitoringScheme, SpecialVersion } from 'Volume/Volume';
 
 export interface AddNewVolumeModalContentProps {
     volume: AddVolume;
-    // @ts-expect-error TODO:
-    initialVolumeType: VolumeType;
     onModalClose: () => void;
 }
 
 // IMPLEMENTATIONS
 
-function AddNewVolumeModalContent({
-    volume,
-    // initialVolumeType,
-    onModalClose,
-}: AddNewVolumeModalContentProps) {
-    const {
-        title,
-        year,
-        // @ts-expect-error TODO:
-        overview,
-        // images,
-        folder,
-    } = volume;
-    // const options = useAddVolumeOptions();
-    // const { isSmallScreen } = useSelector(createDimensionsSelector());
-    const isSmallScreen = false;
-    const isWindows = false; // useIsWindows();
+function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalContentProps) {
+    const { title, year, description } = volume;
 
-    const { isPending: isAdding /*error: addError, mutate: addVolume */ } = { isPending: false }; // = useAddVolume();
+    const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
 
-    /*
-    const { settings, validationErrors, validationWarnings } = useMemo(() => {
-        return selectSettings(options, {}, addError);
-    }, [options, addError]);
+    const { data: rootFolders } = useGetRootFoldersQuery(undefined);
 
-    const [volumeType, setVolumeType] = useState<VolumeType>(
-        initialVolumeType === 'standard' ? settings.volumeType.value : initialVolumeType,
-    );
+    const { monitoringScheme, rootFolder, specialVersion } = useAddVolumeOptions();
+    const [addVolume, addVolumeState] = useAddVolumeMutation();
 
-    const {
-        monitor,
-        qualityProfileId,
-        rootFolderPath,
-        searchForCutoffUnmetIssues,
-        searchForMissingIssues,
-        seasonFolder,
-        volumeType: volumeTypeSetting,
-        tags,
-    } = settings;
+    const isAdding = useMemo(() => {
+        return addVolumeState.isLoading;
+    }, [addVolumeState]);
 
-    const handleInputChange = useCallback(
-        ({ name, value }: InputChanged<string | number | boolean | number[]>) => {
-            setAddVolumeOption(name as keyof AddVolumeOptions, value);
+    const handleRootFolderChange = useCallback(
+        ({ value }: InputChanged<string>) => {
+            const folder = rootFolders?.find((f) => f.path === value);
+
+            if (folder) {
+                setAddVolumeOption('rootFolder', folder);
+            }
         },
-        [],
+        [rootFolders],
     );
 
-    const handleQualityProfileIdChange = useCallback(({ value }: InputChanged<string | number>) => {
-        setAddVolumeOption('qualityProfileId', value as number);
+    const handleMonitoringSchemeChange = useCallback(({ value }: InputChanged<string>) => {
+        setAddVolumeOption('monitoringScheme', value as MonitoringScheme);
+    }, []);
+
+    const handleSpecialVersionChange = useCallback(({ value }: InputChanged<string>) => {
+        setAddVolumeOption('specialVersion', value as SpecialVersion);
     }, []);
 
     const handleAddVolumePress = useCallback(() => {
         addVolume({
             ...volume,
-            rootFolderPath: rootFolderPath.value,
-            monitor: monitor.value,
-            qualityProfileId: qualityProfileId.value,
-            volumeType,
-            seasonFolder: seasonFolder.value,
-            searchForMissingIssues: searchForMissingIssues.value,
-            searchForCutoffUnmetIssues: searchForCutoffUnmetIssues.value,
-            tags: tags.value,
+            rootFolderId: rootFolder?.id ?? 0,
+            monitoringScheme,
+            monitor: monitoringScheme !== 'none',
+            specialVersion,
         });
-    }, [
-        volume,
-        volumeType,
-        rootFolderPath,
-        monitor,
-        qualityProfileId,
-        seasonFolder,
-        searchForMissingIssues,
-        searchForCutoffUnmetIssues,
-        tags,
-        addVolume,
-    ]);
-
-    useEffect(() => {
-        setVolumeType(volumeTypeSetting.value);
-    }, [volumeTypeSetting]);*/
+    }, [volume, specialVersion, monitoringScheme, addVolume, rootFolder]);
 
     return (
         <ModalContent onModalClose={onModalClose}>
@@ -154,12 +106,11 @@ function AddNewVolumeModalContent({
                     )}
 
                     <div className={styles.info}>
-                        {overview ? <div className={styles.overview}>{overview}</div> : null}
+                        {description ? (
+                            <div className={styles.description}>{description}</div>
+                        ) : null}
 
-                        <Form
-                        // validationErrors={validationErrors}
-                        // validationWarnings={validationWarnings}
-                        >
+                        <Form>
                             <FormGroup>
                                 <FormLabel>{translate('RootFolder')}</FormLabel>
 
@@ -167,18 +118,15 @@ function AddNewVolumeModalContent({
                                     type={inputTypes.ROOT_FOLDER_SELECT}
                                     name="rootFolderPath"
                                     valueOptions={{
-                                        volumeFolder: folder,
-                                        isWindows,
+                                        volumeFolder: rootFolder,
                                     }}
                                     selectedValueOptions={{
-                                        volumeFolder: folder,
-                                        isWindows,
+                                        volumeFolder: rootFolder,
                                     }}
                                     helpText={translate('AddNewVolumeRootFolderHelpText', {
-                                        folder,
+                                        folder: rootFolder?.path ?? '',
                                     })}
-                                    onChange={() => {} /*handleInputChange*/}
-                                    // {...rootFolderPath}
+                                    onChange={handleRootFolderChange}
                                 />
                             </FormGroup>
 
@@ -199,34 +147,31 @@ function AddNewVolumeModalContent({
                                 <FormInputGroup
                                     type={inputTypes.MONITOR_ISSUES_SELECT}
                                     name="monitor"
-                                    onChange={() => {} /*handleInputChange*/}
-                                    value={''}
-                                    // {...monitor}
+                                    onChange={handleMonitoringSchemeChange}
+                                    value={monitoringScheme}
                                 />
                             </FormGroup>
 
                             <FormGroup>
                                 <FormLabel>
-                                    {translate('VolumeType')}
+                                    {translate('SpecialVersion')}
 
                                     <Popover
                                         anchor={
                                             <Icon className={styles.labelIcon} name={icons.INFO} />
                                         }
-                                        title={translate('VolumeTypes')}
-                                        body={<VolumeTypePopoverContent />}
+                                        title={translate('SpecialVersions')}
+                                        body={<SpecialVersionPopoverContent />}
                                         position={tooltipPositions.RIGHT}
                                     />
                                 </FormLabel>
 
                                 <FormInputGroup
                                     type={inputTypes.VOLUME_TYPE_SELECT}
-                                    name="volumeType"
-                                    onChange={() => {} /*handleInputChange*/}
-                                    // {...volumeTypeSetting}
-                                    // value={volumeType}
-                                    value={''}
-                                    helpText={translate('VolumeTypesHelpText')}
+                                    name="specialVersion"
+                                    onChange={handleSpecialVersionChange}
+                                    value={specialVersion ?? ''}
+                                    helpText={translate('SpecialVersionsHelpText')}
                                 />
                             </FormGroup>
                         </Form>
@@ -235,41 +180,11 @@ function AddNewVolumeModalContent({
             </ModalBody>
 
             <ModalFooter className={styles.modalFooter}>
-                <div>
-                    <label className={styles.searchLabelContainer}>
-                        <span className={styles.searchLabel}>
-                            {translate('AddNewVolumeSearchForMissingIssues')}
-                        </span>
-
-                        <CheckInput
-                            containerClassName={styles.searchInputContainer}
-                            className={styles.searchInput}
-                            name="searchForMissingIssues"
-                            onChange={() => {} /*handleInputChange*/}
-                            // {...searchForMissingIssues}
-                        />
-                    </label>
-
-                    <label className={styles.searchLabelContainer}>
-                        <span className={styles.searchLabel}>
-                            {translate('AddNewVolumeSearchForCutoffUnmetIssues')}
-                        </span>
-
-                        <CheckInput
-                            containerClassName={styles.searchInputContainer}
-                            className={styles.searchInput}
-                            name="searchForCutoffUnmetIssues"
-                            onChange={() => {} /*handleInputChange*/}
-                            // {...searchForCutoffUnmetIssues}
-                        />
-                    </label>
-                </div>
-
                 <SpinnerButton
                     className={styles.addButton}
                     kind={kinds.SUCCESS}
                     isSpinning={isAdding}
-                    // onPress={handleAddVolumePress}
+                    onPress={handleAddVolumePress}
                 >
                     {translate('AddVolumeWithTitle', { title })}
                 </SpinnerButton>

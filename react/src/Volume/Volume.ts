@@ -25,7 +25,7 @@ export type SpecialVersion =
     | 'volume-as-issue'
     | 'cover'
     | 'metadata'
-    | null;
+    | '';
 
 export type RawVolume = ModelBase & {
     comicvine_id: number;

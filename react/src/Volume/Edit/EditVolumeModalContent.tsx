@@ -48,7 +48,7 @@ function EditVolumeModalContent(
         monitorNewItems,
         seasonFolder,
         qualityProfileId,
-        volumeType,
+        specialVersion,
         path,
         tags,
         rootFolderPath: initialRootFolderPath,
@@ -73,7 +73,7 @@ function EditVolumeModalContent(
                 monitorNewItems,
                 seasonFolder,
                 qualityProfileId,
-                volumeType,
+                specialVersion,
                 path,
                 tags,
             },
@@ -85,7 +85,7 @@ function EditVolumeModalContent(
         monitorNewItems,
         seasonFolder,
         qualityProfileId,
-        volumeType,
+        specialVersion,
         path,
         tags,
         pendingChanges,
@@ -218,13 +218,13 @@ function EditVolumeModalContent(
                     </FormGroup>
 
                     <FormGroup size={sizes.MEDIUM}>
-                        <FormLabel>{translate('VolumeType')}</FormLabel>
+                        <FormLabel>{translate('SpecialVersion')}</FormLabel>
 
                         <FormInputGroup
                             type={inputTypes.VOLUME_TYPE_SELECT}
-                            name="volumeType"
-                            {...settings.volumeType}
-                            helpText={translate('VolumeTypesHelpText')}
+                            name="specialVersion"
+                            {...settings.specialVersion}
+                            helpText={translate('SpecialVersionsHelpText')}
                             onChange={handleInputChange}
                         />
                     </FormGroup>

@@ -9,14 +9,11 @@ import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem'
 
 // IMPLEMENTATIONS
 
-function VolumeTypePopoverContent() {
+// FIXME: add the Kapowarr info
+
+function SpecialVersionPopoverContent() {
     return (
         <DescriptionList>
-            <DescriptionListItem
-                title={translate('Anime')}
-                data={translate('AnimeIssueTypeDescription')}
-            />
-
             <DescriptionListItem
                 title={translate('Daily')}
                 data={translate('DailyIssueTypeDescription')}
@@ -30,4 +27,4 @@ function VolumeTypePopoverContent() {
     );
 }
 
-export default VolumeTypePopoverContent;
+export default SpecialVersionPopoverContent;

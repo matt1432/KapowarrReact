@@ -14,7 +14,7 @@ import VirtualTableSelectAllHeaderCell from 'Components/Table/VirtualTableSelect
 
 // Specific Components
 import VolumeMonitoringOptionsPopoverContent from 'AddVolume/VolumeMonitoringOptionsPopoverContent';
-import VolumeTypePopoverContent from 'AddVolume/VolumeTypePopoverContent';
+import SpecialVersionPopoverContent from 'AddVolume/SpecialVersionPopoverContent';
 
 // CSS
 import styles from './ImportVolumeHeader.module.css';
@@ -62,13 +62,13 @@ function ImportVolumeHeader({
                 {translate('QualityProfile')}
             </VirtualTableHeaderCell>
 
-            <VirtualTableHeaderCell className={styles.volumeType} name="volumeType">
-                {translate('VolumeType')}
+            <VirtualTableHeaderCell className={styles.specialVersion} name="specialVersion">
+                {translate('SpecialVersion')}
 
                 <Popover
                     anchor={<Icon className={styles.detailsIcon} name={icons.INFO} />}
-                    title={translate('VolumeType')}
-                    body={<VolumeTypePopoverContent />}
+                    title={translate('SpecialVersion')}
+                    body={<SpecialVersionPopoverContent />}
                     position={tooltipPositions.RIGHT}
                 />
             </VirtualTableHeaderCell>

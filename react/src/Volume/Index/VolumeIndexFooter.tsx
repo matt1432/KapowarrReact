@@ -26,7 +26,7 @@ import styles from './VolumeIndexFooter.module.css';
 // IMPLEMENTATIONS
 
 export default function VolumeIndexFooter() {
-    const { data: volumes } = useGetVolumesQuery();
+    const { data: volumes } = useGetVolumesQuery(undefined);
     const count = volumes?.length;
     let issues = 0;
     let issueFiles = 0;

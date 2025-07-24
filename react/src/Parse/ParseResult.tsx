@@ -41,7 +41,6 @@ function ParseResult(props: ParseResultProps) {
         absoluteIssueNumbers,
         special,
         isDaily,
-        airDate,
         quality,
     } = parsedIssueInfo;
 
@@ -104,8 +103,6 @@ function ParseResult(props: ParseResultProps) {
                             title={translate('Daily')}
                             data={isDaily ? 'True' : 'False'}
                         />
-
-                        <ParseResultItem title={translate('AirDate')} data={airDate ?? '-'} />
                     </div>
 
                     <div className={styles.column}>
@@ -180,7 +177,8 @@ function ParseResult(props: ParseResultProps) {
                                     return (
                                         <div key={e.id}>
                                             {e.issueNumber}
-                                            {volume?.volumeType === 'anime' && e.absoluteIssueNumber
+                                            {volume?.specialVersion === 'anime' &&
+                                            e.absoluteIssueNumber
                                                 ? ` (${e.absoluteIssueNumber})`
                                                 : ''}{' '}
                                             {` - ${e.title}`}

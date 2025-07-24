@@ -15,7 +15,7 @@ export type InputType =
     | 'rootFolderSelect'
     | 'select'
     | 'dynamicSelect'
-    | 'volumeTypeSelect'
+    | 'specialVersionSelect'
     | 'text'
     | 'textArea'
     | 'umask';
@@ -36,7 +36,7 @@ const DOWNLOAD_CLIENT_SELECT: InputType = 'downloadClientSelect';
 const ROOT_FOLDER_SELECT: InputType = 'rootFolderSelect';
 const SELECT: InputType = 'select';
 const DYNAMIC_SELECT: InputType = 'dynamicSelect';
-const VOLUME_TYPE_SELECT: InputType = 'volumeTypeSelect';
+const VOLUME_TYPE_SELECT: InputType = 'specialVersionSelect';
 const TEXT: InputType = 'text';
 const TEXT_AREA: InputType = 'textArea';
 const UMASK: InputType = 'umask';

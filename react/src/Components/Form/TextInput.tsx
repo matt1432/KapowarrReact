@@ -5,6 +5,7 @@ import {
     type JSX,
     type ChangeEvent,
     type FocusEvent,
+    type KeyboardEvent,
     type SyntheticEvent,
     useCallback,
     useEffect,
@@ -36,6 +37,7 @@ export interface CommonTextInputProps {
     onFocus?: (event: FocusEvent<HTMLInputElement, Element>) => void;
     onBlur?: (event: SyntheticEvent) => void;
     onCopy?: (event: SyntheticEvent) => void;
+    onSubmit?: (event: KeyboardEvent<HTMLInputElement>) => void;
     onSelectionChange?: (start: number | null, end: number | null) => void;
 }
 
@@ -68,6 +70,7 @@ function TextInput({
     onBlur,
     onFocus,
     onCopy,
+    onSubmit,
     onChange,
     onSelectionChange,
 }: TextInputProps | FileInputProps): JSX.Element {
@@ -122,9 +125,16 @@ function TextInput({
         [selectionChanged, onFocus],
     );
 
-    const handleKeyUp = useCallback(() => {
-        selectionChanged();
-    }, [selectionChanged]);
+    const handleKeyUp = useCallback(
+        (event: KeyboardEvent<HTMLInputElement>) => {
+            selectionChanged();
+
+            if (event.key === 'Enter') {
+                onSubmit?.(event);
+            }
+        },
+        [selectionChanged, onSubmit],
+    );
 
     const handleMouseDown = useCallback(() => {
         isMouseTarget.current = true;
