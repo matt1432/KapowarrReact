@@ -14,6 +14,7 @@ import translate from 'Utilities/String/translate';
 
 // General Components
 import Icon from 'Components/Icon';
+import InnerHTML from 'Components/InnerHTML';
 import Label from 'Components/Label';
 import Link from 'Components/Link/Link';
 import MetadataAttribution from 'Components/MetadataAttribution';
@@ -132,7 +133,9 @@ function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
                         ) : null}
                     </div>
 
-                    <div className={styles.overview}>{description}</div>
+                    <div className={styles.overview}>
+                        <InnerHTML innerHTML={description} />
+                    </div>
 
                     <MetadataAttribution />
                 </div>

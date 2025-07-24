@@ -14,8 +14,6 @@ import {
 import useVolume from 'Volume/useVolume';
 
 // Misc
-import DOMPurify from 'dompurify';
-import parse from 'html-react-parser';
 import {
     commandNames,
     icons,
@@ -33,6 +31,7 @@ import formatBytes from 'Utilities/Number/formatBytes';
 // General Components
 import Alert from 'Components/Alert';
 import Icon from 'Components/Icon';
+import InnerHTML from 'Components/InnerHTML';
 import Label from 'Components/Label';
 import IconButton from 'Components/Link/IconButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
@@ -432,11 +431,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                 scrollDirection={scrollDirections.VERTICAL}
                                 autoFocus={false}
                             >
-                                {parse(
-                                    DOMPurify.sanitize(description, {
-                                        USE_PROFILES: { html: true },
-                                    }),
-                                )}
+                                <InnerHTML innerHTML={description} />
                             </Scroller>
 
                             <MetadataAttribution />

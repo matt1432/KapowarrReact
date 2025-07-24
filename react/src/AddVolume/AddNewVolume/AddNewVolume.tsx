@@ -34,6 +34,9 @@ import type { AddVolume } from 'AddVolume/AddVolume';
 
 // IMPLEMENTATIONS
 
+// TODO: handle when adding a volume was successful (refetch allVolumes?)
+// TODO: implement deleting volumes
+
 function AddNewVolume() {
     const { term: initialTerm = '' } = useQueryParams<{ term: string }>();
 
