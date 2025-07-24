@@ -79,7 +79,11 @@ function AddNewVolume() {
 
     useEffect(() => {
         setTerm(initialTerm);
-    }, [initialTerm]);
+
+        if (initialTerm !== '') {
+            lookupVolume({ query: initialTerm });
+        }
+    }, [initialTerm, lookupVolume]);
 
     return (
         <PageContent title={translate('AddNewVolume')}>

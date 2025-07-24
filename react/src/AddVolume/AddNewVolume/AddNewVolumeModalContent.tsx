@@ -60,7 +60,7 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
 
     const handleRootFolderChange = useCallback(
         ({ value }: InputChanged<string>) => {
-            const folder = rootFolders?.find((f) => f.path === value);
+            const folder = rootFolders?.find((f) => f.folder === value);
 
             if (folder) {
                 setAddVolumeOption('rootFolder', folder);
@@ -80,7 +80,7 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
     const handleAddVolumePress = useCallback(() => {
         addVolume({
             ...volume,
-            rootFolderId: rootFolder?.id ?? 0,
+            rootFolderId: rootFolder?.id ?? 1,
             monitoringScheme,
             monitor: monitoringScheme !== 'none',
             specialVersion,
@@ -118,13 +118,13 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
                                     type={inputTypes.ROOT_FOLDER_SELECT}
                                     name="rootFolderPath"
                                     valueOptions={{
-                                        volumeFolder: rootFolder,
+                                        volumeFolder: volume.title + '...',
                                     }}
                                     selectedValueOptions={{
-                                        volumeFolder: rootFolder,
+                                        volumeFolder: volume.title + '...',
                                     }}
                                     helpText={translate('AddNewVolumeRootFolderHelpText', {
-                                        folder: rootFolder?.path ?? '',
+                                        folder: volume.title + '...',
                                     })}
                                     onChange={handleRootFolderChange}
                                 />

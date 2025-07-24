@@ -31,8 +31,8 @@ function RootFolderSelectInput({ name, onChange, ...otherProps }: RootFolderSele
             data?.map(
                 (f) =>
                     ({
-                        key: f.path,
-                        value: f.path,
+                        key: f.folder,
+                        value: f.folder,
                     }) satisfies EnhancedSelectInputValue<string> as EnhancedSelectInputValue<string>,
             ) ?? [];
 
@@ -44,7 +44,7 @@ function RootFolderSelectInput({ name, onChange, ...otherProps }: RootFolderSele
             <EnhancedSelectInput
                 {...otherProps}
                 name={name}
-                value={data?.at(0)?.path ?? ''}
+                value={data?.at(0)?.folder ?? ''}
                 values={values}
                 selectedValueComponent={RootFolderSelectInputSelectedValue}
                 optionComponent={RootFolderSelectInputOption}

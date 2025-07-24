@@ -8,6 +8,5 @@ export interface SizeData {
 
 export interface RootFolder extends ModelBase {
     folder: string;
-    path: string;
     size: SizeData;
 }

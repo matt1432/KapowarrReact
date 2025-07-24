@@ -35,8 +35,6 @@ function RootFolderSelectInputOption({
     isMobile,
     ...otherProps
 }: RootFolderSelectInputOptionProps) {
-    const slashCharacter = '/';
-
     return (
         <EnhancedSelectInputOption id={id} isMobile={isMobile} {...otherProps}>
             <div className={classNames(styles.optionText, isMobile && styles.isMobile)}>
@@ -44,10 +42,7 @@ function RootFolderSelectInputOption({
                     {value}
 
                     {volumeFolder && id !== 'addNew' ? (
-                        <div className={styles.volumeFolder}>
-                            {slashCharacter}
-                            {volumeFolder}
-                        </div>
+                        <div className={styles.volumeFolder}>{volumeFolder}</div>
                     ) : null}
                 </div>
 

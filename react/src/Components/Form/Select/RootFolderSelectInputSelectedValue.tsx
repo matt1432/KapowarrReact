@@ -23,7 +23,6 @@ function RootFolderSelectInputSelectedValue({
     volumeFolder,
     ...otherProps
 }: RootFolderSelectInputSelectedValueProps) {
-    const slashCharacter = '/';
     const { value } =
         values.find((v) => v.key === selectedValue) || ({} as EnhancedSelectInputValue<string>);
 
@@ -32,12 +31,7 @@ function RootFolderSelectInputSelectedValue({
             <div className={styles.pathContainer}>
                 <div className={styles.path}>{value}</div>
 
-                {volumeFolder ? (
-                    <div className={styles.volumeFolder}>
-                        {slashCharacter}
-                        {volumeFolder}
-                    </div>
-                ) : null}
+                {volumeFolder ? <div className={styles.volumeFolder}>{volumeFolder}</div> : null}
             </div>
         </EnhancedSelectInputSelectedValue>
     );
