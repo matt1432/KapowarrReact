@@ -19,7 +19,7 @@ import Link from 'Components/Link/Link';
 // Specific Components
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import PageHeaderActionsMenu from './PageHeaderActionsMenu';
-// import VolumeSearchInput from './VolumeSearchInput';
+import VolumeSearchInput from './VolumeSearchInput';
 
 // CSS
 import styles from './PageHeader.module.css';
@@ -75,7 +75,7 @@ function PageHeader() {
                 />
             </div>
 
-            {/*<VolumeSearchInput />*/}
+            <VolumeSearchInput />
 
             <div className={styles.right}>
                 <PageHeaderActionsMenu

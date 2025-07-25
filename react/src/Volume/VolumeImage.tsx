@@ -9,7 +9,7 @@ import type { Volume } from './Volume';
 import type { AddVolume } from 'AddVolume/AddVolume';
 
 export interface VolumeImageProps {
-    volume: Volume | AddVolume;
+    volume: Volume | AddVolume | { id: number };
     className?: string;
     style?: object;
     placeholder: string;
@@ -21,7 +21,7 @@ export interface VolumeImageProps {
 
 // IMPLEMENTATIONS
 
-function getUrl(volume: Volume | AddVolume) {
+function getUrl(volume: Volume | AddVolume | { id: number }) {
     const { apiKey, urlBase } = window.Kapowarr;
     return 'id' in volume
         ? `${urlBase}/api/volumes/${volume.id}/cover?api_key=${apiKey}`
