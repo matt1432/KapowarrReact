@@ -1,8 +1,14 @@
+// IMPORTS
+
+// React
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+// Misc
 import getQueryString from 'Utilities/Fetch/getQueryString';
 import camelize from 'Utilities/Object/camelize';
 import snakeify from 'Utilities/Object/snakeify';
 
+// Types
 import type { CommandName } from 'Helpers/Props/commandNames';
 import type { DownloadItem } from 'typings/Queue';
 import type { IndexFilter, IndexSort } from 'Volume/Index';
@@ -58,6 +64,8 @@ export interface DeleteVolumeParams {
     volumeId: number;
     deleteFolder: boolean;
 }
+
+// IMPLEMENTATIONS
 
 export const baseApi = createApi({
     reducerPath: 'baseApi',

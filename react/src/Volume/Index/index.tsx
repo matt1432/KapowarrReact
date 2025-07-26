@@ -79,7 +79,7 @@ interface VolumeIndexProps {
 // IMPLEMENTATIONS
 
 const VolumeIndex = withScrollPosition((props: VolumeIndexProps) => {
-    const { columns } = useRootSelector((state) => state.volumeIndex.tableOptions);
+    const { columns } = useRootSelector((state) => state.volumeIndex);
 
     const { filterKey, sortDirection, sortKey, view } = useRootSelector(
         (state) => state.volumeIndex,

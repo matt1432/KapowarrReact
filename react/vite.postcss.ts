@@ -1,7 +1,6 @@
 import autoprefixer from 'autoprefixer';
 // @ts-expect-error no types
 import postcssColorModFunction from 'postcss-color-mod-function';
-// @ts-expect-error no types
 import postcssMixins from 'postcss-mixins';
 import postcssNested from 'postcss-nested';
 import postcssSimpleVars from 'postcss-simple-vars';

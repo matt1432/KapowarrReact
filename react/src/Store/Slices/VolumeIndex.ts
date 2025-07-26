@@ -1,11 +1,21 @@
+// IMPORTS
+
+// Redux
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { Column } from 'Components/Table/Column';
+
+// Misc
 import { sortDirections } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// Types
+import type { Column } from 'Components/Table/Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { TableOptionsChangePayload } from 'typings/Table';
-import translate from 'Utilities/String/translate';
 import type { IndexFilter, IndexSort, IndexView } from 'Volume/Index';
 import type { VolumeColumnName } from 'Volume/Volume';
+
+// IMPLEMENTATIONS
 
 export interface VolumeIndexState {
     sortKey: IndexSort;
@@ -15,7 +25,6 @@ export interface VolumeIndexState {
     view: IndexView;
     filterKey: IndexFilter;
 
-    // TODO: persist this state
     posterOptions: {
         detailedProgressBar: boolean;
         size: string;
@@ -24,12 +33,12 @@ export interface VolumeIndexState {
         showSearchAction: boolean;
     };
 
-    // TODO: persist this state
     tableOptions: {
         showSearchAction: boolean;
         pageSize: number;
-        columns: Column<VolumeColumnName>[];
     };
+
+    columns: Column<VolumeColumnName>[];
 }
 
 const initialState = {
@@ -51,84 +60,84 @@ const initialState = {
     tableOptions: {
         showSearchAction: false,
         pageSize: 20,
-
-        columns: [
-            {
-                name: 'wanted',
-                columnLabel: () => translate('Status'),
-                isSortable: true,
-                isVisible: true,
-                isModifiable: false,
-            },
-            {
-                name: 'title',
-                label: () => translate('VolumeTitle'),
-                isSortable: true,
-                isVisible: true,
-                isModifiable: false,
-            },
-            {
-                name: 'specialVersion',
-                label: () => translate('SpecialVersion'),
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'year',
-                label: () => translate('Year'),
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'publisher',
-                label: () => translate('Publisher'),
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'issueProgress',
-                label: () => translate('Issues'),
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'issueCount',
-                label: () => translate('IssueCount'),
-                isSortable: true,
-                isVisible: false,
-            },
-            {
-                name: 'path',
-                label: () => translate('Path'),
-                isSortable: true,
-                isVisible: false,
-            },
-            {
-                name: 'sizeOnDisk',
-                label: () => translate('SizeOnDisk'),
-                isSortable: true,
-                isVisible: false,
-            },
-            {
-                name: 'releaseGroups',
-                label: () => translate('ReleaseGroups'),
-                isSortable: true,
-                isVisible: false,
-            },
-            {
-                name: 'monitorNewItems',
-                label: () => translate('MonitorNewItems'),
-                isSortable: true,
-                isVisible: false,
-            },
-            {
-                name: 'actions',
-                columnLabel: () => translate('Actions'),
-                isVisible: true,
-                isModifiable: false,
-            },
-        ],
     },
+
+    columns: [
+        {
+            name: 'wanted',
+            columnLabel: () => translate('Status'),
+            isSortable: true,
+            isVisible: true,
+            isModifiable: false,
+        },
+        {
+            name: 'title',
+            label: () => translate('VolumeTitle'),
+            isSortable: true,
+            isVisible: true,
+            isModifiable: false,
+        },
+        {
+            name: 'specialVersion',
+            label: () => translate('SpecialVersion'),
+            isSortable: false,
+            isVisible: true,
+        },
+        {
+            name: 'year',
+            label: () => translate('Year'),
+            isSortable: true,
+            isVisible: true,
+        },
+        {
+            name: 'publisher',
+            label: () => translate('Publisher'),
+            isSortable: true,
+            isVisible: true,
+        },
+        {
+            name: 'issueProgress',
+            label: () => translate('Issues'),
+            isSortable: true,
+            isVisible: true,
+        },
+        {
+            name: 'issueCount',
+            label: () => translate('IssueCount'),
+            isSortable: true,
+            isVisible: false,
+        },
+        {
+            name: 'path',
+            label: () => translate('Path'),
+            isSortable: true,
+            isVisible: false,
+        },
+        {
+            name: 'sizeOnDisk',
+            label: () => translate('SizeOnDisk'),
+            isSortable: true,
+            isVisible: false,
+        },
+        {
+            name: 'releaseGroups',
+            label: () => translate('ReleaseGroups'),
+            isSortable: true,
+            isVisible: false,
+        },
+        {
+            name: 'monitorNewItems',
+            label: () => translate('MonitorNewItems'),
+            isSortable: true,
+            isVisible: false,
+        },
+        {
+            name: 'actions',
+            columnLabel: () => translate('Actions'),
+            isVisible: true,
+            isModifiable: false,
+        },
+    ],
 } satisfies VolumeIndexState as VolumeIndexState;
 
 const volumeIndexSlice = createSlice({
@@ -136,16 +145,16 @@ const volumeIndexSlice = createSlice({
     initialState,
     selectors: {},
     reducers: {
-        setVolumeFilter: (state, { payload }: PayloadAction<IndexFilter>) => {
-            state.filterKey = payload;
+        setVolumeFilter: (state, { payload: value }: PayloadAction<IndexFilter>) => {
+            state.filterKey = value;
         },
 
-        setVolumeSort: (state, { payload }: PayloadAction<IndexSort>) => {
-            state.sortKey = payload;
+        setVolumeSort: (state, { payload: value }: PayloadAction<IndexSort>) => {
+            state.sortKey = value;
         },
 
-        setVolumeView: (state, { payload }: PayloadAction<IndexView>) => {
-            state.view = payload;
+        setVolumeView: (state, { payload: value }: PayloadAction<IndexView>) => {
+            state.view = value;
         },
 
         setVolumeTableOption: (

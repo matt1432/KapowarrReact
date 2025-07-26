@@ -1,5 +1,17 @@
+// IMPORTS
+
+// Redux
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+// Misc
+
+// General Components
+
+// Specific Components
+
+// CSS
+
+// Types
 export interface Dimensions {
     width: number;
     height: number;
@@ -13,6 +25,8 @@ export interface AppState {
     dimensions: Dimensions;
     isSidebarVisible: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function getDimensions(width: number, height: number): Dimensions {
     const dimensions: Dimensions = {
@@ -36,14 +50,17 @@ const appSlice = createSlice({
     name: 'app',
     initialState,
     reducers: {
-        saveDimensions(state, { payload }: PayloadAction<Pick<Dimensions, 'width' | 'height'>>) {
-            const { width, height } = payload;
+        saveDimensions(
+            state,
+            { payload: value }: PayloadAction<Pick<Dimensions, 'width' | 'height'>>,
+        ) {
+            const { width, height } = value;
 
             state.dimensions = getDimensions(width, height);
         },
 
-        setIsSidebarVisible(state, { payload }: PayloadAction<boolean>) {
-            state.isSidebarVisible = payload;
+        setIsSidebarVisible(state, { payload: value }: PayloadAction<boolean>) {
+            state.isSidebarVisible = value;
         },
     },
 });

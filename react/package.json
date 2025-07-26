@@ -43,6 +43,7 @@
         "react-use-measure": "2.1.7",
         "react-window": "1.8.11",
         "redux-first-history": "5.2.0",
+        "redux-remember": "5.2.0",
         "stacktrace-js": "2.0.2",
         "use-debounce": "10.0.5",
         "zustand": "5.0.6"
@@ -68,7 +69,7 @@
         "postcss": "8.5.6",
         "postcss-color-mod-function": "4.1.1",
         "postcss-loader": "8.1.1",
-        "postcss-mixins": "12.0.0",
+        "postcss-mixins": "12.1.2",
         "postcss-nested": "7.0.2",
         "postcss-simple-vars": "7.0.1",
         "postcss-url": "10.1.3",

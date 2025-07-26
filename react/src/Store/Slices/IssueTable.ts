@@ -1,18 +1,28 @@
+// IMPORTS
+
+// Redux
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { Column } from 'Components/Table/Column';
+
+// Misc
 import { sortDirections } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+// Types
+import type { Column } from 'Components/Table/Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { IssueColumnName } from 'Issue/Issue';
 import type { TableOptionsChangePayload } from 'typings/Table';
-import translate from 'Utilities/String/translate';
+
 import type { IssueTableSort } from 'Volume/Details/IssueTable';
 
-// TODO: persist state
 export interface IssueTableState {
     sortKey: IssueTableSort;
     sortDirection: SortDirection;
     columns: Column<IssueColumnName>[];
 }
+
+// IMPLEMENTATIONS
 
 const initialState = {
     sortKey: 'issueNumber',

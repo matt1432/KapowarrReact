@@ -82,7 +82,7 @@ function VolumeIndexTable({
     isSmallScreen,
     scrollerRef,
 }: VolumeIndexTableProps) {
-    const { columns } = useRootSelector((state) => state.volumeIndex.tableOptions);
+    const { columns } = useRootSelector((state) => state.volumeIndex);
 
     const listRef = useRef<FixedSizeList<RowItemData>>(undefined) as RefObject<
         FixedSizeList<RowItemData>
