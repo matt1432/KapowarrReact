@@ -1,7 +1,7 @@
 // IMPORTS
 
 // Misc
-// import translate from 'Utilities/String/translate';
+import translate from 'Utilities/String/translate';
 
 // General Components
 import DescriptionList from 'Components/DescriptionList/DescriptionList';
@@ -13,13 +13,13 @@ function VolumeMonitorNewItemsOptionsPopoverContent() {
     return (
         <DescriptionList>
             <DescriptionListItem
-            // title={translate('MonitorAllSeasons')}
-            // data={translate('MonitorAllSeasonsDescription')}
+                title={translate('MonitorAllIssues')}
+                data={translate('MonitorAllIssuesDescription')}
             />
 
             <DescriptionListItem
-            // title={translate('MonitorNoNewSeasons')}
-            // data={translate('MonitorNoNewSeasonsDescription')}
+                title={translate('MonitorNoFutureIssues')}
+                data={translate('MonitorNoFutureDescription')}
             />
         </DescriptionList>
     );

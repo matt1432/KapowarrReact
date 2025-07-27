@@ -30,13 +30,6 @@
     min-width: 120px;
 }
 
-.seasonFolder {
-    composes: cell from 'Components/Table/Cells/VirtualTableRowCell.module.css';
-
-    flex: 0 1 150px;
-    min-width: 120px;
-}
-
 .volume {
     composes: cell from 'Components/Table/Cells/VirtualTableRowCell.module.css';
 

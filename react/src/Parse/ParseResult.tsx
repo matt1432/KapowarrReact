@@ -9,7 +9,6 @@ import translate from 'Utilities/String/translate';
 
 // General Components
 import FieldSet from 'Components/FieldSet';
-import IssueFormats from 'Issue/IssueFormats';
 import VolumeTitleLink from 'Volume/VolumeTitleLink';
 
 // Specific Components
@@ -28,7 +27,7 @@ interface ParseResultProps {
 
 function ParseResult(props: ParseResultProps) {
     const { item } = props;
-    const { customFormats, customFormatScore, issues, languages, parsedIssueInfo, volume } = item;
+    const { issues, languages, parsedIssueInfo, volume } = item;
 
     const {
         releaseTitle,
@@ -36,7 +35,6 @@ function ParseResult(props: ParseResultProps) {
         volumeTitleInfo,
         releaseGroup,
         releaseHash,
-        seasonNumber,
         issueNumbers,
         absoluteIssueNumbers,
         special,
@@ -78,15 +76,6 @@ function ParseResult(props: ParseResultProps) {
             <FieldSet legend={translate('IssueInfo')}>
                 <div className={styles.container}>
                     <div className={styles.column}>
-                        <ParseResultItem
-                            title={translate('VolumeNumber')}
-                            data={
-                                seasonNumber === 0 && absoluteIssueNumbers.length
-                                    ? '-'
-                                    : seasonNumber
-                            }
-                        />
-
                         <ParseResultItem
                             title={translate('IssueNumbers')}
                             data={issueNumbers.join(', ') || '-'}
@@ -191,13 +180,6 @@ function ParseResult(props: ParseResultProps) {
                         )
                     }
                 />
-
-                <ParseResultItem
-                    title={translate('CustomFormats')}
-                    data={customFormats?.length ? <IssueFormats formats={customFormats} /> : '-'}
-                />
-
-                <ParseResultItem title={translate('CustomFormatScore')} data={customFormatScore} />
             </FieldSet>
         </div>
     );

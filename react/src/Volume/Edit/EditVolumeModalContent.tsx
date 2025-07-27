@@ -46,7 +46,6 @@ function EditVolumeModalContent(
         title,
         monitored,
         monitorNewItems,
-        seasonFolder,
         qualityProfileId,
         specialVersion,
         path,
@@ -71,7 +70,6 @@ function EditVolumeModalContent(
             {
                 monitored,
                 monitorNewItems,
-                seasonFolder,
                 qualityProfileId,
                 specialVersion,
                 path,
@@ -83,7 +81,6 @@ function EditVolumeModalContent(
     }, [
         monitored,
         monitorNewItems,
-        seasonFolder,
         qualityProfileId,
         specialVersion,
         path,
@@ -170,38 +167,6 @@ function EditVolumeModalContent(
                             name="monitored"
                             helpText={translate('MonitoredIssuesHelpText')}
                             {...settings.monitored}
-                            onChange={handleInputChange}
-                        />
-                    </FormGroup>
-
-                    <FormGroup size={sizes.MEDIUM}>
-                        <FormLabel>
-                            {translate('MonitorNewSeasons')}
-                            <Popover
-                                anchor={<Icon className={styles.labelIcon} name={icons.INFO} />}
-                                title={translate('MonitorNewSeasons')}
-                                body={<VolumeMonitorNewItemsOptionsPopoverContent />}
-                                position={tooltipPositions.RIGHT}
-                            />
-                        </FormLabel>
-
-                        <FormInputGroup
-                            type={inputTypes.MONITOR_NEW_ITEMS_SELECT}
-                            name="monitorNewItems"
-                            helpText={translate('MonitorNewSeasonsHelpText')}
-                            {...settings.monitorNewItems}
-                            onChange={handleInputChange}
-                        />
-                    </FormGroup>
-
-                    <FormGroup size={sizes.MEDIUM}>
-                        <FormLabel>{translate('UseSeasonFolder')}</FormLabel>
-
-                        <FormInputGroup
-                            type={inputTypes.CHECK}
-                            name="seasonFolder"
-                            helpText={translate('UseSeasonFolderHelpText')}
-                            {...settings.seasonFolder}
                             onChange={handleInputChange}
                         />
                     </FormGroup>

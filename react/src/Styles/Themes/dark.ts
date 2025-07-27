@@ -206,17 +206,6 @@ export default {
     popoverArrowBorderInverseColor: 'rgba(58, 63, 81, 0.75)',
 
     //
-    // Calendar
-
-    calendarTodayBackgroundColor: '#3e3e3e',
-    calendarBackgroundColor: '#2a2a2a',
-    calendarBorderColor: '#393f45',
-    calendarTextDim: '#eee',
-    calendarTextDimAlternate: '#fff',
-
-    calendarFullColorFilter: 'grayscale(90%) contrast(200%) saturate(50%)',
-
-    //
     // Table
 
     tableRowHoverBackgroundColor: 'rgba(255, 255, 255, 0.08)',
@@ -230,9 +219,8 @@ export default {
     collapseButtonBackgroundColor: '#2a2a2a',
 
     //
-    // Season
+    // Issues
 
-    seasonBackgroundColor: '#424242',
     issuesBackgroundColor: '#2a2a2a',
 
     //

@@ -5,7 +5,6 @@ interface CssExports {
     folder: string;
     monitor: string;
     qualityProfile: string;
-    seasonFolder: string;
     volume: string;
     specialVersion: string;
 }

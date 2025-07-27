@@ -7,7 +7,6 @@ export interface Indexer extends Provider {
     enableInteractiveSearch: boolean;
     supportsRss: boolean;
     supportsSearch: boolean;
-    seasonSearchMaximumSingleIssueAge: number;
     protocol: DownloadProtocol;
     priority: number;
     downloadClientId: number;

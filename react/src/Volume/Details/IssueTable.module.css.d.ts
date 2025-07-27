@@ -14,7 +14,6 @@ interface CssExports {
     expandButtonIcon: string;
     header: string;
     left: string;
-    noEpisodes: string;
     sizeOnDisk: string;
 }
 export const cssExports: CssExports;

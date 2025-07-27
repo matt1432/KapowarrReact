@@ -66,38 +66,20 @@
     flex: 2 0 90px;
 }
 
-.originalLanguage,
-.qualityProfileId {
-    composes: cell;
-
-    flex: 1 0 125px;
-}
-
 .releaseGroups,
-.nextAiring,
-.previousAiring,
-.added,
-.genres {
+.added {
     composes: cell;
 
     flex: 0 0 180px;
 }
 
-.seasonCount,
 .certification {
     composes: cell;
 
     flex: 0 0 100px;
 }
 
-.seasonFolder {
-    composes: cell;
-
-    flex: 0 0 150px;
-}
-
-.issueProgress,
-.latestSeason {
+.issueProgress {
     composes: cell;
 
     display: flex;
@@ -140,12 +122,6 @@
     composes: cell;
 
     flex: 1 0 60px;
-}
-
-.useSceneNumbering {
-    composes: cell;
-
-    flex: 0 0 145px;
 }
 
 .monitorNewItems {

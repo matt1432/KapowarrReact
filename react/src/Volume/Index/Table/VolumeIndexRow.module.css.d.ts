@@ -11,27 +11,18 @@ interface CssExports {
     checkInput: string;
     issueCount: string;
     issueProgress: string;
-    genres: string;
-    latestSeason: string;
     link: string;
     monitorNewItems: string;
     publisher: string;
-    nextAiring: string;
-    originalLanguage: string;
     overlayTitle: string;
     path: string;
-    previousAiring: string;
-    qualityProfileId: string;
     ratings: string;
     releaseGroups: string;
-    seasonCount: string;
-    seasonFolder: string;
     specialVersion: string;
     sizeOnDisk: string;
     title: string;
     status: string;
     tags: string;
-    useSceneNumbering: string;
     year: string;
 }
 export const cssExports: CssExports;

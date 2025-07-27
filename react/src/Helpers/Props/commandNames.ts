@@ -16,7 +16,7 @@ const RENAME_VOLUME: CommandName = 'mass_rename';
 const RENAME_ISSUE: CommandName = 'mass_rename_issue';
 const CONVERT_VOLUME: CommandName = 'mass_convert';
 const CONVERT_ISSUE: CommandName = 'mass_convert_issue';
-const DOWNLOADED_EPISODES_SCAN: CommandName = 'update_all';
+const DOWNLOADED_ISSUES_SCAN: CommandName = 'update_all';
 const SEARCH_ALL: CommandName = 'search_all';
 
 export const commandNames = {
@@ -27,7 +27,7 @@ export const commandNames = {
     RENAME_ISSUE,
     CONVERT_VOLUME,
     CONVERT_ISSUE,
-    DOWNLOADED_EPISODES_SCAN,
+    DOWNLOADED_ISSUES_SCAN,
     SEARCH_ALL,
 };
 

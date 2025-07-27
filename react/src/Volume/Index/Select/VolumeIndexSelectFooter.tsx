@@ -35,7 +35,6 @@ interface SavePayload {
     monitored?: boolean;
     qualityProfileId?: number;
     specialVersion?: string;
-    seasonFolder?: boolean;
     rootFolderPath?: string;
     moveFiles?: boolean;
 }

@@ -55,7 +55,7 @@ function Row({ index, style, data }: ListChildComponentProps<RowItemData>) {
 function ImportVolumeTable({ unmappedFolders, scrollerRef }: ImportVolumeTableProps) {
     const dispatch = useDispatch();
 
-    // const { monitor, qualityProfileId, specialVersion, seasonFolder } = useAddVolumeOptions();
+    // const { monitor, qualityProfileId, specialVersion } = useAddVolumeOptions();
 
     const items = useSelector((state: AppState) => state.importVolume.items);
     const { isSmallScreen } = useSelector(createDimensionsSelector());
@@ -66,7 +66,6 @@ function ImportVolumeTable({ unmappedFolders, scrollerRef }: ImportVolumeTablePr
         monitor,
         qualityProfileId,
         specialVersion,
-        seasonFolder,
     });
 
     const listRef = useRef<FixedSizeList<RowItemData>>(undefined) as RefObject<

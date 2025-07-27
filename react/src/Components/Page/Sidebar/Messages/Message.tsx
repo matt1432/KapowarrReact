@@ -49,8 +49,6 @@ function Message({ id, hideAfter, name, message, type }: MessageProps) {
                 return icons.REFRESH;
             case 'RssSync':
                 return icons.RSS;
-            case 'SeasonSearch':
-                return icons.SEARCH;
             case 'VolumeSearch':
                 return icons.SEARCH;
             case 'UpdateSceneMapping':
