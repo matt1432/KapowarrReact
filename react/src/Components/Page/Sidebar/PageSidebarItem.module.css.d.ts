@@ -8,6 +8,7 @@ interface CssExports {
     isActiveParentLink: string;
     item: string;
     link: string;
+    noIcon: string;
     status: string;
 }
 export const cssExports: CssExports;

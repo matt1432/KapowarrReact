@@ -2,6 +2,7 @@
 
 // React
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation } from 'react-router';
 
 // Redux
 import { useRootDispatch } from 'Store/createAppStore';
@@ -150,6 +151,8 @@ function hasActiveChildLink(link: SidebarItem, pathname: string) {
 }
 
 function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSidebarProps) {
+    const { pathname } = useLocation();
+
     const dispatch = useRootDispatch();
     const sidebarRef = useRef<HTMLDivElement | null>(null);
     const touchStartX = useRef<number | null>(null);
@@ -167,11 +170,6 @@ function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSidebarProps) {
         top: dimensions.headerHeight,
         height: `${window.innerHeight - HEADER_HEIGHT}px`,
     });
-
-    const urlBase = window.Kapowarr.urlBase;
-    const pathname = urlBase
-        ? location.pathname.substring(urlBase.length) || '/'
-        : location.pathname;
 
     const activeParent = useMemo(() => {
         return (

@@ -58,13 +58,15 @@ function PageSidebarItem({
                 to={to}
                 onPress={handlePress}
             >
-                {!!iconName && (
+                {iconName && (
                     <span className={styles.iconContainer}>
                         <Icon name={iconName} />
                     </span>
                 )}
 
-                {typeof title === 'function' ? title() : title}
+                <span className={classNames(!iconName && styles.noIcon)}>
+                    {typeof title === 'function' ? title() : title}
+                </span>
 
                 {!!StatusComponent && (
                     <span className={styles.status}>
