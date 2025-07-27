@@ -32,7 +32,7 @@ function createAppStore() {
 
         enhancers: (getDefaultEnhancers) =>
             getDefaultEnhancers().concat(
-                rememberEnhancer(window.localStorage, ['issueTable', 'volumeIndex'], {
+                rememberEnhancer(window.localStorage, ['addVolume', 'issueTable', 'volumeIndex'], {
                     prefix: 'kapowarr_',
                     persistDebounce: 300,
                 }),

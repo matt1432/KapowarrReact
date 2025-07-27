@@ -5,12 +5,12 @@ import { useCallback, useMemo } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
+import { setAddVolumeOption } from 'Store/Slices/AddVolume';
 import {
     useAddVolumeMutation,
     useGetRootFoldersQuery,
     useGetVolumesQuery,
 } from 'Store/createApiEndpoints';
-import { setAddVolumeOption, useAddVolumeOptions } from 'AddVolume/addVolumeOptionsStore';
 
 // Misc
 import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
@@ -53,11 +53,13 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
     const { title, year, description } = volume;
 
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
+    const { monitoringScheme, rootFolder, specialVersion } = useRootSelector(
+        (state) => state.addVolume,
+    );
 
     const { data: rootFolders } = useGetRootFoldersQuery(undefined);
     const { refetch } = useGetVolumesQuery(undefined);
 
-    const { monitoringScheme, rootFolder, specialVersion } = useAddVolumeOptions();
     const [addVolume, addVolumeState] = useAddVolumeMutation();
 
     const isAdding = useMemo(() => {
