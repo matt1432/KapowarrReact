@@ -8,28 +8,24 @@ import VolumeIndex from 'Volume/Index';
 import VolumeDetailsPage from 'Volume/Details/VolumeDetailsPage';
 
 import AddNewVolume from 'AddVolume/AddNewVolume/AddNewVolume';
+// import ImportVolumePage from 'AddVolume/ImportVolume/ImportVolumePage';
+
+// import Queue from 'Activity/Queue/Queue';
+// import History from 'Activity/History/History';
+// import Blocklist from 'Activity/Blocklist/Blocklist';
+
+import UISettings from 'Settings/UI/UISettings';
+// import MediaManagement from 'Settings/MediaManagement/MediaManagement';
+// import DownloadClientSettings from 'Settings/DownloadClients/DownloadClientSettings';
+// import GeneralSettings from 'Settings/General/GeneralSettings';
+
+// import Status from 'System/Status/Status';
+// import Tasks from 'System/Tasks/Tasks';
 
 import NotFound from 'Components/NotFound';
 
 // Types
 import type { History } from 'history';
-
-/*
-import ImportVolumePage from 'AddVolume/ImportVolume/ImportVolumePage';
-
-import Queue from 'Activity/Queue/Queue';
-import History from 'Activity/History/History';
-import Blocklist from 'Activity/Blocklist/Blocklist';
-
-import Settings from 'Settings/Settings';
-import MediaManagement from 'Settings/MediaManagement/MediaManagement';
-import DownloadClientSettings from 'Settings/DownloadClients/DownloadClientSettings';
-import GeneralSettings from 'Settings/General/GeneralSettings';
-import UISettings from 'Settings/UI/UISettings';
-
-import Status from 'System/Status/Status';
-import Tasks from 'System/Tasks/Tasks';
-*/
 
 // IMPLEMENTATIONS
 
@@ -54,17 +50,15 @@ function AppRoutes({ history }: { history: History }) {
 
             <Route path="/activity/blocklist" element={<Blocklist />} />
 
-            {/*Settings*/
-            /*}
-            <Route exact={true} path="/settings" element={<Settings />} />
+            {/*Settings*/}
+            <Route path="/settings" element={<UISettings />} />
 
+            {/*
             <Route path="/settings/mediamanagement" element={<MediaManagement />} />
 
             <Route path="/settings/downloadclients" element={<DownloadClientSettings />} />
 
             <Route path="/settings/general" element={<GeneralSettings />} />
-
-            <Route path="/settings/ui" element={<UISettings />} />
 
             {/*System*/
             /*}

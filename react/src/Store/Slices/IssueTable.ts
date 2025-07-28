@@ -87,7 +87,6 @@ const initialState = {
 const issueTableSlice = createSlice({
     name: 'issueTable',
     initialState,
-    selectors: {},
     reducers: {
         setIssuesSort: (
             state,

@@ -143,7 +143,6 @@ const initialState = {
 const volumeIndexSlice = createSlice({
     name: 'volumeIndex',
     initialState,
-    selectors: {},
     reducers: {
         setVolumeFilter: (state, { payload: value }: PayloadAction<IndexFilter>) => {
             state.filterKey = value;

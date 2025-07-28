@@ -24,17 +24,16 @@ function withScrollPosition(
     WrappedComponent: React.FC<WrappedComponentProps>,
     scrollPositionKey: string,
 ) {
-    function ScrollPosition(props: ScrollPositionProps) {
-        const _props = {
+    function ScrollPosition({ history }: ScrollPositionProps) {
+        const props = {
             location: useLocation(),
             match: useMatch(window.location.pathname),
-            ...props,
+            history,
         };
 
-        const initialScrollTop =
-            props.history.action === 'POP' ? scrollPositions[scrollPositionKey] : 0;
+        const initialScrollTop = history.action === 'POP' ? scrollPositions[scrollPositionKey] : 0;
 
-        return <WrappedComponent {..._props} initialScrollTop={initialScrollTop} />;
+        return <WrappedComponent {...props} initialScrollTop={initialScrollTop} />;
     }
 
     return ScrollPosition;

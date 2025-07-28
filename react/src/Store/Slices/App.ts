@@ -3,14 +3,6 @@
 // Redux
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-// Misc
-
-// General Components
-
-// Specific Components
-
-// CSS
-
 // Types
 export interface Dimensions {
     width: number;

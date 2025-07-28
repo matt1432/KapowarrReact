@@ -3,8 +3,6 @@
 // Redux
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-// Misc
-
 // Types
 import type { RootFolder } from 'typings/RootFolder';
 import type { MonitoringScheme, SpecialVersion } from 'Volume/Volume';
@@ -28,13 +26,12 @@ const initialState = {
 const addVolumeSlice = createSlice({
     name: 'addVolume',
     initialState,
-    selectors: {},
     reducers: {
         setAddVolumeOption: <K extends keyof AddVolumeState>(
             state: AddVolumeState,
             { payload }: PayloadAction<{ key: K; value: AddVolumeState[K] }>,
         ) => {
-            state = Object.assign(state, payload);
+            state[payload.key] = payload.value;
         },
     },
 });

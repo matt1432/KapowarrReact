@@ -32,10 +32,14 @@ function createAppStore() {
 
         enhancers: (getDefaultEnhancers) =>
             getDefaultEnhancers().concat(
-                rememberEnhancer(window.localStorage, ['addVolume', 'issueTable', 'volumeIndex'], {
-                    prefix: 'kapowarr_',
-                    persistDebounce: 300,
-                }),
+                rememberEnhancer(
+                    window.localStorage,
+                    ['addVolume', 'settings', 'uiSettings', 'issueTable', 'volumeIndex'],
+                    {
+                        prefix: 'kapowarr_',
+                        persistDebounce: 300,
+                    },
+                ),
             ),
     });
 

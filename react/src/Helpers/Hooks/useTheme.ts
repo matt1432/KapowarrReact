@@ -1,18 +1,8 @@
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
+import { useRootSelector } from 'Store/createAppStore';
 import themes from 'Styles/Themes';
 
-function createThemeSelector() {
-    return createSelector(
-        () => window.Kapowarr.theme,
-        (theme) => {
-            return theme;
-        },
-    );
-}
-
 const useTheme = (): keyof typeof themes => {
-    return useSelector(createThemeSelector());
+    return useRootSelector((state) => state.uiSettings.theme ?? window.Kapowarr.theme);
 };
 
 export default useTheme;

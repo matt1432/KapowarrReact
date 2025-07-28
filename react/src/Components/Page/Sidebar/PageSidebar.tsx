@@ -102,20 +102,20 @@ const LINKS: SidebarItem[] = [
         to: '/settings',
         children: [
             {
+                title: () => translate('General'),
+                to: '/settings',
+            },
+            {
                 title: () => translate('MediaManagement'),
                 to: '/settings/mediamanagement',
             },
             {
+                title: () => translate('Download'),
+                to: '/settings/download',
+            },
+            {
                 title: () => translate('DownloadClients'),
                 to: '/settings/downloadclients',
-            },
-            {
-                title: () => translate('General'),
-                to: '/settings/general',
-            },
-            {
-                title: () => translate('Ui'),
-                to: '/settings/ui',
             },
         ],
     },

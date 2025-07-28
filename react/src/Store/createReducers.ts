@@ -9,6 +9,8 @@ import { rememberReducer } from 'redux-remember';
 import AddVolumeSlice from './Slices/AddVolume';
 import AppSlice from './Slices/App';
 import IssueTableSlice from './Slices/IssueTable';
+import SettingsSlice from './Slices/Settings';
+import UISettingsSlice from './Slices/UISettings';
 import VolumeIndexSlice from './Slices/VolumeIndex';
 
 // API
@@ -37,6 +39,8 @@ export default function (history: History) {
                 [AddVolumeSlice.reducerPath]: AddVolumeSlice.reducer,
                 [AppSlice.reducerPath]: AppSlice.reducer,
                 [IssueTableSlice.reducerPath]: IssueTableSlice.reducer,
+                [SettingsSlice.reducerPath]: SettingsSlice.reducer,
+                [UISettingsSlice.reducerPath]: UISettingsSlice.reducer,
                 [VolumeIndexSlice.reducerPath]: VolumeIndexSlice.reducer,
             }),
         ),
