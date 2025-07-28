@@ -2,7 +2,7 @@ import { useRootSelector } from 'Store/createAppStore';
 import themes from 'Styles/Themes';
 
 const useTheme = (): keyof typeof themes => {
-    return useRootSelector((state) => state.uiSettings.theme ?? window.Kapowarr.theme);
+    return useRootSelector((state) => state.uiSettings.theme);
 };
 
 export default useTheme;

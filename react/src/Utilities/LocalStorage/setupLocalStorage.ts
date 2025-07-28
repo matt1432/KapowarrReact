@@ -2,13 +2,11 @@ import getLocalStorage from './getLocalStorage';
 import setLocalStorage from './setLocalStorage';
 
 export interface LocalStorage {
-    theme: 'light' | 'dark' | 'auto';
     apiKey: string | null;
     lastLogin: number;
 }
 
 const defaultValues: LocalStorage = {
-    theme: 'dark',
     apiKey: null,
     lastLogin: 0,
 };

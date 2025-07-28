@@ -1,18 +1,14 @@
 import getApiKey from 'bootstrap/auth';
 import setupLocalStorage from 'Utilities/LocalStorage/setupLocalStorage';
-import getLocalStorage from 'Utilities/LocalStorage/getLocalStorage';
 
 import 'Styles/globals.css';
 import './index.css';
 
 setupLocalStorage();
-const localKapowarr = getLocalStorage();
-
 window.Kapowarr = {
     apiKey: '',
     apiRoot: '/api',
     instanceName: '',
-    theme: localKapowarr.theme,
     urlBase: (document.querySelector('#url_base') as HTMLButtonElement).dataset.value!,
     version: '',
 };
