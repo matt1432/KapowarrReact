@@ -14,7 +14,7 @@ import useAppPage from 'Helpers/Hooks/useAppPage';
 
 // General Components
 import AppUpdatedModal from 'App/AppUpdatedModal';
-// import ColorImpairedContext from 'App/ColorImpairedContext';
+import ColorImpairedContext from 'App/ColorImpairedContext';
 import ConnectionLostModal from 'App/ConnectionLostModal';
 import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
 
@@ -40,8 +40,9 @@ function Page({ children = [] }: PageProps) {
     const [isUpdatedModalOpen, setIsUpdatedModalOpen] = useState(false);
     const [isConnectionLostModalOpen, setIsConnectionLostModalOpen] = useState(false);
 
-    // const { enableColorImpairedMode } = useSelector(createUISettingsSelector());
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
+    const { enableColorImpairedMode } = useRootSelector((state) => state.uiSettings);
+
     // const { authentication } = useSelector(createSystemStatusSelector());
     // const authenticationEnabled = authentication !== 'none';
 
@@ -100,25 +101,31 @@ function Page({ children = [] }: PageProps) {
         return <LoadingPage />;
     }
 
-    // <ColorImpairedContext.Provider value={enableColorImpairedMode}>
     return (
-        <div className={styles.page}>
-            <PageHeader />
+        <ColorImpairedContext.Provider value={enableColorImpairedMode}>
+            <div className={styles.page}>
+                <PageHeader />
 
-            <div className={styles.main}>
-                <PageSidebar isSmallScreen={isSmallScreen} isSidebarVisible={isSidebarVisible} />
+                <div className={styles.main}>
+                    <PageSidebar
+                        isSmallScreen={isSmallScreen}
+                        isSidebarVisible={isSidebarVisible}
+                    />
 
-                {children}
+                    {children}
+                </div>
+
+                <AppUpdatedModal
+                    isOpen={isUpdatedModalOpen}
+                    onModalClose={handleUpdatedModalClose}
+                />
+
+                <ConnectionLostModal isOpen={isConnectionLostModalOpen} />
+
+                <AuthenticationRequiredModal isOpen={false /* !authenticationEnabled */} />
             </div>
-
-            <AppUpdatedModal isOpen={isUpdatedModalOpen} onModalClose={handleUpdatedModalClose} />
-
-            <ConnectionLostModal isOpen={isConnectionLostModalOpen} />
-
-            <AuthenticationRequiredModal isOpen={false /* !authenticationEnabled */} />
-        </div>
+        </ColorImpairedContext.Provider>
     );
-    // </ColorImpairedContext.Provider>
 }
 
 export default Page;
