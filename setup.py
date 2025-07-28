@@ -18,7 +18,9 @@ def system(command: str) -> type[Command]:
     return CustomCommand
 
 
-cmds = {"transpile_ts": system("cd python/frontend/static/js; tsc")}
+cmds = {
+    # "transpile_ts": system("cd python/frontend/static/js; tsc")
+}
 
 
 class BuildCommand(build):

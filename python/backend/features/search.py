@@ -188,6 +188,8 @@ class SearchLibgenPlus:
                         if file_result.get("comics_id") is not None
                         else None,
                         "md5": file_result.get("md5"),
+                        "is_metadata_file": False,
+                        "is_image_file": False,
                     }
                 )
             )
@@ -250,6 +252,8 @@ class SearchLibgenPlus:
                                 if file_result.get("comics_id") is not None
                                 else None,
                                 "md5": file_result.get("md5"),
+                                "is_metadata_file": False,
+                                "is_image_file": False,
                             }
                         )
                     )

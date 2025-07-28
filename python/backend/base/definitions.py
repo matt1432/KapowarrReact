@@ -595,6 +595,7 @@ class IssueNamingKeys(SVNamingKeys):
 class IssueFileData(FileData, FilenameData):
     pass
 
+
 @dataclass
 class IssueData:
     id: int

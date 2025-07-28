@@ -171,7 +171,7 @@ class Issue:
             or {}
         )
 
-        return IssueData(**data, files=self.get_files())
+        return IssueData(**data, files=self.get_files())  # type: ignore
 
     def get_files(self) -> list[FileData]:
         """Get all files linked to the issue.
@@ -459,10 +459,13 @@ class Volume:
             final_files = file_mapping.get(i["id"]) or []
 
             final_files_data = [
-                IssueFileData({
-                    **file,
-                    **extract_filename_data(file["filepath"]),
-                }) for file in final_files
+                IssueFileData(
+                    {
+                        **file,
+                        **extract_filename_data(file["filepath"]),
+                    }
+                )
+                for file in final_files
             ]
             result.append(IssueData(**i, files=final_files_data))
 
