@@ -1,11 +1,10 @@
 // IMPORTS
 
 // React
-// import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useCallback, useEffect, useRef } from 'react';
 
 // Misc
-// import { type BlockerFunction, useBlocker, useNavigate } from 'react-router-dom';
+import { useBlocker } from 'react-router-dom';
 
 import { icons } from 'Helpers/Props';
 
@@ -21,10 +20,11 @@ import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 
 // Specific Components
 import AdvancedSettingsButton from './AdvancedSettingsButton';
-// import PendingChangesModal from './PendingChangesModal';
+import PendingChangesModal from './PendingChangesModal';
 
 // Types
-// import type { Action, Location } from 'history';
+import type { BlockerFunction } from 'react-router-dom';
+
 interface SettingsToolbarProps {
     showSave?: boolean;
     isSaving?: boolean;
@@ -44,72 +44,32 @@ function SettingsToolbar({
 }: SettingsToolbarProps) {
     const { bindShortcut, unbindShortcut } = useKeyboardShortcuts();
 
-    /*
-    const navigate = useNavigate();
-
-    const [nextLocation, setNextLocation] = useState<Location | null>(null);
-    const [nextLocationAction, setNextLocationAction] = useState<Action | null>(null);
     const hasConfirmed = useRef(false);
 
-    const handleConfirmNavigation = useCallback(() => {
-        if (!nextLocation) {
-            return;
+    const handleRouterLeaving = useCallback<BlockerFunction>(() => {
+        if (hasConfirmed.current) {
+            hasConfirmed.current = false;
+
+            return true;
         }
 
-        const path = `${nextLocation.pathname}${nextLocation.search}`;
-
-        hasConfirmed.current = true;
-
-        if (nextLocationAction === 'PUSH') {
-            navigate(path);
+        if (hasPendingChanges) {
+            return true;
         }
-        else {
-            // Unfortunately back and forward both use POP,
-            // which means we don't actually know which direction
-            // the user wanted to go, assuming back.
 
-            navigate(-1);
-        }
-    }, [nextLocation, nextLocationAction, navigate]);
-
-    const handleCancelNavigation = useCallback(() => {
-        setNextLocation(null);
-        setNextLocationAction(null);
-        hasConfirmed.current = false;
-    }, []);
-
-    const handleRouterLeaving = useCallback<BlockerFunction>(
-        ({ currentLocation, historyAction }) => {
-            if (hasConfirmed.current) {
-                setNextLocation(null);
-                setNextLocationAction(null);
-                hasConfirmed.current = false;
-
-                return false;
-            }
-
-            if (hasPendingChanges) {
-                setNextLocation(currentLocation);
-                setNextLocationAction(historyAction);
-
-                return false;
-            }
-
-            return false;
-        },
-        [hasPendingChanges],
-    );
+        return false;
+    }, [hasPendingChanges]);
 
     const blocker = useBlocker(handleRouterLeaving);
 
-    useEffect(() => {
+    const handleConfirmNavigation = useCallback(() => {
         blocker.proceed?.();
+    }, [blocker]);
 
-        return () => {
-            blocker.reset?.();
-        };
-    }, [blocker, handleRouterLeaving]);
-    */
+    const handleCancelNavigation = useCallback(() => {
+        blocker.reset?.();
+        hasConfirmed.current = false;
+    }, [blocker]);
 
     useEffect(() => {
         bindShortcut(
@@ -133,6 +93,7 @@ function SettingsToolbar({
         <PageToolbar>
             <PageToolbarSection>
                 <AdvancedSettingsButton showLabel={true} />
+
                 {showSave ? (
                     <PageToolbarButton
                         label={
@@ -148,13 +109,11 @@ function SettingsToolbar({
                 {additionalButtons}
             </PageToolbarSection>
 
-            {/*
             <PendingChangesModal
-                isOpen={nextLocation !== null}
+                isOpen={blocker.state === 'blocked'}
                 onConfirm={handleConfirmNavigation}
                 onCancel={handleCancelNavigation}
             />
-            */}
         </PageToolbar>
     );
 }
