@@ -4,52 +4,33 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { rememberEnhancer } from 'redux-remember';
 
-// Browser
-import { createBrowserHistory } from 'history';
-
 // React
 import { useDispatch, useSelector } from 'react-redux';
 
 // Store
-import createReducers from 'Store/createReducers';
 import { baseApi } from 'Store/createApiEndpoints';
+
+import createReducers from 'Store/createReducers';
 
 // IMPLEMENTATIONS
 
-function createAppStore() {
-    const initHistory = createBrowserHistory();
-    const { createReduxHistory, reducers, routerMiddleware } = createReducers(initHistory);
+export const store = configureStore({
+    reducer: createReducers(),
 
-    const appStore = configureStore({
-        reducer: reducers,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(baseApi.middleware),
 
-        preloadedState: {
-            router: initHistory,
-        },
-
-        middleware: (getDefaultMiddleware) =>
-            getDefaultMiddleware().concat(routerMiddleware, baseApi.middleware),
-
-        enhancers: (getDefaultEnhancers) =>
-            getDefaultEnhancers().concat(
-                rememberEnhancer(
-                    window.localStorage,
-                    ['addVolume', 'settings', 'uiSettings', 'issueTable', 'volumeIndex'],
-                    {
-                        prefix: 'kapowarr_',
-                        persistDebounce: 300,
-                    },
-                ),
+    enhancers: (getDefaultEnhancers) =>
+        getDefaultEnhancers().concat(
+            rememberEnhancer(
+                window.localStorage,
+                ['addVolume', 'settings', 'uiSettings', 'issueTable', 'volumeIndex'],
+                {
+                    prefix: 'kapowarr_',
+                    persistDebounce: 300,
+                },
             ),
-    });
-
-    return {
-        history: createReduxHistory(appStore),
-        store: appStore,
-    };
-}
-
-export const { history, store } = createAppStore();
+        ),
+});
 
 export type RootState = ReturnType<typeof store.getState>;
 export type RootDispatch = typeof store.dispatch;

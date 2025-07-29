@@ -16,25 +16,23 @@ import ApplyTheme from './ApplyTheme';
 import AppRoutes from './AppRoutes';
 
 // Types
-import type { History } from 'history';
 import type { Store } from 'redux';
 
 interface AppProps {
     store: Store;
-    history: History;
 }
 
 // IMPLEMENTATIONS
 
-function App({ store, history }: AppProps) {
+function App({ store }: AppProps) {
     useTitle(window.Kapowarr.instanceName);
 
     return (
         <Provider store={store}>
-            <HistoryRouter history={history} basename={window.Kapowarr.urlBase}>
+            <HistoryRouter>
                 <ApplyTheme />
                 <Page>
-                    <AppRoutes history={history} />
+                    <AppRoutes />
                 </Page>
             </HistoryRouter>
         </Provider>

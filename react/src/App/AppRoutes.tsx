@@ -24,16 +24,13 @@ import UISettings from 'Settings/UI/UISettings';
 
 import NotFound from 'Components/NotFound';
 
-// Types
-import type { History } from 'history';
-
 // IMPLEMENTATIONS
 
-function AppRoutes({ history }: { history: History }) {
+function AppRoutes() {
     return (
         <Routes>
             {/*Volume*/}
-            <Route path="/" element={<VolumeIndex history={history} />} />
+            <Route path="/" element={<VolumeIndex />} />
 
             <Route path="/volumes/:titleSlug" element={<VolumeDetailsPage />} />
 

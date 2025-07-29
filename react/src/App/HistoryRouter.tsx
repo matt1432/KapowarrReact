@@ -1,37 +1,21 @@
 // IMPORTS
 
 // React
-import { type ReactNode, useLayoutEffect, useState } from 'react';
-import { Router } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
 
 // Types
-import type { History } from 'history';
-
-export type Props = {
-    basename?: string;
-    history: History;
-    children?: ReactNode;
-};
+import type { ReactNode } from 'react';
 
 // IMPLEMENTATIONS
 
-export const HistoryRouter = (props: Props) => {
-    const { basename, children, history } = props;
-    const [historyState, setHistoryState] = useState({
-        action: history.action,
-        location: history.location,
-    });
-
-    useLayoutEffect(() => history.listen(setHistoryState), [history]);
-
-    return (
-        <Router
-            basename={basename}
-            location={historyState.location}
-            navigationType={historyState.action}
-            navigator={history}
-        >
-            {children}
-        </Router>
+export const HistoryRouter = ({ children }: { children?: ReactNode }) => {
+    const router = createBrowserRouter(
+        createRoutesFromElements(<Route path="*" element={children} />),
+        {
+            basename: window.Kapowarr.urlBase,
+        },
     );
+
+    return <RouterProvider router={router}></RouterProvider>;
 };

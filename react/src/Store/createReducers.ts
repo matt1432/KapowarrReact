@@ -1,7 +1,6 @@
 // IMPORTS
 
 // Redux
-import { createReduxHistoryContext } from 'redux-first-history';
 import { combineReducers } from '@reduxjs/toolkit';
 import { rememberReducer } from 'redux-remember';
 
@@ -16,33 +15,19 @@ import VolumeIndexSlice from './Slices/VolumeIndex';
 // API
 import { baseApi } from './createApiEndpoints';
 
-// Types
-import type { History } from 'history';
-
 // IMPLEMENTATIONS
 
-export default function (history: History) {
-    const { createReduxHistory, routerMiddleware, routerReducer } = createReduxHistoryContext({
-        history,
-    });
+export default function createReducers() {
+    return rememberReducer(
+        combineReducers({
+            [baseApi.reducerPath]: baseApi.reducer,
 
-    return {
-        createReduxHistory,
-        routerMiddleware,
-        routerReducer,
-        reducers: rememberReducer(
-            combineReducers({
-                router: routerReducer,
-
-                [baseApi.reducerPath]: baseApi.reducer,
-
-                [AddVolumeSlice.reducerPath]: AddVolumeSlice.reducer,
-                [AppSlice.reducerPath]: AppSlice.reducer,
-                [IssueTableSlice.reducerPath]: IssueTableSlice.reducer,
-                [SettingsSlice.reducerPath]: SettingsSlice.reducer,
-                [UISettingsSlice.reducerPath]: UISettingsSlice.reducer,
-                [VolumeIndexSlice.reducerPath]: VolumeIndexSlice.reducer,
-            }),
-        ),
-    };
+            [AddVolumeSlice.reducerPath]: AddVolumeSlice.reducer,
+            [AppSlice.reducerPath]: AppSlice.reducer,
+            [IssueTableSlice.reducerPath]: IssueTableSlice.reducer,
+            [SettingsSlice.reducerPath]: SettingsSlice.reducer,
+            [UISettingsSlice.reducerPath]: UISettingsSlice.reducer,
+            [VolumeIndexSlice.reducerPath]: VolumeIndexSlice.reducer,
+        }),
+    );
 }
