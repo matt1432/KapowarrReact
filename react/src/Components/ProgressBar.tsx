@@ -1,17 +1,11 @@
 // IMPORTS
 
-// React
-
-// Redux
-
 // Misc
 import classNames from 'classnames';
 import translate from 'Utilities/String/translate';
 
 // General Components
 import { ColorImpairedConsumer } from 'App/ColorImpairedContext';
-
-// Specific Components
 
 // CSS
 import styles from './ProgressBar.module.css';

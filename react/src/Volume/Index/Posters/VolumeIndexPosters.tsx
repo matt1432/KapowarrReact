@@ -219,7 +219,7 @@ export default function VolumeIndexPosters(props: VolumeIndexPostersProps) {
         if (jumpToCharacter) {
             const index = getIndexOfFirstCharacter(items, jumpToCharacter);
 
-            if (index != null) {
+            if (index !== null) {
                 const rowIndex = Math.floor(index / columnCount);
 
                 const scrollTop = rowIndex * rowHeight + padding;

@@ -106,7 +106,6 @@ export interface FormInputGroupValues<T> {
     hint?: string;
 }
 
-// TODO: Remove once all parent components are updated to TSX and we can refactor to a consistent type
 export interface ValidationMessage {
     message: string;
 }

@@ -3,8 +3,6 @@
 // React
 import React from 'react';
 
-// Redux
-
 // Misc
 import { icons } from 'Helpers/Props';
 

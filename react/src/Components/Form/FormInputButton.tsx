@@ -1,9 +1,5 @@
 // IMPORTS
 
-// React
-
-// Redux
-
 // Misc
 import { kinds } from 'Helpers/Props';
 

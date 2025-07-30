@@ -1,3 +1,4 @@
+// TODO:
 // IMPORTS
 
 // React
@@ -42,7 +43,7 @@ function IssueSearch({
     const [executeCommand] = useExecuteCommandMutation();
 
     const [isInteractiveSearchOpen, setIsInteractiveSearchOpen] = useState(
-        startInteractiveSearch, // TODO: || isPopulated,
+        startInteractiveSearch, // || isPopulated,
     );
 
     const handleQuickSearchPress = useCallback(() => {
@@ -60,7 +61,7 @@ function IssueSearch({
     }, []);
 
     if (isInteractiveSearchOpen) {
-        return null; // TODO: <InteractiveSearch type="issue" searchPayload={{ issueId }} />;
+        return null; // <InteractiveSearch type="issue" searchPayload={{ issueId }} />;
     }
 
     return (

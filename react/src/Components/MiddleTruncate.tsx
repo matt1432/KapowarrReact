@@ -3,16 +3,8 @@
 // React
 import { useEffect, useRef, useState } from 'react';
 
-// Redux
-
 // Misc
 import useMeasure from 'Helpers/Hooks/useMeasure';
-
-// General Components
-
-// Specific Components
-
-// CSS
 
 // Types
 interface MiddleTruncateProps {

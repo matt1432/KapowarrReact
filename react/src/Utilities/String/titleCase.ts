@@ -6,7 +6,7 @@ function titleCase(input: string | undefined) {
     }
 
     return input.replace(regex, (match) => {
-        return match.charAt(0).toUpperCase() + match.substr(1).toLowerCase();
+        return match.charAt(0).toUpperCase() + match.substring(1).toLowerCase();
     });
 }
 

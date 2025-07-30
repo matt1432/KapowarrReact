@@ -1,6 +1,13 @@
+// IMPORTS
+
+// General Components
 import VolumePoster from 'Volume/VolumePoster';
-import type { SuggestedVolume } from './VolumeSearchInput';
+
+// CSS
 import styles from './VolumeSearchResult.module.css';
+
+// Types
+import type { SuggestedVolume } from './VolumeSearchInput';
 
 interface Match {
     key: string;
@@ -10,6 +17,8 @@ interface Match {
 interface VolumeSearchResultProps extends SuggestedVolume {
     match: Match;
 }
+
+// IMPLEMENTATIONS
 
 function VolumeSearchResult({ match, title, comicvineId, id }: VolumeSearchResultProps) {
     return (

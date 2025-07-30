@@ -4,8 +4,6 @@
 import { useRef } from 'react';
 import { type DragSourceMonitor, useDrag, useDrop, type XYCoord } from 'react-dnd';
 
-// Redux
-
 // Misc
 import { icons } from 'Helpers/Props';
 
@@ -16,8 +14,6 @@ import DragType from 'Helpers/DragType';
 // General Components
 import CheckInput from 'Components/Form/CheckInput';
 import Icon from 'Components/Icon';
-
-// Specific Components
 
 // CSS
 import styles from './TableOptionsColumn.module.css';

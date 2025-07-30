@@ -98,7 +98,7 @@ function keyboardShortcuts(WrappedComponent: ComponentType<KeyboardShortcutsProp
         };
 
         unbindShortcut = (key: string) => {
-            if (this._mousetrap != null) {
+            if (this._mousetrap !== null) {
                 delete this._mousetrapBindings[key];
                 this._mousetrap.unbind(key);
             }

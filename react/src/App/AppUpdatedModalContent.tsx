@@ -1,3 +1,4 @@
+// TODO:
 // IMPORTS
 
 // React
@@ -23,7 +24,6 @@ interface AppUpdatedModalContentProps {
 
 // IMPLEMENTATIONS
 
-// TODO: https://github.com/Sonarr/Sonarr/blob/v5-develop/frontend/src/App/AppUpdatedModalContent.tsx
 function AppUpdatedModalContent(props: AppUpdatedModalContentProps) {
     const { onModalClose } = props;
 

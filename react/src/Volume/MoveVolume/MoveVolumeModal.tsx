@@ -1,9 +1,5 @@
 // IMPORTS
 
-// React
-
-// Redux
-
 // Misc
 import { kinds, sizes } from 'Helpers/Props';
 
@@ -16,8 +12,6 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-
-// Specific Components
 
 // CSS
 import styles from './MoveVolumeModal.module.css';

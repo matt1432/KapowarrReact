@@ -1,3 +1,5 @@
+// TODO:
+// FIXME: add the Kapowarr info
 // IMPORTS
 
 // Misc
@@ -8,8 +10,6 @@ import DescriptionList from 'Components/DescriptionList/DescriptionList';
 import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem';
 
 // IMPLEMENTATIONS
-
-// FIXME: add the Kapowarr info
 
 function SpecialVersionPopoverContent() {
     return (

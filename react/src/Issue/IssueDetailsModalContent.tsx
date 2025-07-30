@@ -1,3 +1,4 @@
+// TODO:
 // IMPORTS
 
 // React
@@ -104,7 +105,6 @@ function IssueDetailsModalContent({
             return () => {
                 // Clear pending releases here, so we can reshow the search
                 // results even after switching tabs.
-                // TODO:
                 // dispatch(cancelFetchReleases());
                 // dispatch(clearReleases());
             };

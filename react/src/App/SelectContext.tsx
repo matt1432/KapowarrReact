@@ -1,9 +1,23 @@
+// IMPORTS
+
+// React
 import React, { useCallback, useEffect } from 'react';
-import useSelectState, {
-    type SelectState,
-    type SelectStateModel,
-} from 'Helpers/Hooks/useSelectState';
+
+// Redux
+
+// Misc
+
+import useSelectState from 'Helpers/Hooks/useSelectState';
+
+// General Components
+
+// Specific Components
+
+// CSS
+
+// Types
 import type { ModelBase } from './ModelBase';
+import type { SelectState, SelectStateModel } from 'Helpers/Hooks/useSelectState';
 
 export type SelectContextAction =
     | { type: 'reset' }
@@ -31,6 +45,8 @@ interface SelectProviderOptions<T extends SelectStateModel> {
     children: any;
     items: Array<T>;
 }
+
+// IMPLEMENTATIONS
 
 const SelectContext = React.createContext<[SelectState, SelectDispatch] | undefined>(
     structuredClone(undefined),

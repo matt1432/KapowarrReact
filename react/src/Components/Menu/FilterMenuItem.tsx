@@ -1,5 +1,12 @@
+// IMPORTS
+
+// React
 import React from 'react';
+
+// Specific Components
 import SelectedMenuItem, { type SelectedMenuItemProps } from './SelectedMenuItem';
+
+// Types
 import type { IndexFilter } from 'Volume/Index';
 
 interface FilterMenuItemProps
@@ -9,6 +16,8 @@ interface FilterMenuItemProps
     children: React.ReactNode;
     onPress: (view: IndexFilter) => void;
 }
+
+// IMPLEMENTATIONS
 
 function FilterMenuItem({ name, filterKey, ...otherProps }: FilterMenuItemProps) {
     const isSelected = name === filterKey;

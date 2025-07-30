@@ -280,11 +280,9 @@ function VolumeSearchInput() {
 
             // If a suggestion is not selected go to the first volume,
             // otherwise go to the selected volume.
-
-            const selectedSuggestion =
-                highlightedSuggestionIndex == null
-                    ? suggestions[0]
-                    : suggestions[highlightedSuggestionIndex];
+            const selectedSuggestion = !highlightedSuggestionIndex
+                ? suggestions[0]
+                : suggestions[highlightedSuggestionIndex];
 
             navigate(`/volumes/${selectedSuggestion.item.id}`);
 

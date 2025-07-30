@@ -12,7 +12,7 @@ const getQueryString = (queryParams?: QueryParams) => {
     const filteredParams = Object.keys(queryParams).reduce<Record<string, string>>((acc, key) => {
         const value = queryParams[key];
 
-        if (value == null) {
+        if (value === null) {
             return acc;
         }
 

@@ -18,10 +18,6 @@ import { throttle } from 'lodash';
 
 import classNames from 'classnames';
 
-// General Components
-
-// Specific Components
-
 // CSS
 import styles from './Scroller.module.css';
 
@@ -66,7 +62,7 @@ const Scroller = forwardRef((props: ScrollerProps, ref: ForwardedRef<HTMLDivElem
 
     useEffect(
         () => {
-            if (initialScrollTop != null) {
+            if (initialScrollTop) {
                 internalRef.current!.scrollTop = initialScrollTop;
             }
         },
@@ -75,7 +71,7 @@ const Scroller = forwardRef((props: ScrollerProps, ref: ForwardedRef<HTMLDivElem
     );
 
     useEffect(() => {
-        if (scrollTop != null) {
+        if (scrollTop) {
             internalRef.current!.scrollTop = scrollTop;
         }
 

@@ -14,8 +14,6 @@ import copy from 'copy-to-clipboard';
 import FormInputButton from 'Components/Form/FormInputButton';
 import Icon from 'Components/Icon';
 
-// Specific Components
-
 // CSS
 import styles from './ClipboardButton.module.css';
 

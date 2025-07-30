@@ -14,7 +14,7 @@ function toggleSelected<T extends SelectStateModel>(
         ...selectState.selectedState,
     };
 
-    if (selected == null) {
+    if (selected === null) {
         delete nextSelectedState[id];
     }
     else {

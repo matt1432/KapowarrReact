@@ -28,16 +28,16 @@ function parseValue(
     min: number | undefined,
     max: number | undefined,
 ) {
-    if (value == null || value === '') {
+    if (!value || value === '') {
         return null;
     }
 
     let newValue = isFloat ? parseFloat(value) : parseInt(value);
 
-    if (min != null && newValue != null && newValue < min) {
+    if (min && newValue !== null && newValue < min) {
         newValue = min;
     }
-    else if (max != null && newValue != null && newValue > max) {
+    else if (max && newValue !== null && newValue > max) {
         newValue = max;
     }
 
@@ -53,7 +53,7 @@ function NumberInput({
     onChange,
     ...otherProps
 }: NumberInputProps) {
-    const [value, setValue] = useState(inputValue == null ? '' : inputValue.toString());
+    const [value, setValue] = useState(inputValue === null ? '' : inputValue.toString());
     const isFocused = useRef(false);
     const previousValue = usePrevious(inputValue);
 
@@ -75,7 +75,7 @@ function NumberInput({
 
     const handleBlur = useCallback(() => {
         const parsedValue = parseValue(value, isFloat, min, max);
-        const stringValue = parsedValue == null ? '' : parsedValue.toString();
+        const stringValue = parsedValue === null ? '' : parsedValue.toString();
 
         if (stringValue !== value) {
             setValue(stringValue);
@@ -90,13 +90,11 @@ function NumberInput({
     }, [name, value, isFloat, min, max, onChange]);
 
     useEffect(() => {
-        if (
-            // @ts-expect-error inputValue may be null
-            !isNaN(inputValue) &&
-            inputValue !== previousValue &&
-            !isFocused.current
-        ) {
-            setValue(inputValue == null ? '' : inputValue.toString());
+        if (inputValue === null) {
+            setValue('');
+        }
+        else if (!isNaN(inputValue) && inputValue !== previousValue && !isFocused.current) {
+            setValue(inputValue === null ? '' : inputValue.toString());
         }
     }, [inputValue, previousValue, setValue]);
 
@@ -105,7 +103,7 @@ function NumberInput({
             {...otherProps}
             name={name}
             type="number"
-            value={value == null ? '' : value}
+            value={value === null ? '' : value}
             min={min}
             max={max}
             onChange={handleChange}

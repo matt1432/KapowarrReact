@@ -3,15 +3,11 @@
 // React
 import { type ForwardedRef, forwardRef, type ReactNode, useCallback } from 'react';
 
-// Redux
-
 // Misc
 import { isLocked } from 'Utilities/scrollLock';
 
 // General Components
 import Scroller, { type OnScroll } from 'Components/Scroller/Scroller';
-
-// Specific Components
 
 // CSS
 import styles from './PageContentBody.module.css';

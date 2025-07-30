@@ -232,7 +232,7 @@ function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSidebarProps) {
 
     const handleWindowScroll = useCallback(() => {
         const windowScroll =
-            window.scrollY == null ? document.documentElement.scrollTop : window.scrollY;
+            window.scrollY === null ? document.documentElement.scrollTop : window.scrollY;
         const sidebarTop = Math.max(HEADER_HEIGHT - windowScroll, 0);
         const sidebarHeight = window.innerHeight - sidebarTop;
 

@@ -64,9 +64,9 @@ function TableOptionsModal<T extends string>({
     const hasPageSize = !!propsPageSize;
     const isDragging = dropIndex !== null;
     const isDraggingUp =
-        isDragging && dropIndex != null && dragIndex != null && dropIndex < dragIndex;
+        isDragging && dropIndex !== null && dragIndex !== null && dropIndex < dragIndex;
     const isDraggingDown =
-        isDragging && dropIndex != null && dragIndex != null && dropIndex > dragIndex;
+        isDragging && dropIndex !== null && dragIndex !== null && dropIndex > dragIndex;
 
     const handlePageSizeChange = useCallback(
         ({ value }: InputChanged<number | null>) => {

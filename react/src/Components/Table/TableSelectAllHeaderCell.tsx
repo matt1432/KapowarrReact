@@ -3,10 +3,6 @@
 // React
 import { useMemo } from 'react';
 
-// Redux
-
-// Misc
-
 // General Components
 import CheckInput from 'Components/Form/CheckInput';
 

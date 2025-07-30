@@ -1,16 +1,9 @@
+// TODO:
 // IMPORTS
-
-// React
-
-// Redux
 
 // Misc
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
-
-// General Components
-
-// Specific Components
 
 // CSS
 import styles from './ErrorPage.module.css';

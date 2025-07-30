@@ -102,7 +102,6 @@ function Menu({
                 crossAxis: false,
                 mainAxis: true,
             }),
-            // offset({ mainAxis: 10 }),
             shift(),
         ],
         open: isMenuOpen,
@@ -120,7 +119,6 @@ function Menu({
                 return false;
             }
 
-            // TODO: Menu items should handle closing when they are clicked.
             // This is handled before the menu item click event is handled, so wait 100ms before closing.
             setTimeout(() => {
                 setIsMenuOpen(false);

@@ -1,7 +1,5 @@
 // IMPORTS
 
-// React
-
 // Redux
 import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 
@@ -16,12 +14,8 @@ import { ColorImpairedConsumer } from 'App/ColorImpairedContext';
 import DescriptionList from 'Components/DescriptionList/DescriptionList';
 import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem';
 
-// Specific Components
-
 // CSS
 import styles from './VolumeIndexFooter.module.css';
-
-// Types
 
 // IMPLEMENTATIONS
 

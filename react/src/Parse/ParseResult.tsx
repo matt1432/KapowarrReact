@@ -1,3 +1,4 @@
+// TODO:
 // IMPORTS
 
 // React
@@ -27,7 +28,7 @@ interface ParseResultProps {
 
 function ParseResult(props: ParseResultProps) {
     const { item } = props;
-    const { issues, languages, parsedIssueInfo, volume } = item;
+    const { issues, parsedIssueInfo, volume } = item;
 
     const {
         releaseTitle,
@@ -41,8 +42,6 @@ function ParseResult(props: ParseResultProps) {
         isDaily,
         quality,
     } = parsedIssueInfo;
-
-    const finalLanguages = languages ?? parsedIssueInfo.languages;
 
     return (
         <div>
@@ -136,14 +135,6 @@ function ParseResult(props: ParseResultProps) {
                 </div>
             </FieldSet>
 
-            <FieldSet legend={translate('Languages')}>
-                <ParseResultItem
-                    title={translate('Languages')}
-                    // @ts-expect-error TODO
-                    data={finalLanguages.map((l) => l.name).join(', ')}
-                />
-            </FieldSet>
-
             <FieldSet legend={translate('Details')}>
                 <ParseResultItem
                     title={translate('MatchedToVolume')}
@@ -161,7 +152,7 @@ function ParseResult(props: ParseResultProps) {
                     data={
                         issues.length ? (
                             <div>
-                                {/* @ts-expect-error TODO */}
+                                {/* @ts-expect-error idk */}
                                 {issues.map((e) => {
                                     return (
                                         <div key={e.id}>

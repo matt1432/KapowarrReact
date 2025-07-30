@@ -1,4 +1,5 @@
-// TODO: https://github.com/Sonarr/Sonarr/blob/v5-develop/frontend/src/FirstRun/AuthenticationRequiredModalContent.tsx
+// TODO:
+// https://github.com/Sonarr/Sonarr/blob/v5-develop/frontend/src/FirstRun/AuthenticationRequiredModalContent.tsx
 
 // IMPORTS
 

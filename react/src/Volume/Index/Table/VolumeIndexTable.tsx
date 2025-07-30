@@ -92,7 +92,7 @@ function VolumeIndexTable({
         if (jumpToCharacter) {
             const index = getIndexOfFirstCharacter(items, jumpToCharacter);
 
-            if (index != null) {
+            if (index !== null) {
                 let scrollTop = index * 38;
 
                 // If the offset is zero go to the top, otherwise offset

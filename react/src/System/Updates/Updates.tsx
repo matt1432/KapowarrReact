@@ -1,4 +1,5 @@
-// TODO: https://github.com/Sonarr/Sonarr/blob/v5-develop/frontend/src/System/Updates/Updates.tsx
+// TODO:
+// https://github.com/Sonarr/Sonarr/blob/v5-develop/frontend/src/System/Updates/Updates.tsx
 // IMPORTS
 
 // React

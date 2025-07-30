@@ -63,7 +63,6 @@ function TableHeaderCell<T extends string>({
             {...otherProps}
             component="th"
             className={className}
-            // label={typeof label === 'function' ? label() : label}
             title={typeof columnLabel === 'function' ? columnLabel() : columnLabel}
             onPress={handlePress}
         >
