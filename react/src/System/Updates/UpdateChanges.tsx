@@ -14,9 +14,7 @@ interface UpdateChangesProps {
 
 // IMPLEMENTATIONS
 
-function UpdateChanges(props: UpdateChangesProps) {
-    const { title, changes } = props;
-
+function UpdateChanges({ title, changes }: UpdateChangesProps) {
     if (changes.length === 0) {
         return null;
     }

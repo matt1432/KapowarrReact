@@ -36,9 +36,13 @@ interface RootFolderRowProps {
 
 // IMPLEMENTATIONS
 
-function RootFolderRow(props: RootFolderRowProps) {
-    const { id, path, accessible, freeSpace = 0, unmappedFolders = [] } = props;
-
+function RootFolderRow({
+    id,
+    path,
+    accessible,
+    freeSpace = 0,
+    unmappedFolders = [],
+}: RootFolderRowProps) {
     const isUnavailable = !accessible;
 
     const dispatch = useDispatch();

@@ -20,9 +20,7 @@ interface AlertProps {
 
 // IMPLEMENTATIONS
 
-function Alert(props: AlertProps) {
-    const { className = styles.alert, kind = 'info', children } = props;
-
+function Alert({ className = styles.alert, kind = 'info', children }: AlertProps) {
     return <div className={classNames(className, styles[kind])}>{children}</div>;
 }
 

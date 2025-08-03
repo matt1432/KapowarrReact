@@ -21,8 +21,7 @@ interface VolumeIndexPosterSelectProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexPosterSelect(props: VolumeIndexPosterSelectProps) {
-    const { volumeId } = props;
+function VolumeIndexPosterSelect({ volumeId }: VolumeIndexPosterSelectProps) {
     const [selectState, selectDispatch] = useSelect();
     const isSelected = selectState.selectedState[volumeId];
 

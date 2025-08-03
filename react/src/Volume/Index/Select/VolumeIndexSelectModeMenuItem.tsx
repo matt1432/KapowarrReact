@@ -21,8 +21,12 @@ interface VolumeIndexSelectModeMenuItemProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexSelectModeMenuItem(props: VolumeIndexSelectModeMenuItemProps) {
-    const { label, iconName, isSelectMode, onPress } = props;
+function VolumeIndexSelectModeMenuItem({
+    label,
+    iconName,
+    isSelectMode,
+    onPress,
+}: VolumeIndexSelectModeMenuItemProps) {
     const [, selectDispatch] = useSelect();
 
     const onPressWrapper = useCallback(() => {

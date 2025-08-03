@@ -155,23 +155,21 @@ const componentMap: Record<InputType, ElementType> = {
     umask: UMaskInput,
 } as const;
 
-function FormInputGroup<T, C extends InputType>(props: FormInputGroupProps<T, C>) {
-    const {
-        className = styles.inputGroup,
-        containerClassName = styles.inputGroupContainer,
-        inputClassName,
-        type,
-        unit,
-        buttons = [],
-        helpText,
-        helpTexts = [],
-        helpTextWarning,
-        helpLink,
-        errors = [],
-        warnings = [],
-        ...otherProps
-    } = props;
-
+function FormInputGroup<T, C extends InputType>({
+    className = styles.inputGroup,
+    containerClassName = styles.inputGroupContainer,
+    inputClassName,
+    type,
+    unit,
+    buttons = [],
+    helpText,
+    helpTexts = [],
+    helpTextWarning,
+    helpLink,
+    errors = [],
+    warnings = [],
+    ...otherProps
+}: FormInputGroupProps<T, C>) {
     const InputComponent = componentMap[type];
     const checkInput = type === inputTypes.CHECK;
     const hasError = !!errors.length;

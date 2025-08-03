@@ -13,9 +13,7 @@ interface ParseResultItemProps {
 
 // IMPLEMENTATIONS
 
-function ParseResultItem(props: ParseResultItemProps) {
-    const { title, data } = props;
-
+function ParseResultItem({ title, data }: ParseResultItemProps) {
     return (
         <div className={styles.item}>
             <div className={styles.title}>{title}</div>

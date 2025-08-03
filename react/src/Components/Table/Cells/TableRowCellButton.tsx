@@ -19,9 +19,7 @@ interface TableRowCellButtonProps extends LinkProps {
 
 // IMPLEMENTATIONS
 
-function TableRowCellButton(props: TableRowCellButtonProps) {
-    const { className = styles.cell, ...otherProps } = props;
-
+function TableRowCellButton({ className = styles.cell, ...otherProps }: TableRowCellButtonProps) {
     return <Link className={className} component={TableRowCell} {...otherProps} />;
 }
 

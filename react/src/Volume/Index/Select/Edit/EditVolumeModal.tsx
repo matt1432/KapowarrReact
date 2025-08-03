@@ -16,9 +16,7 @@ interface EditVolumeModalProps {
 
 // IMPLEMENTATIONS
 
-function EditVolumeModal(props: EditVolumeModalProps) {
-    const { isOpen, volumeIds, onSavePress, onModalClose } = props;
-
+function EditVolumeModal({ isOpen, volumeIds, onSavePress, onModalClose }: EditVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
             <EditVolumeModalContent

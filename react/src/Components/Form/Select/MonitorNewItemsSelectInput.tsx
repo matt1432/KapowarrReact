@@ -19,14 +19,12 @@ export interface MonitorNewItemsSelectInputProps
 
 // IMPLEMENTATIONS
 
-function MonitorNewItemsSelectInput(props: MonitorNewItemsSelectInputProps) {
-    const {
-        includeNoChange = false,
-        includeNoChangeDisabled = true,
-        includeMixed = false,
-        ...otherProps
-    } = props;
-
+function MonitorNewItemsSelectInput({
+    includeNoChange = false,
+    includeNoChangeDisabled = true,
+    includeMixed = false,
+    ...otherProps
+}: MonitorNewItemsSelectInputProps) {
     const values: EnhancedSelectInputValue<string>[] = [...monitorNewItemsOptions];
 
     if (includeNoChange) {

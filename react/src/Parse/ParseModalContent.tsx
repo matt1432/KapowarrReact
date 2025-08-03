@@ -40,8 +40,7 @@ interface ParseModalContentProps {
 
 // IMPLEMENTATIONS
 
-function ParseModalContent(props: ParseModalContentProps) {
-    const { onModalClose } = props;
+function ParseModalContent({ onModalClose }: ParseModalContentProps) {
     // const { isFetching, error, item } = useSelector(parseStateSelector());
     const isFetching = false;
     const error = undefined;

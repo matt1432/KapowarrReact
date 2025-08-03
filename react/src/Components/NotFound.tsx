@@ -16,9 +16,7 @@ interface NotFoundProps {
 
 // IMPLEMENTATIONS
 
-function NotFound(props: NotFoundProps) {
-    const { message = translate('DefaultNotFoundMessage') } = props;
-
+function NotFound({ message = translate('DefaultNotFoundMessage') }: NotFoundProps) {
     return (
         <PageContent title="MIA">
             <div className={styles.container}>

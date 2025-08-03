@@ -14,9 +14,7 @@ interface ParseModalProps {
 
 // IMPLEMENTATIONS
 
-function ParseModal(props: ParseModalProps) {
-    const { isOpen, onModalClose } = props;
-
+function ParseModal({ isOpen, onModalClose }: ParseModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
             <ParseModalContent onModalClose={onModalClose} />

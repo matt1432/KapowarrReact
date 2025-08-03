@@ -13,9 +13,10 @@ export interface DescriptionListItemTitleProps {
 
 // IMPLEMENTATIONS
 
-function DescriptionListItemTitle(props: DescriptionListItemTitleProps) {
-    const { className = styles.title, children } = props;
-
+function DescriptionListItemTitle({
+    className = styles.title,
+    children,
+}: DescriptionListItemTitleProps) {
     return <dt className={className}>{children}</dt>;
 }
 

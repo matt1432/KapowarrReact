@@ -24,15 +24,16 @@ interface PageContentBodyProps {
 // IMPLEMENTATIONS
 
 const PageContentBody = forwardRef(
-    (props: PageContentBodyProps, ref: ForwardedRef<HTMLDivElement>) => {
-        const {
+    (
+        {
             className = styles.contentBody,
             innerClassName = styles.innerContentBody,
             children,
             onScroll,
             ...otherProps
-        } = props;
-
+        }: PageContentBodyProps,
+        ref: ForwardedRef<HTMLDivElement>,
+    ) => {
         const onScrollWrapper = useCallback(
             (payload: OnScroll) => {
                 if (onScroll && !isLocked()) {

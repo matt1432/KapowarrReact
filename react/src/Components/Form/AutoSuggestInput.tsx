@@ -60,32 +60,30 @@ interface AutoSuggestInputProps<T>
 // IMPLEMENTATIONS
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function AutoSuggestInput<T = any>(props: AutoSuggestInputProps<T>) {
-    const {
-        forwardedRef,
-        className = styles.input,
-        inputContainerClassName = styles.inputContainer,
-        name,
-        value = '',
-        placeholder,
-        suggestions,
-        enforceMaxHeight = true,
-        hasError,
-        hasWarning,
-        maxHeight = 200,
-        getSuggestionValue,
-        renderSuggestion,
-        renderInputComponent,
-        onInputChange,
-        onInputKeyDown,
-        onInputFocus,
-        onInputBlur,
-        onSuggestionsFetchRequested,
-        onSuggestionsClearRequested,
-        onSuggestionSelected,
-        ...otherProps
-    } = props;
-
+function AutoSuggestInput<T = any>({
+    forwardedRef,
+    className = styles.input,
+    inputContainerClassName = styles.inputContainer,
+    name,
+    value = '',
+    placeholder,
+    suggestions,
+    enforceMaxHeight = true,
+    hasError,
+    hasWarning,
+    maxHeight = 200,
+    getSuggestionValue,
+    renderSuggestion,
+    renderInputComponent,
+    onInputChange,
+    onInputKeyDown,
+    onInputFocus,
+    onInputBlur,
+    onSuggestionsFetchRequested,
+    onSuggestionsClearRequested,
+    onSuggestionSelected,
+    ...otherProps
+}: AutoSuggestInputProps<T>) {
     const updater = useRef<(() => void) | null>(null);
     const previousSuggestions = usePrevious(suggestions);
 

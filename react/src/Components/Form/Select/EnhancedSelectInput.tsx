@@ -152,28 +152,24 @@ function isSelectedItem<T extends EnhancedSelectInputValue<V>, V>(
     return values[index].key === value;
 }
 
-function EnhancedSelectInput<T extends EnhancedSelectInputValue<V>, V>(
-    props: EnhancedSelectInputProps<T, V>,
-) {
-    const {
-        className = styles.enhancedSelect,
-        disabledClassName = styles.isDisabled,
-        name,
-        value,
-        values,
-        isDisabled = false,
-        isEditable,
-        isFetching,
-        hasError,
-        hasWarning,
-        valueOptions,
-        selectedValueOptions,
-        selectedValueComponent: SelectedValueComponent = HintedSelectInputSelectedValue,
-        optionComponent: OptionComponent = HintedSelectInputOption,
-        onChange,
-        onOpen,
-    } = props;
-
+function EnhancedSelectInput<T extends EnhancedSelectInputValue<V>, V>({
+    className = styles.enhancedSelect,
+    disabledClassName = styles.isDisabled,
+    name,
+    value,
+    values,
+    isDisabled = false,
+    isEditable,
+    isFetching,
+    hasError,
+    hasWarning,
+    valueOptions,
+    selectedValueOptions,
+    selectedValueComponent: SelectedValueComponent = HintedSelectInputSelectedValue,
+    optionComponent: OptionComponent = HintedSelectInputOption,
+    onChange,
+    onOpen,
+}: EnhancedSelectInputProps<T, V>) {
     const [selectedIndex, setSelectedIndex] = useState(getSelectedIndex(value, values));
     const [isOpen, setIsOpen] = useState(false);
     const isMobile = useMemo(() => isMobileUtil(), []);
@@ -303,7 +299,7 @@ function EnhancedSelectInput<T extends EnhancedSelectInputValue<V>, V>(
                 }
 
                 if (
-                    selectedIndex == null ||
+                    !selectedIndex ||
                     selectedIndex === -1 ||
                     getSelectedOption(selectedIndex, values).isDisabled
                 ) {

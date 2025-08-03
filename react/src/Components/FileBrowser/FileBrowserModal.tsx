@@ -19,9 +19,7 @@ interface FileBrowserModalProps extends FileBrowserModalContentProps {
 
 // IMPLEMENTATIONS
 
-function FileBrowserModal(props: FileBrowserModalProps) {
-    const { isOpen, onModalClose, ...otherProps } = props;
-
+function FileBrowserModal({ isOpen, onModalClose, ...otherProps }: FileBrowserModalProps) {
     return (
         <Modal className={styles.modal} isOpen={isOpen} onModalClose={onModalClose}>
             <FileBrowserModalContent {...otherProps} onModalClose={onModalClose} />

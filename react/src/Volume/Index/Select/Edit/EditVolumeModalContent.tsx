@@ -69,9 +69,11 @@ const monitoredOptions: EnhancedSelectInputValue<string>[] = [
     },
 ];
 
-function EditVolumeModalContent(props: EditVolumeModalContentProps) {
-    const { volumeIds, onSavePress, onModalClose } = props;
-
+function EditVolumeModalContent({
+    volumeIds,
+    onSavePress,
+    onModalClose,
+}: EditVolumeModalContentProps) {
     const [monitored, setMonitored] = useState(NO_CHANGE);
     const [monitorNewItems, setMonitorNewItems] = useState(NO_CHANGE);
     const [qualityProfileId, setQualityProfileId] = useState<string | number>(NO_CHANGE);

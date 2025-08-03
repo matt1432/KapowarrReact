@@ -19,9 +19,11 @@ export interface MonitorIssuesSelectInputProps
 
 // IMPLEMENTATIONS
 
-function MonitorIssuesSelectInput(props: MonitorIssuesSelectInputProps) {
-    const { includeNoChange = false, includeMixed = false, ...otherProps } = props;
-
+function MonitorIssuesSelectInput({
+    includeNoChange = false,
+    includeMixed = false,
+    ...otherProps
+}: MonitorIssuesSelectInputProps) {
     const values: EnhancedSelectInputValue<string>[] = [...monitorOptions];
 
     if (includeNoChange) {

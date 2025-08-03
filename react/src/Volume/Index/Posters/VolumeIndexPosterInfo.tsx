@@ -19,9 +19,12 @@ interface VolumeIndexPosterInfoProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexPosterInfo(props: VolumeIndexPosterInfoProps) {
-    const { publisher, folder, sizeOnDisk = 0, sortKey } = props;
-
+function VolumeIndexPosterInfo({
+    publisher,
+    folder,
+    sizeOnDisk = 0,
+    sortKey,
+}: VolumeIndexPosterInfoProps) {
     if (sortKey === 'publisher' && publisher) {
         return (
             <div className={styles.info} title={translate('Publisher')}>

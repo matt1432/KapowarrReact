@@ -15,9 +15,7 @@ interface OrganizeVolumeModalProps {
 
 // IMPLEMENTATIONS
 
-function OrganizeVolumeModal(props: OrganizeVolumeModalProps) {
-    const { isOpen, onModalClose, ...otherProps } = props;
-
+function OrganizeVolumeModal({ isOpen, onModalClose, ...otherProps }: OrganizeVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
             <OrganizeVolumeModalContent {...otherProps} onModalClose={onModalClose} />

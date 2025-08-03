@@ -14,9 +14,7 @@ interface InlineMarkdownProps {
 
 // IMPLEMENTATIONS
 
-function InlineMarkdown(props: InlineMarkdownProps) {
-    const { className, data, blockClassName } = props;
-
+function InlineMarkdown({ className, data, blockClassName }: InlineMarkdownProps) {
     // For now only replace links or code blocks (not both)
     const markdownBlocks: (ReactElement | string)[] = [];
 

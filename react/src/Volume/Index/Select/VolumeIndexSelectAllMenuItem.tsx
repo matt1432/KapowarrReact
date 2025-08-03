@@ -20,8 +20,7 @@ interface VolumeIndexSelectAllMenuItemProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexSelectAllMenuItem(props: VolumeIndexSelectAllMenuItemProps) {
-    const { isSelectMode } = props;
+function VolumeIndexSelectAllMenuItem({ isSelectMode }: VolumeIndexSelectAllMenuItemProps) {
     const [selectState, selectDispatch] = useSelect();
     const { allSelected, allUnselected } = selectState;
 

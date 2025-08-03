@@ -37,24 +37,22 @@ export interface TooltipProps {
     bodyClassName?: string;
     anchor: React.ReactNode;
     tooltip: string | React.ReactNode;
-    kind?: Extract<Kind, 'default' | 'inverse'>;
+    kind?: Extract<Kind, 'defaultKind' | 'inverse'>;
     position?: Placement;
     canFlip?: boolean;
 }
 
 // IMPLEMENTATIONS
 
-function Tooltip(props: TooltipProps) {
-    const {
-        className,
-        bodyClassName = styles.body,
-        anchor,
-        tooltip,
-        kind = kinds.DEFAULT_KIND,
-        position,
-        canFlip = true,
-    } = props;
-
+function Tooltip({
+    className,
+    bodyClassName = styles.body,
+    anchor,
+    tooltip,
+    kind = kinds.DEFAULT_KIND,
+    position,
+    canFlip = true,
+}: TooltipProps) {
     const arrowColor = useThemeColor(
         kind === 'inverse' ? 'popoverArrowBorderInverseColor' : 'popoverArrowBorderColor',
     );

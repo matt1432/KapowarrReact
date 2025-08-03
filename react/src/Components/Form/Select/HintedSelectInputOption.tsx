@@ -23,9 +23,15 @@ interface HintedSelectInputOptionProps extends Omit<EnhancedSelectInputOptionPro
 
 // IMPLEMENTATIONS
 
-function HintedSelectInputOption(props: HintedSelectInputOptionProps) {
-    const { id, value, hint, depth, isSelected = false, isMobile, ...otherProps } = props;
-
+function HintedSelectInputOption({
+    id,
+    value,
+    hint,
+    depth,
+    isSelected = false,
+    isMobile,
+    ...otherProps
+}: HintedSelectInputOptionProps) {
     return (
         <EnhancedSelectInputOption
             id={id}
@@ -37,7 +43,7 @@ function HintedSelectInputOption(props: HintedSelectInputOptionProps) {
             <div className={classNames(styles.optionText, isMobile && styles.isMobile)}>
                 <div>{value}</div>
 
-                {hint != null && <div className={styles.hintText}>{hint}</div>}
+                {hint && <div className={styles.hintText}>{hint}</div>}
             </div>
         </EnhancedSelectInputOption>
     );

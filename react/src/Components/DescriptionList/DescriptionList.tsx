@@ -13,9 +13,7 @@ interface DescriptionListProps {
     children?: React.ReactNode;
 }
 
-function DescriptionList(props: DescriptionListProps) {
-    const { className = styles.descriptionList, children } = props;
-
+function DescriptionList({ className = styles.descriptionList, children }: DescriptionListProps) {
     return <dl className={className}>{children}</dl>;
 }
 

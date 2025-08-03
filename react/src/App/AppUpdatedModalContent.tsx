@@ -24,9 +24,7 @@ interface AppUpdatedModalContentProps {
 
 // IMPLEMENTATIONS
 
-function AppUpdatedModalContent(props: AppUpdatedModalContentProps) {
-    const { onModalClose } = props;
-
+function AppUpdatedModalContent({ onModalClose }: AppUpdatedModalContentProps) {
     const handleSeeChangesPress = useCallback(() => {
         window.location.href = `${window.Kapowarr.urlBase}/system/updates`;
     }, []);

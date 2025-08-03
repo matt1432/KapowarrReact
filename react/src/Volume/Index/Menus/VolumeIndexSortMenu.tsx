@@ -22,9 +22,12 @@ interface VolumeIndexSortMenuProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexSortMenu(props: VolumeIndexSortMenuProps) {
-    const { sortKey, sortDirection, isDisabled, onSortSelect } = props;
-
+function VolumeIndexSortMenu({
+    sortKey,
+    sortDirection,
+    isDisabled,
+    onSortSelect,
+}: VolumeIndexSortMenuProps) {
     return (
         <SortMenu isDisabled={isDisabled} alignMenu={align.RIGHT}>
             <MenuContent>

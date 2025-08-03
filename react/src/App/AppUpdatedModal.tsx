@@ -18,9 +18,7 @@ interface AppUpdatedModalProps {
 
 // IMPLEMENTATIONS
 
-function AppUpdatedModal(props: AppUpdatedModalProps) {
-    const { isOpen, onModalClose } = props;
-
+function AppUpdatedModal({ isOpen, onModalClose }: AppUpdatedModalProps) {
     const handleModalClose = useCallback(() => {
         location.reload();
     }, []);

@@ -42,9 +42,7 @@ function getIconName(type: string) {
     }
 }
 
-function FileBrowserRow(props: FileBrowserRowProps) {
-    const { type, name, path, onPress } = props;
-
+function FileBrowserRow({ type, name, path, onPress }: FileBrowserRowProps) {
     const handlePress = useCallback(() => {
         onPress(path);
     }, [path, onPress]);

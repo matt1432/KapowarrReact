@@ -22,17 +22,15 @@ interface FormLabelProps {
 
 // IMPLEMENTATIONS
 
-function FormLabel(props: FormLabelProps) {
-    const {
-        children,
-        className = styles.label,
-        errorClassName = styles.hasError,
-        size = 'large',
-        name,
-        hasError,
-        isAdvanced = false,
-    } = props;
-
+function FormLabel({
+    children,
+    className = styles.label,
+    errorClassName = styles.hasError,
+    size = 'large',
+    name,
+    hasError,
+    isAdvanced = false,
+}: FormLabelProps) {
     return (
         <label
             className={classNames(

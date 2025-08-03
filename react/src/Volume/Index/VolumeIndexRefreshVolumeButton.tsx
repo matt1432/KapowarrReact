@@ -30,7 +30,10 @@ interface VolumeIndexRefreshVolumeButtonProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexRefreshVolumeButton(props: VolumeIndexRefreshVolumeButtonProps) {
+function VolumeIndexRefreshVolumeButton({
+    isSelectMode,
+    filterKey,
+}: VolumeIndexRefreshVolumeButtonProps) {
     /*
     const isRefreshing = useSelector(createCommandExecutingSelector(REFRESH_VOLUMES));
 
@@ -46,7 +49,6 @@ function VolumeIndexRefreshVolumeButton(props: VolumeIndexRefreshVolumeButtonPro
     const totalItems = 0;
 
     const dispatch = useDispatch();
-    const { isSelectMode, filterKey } = props;
     const [selectState] = useSelect();
     const { selectedState } = selectState;
 

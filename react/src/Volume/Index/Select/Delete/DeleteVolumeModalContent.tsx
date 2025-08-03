@@ -48,9 +48,7 @@ const selectDeleteOptions = createSelector(
 );
 */
 
-function DeleteVolumeModalContent(props: DeleteVolumeModalContentProps) {
-    const { volumeIds, onModalClose } = props;
-
+function DeleteVolumeModalContent({ volumeIds, onModalClose }: DeleteVolumeModalContentProps) {
     // const { addImportListExclusion } = useSelector(selectDeleteOptions);
     const allVolume: Volume[] = []; // useSelector(createAllVolumeSelector());
     const dispatch = useDispatch();

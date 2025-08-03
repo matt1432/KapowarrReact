@@ -67,9 +67,13 @@ const columns: Column<string>[] = [
 
 const handleClearPaths = () => {};
 
-function FileBrowserModalContent(props: FileBrowserModalContentProps) {
-    const { name, value, includeFiles = true, onChange, onModalClose } = props;
-
+function FileBrowserModalContent({
+    name,
+    value,
+    includeFiles = true,
+    onChange,
+    onModalClose,
+}: FileBrowserModalContentProps) {
     const dispatch = useDispatch();
 
     // const { isWindows, mode } = useSelector(createSystemStatusSelector());

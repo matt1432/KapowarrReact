@@ -31,15 +31,14 @@ interface ScrollbarTrackProps {
 
 const SCROLLBAR_SIZE = 10;
 
-function OverlayScroller(props: OverlayScrollerProps) {
-    const {
-        autoHide = false,
-        autoScroll = true,
-        className = styles.scroller,
-        trackClassName = styles.thumb,
-        children,
-        onScroll,
-    } = props;
+function OverlayScroller({
+    autoHide = false,
+    autoScroll = true,
+    className = styles.scroller,
+    trackClassName = styles.thumb,
+    children,
+    onScroll,
+}: OverlayScrollerProps) {
     const scrollBarRef = useRef<Scrollbars>(null);
     const isScrolling = useRef(false);
 

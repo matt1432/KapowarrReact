@@ -26,9 +26,7 @@ interface ConnectionLostModalProps {
 
 // IMPLEMENTATIONS
 
-function ConnectionLostModal(props: ConnectionLostModalProps) {
-    const { isOpen } = props;
-
+function ConnectionLostModal({ isOpen }: ConnectionLostModalProps) {
     const handleModalClose = useCallback(() => {
         location.reload();
     }, []);

@@ -18,9 +18,7 @@ interface NoVolumeProps {
 
 // IMPLEMENTATIONS
 
-function NoVolume(props: NoVolumeProps) {
-    const { totalItems } = props;
-
+function NoVolume({ totalItems }: NoVolumeProps) {
     if (totalItems > 0) {
         return (
             <div>

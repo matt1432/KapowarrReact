@@ -25,19 +25,17 @@ interface ErrorPageProps {
 
 // IMPLEMENTATIONS
 
-function ErrorPage(props: ErrorPageProps) {
-    const {
-        version,
-        isLocalStorageSupported,
-        translationsError,
-        volumesError,
-        customFiltersError,
-        tagsError,
-        qualityProfilesError,
-        uiSettingsError,
-        systemStatusError,
-    } = props;
-
+function ErrorPage({
+    version,
+    isLocalStorageSupported,
+    translationsError,
+    volumesError,
+    customFiltersError,
+    tagsError,
+    qualityProfilesError,
+    uiSettingsError,
+    systemStatusError,
+}: ErrorPageProps) {
     let errorMessage = translate('FailedToLoadKapowarr');
 
     if (!isLocalStorageSupported) {

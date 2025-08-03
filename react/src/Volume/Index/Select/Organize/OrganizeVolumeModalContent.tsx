@@ -35,9 +35,7 @@ interface OrganizeVolumeModalContentProps {
 
 // IMPLEMENTATIONS
 
-function OrganizeVolumeModalContent(props: OrganizeVolumeModalContentProps) {
-    const { volumeIds, onModalClose } = props;
-
+function OrganizeVolumeModalContent({ volumeIds, onModalClose }: OrganizeVolumeModalContentProps) {
     const allVolume: Volume[] = []; // useSelector(createAllVolumeSelector());
     const dispatch = useDispatch();
 

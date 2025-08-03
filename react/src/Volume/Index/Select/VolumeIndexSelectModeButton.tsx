@@ -19,8 +19,13 @@ interface VolumeIndexSelectModeButtonProps extends PageToolbarButtonProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexSelectModeButton(props: VolumeIndexSelectModeButtonProps) {
-    const { label, iconName, isSelectMode, overflowComponent, onPress } = props;
+function VolumeIndexSelectModeButton({
+    label,
+    iconName,
+    isSelectMode,
+    overflowComponent,
+    onPress,
+}: VolumeIndexSelectModeButtonProps) {
     const [, selectDispatch] = useSelect();
 
     const onPressWrapper = useCallback(() => {

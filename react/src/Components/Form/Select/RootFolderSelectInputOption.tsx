@@ -46,7 +46,7 @@ function RootFolderSelectInputOption({
                     ) : null}
                 </div>
 
-                {freeSpace == null ? null : (
+                {!freeSpace ? null : (
                     <div className={styles.freeSpace}>
                         {translate('RootFolderSelectFreeSpace', {
                             freeSpace: formatBytes(freeSpace),

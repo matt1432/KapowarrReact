@@ -43,75 +43,78 @@ interface ScrollerProps {
 
 // IMPLEMENTATIONS
 
-const Scroller = forwardRef((props: ScrollerProps, ref: ForwardedRef<HTMLDivElement>) => {
-    const {
-        className,
-        autoFocus = false,
-        autoScroll = true,
-        scrollDirection = 'vertical',
-        children,
-        scrollTop,
-        initialScrollTop,
-        onScroll,
-        ...otherProps
-    } = props;
+const Scroller = forwardRef(
+    (
+        {
+            className,
+            autoFocus = false,
+            autoScroll = true,
+            scrollDirection = 'vertical',
+            children,
+            scrollTop,
+            initialScrollTop,
+            onScroll,
+            ...otherProps
+        }: ScrollerProps,
+        ref: ForwardedRef<HTMLDivElement>,
+    ) => {
+        const internalRef = useRef<HTMLDivElement>(null);
 
-    const internalRef = useRef<HTMLDivElement>(null);
+        useImperativeHandle(ref, () => internalRef.current!, []);
 
-    useImperativeHandle(ref, () => internalRef.current!, []);
+        useEffect(
+            () => {
+                if (initialScrollTop) {
+                    internalRef.current!.scrollTop = initialScrollTop;
+                }
+            },
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            [],
+        );
 
-    useEffect(
-        () => {
-            if (initialScrollTop) {
-                internalRef.current!.scrollTop = initialScrollTop;
+        useEffect(() => {
+            if (scrollTop) {
+                internalRef.current!.scrollTop = scrollTop;
             }
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [],
-    );
 
-    useEffect(() => {
-        if (scrollTop) {
-            internalRef.current!.scrollTop = scrollTop;
-        }
+            if (autoFocus && scrollDirection !== 'none') {
+                internalRef.current!.focus({ preventScroll: true });
+            }
+        }, [autoFocus, scrollDirection, scrollTop]);
 
-        if (autoFocus && scrollDirection !== 'none') {
-            internalRef.current!.focus({ preventScroll: true });
-        }
-    }, [autoFocus, scrollDirection, scrollTop]);
+        useEffect(() => {
+            const div = internalRef.current!;
 
-    useEffect(() => {
-        const div = internalRef.current!;
+            const handleScroll = throttle(() => {
+                const scrollLeft = div.scrollLeft;
+                const scrollTop = div.scrollTop;
 
-        const handleScroll = throttle(() => {
-            const scrollLeft = div.scrollLeft;
-            const scrollTop = div.scrollTop;
+                onScroll?.({ scrollLeft, scrollTop });
+            }, 10);
 
-            onScroll?.({ scrollLeft, scrollTop });
-        }, 10);
+            div?.addEventListener('scroll', handleScroll);
 
-        div?.addEventListener('scroll', handleScroll);
+            return () => {
+                div?.removeEventListener('scroll', handleScroll);
+            };
+        }, [onScroll]);
 
-        return () => {
-            div?.removeEventListener('scroll', handleScroll);
-        };
-    }, [onScroll]);
-
-    return (
-        <div
-            {...otherProps}
-            ref={internalRef}
-            className={classNames(
-                className,
-                styles.scroller,
-                styles[scrollDirection],
-                autoScroll && styles.autoScroll,
-            )}
-            tabIndex={-1}
-        >
-            {children}
-        </div>
-    );
-});
+        return (
+            <div
+                {...otherProps}
+                ref={internalRef}
+                className={classNames(
+                    className,
+                    styles.scroller,
+                    styles[scrollDirection],
+                    autoScroll && styles.autoScroll,
+                )}
+                tabIndex={-1}
+            >
+                {children}
+            </div>
+        );
+    },
+);
 
 export default Scroller;

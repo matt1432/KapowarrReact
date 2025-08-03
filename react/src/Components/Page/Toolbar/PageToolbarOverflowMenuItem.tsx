@@ -24,9 +24,14 @@ interface PageToolbarOverflowMenuItemProps {
 
 // IMPLEMENTATIONS
 
-function PageToolbarOverflowMenuItem(props: PageToolbarOverflowMenuItemProps) {
-    const { iconName, spinningName, label, isDisabled, isSpinning = false, ...otherProps } = props;
-
+function PageToolbarOverflowMenuItem({
+    iconName,
+    spinningName,
+    label,
+    isDisabled,
+    isSpinning = false,
+    ...otherProps
+}: PageToolbarOverflowMenuItemProps) {
     return (
         <MenuItem key={label} isDisabled={isDisabled || isSpinning} {...otherProps}>
             <SpinnerIcon

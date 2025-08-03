@@ -3,17 +3,8 @@
 // React
 import React, { useCallback, useEffect } from 'react';
 
-// Redux
-
 // Misc
-
 import useSelectState from 'Helpers/Hooks/useSelectState';
-
-// General Components
-
-// Specific Components
-
-// CSS
 
 // Types
 import type { ModelBase } from './ModelBase';
@@ -52,8 +43,10 @@ const SelectContext = React.createContext<[SelectState, SelectDispatch] | undefi
     structuredClone(undefined),
 );
 
-export function SelectProvider<T extends SelectStateModel>(props: SelectProviderOptions<T>) {
-    const { items } = props;
+export function SelectProvider<T extends SelectStateModel>({
+    children,
+    items,
+}: SelectProviderOptions<T>) {
     const [state, dispatch] = useSelectState();
 
     const dispatchWrapper = useCallback(
@@ -81,7 +74,7 @@ export function SelectProvider<T extends SelectStateModel>(props: SelectProvider
         dispatch({ type: 'updateItems', items });
     }, [items, dispatch]);
 
-    return <SelectContext.Provider value={value}>{props.children}</SelectContext.Provider>;
+    return <SelectContext.Provider value={value}>{children}</SelectContext.Provider>;
 }
 
 // eslint-disable-next-line

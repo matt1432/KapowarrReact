@@ -21,9 +21,7 @@ interface VolumeIndexViewMenuProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexViewMenu(props: VolumeIndexViewMenuProps) {
-    const { view, isDisabled, onViewSelect } = props;
-
+function VolumeIndexViewMenu({ view, isDisabled, onViewSelect }: VolumeIndexViewMenuProps) {
     return (
         <ViewMenu isDisabled={isDisabled} alignMenu={align.RIGHT}>
             <MenuContent>

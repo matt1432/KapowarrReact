@@ -13,9 +13,11 @@ interface SpecialVersionSelectInputOptionProps {
 
 // IMPLEMENTATIONS
 
-function SpecialVersionSelectInputSelectedValue(props: SpecialVersionSelectInputOptionProps) {
-    const { selectedValue, values, ...otherProps } = props;
-
+function SpecialVersionSelectInputSelectedValue({
+    selectedValue,
+    values,
+    ...otherProps
+}: SpecialVersionSelectInputOptionProps) {
     return (
         <HintedSelectInputSelectedValue
             {...otherProps}

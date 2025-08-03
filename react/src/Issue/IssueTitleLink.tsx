@@ -22,8 +22,7 @@ interface IssueTitleLinkProps {
 
 // IMPLEMENTATIONS
 
-function IssueTitleLink(props: IssueTitleLinkProps) {
-    const { issueTitle, ...otherProps } = props;
+function IssueTitleLink({ issueTitle, ...otherProps }: IssueTitleLinkProps) {
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const handleLinkPress = useCallback(() => {
         setIsDetailsModalOpen(true);

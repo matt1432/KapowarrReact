@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 
 const useAppPage = () => {
+    // TODO: all all queries needed before page is loaded
     const queries = [useGetVolumesQuery(undefined)];
 
     const erroredQueries = queries.filter(({ isError }) => isError);

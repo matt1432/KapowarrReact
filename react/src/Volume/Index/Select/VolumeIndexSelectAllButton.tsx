@@ -21,8 +21,10 @@ interface VolumeIndexSelectAllButtonProps extends Omit<PageToolbarButtonProps, '
 
 // IMPLEMENTATIONS
 
-function VolumeIndexSelectAllButton(props: VolumeIndexSelectAllButtonProps) {
-    const { isSelectMode, overflowComponent } = props;
+function VolumeIndexSelectAllButton({
+    isSelectMode,
+    overflowComponent,
+}: VolumeIndexSelectAllButtonProps) {
     const [selectState, selectDispatch] = useSelect();
     const { allSelected, allUnselected } = selectState;
 

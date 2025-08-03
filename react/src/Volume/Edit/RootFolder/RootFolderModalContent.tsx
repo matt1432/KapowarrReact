@@ -44,12 +44,16 @@ interface VolumeFolder {
 
 // IMPLEMENTATIONS
 
-function RootFolderModalContent(props: RootFolderModalContentProps) {
-    const { /* volumeId, */ onSavePress, onModalClose } = props;
+function RootFolderModalContent({
+    // volumeId,
+    onSavePress,
+    onModalClose,
+    rootFolderPath: initRootFolderPath,
+}: RootFolderModalContentProps) {
     // const { isWindows } = useSelector(createSystemStatusSelector());
     const isWindows = false;
 
-    const [rootFolderPath, setRootFolderPath] = useState(props.rootFolderPath);
+    const [rootFolderPath, setRootFolderPath] = useState(initRootFolderPath);
 
     const { isLoading, data } = { isLoading: false, data: {} as VolumeFolder }; // useApiQuery<VolumeFolder>({
     //     path: `/volumes/${volumeId}/folder`,

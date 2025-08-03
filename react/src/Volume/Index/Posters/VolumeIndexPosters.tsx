@@ -97,9 +97,14 @@ function getWindowScrollTopPosition() {
     return document.documentElement.scrollTop || document.body.scrollTop || 0;
 }
 
-export default function VolumeIndexPosters(props: VolumeIndexPostersProps) {
-    const { scrollerRef, items, sortKey, jumpToCharacter, isSelectMode, isSmallScreen } = props;
-
+export default function VolumeIndexPosters({
+    scrollerRef,
+    items,
+    sortKey,
+    jumpToCharacter,
+    isSelectMode,
+    isSmallScreen,
+}: VolumeIndexPostersProps) {
     const { posterOptions } = useRootSelector((state) => state.volumeIndex);
     const ref = useRef<Grid>(null);
     const [measureRef, bounds] = useMeasure();
@@ -119,7 +124,7 @@ export default function VolumeIndexPosters(props: VolumeIndexPostersProps) {
         () => Math.max(Math.floor(size.width / columnWidth), 1),
         [size, columnWidth],
     );
-    const padding = props.isSmallScreen ? columnPaddingSmallScreen : columnPadding;
+    const padding = isSmallScreen ? columnPaddingSmallScreen : columnPadding;
     const posterWidth = columnWidth - padding * 2;
     const posterHeight = Math.ceil((250 / 170) * posterWidth);
 

@@ -26,8 +26,7 @@ interface ParseResultProps {
 
 // IMPLEMENTATIONS
 
-function ParseResult(props: ParseResultProps) {
-    const { item } = props;
+function ParseResult({ item }: ParseResultProps) {
     const { issues, parsedIssueInfo, volume } = item;
 
     const {

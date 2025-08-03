@@ -15,9 +15,7 @@ interface DeleteVolumeModalProps {
 
 // IMPLEMENTATIONS
 
-function DeleteVolumeModal(props: DeleteVolumeModalProps) {
-    const { isOpen, volumeIds, onModalClose } = props;
-
+function DeleteVolumeModal({ isOpen, volumeIds, onModalClose }: DeleteVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
             <DeleteVolumeModalContent volumeIds={volumeIds} onModalClose={onModalClose} />

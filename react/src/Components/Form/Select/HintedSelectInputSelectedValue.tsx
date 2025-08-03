@@ -29,16 +29,14 @@ interface HintedSelectInputSelectedValueProps<T, V> {
 function HintedSelectInputSelectedValue<
     T extends EnhancedSelectInputValue<V>,
     V extends number | string,
->(props: HintedSelectInputSelectedValueProps<T, V>) {
-    const {
-        selectedValue,
-        values,
-        hint,
-        isMultiSelect = false,
-        includeHint = true,
-        ...otherProps
-    } = props;
-
+>({
+    selectedValue,
+    values,
+    hint,
+    isMultiSelect = false,
+    includeHint = true,
+    ...otherProps
+}: HintedSelectInputSelectedValueProps<T, V>) {
     const valuesMap = useMemo(() => {
         return new Map(values.map((v) => [v.key, v.value]));
     }, [values]);
@@ -55,7 +53,7 @@ function HintedSelectInputSelectedValue<
                     : valuesMap.get(selectedValue as ArrayElement<V>)}
             </div>
 
-            {hint != null && includeHint ? <div className={styles.hintText}>{hint}</div> : null}
+            {hint && includeHint ? <div className={styles.hintText}>{hint}</div> : null}
         </EnhancedSelectInputSelectedValue>
     );
 }

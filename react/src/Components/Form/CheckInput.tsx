@@ -41,21 +41,19 @@ export interface CheckInputProps {
 
 // IMPLEMENTATIONS
 
-function CheckInput(props: CheckInputProps) {
-    const {
-        className = styles.input,
-        containerClassName = styles.container,
-        name,
-        value,
-        checkedValue = true,
-        uncheckedValue = false,
-        helpText,
-        helpTextWarning,
-        isDisabled,
-        kind = 'primary',
-        onChange,
-    } = props;
-
+function CheckInput({
+    className = styles.input,
+    containerClassName = styles.container,
+    name,
+    value,
+    checkedValue = true,
+    uncheckedValue = false,
+    helpText,
+    helpTextWarning,
+    isDisabled,
+    kind = 'primary',
+    onChange,
+}: CheckInputProps) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     const isChecked = value === checkedValue;

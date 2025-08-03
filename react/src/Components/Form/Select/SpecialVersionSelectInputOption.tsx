@@ -20,9 +20,12 @@ interface SpecialVersionSelectInputOptionProps extends EnhancedSelectInputOption
 
 // IMPLEMENTATIONS
 
-function SpecialVersionSelectInputOption(props: SpecialVersionSelectInputOptionProps) {
-    const { id, value, isMobile, ...otherProps } = props;
-
+function SpecialVersionSelectInputOption({
+    id,
+    value,
+    isMobile,
+    ...otherProps
+}: SpecialVersionSelectInputOptionProps) {
     return (
         <EnhancedSelectInputOption {...otherProps} id={id} isMobile={isMobile}>
             <div className={classNames(styles.optionText, isMobile && styles.isMobile)}>

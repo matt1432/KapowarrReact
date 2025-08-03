@@ -27,17 +27,15 @@ interface MonitorToggleButtonProps {
 
 // IMPLEMENTATIONS
 
-function MonitorToggleButton(props: MonitorToggleButtonProps) {
-    const {
-        className = styles.toggleButton,
-        monitored,
-        isDisabled = false,
-        isSaving = false,
-        size,
-        onPress,
-        ...otherProps
-    } = props;
-
+function MonitorToggleButton({
+    className = styles.toggleButton,
+    monitored,
+    isDisabled = false,
+    isSaving = false,
+    size,
+    onPress,
+    ...otherProps
+}: MonitorToggleButtonProps) {
     const iconName = monitored ? icons.MONITORED : icons.UNMONITORED;
 
     const title = useMemo(() => {

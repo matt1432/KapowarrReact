@@ -19,9 +19,13 @@ interface DescriptionListItemProps {
 
 // IMPLEMENTATIONS
 
-function DescriptionListItem(props: DescriptionListItemProps) {
-    const { className, titleClassName, descriptionClassName, title, data } = props;
-
+function DescriptionListItem({
+    className,
+    titleClassName,
+    descriptionClassName,
+    title,
+    data,
+}: DescriptionListItemProps) {
     return (
         <div className={className}>
             <DescriptionListItemTitle className={titleClassName}>{title}</DescriptionListItemTitle>

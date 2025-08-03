@@ -22,16 +22,14 @@ interface FormGroupProps extends ComponentPropsWithoutRef<'div'> {
 
 // IMPLEMENTATIONS
 
-function FormGroup(props: FormGroupProps) {
-    const {
-        className = styles.group,
-        children,
-        size = 'small',
-        advancedSettings = false,
-        isAdvanced = false,
-        ...otherProps
-    } = props;
-
+function FormGroup({
+    className = styles.group,
+    children,
+    size = 'small',
+    advancedSettings = false,
+    isAdvanced = false,
+    ...otherProps
+}: FormGroupProps) {
     if (!advancedSettings && isAdvanced) {
         return null;
     }

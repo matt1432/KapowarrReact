@@ -25,16 +25,14 @@ export interface ErrorBoundaryErrorProps {
 
 // IMPLEMENTATIONS
 
-function ErrorBoundaryError(props: ErrorBoundaryErrorProps) {
-    const {
-        className = styles.container,
-        messageClassName = styles.message,
-        detailsClassName = styles.details,
-        message = translate('ErrorLoadingContent'),
-        error,
-        info,
-    } = props;
-
+function ErrorBoundaryError({
+    className = styles.container,
+    messageClassName = styles.message,
+    detailsClassName = styles.details,
+    message = translate('ErrorLoadingContent'),
+    error,
+    info,
+}: ErrorBoundaryErrorProps) {
     const [detailedError, setDetailedError] = useState<StackTrace.StackFrame[] | null>(null);
 
     useEffect(() => {

@@ -78,7 +78,7 @@ interface VolumeIndexProps {
 
 // IMPLEMENTATIONS
 
-const VolumeIndex = withScrollPosition((props: VolumeIndexProps) => {
+const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) => {
     const { columns } = useRootSelector((state) => state.volumeIndex);
 
     const { filterKey, sortDirection, sortKey, view } = useRootSelector(
@@ -296,7 +296,7 @@ const VolumeIndex = withScrollPosition((props: VolumeIndexProps) => {
                         ref={scrollerRef}
                         className={styles.contentBody}
                         innerClassName={styles[`${view}InnerContentBody`]}
-                        initialScrollTop={props.initialScrollTop}
+                        initialScrollTop={initialScrollTop}
                         onScroll={onScroll}
                     >
                         {isFetching && !isPopulated ? <LoadingIndicator /> : null}

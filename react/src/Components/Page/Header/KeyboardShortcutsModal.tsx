@@ -17,9 +17,7 @@ interface KeyboardShortcutsModalProps {
 
 // IMPLEMENTATIONS
 
-function KeyboardShortcutsModal(props: KeyboardShortcutsModalProps) {
-    const { isOpen, onModalClose } = props;
-
+function KeyboardShortcutsModal({ isOpen, onModalClose }: KeyboardShortcutsModalProps) {
     return (
         <Modal isOpen={isOpen} size={sizes.SMALL} onModalClose={onModalClose}>
             <KeyboardShortcutsModalContent onModalClose={onModalClose} />

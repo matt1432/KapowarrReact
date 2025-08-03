@@ -29,9 +29,12 @@ interface IssueDetailsModalProps {
     onModalClose(): void;
 }
 
-function IssueDetailsModal(props: IssueDetailsModalProps) {
-    const { selectedTab, isOpen, onModalClose, ...otherProps } = props;
-
+function IssueDetailsModal({
+    selectedTab,
+    isOpen,
+    onModalClose,
+    ...otherProps
+}: IssueDetailsModalProps) {
     const [closeOnBackgroundClick, setCloseOnBackgroundClick] = useState(selectedTab !== 'search');
 
     const handleTabChange = useCallback(

@@ -1,7 +1,19 @@
-import DOMPurify from 'dompurify';
+// IMPORTS
+
+// React
 import parse from 'html-react-parser';
 
-export default function InnerHTML({ innerHTML }: { innerHTML: string }) {
+// Misc
+import DOMPurify from 'dompurify';
+
+// Types
+export interface InnerHTMLProps {
+    innerHTML: string;
+}
+
+// IMPLEMENTATIONS
+
+export default function InnerHTML({ innerHTML }: InnerHTMLProps) {
     return (
         <>
             {parse(
