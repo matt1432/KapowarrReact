@@ -220,6 +220,18 @@ export const useGetVolumeQuery = (volumeId: number) => {
     );
 };
 
+export const useExistingVolumeQuery = (comicvineId: number) => {
+    return baseApi.useGetVolumesQuery(
+        {},
+        {
+            selectFromResult: ({ data, ...rest }) => ({
+                isExistingVolume: Boolean(data?.some((v) => v.comicvineId === comicvineId)),
+                ...rest,
+            }),
+        },
+    );
+};
+
 export const useFetchQueueDetails = ({
     volumeId,
     issueId,

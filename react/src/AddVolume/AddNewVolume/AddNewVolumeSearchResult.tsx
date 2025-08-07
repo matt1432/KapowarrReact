@@ -110,12 +110,12 @@ function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
                             ) : null}
 
                             <Link
-                                className={styles.tvdbLink}
+                                className={styles.comicvineLink}
                                 to={siteUrl}
                                 onPress={handleTvdbLinkPress}
                             >
                                 <Icon
-                                    className={styles.tvdbLinkIcon}
+                                    className={styles.comicvineLinkIcon}
                                     name={icons.EXTERNAL_LINK}
                                     size={28}
                                 />

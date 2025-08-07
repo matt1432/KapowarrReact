@@ -9,6 +9,8 @@ import VolumeIndex from 'Volume/Index';
 import VolumeDetailsPage from 'Volume/Details/VolumeDetailsPage';
 
 import AddNewVolume from 'AddVolume/AddNewVolume/AddNewVolume';
+
+// TODO: do this one from scracth to follow how it works in Kapowarr
 // import ImportVolumePage from 'AddVolume/ImportVolume/ImportVolumePage';
 
 // import Queue from 'Activity/Queue/Queue';

@@ -13,8 +13,8 @@ interface CssExports {
     title: string;
     titleContainer: string;
     titleRow: string;
-    tvdbLink: string;
-    tvdbLinkIcon: string;
+    comicvineLink: string;
+    comicvineLinkIcon: string;
     underlay: string;
     year: string;
 }
