@@ -25,7 +25,7 @@ interface AppProps {
 // IMPLEMENTATIONS
 
 function App({ store }: AppProps) {
-    useTitle(window.Kapowarr.instanceName);
+    useTitle('Kapowarr');
 
     return (
         <Provider store={store}>

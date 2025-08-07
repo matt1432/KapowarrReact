@@ -8,7 +8,6 @@ setupLocalStorage();
 window.Kapowarr = {
     apiKey: '',
     apiRoot: '/api',
-    instanceName: '', // TODO:
     urlBase: (document.querySelector('#url_base') as HTMLButtonElement).dataset.value!,
     version: '', // TODO:
 };

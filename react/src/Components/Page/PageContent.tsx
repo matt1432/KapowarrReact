@@ -25,7 +25,7 @@ interface PageContentProps {
 // IMPLEMENTATIONS
 
 function PageContent({ className = styles.content, title, children }: PageContentProps) {
-    useTitle(title ? `${title} - ${window.Kapowarr.instanceName}` : window.Kapowarr.instanceName);
+    useTitle(title ? `${title} - Kapowarr` : 'Kapowarr');
 
     return (
         <ErrorBoundary errorComponent={PageContentError}>
