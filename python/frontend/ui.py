@@ -3,6 +3,7 @@ from json import dumps
 from typing import Any
 
 from backend.internals.server import SERVER
+from backend.internals.settings import about_data
 from flask import Blueprint, render_template, send_file
 
 ui = Blueprint("ui", __name__)
@@ -10,7 +11,7 @@ methods = ["GET"]
 
 
 def render(filename: str, **kwargs: Any) -> str:
-    return render_template(filename, url_base=SERVER.url_base, **kwargs)
+    return render_template(filename, url_base=SERVER.url_base, version=about_data['version'], **kwargs)
 
 
 @ui.route("/manifest.json", methods=methods)
