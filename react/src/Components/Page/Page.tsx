@@ -7,14 +7,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { saveDimensions } from 'Store/Slices/App';
-// import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
-// import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 
 // Misc
 import useAppPage from 'Helpers/Hooks/useAppPage';
 
 // General Components
-import AppUpdatedModal from 'App/AppUpdatedModal';
 import ColorImpairedContext from 'App/ColorImpairedContext';
 import ConnectionLostModal from 'App/ConnectionLostModal';
 import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
@@ -38,7 +35,6 @@ interface PageProps {
 function Page({ children = [] }: PageProps) {
     const dispatch = useRootDispatch();
     const { hasError, errors, isPopulated, isLocalStorageSupported } = useAppPage();
-    const [isUpdatedModalOpen, setIsUpdatedModalOpen] = useState(false);
     const [isConnectionLostModalOpen, setIsConnectionLostModalOpen] = useState(false);
 
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
@@ -47,17 +43,13 @@ function Page({ children = [] }: PageProps) {
     // const { authentication } = useSelector(createSystemStatusSelector());
     // const authenticationEnabled = authentication !== 'none';
 
+    const { isSidebarVisible } = useRootSelector((state) => state.app);
+
     // TODO: implement this
-    // const { isSidebarVisible, isUpdated, isDisconnected, version } = useSelector(
+    // const { isDisconnected } = useSelector(
     //     (state: AppState) => state.app,
     // );
-    const isSidebarVisible = useRootSelector((state) => state.app.isSidebarVisible);
-    const isUpdated = false;
     const isDisconnected = false;
-
-    const handleUpdatedModalClose = useCallback(() => {
-        setIsUpdatedModalOpen(false);
-    }, []);
 
     const handleResize = useCallback(() => {
         dispatch(
@@ -81,12 +73,6 @@ function Page({ children = [] }: PageProps) {
             setIsConnectionLostModalOpen(true);
         }
     }, [isDisconnected]);
-
-    useEffect(() => {
-        if (isUpdated) {
-            setIsUpdatedModalOpen(true);
-        }
-    }, [isUpdated]);
 
     if (hasError || !isLocalStorageSupported) {
         return (
@@ -115,11 +101,6 @@ function Page({ children = [] }: PageProps) {
 
                     {children}
                 </div>
-
-                <AppUpdatedModal
-                    isOpen={isUpdatedModalOpen}
-                    onModalClose={handleUpdatedModalClose}
-                />
 
                 <ConnectionLostModal isOpen={isConnectionLostModalOpen} />
 
