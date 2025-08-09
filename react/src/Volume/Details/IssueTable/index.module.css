@@ -1,0 +1,104 @@
+.header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    font-size: 24px;
+}
+
+.issueCountTooltip {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+.sizeOnDisk {
+    color: #777;
+    font-size: $defaultFontSize;
+}
+
+.expandButton {
+    composes: link from 'Components/Link/Link/index.module.css';
+
+    flex-grow: 1;
+    margin: 0 20px;
+    text-align: center;
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    flex: 0 1 350px;
+}
+
+.left,
+.actions {
+    padding: 15px 10px;
+}
+
+.actionsMenu {
+    composes: menu from 'Components/Menu/Menu/index.module.css';
+
+    flex: 0 0 45px;
+}
+
+.actionsMenuContent {
+    composes: menuContent from 'Components/Menu/MenuContent/index.module.css';
+
+    white-space: nowrap;
+    font-size: $defaultFontSize;
+}
+
+.actionMenuIcon {
+    margin-right: 8px;
+}
+
+.actionButton {
+    composes: button from 'Components/Link/IconButton/index.module.css';
+
+    width: 30px;
+}
+
+.issues {
+    margin-bottom: 20px;
+    border: 1px solid var(--borderColor);
+    border-radius: 4px;
+    background-color: var(--cardBackgroundColor);
+}
+
+.collapseButtonContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 15px;
+    width: 100%;
+    border-top: 1px solid var(--borderColor);
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    background-color: var(--collapseButtonBackgroundColor);
+}
+
+.collapseButtonIcon {
+    margin-bottom: -4px;
+}
+
+.expandButtonIcon {
+    composes: actionButton;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -12px;
+    margin-left: -12px;
+}
+
+@media only screen and (max-width: $breakpointSmall) {
+    .expandButtonIcon {
+        position: static;
+        margin: 0;
+    }
+
+    .sizeOnDisk {
+        display: none;
+    }
+}

@@ -1,0 +1,49 @@
+// IMPORTS
+
+// Misc
+import classNames from 'classnames';
+
+// CSS
+import styles from './index.module.css';
+
+// Types
+import type { ReactNode } from 'react';
+import type { Size } from 'Helpers/Props/sizes';
+
+interface FormLabelProps {
+    children: ReactNode;
+    className?: string;
+    errorClassName?: string;
+    size?: Extract<Size, keyof typeof styles>;
+    name?: string;
+    hasError?: boolean;
+    isAdvanced?: boolean;
+}
+
+// IMPLEMENTATIONS
+
+function FormLabel({
+    children,
+    className = styles.label,
+    errorClassName = styles.hasError,
+    size = 'large',
+    name,
+    hasError,
+    isAdvanced = false,
+}: FormLabelProps) {
+    return (
+        <label
+            className={classNames(
+                className,
+                styles[size],
+                hasError && errorClassName,
+                isAdvanced && styles.isAdvanced,
+            )}
+            htmlFor={name}
+        >
+            {children}
+        </label>
+    );
+}
+
+export default FormLabel;

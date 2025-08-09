@@ -1,0 +1,80 @@
+.status {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
+
+    flex: 0 0 60px;
+}
+
+.title {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
+
+    flex: 4 0 110px;
+}
+
+.banner {
+    flex: 0 0 379px;
+}
+
+.bannerGrow {
+    flex-grow: 1;
+}
+
+.specialVersion {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
+
+    flex: 0 0 100px;
+}
+
+.publisher {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
+
+    flex: 2 0 90px;
+}
+
+.releaseGroups,
+.added {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
+
+    flex: 0 0 180px;
+}
+
+.issueProgress {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
+
+    flex: 0 0 150px;
+}
+
+.issueCount {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
+
+    flex: 0 0 130px;
+}
+
+.year {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
+
+    flex: 0 0 80px;
+}
+
+.folder {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
+
+    flex: 1 0 150px;
+}
+
+.sizeOnDisk {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
+
+    flex: 0 0 120px;
+}
+
+.monitorNewItems {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
+
+    flex: 0 0 175px;
+}
+
+.actions {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
+
+    flex: 0 1 90px;
+}

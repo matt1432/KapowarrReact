@@ -36,7 +36,6 @@ import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
-import ParseToolbarButton from 'Parse/ParseToolbarButton';
 import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
 
 // Specific Components
@@ -243,8 +242,6 @@ const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) 
                         />
 
                         <PageToolbarSeparator />
-
-                        <ParseToolbarButton />
                     </PageToolbarSection>
 
                     <PageToolbarSection alignContent={align.RIGHT} collapseButtons={false}>

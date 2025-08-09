@@ -1,0 +1,11 @@
+.selectAllHeaderCell {
+    composes: headerCell from 'Components/Table/TableHeaderCell/index.module.css';
+
+    flex: 0 0 36px;
+}
+
+.input {
+    composes: input from 'Components/Form/CheckInput/index.module.css';
+
+    margin: 0;
+}

@@ -1,0 +1,5 @@
+.modal {
+    composes: modal from 'Components/Modal/Modal/index.module.css';
+
+    height: 600px;
+}

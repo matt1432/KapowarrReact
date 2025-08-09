@@ -8,7 +8,6 @@ export type InputType =
     | 'file'
     | 'float'
     | 'number'
-    | 'oauth'
     | 'password'
     | 'path'
     | 'downloadClientSelect'
@@ -29,7 +28,6 @@ const MONITOR_NEW_ITEMS_SELECT: InputType = 'monitorNewItemsSelect';
 const FILE: InputType = 'file';
 const FLOAT: InputType = 'float';
 const NUMBER: InputType = 'number';
-const OAUTH: InputType = 'oauth';
 const PASSWORD: InputType = 'password';
 const PATH: InputType = 'path';
 const DOWNLOAD_CLIENT_SELECT: InputType = 'downloadClientSelect';
@@ -51,7 +49,6 @@ const all = [
     FILE,
     FLOAT,
     NUMBER,
-    OAUTH,
     PASSWORD,
     PATH,
     DOWNLOAD_CLIENT_SELECT,
@@ -74,7 +71,6 @@ export const inputTypes = {
     FILE,
     FLOAT,
     NUMBER,
-    OAUTH,
     PASSWORD,
     PATH,
     DOWNLOAD_CLIENT_SELECT,
