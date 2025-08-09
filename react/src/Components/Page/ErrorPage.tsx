@@ -13,7 +13,6 @@ import styles from './ErrorPage.module.css';
 
 interface ErrorPageProps {
     version: string;
-    isLocalStorageSupported: boolean;
     translationsError?: Error;
     volumesError?: Error;
     customFiltersError?: Error;
@@ -27,7 +26,6 @@ interface ErrorPageProps {
 
 function ErrorPage({
     version,
-    isLocalStorageSupported,
     translationsError,
     volumesError,
     customFiltersError,
@@ -38,10 +36,7 @@ function ErrorPage({
 }: ErrorPageProps) {
     let errorMessage = translate('FailedToLoadKapowarr');
 
-    if (!isLocalStorageSupported) {
-        errorMessage = translate('LocalStorageIsNotSupported');
-    }
-    else if (translationsError) {
+    if (translationsError) {
         errorMessage = getErrorMessage(
             translationsError,
             translate('FailedToLoadTranslationsFromApi'),

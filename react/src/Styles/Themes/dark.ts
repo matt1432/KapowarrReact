@@ -42,6 +42,7 @@ export default {
     themeLightColor: '#595959',
     pageBackground: '#202020',
     pageFooterBackground: 'rgba(0, 0, 0, .25)',
+    panelBackground: '#111',
 
     torrentColor: '#00853d',
     usenetColor: '#17b1d9',

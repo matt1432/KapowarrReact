@@ -14,7 +14,6 @@ import useAppPage from 'Helpers/Hooks/useAppPage';
 // General Components
 import ColorImpairedContext from 'App/ColorImpairedContext';
 import ConnectionLostModal from 'App/ConnectionLostModal';
-import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
 
 // Specific Components
 import ErrorPage from './ErrorPage';
@@ -24,6 +23,7 @@ import PageSidebar from './Sidebar/PageSidebar';
 
 // CSS
 import styles from './Page.module.css';
+import LoginPage from 'Login/LoginPage';
 
 // Types
 interface PageProps {
@@ -34,14 +34,13 @@ interface PageProps {
 
 function Page({ children = [] }: PageProps) {
     const dispatch = useRootDispatch();
-    const { hasError, errors, isPopulated, isLocalStorageSupported } = useAppPage();
+
+    const { hasError, errors, isPopulated, needsAuth } = useAppPage();
+
     const [isConnectionLostModalOpen, setIsConnectionLostModalOpen] = useState(false);
 
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
     const { enableColorImpairedMode } = useRootSelector((state) => state.uiSettings);
-
-    // const { authentication } = useSelector(createSystemStatusSelector());
-    // const authenticationEnabled = authentication !== 'none';
 
     const { isSidebarVisible } = useRootSelector((state) => state.app);
 
@@ -74,14 +73,12 @@ function Page({ children = [] }: PageProps) {
         }
     }, [isDisconnected]);
 
-    if (hasError || !isLocalStorageSupported) {
-        return (
-            <ErrorPage
-                {...errors}
-                version={window.Kapowarr.version}
-                isLocalStorageSupported={isLocalStorageSupported}
-            />
-        );
+    if (hasError) {
+        return <ErrorPage {...errors} version={window.Kapowarr.version} />;
+    }
+
+    if (needsAuth) {
+        return <LoginPage />;
     }
 
     if (!isPopulated) {
@@ -103,8 +100,6 @@ function Page({ children = [] }: PageProps) {
                 </div>
 
                 <ConnectionLostModal isOpen={isConnectionLostModalOpen} />
-
-                <AuthenticationRequiredModal isOpen={false /* !authenticationEnabled */} />
             </div>
         </ColorImpairedContext.Provider>
     );

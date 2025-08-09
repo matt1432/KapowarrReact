@@ -43,6 +43,7 @@ export default {
     themeLightColor: '#4f566f',
     pageBackground: '#f5f7fa',
     pageFooterBackground: '#f1f1f1',
+    panelBackground: '#fff',
 
     torrentColor: '#00853d',
     usenetColor: '#17b1d9',

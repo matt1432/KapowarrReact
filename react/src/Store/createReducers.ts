@@ -14,6 +14,7 @@ import VolumeIndexSlice from './Slices/VolumeIndex';
 
 // API
 import { baseApi } from './createApiEndpoints';
+import AuthSlice from './Slices/Auth';
 
 // IMPLEMENTATIONS
 
@@ -24,6 +25,7 @@ export default function createReducers() {
 
             [AddVolumeSlice.reducerPath]: AddVolumeSlice.reducer,
             [AppSlice.reducerPath]: AppSlice.reducer,
+            [AuthSlice.reducerPath]: AuthSlice.reducer,
             [IssueTableSlice.reducerPath]: IssueTableSlice.reducer,
             [SettingsSlice.reducerPath]: SettingsSlice.reducer,
             [UISettingsSlice.reducerPath]: UISettingsSlice.reducer,

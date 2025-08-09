@@ -1053,6 +1053,7 @@
     "Location": "Location",
     "LogFiles": "Log Files",
     "LogFilesLocation": "Log files are located in: {location}",
+    "Login": "Login",
     "LogLevel": "Log Level",
     "LogLevelTraceHelpTextWarning": "Trace logging should only be enabled temporarily",
     "LogOnly": "Log Only",

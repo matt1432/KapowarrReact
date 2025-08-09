@@ -2,6 +2,11 @@
 
 // React
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { useEffect } from 'react';
+
+// Redux
+import { useRootDispatch, useRootSelector } from './createAppStore';
+import { setApiKey, setLastLogin } from './Slices/Auth';
 
 // Misc
 import getQueryString from 'Utilities/Fetch/getQueryString';
@@ -128,6 +133,17 @@ export const baseApi = createApi({
         }),
 
         // POST
+        getApiKey: build.mutation<string, { password?: string }>({
+            query: (body) => ({
+                method: 'POST',
+                url: 'auth',
+                body: snakeify(body),
+            }),
+
+            transformResponse: (response: { result: { api_key: string } }) =>
+                response.result.api_key,
+        }),
+
         addVolume: build.mutation<VolumePublicInfo, AddVolumeParams>({
             query: (body) => ({
                 method: 'POST',
@@ -201,6 +217,7 @@ export const {
     useExecuteCommandMutation,
     useGetRootFoldersQuery,
     useGetVolumesQuery,
+    useLazyGetVolumesQuery,
     useLazyLookupVolumeQuery,
     useSearchVolumeQuery,
     useToggleIssueMonitoredMutation,
@@ -256,4 +273,31 @@ export const useFetchQueueDetails = ({
             };
         },
     });
+};
+
+export const useApiKey = () => {
+    const dispatch = useRootDispatch();
+
+    const { apiKey, lastLogin } = useRootSelector((state) => state.auth);
+
+    const [getApiKey, { data, ...getApiKeyState }] = baseApi.useGetApiKeyMutation();
+
+    useEffect(() => {
+        if (!apiKey || lastLogin < Date.now() / 1000 - 86400) {
+            getApiKey({});
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        if (data) {
+            dispatch(setApiKey(data));
+            dispatch(setLastLogin(Date.now() / 1000));
+        }
+    }, [data, dispatch, lastLogin]);
+
+    return {
+        getApiKey,
+        ...getApiKeyState,
+    };
 };
