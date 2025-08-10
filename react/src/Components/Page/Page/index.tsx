@@ -1,8 +1,7 @@
-// TODO:
 // IMPORTS
 
 // React
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -13,7 +12,6 @@ import useAppPage from 'Helpers/Hooks/useAppPage';
 
 // General Components
 import ColorImpairedContext from 'App/ColorImpairedContext';
-import ConnectionLostModal from 'App/ConnectionLostModal';
 
 // Specific Components
 import ErrorPage from '../ErrorPage';
@@ -37,18 +35,10 @@ function Page({ children = [] }: PageProps) {
 
     const { hasError, errors, isPopulated, needsAuth } = useAppPage();
 
-    const [isConnectionLostModalOpen, setIsConnectionLostModalOpen] = useState(false);
-
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
     const { enableColorImpairedMode } = useRootSelector((state) => state.uiSettings);
 
     const { isSidebarVisible } = useRootSelector((state) => state.app);
-
-    // TODO: implement this
-    // const { isDisconnected } = useSelector(
-    //     (state: AppState) => state.app,
-    // );
-    const isDisconnected = false;
 
     const handleResize = useCallback(() => {
         dispatch(
@@ -66,12 +56,6 @@ function Page({ children = [] }: PageProps) {
             window.removeEventListener('resize', handleResize);
         };
     }, [handleResize]);
-
-    useEffect(() => {
-        if (isDisconnected) {
-            setIsConnectionLostModalOpen(true);
-        }
-    }, [isDisconnected]);
 
     if (hasError) {
         return <ErrorPage {...errors} version={window.Kapowarr.version} />;
@@ -97,8 +81,6 @@ function Page({ children = [] }: PageProps) {
                     />
                     {children}
                 </div>
-
-                <ConnectionLostModal isOpen={isConnectionLostModalOpen} />
             </div>
         </ColorImpairedContext.Provider>
     );
