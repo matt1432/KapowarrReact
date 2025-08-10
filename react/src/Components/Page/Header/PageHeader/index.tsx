@@ -15,6 +15,7 @@ import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 // General Components
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
+import Logo from 'Components/Page/Header/Logo';
 
 // Specific Components
 import KeyboardShortcutsModal from '../KeyboardShortcutsModal';
@@ -59,11 +60,7 @@ function PageHeader() {
         <div className={styles.header}>
             <div className={styles.logoContainer}>
                 <Link className={styles.logoLink} to={window.Kapowarr.urlBase}>
-                    <img
-                        className={styles.logo}
-                        src={`${window.Kapowarr.urlBase}/static/img/favicon.svg`}
-                        alt="Kapowarr Logo"
-                    />
+                    <Logo />
                 </Link>
             </div>
 

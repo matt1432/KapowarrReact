@@ -2,18 +2,13 @@
 // Please do not change this file!
 interface CssExports {
     center: string;
-    content: string;
-    logo: string;
     panel: string;
     panelHeader: string;
     panelBody: string;
     signIn: string;
     formGroup: string;
-    formInput: string;
     button: string;
-    copy: string;
     loginFailed: string;
-    hidden: string;
 }
 export const cssExports: CssExports;
 export default cssExports;

@@ -1,8 +1,8 @@
 // IMPORTS
 
 // React
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { useEffect } from 'react';
+import { createApi, fetchBaseQuery, type FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
+import { useEffect, useMemo, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from './createAppStore';
@@ -278,14 +278,18 @@ export const useFetchQueueDetails = ({
 export const useApiKey = () => {
     const dispatch = useRootDispatch();
 
+    const [isFirstPost, setIsFirstPost] = useState(true);
+
     const { apiKey, lastLogin } = useRootSelector((state) => state.auth);
 
-    const [getApiKey, { data, ...getApiKeyState }] = baseApi.useGetApiKeyMutation();
+    const [getApiKey, { data, error, ...getApiKeyState }] = baseApi.useGetApiKeyMutation();
 
     useEffect(() => {
         if (!apiKey || lastLogin < Date.now() / 1000 - 86400) {
             getApiKey({});
         }
+
+        // Only run once
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -296,8 +300,33 @@ export const useApiKey = () => {
         }
     }, [data, dispatch, lastLogin]);
 
+    const isInvalidPassword = useMemo(() => {
+        if (!error) {
+            return false;
+        }
+
+        const e = error as FetchBaseQueryError;
+
+        if (e.status === 401) {
+            if (isFirstPost) {
+                setIsFirstPost(false);
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        return false;
+
+        // Don't depend on isFirstPost since this is the only place where it is updated
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [error]);
+
     return {
         getApiKey,
+        isInvalidPassword,
+        error,
         ...getApiKeyState,
     };
 };
