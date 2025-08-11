@@ -216,10 +216,7 @@ const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) 
             <PageContent>
                 <PageToolbar>
                     <PageToolbarSection>
-                        <VolumeIndexRefreshVolumeButton
-                            isSelectMode={isSelectMode}
-                            filterKey={filterKey}
-                        />
+                        <VolumeIndexRefreshVolumeButton />
 
                         <PageToolbarSeparator />
 

@@ -18,7 +18,7 @@ const initialState = {
     enableColorImpairedMode: false,
 } satisfies UISettingsState as UISettingsState;
 
-const uiSettingsSlice = createSlice({
+const UISettingsSlice = createSlice({
     name: 'uiSettings',
     initialState,
     reducers: {
@@ -34,6 +34,6 @@ const uiSettingsSlice = createSlice({
 export const setUISettingsOption = <K extends keyof UISettingsState>(
     key: K,
     value: UISettingsState[K],
-) => uiSettingsSlice.actions.setUISettingsOption({ key, value });
+) => UISettingsSlice.actions.setUISettingsOption({ key, value });
 
-export default uiSettingsSlice;
+export default UISettingsSlice;

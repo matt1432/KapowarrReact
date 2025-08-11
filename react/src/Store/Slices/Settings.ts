@@ -16,7 +16,7 @@ const initialState = {
     advancedSettings: false,
 } satisfies SettingsState as SettingsState;
 
-const settingsSlice = createSlice({
+const SettingsSlice = createSlice({
     name: 'settings',
     initialState,
     reducers: {
@@ -26,5 +26,5 @@ const settingsSlice = createSlice({
     },
 });
 
-export const { toggleAdvancedSettings } = settingsSlice.actions;
-export default settingsSlice;
+export const { toggleAdvancedSettings } = SettingsSlice.actions;
+export default SettingsSlice;

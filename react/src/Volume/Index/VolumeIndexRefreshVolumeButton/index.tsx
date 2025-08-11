@@ -1,86 +1,37 @@
-// TODO:
 // IMPORTS
 
 // React
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 // Redux
-import { useDispatch /*, useSelector */ } from 'react-redux';
-// import { executeCommand } from 'Store/Actions/commandActions';
-// import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
-// import createVolumeClientSideCollectionItemsSelector from 'Store/Selectors/createVolumeClientSideCollectionItemsSelector';
+import { useExecuteCommandMutation, useGetVolumesQuery } from 'Store/createApiEndpoints';
 
 // Misc
-import { useSelect } from 'App/SelectContext';
-import { icons } from 'Helpers/Props';
+import { commandNames, icons } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
-import getSelectedIds from 'Utilities/Table/getSelectedIds';
 
 // General Components
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 
-// Types
-import type { Volume } from 'Volume/Volume';
-
-interface VolumeIndexRefreshVolumeButtonProps {
-    isSelectMode: boolean;
-    filterKey: string;
-}
-
 // IMPLEMENTATIONS
 
-function VolumeIndexRefreshVolumeButton({
-    isSelectMode,
-    filterKey,
-}: VolumeIndexRefreshVolumeButtonProps) {
-    /*
-    const isRefreshing = useSelector(createCommandExecutingSelector(REFRESH_VOLUMES));
+function VolumeIndexRefreshVolumeButton() {
+    const { totalItems } = useGetVolumesQuery(undefined, {
+        selectFromResult: ({ data }) => ({
+            totalItems: data?.length ?? 0,
+        }),
+    });
 
-    const {
-        items,
-        totalItems,
-    }: VolumeAppState & VolumeIndexAppState & ClientSideCollectionAppState = useSelector(
-        createVolumeClientSideCollectionItemsSelector('volumeIndex'),
-    );
-    */
-    const isRefreshing = false;
-    const items = [] as Volume[];
-    const totalItems = 0;
-
-    const dispatch = useDispatch();
-    const [selectState] = useSelect();
-    const { selectedState } = selectState;
-
-    const selectedVolumeIds = useMemo(() => {
-        return getSelectedIds(selectedState);
-    }, [selectedState]);
-
-    const volumesToRefresh =
-        isSelectMode && selectedVolumeIds.length > 0 ? selectedVolumeIds : items.map((m) => m.id);
-
-    let refreshLabel = translate('UpdateAll');
-
-    if (selectedVolumeIds.length > 0) {
-        refreshLabel = translate('UpdateSelected');
-    }
-    else if (filterKey !== 'all') {
-        refreshLabel = translate('UpdateFiltered');
-    }
+    const [executeCommand, { isLoading: isRefreshing }] = useExecuteCommandMutation();
 
     const onPress = useCallback(() => {
-        /*
-        dispatch(
-            executeCommand({
-                name: REFRESH_VOLUMES,
-                volumeIds: volumesToRefresh,
-            }),
-        );*/
-    }, [dispatch, volumesToRefresh]);
+        executeCommand({ cmd: commandNames.UPDATE_ALL });
+    }, [executeCommand]);
 
     return (
         <PageToolbarButton
-            label={refreshLabel}
+            label={translate('UpdateAll')}
             isSpinning={isRefreshing}
             isDisabled={!totalItems}
             iconName={icons.REFRESH}

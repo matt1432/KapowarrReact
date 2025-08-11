@@ -38,7 +38,7 @@ const initialState = {
     isSidebarVisible: !getDimensions(window.innerWidth, window.innerHeight).isSmallScreen,
 } satisfies AppState as AppState;
 
-const appSlice = createSlice({
+const AppSlice = createSlice({
     name: 'app',
     initialState,
     reducers: {
@@ -57,5 +57,5 @@ const appSlice = createSlice({
     },
 });
 
-export const { saveDimensions, setIsSidebarVisible } = appSlice.actions;
-export default appSlice;
+export const { saveDimensions, setIsSidebarVisible } = AppSlice.actions;
+export default AppSlice;

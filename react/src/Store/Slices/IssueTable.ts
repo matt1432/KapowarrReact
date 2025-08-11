@@ -84,7 +84,7 @@ const initialState = {
     ],
 } satisfies IssueTableState as IssueTableState;
 
-const issueTableSlice = createSlice({
+const IssueTableSlice = createSlice({
     name: 'issueTable',
     initialState,
     reducers: {
@@ -106,6 +106,6 @@ const issueTableSlice = createSlice({
     },
 });
 
-export const { setIssuesSort, setIssuesTableOption } = issueTableSlice.actions;
+export const { setIssuesSort, setIssuesTableOption } = IssueTableSlice.actions;
 
-export default issueTableSlice;
+export default IssueTableSlice;

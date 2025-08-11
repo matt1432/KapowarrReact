@@ -23,7 +23,7 @@ const initialState = {
     specialVersion: '' as SpecialVersion,
 } satisfies AddVolumeState as AddVolumeState;
 
-const addVolumeSlice = createSlice({
+const AddVolumeSlice = createSlice({
     name: 'addVolume',
     initialState,
     reducers: {
@@ -39,6 +39,6 @@ const addVolumeSlice = createSlice({
 export const setAddVolumeOption = <K extends keyof AddVolumeState>(
     key: K,
     value: AddVolumeState[K],
-) => addVolumeSlice.actions.setAddVolumeOption({ key, value });
+) => AddVolumeSlice.actions.setAddVolumeOption({ key, value });
 
-export default addVolumeSlice;
+export default AddVolumeSlice;

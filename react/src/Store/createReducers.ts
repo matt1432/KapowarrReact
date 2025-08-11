@@ -7,6 +7,7 @@ import { rememberReducer } from 'redux-remember';
 // Slices
 import AddVolumeSlice from './Slices/AddVolume';
 import AppSlice from './Slices/App';
+import AuthSlice from './Slices/Auth';
 import IssueTableSlice from './Slices/IssueTable';
 import SettingsSlice from './Slices/Settings';
 import UISettingsSlice from './Slices/UISettings';
@@ -14,7 +15,6 @@ import VolumeIndexSlice from './Slices/VolumeIndex';
 
 // API
 import { baseApi } from './createApiEndpoints';
-import AuthSlice from './Slices/Auth';
 
 // IMPLEMENTATIONS
 

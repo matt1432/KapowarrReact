@@ -16,7 +16,7 @@ const initialState = {
     lastLogin: 0,
 } satisfies AuthState as AuthState;
 
-const authSlice = createSlice({
+const AuthSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
@@ -32,5 +32,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { setApiKey, setLastLogin } = authSlice.actions;
-export default authSlice;
+export const { setApiKey, setLastLogin } = AuthSlice.actions;
+export default AuthSlice;

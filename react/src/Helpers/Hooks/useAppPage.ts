@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLazyGetVolumesQuery } from 'Store/createApiEndpoints';
 import { useRootSelector } from 'Store/createAppStore';
 
-const useAppPage = () => {
+export default function useAppPage() {
     const { apiKey } = useRootSelector((state) => state.auth);
 
     // TODO: all queries needed before page is loaded
@@ -33,6 +33,4 @@ const useAppPage = () => {
             isPopulated,
         };
     }, [apiKey, erroredQueries, hasError, isPopulated]);
-};
-
-export default useAppPage;
+}

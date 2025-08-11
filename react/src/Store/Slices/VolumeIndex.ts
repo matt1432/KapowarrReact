@@ -140,7 +140,7 @@ const initialState = {
     ],
 } satisfies VolumeIndexState as VolumeIndexState;
 
-const volumeIndexSlice = createSlice({
+const VolumeIndexSlice = createSlice({
     name: 'volumeIndex',
     initialState,
     reducers: {
@@ -178,6 +178,6 @@ export const {
     setVolumeView,
     setVolumeTableOption,
     setVolumePosterOption,
-} = volumeIndexSlice.actions;
+} = VolumeIndexSlice.actions;
 
-export default volumeIndexSlice;
+export default VolumeIndexSlice;
