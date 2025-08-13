@@ -10,7 +10,7 @@ import EditVolumeModalContent from './EditVolumeModalContent';
 interface EditVolumeModalProps {
     isOpen: boolean;
     volumeIds: number[];
-    onSavePress(payload: object): void;
+    onSavePress(): void;
     onModalClose(): void;
 }
 

@@ -3,6 +3,9 @@
 // React
 import { useCallback, useState } from 'react';
 
+// Redux
+import { useGetRootFoldersQuery } from 'Store/createApiEndpoints';
+
 // Misc
 import { inputTypes } from 'Helpers/Props';
 
@@ -18,28 +21,18 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 
-// Specific Components
-import MoveVolumeModal from 'Volume/MoveVolume/MoveVolumeModal';
-
 // CSS
 import styles from './index.module.css';
 
 // Types
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 import type { InputChanged } from 'typings/inputs';
-
-interface SavePayload {
-    monitored?: boolean;
-    monitorNewItems?: string;
-    qualityProfileId?: number;
-    specialVersion?: string;
-    rootFolderPath?: string;
-    moveFiles?: boolean;
-}
+import { useMassEditMutation } from 'Store/createApiEndpoints';
+import massEditActions from 'Helpers/Props/massEditActions';
 
 interface EditVolumeModalContentProps {
     volumeIds: number[];
-    onSavePress(payload: object): void;
+    onSavePress(): void;
     onModalClose(): void;
 }
 
@@ -74,75 +67,55 @@ function EditVolumeModalContent({
     onSavePress,
     onModalClose,
 }: EditVolumeModalContentProps) {
+    const { data: rootFolders = [] } = useGetRootFoldersQuery(undefined);
+    const [runMassEditAction] = useMassEditMutation();
+
     const [monitored, setMonitored] = useState(NO_CHANGE);
-    const [monitorNewItems, setMonitorNewItems] = useState(NO_CHANGE);
-    const [qualityProfileId, setQualityProfileId] = useState<string | number>(NO_CHANGE);
-    const [specialVersion, setSpecialVersion] = useState(NO_CHANGE);
     const [rootFolderPath, setRootFolderPath] = useState(NO_CHANGE);
-    const [isConfirmMoveModalOpen, setIsConfirmMoveModalOpen] = useState(false);
 
-    const save = useCallback(
-        (moveFiles: boolean) => {
-            let hasChanges = false;
-            const payload: SavePayload = {};
+    const save = useCallback(() => {
+        let hasChanges = false;
 
-            if (monitored !== NO_CHANGE) {
-                hasChanges = true;
-                payload.monitored = monitored === 'monitored';
-            }
+        if (monitored !== NO_CHANGE) {
+            hasChanges = true;
+            runMassEditAction({
+                action:
+                    monitored === 'monitored' ? massEditActions.MONITOR : massEditActions.UNMONITOR,
+                volumeIds,
+            });
+        }
 
-            if (monitorNewItems !== NO_CHANGE) {
-                hasChanges = true;
-                payload.monitorNewItems = monitorNewItems;
-            }
+        if (rootFolderPath !== NO_CHANGE) {
+            hasChanges = true;
+            runMassEditAction({
+                action: massEditActions.ROOT_FOLDER,
+                volumeIds,
+                args: {
+                    rootFolderId: rootFolders.find((f) => f.folder === rootFolderPath)!.id,
+                },
+            });
+        }
 
-            if (qualityProfileId !== NO_CHANGE) {
-                hasChanges = true;
-                payload.qualityProfileId = qualityProfileId as number;
-            }
+        if (hasChanges) {
+            onSavePress();
+        }
 
-            if (specialVersion !== NO_CHANGE) {
-                hasChanges = true;
-                payload.specialVersion = specialVersion;
-            }
-
-            if (rootFolderPath !== NO_CHANGE) {
-                hasChanges = true;
-                payload.rootFolderPath = rootFolderPath;
-                payload.moveFiles = moveFiles;
-            }
-
-            if (hasChanges) {
-                onSavePress(payload);
-            }
-
-            onModalClose();
-        },
-        [
-            monitored,
-            monitorNewItems,
-            qualityProfileId,
-            specialVersion,
-            rootFolderPath,
-            onSavePress,
-            onModalClose,
-        ],
-    );
+        onModalClose();
+    }, [
+        monitored,
+        rootFolderPath,
+        onSavePress,
+        onModalClose,
+        rootFolders,
+        runMassEditAction,
+        volumeIds,
+    ]);
 
     const onInputChange = useCallback(
         ({ name, value }: InputChanged) => {
             switch (name) {
                 case 'monitored':
                     setMonitored(value as string);
-                    break;
-                case 'monitorNewItems':
-                    setMonitorNewItems(value as string);
-                    break;
-                case 'qualityProfileId':
-                    setQualityProfileId(value as string);
-                    break;
-                case 'specialVersion':
-                    setSpecialVersion(value as string);
                     break;
                 case 'rootFolderPath':
                     setRootFolderPath(value as string);
@@ -153,29 +126,6 @@ function EditVolumeModalContent({
         },
         [setMonitored],
     );
-
-    const onSavePressWrapper = useCallback(() => {
-        if (rootFolderPath === NO_CHANGE) {
-            save(false);
-        }
-        else {
-            setIsConfirmMoveModalOpen(true);
-        }
-    }, [rootFolderPath, save]);
-
-    const onCancelPress = useCallback(() => {
-        setIsConfirmMoveModalOpen(false);
-    }, [setIsConfirmMoveModalOpen]);
-
-    const onDoNotMoveVolumePress = useCallback(() => {
-        setIsConfirmMoveModalOpen(false);
-        save(false);
-    }, [setIsConfirmMoveModalOpen, save]);
-
-    const onMoveVolumePress = useCallback(() => {
-        setIsConfirmMoveModalOpen(false);
-        save(true);
-    }, [setIsConfirmMoveModalOpen, save]);
 
     const selectedCount = volumeIds.length;
 
@@ -192,33 +142,6 @@ function EditVolumeModalContent({
                         name="monitored"
                         value={monitored}
                         values={monitoredOptions}
-                        onChange={onInputChange}
-                    />
-                </FormGroup>
-
-                <FormGroup>
-                    <FormLabel>{translate('MonitorNewItems')}</FormLabel>
-
-                    <FormInputGroup
-                        type={inputTypes.MONITOR_NEW_ITEMS_SELECT}
-                        name="monitorNewItems"
-                        value={monitorNewItems}
-                        includeNoChange={true}
-                        includeNoChangeDisabled={false}
-                        onChange={onInputChange}
-                    />
-                </FormGroup>
-
-                <FormGroup>
-                    <FormLabel>{translate('SpecialVersion')}</FormLabel>
-
-                    <FormInputGroup
-                        type={inputTypes.VOLUME_TYPE_SELECT}
-                        name="specialVersion"
-                        value={specialVersion}
-                        includeNoChange={true}
-                        includeNoChangeDisabled={false}
-                        helpText={translate('SpecialVersionsHelpText')}
                         onChange={onInputChange}
                     />
                 </FormGroup>
@@ -244,17 +167,9 @@ function EditVolumeModalContent({
                 <div>
                     <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
-                    <Button onPress={onSavePressWrapper}>{translate('ApplyChanges')}</Button>
+                    <Button onPress={save}>{translate('ApplyChanges')}</Button>
                 </div>
             </ModalFooter>
-
-            <MoveVolumeModal
-                isOpen={isConfirmMoveModalOpen}
-                destinationRootFolder={rootFolderPath}
-                onModalClose={onCancelPress}
-                onSavePress={onDoNotMoveVolumePress}
-                onMoveVolumePress={onMoveVolumePress}
-            />
         </ModalContent>
     );
 }
