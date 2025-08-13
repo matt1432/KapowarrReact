@@ -86,12 +86,16 @@ type MassEditSpecificParams = {
     };
 };
 
-type RawMassEditParams<T extends MassEditAction> = {
-    action: T;
-    volume_ids: number[];
-} & (T extends keyof MassEditSpecificParams
-    ? { args: MassEditSpecificParams[T] }
-    : { args?: never });
+type RawMassEditParams<T extends MassEditAction> = T extends keyof MassEditSpecificParams
+    ? {
+          action: T;
+          volume_ids: number[];
+          args: MassEditSpecificParams[T];
+      }
+    : {
+          action: T;
+          volume_ids: number[];
+      };
 
 export type MassEditParams<T extends MassEditAction = MassEditAction> = CamelCasedPropertiesDeep<
     RawMassEditParams<T>

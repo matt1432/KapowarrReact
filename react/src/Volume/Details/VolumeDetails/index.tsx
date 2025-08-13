@@ -71,7 +71,7 @@ interface VolumeDetailsProps {
 import MonitoringOptionsModal from 'Volume/MonitoringOptions/MonitoringOptionsModal';
 
 function VolumeDetails({ volumeId }: VolumeDetailsProps) {
-    const { data: allVolumes } = useGetVolumesQuery(undefined);
+    const { data: allVolumes = [] } = useGetVolumesQuery(undefined);
 
     const { volume, refetch, isFetching, isPopulated, error, hasIssues, hasMonitoredIssues } =
         useVolume(volumeId);
@@ -100,7 +100,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     }, [volumeId, executeCommandState]);
 
     const { nextVolume, previousVolume } = useMemo(() => {
-        const sortedVolume = [...(allVolumes ?? [])].sort(sortByProp('title'));
+        const sortedVolume = allVolumes.toSorted(sortByProp('title'));
         const volumeIndex = sortedVolume.findIndex((volume) => volume.id === volumeId);
 
         if (volumeIndex === -1) {
@@ -111,8 +111,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         }
 
         const nextVolume = sortedVolume[volumeIndex + 1] ?? sortedVolume[0];
-        const previousVolume =
-            sortedVolume[volumeIndex - 1] ?? sortedVolume[sortedVolume.length - 1];
+        const previousVolume = sortedVolume[volumeIndex - 1] ?? sortedVolume.at(-1)!;
 
         return {
             nextVolume: {

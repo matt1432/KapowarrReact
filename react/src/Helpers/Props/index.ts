@@ -3,6 +3,7 @@ import commandNames from './commandNames';
 import icons from './icons';
 import inputTypes from './inputTypes';
 import kinds from './kinds';
+import massEditActions from './massEditActions';
 import messageTypes from './messageTypes';
 import scrollDirections from './scrollDirections';
 import sizes from './sizes';
@@ -15,6 +16,7 @@ export {
     icons,
     inputTypes,
     kinds,
+    massEditActions,
     messageTypes,
     scrollDirections,
     sizes,

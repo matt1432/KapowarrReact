@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
 import { useGetRootFoldersQuery } from 'Store/createApiEndpoints';
-// import { updateVolumeMonitor } from 'Store/Actions/volumeActions';
 // import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 
 // Misc
@@ -62,13 +61,12 @@ function VolumeIndexSelectFooter() {
     const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isSavingVolume, setIsSavingVolume] = useState(false);
+
     const previousIsDeleting = usePrevious(isDeleting);
 
     const [{ selectedState }, selectDispatch] = useSelect();
 
-    const volumeIds = useMemo(() => {
-        return getSelectedIds(selectedState);
-    }, [selectedState]);
+    const volumeIds = useMemo(() => getSelectedIds(selectedState), [selectedState]);
 
     const selectedCount = volumeIds.length;
 

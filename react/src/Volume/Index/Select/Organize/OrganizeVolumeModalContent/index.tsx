@@ -1,15 +1,14 @@
-// TODO:
 // IMPORTS
 
-// Redux
+// React
 import { useCallback, useMemo } from 'react';
-import { useDispatch /*, useSelector */ } from 'react-redux';
-// import { executeCommand } from 'Store/Actions/commandActions';
-// import createAllVolumeSelector from 'Store/Selectors/createAllVolumeSelector';
+
+// Redux
+import { useGetVolumesQuery, useMassEditMutation } from 'Store/createApiEndpoints';
 
 // Misc
 import { orderBy } from 'lodash';
-import { icons, kinds } from 'Helpers/Props';
+import { icons, kinds, massEditActions } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
@@ -26,7 +25,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import styles from './index.module.css';
 
 // Types
-import type { Volume } from 'Volume/Volume';
+import type { VolumePublicInfo } from 'Volume/Volume';
 
 interface OrganizeVolumeModalContentProps {
     volumeIds: number[];
@@ -36,12 +35,12 @@ interface OrganizeVolumeModalContentProps {
 // IMPLEMENTATIONS
 
 function OrganizeVolumeModalContent({ volumeIds, onModalClose }: OrganizeVolumeModalContentProps) {
-    const allVolume: Volume[] = []; // useSelector(createAllVolumeSelector());
-    const dispatch = useDispatch();
+    const { data: allVolumes = [] } = useGetVolumesQuery(undefined);
+    const [runMassEditAction] = useMassEditMutation();
 
     const volumeTitles = useMemo(() => {
-        const volumes = volumeIds.reduce((acc: Volume[], id) => {
-            const s = allVolume.find((s) => s.id === id);
+        const volumes = volumeIds.reduce((acc: VolumePublicInfo[], id) => {
+            const s = allVolumes.find((s) => s.id === id);
 
             if (s) {
                 acc.push(s);
@@ -50,22 +49,19 @@ function OrganizeVolumeModalContent({ volumeIds, onModalClose }: OrganizeVolumeM
             return acc;
         }, []);
 
-        const sorted = orderBy(volumes, ['sortTitle']);
+        const sorted = orderBy(volumes, ['title']);
 
         return sorted.map((s) => s.title);
-    }, [volumeIds, allVolume]);
+    }, [volumeIds, allVolumes]);
 
     const onOrganizePress = useCallback(() => {
-        /*
-        dispatch(
-            executeCommand({
-                name: RENAME_VOLUMES,
-                volumeIds,
-            }),
-        );*/
+        runMassEditAction({
+            action: massEditActions.RENAME,
+            volumeIds,
+        });
 
         onModalClose();
-    }, [volumeIds, onModalClose, dispatch]);
+    }, [volumeIds, onModalClose, runMassEditAction]);
 
     return (
         <ModalContent onModalClose={onModalClose}>

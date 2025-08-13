@@ -5,9 +5,10 @@ import { useCallback, useState } from 'react';
 
 // Redux
 import { useGetRootFoldersQuery } from 'Store/createApiEndpoints';
+import { useMassEditMutation } from 'Store/createApiEndpoints';
 
 // Misc
-import { inputTypes } from 'Helpers/Props';
+import { inputTypes, massEditActions } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
@@ -27,8 +28,6 @@ import styles from './index.module.css';
 // Types
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 import type { InputChanged } from 'typings/inputs';
-import { useMassEditMutation } from 'Store/createApiEndpoints';
-import massEditActions from 'Helpers/Props/massEditActions';
 
 interface EditVolumeModalContentProps {
     volumeIds: number[];

@@ -75,19 +75,18 @@ function VolumeSearchInput() {
     const navigate = useNavigate();
 
     const { volumes } = useGetVolumesQuery(undefined, {
-        selectFromResult: ({ data: allVolumes }) => {
+        selectFromResult: ({ data: allVolumes = [] }) => {
             return {
-                volumes:
-                    allVolumes?.map((volume): SuggestedVolume => {
-                        const { title, id, comicvineId } = volume;
+                volumes: allVolumes.map((volume): SuggestedVolume => {
+                    const { title, id, comicvineId } = volume;
 
-                        return {
-                            title,
-                            id,
-                            comicvineId,
-                            firstCharacter: title.charAt(0).toLowerCase(),
-                        };
-                    }) ?? [],
+                    return {
+                        title,
+                        id,
+                        comicvineId,
+                        firstCharacter: title.charAt(0).toLowerCase(),
+                    };
+                }),
             };
         },
     });
@@ -141,7 +140,6 @@ function VolumeSearchInput() {
                 requestValue.current = null;
                 setRequestLoading(false);
                 isLoading.current = false;
-                // setLoading(false);
             }
             else {
                 setSuggestions(suggestions);
@@ -179,7 +177,6 @@ function VolumeSearchInput() {
     const reset = useCallback(() => {
         setValue('');
         setSuggestions([]);
-        // setLoading(false);
         isLoading.current = false;
     }, []);
 

@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 // Redux
@@ -20,12 +20,14 @@ import VolumeDetails from './VolumeDetails';
 // IMPLEMENTATIONS
 
 function VolumeDetailsPage() {
-    const { data: allVolumes } = useGetVolumesQuery(undefined);
+    const { data: allVolumes = [] } = useGetVolumesQuery(undefined);
     const { titleSlug } = useParams<{ titleSlug: string }>();
 
     const navigate = useNavigate();
 
-    const volumeIndex = allVolumes?.findIndex((volume) => volume.id.toString() === titleSlug) ?? -1;
+    const volumeIndex = useMemo(() => {
+        return allVolumes.findIndex((volume) => volume.id.toString() === titleSlug);
+    }, [allVolumes, titleSlug]);
 
     const previousIndex = usePrevious(volumeIndex);
 
@@ -35,7 +37,7 @@ function VolumeDetailsPage() {
         }
     }, [navigate, volumeIndex, previousIndex]);
 
-    if (!allVolumes || volumeIndex === -1) {
+    if (volumeIndex === -1) {
         return <NotFound message={translate('VolumeCannotBeFound')} />;
     }
 
