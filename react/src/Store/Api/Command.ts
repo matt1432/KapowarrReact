@@ -9,7 +9,6 @@ import snakeify from 'Utilities/Object/snakeify';
 
 // Types
 import type { CamelCasedPropertiesDeep } from 'type-fest';
-import type { SerializedError } from '@reduxjs/toolkit';
 
 import type { CommandName } from 'Helpers/Props/commandNames';
 import type { MonitoringScheme } from 'Volume/Volume';
@@ -82,32 +81,11 @@ const extendedApi = baseApi.injectEndpoints({
 
 export const { useExecuteCommandMutation } = extendedApi;
 
-type UseMutationTrigger = <T extends MassEditAction>(
-    arg: MassEditParams<T>,
-) => Promise<void | {
-    error: SerializedError;
-}> & {
-    requestId: string;
-    abort: () => void;
-    unwrap: () => Promise<void>;
-    reset: () => void;
-};
+export const useMassEditMutation = () => {
+    const [trigger, state] = extendedApi.useMassEditMutation();
 
-type UseMutationResult = {
-    originalArgs?: MassEditParams;
-    error?: unknown;
-    endpointName?: string;
-    fulfilledTimeStamp?: number;
-    isUninitialized: boolean;
-    isLoading: boolean;
-    isSuccess: boolean;
-    isError: boolean;
-    startedTimeStamp?: number;
-    reset: () => void;
+    return [
+        trigger as <T extends MassEditAction>(arg: MassEditParams<T>) => ReturnType<typeof trigger>,
+        state,
+    ] as const;
 };
-
-export const useMassEditMutation = (): readonly [
-    UseMutationTrigger,
-    UseMutationResult,
-    // @ts-expect-error FIXME: figure out how to type this directly with RTK-Query
-] => extendedApi.useMassEditMutation();
