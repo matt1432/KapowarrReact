@@ -13,9 +13,20 @@ export interface Dimensions {
     isLargeScreen: boolean;
 }
 
+export type ScrollPositionKey = keyof AppState['scrollPositions'];
+
+export type ScrollPayload = PayloadAction<{
+    name: ScrollPositionKey;
+    value: number;
+}>;
+
 export interface AppState {
     dimensions: Dimensions;
     isSidebarVisible: boolean;
+
+    scrollPositions: {
+        volumeIndex: number;
+    };
 }
 
 // IMPLEMENTATIONS
@@ -36,6 +47,10 @@ function getDimensions(width: number, height: number): Dimensions {
 const initialState = {
     dimensions: getDimensions(window.innerWidth, window.innerHeight),
     isSidebarVisible: !getDimensions(window.innerWidth, window.innerHeight).isSmallScreen,
+
+    scrollPositions: {
+        volumeIndex: 0,
+    },
 } satisfies AppState as AppState;
 
 const AppSlice = createSlice({
@@ -54,8 +69,12 @@ const AppSlice = createSlice({
         setIsSidebarVisible(state, { payload: value }: PayloadAction<boolean>) {
             state.isSidebarVisible = value;
         },
+
+        setScrollPosition(state, { payload: { name, value } }: ScrollPayload) {
+            state.scrollPositions[name] = value;
+        },
     },
 });
 
-export const { saveDimensions, setIsSidebarVisible } = AppSlice.actions;
+export const { saveDimensions, setIsSidebarVisible, setScrollPosition } = AppSlice.actions;
 export default AppSlice;

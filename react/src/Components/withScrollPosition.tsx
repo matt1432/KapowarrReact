@@ -2,12 +2,14 @@
 
 // React
 import React from 'react';
-import { useLocation, useMatch, useNavigationType } from 'react-router-dom';
+import { useNavigationType } from 'react-router-dom';
 
 // Redux
-import scrollPositions from 'Store/scrollPositions';
+import { useRootSelector } from 'Store/createAppStore';
 
 // Types
+import type { ScrollPositionKey } from 'Store/Slices/App';
+
 interface WrappedComponentProps {
     initialScrollTop: number;
 }
@@ -16,19 +18,16 @@ interface WrappedComponentProps {
 
 function withScrollPosition(
     WrappedComponent: React.FC<WrappedComponentProps>,
-    scrollPositionKey: string,
+    scrollPositionKey: ScrollPositionKey,
 ) {
     function ScrollPosition() {
-        const props = {
-            location: useLocation(),
-            match: useMatch(window.location.pathname),
-        };
+        const { scrollPositions } = useRootSelector((state) => state.app);
 
         const historyAction = useNavigationType();
 
         const initialScrollTop = historyAction === 'POP' ? scrollPositions[scrollPositionKey] : 0;
 
-        return <WrappedComponent {...props} initialScrollTop={initialScrollTop} />;
+        return <WrappedComponent initialScrollTop={initialScrollTop} />;
     }
 
     return ScrollPosition;

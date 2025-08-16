@@ -18,7 +18,6 @@ import { useGetVolumesQuery } from 'Store/createApiEndpoints';
 // Misc
 import { align, icons, kinds, sortDirections } from 'Helpers/Props';
 
-import scrollPositions from 'Store/scrollPositions';
 import translate from 'Utilities/String/translate';
 
 // General Components
@@ -58,7 +57,8 @@ import VolumeIndexTable from './Table/VolumeIndexTable';
 import styles from './index.module.css';
 
 // Types
-import { type SortDirection } from 'Helpers/Props/sortDirections';
+import type { SortDirection } from 'Helpers/Props/sortDirections';
+import { setScrollPosition } from 'Store/Slices/App';
 
 export type IndexView = 'posters' | 'table';
 export type IndexFilter = '' | 'wanted' | 'monitored';
@@ -78,9 +78,9 @@ interface VolumeIndexProps {
 // IMPLEMENTATIONS
 
 const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) => {
-    const { columns } = useRootSelector((state) => state.volumeIndex);
+    const dispatch = useRootDispatch();
 
-    const { filterKey, sortDirection, sortKey, view } = useRootSelector(
+    const { columns, filterKey, sortDirection, sortKey, view } = useRootSelector(
         (state) => state.volumeIndex,
     );
 
@@ -98,7 +98,6 @@ const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) 
     const totalItems = items?.length ?? 0;
 
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
-    const dispatch = useRootDispatch();
     const scrollerRef = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>;
     const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
     const [jumpToCharacter, setJumpToCharacter] = useState<string | undefined>(undefined);
@@ -158,9 +157,9 @@ const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) 
     const onScroll = useCallback(
         ({ scrollTop }: { scrollTop: number }) => {
             setJumpToCharacter(undefined);
-            scrollPositions.volumeIndex = scrollTop;
+            dispatch(setScrollPosition({ name: 'volumeIndex', value: scrollTop }));
         },
-        [setJumpToCharacter],
+        [dispatch, setJumpToCharacter],
     );
 
     const jumpBarItems: PageJumpBarItems = useMemo(() => {
