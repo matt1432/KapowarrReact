@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { useLazyGetVolumesQuery } from 'Store/createApiEndpoints';
+import { useLazyGetVolumesQuery } from 'Store/Api/Volumes';
 import { useRootSelector } from 'Store/createAppStore';
 
 export default function useAppPage() {

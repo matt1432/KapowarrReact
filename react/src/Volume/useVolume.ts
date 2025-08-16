@@ -1,4 +1,4 @@
-import { useGetVolumeQuery, useSearchVolumeQuery } from 'Store/createApiEndpoints';
+import { useGetVolumeQuery, useSearchVolumeQuery } from 'Store/Api/Volumes';
 
 import type { Volume, VolumePublicInfo } from './Volume';
 

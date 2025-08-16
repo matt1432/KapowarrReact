@@ -5,7 +5,8 @@ import React, { useCallback, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
-import { useGetVolumesQuery } from 'Store/createApiEndpoints';
+
+import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
 import { icons, sizes } from 'Helpers/Props';

@@ -5,12 +5,10 @@ import { useCallback, useMemo } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
+
 import { setAddVolumeOption } from 'Store/Slices/AddVolume';
-import {
-    useAddVolumeMutation,
-    useGetRootFoldersQuery,
-    useGetVolumesQuery,
-} from 'Store/createApiEndpoints';
+import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
+import { useAddVolumeMutation, useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
 import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';

@@ -4,7 +4,7 @@
 import { useCallback, useState } from 'react';
 
 // Redux
-import { useDeleteVolumeMutation, useGetVolumesQuery } from 'Store/createApiEndpoints';
+import { useDeleteVolumeMutation, useGetVolumesQuery } from 'Store/Api/Volumes';
 
 import useVolume from 'Volume/useVolume';
 

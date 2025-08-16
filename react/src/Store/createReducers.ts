@@ -14,7 +14,7 @@ import UISettingsSlice from './Slices/UISettings';
 import VolumeIndexSlice from './Slices/VolumeIndex';
 
 // API
-import { baseApi } from './createApiEndpoints';
+import { baseApi } from './Api/base';
 
 // IMPLEMENTATIONS
 

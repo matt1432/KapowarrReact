@@ -13,7 +13,7 @@ import {
     type VolumeIndexState,
 } from 'Store/Slices/VolumeIndex';
 
-import { useGetVolumesQuery } from 'Store/createApiEndpoints';
+import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
 import { align, icons, kinds, sortDirections } from 'Helpers/Props';

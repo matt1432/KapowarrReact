@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 // Redux
-import { useUpdateVolumeMutation } from 'Store/createApiEndpoints';
+import { useUpdateVolumeMutation } from 'Store/Api/Volumes';
 
 // Misc
 import { icons, kinds, tooltipPositions } from 'Helpers/Props';

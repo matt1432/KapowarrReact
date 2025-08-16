@@ -4,12 +4,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
-import {
-    useExecuteCommandMutation,
-    useFetchQueueDetails,
-    useGetVolumesQuery,
-    useUpdateVolumeMutation,
-} from 'Store/createApiEndpoints';
+import { useExecuteCommandMutation } from 'Store/Api/Command';
+import { useFetchQueueDetails } from 'Store/Api/Queue';
+import { useGetVolumesQuery, useUpdateVolumeMutation } from 'Store/Api/Volumes';
 
 import useVolume from 'Volume/useVolume';
 

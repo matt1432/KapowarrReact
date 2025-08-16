@@ -4,7 +4,8 @@
 import { useCallback, useMemo } from 'react';
 
 // Redux
-import { useGetVolumesQuery, useMassEditMutation } from 'Store/createApiEndpoints';
+import { useMassEditMutation } from 'Store/Api/Command';
+import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
 import { orderBy } from 'lodash';

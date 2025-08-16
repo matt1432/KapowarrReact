@@ -4,8 +4,8 @@
 import { useCallback, useState } from 'react';
 
 // Redux
-import { useGetRootFoldersQuery } from 'Store/createApiEndpoints';
-import { useMassEditMutation } from 'Store/createApiEndpoints';
+import { useMassEditMutation } from 'Store/Api/Command';
+import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
 
 // Misc
 import { inputTypes, massEditActions } from 'Helpers/Props';

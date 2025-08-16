@@ -4,7 +4,7 @@
 import { useCallback, useState } from 'react';
 
 // Redux
-import { useApiKey } from 'Store/createApiEndpoints';
+import { useApiKey } from 'Store/Api/Auth';
 
 // Misc
 import { inputTypes, kinds } from 'Helpers/Props';

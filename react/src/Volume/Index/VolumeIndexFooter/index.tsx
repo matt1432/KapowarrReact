@@ -1,7 +1,7 @@
 // IMPORTS
 
 // Redux
-import { useGetVolumesQuery } from 'Store/createApiEndpoints';
+import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
 import classNames from 'classnames';

@@ -5,7 +5,9 @@ import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
-import { useExecuteCommandMutation, useSearchVolumeQuery } from 'Store/createApiEndpoints';
+
+import { useExecuteCommandMutation } from 'Store/Api/Command';
+import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc
 import { commandNames, icons } from 'Helpers/Props';

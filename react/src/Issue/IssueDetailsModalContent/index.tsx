@@ -6,7 +6,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 
 // Redux
-import { useSearchVolumeQuery, useToggleIssueMonitoredMutation } from 'Store/createApiEndpoints';
+import { useToggleIssueMonitoredMutation } from 'Store/Api/Issue';
+import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 // import { cancelFetchReleases, clearReleases } from 'Store/Actions/releaseActions';
 
 // Misc

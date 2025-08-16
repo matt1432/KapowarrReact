@@ -4,7 +4,8 @@
 import { useCallback } from 'react';
 
 // Redux
-import { useExecuteCommandMutation, useGetVolumesQuery } from 'Store/createApiEndpoints';
+import { useExecuteCommandMutation } from 'Store/Api/Command';
+import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
 import { commandNames, icons } from 'Helpers/Props';

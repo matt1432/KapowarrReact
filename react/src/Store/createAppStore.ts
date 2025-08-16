@@ -8,9 +8,9 @@ import { rememberEnhancer } from 'redux-remember';
 import { useDispatch, useSelector } from 'react-redux';
 
 // Store
-import { baseApi } from 'Store/createApiEndpoints';
+import { baseApi } from './Api/base';
 
-import createReducers from 'Store/createReducers';
+import createReducers from './createReducers';
 
 // IMPLEMENTATIONS
 

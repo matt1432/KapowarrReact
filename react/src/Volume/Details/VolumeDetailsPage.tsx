@@ -5,7 +5,7 @@ import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 // Redux
-import { useGetVolumesQuery } from 'Store/createApiEndpoints';
+import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
 import usePrevious from 'Helpers/Hooks/usePrevious';

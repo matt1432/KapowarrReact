@@ -6,7 +6,9 @@ import { useCallback, useEffect, useRef } from 'react';
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { setIssuesSort, setIssuesTableOption } from 'Store/Slices/IssueTable';
-import { useSearchVolumeQuery, useToggleIssueMonitoredMutation } from 'Store/createApiEndpoints';
+
+import { useToggleIssueMonitoredMutation } from 'Store/Api/Issue';
+import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc
 import getToggledRange from 'Utilities/Table/getToggledRange';

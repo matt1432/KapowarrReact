@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 // Redux
-import { useGetVolumesQuery, useLazyLookupVolumeQuery } from 'Store/createApiEndpoints';
+import { useGetVolumesQuery, useLazyLookupVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc
 import { icons, kinds } from 'Helpers/Props';

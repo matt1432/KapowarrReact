@@ -14,7 +14,7 @@ import {
 import Autosuggest from 'react-autosuggest';
 
 // Redux
-import { useGetVolumesQuery } from 'Store/createApiEndpoints';
+import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
 import { useDebouncedCallback } from 'use-debounce';

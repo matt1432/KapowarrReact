@@ -4,7 +4,7 @@
 import { useCallback } from 'react';
 
 // Redux
-import { useExecuteCommandMutation } from 'Store/createApiEndpoints';
+import { useExecuteCommandMutation } from 'Store/Api/Command';
 
 // Misc
 import { commandNames, icons } from 'Helpers/Props';

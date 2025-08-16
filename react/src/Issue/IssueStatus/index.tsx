@@ -1,7 +1,7 @@
 // IMPORTS
 
 // Redux
-import { useFetchQueueDetails } from 'Store/createApiEndpoints';
+import { useFetchQueueDetails } from 'Store/Api/Queue';
 
 // Misc
 import { icons, kinds, sizes } from 'Helpers/Props';

@@ -4,7 +4,7 @@
 import { useCallback } from 'react';
 
 // Redux
-import { useSearchVolumeQuery } from 'Store/createApiEndpoints';
+import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc
 import formatBytes from 'Utilities/Number/formatBytes';

@@ -5,7 +5,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
-import { useGetRootFoldersQuery } from 'Store/createApiEndpoints';
+import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
 // import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 
 // Misc

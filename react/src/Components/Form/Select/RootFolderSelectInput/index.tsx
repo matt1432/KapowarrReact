@@ -4,7 +4,7 @@
 import { useMemo } from 'react';
 
 // Redux
-import { useGetRootFoldersQuery } from 'Store/createApiEndpoints';
+import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
 
 // Specific Components
 import RootFolderSelectInputOption from '../RootFolderSelectInputOption';
