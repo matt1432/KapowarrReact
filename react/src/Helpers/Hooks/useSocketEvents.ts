@@ -2,22 +2,22 @@ import { useEffect } from 'react';
 
 import socket from 'Store/socket';
 
-export interface Event {
-    name: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handler(...args: any[]): void;
-}
+import type { SocketEventHandler, SocketEventName } from 'Helpers/Props/socketEvents';
 
-export default function useSocketEvents(events: Event[]) {
+export type Events = {
+    [Key in SocketEventName]?: SocketEventHandler<Key>;
+};
+
+export default function useSocketEvents(events: Events) {
     useEffect(() => {
-        for (const event of events) {
-            socket.on(event.name, event.handler);
-        }
+        Object.entries(events).forEach(([name, handler]) => {
+            socket.on(name, handler);
+        });
 
         return () => {
-            for (const event of events) {
-                socket.off(event.name);
-            }
+            Object.entries(events).forEach(([name, handler]) => {
+                socket.off(name, handler);
+            });
         };
     }, [events]);
 }

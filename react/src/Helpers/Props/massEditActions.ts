@@ -11,7 +11,7 @@ export type MassEditAction =
     | 'monitoring_scheme';
 
 const DELETE: MassEditAction = 'delete';
-const ROOT_FOLDER = 'root_folder' as const;
+const ROOT_FOLDER: MassEditAction = 'root_folder';
 const REMOVE_ADS: MassEditAction = 'remove_ads';
 const RENAME: MassEditAction = 'rename';
 const UPDATE: MassEditAction = 'update';

@@ -1,3 +1,4 @@
+// TODO:
 import type { ModelBase } from 'App/ModelBase';
 import type { DownloadProtocol } from 'DownloadClient/DownloadProtocol';
 import type { Issue } from 'Issue/Issue';
@@ -59,4 +60,17 @@ export interface DownloadItem extends ModelBase {
     status: string;
     progress: number;
     speed: number;
+}
+
+// NOT todo
+export interface DownloadState {
+    QUEUED_STATE: 'queued';
+    PAUSED_STATE: 'paused';
+    DOWNLOADING_STATE: 'downloading';
+    SEEDING_STATE: 'seeding';
+    IMPORTING_STATE: 'importing';
+
+    FAILED_STATE: 'failed';
+    CANCELED_STATE: 'canceled';
+    SHUTDOWN_STATE: 'shutting down';
 }

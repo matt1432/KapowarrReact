@@ -44,20 +44,14 @@ function Page({ children = [] }: PageProps) {
 
     const [isConnectionLostModalOpen, setIsConnectionLostModalOpen] = useState(false);
 
-    useSocketEvents([
-        {
-            name: 'connect',
-            handler: () => {
-                setIsConnectionLostModalOpen(false);
-            },
+    useSocketEvents({
+        connect: () => {
+            setIsConnectionLostModalOpen(false);
         },
-        {
-            name: 'disconnect',
-            handler: () => {
-                setIsConnectionLostModalOpen(true);
-            },
+        disconnect: () => {
+            setIsConnectionLostModalOpen(true);
         },
-    ]);
+    });
 
     const handleResize = useCallback(() => {
         dispatch(
