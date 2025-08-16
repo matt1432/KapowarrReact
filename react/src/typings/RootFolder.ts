@@ -1,12 +1,4 @@
-import type { ModelBase } from 'App/ModelBase';
-
-export interface SizeData {
-    total: number;
-    used: number;
-    free: number;
-}
-
-export interface RootFolder extends ModelBase {
+export interface RootFolder {
+    id: number;
     folder: string;
-    size: SizeData;
 }

@@ -1,16 +1,9 @@
-export type Align = 'left' | 'center' | 'right';
-
-const LEFT: Align = 'left';
-const CENTER: Align = 'center';
-const RIGHT: Align = 'right';
-
-const all: Align[] = [LEFT, CENTER, RIGHT] as const;
-
 export const align = {
-    LEFT,
-    CENTER,
-    RIGHT,
-    all,
-};
+    LEFT: 'left',
+    CENTER: 'center',
+    RIGHT: 'right',
+} as const;
 
 export default align;
+
+export type Align = (typeof align)[keyof typeof align];

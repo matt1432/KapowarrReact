@@ -10,7 +10,7 @@ import classNames from 'classnames';
 import styles from './index.module.css';
 
 // Types
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 
 export interface TextAreaProps {
     className?: string;

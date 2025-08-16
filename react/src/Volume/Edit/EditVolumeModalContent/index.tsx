@@ -22,7 +22,7 @@ import MoveVolumeModal from 'Volume/MoveVolume/MoveVolumeModal';
 // import useVolume from 'Volume/useVolume';
 // import { saveVolume, setVolumeValue } from 'Store/Actions/volumeActions';
 // import selectSettings from 'Store/Selectors/selectSettings';
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 import translate from 'Utilities/String/translate';
 import RootFolderModal from './RootFolder/RootFolderModal';
 import type { RootFolderUpdated } from './RootFolder/RootFolderModalContent';

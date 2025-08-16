@@ -29,7 +29,7 @@ import TableOptionsColumn from '../TableOptionsColumn';
 import styles from './index.module.css';
 
 // Types
-import type { CheckInputChanged, InputChanged } from 'typings/inputs';
+import type { CheckInputChanged, InputChanged } from 'typings/Inputs';
 import type { Column } from '../../Column';
 import type { TableOptionsChangePayload } from 'typings/Table';
 

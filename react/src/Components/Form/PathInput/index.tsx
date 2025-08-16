@@ -28,7 +28,7 @@ import styles from './index.module.css';
 
 // Types
 import type { ChangeEvent, SuggestionsFetchRequestedParams } from 'react-autosuggest';
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 
 // eslint-disable-next-line
 type Path = any;

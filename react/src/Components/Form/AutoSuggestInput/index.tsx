@@ -31,7 +31,7 @@ import usePrevious from 'Helpers/Hooks/usePrevious';
 import styles from './index.module.css';
 
 // Types
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 
 interface AutoSuggestInputProps<T>
     extends Omit<AutosuggestPropsBase<T>, 'renderInputComponent' | 'inputProps'> {

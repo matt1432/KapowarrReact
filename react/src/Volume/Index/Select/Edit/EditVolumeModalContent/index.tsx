@@ -27,7 +27,7 @@ import styles from './index.module.css';
 
 // Types
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 
 interface EditVolumeModalContentProps {
     volumeIds: number[];

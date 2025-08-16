@@ -29,7 +29,7 @@ import AddNewVolumeSearchResult from '../AddNewVolumeSearchResult';
 import styles from './index.module.css';
 
 // Types
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 import type { AddVolume } from 'AddVolume/AddVolume';
 
 // IMPLEMENTATIONS

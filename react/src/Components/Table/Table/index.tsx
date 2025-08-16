@@ -23,7 +23,7 @@ import styles from './index.module.css';
 
 // Types
 import type { SortDirection } from 'Helpers/Props/sortDirections';
-import type { CheckInputChanged } from 'typings/inputs';
+import type { CheckInputChanged } from 'typings/Inputs';
 import type { TableOptionsChangePayload } from 'typings/Table';
 import type { Column } from '../Column';
 

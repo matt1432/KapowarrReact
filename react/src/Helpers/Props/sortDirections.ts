@@ -1,14 +1,8 @@
-export type SortDirection = 'ascending' | 'descending';
-
-const ASCENDING: SortDirection = 'ascending';
-const DESCENDING: SortDirection = 'descending';
-
-const all: SortDirection[] = [ASCENDING, DESCENDING];
-
 export const sortDirections = {
-    ASCENDING,
-    DESCENDING,
-    all,
-};
+    ASCENDING: 'ascending',
+    DESCENDING: 'descending',
+} as const;
 
 export default sortDirections;
+
+export type SortDirection = (typeof sortDirections)[keyof typeof sortDirections];

@@ -1,48 +1,9 @@
 // TODO:
-import type { ModelBase } from 'App/ModelBase';
-import type { DownloadProtocol } from 'DownloadClient/DownloadProtocol';
-import type { Issue } from 'Issue/Issue';
-export type QueueTrackedDownloadStatus = 'ok' | 'warning' | 'error';
+import type { DownloadState } from 'Helpers/Props/downloadStates';
 
-export type QueueTrackedDownloadState =
-    | 'downloading'
-    | 'importBlocked'
-    | 'importPending'
-    | 'importing'
-    | 'imported'
-    | 'failedPending'
-    | 'failed'
-    | 'ignored';
-
-export interface StatusMessage {
-    title: string;
-    messages: string[];
-}
-
-export interface Queue extends ModelBase {
-    size: number;
-    title: string;
-    sizeleft: number;
-    timeleft: string;
-    estimatedCompletionTime: string;
-    added?: string;
-    status: string;
-    trackedDownloadStatus: QueueTrackedDownloadStatus;
-    trackedDownloadState: QueueTrackedDownloadState;
-    statusMessages: StatusMessage[];
-    errorMessage: string;
-    downloadId: string;
-    protocol: DownloadProtocol;
-    downloadClient: string;
-    outputPath: string;
-    issueHasFile: boolean;
-    volumeId?: number;
-    issueId?: number;
-    downloadClientHasPostImportCategory: boolean;
-    issue?: Issue;
-}
-
-export interface DownloadItem extends ModelBase {
+// FIXME: this type is incomplete
+export interface DownloadItem {
+    id: number;
     volume_id: number;
     issue_id: number | null;
     web_link: string | null;
@@ -57,20 +18,7 @@ export interface DownloadItem extends ModelBase {
     title: string;
     download_folder: string;
     size: number;
-    status: string;
+    status: DownloadState;
     progress: number;
     speed: number;
-}
-
-// NOT todo
-export interface DownloadState {
-    QUEUED_STATE: 'queued';
-    PAUSED_STATE: 'paused';
-    DOWNLOADING_STATE: 'downloading';
-    SEEDING_STATE: 'seeding';
-    IMPORTING_STATE: 'importing';
-
-    FAILED_STATE: 'failed';
-    CANCELED_STATE: 'canceled';
-    SHUTDOWN_STATE: 'shutting down';
 }

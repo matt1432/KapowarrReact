@@ -1,36 +1,16 @@
-export type CommandName =
-    | 'refresh_and_scan'
-    | 'auto_search'
-    | 'auto_search_issue'
-    | 'mass_rename'
-    | 'mass_rename_issue'
-    | 'mass_convert'
-    | 'mass_convert_issue'
-    | 'update_all'
-    | 'search_all';
-
-const REFRESH_VOLUME: CommandName = 'refresh_and_scan';
-const VOLUME_SEARCH: CommandName = 'auto_search';
-const ISSUE_SEARCH: CommandName = 'auto_search_issue';
-const RENAME_VOLUME: CommandName = 'mass_rename';
-const RENAME_ISSUE: CommandName = 'mass_rename_issue';
-const CONVERT_VOLUME: CommandName = 'mass_convert';
-const CONVERT_ISSUE: CommandName = 'mass_convert_issue';
-const DOWNLOADED_ISSUES_SCAN: CommandName = 'update_all';
-const UPDATE_ALL: CommandName = 'update_all';
-const SEARCH_ALL: CommandName = 'search_all';
-
 export const commandNames = {
-    REFRESH_VOLUME,
-    VOLUME_SEARCH,
-    ISSUE_SEARCH,
-    RENAME_VOLUME,
-    RENAME_ISSUE,
-    CONVERT_VOLUME,
-    CONVERT_ISSUE,
-    DOWNLOADED_ISSUES_SCAN,
-    UPDATE_ALL,
-    SEARCH_ALL,
-};
+    REFRESH_VOLUME: 'refresh_and_scan',
+    VOLUME_SEARCH: 'auto_search',
+    ISSUE_SEARCH: 'auto_search_issue',
+    RENAME_VOLUME: 'mass_rename',
+    RENAME_ISSUE: 'mass_rename_issue',
+    CONVERT_VOLUME: 'mass_convert',
+    CONVERT_ISSUE: 'mass_convert_issue',
+    DOWNLOADED_ISSUES_SCAN: 'update_all',
+    UPDATE_ALL: 'update_all',
+    SEARCH_ALL: 'search_all',
+} as const;
 
 export default commandNames;
+
+export type CommandName = (typeof commandNames)[keyof typeof commandNames];

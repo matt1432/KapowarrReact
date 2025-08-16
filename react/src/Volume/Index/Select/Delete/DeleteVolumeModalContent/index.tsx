@@ -32,7 +32,7 @@ import styles from './index.module.css';
 
 // Types
 import type { Volume } from 'Volume/Volume';
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 
 interface DeleteVolumeModalContentProps {
     volumeIds: number[];

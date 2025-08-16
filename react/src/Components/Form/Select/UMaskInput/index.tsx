@@ -11,7 +11,7 @@ import styles from './index.module.css';
 
 // Types
 import type { SyntheticEvent } from 'react';
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 
 export interface UMaskInputProps {
     name: string;

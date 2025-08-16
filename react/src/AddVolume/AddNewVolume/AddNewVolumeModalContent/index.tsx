@@ -36,7 +36,7 @@ import styles from './index.module.css';
 
 // Types
 import type { AddVolume } from 'AddVolume/AddVolume';
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 import type { MonitoringScheme, SpecialVersion } from 'Volume/Volume';
 import InnerHTML from 'Components/InnerHTML';
 

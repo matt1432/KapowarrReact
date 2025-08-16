@@ -1,6 +1,4 @@
-//
 // Regular
-
 import {
     faBookmark as farBookmark,
     faCalendar as farCalendar,
@@ -19,7 +17,7 @@ import {
     faObjectUngroup as farObjectUngroup,
     faSquare as farSquare,
 } from '@fortawesome/free-regular-svg-icons';
-//
+
 // Solid
 import {
     faArrowCircleLeft as fasArrowCircleLeft,
@@ -110,9 +108,7 @@ import {
     faWrench as fasWrench,
 } from '@fortawesome/free-solid-svg-icons';
 
-//
 // Icons
-
 export const icons = {
     ACTIONS: fasBolt,
     ACTIVITY: farClock,
@@ -231,6 +227,6 @@ export const icons = {
     VIEW: fasEye,
     WARNING: fasExclamationTriangle,
     WIKI: fasBookReader,
-};
+} as const;
 
 export default icons;

@@ -11,7 +11,7 @@ import styles from './index.module.css';
 
 // Types
 import type { ReactNode } from 'react';
-import type { ValidationError, ValidationWarning } from 'typings/pending';
+import type { ValidationError, ValidationWarning } from 'typings/Validation';
 
 export interface FormProps {
     id?: string;

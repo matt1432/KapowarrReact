@@ -10,7 +10,7 @@ import usePrevious from 'Helpers/Hooks/usePrevious';
 import TextInput, { type TextInputProps } from '../TextInput';
 
 // Types
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 
 export interface NumberInputProps extends Omit<TextInputProps, 'value' | 'onChange'> {
     value?: number | null;

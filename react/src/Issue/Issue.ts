@@ -1,7 +1,7 @@
-import type { ModelBase } from 'App/ModelBase';
 import type { CamelCasedProperties } from 'type-fest';
 
-export interface RawFileData extends ModelBase {
+export interface RawFileData {
+    id: number;
     filepath: string;
     size: number;
     releaser: string;
@@ -31,7 +31,8 @@ export interface RawIssueFileData extends RawFileData {
 
 export type IssueFileData = CamelCasedProperties<RawIssueFileData>;
 
-export interface RawIssueData extends ModelBase {
+export interface RawIssueData {
+    id: number;
     volume_id: number;
     comicvine_id: number;
     issue_number: string;

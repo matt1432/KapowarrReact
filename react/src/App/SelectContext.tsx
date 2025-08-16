@@ -7,7 +7,6 @@ import React, { useCallback, useEffect } from 'react';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 
 // Types
-import type { ModelBase } from './ModelBase';
 import type { SelectState, SelectStateModel } from 'Helpers/Hooks/useSelectState';
 
 export type SelectContextAction =
@@ -26,7 +25,7 @@ export type SelectContextAction =
       }
     | {
           type: 'updateItems';
-          items: ModelBase[];
+          items: { id: number }[];
       };
 
 export type SelectDispatch = (action: SelectContextAction) => void;

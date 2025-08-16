@@ -20,15 +20,15 @@ import EnhancedSelectInput, {
 } from '../EnhancedSelectInput';
 
 // Types
-import type { Protocol } from 'typings/DownloadClient';
-import type { EnhancedSelectInputChanged } from 'typings/inputs';
+// import type { Protocol } from 'typings/DownloadClient';
+import type { EnhancedSelectInputChanged } from 'typings/Inputs';
 
 export interface DownloadClientSelectInputProps
     extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<number>, number>, 'values'> {
     name: string;
     value: number;
     includeAny?: boolean;
-    protocol?: Protocol;
+    protocol?: unknown; // Protocol;
     onChange: (change: EnhancedSelectInputChanged<number>) => void;
 }
 

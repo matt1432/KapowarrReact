@@ -13,7 +13,7 @@ import VirtualTableHeaderCell from '../VirtualTableHeaderCell';
 import styles from './index.module.css';
 
 // Types
-import type { CheckInputChanged } from 'typings/inputs';
+import type { CheckInputChanged } from 'typings/Inputs';
 
 interface VirtualTableSelectAllHeaderCellProps {
     allSelected: boolean;

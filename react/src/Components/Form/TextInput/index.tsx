@@ -19,7 +19,7 @@ import classNames from 'classnames';
 import styles from './index.module.css';
 
 // Types
-import type { FileInputChanged, InputChanged } from 'typings/inputs';
+import type { FileInputChanged, InputChanged } from 'typings/Inputs';
 
 export interface CommonTextInputProps {
     className?: string;

@@ -17,7 +17,7 @@ import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
 
 // Types
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 
 interface VolumeIndexTableOptionsProps {
     onTableOptionChange(...args: unknown[]): unknown;

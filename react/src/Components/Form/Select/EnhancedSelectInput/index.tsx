@@ -10,6 +10,7 @@ import {
     useMemo,
     useState,
 } from 'react';
+
 import {
     autoUpdate,
     flip,
@@ -46,11 +47,12 @@ import HintedSelectInputSelectedValue from '../HintedSelectInputSelectedValue';
 import styles from './index.module.css';
 
 // Types
-import type { ArrayElement } from 'typings/Helpers/ArrayElement';
-import type { EnhancedSelectInputChanged, InputChanged } from 'typings/inputs';
+import type { IterableElement } from 'type-fest';
+
+import type { EnhancedSelectInputChanged, InputChanged } from 'typings/Inputs';
 
 export interface EnhancedSelectInputValue<V> {
-    key: ArrayElement<V>;
+    key: IterableElement<V>;
     value: V;
     hint?: ReactNode;
     isDisabled?: boolean;
@@ -226,7 +228,7 @@ function EnhancedSelectInput<T extends EnhancedSelectInputValue<V>, V>({
     }, []);
 
     const handleSelect = useCallback(
-        (newValue: ArrayElement<V>) => {
+        (newValue: IterableElement<V>) => {
             const additionalProperties = values.find(
                 (v) => v.key === newValue,
             )?.additionalProperties;

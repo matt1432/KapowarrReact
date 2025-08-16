@@ -51,7 +51,7 @@ import styles from './index.module.css';
 
 // Types
 import type { InputType } from 'Helpers/Props/inputTypes';
-import type { Failure, ValidationError, ValidationWarning } from 'typings/pending';
+import type { Failure, ValidationError, ValidationWarning } from 'typings/Validation';
 import type { FormInputButtonProps } from '../FormInputButton';
 
 type PickProps<V, C extends InputType> = C extends 'text'

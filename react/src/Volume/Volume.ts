@@ -1,6 +1,5 @@
 import type { CamelCasedProperties } from 'type-fest';
 
-import type { ModelBase } from 'App/ModelBase';
 import type { GeneralFileData, Issue, RawIssue } from 'Issue/Issue';
 
 export type VolumeColumnName =
@@ -27,7 +26,8 @@ export type SpecialVersion =
     | 'metadata'
     | '';
 
-export type RawVolume = ModelBase & {
+export type RawVolume = {
+    id: number;
     comicvine_id: number;
     libgen_url: string | null;
     title: string;

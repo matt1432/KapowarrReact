@@ -1,3 +1,4 @@
+import { downloadStates, type DownloadState } from 'Helpers/Props/downloadStates';
 import getProgressBarKind from './getProgressBarKind';
 
 import type { DownloadItem } from 'typings/Queue';
@@ -16,6 +17,12 @@ interface GetDownloadedIssuesProgressReturn {
     text: string;
 }
 
+const FAILED_STATE: DownloadState[] = [
+    downloadStates.FAILED,
+    downloadStates.CANCELED,
+    downloadStates.SHUTDOWN,
+];
+
 export function getDownloadedIssuesProgress({
     queue,
     volume,
@@ -27,9 +34,7 @@ export function getDownloadedIssuesProgress({
     ).length;
 
     const newDownloads =
-        queue.length -
-        queue.filter((item) => ['failed', 'canceled', 'shutting down'].includes(item.status))
-            .length;
+        queue.length - queue.filter((item) => FAILED_STATE.includes(item.status)).length;
 
     const progress = issueCount ? (issueFileCount / issueCount) * 100 : 100;
     const text = newDownloads

@@ -13,7 +13,7 @@ import KeyValueListInputItem from '../KeyValueListInputItem';
 import styles from './index.module.css';
 
 // Types
-import type { InputOnChange } from 'typings/inputs';
+import type { InputOnChange } from 'typings/Inputs';
 
 interface KeyValue {
     key: string;

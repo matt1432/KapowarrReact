@@ -1,87 +1,25 @@
-export type InputType =
-    | 'autoComplete'
-    | 'check'
-    | 'date'
-    | 'keyValueList'
-    | 'monitorIssuesSelect'
-    | 'monitorNewItemsSelect'
-    | 'file'
-    | 'float'
-    | 'number'
-    | 'password'
-    | 'path'
-    | 'downloadClientSelect'
-    | 'rootFolderSelect'
-    | 'select'
-    | 'dynamicSelect'
-    | 'specialVersionSelect'
-    | 'text'
-    | 'textArea'
-    | 'umask';
-
-const AUTO_COMPLETE: InputType = 'autoComplete';
-const CHECK: InputType = 'check';
-const DATE: InputType = 'date';
-const KEY_VALUE_LIST: InputType = 'keyValueList';
-const MONITOR_ISSUES_SELECT: InputType = 'monitorIssuesSelect';
-const MONITOR_NEW_ITEMS_SELECT: InputType = 'monitorNewItemsSelect';
-const FILE: InputType = 'file';
-const FLOAT: InputType = 'float';
-const NUMBER: InputType = 'number';
-const PASSWORD: InputType = 'password';
-const PATH: InputType = 'path';
-const DOWNLOAD_CLIENT_SELECT: InputType = 'downloadClientSelect';
-const ROOT_FOLDER_SELECT: InputType = 'rootFolderSelect';
-const SELECT: InputType = 'select';
-const DYNAMIC_SELECT: InputType = 'dynamicSelect';
-const VOLUME_TYPE_SELECT: InputType = 'specialVersionSelect';
-const TEXT: InputType = 'text';
-const TEXT_AREA: InputType = 'textArea';
-const UMASK: InputType = 'umask';
-
-const all = [
-    AUTO_COMPLETE,
-    CHECK,
-    DATE,
-    KEY_VALUE_LIST,
-    MONITOR_ISSUES_SELECT,
-    MONITOR_NEW_ITEMS_SELECT,
-    FILE,
-    FLOAT,
-    NUMBER,
-    PASSWORD,
-    PATH,
-    DOWNLOAD_CLIENT_SELECT,
-    ROOT_FOLDER_SELECT,
-    SELECT,
-    DYNAMIC_SELECT,
-    VOLUME_TYPE_SELECT,
-    TEXT,
-    TEXT_AREA,
-    UMASK,
-] as const;
-
 export const inputTypes = {
-    AUTO_COMPLETE,
-    CHECK,
-    DATE,
-    KEY_VALUE_LIST,
-    MONITOR_ISSUES_SELECT,
-    MONITOR_NEW_ITEMS_SELECT,
-    FILE,
-    FLOAT,
-    NUMBER,
-    PASSWORD,
-    PATH,
-    DOWNLOAD_CLIENT_SELECT,
-    ROOT_FOLDER_SELECT,
-    SELECT,
-    DYNAMIC_SELECT,
-    VOLUME_TYPE_SELECT,
-    TEXT,
-    TEXT_AREA,
-    UMASK,
-    all,
-};
+    AUTO_COMPLETE: 'autoComplete',
+    CHECK: 'check',
+    DATE: 'date',
+    KEY_VALUE_LIST: 'keyValueList',
+    MONITOR_ISSUES_SELECT: 'monitorIssuesSelect',
+    MONITOR_NEW_ITEMS_SELECT: 'monitorNewItemsSelect',
+    FILE: 'file',
+    FLOAT: 'float',
+    NUMBER: 'number',
+    PASSWORD: 'password',
+    PATH: 'path',
+    DOWNLOAD_CLIENT_SELECT: 'downloadClientSelect',
+    ROOT_FOLDER_SELECT: 'rootFolderSelect',
+    SELECT: 'select',
+    DYNAMIC_SELECT: 'dynamicSelect',
+    VOLUME_TYPE_SELECT: 'specialVersionSelect',
+    TEXT: 'text',
+    TEXT_AREA: 'textArea',
+    UMASK: 'umask',
+} as const;
 
 export default inputTypes;
+
+export type InputType = (typeof inputTypes)[keyof typeof inputTypes];

@@ -19,7 +19,7 @@ import styles from './index.module.css';
 
 // Types
 import type { Kind } from 'Helpers/Props/kinds';
-import type { CheckInputChanged } from 'typings/inputs';
+import type { CheckInputChanged } from 'typings/Inputs';
 
 interface ChangeEvent<T = Element> extends SyntheticEvent<T, MouseEvent> {
     target: EventTarget & T;

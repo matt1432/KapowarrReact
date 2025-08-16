@@ -29,7 +29,7 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
-import type { CheckInputChanged } from 'typings/inputs';
+import type { CheckInputChanged } from 'typings/Inputs';
 import type { IndexSort } from '../..';
 import type { TableOptionsChangePayload } from 'typings/Table';
 import type { VolumeColumnName } from 'Volume/Volume';

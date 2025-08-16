@@ -19,7 +19,7 @@ import Icon from 'Components/Icon';
 import styles from './index.module.css';
 
 // Types
-import type { CheckInputChanged } from 'typings/inputs';
+import type { CheckInputChanged } from 'typings/Inputs';
 import type { Column } from '../../Column';
 
 interface DragItem {

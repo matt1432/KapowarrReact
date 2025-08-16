@@ -32,7 +32,7 @@ import Popover from 'Components/Tooltip/Popover';
 import styles from './index.module.css';
 
 // Types
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 import type { MonitoringScheme } from 'Volume/Volume';
 
 export interface MonitoringOptionsModalContentProps {

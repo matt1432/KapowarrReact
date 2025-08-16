@@ -11,7 +11,7 @@ import AutoSuggestInput from '../AutoSuggestInput';
 
 // Types
 import type { ChangeEvent, SuggestionsFetchRequestedParams } from 'react-autosuggest';
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 
 export interface AutoCompleteInputProps {
     name: string;

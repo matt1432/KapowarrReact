@@ -36,7 +36,7 @@ import styles from './index.module.css';
 
 // Types
 import type { Column } from 'Components/Table/Column';
-import type { SelectStateInputProps } from 'typings/props';
+import type { SelectStateInputProps } from 'typings/Inputs';
 import type { VolumeColumnName } from 'Volume/Volume';
 
 interface VolumeIndexRowProps {

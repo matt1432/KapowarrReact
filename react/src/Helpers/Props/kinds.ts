@@ -1,51 +1,16 @@
-export type Kind =
-    | 'danger'
-    | 'defaultKind'
-    | 'disabled'
-    | 'info'
-    | 'inverse'
-    | 'pink'
-    | 'primary'
-    | 'purple'
-    | 'success'
-    | 'warning';
-
-const DANGER: Kind = 'danger';
-const DEFAULT_KIND: Kind = 'defaultKind';
-const DISABLED: Kind = 'disabled';
-const INFO: Kind = 'info';
-const INVERSE: Kind = 'inverse';
-const PINK: Kind = 'pink';
-const PRIMARY: Kind = 'primary';
-const PURPLE: Kind = 'purple';
-const SUCCESS: Kind = 'success';
-const WARNING: Kind = 'warning';
-
-const all = [
-    DANGER,
-    DEFAULT_KIND,
-    DISABLED,
-    INFO,
-    INVERSE,
-    PINK,
-    PRIMARY,
-    PURPLE,
-    SUCCESS,
-    WARNING,
-] as const;
-
 export const kinds = {
-    DANGER,
-    DEFAULT_KIND,
-    DISABLED,
-    INFO,
-    INVERSE,
-    PINK,
-    PRIMARY,
-    PURPLE,
-    SUCCESS,
-    WARNING,
-    all,
-};
+    DANGER: 'danger',
+    DEFAULT_KIND: 'defaultKind',
+    DISABLED: 'disabled',
+    INFO: 'info',
+    INVERSE: 'inverse',
+    PINK: 'pink',
+    PRIMARY: 'primary',
+    PURPLE: 'purple',
+    SUCCESS: 'success',
+    WARNING: 'warning',
+} as const;
 
 export default kinds;
+
+export type Kind = (typeof kinds)[keyof typeof kinds];

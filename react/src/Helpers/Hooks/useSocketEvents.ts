@@ -2,10 +2,11 @@ import { useEffect } from 'react';
 
 import socket from 'Store/socket';
 
-import type { SocketEventHandler, SocketEventName } from 'Helpers/Props/socketEvents';
+import type { SocketEvent } from 'Helpers/Props/socketEvents';
+import type { SocketEventHandler } from 'typings/Socket';
 
 export type Events = {
-    [Key in SocketEventName]?: SocketEventHandler<Key>;
+    [Key in SocketEvent]?: SocketEventHandler<Key>;
 };
 
 export default function useSocketEvents(events: Events) {

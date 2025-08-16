@@ -17,7 +17,7 @@ import SpinnerButton, { type SpinnerButtonProps } from 'Components/Link/SpinnerB
 import styles from './index.module.css';
 
 // Types
-import type { ValidationFailure } from 'typings/pending';
+import type { ValidationFailure } from 'typings/Validation';
 
 interface SpinnerErrorButtonProps extends SpinnerButtonProps {
     isSpinning: boolean;

@@ -1,18 +1,10 @@
-export type TooltipPosition = 'top' | 'right' | 'bottom' | 'left';
-
-const TOP: TooltipPosition = 'top';
-const RIGHT: TooltipPosition = 'right';
-const BOTTOM: TooltipPosition = 'bottom';
-const LEFT: TooltipPosition = 'left';
-
-const all: TooltipPosition[] = [TOP, RIGHT, BOTTOM, LEFT];
-
 export const tooltipPositions = {
-    TOP,
-    RIGHT,
-    BOTTOM,
-    LEFT,
-    all,
-};
+    TOP: 'top',
+    RIGHT: 'right',
+    BOTTOM: 'bottom',
+    LEFT: 'left',
+} as const;
 
 export default tooltipPositions;
+
+export type TooltipPosition = (typeof tooltipPositions)[keyof typeof tooltipPositions];

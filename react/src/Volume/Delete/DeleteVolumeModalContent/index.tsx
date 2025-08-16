@@ -32,7 +32,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import styles from './index.module.css';
 
 // Types
-import type { CheckInputChanged } from 'typings/inputs';
+import type { CheckInputChanged } from 'typings/Inputs';
 
 // IMPLEMENTATIONS
 

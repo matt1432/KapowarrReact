@@ -17,3 +17,9 @@ export interface EnhancedSelectInputChanged<T> extends InputChanged<T> {
     value: T;
     additionalProperties?: unknown;
 }
+
+export interface SelectStateInputProps {
+    id: number | string;
+    value: boolean | null;
+    shiftKey: boolean;
+}

@@ -13,8 +13,8 @@ import VirtualTableRowCell, { type VirtualTableRowCellProps } from '../VirtualTa
 import styles from './index.module.css';
 
 // Types
-import type { CheckInputChanged } from 'typings/inputs';
-import type { SelectStateInputProps } from 'typings/props';
+import type { CheckInputChanged } from 'typings/Inputs';
+import type { SelectStateInputProps } from 'typings/Inputs';
 
 interface VirtualTableSelectCellProps extends VirtualTableRowCellProps {
     inputClassName?: string;

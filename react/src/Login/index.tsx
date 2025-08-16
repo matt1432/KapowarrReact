@@ -20,7 +20,7 @@ import Logo from 'Components/Page/Header/Logo';
 import styles from './index.module.css';
 
 // Types
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 
 // IMPLEMENTATIONS
 

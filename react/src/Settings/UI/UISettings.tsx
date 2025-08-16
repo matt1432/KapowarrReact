@@ -31,7 +31,7 @@ import SettingsToolbar from 'Settings/SettingsToolbar';
 import themes from 'Styles/Themes';
 
 // Types
-import type { InputChanged } from 'typings/inputs';
+import type { InputChanged } from 'typings/Inputs';
 
 // IMPLEMENTATIONS
 
