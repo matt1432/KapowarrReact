@@ -52,8 +52,9 @@ function VolumeIndexSelectFooter() {
             }
 
             switch (identifier) {
-                // FIXME: not sure this is the right one
-                case massEditActions.UPDATE: {
+                case massEditActions.ROOT_FOLDER:
+                case massEditActions.MONITOR:
+                case massEditActions.UNMONITOR: {
                     setIsSaving(value);
                     break;
                 }
@@ -72,7 +73,6 @@ function VolumeIndexSelectFooter() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [isSavingVolume, setIsSavingVolume] = useState(false);
 
     const previousIsDeleting = usePrevious(isDeleting);
 
@@ -91,7 +91,7 @@ function VolumeIndexSelectFooter() {
     }, [setIsEditModalOpen]);
 
     const onSavePress = useCallback(() => {
-        setIsSavingVolume(true);
+        setIsSaving(true);
         setIsEditModalOpen(false);
     }, []);
 
@@ -130,7 +130,7 @@ function VolumeIndexSelectFooter() {
             <div className={styles.buttons}>
                 <div className={styles.actionButtons}>
                     <SpinnerButton
-                        isSpinning={isSaving && isSavingVolume}
+                        isSpinning={isSaving}
                         isDisabled={!anySelected || isOrganizing}
                         onPress={onEditPress}
                     >
