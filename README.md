@@ -10,7 +10,7 @@
 > - I will still do my best to keep up to date with upstream, but if you start using
     this fork, you cannot go back to upstream since I've changed some things in the
     database.
-> - Currently at https://github.com/Casvt/Kapowarr/commit/b43be3c9fb5eaaeb2711b8fef87d05717ed41866
+> - Currently at https://github.com/Casvt/Kapowarr/commit/0854d89074d788a6b6cfbf2fe83f761e3a3c6d15
 
 <!---
 [![Docker Pulls](https://img.shields.io/docker/pulls/mrcas/kapowarr.svg)](https://hub.docker.com/r/mrcas/kapowarr)

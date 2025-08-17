@@ -401,6 +401,26 @@ class WebSocket(SocketIO, metaclass=Singleton):
         )
         return
 
+    def update_mass_editor_status(
+        self, identifier: str, current_item: int, total_items: int
+    ) -> None:
+        """Send a message with the progress on a Mass Editor job.
+
+        Args:
+            identifier (str): The identifier of the job.
+            current_item (int): The item number currently being worked on.
+            total_items (int): The total number of items that will be worked on.
+        """
+        self.emit(
+            SocketEvent.MASS_EDITOR_STATUS.value,
+            {
+                "identifier": identifier,
+                "current_item": current_item,
+                "total_items": total_items,
+            },
+        )
+        return
+
 
 def setup_process(
     log_level: int,
