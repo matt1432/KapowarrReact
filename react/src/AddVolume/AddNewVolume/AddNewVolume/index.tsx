@@ -37,16 +37,11 @@ import type { AddVolume } from 'AddVolume/AddVolume';
 function AddNewVolume() {
     const { term: initialTerm = '' } = useQueryParams<{ term: string }>();
 
-    const { volumeCount } = useGetVolumesQuery(
-        {},
-        {
-            selectFromResult: ({ data, ...rest }) => ({
-                data,
-                volumeCount: data?.length ?? 0,
-                ...rest,
-            }),
-        },
-    );
+    const { volumeCount } = useGetVolumesQuery(undefined, {
+        selectFromResult: ({ data }) => ({
+            volumeCount: data?.length ?? 0,
+        }),
+    });
 
     const [_term, _setTerm] = useState(initialTerm);
     const [term, setTerm] = useState(initialTerm);

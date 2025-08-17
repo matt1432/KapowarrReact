@@ -6,12 +6,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
 import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
-// import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
+import { useGetVolumesQuery } from 'Store/Api/Volumes';
+import { useIndexVolumes } from 'Volume/Index';
 
 // Misc
 import { useSelect } from 'App/SelectContext';
-import { kinds } from 'Helpers/Props';
 
+import { kinds, massEditActions } from 'Helpers/Props';
+
+import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
@@ -28,34 +31,43 @@ import OrganizeVolumeModal from '../Organize/OrganizeVolumeModal';
 // CSS
 import styles from './index.module.css';
 
-// Types
-
 // IMPLEMENTATIONS
 
-/*
-const volumeEditorSelector = createSelector(
-    (state: AppState) => state.volumes,
-    (volumes) => {
-        const { isSaving, isDeleting, deleteError } = volumes;
-
-        return {
-            isSaving,
-            isDeleting,
-            deleteError,
-        };
-    },
-);
-*/
-
 function VolumeIndexSelectFooter() {
-    // const { isSaving, isDeleting, deleteError } = useSelector(volumeEditorSelector);
+    const { refetch } = useGetVolumesQuery(undefined);
+    const { refetch: refetchIndex } = useIndexVolumes();
 
-    // const isOrganizingVolumes = useSelector(createCommandExecutingSelector(RENAME_VOLUMES));
+    const [isSaving, setIsSaving] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isOrganizing, setIsOrganizing] = useState(false);
 
-    const isSaving = false;
-    const isDeleting = false;
-    const deleteError = undefined;
-    const isOrganizingVolumes = false;
+    useSocketEvents({
+        mass_editor_status: ({ identifier, current_item, total_items }) => {
+            const value = current_item !== total_items;
+
+            if (!value) {
+                // Refresh volumes once an action is finished
+                refetch();
+                refetchIndex();
+            }
+
+            switch (identifier) {
+                // FIXME: not sure this is the right one
+                case massEditActions.UPDATE: {
+                    setIsSaving(value);
+                    break;
+                }
+                case massEditActions.DELETE: {
+                    setIsDeleting(value);
+                    break;
+                }
+                case massEditActions.RENAME: {
+                    setIsOrganizing(value);
+                    break;
+                }
+            }
+        },
+    });
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
@@ -100,10 +112,10 @@ function VolumeIndexSelectFooter() {
     }, []);
 
     useEffect(() => {
-        if (previousIsDeleting && !isDeleting && !deleteError) {
+        if (previousIsDeleting && !isDeleting) {
             selectDispatch({ type: 'unselectAll' });
         }
-    }, [previousIsDeleting, isDeleting, deleteError, selectDispatch]);
+    }, [previousIsDeleting, isDeleting, selectDispatch]);
 
     const { refetch: fetchRootFolders } = useGetRootFoldersQuery(undefined);
 
@@ -119,7 +131,7 @@ function VolumeIndexSelectFooter() {
                 <div className={styles.actionButtons}>
                     <SpinnerButton
                         isSpinning={isSaving && isSavingVolume}
-                        isDisabled={!anySelected || isOrganizingVolumes}
+                        isDisabled={!anySelected || isOrganizing}
                         onPress={onEditPress}
                     >
                         {translate('Edit')}
@@ -127,8 +139,8 @@ function VolumeIndexSelectFooter() {
 
                     <SpinnerButton
                         kind={kinds.WARNING}
-                        isSpinning={isOrganizingVolumes}
-                        isDisabled={!anySelected || isOrganizingVolumes}
+                        isSpinning={isOrganizing}
+                        isDisabled={!anySelected || isOrganizing}
                         onPress={onOrganizePress}
                     >
                         {translate('RenameFiles')}

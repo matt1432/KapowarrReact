@@ -174,3 +174,115 @@ export const useExistingVolumeQuery = (comicvineId: number) => {
         },
     );
 };
+
+/*
+        // GET
+        getVolumes: build.mutation<VolumePublicInfo[], GetVolumesParams>({
+            query: ({ filter, sort }) => ({
+                method: 'GET',
+                url:
+                    'volumes' +
+                    getQueryString({
+                        filter: filter ?? '',
+                        sort: sort ?? 'title',
+                        api_key: window.Kapowarr.apiKey,
+                    }),
+            }),
+
+            transformResponse: (response: { result: RawVolumePublicInfo[] }) =>
+                response.result.map(camelize),
+        }),
+
+type GetVolumes = typeof extendedApi.endpoints.getVolumes.Types;
+type GetVolumesSelectorResult = MutationResultSelectorResult<GetVolumes['MutationDefinition']>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyRecord = Record<string, any>;
+
+type GetVolumesOptions<R extends AnyRecord> = {
+    fixedCacheKey?: string;
+    selectFromResult?: (state: GetVolumesSelectorResult) => R;
+};
+
+export const useLazyGetVolumesQuery = <R extends AnyRecord = GetVolumesSelectorResult>(
+    params: GetVolumesParams = {},
+    options: GetVolumesOptions<R> = {},
+) => {
+    const [trigger, state] = extendedApi.useGetVolumesMutation(options);
+
+    const refetch = useMemo(() => () => trigger(params), [trigger, params]);
+
+    return [
+        refetch,
+        state as TypedUseMutationResult<
+            GetVolumes['ResultType'],
+            GetVolumes['QueryArg'],
+            GetVolumes['BaseQuery'],
+            R
+        >,
+    ] as const;
+};
+
+export const useLazyGetAllVolumes = () => {
+    return useLazyGetVolumesQuery(
+        {},
+        {
+            fixedCacheKey: 'allVolumes',
+        },
+    );
+};
+
+export const useGetVolumesQuery = <R extends AnyRecord = GetVolumesSelectorResult>(
+    params: GetVolumesParams = {},
+    options: GetVolumesOptions<R> = {},
+) => {
+    const [refetch, state] = useLazyGetVolumesQuery(params, options);
+
+    useEffect(() => {
+        console.log('hi');
+        refetch();
+        // Run this once
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return {
+        ...state,
+        refetch,
+    };
+};
+
+export const useGetAllVolumes = () => {
+    return useGetVolumesQuery(
+        {},
+        {
+            fixedCacheKey: 'allVolumes',
+        },
+    );
+};
+
+export const useGetVolumeQuery = (volumeId: number) => {
+    return useGetVolumesQuery(
+        {},
+        {
+            fixedCacheKey: `volume${volumeId}`,
+            selectFromResult: ({ data, ...rest }) => ({
+                volume: data?.find((v) => v.id === volumeId),
+                ...rest,
+            }),
+        },
+    );
+};
+
+export const useExistingVolumeQuery = (comicvineId: number) => {
+    return useGetVolumesQuery(
+        {},
+        {
+            fixedCacheKey: `exists${comicvineId}`,
+            selectFromResult: ({ data, ...rest }) => ({
+                isExistingVolume: Boolean(data?.some((v) => v.comicvineId === comicvineId)),
+                ...rest,
+            }),
+        },
+    );
+};
+*/

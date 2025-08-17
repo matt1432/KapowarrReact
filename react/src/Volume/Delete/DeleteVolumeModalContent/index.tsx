@@ -6,6 +6,7 @@ import { useCallback, useState } from 'react';
 // Redux
 import { useDeleteVolumeMutation, useGetVolumesQuery } from 'Store/Api/Volumes';
 
+import { useIndexVolumes } from 'Volume/Index';
 import useVolume from 'Volume/useVolume';
 
 // Misc
@@ -46,7 +47,9 @@ function DeleteVolumeModalContent({ volumeId, onModalClose }: DeleteVolumeModalC
 
     const { volume } = useVolume(volumeId);
     const { title, issueFileCount, totalSize: sizeOnDisk, folder: path } = volume!;
+
     const { refetch } = useGetVolumesQuery(undefined);
+    const { refetch: refetchIndex } = useIndexVolumes();
 
     const [deleteVolume] = useDeleteVolumeMutation();
 
@@ -59,11 +62,12 @@ function DeleteVolumeModalContent({ volumeId, onModalClose }: DeleteVolumeModalC
     const handleDeleteVolumeConfirmed = useCallback(() => {
         deleteVolume({ volumeId, deleteFolder: deleteFiles }).then(() => {
             refetch();
+            refetchIndex();
 
             onModalClose();
             navigate('/');
         });
-    }, [volumeId, deleteFiles, deleteVolume, navigate, onModalClose, refetch]);
+    }, [volumeId, deleteFiles, deleteVolume, navigate, onModalClose, refetch, refetchIndex]);
 
     return (
         <ModalContent onModalClose={onModalClose}>

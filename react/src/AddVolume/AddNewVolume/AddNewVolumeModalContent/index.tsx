@@ -10,6 +10,8 @@ import { setAddVolumeOption } from 'Store/Slices/AddVolume';
 import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import { useAddVolumeMutation, useGetVolumesQuery } from 'Store/Api/Volumes';
 
+import { useIndexVolumes } from 'Volume/Index';
+
 // Misc
 import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
 
@@ -21,6 +23,7 @@ import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
 import Icon from 'Components/Icon';
+import InnerHTML from 'Components/InnerHTML';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
@@ -38,7 +41,6 @@ import styles from './index.module.css';
 import type { AddVolume } from 'AddVolume/AddVolume';
 import type { InputChanged } from 'typings/Inputs';
 import type { MonitoringScheme, SpecialVersion } from 'Volume/Volume';
-import InnerHTML from 'Components/InnerHTML';
 
 export interface AddNewVolumeModalContentProps {
     volume: AddVolume;
@@ -57,6 +59,7 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
 
     const { data: rootFolders } = useGetRootFoldersQuery(undefined);
     const { refetch } = useGetVolumesQuery(undefined);
+    const { refetch: refetchIndex } = useIndexVolumes();
 
     const [addVolume, addVolumeState] = useAddVolumeMutation();
 
@@ -85,8 +88,10 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
 
     const handleAddVolumeSuccess = useCallback(() => {
         refetch();
+        refetchIndex();
+
         onModalClose();
-    }, [onModalClose, refetch]);
+    }, [onModalClose, refetch, refetchIndex]);
 
     const handleAddVolumePress = useCallback(() => {
         addVolume({

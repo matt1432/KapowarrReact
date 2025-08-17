@@ -77,6 +77,34 @@ interface VolumeIndexProps {
 
 // IMPLEMENTATIONS
 
+// eslint-disable-next-line
+export const useIndexVolumes = () => {
+    const { filterKey, sortKey } = useRootSelector((state) => state.volumeIndex);
+
+    const { isFetching, isPopulated, error, items, refetch } = useGetVolumesQuery(
+        {
+            sort: sortKey,
+            filter: filterKey,
+        },
+        {
+            selectFromResult: ({ isFetching, isSuccess, error, data }) => ({
+                isFetching,
+                isPopulated: isSuccess,
+                error,
+                items: data ?? [],
+            }),
+        },
+    );
+
+    return {
+        isFetching,
+        isPopulated,
+        error,
+        items,
+        refetch,
+    };
+};
+
 const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) => {
     const dispatch = useRootDispatch();
 
@@ -84,18 +112,9 @@ const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) 
         (state) => state.volumeIndex,
     );
 
-    const {
-        isFetching,
-        isSuccess,
-        error,
-        data: items,
-    } = useGetVolumesQuery({
-        sort: sortKey,
-        filter: filterKey,
-    });
+    const { isFetching, isPopulated, error, items } = useIndexVolumes();
 
-    const isPopulated = items && isSuccess;
-    const totalItems = items?.length ?? 0;
+    const totalItems = items.length;
 
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
     const scrollerRef = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>;
@@ -172,7 +191,7 @@ const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) 
         }
 
         const characters =
-            items?.reduce((acc: Record<string, number>, item) => {
+            items.reduce((acc: Record<string, number>, item) => {
                 let char = item.title.charAt(0);
 
                 if (!isNaN(Number(char))) {
@@ -207,11 +226,11 @@ const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) 
         [view],
     );
 
-    const isLoaded = !!(!error && isPopulated && items.length);
+    const isLoaded = !error && isPopulated && items.length;
     const hasNoVolume = !totalItems;
 
     return (
-        <SelectProvider items={items ?? []}>
+        <SelectProvider items={items}>
             <PageContent>
                 <PageToolbar>
                     <PageToolbarSection>

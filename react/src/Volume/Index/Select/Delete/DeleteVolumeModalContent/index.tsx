@@ -5,14 +5,11 @@
 import { useCallback, useMemo, useState } from 'react';
 
 // Redux
-import { useDispatch /* , useSelector */ } from 'react-redux';
-// import { createSelector } from 'reselect';
-// import { bulkDeleteVolume, setDeleteOption } from 'Store/Actions/volumeActions';
-// import createAllVolumeSelector from 'Store/Selectors/createAllVolumeSelector';
+import { useMassEditMutation } from 'Store/Api/Command';
+import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
-import { orderBy } from 'lodash';
-import { inputTypes, kinds } from 'Helpers/Props';
+import { inputTypes, kinds, massEditActions } from 'Helpers/Props';
 
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
@@ -31,7 +28,6 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import styles from './index.module.css';
 
 // Types
-import type { Volume } from 'Volume/Volume';
 import type { InputChanged } from 'typings/Inputs';
 
 interface DeleteVolumeModalContentProps {
@@ -41,77 +37,39 @@ interface DeleteVolumeModalContentProps {
 
 // IMPLEMENTATIONS
 
-/*
-const selectDeleteOptions = createSelector(
-    (state: AppState) => state.volume.deleteOptions,
-    (deleteOptions) => deleteOptions,
-);
-*/
-
 function DeleteVolumeModalContent({ volumeIds, onModalClose }: DeleteVolumeModalContentProps) {
-    // const { addImportListExclusion } = useSelector(selectDeleteOptions);
-    const allVolume: Volume[] = []; // useSelector(createAllVolumeSelector());
-    const dispatch = useDispatch();
+    const [runMassEditAction] = useMassEditMutation();
 
     const [deleteFiles, setDeleteFiles] = useState(false);
 
-    const volumes = useMemo((): Volume[] => {
-        const volumeList = volumeIds.map((id) => {
-            return allVolume.find((s) => s.id === id);
-        }) as Volume[];
+    const { data: allVolumes = [] } = useGetVolumesQuery(undefined);
 
-        return orderBy(volumeList, ['sortTitle']);
-    }, [volumeIds, allVolume]);
+    const volumes = useMemo(() => {
+        return allVolumes.filter((v) => volumeIds.includes(v.id));
+    }, [volumeIds, allVolumes]);
 
-    const onDeleteFilesChange = useCallback(
-        ({ value }: InputChanged<boolean>) => {
-            setDeleteFiles(value);
-        },
-        [setDeleteFiles],
-    );
-
-    const onDeleteOptionChange = useCallback(
-        // @ts-expect-error TODO:
-        // eslint-disable-next-line
-        ({ name, value }: { name: string; value: boolean }) => {
-            /*
-            dispatch(
-                setDeleteOption({
-                    [name]: value,
-                }),
-            );*/
-        },
-        [dispatch],
-    );
+    const onDeleteFilesChange = useCallback(({ value }: InputChanged<boolean>) => {
+        setDeleteFiles(value);
+    }, []);
 
     const onDeleteVolumeConfirmed = useCallback(() => {
         setDeleteFiles(false);
 
-        /*
-        dispatch(
-            bulkDeleteVolume({
-                volumeIds,
-                deleteFiles,
-                addImportListExclusion,
-            }),
-        );*/
+        runMassEditAction({
+            action: massEditActions.DELETE,
+            volumeIds,
+            args: {
+                deleteFolder: deleteFiles,
+            },
+        });
 
         onModalClose();
-    }, [
-        volumeIds,
-        deleteFiles,
-        /* addImportListExclusion, */ setDeleteFiles,
-        dispatch,
-        onModalClose,
-    ]);
+    }, [volumeIds, deleteFiles, onModalClose, runMassEditAction]);
 
     const { totalIssueFileCount, totalSizeOnDisk } = useMemo(() => {
         return volumes.reduce(
-            (acc, { totalSize, issues }) => {
-                acc.totalIssueFileCount += issues.reduce(
-                    (acc, issue) => acc + issue.files.length,
-                    0,
-                );
+            (acc, { totalSize, issueFileCount }) => {
+                acc.totalIssueFileCount += issueFileCount;
                 acc.totalSizeOnDisk += totalSize;
 
                 return acc;
@@ -129,18 +87,6 @@ function DeleteVolumeModalContent({ volumeIds, onModalClose }: DeleteVolumeModal
 
             <ModalBody>
                 <div>
-                    <FormGroup>
-                        <FormLabel>{translate('AddListExclusion')}</FormLabel>
-
-                        <FormInputGroup
-                            type={inputTypes.CHECK}
-                            name="addImportListExclusion"
-                            value={'' /*addImportListExclusion*/}
-                            helpText={translate('AddListExclusionVolumeHelpText')}
-                            onChange={onDeleteOptionChange}
-                        />
-                    </FormGroup>
-
                     <FormGroup>
                         <FormLabel>
                             {volumes.length > 1
@@ -174,39 +120,33 @@ function DeleteVolumeModalContent({ volumeIds, onModalClose }: DeleteVolumeModal
                 </div>
 
                 <ul>
-                    {volumes.map(({ title, folder, issues, totalSize }) => {
-                        const issueFileCount = issues.reduce(
-                            (acc, issue) => acc + issue.files.length,
-                            0,
-                        );
-                        return (
-                            <li key={title}>
-                                <span>{title}</span>
+                    {volumes.map(({ title, folder, issueFileCount, totalSize }) => (
+                        <li key={title}>
+                            <span>{title}</span>
 
-                                {deleteFiles && (
-                                    <span>
-                                        <span className={styles.pathContainer}>
-                                            -<span className={styles.path}>{folder}</span>
-                                        </span>
-
-                                        {!!issueFileCount && (
-                                            <span className={styles.statistics}>
-                                                (
-                                                {translate('DeleteVolumeFolderIssueCount', {
-                                                    issueFileCount,
-                                                    size: formatBytes(totalSize),
-                                                })}
-                                                )
-                                            </span>
-                                        )}
+                            {deleteFiles && (
+                                <span>
+                                    <span className={styles.pathContainer}>
+                                        -<span className={styles.path}>{folder}</span>
                                     </span>
-                                )}
-                            </li>
-                        );
-                    })}
+
+                                    {Boolean(issueFileCount) && (
+                                        <span className={styles.statistics}>
+                                            (
+                                            {translate('DeleteVolumeFolderIssueCount', {
+                                                issueFileCount,
+                                                size: formatBytes(totalSize),
+                                            })}
+                                            )
+                                        </span>
+                                    )}
+                                </span>
+                            )}
+                        </li>
+                    ))}
                 </ul>
 
-                {deleteFiles && !!totalIssueFileCount ? (
+                {deleteFiles && Boolean(totalIssueFileCount) ? (
                     <div className={styles.deleteFilesMessage}>
                         {translate('DeleteVolumeFolderIssueCount', {
                             issueFileCount: totalIssueFileCount,
