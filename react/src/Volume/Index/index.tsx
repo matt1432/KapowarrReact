@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useMemo, useRef, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -12,6 +12,7 @@ import {
     setVolumeTableOption,
     type VolumeIndexState,
 } from 'Store/Slices/VolumeIndex';
+import { setScrollPosition } from 'Store/Slices/App';
 
 import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
@@ -55,11 +56,9 @@ import VolumeIndexTable from './Table/VolumeIndexTable';
 
 // CSS
 import styles from './index.module.css';
+import type { VolumePublicInfo } from 'Volume/Volume';
 
 // Types
-import type { SortDirection } from 'Helpers/Props/sortDirections';
-import { setScrollPosition } from 'Store/Slices/App';
-
 export type IndexView = 'posters' | 'table';
 export type IndexFilter = '' | 'wanted' | 'monitored';
 export type IndexSort =
@@ -79,9 +78,10 @@ interface VolumeIndexProps {
 
 // eslint-disable-next-line
 export const useIndexVolumes = () => {
-    const { filterKey, sortKey } = useRootSelector((state) => state.volumeIndex);
+    const [items, setItems] = useState<VolumePublicInfo[]>([]);
+    const { filterKey, sortKey, sortDirection } = useRootSelector((state) => state.volumeIndex);
 
-    const { isFetching, isPopulated, error, items, refetch } = useGetVolumesQuery(
+    const { isFetching, isPopulated, error, data, refetch } = useGetVolumesQuery(
         {
             sort: sortKey,
             filter: filterKey,
@@ -91,10 +91,19 @@ export const useIndexVolumes = () => {
                 isFetching,
                 isPopulated: isSuccess,
                 error,
-                items: data ?? [],
+                data: data ?? [],
             }),
         },
     );
+
+    useEffect(() => {
+        if (sortDirection === sortDirections.DESCENDING) {
+            setItems(data.toReversed());
+        }
+        else {
+            setItems(data);
+        }
+    }, [data, sortDirection]);
 
     return {
         isFetching,
@@ -145,8 +154,8 @@ const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) 
     );
 
     const onSortSelect = useCallback(
-        (value: IndexSort) => {
-            dispatch(setVolumeSort(value));
+        (sortKey: IndexSort) => {
+            dispatch(setVolumeSort({ sortKey }));
         },
         [dispatch],
     );
@@ -211,7 +220,7 @@ const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) 
         const order = Object.keys(characters).sort();
 
         // Reverse if sorting descending
-        if ((sortDirection as SortDirection) === sortDirections.DESCENDING) {
+        if (sortDirection === sortDirections.DESCENDING) {
             order.reverse();
         }
 

@@ -22,6 +22,11 @@ export interface IssueTableState {
     columns: Column<IssueColumnName>[];
 }
 
+export interface SetIssuesSortParams {
+    sortKey: IssueTableSort;
+    sortDirection?: SortDirection;
+}
+
 // IMPLEMENTATIONS
 
 const initialState = {
@@ -88,13 +93,22 @@ const IssueTableSlice = createSlice({
     name: 'issueTable',
     initialState,
     reducers: {
-        setIssuesSort: (
-            state,
-            {
-                payload,
-            }: PayloadAction<Partial<{ sortKey: IssueTableSort; sortDirection: SortDirection }>>,
-        ) => {
-            state = Object.assign(state, payload);
+        setIssuesSort: (state, { payload }: PayloadAction<SetIssuesSortParams>) => {
+            const newState = structuredClone(payload);
+
+            if (!newState.sortDirection) {
+                if (newState.sortKey === state.sortKey) {
+                    newState.sortDirection =
+                        state.sortDirection === sortDirections.ASCENDING
+                            ? sortDirections.DESCENDING
+                            : sortDirections.ASCENDING;
+                }
+                else {
+                    newState.sortDirection = state.sortDirection;
+                }
+            }
+
+            state = Object.assign(state, newState);
         },
 
         setIssuesTableOption: (

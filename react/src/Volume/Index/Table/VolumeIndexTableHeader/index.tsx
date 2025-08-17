@@ -53,8 +53,8 @@ function VolumeIndexTableHeader({
     const [selectState, selectDispatch] = useSelect();
 
     const onSortPress = useCallback(
-        (value: string) => {
-            dispatch(setVolumeSort(value as IndexSort));
+        (sortKey: string) => {
+            dispatch(setVolumeSort({ sortKey: sortKey as IndexSort }));
         },
         [dispatch],
     );

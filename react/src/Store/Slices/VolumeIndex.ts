@@ -15,6 +15,11 @@ import type { TableOptionsChangePayload } from 'typings/Table';
 import type { IndexFilter, IndexSort, IndexView } from 'Volume/Index';
 import type { VolumeColumnName } from 'Volume/Volume';
 
+export interface SetVolumeSortParams {
+    sortKey: IndexSort;
+    sortDirection?: SortDirection;
+}
+
 // IMPLEMENTATIONS
 
 export interface VolumeIndexState {
@@ -152,8 +157,22 @@ const VolumeIndexSlice = createSlice({
             state.filterKey = value;
         },
 
-        setVolumeSort: (state, { payload: value }: PayloadAction<IndexSort>) => {
-            state.sortKey = value;
+        setVolumeSort: (state, { payload }: PayloadAction<SetVolumeSortParams>) => {
+            const newState = structuredClone(payload);
+
+            if (!newState.sortDirection) {
+                if (newState.sortKey === state.sortKey) {
+                    newState.sortDirection =
+                        state.sortDirection === sortDirections.ASCENDING
+                            ? sortDirections.DESCENDING
+                            : sortDirections.ASCENDING;
+                }
+                else {
+                    newState.sortDirection = state.sortDirection;
+                }
+            }
+
+            state = Object.assign(state, newState);
         },
 
         setVolumeView: (state, { payload: value }: PayloadAction<IndexView>) => {
