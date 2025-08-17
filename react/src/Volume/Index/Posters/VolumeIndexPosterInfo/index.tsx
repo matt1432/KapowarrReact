@@ -1,7 +1,6 @@
 // IMPORTS
 
 // Misc
-import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 
 // CSS
@@ -12,19 +11,44 @@ import type { IndexSort } from '../..';
 
 interface VolumeIndexPosterInfoProps {
     publisher?: string;
-    folder: string;
-    sizeOnDisk?: number;
     sortKey: IndexSort;
+    volumeNumber: number;
+    year: number;
 }
 
 // IMPLEMENTATIONS
 
 function VolumeIndexPosterInfo({
     publisher,
-    folder,
-    sizeOnDisk = 0,
     sortKey,
+    volumeNumber,
+    year,
 }: VolumeIndexPosterInfoProps) {
+    // 'title'
+    // Already Shown
+
+    // 'year'
+    if (sortKey === 'year') {
+        return (
+            <div className={styles.info} title={translate('Year')}>
+                {year}
+            </div>
+        );
+    }
+
+    // 'volume_number'
+    if (sortKey === 'volume_number') {
+        return (
+            <div className={styles.info} title={translate('VolumeNumber')}>
+                {`Volume #${volumeNumber}`}
+            </div>
+        );
+    }
+
+    // 'recently_added'
+    // Not available through API
+
+    // 'publisher'
     if (sortKey === 'publisher' && publisher) {
         return (
             <div className={styles.info} title={translate('Publisher')}>
@@ -33,21 +57,11 @@ function VolumeIndexPosterInfo({
         );
     }
 
-    if (sortKey === 'folder') {
-        return (
-            <div className={styles.info} title={translate('Folder')}>
-                {folder}
-            </div>
-        );
-    }
+    // 'wanted'
+    // Already Shown
 
-    if (sortKey === 'total_size') {
-        return (
-            <div className={styles.info} title={translate('SizeOnDisk')}>
-                {formatBytes(sizeOnDisk)}
-            </div>
-        );
-    }
+    // 'recently_released';
+    // Not available through API
 
     return null;
 }

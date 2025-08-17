@@ -64,6 +64,8 @@ const ADDITIONAL_COLUMN_COUNT: Record<string, number> = {
     large: 1,
 };
 
+const EXTRA_ROW_HEIGHT = 19;
+
 function Cell({ columnIndex, rowIndex, style, data }: GridChildComponentProps<CellItemData>) {
     const { layout, items, sortKey, isSelectMode } = data;
     const { columnCount, padding, posterWidth, posterHeight } = layout;
@@ -129,31 +131,37 @@ export default function VolumeIndexPosters({
     const posterHeight = Math.ceil((250 / 170) * posterWidth);
 
     const rowHeight = useMemo(() => {
-        const { detailedProgressBar, showTitle, showMonitored } = posterOptions;
+        const { detailedProgressBar, showFolder, showMonitored, showSizeOnDisk, showTitle } =
+            posterOptions;
 
         const heights = [
             posterHeight,
             detailedProgressBar ? detailedProgressBarHeight : progressBarHeight,
-            19,
+            EXTRA_ROW_HEIGHT,
             isSmallScreen ? columnPaddingSmallScreen : columnPadding,
         ];
 
-        if (showTitle) {
-            heights.push(19);
+        if (showFolder) {
+            heights.push(EXTRA_ROW_HEIGHT);
         }
 
         if (showMonitored) {
-            heights.push(19);
+            heights.push(EXTRA_ROW_HEIGHT);
         }
 
-        // TODO: figure this out
+        if (showSizeOnDisk) {
+            heights.push(EXTRA_ROW_HEIGHT);
+        }
+
+        if (showTitle) {
+            heights.push(EXTRA_ROW_HEIGHT);
+        }
+
         switch (sortKey) {
-            case 'wanted':
-            case 'title':
-            case 'total_size':
-            case 'folder':
+            case 'year':
+            case 'volume_number':
             case 'publisher':
-                heights.push(19);
+                heights.push(EXTRA_ROW_HEIGHT);
                 break;
             default:
             // No need to add a height of 0

@@ -28,9 +28,11 @@ export interface VolumeIndexState {
     posterOptions: {
         detailedProgressBar: boolean;
         size: string;
-        showTitle: boolean;
+        showFolder: boolean;
         showMonitored: boolean;
         showSearchAction: boolean;
+        showSizeOnDisk: boolean;
+        showTitle: boolean;
     };
 
     tableOptions: {
@@ -52,9 +54,11 @@ const initialState = {
     posterOptions: {
         detailedProgressBar: true,
         size: 'large',
-        showTitle: true,
+        showFolder: false,
         showMonitored: true,
         showSearchAction: false,
+        showSizeOnDisk: false,
+        showTitle: true,
     },
 
     tableOptions: {

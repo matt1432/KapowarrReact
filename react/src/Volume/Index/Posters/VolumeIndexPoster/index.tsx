@@ -12,6 +12,7 @@ import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 // Misc
 import { commandNames, icons } from 'Helpers/Props';
 
+import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 
 // General Components
@@ -53,9 +54,14 @@ function VolumeIndexPoster({
 }: VolumeIndexPosterProps) {
     const { data: volume } = useSearchVolumeQuery({ volumeId });
 
-    const { detailedProgressBar, showTitle, showMonitored, showSearchAction } = useRootSelector(
-        (state) => state.volumeIndex.posterOptions,
-    );
+    const {
+        detailedProgressBar,
+        showFolder,
+        showMonitored,
+        showSearchAction,
+        showSizeOnDisk,
+        showTitle,
+    } = useRootSelector((state) => state.volumeIndex.posterOptions);
 
     const [hasPosterError, setHasPosterError] = useState(false);
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
@@ -116,7 +122,7 @@ function VolumeIndexPoster({
         return null;
     }
 
-    const { title, monitored, folder, publisher, totalSize } = volume;
+    const { title, monitored, folder, publisher, totalSize, volumeNumber, year } = volume;
 
     const link = `/volumes/${volumeId}`;
 
@@ -190,11 +196,23 @@ function VolumeIndexPoster({
                 </div>
             ) : null}
 
+            {showSizeOnDisk ? (
+                <div className={styles.title} title={translate('SizeOnDisk')}>
+                    {formatBytes(totalSize)}
+                </div>
+            ) : null}
+
+            {showFolder ? (
+                <div className={styles.title} title={translate('Folder')}>
+                    {folder}
+                </div>
+            ) : null}
+
             <VolumeIndexPosterInfo
                 sortKey={sortKey}
-                sizeOnDisk={totalSize}
                 publisher={publisher}
-                folder={folder}
+                volumeNumber={volumeNumber}
+                year={year}
             />
 
             <EditVolumeModal

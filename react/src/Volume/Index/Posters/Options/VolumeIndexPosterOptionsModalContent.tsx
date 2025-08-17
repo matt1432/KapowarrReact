@@ -57,8 +57,15 @@ const posterSizeOptions: EnhancedSelectInputValue<string>[] = [
 function VolumeIndexPosterOptionsModalContent({
     onModalClose,
 }: VolumeIndexPosterOptionsModalContentProps) {
-    const { detailedProgressBar, size, showTitle, showMonitored, showSearchAction } =
-        useRootSelector((state) => state.volumeIndex.posterOptions);
+    const {
+        detailedProgressBar,
+        size,
+        showFolder,
+        showMonitored,
+        showSearchAction,
+        showSizeOnDisk,
+        showTitle,
+    } = useRootSelector((state) => state.volumeIndex.posterOptions);
 
     const dispatch = useRootDispatch();
 
@@ -122,6 +129,30 @@ function VolumeIndexPosterOptionsModalContent({
                             name="showMonitored"
                             value={showMonitored}
                             helpText={translate('ShowMonitoredHelpText')}
+                            onChange={onPosterOptionChange}
+                        />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <FormLabel>{translate('ShowSizeOnDisk')}</FormLabel>
+
+                        <FormInputGroup
+                            type={inputTypes.CHECK}
+                            name="showSizeOnDisk"
+                            value={showSizeOnDisk}
+                            helpText={translate('ShowSizeOnDiskHelpText')}
+                            onChange={onPosterOptionChange}
+                        />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <FormLabel>{translate('ShowFolder')}</FormLabel>
+
+                        <FormInputGroup
+                            type={inputTypes.CHECK}
+                            name="showFolder"
+                            value={showFolder}
+                            helpText={translate('ShowFolderHelpText')}
                             onChange={onPosterOptionChange}
                         />
                     </FormGroup>

@@ -64,12 +64,12 @@ export type IndexView = 'posters' | 'table';
 export type IndexFilter = '' | 'wanted' | 'monitored';
 export type IndexSort =
     | 'title'
-    | 'volume_number'
     | 'year'
+    | 'volume_number'
+    | 'recently_added'
     | 'publisher'
     | 'wanted'
-    | 'total_size'
-    | 'folder';
+    | 'recently_released';
 
 interface VolumeIndexProps {
     initialScrollTop?: number;

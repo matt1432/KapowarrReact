@@ -59,6 +59,15 @@ function VolumeIndexSortMenu({
                 </SortMenuItem>
 
                 <SortMenuItem
+                    name="recently_added"
+                    sortKey={sortKey}
+                    sortDirection={sortDirection}
+                    onPress={onSortSelect}
+                >
+                    {translate('RecentlyAdded')}
+                </SortMenuItem>
+
+                <SortMenuItem
                     name="publisher"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
@@ -73,25 +82,16 @@ function VolumeIndexSortMenu({
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
                 >
-                    {translate('MonitoredStatus')}
+                    {translate('MissingIssues')}
                 </SortMenuItem>
 
                 <SortMenuItem
-                    name="total_size"
+                    name="recently_released"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
                 >
-                    {translate('SizeOnDisk')}
-                </SortMenuItem>
-
-                <SortMenuItem
-                    name="folder"
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
-                    onPress={onSortSelect}
-                >
-                    {translate('Path')}
+                    {translate('RecentlyReleased')}
                 </SortMenuItem>
             </MenuContent>
         </SortMenu>
