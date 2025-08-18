@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -57,7 +57,7 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
         (state) => state.addVolume,
     );
 
-    const { data: rootFolders } = useGetRootFoldersQuery(undefined);
+    const { data: rootFolders = [] } = useGetRootFoldersQuery(undefined);
     const { refetch } = useGetVolumesQuery(undefined);
     const { refetch: refetchIndex } = useIndexVolumes();
 
@@ -67,11 +67,20 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
         return addVolumeState.isLoading;
     }, [addVolumeState]);
 
+    const [rootFolderPath, setRootFolderPath] = useState('');
+
+    useEffect(() => {
+        if (rootFolderPath === '' && rootFolders.length !== 0) {
+            setRootFolderPath(rootFolders[0].folder);
+        }
+    }, [rootFolderPath, rootFolders]);
+
     const handleRootFolderChange = useCallback(
         ({ value }: InputChanged<string>) => {
-            const folder = rootFolders?.find((f) => f.folder === value);
+            const folder = rootFolders.find((f) => f.folder === value);
 
             if (folder) {
+                setRootFolderPath(folder.folder);
                 setAddVolumeOption('rootFolder', folder);
             }
         },
@@ -135,6 +144,7 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
                                 <FormInputGroup
                                     type={inputTypes.ROOT_FOLDER_SELECT}
                                     name="rootFolderPath"
+                                    value={rootFolderPath}
                                     valueOptions={{
                                         volumeFolder: volume.title + '...',
                                     }}

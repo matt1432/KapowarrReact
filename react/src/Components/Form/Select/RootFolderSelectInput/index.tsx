@@ -18,12 +18,17 @@ import EnhancedSelectInput, {
 // Types
 export type RootFolderSelectInputProps = Omit<
     EnhancedSelectInputProps<EnhancedSelectInputValue<string>, string>,
-    'value' | 'values'
+    'values'
 >;
 
 // IMPLEMENTATIONS
 
-function RootFolderSelectInput({ name, onChange, ...otherProps }: RootFolderSelectInputProps) {
+function RootFolderSelectInput({
+    name,
+    onChange,
+    value,
+    ...otherProps
+}: RootFolderSelectInputProps) {
     const { data } = useGetRootFoldersQuery(undefined);
 
     const values = useMemo(() => {
@@ -44,7 +49,7 @@ function RootFolderSelectInput({ name, onChange, ...otherProps }: RootFolderSele
             <EnhancedSelectInput
                 {...otherProps}
                 name={name}
-                value={data?.at(0)?.folder ?? ''}
+                value={value}
                 values={values}
                 selectedValueComponent={RootFolderSelectInputSelectedValue}
                 optionComponent={RootFolderSelectInputOption}

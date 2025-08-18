@@ -1,12 +1,10 @@
-// TODO:
 // IMPORTS
 
 // React
 import { useCallback, useState } from 'react';
 
 // Redux
-// import { useSelector } from 'react-redux';
-// import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
+import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc
 import { inputTypes } from 'Helpers/Props';
@@ -38,39 +36,36 @@ export interface RootFolderModalContentProps {
     onModalClose(): void;
 }
 
-interface VolumeFolder {
-    folder: string;
-}
-
 // IMPLEMENTATIONS
 
 function RootFolderModalContent({
-    // volumeId,
+    volumeId,
     onSavePress,
     onModalClose,
     rootFolderPath: initRootFolderPath,
 }: RootFolderModalContentProps) {
-    // const { isWindows } = useSelector(createSystemStatusSelector());
-    const isWindows = false;
-
     const [rootFolderPath, setRootFolderPath] = useState(initRootFolderPath);
 
-    const { isLoading, data } = { isLoading: false, data: {} as VolumeFolder }; // useApiQuery<VolumeFolder>({
-    //     path: `/volumes/${volumeId}/folder`,
-    // });
+    const { isLoading, folder } = useSearchVolumeQuery(
+        { volumeId },
+        {
+            selectFromResult: ({ isLoading, data }) => ({
+                isLoading,
+                folder: data?.folder,
+            }),
+        },
+    );
 
     const onInputChange = useCallback(({ value }: InputChanged<string>) => {
         setRootFolderPath(value);
     }, []);
 
     const handleSavePress = useCallback(() => {
-        const separator = isWindows ? '\\' : '/';
-
         onSavePress({
-            path: `${rootFolderPath}${separator}${data?.folder}`,
+            path: `${rootFolderPath}/${folder}`,
             rootFolderPath,
         });
-    }, [rootFolderPath, isWindows, data, onSavePress]);
+    }, [rootFolderPath, folder, onSavePress]);
 
     return (
         <ModalContent onModalClose={onModalClose}>
@@ -83,15 +78,8 @@ function RootFolderModalContent({
                     <FormInputGroup
                         type={inputTypes.ROOT_FOLDER_SELECT}
                         name="rootFolderPath"
-                        // value={rootFolderPath}
-                        valueOptions={{
-                            volumeFolder: data?.folder,
-                            isWindows,
-                        }}
-                        selectedValueOptions={{
-                            volumeFolder: data?.folder,
-                            isWindows,
-                        }}
+                        value={rootFolderPath}
+                        selectedValueOptions={{ includeFreeSpace: false }}
                         helpText={translate('VolumeEditRootFolderHelpText')}
                         onChange={onInputChange}
                     />
@@ -101,7 +89,7 @@ function RootFolderModalContent({
             <ModalFooter>
                 <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
-                <Button disabled={isLoading || !data?.folder} onPress={handleSavePress}>
+                <Button disabled={isLoading || !folder} onPress={handleSavePress}>
                     {translate('UpdatePath')}
                 </Button>
             </ModalFooter>

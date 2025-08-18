@@ -151,6 +151,7 @@ function EditVolumeModalContent({
                     <FormInputGroup
                         type={inputTypes.ROOT_FOLDER_SELECT}
                         name="rootFolderPath"
+                        value={rootFolderPath}
                         selectedValueOptions={{ includeFreeSpace: false }}
                         helpText={translate('VolumeEditRootFolderHelpText')}
                         onChange={onInputChange}
