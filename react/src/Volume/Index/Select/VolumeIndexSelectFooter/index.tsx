@@ -1,7 +1,3 @@
-// TODO:
-// - Convert
-// - Remove Ads
-
 // IMPORTS
 
 // React
@@ -10,6 +6,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 // Redux
 import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import { useGetVolumesQuery } from 'Store/Api/Volumes';
+import { useMassEditMutation } from 'Store/Api/Command';
+
 import { useIndexVolumes } from 'Volume/Index';
 
 // Misc
@@ -43,6 +41,8 @@ function VolumeIndexSelectFooter() {
     const [isSaving, setIsSaving] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isOrganizing, setIsOrganizing] = useState(false);
+    const [isConverting, setIsConverting] = useState(false);
+    const [isRemovingAds, setIsRemovingAds] = useState(false);
 
     useSocketEvents({
         mass_editor_status: ({ identifier, current_item, total_items }) => {
@@ -67,6 +67,14 @@ function VolumeIndexSelectFooter() {
                 }
                 case massEditActions.RENAME: {
                     setIsOrganizing(value);
+                    break;
+                }
+                case massEditActions.CONVERT: {
+                    setIsConverting(value);
+                    break;
+                }
+                case massEditActions.REMOVE_ADS: {
+                    setIsRemovingAds(value);
                     break;
                 }
             }
@@ -114,6 +122,22 @@ function VolumeIndexSelectFooter() {
         setIsDeleteModalOpen(false);
     }, []);
 
+    const [runMassEditAction] = useMassEditMutation();
+
+    const onConvertPress = useCallback(() => {
+        runMassEditAction({
+            action: massEditActions.CONVERT,
+            volumeIds,
+        });
+    }, [runMassEditAction, volumeIds]);
+
+    const onRemoveAdsPress = useCallback(() => {
+        runMassEditAction({
+            action: massEditActions.REMOVE_ADS,
+            volumeIds,
+        });
+    }, [runMassEditAction, volumeIds]);
+
     useEffect(() => {
         if (previousIsDeleting && !isDeleting) {
             selectDispatch({ type: 'unselectAll' });
@@ -147,6 +171,22 @@ function VolumeIndexSelectFooter() {
                         onPress={onOrganizePress}
                     >
                         {translate('RenameFiles')}
+                    </SpinnerButton>
+
+                    <SpinnerButton
+                        isSpinning={isConverting}
+                        isDisabled={!anySelected || isConverting}
+                        onPress={onConvertPress}
+                    >
+                        {translate('ConvertFiles')}
+                    </SpinnerButton>
+
+                    <SpinnerButton
+                        isSpinning={isRemovingAds}
+                        isDisabled={!anySelected || isRemovingAds}
+                        onPress={onRemoveAdsPress}
+                    >
+                        {translate('RemoveAds')}
                     </SpinnerButton>
                 </div>
 
