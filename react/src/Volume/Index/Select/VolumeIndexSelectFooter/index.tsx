@@ -1,4 +1,8 @@
 // TODO:
+// - Convert
+// - Remove Ads
+// - Auto Search
+
 // IMPORTS
 
 // React
