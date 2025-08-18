@@ -1734,6 +1734,7 @@
     "SearchAll": "Search All",
     "SearchByComicVineId": "You can also search using the CV ID of a volume. e.g. 'cv:4050-2127', 'cv:2127' or '4050-2127'",
     "SearchFailedError": "Search failed, please try again later.",
+    "SearchFiltered": "Search Filtered",
     "SearchForAllMissingIssues": "Search for all missing issues",
     "SearchForAllMissingIssuesConfirmationCount": "Are you sure you want to search for all {totalRecords} missing issues?",
     "SearchForCutoffUnmetIssues": "Search for all Cutoff Unmet issues",

@@ -57,6 +57,7 @@ import VolumeIndexTable from './Table/VolumeIndexTable';
 // CSS
 import styles from './index.module.css';
 import type { VolumePublicInfo } from 'Volume/Volume';
+import VolumeIndexSearchVolumeButton from './VolumeIndexSearchVolumeButton';
 
 // Types
 export type IndexView = 'posters' | 'table';
@@ -244,6 +245,11 @@ const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) 
                 <PageToolbar>
                     <PageToolbarSection>
                         <VolumeIndexRefreshVolumeButton
+                            isSelectMode={isSelectMode}
+                            filterKey={filterKey}
+                        />
+
+                        <VolumeIndexSearchVolumeButton
                             isSelectMode={isSelectMode}
                             filterKey={filterKey}
                         />

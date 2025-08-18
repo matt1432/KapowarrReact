@@ -19,17 +19,17 @@ import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 
 // Types
-interface VolumeIndexRefreshVolumeButtonProps {
+interface VolumeIndexSearchVolumeButtonProps {
     isSelectMode: boolean;
     filterKey: string;
 }
 
 // IMPLEMENTATIONS
 
-function VolumeIndexRefreshVolumeButton({
+function VolumeIndexSearchVolumeButton({
     isSelectMode,
     filterKey,
-}: VolumeIndexRefreshVolumeButtonProps) {
+}: VolumeIndexSearchVolumeButtonProps) {
     const { items, totalItems } = useGetVolumesQuery(undefined, {
         selectFromResult: ({ data }) => ({
             items: data ?? [],
@@ -43,50 +43,50 @@ function VolumeIndexRefreshVolumeButton({
         return getSelectedIds(selectedState);
     }, [selectedState]);
 
-    const volumesToRefresh = useMemo(() => {
+    const volumesToSearch = useMemo(() => {
         return isSelectMode && selectedVolumeIds.length > 0
             ? selectedVolumeIds
             : items.map((m) => m.id);
     }, [isSelectMode, items, selectedVolumeIds]);
 
-    const refreshLabel = useMemo(() => {
+    const searchLabel = useMemo(() => {
         if (selectedVolumeIds.length > 0) {
-            return translate('UpdateSelected');
+            return translate('SearchSelected');
         }
         else if (filterKey !== '') {
-            return translate('UpdateFiltered');
+            return translate('SearchFiltered');
         }
 
-        return translate('UpdateAll');
+        return translate('SearchAll');
     }, [filterKey, selectedVolumeIds.length]);
 
-    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
     const [runMassEditAction] = useMassEditMutation();
 
     const onPress = useCallback(() => {
         runMassEditAction({
-            action: massEditActions.UPDATE,
-            volumeIds: volumesToRefresh,
+            action: massEditActions.SEARCH,
+            volumeIds: volumesToSearch,
         });
-    }, [runMassEditAction, volumesToRefresh]);
+    }, [runMassEditAction, volumesToSearch]);
 
     useSocketEvents({
         mass_editor_status: ({ identifier, current_item, total_items }) => {
-            if (identifier === massEditActions.UPDATE) {
-                setIsRefreshing(current_item !== total_items);
+            if (identifier === massEditActions.SEARCH) {
+                setIsSearching(current_item !== total_items);
             }
         },
     });
 
     return (
         <PageToolbarButton
-            label={refreshLabel}
-            isSpinning={isRefreshing}
+            label={searchLabel}
+            isSpinning={isSearching}
             isDisabled={!totalItems}
-            iconName={icons.REFRESH}
+            iconName={icons.SEARCH}
             onPress={onPress}
         />
     );
 }
 
-export default VolumeIndexRefreshVolumeButton;
+export default VolumeIndexSearchVolumeButton;
