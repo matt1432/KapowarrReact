@@ -376,7 +376,7 @@ class DownloadHandler(metaclass=Singleton):
         """
         if link.startswith(Constants.GC_SITE_URL):
             return "gc"
-        if link.startswith("https://libgen.gl/get.php?md5="):
+        if link.startswith("https://libgen.la/get.php?md5="):
             return "lg"
         return None
 
