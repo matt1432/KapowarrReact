@@ -160,9 +160,9 @@ class SearchLibgenPlus:
         volume_data = self.volume.get_data()
 
         if libgen_url is not None and libgen_url.startswith(
-            "https://libgen.gs/file.php?id="
+            "https://libgen.la/file.php?id="
         ):
-            file_id = libgen_url.replace("https://libgen.gs/file.php?id=", "")
+            file_id = libgen_url.replace("https://libgen.la/file.php?id=", "")
             file_result = ResultFile(file_id)
 
             results.append(
@@ -208,7 +208,7 @@ class SearchLibgenPlus:
 
                 if issue is not None:
                     new_libgen_url = (
-                        f"https://libgen.gs/series.php?id={issue.series.id}"
+                        f"https://libgen.la/series.php?id={issue.series.id}"
                     )
 
                     if volume_data.libgen_url != new_libgen_url:
