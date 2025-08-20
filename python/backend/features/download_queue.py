@@ -438,7 +438,7 @@ class DownloadHandler(metaclass=Singleton):
             if "comics_id" in result and result["comics_id"]:
                 torrent_name = str(int(int(result["comics_id"]) / 1000) * 1000)
                 torrent_link = (
-                    f"https://libgen.gs/torrents/comics/c_{torrent_name}.torrent"
+                    f"https://libgen.la/torrents/comics/c_{torrent_name}.torrent"
                 )
 
                 downloads.append(
