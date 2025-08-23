@@ -33,12 +33,12 @@ import styles from './index.module.css';
 // Types
 import type { InputChanged } from 'typings/Inputs';
 
-interface AutoSuggestInputProps<T>
+interface AutoSuggestInputProps<K extends string, T>
     extends Omit<AutosuggestPropsBase<T>, 'renderInputComponent' | 'inputProps'> {
     forwardedRef?: MutableRefObject<Autosuggest<T> | null>;
     className?: string;
     inputContainerClassName?: string;
-    name: string;
+    name: K;
     value?: string;
     placeholder?: string;
     suggestions: T[];
@@ -54,13 +54,12 @@ interface AutoSuggestInputProps<T>
     onInputKeyDown?: KeyboardEventHandler<HTMLElement>;
     onInputFocus?: (event: SyntheticEvent) => unknown;
     onInputBlur: (event: FocusEvent<HTMLElement>, params?: BlurEvent<T>) => unknown;
-    onChange?: (change: InputChanged<T>) => unknown;
+    onChange?: (change: InputChanged<K, string>) => unknown;
 }
 
 // IMPLEMENTATIONS
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function AutoSuggestInput<T = any>({
+function AutoSuggestInput<T, K extends string>({
     forwardedRef,
     className = styles.input,
     inputContainerClassName = styles.inputContainer,
@@ -83,7 +82,7 @@ function AutoSuggestInput<T = any>({
     onSuggestionsClearRequested,
     onSuggestionSelected,
     ...otherProps
-}: AutoSuggestInputProps<T>) {
+}: AutoSuggestInputProps<K, T>) {
     const updater = useRef<(() => void) | null>(null);
     const previousSuggestions = usePrevious(suggestions);
 

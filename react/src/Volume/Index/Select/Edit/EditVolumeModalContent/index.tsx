@@ -111,13 +111,13 @@ function EditVolumeModalContent({
     ]);
 
     const onInputChange = useCallback(
-        ({ name, value }: InputChanged) => {
+        ({ name, value }: InputChanged<string, string>) => {
             switch (name) {
                 case 'monitored':
-                    setMonitored(value as string);
+                    setMonitored(value);
                     break;
                 case 'rootFolderPath':
-                    setRootFolderPath(value as string);
+                    setRootFolderPath(value);
                     break;
                 default:
                     console.warn('EditVolumeModalContent Unknown Input');

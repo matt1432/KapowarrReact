@@ -18,7 +18,7 @@ import type { CheckInputChanged } from 'typings/Inputs';
 interface VirtualTableSelectAllHeaderCellProps {
     allSelected: boolean;
     allUnselected: boolean;
-    onSelectAllChange: (change: CheckInputChanged) => void;
+    onSelectAllChange: (change: CheckInputChanged<string>) => void;
 }
 
 // IMPLEMENTATIONS

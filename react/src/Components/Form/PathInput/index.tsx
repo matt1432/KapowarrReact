@@ -41,7 +41,7 @@ export interface PathInputProps {
     includeFiles: boolean;
     hasButton?: boolean;
     hasFileBrowser?: boolean;
-    onChange: (change: InputChanged<string>) => void;
+    onChange: (change: InputChanged<string, string>) => void;
 }
 
 interface PathInputInternalProps extends PathInputProps {
@@ -197,7 +197,7 @@ export function PathInputInternal(props: PathInputInternalProps) {
     }, [setIsFileBrowserModalOpen]);
 
     const handleChange = useCallback(
-        (change: InputChanged<Path>) => {
+        (change: InputChanged<string, Path>) => {
             onChange({ name, value: change.value.path });
         },
         [name, onChange],

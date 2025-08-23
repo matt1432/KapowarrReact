@@ -67,7 +67,7 @@ function VolumeIndexTableHeader({
     );
 
     const onSelectAllChange = useCallback(
-        ({ value }: CheckInputChanged) => {
+        ({ value }: CheckInputChanged<string>) => {
             selectDispatch({
                 type: value ? 'selectAll' : 'unselectAll',
             });

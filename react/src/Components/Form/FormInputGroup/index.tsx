@@ -54,47 +54,47 @@ import type { InputType } from 'Helpers/Props/inputTypes';
 import type { Failure, ValidationError, ValidationWarning } from 'typings/Validation';
 import type { FormInputButtonProps } from '../FormInputButton';
 
-type PickProps<V, C extends InputType> = C extends 'text'
-    ? TextInputProps
+type PickProps<V, C extends InputType, K extends string> = C extends 'text'
+    ? TextInputProps<K, 'text'>
     : C extends 'autoComplete'
-      ? AutoCompleteInputProps
+      ? AutoCompleteInputProps<K>
       : C extends 'check'
-        ? CheckInputProps
+        ? CheckInputProps<K>
         : C extends 'date'
-          ? TextInputProps
+          ? TextInputProps<K, 'date'>
           : C extends 'downloadClientSelect'
-            ? DownloadClientSelectInputProps
+            ? DownloadClientSelectInputProps<K>
             : C extends 'dynamicSelect'
-              ? ProviderOptionSelectInputProps
+              ? ProviderOptionSelectInputProps<K>
               : C extends 'file'
-                ? TextInputProps
+                ? TextInputProps<K, 'file'>
                 : C extends 'float'
-                  ? TextInputProps
+                  ? TextInputProps<K, 'number'>
                   : C extends 'keyValueList'
-                    ? KeyValueListInputProps
+                    ? KeyValueListInputProps<K>
                     : C extends 'monitorIssuesSelect'
-                      ? MonitorIssuesSelectInputProps
+                      ? MonitorIssuesSelectInputProps<K>
                       : C extends 'monitorNewItemsSelect'
-                        ? MonitorNewItemsSelectInputProps
+                        ? MonitorNewItemsSelectInputProps<K>
                         : C extends 'number'
-                          ? NumberInputProps
+                          ? NumberInputProps<K>
                           : C extends 'password'
-                            ? TextInputProps
+                            ? TextInputProps<K, 'password'>
                             : C extends 'path'
                               ? PathInputProps
                               : C extends 'rootFolderSelect'
-                                ? RootFolderSelectInputProps
+                                ? RootFolderSelectInputProps<K>
                                 : C extends 'select'
                                   ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    EnhancedSelectInputProps<any, V>
+                                    EnhancedSelectInputProps<K, any, V>
                                   : C extends 'specialVersionSelect'
-                                    ? SpecialVersionSelectInputProps
+                                    ? SpecialVersionSelectInputProps<K>
                                     : C extends 'text'
-                                      ? TextInputProps
+                                      ? TextInputProps<K, 'text'>
                                       : C extends 'textArea'
-                                        ? TextAreaProps
+                                        ? TextAreaProps<K>
                                         : C extends 'umask'
-                                          ? UMaskInputProps
+                                          ? UMaskInputProps<K>
                                           : never;
 
 export interface FormInputGroupValues<T> {
@@ -107,14 +107,17 @@ export interface ValidationMessage {
     message: string;
 }
 
-export type FormInputGroupProps<V, C extends InputType> = Omit<PickProps<V, C>, 'className'> & {
+export type FormInputGroupProps<V, C extends InputType, K extends string> = Omit<
+    PickProps<V, C, K>,
+    'className'
+> & {
     type: C;
     className?: string;
     containerClassName?: string;
     inputClassName?: string;
     autoFocus?: boolean;
     autocomplete?: string;
-    name: string;
+    name: K;
     buttons?: ReactNode | ReactNode[];
     helpText?: string;
     helpTexts?: string[];
@@ -151,7 +154,7 @@ const componentMap: Record<InputType, ElementType> = {
     umask: UMaskInput,
 } as const;
 
-function FormInputGroup<T, C extends InputType>({
+function FormInputGroup<T, C extends InputType, K extends string>({
     className = styles.inputGroup,
     containerClassName = styles.inputGroupContainer,
     inputClassName,
@@ -165,7 +168,7 @@ function FormInputGroup<T, C extends InputType>({
     errors = [],
     warnings = [],
     ...otherProps
-}: FormInputGroupProps<T, C>) {
+}: FormInputGroupProps<T, C, K>) {
     const InputComponent = componentMap[type];
     const checkInput = type === inputTypes.CHECK;
     const hasError = !!errors.length;

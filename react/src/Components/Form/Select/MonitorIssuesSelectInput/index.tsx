@@ -9,38 +9,30 @@ import EnhancedSelectInput, {
     type EnhancedSelectInputProps,
     type EnhancedSelectInputValue,
 } from '../EnhancedSelectInput';
+import type { MonitoringScheme } from 'Volume/Volume';
 
 // Types
-export interface MonitorIssuesSelectInputProps
-    extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<string>, string>, 'values'> {
+export interface MonitorIssuesSelectInputProps<K extends string>
+    extends Omit<
+        EnhancedSelectInputProps<K, EnhancedSelectInputValue<MonitoringScheme>, MonitoringScheme>,
+        'values'
+    > {
     includeNoChange?: boolean;
-    includeMixed?: boolean;
 }
 
 // IMPLEMENTATIONS
 
-function MonitorIssuesSelectInput({
+function MonitorIssuesSelectInput<K extends string>({
     includeNoChange = false,
-    includeMixed = false,
     ...otherProps
-}: MonitorIssuesSelectInputProps) {
-    const values: EnhancedSelectInputValue<string>[] = [...monitorOptions];
+}: MonitorIssuesSelectInputProps<K>) {
+    const values: EnhancedSelectInputValue<MonitoringScheme>[] = [...monitorOptions];
 
     if (includeNoChange) {
         values.unshift({
             key: 'noChange',
             get value() {
                 return translate('NoChange');
-            },
-            isDisabled: true,
-        });
-    }
-
-    if (includeMixed) {
-        values.unshift({
-            key: 'mixed',
-            get value() {
-                return `(${translate('Mixed')})`;
             },
             isDisabled: true,
         });

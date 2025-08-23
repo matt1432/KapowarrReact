@@ -13,12 +13,12 @@ import styles from './index.module.css';
 import type { SyntheticEvent } from 'react';
 import type { InputChanged } from 'typings/Inputs';
 
-export interface UMaskInputProps {
-    name: string;
+export interface UMaskInputProps<K extends string> {
+    name: K;
     value: string;
     hasError?: boolean;
     hasWarning?: boolean;
-    onChange: (change: InputChanged) => void;
+    onChange: (change: InputChanged<K, string>) => void;
     onFocus?: (event: SyntheticEvent) => void;
     onBlur?: (event: SyntheticEvent) => void;
 }
@@ -88,7 +88,7 @@ function formatPermissions(permissions: number) {
     return result;
 }
 
-function UMaskInput({ name, value, onChange }: UMaskInputProps) {
+function UMaskInput<K extends string>({ name, value, onChange }: UMaskInputProps<K>) {
     const valueNum = parseInt(value, 8);
     const umaskNum = 0o777 & ~valueNum;
     const umask = umaskNum.toString(8).padStart(4, '0');

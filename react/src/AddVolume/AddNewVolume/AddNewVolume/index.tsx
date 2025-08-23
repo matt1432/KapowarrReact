@@ -47,7 +47,7 @@ function AddNewVolume() {
     const [term, setTerm] = useState(initialTerm);
     const [searchResults, setSearchResults] = useState<AddVolume[]>([]);
 
-    const handleSearchInputChange = useCallback(({ value }: InputChanged<string>) => {
+    const handleSearchInputChange = useCallback(({ value }: InputChanged<string, string>) => {
         _setTerm(value);
     }, []);
 

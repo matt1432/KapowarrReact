@@ -17,8 +17,13 @@ import SpecialVersionSelectInputOption from '../SpecialVersionSelectInputOption'
 import SpecialVersionSelectInputSelectedValue from '../SpecialVersionSelectInputSelectedValue';
 
 // Types
-export interface SpecialVersionSelectInputProps
-    extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<string>, string>, 'values'> {
+import type { SpecialVersion } from 'Volume/Volume';
+
+export interface SpecialVersionSelectInputProps<K extends string>
+    extends Omit<
+        EnhancedSelectInputProps<K, EnhancedSelectInputValue<SpecialVersion>, SpecialVersion>,
+        'values'
+    > {
     includeNoChange?: boolean;
     includeNoChangeDisabled?: boolean;
     includeMixed?: boolean;
@@ -51,7 +56,7 @@ const specialVersionOptions: ISpecialVersionOption[] = [
     },
 ];
 
-function SpecialVersionSelectInput(props: SpecialVersionSelectInputProps) {
+function SpecialVersionSelectInput<K extends string>(props: SpecialVersionSelectInputProps<K>) {
     const { includeNoChange = false, includeNoChangeDisabled = true, includeMixed = false } = props;
 
     const values = useMemo(() => {

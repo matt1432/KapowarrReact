@@ -45,7 +45,7 @@ export interface FileBrowserModalContentProps {
     name: string;
     value: string;
     includeFiles?: boolean;
-    onChange: (args: InputChanged<string>) => unknown;
+    onChange: (args: InputChanged<string, string>) => unknown;
     onModalClose: () => void;
 }
 
@@ -98,7 +98,7 @@ function FileBrowserModalContent({
     const emptyParent = parent === '';
     const isWindowsService = false; // isWindows && mode === 'service';
 
-    const handlePathInputChange = useCallback(({ value }: InputChanged<string>) => {
+    const handlePathInputChange = useCallback(({ value }: InputChanged<string, string>) => {
         setCurrentPath(value);
     }, []);
 

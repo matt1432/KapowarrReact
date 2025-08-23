@@ -66,9 +66,12 @@ function MonitoringOptionsModalContent({
     );
     const wasSaving = usePrevious(isSaving);
 
-    const handleMonitorChange = useCallback(({ value }: InputChanged<string>) => {
-        setMonitoringScheme(value as MonitoringScheme);
-    }, []);
+    const handleMonitorChange = useCallback(
+        ({ value }: InputChanged<'monitor', MonitoringScheme | typeof NO_CHANGE>) => {
+            setMonitoringScheme(value);
+        },
+        [],
+    );
 
     const handleSavePress = useCallback(() => {
         if (monitoringScheme === NO_CHANGE) {

@@ -53,7 +53,7 @@ import type { EnhancedSelectInputChanged, InputChanged } from 'typings/Inputs';
 
 export interface EnhancedSelectInputValue<V> {
     key: IterableElement<V>;
-    value: V;
+    value: string;
     hint?: ReactNode;
     isDisabled?: boolean;
     isHidden?: boolean;
@@ -61,10 +61,14 @@ export interface EnhancedSelectInputValue<V> {
     additionalProperties?: object;
 }
 
-export interface EnhancedSelectInputProps<T extends EnhancedSelectInputValue<V>, V> {
+export interface EnhancedSelectInputProps<
+    K extends string,
+    T extends EnhancedSelectInputValue<V>,
+    V,
+> {
     className?: string;
     disabledClassName?: string;
-    name: string;
+    name: K;
     value: V;
     values: T[];
     isDisabled?: boolean;
@@ -77,7 +81,7 @@ export interface EnhancedSelectInputProps<T extends EnhancedSelectInputValue<V>,
     selectedValueComponent?: string | ElementType;
     optionComponent?: ElementType;
     onOpen?: () => void;
-    onChange: (change: EnhancedSelectInputChanged<V>) => void;
+    onChange: (change: EnhancedSelectInputChanged<K, V>) => void;
 }
 
 // IMPLEMENTATIONS
@@ -154,7 +158,7 @@ function isSelectedItem<T extends EnhancedSelectInputValue<V>, V>(
     return values[index].key === value;
 }
 
-function EnhancedSelectInput<T extends EnhancedSelectInputValue<V>, V>({
+function EnhancedSelectInput<K extends string, T extends EnhancedSelectInputValue<V>, V>({
     className = styles.enhancedSelect,
     disabledClassName = styles.isDisabled,
     name,
@@ -171,7 +175,7 @@ function EnhancedSelectInput<T extends EnhancedSelectInputValue<V>, V>({
     optionComponent: OptionComponent = HintedSelectInputOption,
     onChange,
     onOpen,
-}: EnhancedSelectInputProps<T, V>) {
+}: EnhancedSelectInputProps<K, T, V>) {
     const [selectedIndex, setSelectedIndex] = useState(getSelectedIndex(value, values));
     const [isOpen, setIsOpen] = useState(false);
     const isMobile = useMemo(() => isMobileUtil(), []);
@@ -367,8 +371,8 @@ function EnhancedSelectInput<T extends EnhancedSelectInputValue<V>, V>({
     }, [setIsOpen]);
 
     const handleEditChange = useCallback(
-        (change: InputChanged<string>) => {
-            onChange(change as EnhancedSelectInputChanged<V>);
+        (change: InputChanged<K, string>) => {
+            onChange(change as EnhancedSelectInputChanged<K, V>);
         },
         [onChange],
     );

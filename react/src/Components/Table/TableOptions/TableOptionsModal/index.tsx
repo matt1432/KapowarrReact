@@ -69,7 +69,7 @@ function TableOptionsModal<T extends string>({
         isDragging && dropIndex !== null && dragIndex !== null && dropIndex > dragIndex;
 
     const handlePageSizeChange = useCallback(
-        ({ value }: InputChanged<number | null>) => {
+        ({ value }: InputChanged<string, number | null>) => {
             let error: string | null = null;
 
             if (value === null || value < 5) {
@@ -93,7 +93,7 @@ function TableOptionsModal<T extends string>({
     );
 
     const handleVisibleChange = useCallback(
-        ({ name, value }: CheckInputChanged) => {
+        ({ name, value }: CheckInputChanged<T>) => {
             const newColumns = columns.map((column) => {
                 if (column.name === name) {
                     return {

@@ -12,16 +12,16 @@ import styles from './index.module.css';
 // Types
 import type { InputChanged } from 'typings/Inputs';
 
-export interface TextAreaProps {
+export interface TextAreaProps<K extends string> {
     className?: string;
     readOnly?: boolean;
     autoFocus?: boolean;
     placeholder?: string;
-    name: string;
+    name: K;
     value?: string;
     hasError?: boolean;
     hasWarning?: boolean;
-    onChange: (change: InputChanged<string>) => void;
+    onChange: (change: InputChanged<K, string>) => void;
     onFocus?: (event: SyntheticEvent) => void;
     onBlur?: (event: SyntheticEvent) => void;
     onSelectionChange?: (start: number | null, end: number | null) => void;
@@ -29,7 +29,7 @@ export interface TextAreaProps {
 
 // IMPLEMENTATIONS
 
-function TextArea({
+function TextArea<K extends string>({
     className = styles.input,
     readOnly = false,
     autoFocus = false,
@@ -42,7 +42,7 @@ function TextArea({
     onFocus,
     onChange,
     onSelectionChange,
-}: TextAreaProps) {
+}: TextAreaProps<K>) {
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const selectionTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
     const selectionStart = useRef<number | null>(null);

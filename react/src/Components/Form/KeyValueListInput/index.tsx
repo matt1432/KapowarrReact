@@ -13,27 +13,27 @@ import KeyValueListInputItem from '../KeyValueListInputItem';
 import styles from './index.module.css';
 
 // Types
-import type { InputOnChange } from 'typings/Inputs';
+import type { InputChanged } from 'typings/Inputs';
 
 interface KeyValue {
     key: string;
     value: string;
 }
 
-export interface KeyValueListInputProps {
+export interface KeyValueListInputProps<K extends string> {
     className?: string;
-    name: string;
+    name: K;
     value: KeyValue[];
     hasError?: boolean;
     hasWarning?: boolean;
     keyPlaceholder?: string;
     valuePlaceholder?: string;
-    onChange: InputOnChange<KeyValue[]>;
+    onChange: (change: InputChanged<K, KeyValue[]>) => void;
 }
 
 // IMPLEMENTATIONS
 
-function KeyValueListInput({
+function KeyValueListInput<K extends string>({
     className = styles.inputContainer,
     name,
     value = [],
@@ -42,7 +42,7 @@ function KeyValueListInput({
     keyPlaceholder,
     valuePlaceholder,
     onChange,
-}: KeyValueListInputProps): JSX.Element {
+}: KeyValueListInputProps<K>): JSX.Element {
     const [isFocused, setIsFocused] = useState(false);
 
     const handleItemChange = useCallback(

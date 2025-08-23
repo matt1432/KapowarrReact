@@ -35,7 +35,7 @@ function VirtualTableSelectCell({
     ...otherProps
 }: VirtualTableSelectCellProps) {
     const handleChange = useCallback(
-        ({ value, shiftKey }: CheckInputChanged) => {
+        ({ value, shiftKey }: CheckInputChanged<string>) => {
             onSelectedChange({ id, value, shiftKey });
         },
         [id, onSelectedChange],

@@ -46,14 +46,16 @@ function UISettings() {
     }));
 
     const handleThemeChange = useCallback(
-        ({ value }: InputChanged<UISettingsState['theme']>) => {
+        ({ value }: InputChanged<'theme', UISettingsState['theme']>) => {
             dispatch(setUISettingsOption('theme', value));
         },
         [dispatch],
     );
 
     const handleColorImpairedChange = useCallback(
-        ({ value }: InputChanged<UISettingsState['enableColorImpairedMode']>) => {
+        ({
+            value,
+        }: InputChanged<'enableColorImpairedMode', UISettingsState['enableColorImpairedMode']>) => {
             dispatch(setUISettingsOption('enableColorImpairedMode', value));
         },
         [dispatch],

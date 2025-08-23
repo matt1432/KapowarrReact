@@ -23,13 +23,13 @@ import EnhancedSelectInput, {
 // import type { Protocol } from 'typings/DownloadClient';
 import type { EnhancedSelectInputChanged } from 'typings/Inputs';
 
-export interface DownloadClientSelectInputProps
-    extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<number>, number>, 'values'> {
-    name: string;
+export interface DownloadClientSelectInputProps<K extends string>
+    extends Omit<EnhancedSelectInputProps<K, EnhancedSelectInputValue<number>, number>, 'values'> {
+    name: K;
     value: number;
     includeAny?: boolean;
     protocol?: unknown; // Protocol;
-    onChange: (change: EnhancedSelectInputChanged<number>) => void;
+    onChange: (change: EnhancedSelectInputChanged<K, number>) => void;
 }
 
 // IMPLEMENTATIONS
@@ -70,11 +70,11 @@ function createDownloadClientsSelector(includeAny: boolean, protocol: Protocol) 
 }
 */
 
-function DownloadClientSelectInput({
+function DownloadClientSelectInput<K extends string>({
     // includeAny = false,
     // protocol = 'torrent',
     ...otherProps
-}: DownloadClientSelectInputProps) {
+}: DownloadClientSelectInputProps<K>) {
     const dispatch = useDispatch();
     // const { isFetching, isPopulated, values } = useSelector(
     //     createDownloadClientsSelector(includeAny, protocol),

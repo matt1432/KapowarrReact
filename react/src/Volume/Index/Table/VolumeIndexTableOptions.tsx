@@ -31,7 +31,7 @@ function VolumeIndexTableOptions({ onTableOptionChange }: VolumeIndexTableOption
     const { showSearchAction } = tableOptions;
 
     const onTableOptionChangeWrapper = useCallback(
-        ({ name, value }: InputChanged<boolean>) => {
+        ({ name, value }: InputChanged<'showSearchAction', boolean>) => {
             onTableOptionChange({
                 tableOptions: {
                     ...tableOptions,

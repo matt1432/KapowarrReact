@@ -55,7 +55,7 @@ function DeleteVolumeModalContent({ volumeId, onModalClose }: DeleteVolumeModalC
 
     const [deleteFiles, setDeleteFiles] = useState(false);
 
-    const handleDeleteFilesChange = useCallback(({ value }: CheckInputChanged) => {
+    const handleDeleteFilesChange = useCallback(({ value }: CheckInputChanged<'deleteFiles'>) => {
         setDeleteFiles(value);
     }, []);
 

@@ -25,10 +25,10 @@ interface ChangeEvent<T = Element> extends SyntheticEvent<T, MouseEvent> {
     target: EventTarget & T;
 }
 
-export interface CheckInputProps {
+export interface CheckInputProps<K extends string> {
     className?: string;
     containerClassName?: string;
-    name: string;
+    name: K;
     checkedValue?: boolean;
     uncheckedValue?: boolean;
     value?: string | boolean | null;
@@ -36,12 +36,12 @@ export interface CheckInputProps {
     helpTextWarning?: string;
     isDisabled?: boolean;
     kind?: Extract<Kind, keyof typeof styles>;
-    onChange: (changes: CheckInputChanged) => void;
+    onChange: (changes: CheckInputChanged<K>) => void;
 }
 
 // IMPLEMENTATIONS
 
-function CheckInput({
+function CheckInput<K extends string>({
     className = styles.input,
     containerClassName = styles.container,
     name,
@@ -53,7 +53,7 @@ function CheckInput({
     isDisabled,
     kind = 'primary',
     onChange,
-}: CheckInputProps) {
+}: CheckInputProps<K>) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     const isChecked = value === checkedValue;

@@ -1,5 +1,5 @@
 .iconContainer {
-    composes: spinnerContainer from './SpinnerButton/index.module.css';
+    composes: spinnerContainer from '../SpinnerButton/index.module.css';
 }
 
 .icon {
@@ -7,7 +7,7 @@
 }
 
 .label {
-    composes: label from './SpinnerButton/index.module.css';
+    composes: label from '../SpinnerButton/index.module.css';
 }
 
 .showIcon {

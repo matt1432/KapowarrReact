@@ -27,7 +27,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import styles from './index.module.css';
 
 // Types
-import type { InputChanged } from 'typings/Inputs';
+import type { CheckInputChanged } from 'typings/Inputs';
 
 interface DeleteVolumeModalContentProps {
     volumeIds: number[];
@@ -47,7 +47,7 @@ function DeleteVolumeModalContent({ volumeIds, onModalClose }: DeleteVolumeModal
         return allVolumes.filter((v) => volumeIds.includes(v.id));
     }, [volumeIds, allVolumes]);
 
-    const onDeleteFilesChange = useCallback(({ value }: InputChanged<boolean>) => {
+    const onDeleteFilesChange = useCallback(({ value }: CheckInputChanged<'deleteFiles'>) => {
         setDeleteFiles(value);
     }, []);
 

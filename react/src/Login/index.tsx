@@ -30,7 +30,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState<string>('');
 
     const onInputChange = useCallback(
-        ({ value }: InputChanged<string>) => {
+        ({ value }: InputChanged<string, string>) => {
             setPassword(value);
         },
         [setPassword],

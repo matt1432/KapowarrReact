@@ -12,12 +12,13 @@ import TextInput, { type TextInputProps } from '../TextInput';
 // Types
 import type { InputChanged } from 'typings/Inputs';
 
-export interface NumberInputProps extends Omit<TextInputProps, 'value' | 'onChange'> {
+export interface NumberInputProps<K extends string>
+    extends Omit<TextInputProps<K, 'number'>, 'value' | 'onChange'> {
     value?: number | null;
     min?: number;
     max?: number;
     isFloat?: boolean;
-    onChange: (input: InputChanged<number | null>) => void;
+    onChange: (input: InputChanged<K, number | null>) => void;
 }
 
 // IMPLEMENTATIONS
@@ -44,7 +45,7 @@ function parseValue(
     return newValue;
 }
 
-function NumberInput({
+function NumberInput<K extends string>({
     name,
     value: inputValue = null,
     isFloat = false,
@@ -52,13 +53,13 @@ function NumberInput({
     max,
     onChange,
     ...otherProps
-}: NumberInputProps) {
+}: NumberInputProps<K>) {
     const [value, setValue] = useState(inputValue === null ? '' : inputValue.toString());
     const isFocused = useRef(false);
     const previousValue = usePrevious(inputValue);
 
     const handleChange = useCallback(
-        ({ name, value: newValue }: InputChanged<string>) => {
+        ({ name, value: newValue }: InputChanged<K, string>) => {
             setValue(newValue);
 
             onChange({

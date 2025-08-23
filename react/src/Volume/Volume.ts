@@ -16,7 +16,7 @@ export type VolumeColumnName =
     | 'monitorNewItems'
     | 'actions';
 
-export type MonitoringScheme = 'all' | 'missing' | 'none';
+export type MonitoringScheme = 'all' | 'missing' | 'none' | 'noChange';
 export type SpecialVersion =
     | 'tpb'
     | 'one-shot'

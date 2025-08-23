@@ -13,23 +13,23 @@ import AutoSuggestInput from '../AutoSuggestInput';
 import type { ChangeEvent, SuggestionsFetchRequestedParams } from 'react-autosuggest';
 import type { InputChanged } from 'typings/Inputs';
 
-export interface AutoCompleteInputProps {
-    name: string;
+export interface AutoCompleteInputProps<K extends string> {
+    name: K;
     readOnly?: boolean;
     value?: string;
     values: string[];
-    onChange: (change: InputChanged<string>) => unknown;
+    onChange: (change: InputChanged<K, string>) => unknown;
 }
 
 // IMPLEMENTATIONS
 
-function AutoCompleteInput({
+function AutoCompleteInput<K extends string>({
     name,
     value = '',
     values,
     onChange,
     ...otherProps
-}: AutoCompleteInputProps) {
+}: AutoCompleteInputProps<K>) {
     const [suggestions, setSuggestions] = useState<string[]>([]);
 
     const getSuggestionValue = useCallback((item: string) => {

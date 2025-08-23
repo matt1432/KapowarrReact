@@ -10,8 +10,8 @@ import EnhancedSelectInput, {
 } from '../EnhancedSelectInput';
 
 // Types
-export interface MonitorNewItemsSelectInputProps
-    extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<string>, string>, 'values'> {
+export interface MonitorNewItemsSelectInputProps<K extends string>
+    extends Omit<EnhancedSelectInputProps<K, EnhancedSelectInputValue<string>, string>, 'values'> {
     includeNoChange?: boolean;
     includeNoChangeDisabled?: boolean;
     includeMixed?: boolean;
@@ -19,12 +19,12 @@ export interface MonitorNewItemsSelectInputProps
 
 // IMPLEMENTATIONS
 
-function MonitorNewItemsSelectInput({
+function MonitorNewItemsSelectInput<K extends string>({
     includeNoChange = false,
     includeNoChangeDisabled = true,
     includeMixed = false,
     ...otherProps
-}: MonitorNewItemsSelectInputProps) {
+}: MonitorNewItemsSelectInputProps<K>) {
     const values: EnhancedSelectInputValue<string>[] = [...monitorNewItemsOptions];
 
     if (includeNoChange) {

@@ -21,12 +21,18 @@ import styles from './index.module.css';
 // Types
 import type { FileInputChanged, InputChanged } from 'typings/Inputs';
 
-export interface CommonTextInputProps {
+export type TextInputType = 'date' | 'number' | 'password' | 'text' | 'file';
+
+export interface TextInputProps<K extends string, Type extends TextInputType> {
+    type?: Type;
+    onChange: Type extends 'file'
+        ? (change: FileInputChanged<K>) => void
+        : (change: InputChanged<K, string>) => void;
     className?: string;
     readOnly?: boolean;
     autoFocus?: boolean;
     placeholder?: string;
-    name: string;
+    name: K;
     value: string | number | string[];
     hasError?: boolean;
     hasWarning?: boolean;
@@ -41,21 +47,11 @@ export interface CommonTextInputProps {
     onSelectionChange?: (start: number | null, end: number | null) => void;
 }
 
-export interface TextInputProps extends CommonTextInputProps {
-    type?: 'date' | 'number' | 'password' | 'text';
-    onChange: (change: InputChanged<string>) => void;
-}
-
-export interface FileInputProps extends CommonTextInputProps {
-    type: 'file';
-    onChange: (change: FileInputChanged) => void;
-}
-
 // IMPLEMENTATIONS
 
-function TextInput({
+function TextInput<K extends string, Type extends TextInputType = 'text'>({
     className = styles.input,
-    type = 'text',
+    type,
     readOnly = false,
     autoFocus = false,
     placeholder,
@@ -73,7 +69,7 @@ function TextInput({
     onSubmit,
     onChange,
     onSelectionChange,
-}: TextInputProps | FileInputProps): JSX.Element {
+}: TextInputProps<K, Type>): JSX.Element {
     const inputRef = useRef<HTMLInputElement>(null);
     const selectionTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
     const selectionStart = useRef<number | null>(null);
@@ -175,7 +171,7 @@ function TextInput({
     return (
         <input
             ref={inputRef}
-            type={type}
+            type={type ?? 'text'}
             readOnly={readOnly}
             autoFocus={autoFocus}
             placeholder={placeholder}

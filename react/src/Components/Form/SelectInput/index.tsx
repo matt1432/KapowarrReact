@@ -17,23 +17,23 @@ export interface SelectInputOption extends Pick<ComponentProps<'option'>, 'disab
     value: string | number | (() => string | number);
 }
 
-interface SelectInputProps<T> {
+interface SelectInputProps<K extends string, T> {
     className?: string;
     disabledClassName?: string;
-    name: string;
+    name: K;
     value: string | number;
     values: SelectInputOption[];
     isDisabled?: boolean;
     hasError?: boolean;
     hasWarning?: boolean;
     autoFocus?: boolean;
-    onChange: (change: InputChanged<T>) => void;
+    onChange: (change: InputChanged<K, T>) => void;
     onBlur?: (event: SyntheticEvent) => void;
 }
 
 // IMPLEMENTATIONS
 
-function SelectInput<T>({
+function SelectInput<K extends string, T>({
     className = styles.select,
     disabledClassName = styles.isDisabled,
     name,
@@ -45,7 +45,7 @@ function SelectInput<T>({
     autoFocus = false,
     onBlur,
     onChange,
-}: SelectInputProps<T>) {
+}: SelectInputProps<K, T>) {
     const handleChange = useCallback(
         (event: ChangeEvent<HTMLSelectElement>) => {
             onChange({

@@ -28,14 +28,14 @@ interface DragItem {
 }
 
 interface TableOptionsColumnProps<T extends string> {
-    name: string;
+    name: T;
     label: Column<T>['label'];
     isDraggingDown: boolean;
     isDraggingUp: boolean;
     isVisible: boolean;
     isModifiable: boolean;
     index: number;
-    onVisibleChange: (change: CheckInputChanged) => void;
+    onVisibleChange: (change: CheckInputChanged<T>) => void;
     onColumnDragEnd: (didDrop: boolean) => void;
     onColumnDragMove: (dragIndex: number, hoverIndex: number) => void;
 }

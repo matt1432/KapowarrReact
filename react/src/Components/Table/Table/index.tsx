@@ -42,7 +42,7 @@ interface TableProps<T extends string> {
     children?: React.ReactNode;
     onSortPress?: (name: string, sortDirection?: SortDirection) => void;
     onTableOptionChange?: (payload: TableOptionsChangePayload<T>) => void;
-    onSelectAllChange?: (change: CheckInputChanged) => void;
+    onSelectAllChange?: (change: CheckInputChanged<string>) => void;
 }
 
 // IMPLEMENTATIONS

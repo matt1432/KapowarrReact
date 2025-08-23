@@ -72,23 +72,25 @@ function createProviderOptionsSelector(
 }
 */
 
-export interface ProviderOptionSelectInputProps
-    extends Omit<EnhancedSelectInputProps<EnhancedSelectInputValue<unknown>, unknown>, 'values'> {
+export interface ProviderOptionSelectInputProps<K extends string>
+    extends Omit<
+        EnhancedSelectInputProps<K, EnhancedSelectInputValue<unknown>, unknown>,
+        'values'
+    > {
     provider: string;
     providerData: object; // ProviderOptions;
-    name: string;
     value: unknown;
     selectOptionsProviderAction: string; // keyof Omit<ProviderOptionsAppState, 'devices'>;
 }
 
-function ProviderOptionSelectInput(
+function ProviderOptionSelectInput<K extends string>(
     // eslint-disable-next-line
     {
         // provider,
         // providerData,
         // selectOptionsProviderAction,
         // ...otherProps
-    }: ProviderOptionSelectInputProps,
+    }: ProviderOptionSelectInputProps<K>,
 ) {
     /*
     const dispatch = useDispatch();

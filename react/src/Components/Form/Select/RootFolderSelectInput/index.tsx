@@ -16,19 +16,19 @@ import EnhancedSelectInput, {
 } from '../EnhancedSelectInput';
 
 // Types
-export type RootFolderSelectInputProps = Omit<
-    EnhancedSelectInputProps<EnhancedSelectInputValue<string>, string>,
+export type RootFolderSelectInputProps<K extends string> = Omit<
+    EnhancedSelectInputProps<K, EnhancedSelectInputValue<string>, string>,
     'values'
 >;
 
 // IMPLEMENTATIONS
 
-function RootFolderSelectInput({
+function RootFolderSelectInput<K extends string>({
     name,
     onChange,
     value,
     ...otherProps
-}: RootFolderSelectInputProps) {
+}: RootFolderSelectInputProps<K>) {
     const { data } = useGetRootFoldersQuery(undefined);
 
     const values = useMemo(() => {

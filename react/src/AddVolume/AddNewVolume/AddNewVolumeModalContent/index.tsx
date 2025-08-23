@@ -76,7 +76,7 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
     }, [rootFolderPath, rootFolders]);
 
     const handleRootFolderChange = useCallback(
-        ({ value }: InputChanged<string>) => {
+        ({ value }: InputChanged<'rootFolder', string>) => {
             const folder = rootFolders.find((f) => f.folder === value);
 
             if (folder) {
@@ -87,13 +87,19 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
         [rootFolders],
     );
 
-    const handleMonitoringSchemeChange = useCallback(({ value }: InputChanged<string>) => {
-        setAddVolumeOption('monitoringScheme', value as MonitoringScheme);
-    }, []);
+    const handleMonitoringSchemeChange = useCallback(
+        ({ value }: InputChanged<'monitoringScheme', MonitoringScheme>) => {
+            setAddVolumeOption('monitoringScheme', value);
+        },
+        [],
+    );
 
-    const handleSpecialVersionChange = useCallback(({ value }: InputChanged<string>) => {
-        setAddVolumeOption('specialVersion', value as SpecialVersion);
-    }, []);
+    const handleSpecialVersionChange = useCallback(
+        ({ value }: InputChanged<'specialVersion', SpecialVersion>) => {
+            setAddVolumeOption('specialVersion', value);
+        },
+        [],
+    );
 
     const handleAddVolumeSuccess = useCallback(() => {
         refetch();
@@ -143,7 +149,7 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
 
                                 <FormInputGroup
                                     type={inputTypes.ROOT_FOLDER_SELECT}
-                                    name="rootFolderPath"
+                                    name="rootFolder"
                                     value={rootFolderPath}
                                     valueOptions={{
                                         volumeFolder: volume.title + '...',
@@ -174,7 +180,7 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
 
                                 <FormInputGroup
                                     type={inputTypes.MONITOR_ISSUES_SELECT}
-                                    name="monitor"
+                                    name="monitoringScheme"
                                     onChange={handleMonitoringSchemeChange}
                                     value={monitoringScheme}
                                 />

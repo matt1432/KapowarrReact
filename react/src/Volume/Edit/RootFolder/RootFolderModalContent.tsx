@@ -56,7 +56,7 @@ function RootFolderModalContent({
         },
     );
 
-    const onInputChange = useCallback(({ value }: InputChanged<string>) => {
+    const onInputChange = useCallback(({ value }: InputChanged<string, string>) => {
         setRootFolderPath(value);
     }, []);
 
