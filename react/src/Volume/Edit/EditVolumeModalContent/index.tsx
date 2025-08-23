@@ -1,8 +1,23 @@
 // TODO:
-/*import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import VolumeMonitorNewItemsOptionsPopoverContent from 'AddVolume/VolumeMonitorNewItemsOptionsPopoverContent';
-// import type { AppState } from 'App/State/AppState';
+
+// IMPORTS
+
+// React
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+// Redux
+import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
+import { useUpdateVolumeMutation, type UpdateVolumeParams } from 'Store/Api/Volumes';
+
+// Misc
+import { icons, inputTypes, kinds, sizes } from 'Helpers/Props';
+
+import usePrevious from 'Helpers/Hooks/usePrevious';
+import useVolume from 'Volume/useVolume';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputButton from 'Components/Form/FormInputButton';
@@ -15,89 +30,88 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import Popover from 'Components/Tooltip/Popover';
-import usePrevious from 'Helpers/Hooks/usePrevious';
-import { icons, inputTypes, kinds, sizes, tooltipPositions } from 'Helpers/Props';
+
+// Specific Components
 import MoveVolumeModal from 'Volume/MoveVolume/MoveVolumeModal';
-// import useVolume from 'Volume/useVolume';
-// import { saveVolume, setVolumeValue } from 'Store/Actions/volumeActions';
-// import selectSettings from 'Store/Selectors/selectSettings';
+import RootFolderModal from '../RootFolder/RootFolderModal';
+
+// CSS
+import styles from './index.module.css';
+
+// Types
 import type { InputChanged } from 'typings/Inputs';
-import translate from 'Utilities/String/translate';
-import RootFolderModal from './RootFolder/RootFolderModal';
-import type { RootFolderUpdated } from './RootFolder/RootFolderModalContent';
-import styles from './index.module.css';*/
+import type { RootFolderUpdated } from '../RootFolder/RootFolderModalContent';
+import type { SpecialVersion } from 'Volume/Volume';
 
 export interface EditVolumeModalContentProps {
     volumeId: number;
     onModalClose: () => void;
     onDeleteVolumePress: () => void;
 }
-function EditVolumeModalContent(
-    // eslint-disable-next-line
-    {
-        // volumeId,
-        // onModalClose,
-        // onDeleteVolumePress,
-    }: EditVolumeModalContentProps,
-) {
-    /*
-    const dispatch = useDispatch();
+
+// IMPLEMENTATIONS
+
+function EditVolumeModalContent({
+    volumeId,
+    onModalClose,
+    onDeleteVolumePress,
+}: EditVolumeModalContentProps) {
+    const [updateVolume, { isLoading: isSaving, error: saveError }] = useUpdateVolumeMutation();
+
+    const { data: rootFolders = [] } = useGetRootFoldersQuery(undefined);
+
+    const { volume } = useVolume(volumeId);
     const {
         title,
-        monitored,
-        monitorNewItems,
-        qualityProfileId,
-        specialVersion,
-        path,
-        tags,
-        rootFolderPath: initialRootFolderPath,
-    } = useVolume(volumeId)!;
-
-    const { isSaving, saveError, pendingChanges } = useSelector((state: AppState) => state.volumes);
+        libgenUrl: initialLibgenUrl,
+        monitored: initialMonitored,
+        specialVersion: initialSpecialVersion,
+        volumeFolder: initialVolumeFolder,
+        rootFolder: initialRootFolderPath,
+    } = volume!;
 
     const wasSaving = usePrevious(isSaving);
 
     const [isRootFolderModalOpen, setIsRootFolderModalOpen] = useState(false);
-
-    const [rootFolderPath, setRootFolderPath] = useState(initialRootFolderPath);
-
-    const isPathChanging = pendingChanges.path && path !== pendingChanges.path;
-
     const [isConfirmMoveModalOpen, setIsConfirmMoveModalOpen] = useState(false);
 
-    const { settings, ...otherSettings } = useMemo(() => {
-        return selectSettings(
-            {
-                monitored,
-                monitorNewItems,
-                qualityProfileId,
-                specialVersion,
-                path,
-                tags,
-            },
-            pendingChanges,
-            saveError,
-        );
-    }, [
-        monitored,
-        monitorNewItems,
-        qualityProfileId,
-        specialVersion,
-        path,
-        tags,
-        pendingChanges,
-        saveError,
-    ]);
+    const [rootFolderId, setRootFolderId] = useState(initialRootFolderPath);
+    const rootFolderPath = useMemo(
+        () => rootFolders.find((f) => f.id === rootFolderId)?.folder ?? '',
+        [rootFolderId, rootFolders],
+    );
+
+    const [monitored, setMonitored] = useState(initialMonitored);
+    const [specialVersion, setSpecialVersion] = useState(initialSpecialVersion);
+    const [libgenUrl, setLibgenUrl] = useState(initialLibgenUrl ?? '');
+    const [volumeFolder, setVolumeFolder] = useState(initialVolumeFolder);
+
+    const isPathChanging = useMemo(
+        () => initialVolumeFolder !== volumeFolder,
+        [initialVolumeFolder, volumeFolder],
+    );
 
     const handleInputChange = useCallback(
-        // @ts-expect-error TODO:
-        // eslint-disable-next-line
-        ({ name, value }: InputChanged) => {
-            // // @ts-expect-error actions aren't typed
-            // dispatch(setVolumeValue({ name, value }));
+        <K extends keyof UpdateVolumeParams>({
+            name,
+            value,
+        }: InputChanged<K, UpdateVolumeParams[K]>) => {
+            switch (name) {
+                case 'monitored':
+                    setMonitored(value as boolean);
+                    break;
+                case 'specialVersion':
+                    setSpecialVersion(value as SpecialVersion);
+                    break;
+                case 'libgenUrl':
+                    setLibgenUrl(value as string);
+                    break;
+                case 'volumeFolder':
+                    setVolumeFolder(value as string);
+                    break;
+            }
         },
-        [dispatch],
+        [],
     );
 
     const handleRootFolderPress = useCallback(() => {
@@ -111,15 +125,25 @@ function EditVolumeModalContent(
     const handleRootFolderChange = useCallback(
         ({ path: newPath, rootFolderPath: newRootFolderPath }: RootFolderUpdated) => {
             setIsRootFolderModalOpen(false);
-            setRootFolderPath(newRootFolderPath);
-            handleInputChange({ name: 'path', value: newPath });
+            setRootFolderId(rootFolders.find((f) => f.folder === newRootFolderPath)!.id);
+            handleInputChange({ name: 'volumeFolder', value: newPath });
         },
-        [handleInputChange],
+        [handleInputChange, rootFolders],
     );
 
     const handleCancelPress = useCallback(() => {
         setIsConfirmMoveModalOpen(false);
     }, []);
+
+    const saveVolume = useCallback(() => {
+        updateVolume({
+            volumeId,
+            rootFolder: rootFolderId,
+            monitored,
+            specialVersion,
+            volumeFolder,
+        });
+    }, [monitored, rootFolderId, specialVersion, updateVolume, volumeFolder, volumeId]);
 
     const handleSavePress = useCallback(() => {
         if (isPathChanging && !isConfirmMoveModalOpen) {
@@ -127,26 +151,14 @@ function EditVolumeModalContent(
         }
         else {
             setIsConfirmMoveModalOpen(false);
-
-            dispatch(
-                saveVolume({
-                    id: volumeId,
-                    moveFiles: false,
-                }),
-            );
+            saveVolume();
         }
-    }, [volumeId, isPathChanging, isConfirmMoveModalOpen, dispatch]);
+    }, [isPathChanging, isConfirmMoveModalOpen, saveVolume]);
 
     const handleMoveVolumePress = useCallback(() => {
         setIsConfirmMoveModalOpen(false);
-
-        dispatch(
-            saveVolume({
-                id: volumeId,
-                moveFiles: true,
-            }),
-        );
-    }, [volumeId, dispatch]);
+        saveVolume();
+    }, [saveVolume]);
 
     useEffect(() => {
         if (!isSaving && wasSaving && !saveError) {
@@ -159,7 +171,7 @@ function EditVolumeModalContent(
             <ModalHeader>{translate('EditVolumeModalHeader', { title })}</ModalHeader>
 
             <ModalBody>
-                <Form {...otherSettings}>
+                <Form>
                     <FormGroup size={sizes.MEDIUM}>
                         <FormLabel>{translate('Monitored')}</FormLabel>
 
@@ -167,18 +179,7 @@ function EditVolumeModalContent(
                             type={inputTypes.CHECK}
                             name="monitored"
                             helpText={translate('MonitoredIssuesHelpText')}
-                            {...settings.monitored}
-                            onChange={handleInputChange}
-                        />
-                    </FormGroup>
-
-                    <FormGroup size={sizes.MEDIUM}>
-                        <FormLabel>{translate('QualityProfile')}</FormLabel>
-
-                        <FormInputGroup
-                            type={inputTypes.QUALITY_PROFILE_SELECT}
-                            name="qualityProfileId"
-                            {...settings.qualityProfileId}
+                            value={monitored}
                             onChange={handleInputChange}
                         />
                     </FormGroup>
@@ -189,8 +190,20 @@ function EditVolumeModalContent(
                         <FormInputGroup
                             type={inputTypes.VOLUME_TYPE_SELECT}
                             name="specialVersion"
-                            {...settings.specialVersion}
+                            value={specialVersion}
                             helpText={translate('SpecialVersionsHelpText')}
+                            onChange={handleInputChange}
+                        />
+                    </FormGroup>
+
+                    <FormGroup size={sizes.MEDIUM}>
+                        <FormLabel>{translate('LibgenURL')}</FormLabel>
+
+                        <FormInputGroup
+                            type={inputTypes.TEXT}
+                            name="libgenUrl"
+                            value={libgenUrl}
+                            helpText={translate('LibgenURLHelpText')}
                             onChange={handleInputChange}
                         />
                     </FormGroup>
@@ -200,8 +213,8 @@ function EditVolumeModalContent(
 
                         <FormInputGroup
                             type={inputTypes.PATH}
-                            name="path"
-                            {...settings.path}
+                            name="volumeFolder"
+                            value={volumeFolder}
                             buttons={[
                                 <FormInputButton
                                     key="fileBrowser"
@@ -231,7 +244,7 @@ function EditVolumeModalContent(
                 <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
                 <SpinnerErrorButton
-                    error={saveError}
+                    error={saveError ? 'error' : undefined}
                     isSpinning={isSaving}
                     onPress={handleSavePress}
                 >
@@ -248,16 +261,15 @@ function EditVolumeModalContent(
             />
 
             <MoveVolumeModal
-                originalPath={path}
-                destinationPath={pendingChanges.path}
+                originalPath={initialVolumeFolder}
+                destinationPath={volumeFolder}
                 isOpen={isConfirmMoveModalOpen}
                 onModalClose={handleCancelPress}
                 onSavePress={handleSavePress}
                 onMoveVolumePress={handleMoveVolumePress}
             />
         </ModalContent>
-    );*/
-    return null;
+    );
 }
 
 export default EditVolumeModalContent;

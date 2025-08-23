@@ -1031,6 +1031,8 @@
     "LastWriteTime": "Last Write Time",
     "Level": "Level",
     "LiberaWebchat": "Libera Webchat",
+    "LibgenURL": "Libgen URL",
+    "LibgenURLHelpText": "URL that corresponds to this volume on libgen",
     "LibraryImport": "Library Import",
     "LibraryImportVolumeHeader": "Import volume you already have",
     "LibraryImportTips": "Some tips to ensure the import goes smoothly:",

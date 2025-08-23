@@ -41,11 +41,11 @@ import styles from './index.module.css';
 import type { Column } from 'Components/Table/Column';
 import type { InputChanged } from 'typings/Inputs';
 
-export interface FileBrowserModalContentProps {
-    name: string;
+export interface FileBrowserModalContentProps<K extends string> {
+    name: K;
     value: string;
     includeFiles?: boolean;
-    onChange: (args: InputChanged<string, string>) => unknown;
+    onChange: (args: InputChanged<K, string>) => unknown;
     onModalClose: () => void;
 }
 
@@ -67,13 +67,13 @@ const columns: Column<string>[] = [
 
 const handleClearPaths = () => {};
 
-function FileBrowserModalContent({
+function FileBrowserModalContent<K extends string>({
     name,
     value,
     includeFiles = true,
     onChange,
     onModalClose,
-}: FileBrowserModalContentProps) {
+}: FileBrowserModalContentProps<K>) {
     const dispatch = useDispatch();
 
     // const { isWindows, mode } = useSelector(createSystemStatusSelector());

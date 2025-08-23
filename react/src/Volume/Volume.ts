@@ -39,7 +39,7 @@ export type RawVolume = {
     site_url: string;
     monitored: boolean;
     monitor_new_issues: boolean;
-    root_folder: string;
+    root_folder: number;
     folder: string;
     custom_folder: boolean;
     special_version: SpecialVersion;

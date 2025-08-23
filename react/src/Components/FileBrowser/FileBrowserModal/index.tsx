@@ -12,14 +12,18 @@ import FileBrowserModalContent, {
 import styles from './index.module.css';
 
 // Types
-interface FileBrowserModalProps extends FileBrowserModalContentProps {
+interface FileBrowserModalProps<K extends string> extends FileBrowserModalContentProps<K> {
     isOpen: boolean;
     onModalClose: () => void;
 }
 
 // IMPLEMENTATIONS
 
-function FileBrowserModal({ isOpen, onModalClose, ...otherProps }: FileBrowserModalProps) {
+function FileBrowserModal<K extends string>({
+    isOpen,
+    onModalClose,
+    ...otherProps
+}: FileBrowserModalProps<K>) {
     return (
         <Modal className={styles.modal} isOpen={isOpen} onModalClose={onModalClose}>
             <FileBrowserModalContent {...otherProps} onModalClose={onModalClose} />

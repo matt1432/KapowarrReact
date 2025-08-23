@@ -33,18 +33,18 @@ import type { InputChanged } from 'typings/Inputs';
 // eslint-disable-next-line
 type Path = any;
 
-export interface PathInputProps {
+export interface PathInputProps<K extends string> {
     className?: string;
-    name: string;
+    name: K;
     value?: string;
     placeholder?: string;
     includeFiles: boolean;
     hasButton?: boolean;
     hasFileBrowser?: boolean;
-    onChange: (change: InputChanged<string, string>) => void;
+    onChange: (change: InputChanged<K, string>) => void;
 }
 
-interface PathInputInternalProps extends PathInputProps {
+interface PathInputInternalProps<K extends string> extends PathInputProps<K> {
     // eslint-disable-next-line
     paths: any[]; // Path[];
     onFetchPaths: (path: string) => void;
@@ -75,7 +75,7 @@ function createPathsSelector() {
 }
 */
 
-function PathInput(props: PathInputProps) {
+function PathInput<K extends string>(props: PathInputProps<K>) {
     const { includeFiles } = props;
 
     const dispatch = useDispatch();
@@ -110,20 +110,18 @@ function PathInput(props: PathInputProps) {
 
 export default PathInput;
 
-export function PathInputInternal(props: PathInputInternalProps) {
-    const {
-        className = styles.inputWrapper,
-        name,
-        value: inputValue = '',
-        paths,
-        includeFiles,
-        hasButton,
-        hasFileBrowser = true,
-        onChange,
-        onClearPaths,
-        ...otherProps
-    } = props;
-
+export function PathInputInternal<K extends string>({
+    className = styles.inputWrapper,
+    name,
+    value: inputValue = '',
+    paths,
+    includeFiles,
+    hasButton,
+    hasFileBrowser = true,
+    onChange,
+    onClearPaths,
+    ...otherProps
+}: PathInputInternalProps<K>) {
     const [value, setValue] = useState(inputValue);
     const [isFileBrowserModalOpen, setIsFileBrowserModalOpen] = useState(false);
     const previousInputValue = usePrevious(inputValue);
@@ -197,7 +195,7 @@ export function PathInputInternal(props: PathInputInternalProps) {
     }, [setIsFileBrowserModalOpen]);
 
     const handleChange = useCallback(
-        (change: InputChanged<string, Path>) => {
+        (change: InputChanged<K, Path>) => {
             onChange({ name, value: change.value.path });
         },
         [name, onChange],

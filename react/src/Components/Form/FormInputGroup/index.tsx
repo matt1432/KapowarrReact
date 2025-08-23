@@ -81,7 +81,7 @@ type PickProps<V, C extends InputType, K extends string> = C extends 'text'
                           : C extends 'password'
                             ? TextInputProps<K, 'password'>
                             : C extends 'path'
-                              ? PathInputProps
+                              ? PathInputProps<K>
                               : C extends 'rootFolderSelect'
                                 ? RootFolderSelectInputProps<K>
                                 : C extends 'select'
