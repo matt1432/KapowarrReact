@@ -1,4 +1,4 @@
-export const socketEvents = {
+const socketEvents = {
     CONNECT: 'connect',
     DISCONNECT: 'disconnect',
     TASK_ADDED: 'task_added',

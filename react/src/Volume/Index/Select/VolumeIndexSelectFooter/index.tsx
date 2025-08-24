@@ -72,8 +72,8 @@ function VolumeIndexSelectFooter() {
 
     // Refresh volumes once an action is finished
     useSocketEvents({
-        mass_editor_status: ({ current_item, total_items }) => {
-            if (current_item === total_items) {
+        massEditorStatus: ({ currentItem, totalItems }) => {
+            if (currentItem === totalItems) {
                 refetch();
                 refetchIndex();
             }
@@ -84,7 +84,7 @@ function VolumeIndexSelectFooter() {
     const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-    const previousIsDeleting = usePrevious(isDeleting);
+    const wasDeleting = usePrevious(isDeleting);
 
     const [{ selectedState }, selectDispatch] = useSelect();
 
@@ -137,10 +137,10 @@ function VolumeIndexSelectFooter() {
     }, [runMassEditAction, volumeIds]);
 
     useEffect(() => {
-        if (previousIsDeleting && !isDeleting) {
+        if (wasDeleting && !isDeleting) {
             selectDispatch({ type: 'unselectAll' });
         }
-    }, [previousIsDeleting, isDeleting, selectDispatch]);
+    }, [wasDeleting, isDeleting, selectDispatch]);
 
     const { refetch: fetchRootFolders } = useGetRootFoldersQuery(undefined);
 

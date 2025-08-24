@@ -6,6 +6,7 @@ import kinds from './kinds';
 import massEditActions from './massEditActions';
 import scrollDirections from './scrollDirections';
 import sizes from './sizes';
+import socketEvents from './socketEvents';
 import sortDirections from './sortDirections';
 import tooltipPositions from './tooltipPositions';
 
@@ -18,6 +19,7 @@ export {
     massEditActions,
     scrollDirections,
     sizes,
+    socketEvents,
     sortDirections,
     tooltipPositions,
 };

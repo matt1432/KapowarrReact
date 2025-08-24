@@ -1,22 +1,39 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import socket from 'Store/socket';
 
+import { snakeCase } from 'lodash';
+import camelize from 'Utilities/Object/camelize';
+
+import type { CamelCase, SnakeCase } from 'type-fest';
 import type { SocketEvent } from 'Helpers/Props/socketEvents';
 import type { SocketEventHandler } from 'typings/Socket';
 
 export type Events = {
-    [Key in SocketEvent]?: SocketEventHandler<Key>;
+    [Key in CamelCase<SocketEvent>]?: SocketEventHandler<SnakeCase<Key>>;
 };
 
-export default function useSocketEvents(events: Events) {
+export default function useSocketEvents(_events: Events) {
+    const events = useMemo(
+        () =>
+            Object.entries(_events).map(
+                ([name, handler]) =>
+                    // eslint-disable-next-line
+                    [snakeCase(name), (data: any) => handler(camelize(data))] as [
+                        SocketEvent,
+                        SocketEventHandler<SocketEvent>,
+                    ],
+            ),
+        [_events],
+    );
+
     useEffect(() => {
-        Object.entries(events).forEach(([name, handler]) => {
+        events.forEach(([name, handler]) => {
             socket.on(name, handler);
         });
 
         return () => {
-            Object.entries(events).forEach(([name, handler]) => {
+            events.forEach(([name, handler]) => {
                 socket.off(name, handler);
             });
         };

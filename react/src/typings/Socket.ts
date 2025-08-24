@@ -1,3 +1,5 @@
+import type { CamelCasedPropertiesDeep } from 'type-fest';
+
 import type { DownloadItem } from 'typings/Queue';
 
 import type { MassEditAction } from 'Helpers/Props/massEditActions';
@@ -11,12 +13,20 @@ interface TaskData {
     issue_id: number | null;
 }
 
+interface TaskStatusData {
+    message: string;
+}
+
 interface QueueStatusData {
     id: number;
     status: DownloadState;
     size: number;
     speed: number;
     progress: number;
+}
+
+interface QueueEndedData {
+    id: number;
 }
 
 interface MassEditorData {
@@ -32,17 +42,17 @@ interface DownloadedStatusData {
 }
 
 interface SpecificEventHandlers {
-    task_added: (data: TaskData) => void;
-    task_ended: (data: TaskData) => void;
-    task_status: (data: { message: string }) => void;
+    task_added: (data: CamelCasedPropertiesDeep<TaskData>) => void;
+    task_ended: (data: CamelCasedPropertiesDeep<TaskData>) => void;
+    task_status: (data: CamelCasedPropertiesDeep<TaskStatusData>) => void;
 
     // FIXME: ensure this is the correct type
-    queue_added: (data: DownloadItem) => void;
+    queue_added: (data: CamelCasedPropertiesDeep<DownloadItem>) => void;
 
-    queue_ended: (data: { id: number }) => void;
-    queue_status: (data: QueueStatusData) => void;
-    mass_editor_status: (data: MassEditorData) => void;
-    downloaded_status: (data: DownloadedStatusData) => void;
+    queue_ended: (data: CamelCasedPropertiesDeep<QueueEndedData>) => void;
+    queue_status: (data: CamelCasedPropertiesDeep<QueueStatusData>) => void;
+    mass_editor_status: (data: CamelCasedPropertiesDeep<MassEditorData>) => void;
+    downloaded_status: (data: CamelCasedPropertiesDeep<DownloadedStatusData>) => void;
 }
 
 export type SocketEventHandler<T extends SocketEvent> = T extends keyof SpecificEventHandlers
