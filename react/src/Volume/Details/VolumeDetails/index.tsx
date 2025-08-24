@@ -64,7 +64,7 @@ interface VolumeDetailsProps {
 
 // TODO:
 // import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
-// import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
+import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
 import MonitoringOptionsModal from 'Volume/MonitoringOptions/MonitoringOptionsModal';
 
 function VolumeDetails({ volumeId }: VolumeDetailsProps) {
@@ -122,7 +122,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         };
     }, [volumeId, allVolumes]);
 
-    // const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
+    const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
     // const [isManageIssuesOpen, setIsManageIssuesOpen] = useState(false);
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
     const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);
@@ -131,14 +131,12 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     const wasRenaming = usePrevious(isRenaming);
 
     const handleOrganizePress = useCallback(() => {
-        // setIsOrganizeModalOpen(true);
+        setIsOrganizeModalOpen(true);
     }, []);
 
-    /*
     const handleOrganizeModalClose = useCallback(() => {
         setIsOrganizeModalOpen(false);
     }, []);
-    */
 
     const handleManageIssuesPress = useCallback(() => {
         // setIsManageIssuesOpen(true);
@@ -445,13 +443,13 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                     <IssueTable volumeId={volumeId} />
                 </div>
 
-                {/*
                 <OrganizePreviewModal
                     isOpen={isOrganizeModalOpen}
                     volumeId={volumeId}
                     onModalClose={handleOrganizeModalClose}
                 />
 
+                {/*
                 <InteractiveImportModal
                     isOpen={isManageIssuesOpen}
                     volumeId={volumeId}
