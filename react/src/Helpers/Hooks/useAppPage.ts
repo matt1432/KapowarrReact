@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useLazyGetSettingsQuery } from 'Store/Api/Settings';
 
 import { useLazyGetVolumesQuery } from 'Store/Api/Volumes';
 import { useRootSelector } from 'Store/createAppStore';
@@ -8,13 +9,23 @@ export default function useAppPage() {
 
     // TODO: all queries needed before page is loaded
     const [getVolumes, getVolumesState] = useLazyGetVolumesQuery(undefined);
+    const [getSettings, getSettingsState] = useLazyGetSettingsQuery(undefined);
 
-    const queries = [getVolumesState];
-    const [triggers] = useState([() => getVolumes(undefined)]);
+    const queries = useMemo(
+        () => [getVolumesState, getSettingsState],
+        [getVolumesState, getSettingsState],
+    );
+    const triggers = useMemo(
+        () => [() => getVolumes(undefined), () => getSettings(undefined)],
+        [getVolumes, getSettings],
+    );
 
-    const erroredQueries = queries.filter(({ isError }) => isError);
-    const isPopulated = queries.every(({ data, isSuccess }) => data && isSuccess);
-    const hasError = erroredQueries.length > 0;
+    const erroredQueries = useMemo(() => queries.filter(({ isError }) => isError), [queries]);
+    const isPopulated = useMemo(
+        () => queries.every(({ data, isSuccess }) => data && isSuccess),
+        [queries],
+    );
+    const hasError = useMemo(() => erroredQueries.length > 0, [erroredQueries.length]);
 
     useEffect(() => {
         if (apiKey) {

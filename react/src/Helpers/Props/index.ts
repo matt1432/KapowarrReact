@@ -5,10 +5,13 @@ import inputTypes from './inputTypes';
 import kinds from './kinds';
 import massEditActions from './massEditActions';
 import scrollDirections from './scrollDirections';
+import seedingHandlingValues from './seedingHandlingValues';
 import sizes from './sizes';
 import socketEvents from './socketEvents';
 import sortDirections from './sortDirections';
 import tooltipPositions from './tooltipPositions';
+
+import GCDownloadSources from './GCDownloadSources';
 
 export {
     align,
@@ -18,8 +21,10 @@ export {
     kinds,
     massEditActions,
     scrollDirections,
+    seedingHandlingValues,
     sizes,
     socketEvents,
     sortDirections,
     tooltipPositions,
+    GCDownloadSources,
 };
