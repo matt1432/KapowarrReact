@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 // Misc
 import translate from 'Utilities/String/translate';
 
-import * as specialVersions from 'Utilities/Volume/specialVersions';
+import { specialVersions } from 'Helpers/Props';
 
 // Specific Components
 import EnhancedSelectInput, {
@@ -17,7 +17,7 @@ import SpecialVersionSelectInputOption from '../SpecialVersionSelectInputOption'
 import SpecialVersionSelectInputSelectedValue from '../SpecialVersionSelectInputSelectedValue';
 
 // Types
-import type { SpecialVersion } from 'Volume/Volume';
+import type { SpecialVersion } from 'Helpers/Props/specialVersions';
 
 export interface SpecialVersionSelectInputProps<K extends string>
     extends Omit<

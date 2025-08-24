@@ -13,7 +13,6 @@ import type {
     MonitoringScheme,
     RawVolume,
     RawVolumePublicInfo,
-    SpecialVersion,
     Volume,
     VolumePublicInfo,
 } from 'Volume/Volume';
@@ -21,6 +20,8 @@ import type {
 import type { RawVolumeMetadata, VolumeMetadata } from 'AddVolume/AddVolume';
 
 import type { IndexFilter, IndexSort } from 'Volume/Index';
+
+import type { SpecialVersion } from 'Helpers/Props/specialVersions';
 
 export type GetVolumesParams =
     | {

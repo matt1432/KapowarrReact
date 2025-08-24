@@ -1,6 +1,7 @@
 import type { CamelCasedProperties } from 'type-fest';
 
 import type { GeneralFileData, Issue, RawIssue } from 'Issue/Issue';
+import type { SpecialVersion } from 'Helpers/Props/specialVersions';
 
 export type VolumeColumnName =
     | 'wanted'
@@ -17,14 +18,6 @@ export type VolumeColumnName =
     | 'actions';
 
 export type MonitoringScheme = 'all' | 'missing' | 'none' | 'noChange';
-export type SpecialVersion =
-    | 'tpb'
-    | 'one-shot'
-    | 'hard-cover'
-    | 'volume-as-issue'
-    | 'cover'
-    | 'metadata'
-    | '';
 
 export type RawVolume = {
     id: number;

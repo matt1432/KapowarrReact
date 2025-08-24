@@ -5,15 +5,14 @@
 import { useCallback, useEffect } from 'react';
 
 // Redux
-import { useDispatch } from 'react-redux';
+import { useGetSettingsQuery } from 'Store/Api/Settings';
 
 // import { executeCommand } from 'Store/Actions/commandActions';
 // import { fetchOrganizePreview } from 'Store/Actions/organizePreviewActions';
-// import { fetchNamingSettings } from 'Store/Actions/settingsActions';
 
 // Misc
 // import * as commandNames from 'Commands/commandNames';
-import { kinds } from 'Helpers/Props';
+import { kinds, specialVersions } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 // import getSelectedIds from 'Utilities/Table/getSelectedIds';
@@ -43,7 +42,6 @@ import type { CheckInputChanged, SelectStateInputProps } from 'typings/Inputs';
 
 export interface OrganizePreviewModalContentProps {
     volumeId: number;
-    seasonNumber?: number;
     onModalClose: () => void;
 }
 
@@ -62,10 +60,8 @@ function getValue(allSelected: boolean, allUnselected: boolean) {
 
 export default function OrganizePreviewModalContent({
     volumeId,
-    seasonNumber,
     onModalClose,
 }: OrganizePreviewModalContentProps) {
-    const dispatch = useDispatch();
     const {
         items,
         isFetching: isPreviewFetching,
@@ -79,28 +75,37 @@ export default function OrganizePreviewModalContent({
     }; // useSelector((state) => state.organizePreview);
 
     const {
-        isFetching: isNamingFetching,
-        isPopulated: isNamingPopulated,
-        error: namingError,
-        item: naming,
-    } = {
-        isFetching: true,
-        isPopulated: false,
-        error: undefined,
-        item: {
-            renameIssues: false,
-        },
-    }; // useSelector((state) => state.settings.naming);
+        isNamingFetching,
+        isNamingPopulated,
+        namingError,
+        naming,
+        refetch: fetchNamingSettings,
+    } = useGetSettingsQuery(undefined, {
+        selectFromResult: ({ data, error, isFetching, isUninitialized }) => ({
+            isNamingFetching: isFetching,
+            isNamingPopulated: !isUninitialized,
+            namingError: error,
+            naming: {
+                [`naming${specialVersions.NORMAL}`]: data?.fileNaming,
+                [`naming${specialVersions.VOL_AS_ISSUE}`]: data?.fileNamingVai,
+                [`naming${specialVersions.TPB}`]: data?.fileNamingSpecialVersion,
+                [`naming${specialVersions.ONE_SHOT}`]: data?.fileNamingSpecialVersion,
+                [`naming${specialVersions.HARD_COVER}`]: data?.fileNamingSpecialVersion,
+            },
+        }),
+    });
 
     const { volume } = useVolume(volumeId)!;
-    const [selectState, setSelectState] = useSelectState();
+    const [{ allSelected, allUnselected, selectedState }, setSelectState] = useSelectState();
 
-    const { allSelected, allUnselected, selectedState } = selectState;
     const isFetching = isPreviewFetching || isNamingFetching;
     const isPopulated = isPreviewPopulated && isNamingPopulated;
     const error = previewError || namingError;
-    const { renameIssues } = naming;
-    // const issueFormat = naming[`${volume?.specialVersion}IssueFormat`];
+
+    const issueFormat =
+        naming[`${volume?.specialVersion}IssueFormat`] ??
+        naming[`naming${specialVersions.NORMAL}`] ??
+        '';
 
     const selectAllValue = getValue(allSelected, allUnselected);
 
@@ -138,12 +143,12 @@ export default function OrganizePreviewModalContent({
         */
 
         onModalClose();
-    }, [volumeId, selectedState, dispatch, onModalClose]);
+    }, [volumeId, selectedState, onModalClose]);
 
     useEffect(() => {
-        // dispatch(fetchOrganizePreview({ volumeId, seasonNumber }));
-        // dispatch(fetchNamingSettings());
-    }, [volumeId, seasonNumber, dispatch]);
+        // dispatch(fetchOrganizePreview({ volumeId }));
+        fetchNamingSettings();
+    }, [fetchNamingSettings, volumeId]);
 
     if (!volume) {
         return null;
@@ -162,11 +167,7 @@ export default function OrganizePreviewModalContent({
 
                 {!isFetching && isPopulated && !items.length ? (
                     <div>
-                        {renameIssues ? (
-                            <div>{translate('OrganizeNothingToRename')}</div>
-                        ) : (
-                            <div>{translate('OrganizeRenamingDisabled')}</div>
-                        )}
+                        <div>{translate('OrganizeNothingToRename')}</div>
                     </div>
                 ) : null}
 
@@ -184,8 +185,8 @@ export default function OrganizePreviewModalContent({
 
                             <div>
                                 <InlineMarkdown
-                                // data={translate('OrganizeNamingPattern', { issueFormat })}
-                                // blockClassName={styles.issueFormat}
+                                    data={translate('OrganizeNamingPattern', { issueFormat })}
+                                    blockClassName={styles.issueFormat}
                                 />
                             </div>
                         </Alert>

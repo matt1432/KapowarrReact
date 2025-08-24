@@ -5,7 +5,8 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 // Types
 import type { RootFolder } from 'typings/RootFolder';
-import type { MonitoringScheme, SpecialVersion } from 'Volume/Volume';
+import type { MonitoringScheme } from 'Volume/Volume';
+import type { SpecialVersion } from 'Helpers/Props/specialVersions';
 
 export interface AddVolumeState {
     rootFolder: RootFolder | null;

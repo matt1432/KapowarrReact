@@ -9,6 +9,7 @@ import seedingHandlingValues from './seedingHandlingValues';
 import sizes from './sizes';
 import socketEvents from './socketEvents';
 import sortDirections from './sortDirections';
+import specialVersions from './specialVersions';
 import tooltipPositions from './tooltipPositions';
 
 import GCDownloadSources from './GCDownloadSources';
@@ -25,6 +26,7 @@ export {
     sizes,
     socketEvents,
     sortDirections,
+    specialVersions,
     tooltipPositions,
     GCDownloadSources,
 };

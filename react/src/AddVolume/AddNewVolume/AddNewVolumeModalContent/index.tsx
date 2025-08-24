@@ -40,7 +40,8 @@ import styles from './index.module.css';
 // Types
 import type { AddVolume } from 'AddVolume/AddVolume';
 import type { InputChanged } from 'typings/Inputs';
-import type { MonitoringScheme, SpecialVersion } from 'Volume/Volume';
+import type { MonitoringScheme } from 'Volume/Volume';
+import type { SpecialVersion } from 'Helpers/Props/specialVersions';
 
 export interface AddNewVolumeModalContentProps {
     volume: AddVolume;

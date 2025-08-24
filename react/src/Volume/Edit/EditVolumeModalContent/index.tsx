@@ -39,7 +39,7 @@ import styles from './index.module.css';
 // Types
 import type { InputChanged } from 'typings/Inputs';
 import type { RootFolderUpdated } from '../RootFolder/RootFolderModalContent';
-import type { SpecialVersion } from 'Volume/Volume';
+import type { SpecialVersion } from 'Helpers/Props/specialVersions';
 
 export interface EditVolumeModalContentProps {
     volumeId: number;
