@@ -1,4 +1,4 @@
-// TODO:
+// TODO: figure out queue types
 import type { DownloadState } from 'Helpers/Props/downloadStates';
 
 // FIXME: this type is incomplete

@@ -1,5 +1,3 @@
-// TODO:
-
 // IMPORTS
 
 // React

@@ -1,4 +1,5 @@
-// TODO:
+// TODO: figure out form validation
+
 export interface ValidationFailure {
     isWarning: boolean;
     propertyName: string;
