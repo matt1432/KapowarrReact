@@ -3,8 +3,6 @@
 // Redux
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-// Misc
-
 // Types
 export interface UISettingsState {
     theme: 'auto' | 'dark' | 'light';

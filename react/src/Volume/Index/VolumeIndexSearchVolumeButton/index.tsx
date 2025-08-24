@@ -1,9 +1,11 @@
 // IMPORTS
 
 // React
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
+
 import { useMassEditMutation } from 'Store/Api/Command';
 import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
@@ -11,7 +13,6 @@ import { useGetVolumesQuery } from 'Store/Api/Volumes';
 import { icons, massEditActions } from 'Helpers/Props';
 import { useSelect } from 'App/SelectContext';
 
-import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 
@@ -30,6 +31,10 @@ function VolumeIndexSearchVolumeButton({
     isSelectMode,
     filterKey,
 }: VolumeIndexSearchVolumeButtonProps) {
+    const { isRunning: isSearching } = useRootSelector(
+        (state) => state.socketEvents.massEditorStatus.search,
+    );
+
     const { items, totalItems } = useGetVolumesQuery(undefined, {
         selectFromResult: ({ data }) => ({
             items: data ?? [],
@@ -60,7 +65,6 @@ function VolumeIndexSearchVolumeButton({
         return translate('SearchAll');
     }, [filterKey, selectedVolumeIds.length]);
 
-    const [isSearching, setIsSearching] = useState(false);
     const [runMassEditAction] = useMassEditMutation();
 
     const onPress = useCallback(() => {
@@ -69,14 +73,6 @@ function VolumeIndexSearchVolumeButton({
             volumeIds: volumesToSearch,
         });
     }, [runMassEditAction, volumesToSearch]);
-
-    useSocketEvents({
-        mass_editor_status: ({ identifier, current_item, total_items }) => {
-            if (identifier === massEditActions.SEARCH) {
-                setIsSearching(current_item !== total_items);
-            }
-        },
-    });
 
     return (
         <PageToolbarButton

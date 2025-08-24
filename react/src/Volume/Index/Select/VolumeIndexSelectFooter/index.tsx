@@ -4,6 +4,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
+
 import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import { useGetVolumesQuery } from 'Store/Api/Volumes';
 import { useMassEditMutation } from 'Store/Api/Command';
@@ -35,48 +37,45 @@ import styles from './index.module.css';
 // IMPLEMENTATIONS
 
 function VolumeIndexSelectFooter() {
+    const { massEditorStatus } = useRootSelector((state) => state.socketEvents);
+
     const { refetch } = useGetVolumesQuery(undefined);
     const { refetch: refetchIndex } = useIndexVolumes();
 
-    const [isSaving, setIsSaving] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [isOrganizing, setIsOrganizing] = useState(false);
-    const [isConverting, setIsConverting] = useState(false);
-    const [isRemovingAds, setIsRemovingAds] = useState(false);
+    const isSaving = useMemo(
+        () =>
+            massEditorStatus.root_folder.isRunning ||
+            massEditorStatus.monitor.isRunning ||
+            massEditorStatus.unmonitor.isRunning,
+        [
+            massEditorStatus.root_folder.isRunning,
+            massEditorStatus.monitor.isRunning,
+            massEditorStatus.unmonitor.isRunning,
+        ],
+    );
+    const isDeleting = useMemo(
+        () => massEditorStatus.delete.isRunning,
+        [massEditorStatus.delete.isRunning],
+    );
+    const isOrganizing = useMemo(
+        () => massEditorStatus.rename.isRunning,
+        [massEditorStatus.rename.isRunning],
+    );
+    const isConverting = useMemo(
+        () => massEditorStatus.convert.isRunning,
+        [massEditorStatus.convert.isRunning],
+    );
+    const isRemovingAds = useMemo(
+        () => massEditorStatus.remove_ads.isRunning,
+        [massEditorStatus.remove_ads.isRunning],
+    );
 
+    // Refresh volumes once an action is finished
     useSocketEvents({
-        mass_editor_status: ({ identifier, current_item, total_items }) => {
-            const value = current_item !== total_items;
-
-            if (!value) {
-                // Refresh volumes once an action is finished
+        mass_editor_status: ({ current_item, total_items }) => {
+            if (current_item === total_items) {
                 refetch();
                 refetchIndex();
-            }
-
-            switch (identifier) {
-                case massEditActions.ROOT_FOLDER:
-                case massEditActions.MONITOR:
-                case massEditActions.UNMONITOR: {
-                    setIsSaving(value);
-                    break;
-                }
-                case massEditActions.DELETE: {
-                    setIsDeleting(value);
-                    break;
-                }
-                case massEditActions.RENAME: {
-                    setIsOrganizing(value);
-                    break;
-                }
-                case massEditActions.CONVERT: {
-                    setIsConverting(value);
-                    break;
-                }
-                case massEditActions.REMOVE_ADS: {
-                    setIsRemovingAds(value);
-                    break;
-                }
             }
         },
     });
@@ -102,7 +101,6 @@ function VolumeIndexSelectFooter() {
     }, [setIsEditModalOpen]);
 
     const onSavePress = useCallback(() => {
-        setIsSaving(true);
         setIsEditModalOpen(false);
     }, []);
 

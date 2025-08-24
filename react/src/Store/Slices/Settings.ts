@@ -3,8 +3,6 @@
 // Redux
 import { createSlice } from '@reduxjs/toolkit';
 
-// Misc
-
 // Types
 export interface SettingsState {
     advancedSettings: boolean;

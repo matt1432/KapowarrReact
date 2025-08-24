@@ -14,6 +14,7 @@ import { HistoryRouter } from './HistoryRouter';
 
 import ApplyTheme from './ApplyTheme';
 import AppRoutes from './AppRoutes';
+import SocketListener from './SocketListener';
 
 // Types
 import type { Store } from 'redux';
@@ -31,6 +32,7 @@ function App({ store }: AppProps) {
         <Provider store={store}>
             <HistoryRouter>
                 <ApplyTheme />
+                <SocketListener />
                 <Page>
                     <AppRoutes />
                 </Page>

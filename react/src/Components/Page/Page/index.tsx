@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -9,9 +9,9 @@ import { saveDimensions } from 'Store/Slices/App';
 
 // Misc
 import useAppPage from 'Helpers/Hooks/useAppPage';
-import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
 
 // General Components
+import LoginPage from 'Login';
 import ColorImpairedContext from 'App/ColorImpairedContext';
 import ConnectionLostModal from 'App/ConnectionLostModal';
 
@@ -23,7 +23,6 @@ import PageSidebar from '../Sidebar/PageSidebar';
 
 // CSS
 import styles from './index.module.css';
-import LoginPage from 'Login';
 
 // Types
 interface PageProps {
@@ -35,23 +34,14 @@ interface PageProps {
 function Page({ children = [] }: PageProps) {
     const dispatch = useRootDispatch();
 
+    const { isConnected } = useRootSelector((state) => state.socketEvents);
+
     const { hasError, errors, isPopulated, needsAuth } = useAppPage();
 
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
     const { enableColorImpairedMode } = useRootSelector((state) => state.uiSettings);
 
     const { isSidebarVisible } = useRootSelector((state) => state.app);
-
-    const [isConnectionLostModalOpen, setIsConnectionLostModalOpen] = useState(false);
-
-    useSocketEvents({
-        connect: () => {
-            setIsConnectionLostModalOpen(false);
-        },
-        disconnect: () => {
-            setIsConnectionLostModalOpen(true);
-        },
-    });
 
     const handleResize = useCallback(() => {
         dispatch(
@@ -95,7 +85,7 @@ function Page({ children = [] }: PageProps) {
                     {children}
                 </div>
 
-                <ConnectionLostModal isOpen={isConnectionLostModalOpen} />
+                <ConnectionLostModal isOpen={!isConnected} />
             </div>
         </ColorImpairedContext.Provider>
     );

@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 // Redux
 import { useMassEditMutation } from 'Store/Api/Command';
@@ -11,12 +11,12 @@ import { useGetVolumesQuery } from 'Store/Api/Volumes';
 import { icons, massEditActions } from 'Helpers/Props';
 import { useSelect } from 'App/SelectContext';
 
-import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 
 // General Components
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
+import { useRootSelector } from 'Store/createAppStore';
 
 // Types
 interface VolumeIndexRefreshVolumeButtonProps {
@@ -30,6 +30,10 @@ function VolumeIndexRefreshVolumeButton({
     isSelectMode,
     filterKey,
 }: VolumeIndexRefreshVolumeButtonProps) {
+    const { isRunning: isRefreshing } = useRootSelector(
+        (state) => state.socketEvents.massEditorStatus.update,
+    );
+
     const { items, totalItems } = useGetVolumesQuery(undefined, {
         selectFromResult: ({ data }) => ({
             items: data ?? [],
@@ -60,7 +64,6 @@ function VolumeIndexRefreshVolumeButton({
         return translate('UpdateAll');
     }, [filterKey, selectedVolumeIds.length]);
 
-    const [isRefreshing, setIsRefreshing] = useState(false);
     const [runMassEditAction] = useMassEditMutation();
 
     const onPress = useCallback(() => {
@@ -69,14 +72,6 @@ function VolumeIndexRefreshVolumeButton({
             volumeIds: volumesToRefresh,
         });
     }, [runMassEditAction, volumesToRefresh]);
-
-    useSocketEvents({
-        mass_editor_status: ({ identifier, current_item, total_items }) => {
-            if (identifier === massEditActions.UPDATE) {
-                setIsRefreshing(current_item !== total_items);
-            }
-        },
-    });
 
     return (
         <PageToolbarButton
