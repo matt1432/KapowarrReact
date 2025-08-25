@@ -51,6 +51,9 @@
           ];
           config.allowUnfreePredicate = pkg: builtins.elem pkg.pname ["rar"];
         }));
+
+    pyEnv = pkgs:
+      pkgs.python3.withPackages (_: pkgs.kapowarr.dependencies ++ [pkgs.kapowarr]);
   in {
     overlays.default = final: _prev: let
       pyPkgs = final.python3Packages.override (o: {
@@ -171,16 +174,13 @@
     });
 
     formatter = perSystem (pkgs: let
-      treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+      treefmtEval = treefmt-nix.lib.evalModule pkgs (import ./treefmt.nix pyEnv);
     in
       treefmtEval.config.build.wrapper);
 
     devShells = perSystem (pkgs: {
       default = pkgs.mkShell {
-        packages = with pkgs; [
-          alejandra
-          (python3.withPackages (_: pkgs.kapowarr.dependencies ++ [pkgs.kapowarr]))
-        ];
+        packages = [(pyEnv pkgs)];
       };
     });
   };
