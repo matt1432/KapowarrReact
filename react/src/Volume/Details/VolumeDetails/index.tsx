@@ -17,7 +17,7 @@ import {
     kinds,
     scrollDirections,
     sizes,
-    /*sortDirections,*/ tooltipPositions,
+    tooltipPositions,
 } from 'Helpers/Props';
 
 import usePrevious from 'Helpers/Hooks/usePrevious';
@@ -46,11 +46,13 @@ import Tooltip from 'Components/Tooltip/Tooltip';
 // Specific Components
 import DeleteVolumeModal from 'Volume/Delete/DeleteVolumeModal';
 import EditVolumeModal from 'Volume/Edit/EditVolumeModal';
-import VolumePoster from 'Volume/VolumePoster';
+import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
+import MonitoringOptionsModal from 'Volume/MonitoringOptions/MonitoringOptionsModal';
 
 import IssueTable from '../IssueTable';
 import VolumeDetailsLinks from '../VolumeDetailsLinks';
 import VolumeProgressLabel from '../VolumeProgressLabel';
+import VolumePoster from 'Volume/VolumePoster';
 
 // CSS
 import styles from './index.module.css';
@@ -61,11 +63,6 @@ interface VolumeDetailsProps {
 }
 
 // IMPLEMENTATIONS
-
-// TODO:
-// import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
-import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
-import MonitoringOptionsModal from 'Volume/MonitoringOptions/MonitoringOptionsModal';
 
 function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     const { data: allVolumes = [] } = useGetVolumesQuery(undefined);
@@ -81,7 +78,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         if (toggleVolumeMonitoredState.isSuccess) {
             refetch();
         }
-    }, [refetch, toggleVolumeMonitoredState]);
+    }, [refetch, toggleVolumeMonitoredState.isSuccess]);
 
     const { refetch: refetchQueueDetails } = useFetchQueueDetails({ volumeId });
 
@@ -123,7 +120,6 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     }, [volumeId, allVolumes]);
 
     const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
-    // const [isManageIssuesOpen, setIsManageIssuesOpen] = useState(false);
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
     const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);
     const [isMonitorOptionsModalOpen, setIsMonitorOptionsModalOpen] = useState(false);
@@ -137,16 +133,6 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     const handleOrganizeModalClose = useCallback(() => {
         setIsOrganizeModalOpen(false);
     }, []);
-
-    const handleManageIssuesPress = useCallback(() => {
-        // setIsManageIssuesOpen(true);
-    }, []);
-
-    /*
-    const handleManageIssuesModalClose = useCallback(() => {
-        setIsManageIssuesOpen(false);
-    }, []);
-    */
 
     const handleEditVolumePress = useCallback(() => {
         setIsEditVolumeModalOpen(true);
@@ -252,6 +238,8 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                         onPress={handleSearchPress}
                     />
 
+                    {/* TODO: add ManualSearch button */}
+
                     <PageToolbarSeparator />
 
                     <PageToolbarButton
@@ -261,13 +249,11 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                         onPress={handleOrganizePress}
                     />
 
-                    <PageToolbarButton
-                        label={translate('ManageIssues')}
-                        iconName={icons.ISSUE_FILE}
-                        onPress={handleManageIssuesPress}
-                    />
+                    {/* TODO: add PreviewConvert button */}
 
                     <PageToolbarSeparator />
+
+                    {/* TODO: add GeneralFiles button */}
 
                     <PageToolbarButton
                         label={translate('IssueMonitoring')}
@@ -310,7 +296,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                         <MonitorToggleButton
                                             className={styles.monitorToggleButton}
                                             monitored={monitored}
-                                            isSaving={false} // TODO:
+                                            isSaving={toggleVolumeMonitoredState.isLoading}
                                             size={40}
                                             onPress={handleMonitorTogglePress}
                                         />
@@ -448,23 +434,6 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                     volumeId={volumeId}
                     onModalClose={handleOrganizeModalClose}
                 />
-
-                {/*
-                <InteractiveImportModal
-                    isOpen={isManageIssuesOpen}
-                    volumeId={volumeId}
-                    title={title}
-                    folder={folder}
-                    initialSortKey="relativePath"
-                    initialSortDirection={sortDirections.DESCENDING}
-                    showVolume={false}
-                    allowVolumeChange={false}
-                    showDelete={true}
-                    showImportMode={false}
-                    modalTitle={translate('ManageIssues')}
-                    onModalClose={handleManageIssuesModalClose}
-                />
-                */}
 
                 <EditVolumeModal
                     isOpen={isEditVolumeModalOpen}
