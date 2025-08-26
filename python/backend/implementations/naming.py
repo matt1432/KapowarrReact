@@ -762,7 +762,8 @@ def preview_mass_rename(
     volume_id: int,
     issue_id: int | None = None,
     filepath_filter: list[str] | None = None,
-) -> tuple[dict[str, str], str | None]:
+    is_for_api: bool = False,
+) -> tuple[dict[str, str] | list[dict[str, str | int]], str | None]:
     """Determine what the new filenames would be, if they aren't already
     following the format.
 
@@ -783,7 +784,7 @@ def preview_mass_rename(
         folder if it is not the same as the current folder. Otherwise, it's
         `None`.
     """
-    result: dict[str, str] = {}
+    result: dict[str, str] | list[dict[str, str | int]] = {}
     volume = Volume(volume_id)
     volume_data = volume.get_data()
     volume_folder = volume_data.folder
@@ -867,6 +868,31 @@ def preview_mass_rename(
 
     result = same_name_indexing(volume_folder, result)
 
+    if is_for_api:
+        if not issue_id:
+            issues = volume.get_issues()
+            result = [
+                {
+                    "id": next(
+                        (
+                            x
+                            for x in issues
+                            if x.calculated_issue_number
+                            == FilesDB.issues_covered(key)[0]
+                        ),
+                        issues[0],
+                    ).id,
+                    "existingPath": key,
+                    "newPath": result[key],
+                }
+                for key in result
+            ]
+        else:
+            result = [
+                {"id": issue_id, "existingPath": key, "newPath": result[key]}
+                for key in result
+            ]
+
     if volume_folder != volume.get_data().folder:
         return result, volume_folder
     else:
@@ -902,7 +928,7 @@ def mass_rename(
     renames, new_volume_folder = preview_mass_rename(
         volume_id, issue_id, filepath_filter
     )
-    if not renames and not new_volume_folder:
+    if not renames and not new_volume_folder or isinstance(renames, list):
         return []
 
     volume = Volume(volume_id)

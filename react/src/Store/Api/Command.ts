@@ -18,7 +18,7 @@ export type ExecuteCommandParams = {
     cmd: CommandName;
     volumeId?: number;
     issueId?: number;
-    [key: string]: string | number | undefined;
+    [key: string]: string | string[] | number | undefined;
 };
 
 type MassEditSpecificParams = {

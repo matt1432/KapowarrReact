@@ -98,6 +98,21 @@ const extendedApi = baseApi.injectEndpoints({
                 camelize(response.result),
         }),
 
+        previewRenameVolume: build.query<
+            { id: number; existingPath: string; newPath: string }[],
+            { volumeId: number }
+        >({
+            query: ({ volumeId }) =>
+                `volumes/${volumeId}/rename` +
+                getQueryString({
+                    api_key: window.Kapowarr.apiKey,
+                }),
+
+            transformResponse: (response: {
+                result: { id: number; existingPath: string; newPath: string }[];
+            }) => response.result,
+        }),
+
         // POST
         addVolume: build.mutation<VolumePublicInfo, AddVolumeParams>({
             query: (body) => ({
@@ -148,6 +163,7 @@ export const {
     useGetVolumesQuery,
     useLazyGetVolumesQuery,
     useLazyLookupVolumeQuery,
+    usePreviewRenameVolumeQuery,
     useSearchVolumeQuery,
     useUpdateVolumeMutation,
 } = extendedApi;
