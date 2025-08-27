@@ -16,6 +16,10 @@ import EnhancedSelectInput, {
 } from '../EnhancedSelectInput';
 
 // Types
+export interface RootFolderSelectInputValue extends EnhancedSelectInputValue<string> {
+    freeSpace?: number;
+}
+
 export type RootFolderSelectInputProps<K extends string> = Omit<
     EnhancedSelectInputProps<K, EnhancedSelectInputValue<string>, string>,
     'values'
@@ -37,7 +41,8 @@ function RootFolderSelectInput<K extends string>({
                 ({
                     key: f.folder,
                     value: f.folder,
-                }) satisfies EnhancedSelectInputValue<string> as EnhancedSelectInputValue<string>,
+                    freeSpace: f.size.free,
+                }) satisfies RootFolderSelectInputValue,
         );
     }, [data]);
 
