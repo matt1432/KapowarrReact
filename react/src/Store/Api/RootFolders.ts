@@ -23,7 +23,20 @@ const extendedApi = baseApi.injectEndpoints({
 
             transformResponse: (response: { result: RootFolder[] }) => response.result,
         }),
+
+        // DELETE
+        deleteRootFolder: build.mutation<void, { id: number }>({
+            query: ({ id }) => ({
+                method: 'DELETE',
+                url:
+                    `rootfolder/${id}` +
+                    getQueryString({
+                        api_key: window.Kapowarr.apiKey,
+                    }),
+            }),
+        }),
     }),
 });
 
-export const { useGetRootFoldersQuery, useLazyGetRootFoldersQuery } = extendedApi;
+export const { useDeleteRootFolderMutation, useGetRootFoldersQuery, useLazyGetRootFoldersQuery } =
+    extendedApi;

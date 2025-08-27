@@ -1,5 +1,4 @@
-// TODO:
-// https://github.com/Sonarr/Sonarr/blob/v5-develop/frontend/src/Utilities/String/translate.ts
+// TODO: https://github.com/Sonarr/Sonarr/blob/v5-develop/frontend/src/Utilities/String/translate.ts
 
 import english from './en.json';
 

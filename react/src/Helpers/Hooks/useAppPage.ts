@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { useLazyGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import { useLazyGetSettingsQuery } from 'Store/Api/Settings';
 
 import { useLazyGetVolumesQuery } from 'Store/Api/Volumes';
@@ -7,17 +8,22 @@ import { useRootSelector } from 'Store/createAppStore';
 export default function useAppPage() {
     const { apiKey } = useRootSelector((state) => state.auth);
 
-    // TODO: all queries needed before page is loaded
-    const [getVolumes, getVolumesState] = useLazyGetVolumesQuery(undefined);
-    const [getSettings, getSettingsState] = useLazyGetSettingsQuery(undefined);
+    // all queries needed before page is loaded
+    const [getRootFolders, getRootFoldersState] = useLazyGetRootFoldersQuery();
+    const [getSettings, getSettingsState] = useLazyGetSettingsQuery();
+    const [getVolumes, getVolumesState] = useLazyGetVolumesQuery();
 
     const queries = useMemo(
-        () => [getVolumesState, getSettingsState],
-        [getVolumesState, getSettingsState],
+        () => [getRootFoldersState, getSettingsState, getVolumesState],
+        [getRootFoldersState, getSettingsState, getVolumesState],
     );
     const triggers = useMemo(
-        () => [() => getVolumes(undefined), () => getSettings(undefined)],
-        [getVolumes, getSettings],
+        () => [
+            () => getRootFolders(undefined),
+            () => getSettings(undefined),
+            () => getVolumes(undefined),
+        ],
+        [getRootFolders, getSettings, getVolumes],
     );
 
     const erroredQueries = useMemo(() => queries.filter(({ isError }) => isError), [queries]);

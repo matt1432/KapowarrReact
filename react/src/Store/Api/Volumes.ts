@@ -134,7 +134,7 @@ const extendedApi = baseApi.injectEndpoints({
             query: ({ volumeId, ...body }) => ({
                 method: 'PUT',
                 url:
-                    `/volumes/${volumeId}` +
+                    `volumes/${volumeId}` +
                     getQueryString({
                         api_key: window.Kapowarr.apiKey,
                     }),
@@ -147,7 +147,7 @@ const extendedApi = baseApi.injectEndpoints({
             query: ({ volumeId, ...body }) => ({
                 method: 'DELETE',
                 url:
-                    `/volumes/${volumeId}` +
+                    `volumes/${volumeId}` +
                     getQueryString({
                         api_key: window.Kapowarr.apiKey,
                         ...snakeify(body),

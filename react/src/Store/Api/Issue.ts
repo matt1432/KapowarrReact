@@ -22,7 +22,7 @@ const extendedApi = baseApi.injectEndpoints({
             query: ({ issueId, ...body }) => ({
                 method: 'PUT',
                 url:
-                    `/issues/${issueId}` +
+                    `issues/${issueId}` +
                     getQueryString({
                         api_key: window.Kapowarr.apiKey,
                     }),
