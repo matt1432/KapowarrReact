@@ -14,7 +14,7 @@ import type { RootFolder } from 'typings/RootFolder';
 const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         // GET
-        getRootFolders: build.query<RootFolder[], undefined>({
+        getRootFolders: build.query<RootFolder[], void>({
             query: () =>
                 'rootfolder' +
                 getQueryString({

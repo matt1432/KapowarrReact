@@ -66,7 +66,7 @@ function EditVolumeModalContent({
     onSavePress,
     onModalClose,
 }: EditVolumeModalContentProps) {
-    const { data: rootFolders = [] } = useGetRootFoldersQuery(undefined);
+    const { data: rootFolders = [] } = useGetRootFoldersQuery();
     const [runMassEditAction] = useMassEditMutation();
 
     const [monitored, setMonitored] = useState(NO_CHANGE);

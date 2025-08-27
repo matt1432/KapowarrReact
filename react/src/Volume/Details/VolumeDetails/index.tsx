@@ -65,7 +65,7 @@ interface VolumeDetailsProps {
 // IMPLEMENTATIONS
 
 function VolumeDetails({ volumeId }: VolumeDetailsProps) {
-    const { data: allVolumes = [] } = useGetVolumesQuery(undefined);
+    const { data: allVolumes = [] } = useGetVolumesQuery();
 
     const { volume, refetch, isFetching, isPopulated, error, hasIssues, hasMonitoredIssues } =
         useVolume(volumeId);

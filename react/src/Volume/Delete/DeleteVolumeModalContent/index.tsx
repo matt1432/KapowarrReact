@@ -48,7 +48,7 @@ function DeleteVolumeModalContent({ volumeId, onModalClose }: DeleteVolumeModalC
     const { volume } = useVolume(volumeId);
     const { title, issueFileCount, totalSize: sizeOnDisk, folder: path } = volume!;
 
-    const { refetch } = useGetVolumesQuery(undefined);
+    const { refetch } = useGetVolumesQuery();
     const { refetch: refetchIndex } = useIndexVolumes();
 
     const [deleteVolume] = useDeleteVolumeMutation();

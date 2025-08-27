@@ -1,5 +1,8 @@
 // IMPORTS
 
+// React
+import { useMemo } from 'react';
+
 // Redux
 import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
@@ -20,25 +23,34 @@ import styles from './index.module.css';
 // IMPLEMENTATIONS
 
 export default function VolumeIndexFooter() {
-    const { data: volumes } = useGetVolumesQuery(undefined);
-    const count = volumes?.length;
-    let issues = 0;
-    let issueFiles = 0;
-    let monitored = 0;
-    let totalFileSize = 0;
+    const { data: volumes = [] } = useGetVolumesQuery();
 
-    volumes?.forEach((v) => {
-        const { issueCount, issueFileCount, totalSize } = v;
+    const count = useMemo(() => volumes.length, [volumes.length]);
 
-        issues += issueCount;
-        issueFiles += issueFileCount;
+    const { issues, issueFiles, monitored, totalFileSize } = useMemo(() => {
+        let issues = 0;
+        let issueFiles = 0;
+        let monitored = 0;
+        let totalFileSize = 0;
 
-        if (v.monitored) {
-            monitored++;
-        }
+        volumes.forEach((v) => {
+            issues += v.issueCount;
+            issueFiles += v.issueFileCount;
 
-        totalFileSize += totalSize;
-    });
+            if (v.monitored) {
+                monitored++;
+            }
+
+            totalFileSize += v.totalSize;
+        });
+
+        return {
+            issues,
+            issueFiles,
+            monitored,
+            totalFileSize,
+        };
+    }, [volumes]);
 
     return (
         <ColorImpairedConsumer>

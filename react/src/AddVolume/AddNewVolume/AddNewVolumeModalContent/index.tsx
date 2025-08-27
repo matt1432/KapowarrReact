@@ -58,8 +58,8 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
         (state) => state.addVolume,
     );
 
-    const { data: rootFolders = [] } = useGetRootFoldersQuery(undefined);
-    const { refetch } = useGetVolumesQuery(undefined);
+    const { data: rootFolders = [] } = useGetRootFoldersQuery();
+    const { refetch } = useGetVolumesQuery();
     const { refetch: refetchIndex } = useIndexVolumes();
 
     const [addVolume, addVolumeState] = useAddVolumeMutation();

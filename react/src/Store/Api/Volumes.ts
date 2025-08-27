@@ -63,7 +63,7 @@ export interface DeleteVolumeParams {
 const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         // GET
-        getVolumes: build.query<VolumePublicInfo[], GetVolumesParams>({
+        getVolumes: build.query<VolumePublicInfo[], GetVolumesParams | void>({
             query: ({ filter, sort } = {}) =>
                 'volumes' +
                 getQueryString({

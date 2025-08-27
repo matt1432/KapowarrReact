@@ -15,7 +15,7 @@ import type { SettingsValue, RawSettingsValue } from 'typings/Settings';
 const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         // GET
-        getSettings: build.query<SettingsValue, undefined>({
+        getSettings: build.query<SettingsValue, void>({
             query: () =>
                 'settings' +
                 getQueryString({

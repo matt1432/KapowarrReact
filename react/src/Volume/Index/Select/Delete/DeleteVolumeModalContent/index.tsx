@@ -41,7 +41,7 @@ function DeleteVolumeModalContent({ volumeIds, onModalClose }: DeleteVolumeModal
 
     const [deleteFiles, setDeleteFiles] = useState(false);
 
-    const { data: allVolumes = [] } = useGetVolumesQuery(undefined);
+    const { data: allVolumes = [] } = useGetVolumesQuery();
 
     const volumes = useMemo(() => {
         return allVolumes.filter((v) => volumeIds.includes(v.id));

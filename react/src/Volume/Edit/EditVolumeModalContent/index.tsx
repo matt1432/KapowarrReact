@@ -56,7 +56,7 @@ function EditVolumeModalContent({
 }: EditVolumeModalContentProps) {
     const [updateVolume, { isLoading: isSaving, error: saveError }] = useUpdateVolumeMutation();
 
-    const { data: rootFolders = [] } = useGetRootFoldersQuery(undefined);
+    const { data: rootFolders = [] } = useGetRootFoldersQuery();
 
     const { volume } = useVolume(volumeId);
     const {

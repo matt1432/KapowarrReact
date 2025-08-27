@@ -46,12 +46,7 @@ const rootFolderColumns: Column<string>[] = [
 ];
 
 function RootFolders() {
-    const {
-        isFetching,
-        isUninitialized,
-        error,
-        data: items = [],
-    } = useGetRootFoldersQuery(undefined);
+    const { isFetching, isUninitialized, error, data: items = [] } = useGetRootFoldersQuery();
 
     if (isFetching && isUninitialized) {
         return <LoadingIndicator />;

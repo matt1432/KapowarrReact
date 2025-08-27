@@ -20,7 +20,7 @@ import VolumeDetails from './VolumeDetails';
 // IMPLEMENTATIONS
 
 function VolumeDetailsPage() {
-    const { data: allVolumes = [] } = useGetVolumesQuery(undefined);
+    const { data: allVolumes = [] } = useGetVolumesQuery();
     const { titleSlug } = useParams<{ titleSlug: string }>();
 
     const navigate = useNavigate();

@@ -19,7 +19,7 @@ export interface FetchQueueParams {
 const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         // GET
-        fetchQueueDetails: build.query<DownloadItem[], undefined>({
+        fetchQueueDetails: build.query<DownloadItem[], void>({
             query: () =>
                 'activity/queue' +
                 getQueryString({

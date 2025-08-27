@@ -18,11 +18,7 @@ export default function useAppPage() {
         [getRootFoldersState, getSettingsState, getVolumesState],
     );
     const triggers = useMemo(
-        () => [
-            () => getRootFolders(undefined),
-            () => getSettings(undefined),
-            () => getVolumes(undefined),
-        ],
+        () => [() => getRootFolders(), () => getSettings(), () => getVolumes()],
         [getRootFolders, getSettings, getVolumes],
     );
 

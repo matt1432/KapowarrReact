@@ -39,7 +39,7 @@ import styles from './index.module.css';
 function VolumeIndexSelectFooter() {
     const { massEditorStatus } = useRootSelector((state) => state.socketEvents);
 
-    const { refetch } = useGetVolumesQuery(undefined);
+    const { refetch } = useGetVolumesQuery();
     const { refetch: refetchIndex } = useIndexVolumes();
 
     const isSaving = useMemo(
@@ -142,7 +142,7 @@ function VolumeIndexSelectFooter() {
         }
     }, [wasDeleting, isDeleting, selectDispatch]);
 
-    const { refetch: fetchRootFolders } = useGetRootFoldersQuery(undefined);
+    const { refetch: fetchRootFolders } = useGetRootFoldersQuery();
 
     useEffect(() => {
         fetchRootFolders();

@@ -36,7 +36,7 @@ interface OrganizeVolumeModalContentProps {
 // IMPLEMENTATIONS
 
 function OrganizeVolumeModalContent({ volumeIds, onModalClose }: OrganizeVolumeModalContentProps) {
-    const { data: allVolumes = [] } = useGetVolumesQuery(undefined);
+    const { data: allVolumes = [] } = useGetVolumesQuery();
     const [runMassEditAction] = useMassEditMutation();
 
     const volumeTitles = useMemo(() => {

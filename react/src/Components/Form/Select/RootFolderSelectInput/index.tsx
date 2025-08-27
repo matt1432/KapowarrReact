@@ -29,19 +29,16 @@ function RootFolderSelectInput<K extends string>({
     value,
     ...otherProps
 }: RootFolderSelectInputProps<K>) {
-    const { data } = useGetRootFoldersQuery(undefined);
+    const { data = [] } = useGetRootFoldersQuery();
 
     const values = useMemo(() => {
-        const values =
-            data?.map(
-                (f) =>
-                    ({
-                        key: f.folder,
-                        value: f.folder,
-                    }) satisfies EnhancedSelectInputValue<string> as EnhancedSelectInputValue<string>,
-            ) ?? [];
-
-        return values;
+        return data.map(
+            (f) =>
+                ({
+                    key: f.folder,
+                    value: f.folder,
+                }) satisfies EnhancedSelectInputValue<string> as EnhancedSelectInputValue<string>,
+        );
     }, [data]);
 
     return (
