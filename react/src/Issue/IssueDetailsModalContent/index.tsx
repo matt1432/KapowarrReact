@@ -23,7 +23,7 @@ import MonitorToggleButton from 'Components/MonitorToggleButton';
 
 // Specific Components
 import IssueSearch from '../Search';
-// import IssueSummary from './Summary/IssueSummary';
+import IssueSummary from '../Summary/IssueSummary';
 
 // CSS
 import styles from './index.module.css';
@@ -101,20 +101,6 @@ function IssueDetailsModalContent({
         [issueId, toggleIssueMonitored],
     );
 
-    useEffect(
-        () => {
-            return () => {
-                // Clear pending releases here, so we can reshow the search
-                // results even after switching tabs.
-                // dispatch(cancelFetchReleases());
-                // dispatch(clearReleases());
-            };
-        },
-        [
-            /*dispatch*/
-        ],
-    );
-
     const volumeLink = `/volumes/${titleSlug}`;
 
     return (
@@ -129,8 +115,6 @@ function IssueDetailsModalContent({
                 />
 
                 <span className={styles.volumeTitle}>{volumeTitle}</span>
-
-                <span className={styles.separator}>-</span>
 
                 <span className={styles.separator}>-</span>
 
@@ -149,28 +133,18 @@ function IssueDetailsModalContent({
                         </Tab>
 
                         <Tab className={styles.tab} selectedClassName={styles.selectedTab}>
-                            {translate('History')}
-                        </Tab>
-
-                        <Tab className={styles.tab} selectedClassName={styles.selectedTab}>
                             {translate('Search')}
                         </Tab>
                     </TabList>
 
-                    {/*
                     <TabPanel>
                         <div className={styles.tabContent}>
-                            <IssueSummary
-                                issueId={issueId}
-                                issueFileId={issueFileId}
-                                volumeId={volumeId}
-                            />
+                            <IssueSummary issueId={issueId} volumeId={volumeId} />
                         </div>
                     </TabPanel>
-                    */}
 
                     <TabPanel>
-                        {/* Don't wrap in tabContent so we not have a top margin */}
+                        {/* Don't wrap in tabContent so we don't have a top margin */}
                         <IssueSearch
                             volumeId={volumeId}
                             issueId={issueId}

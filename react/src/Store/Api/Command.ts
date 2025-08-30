@@ -6,13 +6,15 @@ import { baseApi } from './base';
 // Misc
 import getQueryString from 'Utilities/Fetch/getQueryString';
 import snakeify from 'Utilities/Object/snakeify';
+import camelize from 'Utilities/Object/camelize';
 
 // Types
-import type { CamelCasedPropertiesDeep } from 'type-fest';
+import type { CamelCasedPropertiesDeep, RequireExactlyOne } from 'type-fest';
 
 import type { CommandName } from 'Helpers/Props/commandNames';
 import type { MonitoringScheme } from 'Volume/Volume';
 import type { MassEditAction } from 'Helpers/Props/massEditActions';
+import type { RawSearchResult, SearchResult } from 'typings/Search';
 
 export type ExecuteCommandParams = {
     cmd: CommandName;
@@ -48,11 +50,49 @@ export type MassEditParams<T extends MassEditAction = MassEditAction> = CamelCas
     RawMassEditParams<T>
 >;
 
+export type ManualSearchParams = RequireExactlyOne<{
+    volumeId: number;
+    issueId?: number;
+}>;
+
+export type AddDownloadParams = ManualSearchParams & { result: SearchResult; forceMatch?: boolean };
+
 // IMPLEMENTATIONS
 
 const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
+        // GET
+        manualSearch: build.query<SearchResult[], ManualSearchParams>({
+            query: ({ issueId, volumeId }) =>
+                (issueId !== undefined
+                    ? `issues/${issueId}/manualsearch`
+                    : `volumes/${volumeId}/manualsearch`) +
+                getQueryString({
+                    api_key: window.Kapowarr.apiKey,
+                }),
+
+            transformResponse: (response: { result: RawSearchResult[] }) =>
+                camelize(response.result),
+        }),
+
         // POST
+        addDownload: build.mutation<void, AddDownloadParams>({
+            query: ({ issueId, volumeId, result, forceMatch = false }) => ({
+                method: 'POST',
+                url:
+                    (issueId !== undefined
+                        ? `issues/${issueId}/download`
+                        : `volumes/${volumeId}/download`) +
+                    getQueryString({
+                        api_key: window.Kapowarr.apiKey,
+                    }),
+                body: snakeify({
+                    ...result,
+                    forceMatch,
+                }),
+            }),
+        }),
+
         massEdit: build.mutation<void, MassEditParams>({
             query: (body) => ({
                 method: 'POST',
@@ -79,7 +119,8 @@ const extendedApi = baseApi.injectEndpoints({
     }),
 });
 
-export const { useExecuteCommandMutation } = extendedApi;
+export const { useAddDownloadMutation, useExecuteCommandMutation, useManualSearchQuery } =
+    extendedApi;
 
 export const useMassEditMutation = () => {
     const [trigger, state] = extendedApi.useMassEditMutation();

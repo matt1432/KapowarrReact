@@ -9,6 +9,7 @@ import AddVolumeSlice from './Slices/AddVolume';
 import AppSlice from './Slices/App';
 import AuthSlice from './Slices/Auth';
 import IssueTableSlice from './Slices/IssueTable';
+import SearchResultsSlice from './Slices/SearchResults';
 import SettingsSlice from './Slices/Settings';
 import SocketEventsSlice from './Slices/SocketEvents';
 import UISettingsSlice from './Slices/UISettings';
@@ -28,6 +29,7 @@ export default function createReducers() {
             [AppSlice.reducerPath]: AppSlice.reducer,
             [AuthSlice.reducerPath]: AuthSlice.reducer,
             [IssueTableSlice.reducerPath]: IssueTableSlice.reducer,
+            [SearchResultsSlice.reducerPath]: SearchResultsSlice.reducer,
             [SettingsSlice.reducerPath]: SettingsSlice.reducer,
             [SocketEventsSlice.reducerPath]: SocketEventsSlice.reducer,
             [UISettingsSlice.reducerPath]: UISettingsSlice.reducer,

@@ -62,3 +62,5 @@ export type IssueColumnName =
     | 'releaseGroup'
     | 'status'
     | 'actions';
+
+export type IssueSummaryColumnName = 'path' | 'filesize' | 'actions';

@@ -28,7 +28,7 @@ interface TableHeaderCellProps<T extends string> {
     fixedSortDirection?: SortDirection;
     sortDirection?: string;
     children?: React.ReactNode;
-    onSortPress?: (name: string, sortDirection?: SortDirection) => void;
+    onSortPress?: (name: T, sortDirection?: SortDirection) => void;
 }
 
 // IMPLEMENTATIONS

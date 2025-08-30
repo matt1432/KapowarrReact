@@ -29,7 +29,19 @@ const extendedApi = baseApi.injectEndpoints({
                 body: snakeify(body),
             }),
         }),
+
+        // DELETE
+        deleteFile: build.mutation<void, { fileId: number }>({
+            query: ({ fileId }) => ({
+                method: 'DELETE',
+                url:
+                    `files/${fileId}` +
+                    getQueryString({
+                        api_key: window.Kapowarr.apiKey,
+                    }),
+            }),
+        }),
     }),
 });
 
-export const { useToggleIssueMonitoredMutation } = extendedApi;
+export const { useDeleteFileMutation, useToggleIssueMonitoredMutation } = extendedApi;

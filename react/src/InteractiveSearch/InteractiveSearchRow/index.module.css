@@ -1,0 +1,77 @@
+.match {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.displayTitle {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    word-break: break-all;
+}
+
+.filesize {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    white-space: nowrap;
+}
+
+.pages {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.releaser {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.scanType {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.resolution {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.dpi {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.source {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.download {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    width: 80px;
+}
+
+.manualDownloadContent {
+    position: relative;
+    display: inline-block;
+    margin: 0 2px;
+    width: 22px;
+    height: 20.39px;
+    vertical-align: middle;
+    line-height: 20.39px;
+
+    &:hover {
+        color: var(--iconButtonHoverColor);
+    }
+}
+
+.interactiveIcon {
+    position: absolute;
+    top: 4px;
+    left: 0;
+    text-align: center;
+}
+
+.downloadIcon {
+    position: absolute;
+    top: 7px;
+    left: 8px;
+    text-align: center;
+}
+
+.rejected {
+    width: 50px;
+}

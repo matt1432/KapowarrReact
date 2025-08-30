@@ -7,19 +7,21 @@ import React from 'react';
 import SelectedMenuItem, { type SelectedMenuItemProps } from './SelectedMenuItem';
 
 // Types
-import type { IndexFilter } from 'Volume/Index';
-
-interface FilterMenuItemProps
-    extends Omit<SelectedMenuItemProps<IndexFilter>, 'isSelected' | 'onPress'> {
-    name?: IndexFilter;
-    filterKey: IndexFilter;
+interface FilterMenuItemProps<T extends string>
+    extends Omit<SelectedMenuItemProps<T>, 'isSelected' | 'onPress'> {
+    name?: T;
+    filterKey: T;
     children: React.ReactNode;
-    onPress: (view: IndexFilter) => void;
+    onPress: (view: T) => void;
 }
 
 // IMPLEMENTATIONS
 
-function FilterMenuItem({ name, filterKey, ...otherProps }: FilterMenuItemProps) {
+function FilterMenuItem<T extends string>({
+    name,
+    filterKey,
+    ...otherProps
+}: FilterMenuItemProps<T>) {
     const isSelected = name === filterKey;
 
     return <SelectedMenuItem name={name} isSelected={isSelected} {...otherProps} />;

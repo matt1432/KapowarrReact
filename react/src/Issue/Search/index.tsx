@@ -17,7 +17,7 @@ import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
 
 // Specific Components
-// import InteractiveSearch from 'InteractiveSearch/InteractiveSearch';
+import InteractiveSearch from 'InteractiveSearch';
 
 // CSS
 import styles from './index.module.css';
@@ -38,13 +38,9 @@ function IssueSearch({
     startInteractiveSearch,
     onModalClose,
 }: IssueSearchProps) {
-    // const { isPopulated } = useSelector((state: AppState) => state.releases);
-
     const [executeCommand] = useExecuteCommandMutation();
 
-    const [isInteractiveSearchOpen, setIsInteractiveSearchOpen] = useState(
-        startInteractiveSearch, // || isPopulated,
-    );
+    const [isInteractiveSearchOpen, setIsInteractiveSearchOpen] = useState(startInteractiveSearch);
 
     const handleQuickSearchPress = useCallback(() => {
         executeCommand({
@@ -61,7 +57,7 @@ function IssueSearch({
     }, []);
 
     if (isInteractiveSearchOpen) {
-        return null; // <InteractiveSearch type="issue" searchPayload={{ issueId }} />;
+        return <InteractiveSearch searchPayload={{ issueId }} />;
     }
 
     return (
