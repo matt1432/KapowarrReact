@@ -2,6 +2,7 @@
 // Please do not change this file!
 interface CssExports {
     match: string;
+    issueNumber: string;
     displayTitle: string;
     filesize: string;
     pages: string;

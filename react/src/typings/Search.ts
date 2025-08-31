@@ -32,6 +32,7 @@ export type SearchResult = CamelCasedProperties<RawSearchResult>;
 
 export type InteractiveSearchSort =
     | 'match'
+    | 'issueNumber'
     | 'displayTitle'
     | 'filesize'
     | 'pages'

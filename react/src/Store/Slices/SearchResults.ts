@@ -23,7 +23,7 @@ export interface SearchResultsState {
 }
 
 const initialState = {
-    sortKey: 'source',
+    sortKey: 'issueNumber',
     sortDirection: sortDirections.ASCENDING,
 } satisfies SearchResultsState as SearchResultsState;
 

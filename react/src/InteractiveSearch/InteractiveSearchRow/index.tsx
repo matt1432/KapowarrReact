@@ -130,6 +130,8 @@ function InteractiveSearchRow({ searchPayload, result }: InteractiveSearchRowPro
                 <Icon name={result.match ? 'check' : 'xmark'} />
             </TableRowCell>
 
+            <TableRowCell className={styles.issueNumber}>{result.issueNumber}</TableRowCell>
+
             <TableRowCell className={styles.displayTitle}>{result.displayTitle}</TableRowCell>
 
             <TableRowCell className={styles.filesize}>{formatBytes(result.filesize)}</TableRowCell>

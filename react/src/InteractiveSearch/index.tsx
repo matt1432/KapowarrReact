@@ -34,7 +34,7 @@ import type { InteractiveSearchPayload, InteractiveSearchSort } from 'typings/Se
 
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 
-interface InteractiveSearchProps {
+export interface InteractiveSearchProps {
     searchPayload: InteractiveSearchPayload;
 }
 
@@ -44,6 +44,12 @@ const columns: Column<InteractiveSearchSort>[] = [
     {
         name: 'match',
         label: () => translate('Match'),
+        isSortable: true,
+        isVisible: true,
+    },
+    {
+        name: 'issueNumber',
+        label: '#',
         isSortable: true,
         isVisible: true,
     },
