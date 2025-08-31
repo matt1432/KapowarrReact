@@ -11,6 +11,7 @@ import { useDeleteFileMutation } from 'Store/Api/Issue';
 import translate from 'Utilities/String/translate';
 
 // General Components
+import InnerHTML from 'Components/InnerHTML';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 
@@ -23,7 +24,6 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { IssueData, IssueSummaryColumnName } from 'Issue/Issue';
-import InnerHTML from 'Components/InnerHTML';
 
 interface IssueSummaryProps {
     volumeId: number;

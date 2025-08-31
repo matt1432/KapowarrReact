@@ -27,7 +27,7 @@ import type { CheckInputChanged } from 'typings/Inputs';
 import type { TableOptionsChangePayload } from 'typings/Table';
 import type { Column } from '../Column';
 
-interface TableProps<T extends string> {
+export interface TableProps<T extends string> {
     className?: string;
     horizontalScroll?: boolean;
     selectAll?: boolean;
@@ -37,7 +37,7 @@ interface TableProps<T extends string> {
     optionsComponent?: React.ElementType;
     pageSize?: number;
     canModifyColumns?: boolean;
-    sortKey?: string;
+    sortKey?: T;
     sortDirection?: SortDirection;
     children?: React.ReactNode;
     onSortPress?: (name: T, sortDirection?: SortDirection) => void;
