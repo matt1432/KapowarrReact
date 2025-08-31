@@ -48,6 +48,7 @@ import DeleteVolumeModal from 'Volume/Delete/DeleteVolumeModal';
 import EditVolumeModal from 'Volume/Edit/EditVolumeModal';
 import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
 import MonitoringOptionsModal from 'Volume/MonitoringOptions/MonitoringOptionsModal';
+import SearchVolumeModal from 'Volume/Search/SearchVolumeModal';
 
 import IssueTable from '../IssueTable';
 import VolumeDetailsLinks from '../VolumeDetailsLinks';
@@ -123,6 +124,8 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
     const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);
     const [isMonitorOptionsModalOpen, setIsMonitorOptionsModalOpen] = useState(false);
+    const [isSearchVolumeModalOpen, setIsSearchVolumeModalOpen] = useState(false);
+
     const wasRefreshing = usePrevious(isRefreshing);
     const wasRenaming = usePrevious(isRenaming);
 
@@ -140,6 +143,14 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const handleEditVolumeModalClose = useCallback(() => {
         setIsEditVolumeModalOpen(false);
+    }, []);
+
+    const handleSearchVolumePress = useCallback(() => {
+        setIsSearchVolumeModalOpen(true);
+    }, []);
+
+    const handleSearchVolumeModalClose = useCallback(() => {
+        setIsSearchVolumeModalOpen(false);
     }, []);
 
     const handleDeleteVolumePress = useCallback(() => {
@@ -238,7 +249,14 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                         onPress={handleSearchPress}
                     />
 
-                    {/* TODO: add ManualSearch button */}
+                    <PageToolbarButton
+                        label={translate('InteractiveSearch')}
+                        iconName={icons.INTERACTIVE}
+                        isDisabled={!monitored || !hasMonitoredIssues || !hasIssues}
+                        isSpinning={false}
+                        title={hasMonitoredIssues ? undefined : translate('NoMonitoredIssues')}
+                        onPress={handleSearchVolumePress}
+                    />
 
                     <PageToolbarSeparator />
 
@@ -453,6 +471,12 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                     volumeId={volumeId}
                     onModalClose={handleMonitorOptionsClose}
                     refetch={refetch}
+                />
+
+                <SearchVolumeModal
+                    isOpen={isSearchVolumeModalOpen}
+                    volumeId={volumeId}
+                    onModalClose={handleSearchVolumeModalClose}
                 />
             </PageContentBody>
         </PageContent>
