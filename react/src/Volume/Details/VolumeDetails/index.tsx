@@ -47,6 +47,7 @@ import Tooltip from 'Components/Tooltip/Tooltip';
 import DeleteVolumeModal from 'Volume/Delete/DeleteVolumeModal';
 import EditVolumeModal from 'Volume/Edit/EditVolumeModal';
 import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
+import ConvertPreviewModal from 'Convert/ConvertPreviewModal';
 import MonitoringOptionsModal from 'Volume/MonitoringOptions/MonitoringOptionsModal';
 import SearchVolumeModal from 'Volume/Search/SearchVolumeModal';
 
@@ -83,16 +84,15 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const { refetch: refetchQueueDetails } = useFetchQueueDetails({ volumeId });
 
-    const { isRefreshing, isRenaming, isSearching } = useMemo(() => {
+    const { isRefreshing, isSearching } = useMemo(() => {
         const isRunning = (cmd: string) =>
             executeCommandState.originalArgs?.cmd === cmd && executeCommandState.isLoading;
 
         return {
             isRefreshing: isRunning(commandNames.REFRESH_VOLUME),
-            isRenaming: isRunning(`/volumes/${volumeId}/rename`),
             isSearching: isRunning(commandNames.VOLUME_SEARCH),
         };
-    }, [volumeId, executeCommandState]);
+    }, [executeCommandState]);
 
     const { nextVolume, previousVolume } = useMemo(() => {
         const sortedVolume = allVolumes.toSorted(sortByProp('title'));
@@ -121,13 +121,14 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     }, [volumeId, allVolumes]);
 
     const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
+    const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
+    // const [isGeneralFilesModalOpen, setIsGeneralFilesModalOpen] = useState(false);
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
     const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);
     const [isMonitorOptionsModalOpen, setIsMonitorOptionsModalOpen] = useState(false);
     const [isSearchVolumeModalOpen, setIsSearchVolumeModalOpen] = useState(false);
 
     const wasRefreshing = usePrevious(isRefreshing);
-    const wasRenaming = usePrevious(isRenaming);
 
     const handleOrganizePress = useCallback(() => {
         setIsOrganizeModalOpen(true);
@@ -136,6 +137,24 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     const handleOrganizeModalClose = useCallback(() => {
         setIsOrganizeModalOpen(false);
     }, []);
+
+    const handleConvertPress = useCallback(() => {
+        setIsConvertModalOpen(true);
+    }, []);
+
+    const handleConvertModalClose = useCallback(() => {
+        setIsConvertModalOpen(false);
+    }, []);
+
+    /*
+    const handleGeneralFilesPress = useCallback(() => {
+        setIsGeneralFilesModalOpen(true);
+    }, []);
+
+    const handleGeneralFilesModalClose = useCallback(() => {
+        setIsGeneralFilesModalOpen(false);
+    }, []);
+    */
 
     const handleEditVolumePress = useCallback(() => {
         setIsEditVolumeModalOpen(true);
@@ -204,10 +223,10 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     }, [populate]);
 
     useEffect(() => {
-        if ((!isRefreshing && wasRefreshing) || (!isRenaming && wasRenaming)) {
+        if (!isRefreshing && wasRefreshing) {
             populate();
         }
-    }, [isRefreshing, wasRefreshing, isRenaming, wasRenaming, populate]);
+    }, [isRefreshing, wasRefreshing, populate]);
 
     if (!volume) {
         return null;
@@ -267,11 +286,22 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                         onPress={handleOrganizePress}
                     />
 
-                    {/* TODO: add PreviewConvert button */}
+                    <PageToolbarButton
+                        label={translate('PreviewConvert')}
+                        iconName={icons.CONVERT}
+                        isDisabled={issueFileCount === 0}
+                        onPress={handleConvertPress}
+                    />
 
                     <PageToolbarSeparator />
 
-                    {/* TODO: add GeneralFiles button */}
+                    {/* TODO: add GeneralFiles button
+                    <PageToolbarButton
+                        label={translate('GeneralFiles')}
+                        iconName={icons.GENERAL_FILES}
+                        isDisabled={issueFileCount === 0}
+                        onPress={handleGeneralFilesPress}
+                    />*/}
 
                     <PageToolbarButton
                         label={translate('IssueMonitoring')}
@@ -451,6 +481,12 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                     isOpen={isOrganizeModalOpen}
                     volumeId={volumeId}
                     onModalClose={handleOrganizeModalClose}
+                />
+
+                <ConvertPreviewModal
+                    isOpen={isConvertModalOpen}
+                    volumeId={volumeId}
+                    onModalClose={handleConvertModalClose}
                 />
 
                 <EditVolumeModal

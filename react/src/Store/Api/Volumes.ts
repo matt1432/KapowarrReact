@@ -116,6 +116,22 @@ const extendedApi = baseApi.injectEndpoints({
             }) => response.result,
         }),
 
+        previewConvertVolume: build.query<
+            { id: number; existingPath: string; newPath: string }[],
+            { volumeId: number }
+        >({
+            query: ({ volumeId }) => ({
+                url: `volumes/${volumeId}/convert`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+
+            transformResponse: (response: {
+                result: { id: number; existingPath: string; newPath: string }[];
+            }) => response.result,
+        }),
+
         // POST
         addVolume: build.mutation<VolumePublicInfo, AddVolumeParams>({
             query: (body) => ({
@@ -163,6 +179,7 @@ export const {
     useGetVolumesQuery,
     useLazyGetVolumesQuery,
     useLazyLookupVolumeQuery,
+    usePreviewConvertVolumeQuery,
     usePreviewRenameVolumeQuery,
     useSearchVolumeQuery,
     useUpdateVolumeMutation,

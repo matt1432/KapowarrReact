@@ -838,7 +838,7 @@ def api_rename_issue(id: int) -> ApiReturn:
 @auth
 def api_convert(id: int) -> ApiReturn:
     library.get_volume(id)
-    result = preview_mass_convert(id)
+    result = preview_mass_convert(id, is_for_api=True)
     return return_api(result)
 
 
@@ -847,7 +847,7 @@ def api_convert(id: int) -> ApiReturn:
 @auth
 def api_convert_issue(id: int) -> ApiReturn:
     volume_id = library.get_issue(id).get_data().volume_id
-    result = preview_mass_convert(volume_id, id)
+    result = preview_mass_convert(volume_id, id, is_for_api=True)
     return return_api(result)
 
 

@@ -13,6 +13,7 @@ from backend.base.logging import LOGGER
 from backend.implementations.converters import run_rar
 from backend.implementations.volumes import Volume, scan_files
 from backend.internals.db import commit
+from backend.internals.db_models import FilesDB
 from backend.internals.server import WebSocket
 from backend.internals.settings import Settings
 
@@ -128,7 +129,11 @@ def convert_file(converter: FileConversionHandler) -> list[str]:
     return converter.converter.convert(converter.file)
 
 
-def preview_mass_convert(volume_id: int, issue_id: int | None = None) -> dict[str, str]:
+def preview_mass_convert(
+    volume_id: int,
+    issue_id: int | None = None,
+    is_for_api: bool = False,
+) -> dict[str, str] | list[dict[str, str | int]]:
     """Get a list of suggested conversions for a volume or issue.
 
     Args:
@@ -145,7 +150,7 @@ def preview_mass_convert(volume_id: int, issue_id: int | None = None) -> dict[st
     extract_issue_ranges = settings.extract_issue_ranges
     volume_folder = volume.vd.folder
 
-    result = {}
+    result: dict[str, str] | list[dict[str, str | int]] = {}
     for f in sorted(
         f["filepath"]
         for f in (
@@ -171,6 +176,31 @@ def preview_mass_convert(volume_id: int, issue_id: int | None = None) -> dict[st
                 result[f] = volume_folder
             else:
                 result[f] = splitext(f)[0] + "." + converter.target_format
+
+    if is_for_api:
+        if not issue_id:
+            issues = volume.get_issues()
+            result = [
+                {
+                    "id": next(
+                        (
+                            x
+                            for x in issues
+                            if x.calculated_issue_number
+                            == FilesDB.issues_covered(key)[0]
+                        ),
+                        issues[0],
+                    ).id,
+                    "existingPath": key,
+                    "newPath": result[key],
+                }
+                for key in result
+            ]
+        else:
+            result = [
+                {"id": issue_id, "existingPath": key, "newPath": result[key]}
+                for key in result
+            ]
 
     return result
 

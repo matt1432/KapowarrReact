@@ -5,11 +5,11 @@ import { useCallback } from 'react';
 
 // Redux
 import { useGetSettingsQuery } from 'Store/Api/Settings';
-import { usePreviewRenameVolumeQuery } from 'Store/Api/Volumes';
+import { usePreviewConvertVolumeQuery } from 'Store/Api/Volumes';
 import { useExecuteCommandMutation } from 'Store/Api/Command';
 
 // Misc
-import { commandNames, kinds, specialVersions } from 'Helpers/Props';
+import { commandNames, kinds } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
@@ -29,7 +29,7 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 
 // Specific Components
-import OrganizePreviewRow from '../OrganizePreviewRow';
+import ConvertPreviewRow from '../ConvertPreviewRow';
 
 // CSS
 import styles from './index.module.css';
@@ -37,7 +37,7 @@ import styles from './index.module.css';
 // Types
 import type { CheckInputChanged, SelectStateInputProps } from 'typings/Inputs';
 
-export interface OrganizePreviewModalContentProps {
+export interface ConvertPreviewModalContentProps {
     volumeId: number;
     onModalClose: () => void;
 }
@@ -55,14 +55,14 @@ function getValue(allSelected: boolean, allUnselected: boolean) {
     return null;
 }
 
-export default function OrganizePreviewModalContent({
+export default function ConvertPreviewModalContent({
     volumeId,
     onModalClose,
-}: OrganizePreviewModalContentProps) {
+}: ConvertPreviewModalContentProps) {
     const [executeCommand] = useExecuteCommandMutation();
 
     const { items, isPreviewFetching, isPreviewPopulated, previewError } =
-        usePreviewRenameVolumeQuery(
+        usePreviewConvertVolumeQuery(
             { volumeId },
             {
                 refetchOnMountOrArgChange: true,
@@ -75,35 +75,23 @@ export default function OrganizePreviewModalContent({
             },
         );
 
-    const { isNamingFetching, isNamingPopulated, namingError, naming } = useGetSettingsQuery(
-        undefined,
-        {
+    const { isFormatFetching, isFormatPopulated, formatError, format, convertFiles } =
+        useGetSettingsQuery(undefined, {
             selectFromResult: ({ data, error, isFetching, isUninitialized }) => ({
-                isNamingFetching: isFetching,
-                isNamingPopulated: !isUninitialized,
-                namingError: error,
-                naming: {
-                    [`naming${specialVersions.NORMAL}`]: data?.fileNaming,
-                    [`naming${specialVersions.VOL_AS_ISSUE}`]: data?.fileNamingVai,
-                    [`naming${specialVersions.TPB}`]: data?.fileNamingSpecialVersion,
-                    [`naming${specialVersions.ONE_SHOT}`]: data?.fileNamingSpecialVersion,
-                    [`naming${specialVersions.HARD_COVER}`]: data?.fileNamingSpecialVersion,
-                },
+                isFormatFetching: isFetching,
+                isFormatPopulated: !isUninitialized,
+                formatError: error,
+                format: data?.formatPreference,
+                convertFiles: data?.convert,
             }),
-        },
-    );
+        });
 
     const { volume } = useVolume(volumeId);
     const [{ allSelected, allUnselected, selectedState }, setSelectState] = useSelectState();
 
-    const isFetching = isPreviewFetching || isNamingFetching;
-    const isPopulated = isPreviewPopulated && isNamingPopulated;
-    const error = previewError || namingError;
-
-    const issueFormat =
-        naming[`${volume?.specialVersion}IssueFormat`] ??
-        naming[`naming${specialVersions.NORMAL}`] ??
-        '';
+    const isFetching = isPreviewFetching || isFormatFetching;
+    const isPopulated = isPreviewPopulated && isFormatPopulated;
+    const error = previewError || formatError;
 
     const selectAllValue = getValue(allSelected, allUnselected);
 
@@ -127,7 +115,7 @@ export default function OrganizePreviewModalContent({
         [items, setSelectState],
     );
 
-    const handleOrganizePress = useCallback(() => {
+    const handleConvertPress = useCallback(() => {
         const issueIds = getSelectedIds(selectedState);
 
         executeCommand({
@@ -147,19 +135,21 @@ export default function OrganizePreviewModalContent({
 
     return (
         <ModalContent onModalClose={onModalClose}>
-            <ModalHeader>{translate('OrganizeModalHeader')}</ModalHeader>
+            <ModalHeader>{translate('ConvertModalHeader')}</ModalHeader>
 
             <ModalBody>
                 {isFetching ? <LoadingIndicator /> : null}
 
                 {!isFetching && error ? (
-                    <Alert kind={kinds.DANGER}>{translate('OrganizeLoadError')}</Alert>
+                    <Alert kind={kinds.DANGER}>{translate('ConvertLoadError')}</Alert>
                 ) : null}
 
                 {!isFetching && isPopulated && !items.length ? (
-                    <div>
-                        <div>{translate('OrganizeNothingToRename')}</div>
-                    </div>
+                    convertFiles ? (
+                        <div>{translate('ConvertNothingToConvert')}</div>
+                    ) : (
+                        <div>{translate('ConvertDisabled')}</div>
+                    )
                 ) : null}
 
                 {!isFetching && isPopulated && items.length ? (
@@ -167,25 +157,27 @@ export default function OrganizePreviewModalContent({
                         <Alert>
                             <div>
                                 <InlineMarkdown
-                                    data={translate('OrganizeRelativePaths', {
+                                    data={translate('ConvertRelativePaths', {
                                         path: volume.folder,
                                     })}
                                     blockClassName={styles.path}
                                 />
                             </div>
 
-                            <div>
-                                <InlineMarkdown
-                                    data={translate('OrganizeNamingPattern', { issueFormat })}
-                                    blockClassName={styles.issueFormat}
-                                />
-                            </div>
+                            {format && (
+                                <div>
+                                    <InlineMarkdown
+                                        data={translate('ConvertFormatPattern', { format })}
+                                        blockClassName={styles.issueFormat}
+                                    />
+                                </div>
+                            )}
                         </Alert>
 
                         <div className={styles.previews}>
                             {items.map((item) => {
                                 return (
-                                    <OrganizePreviewRow
+                                    <ConvertPreviewRow
                                         key={item.id}
                                         id={item.id}
                                         existingPath={item.existingPath.replace(
@@ -216,8 +208,8 @@ export default function OrganizePreviewModalContent({
 
                 <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
-                <Button kind={kinds.PRIMARY} onPress={handleOrganizePress} disabled={!items.length}>
-                    {translate('Organize')}
+                <Button kind={kinds.PRIMARY} onPress={handleConvertPress} disabled={!items.length}>
+                    {translate('Convert')}
                 </Button>
             </ModalFooter>
         </ModalContent>
