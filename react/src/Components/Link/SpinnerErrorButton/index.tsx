@@ -1,11 +1,15 @@
+// TODO:
 // IMPORTS
 
 // React
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 // Misc
-import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons } from 'Helpers/Props';
+
+import { isFetchError } from 'Utilities/Object/error';
+
+import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
 import Icon, { type IconKind, type IconName } from 'Components/Icon';
@@ -17,18 +21,17 @@ import SpinnerButton, { type SpinnerButtonProps } from 'Components/Link/SpinnerB
 import styles from './index.module.css';
 
 // Types
-import type { ValidationFailure } from 'typings/Validation';
+import type { AnyError } from 'typings/Api';
 
 interface SpinnerErrorButtonProps extends SpinnerButtonProps {
     isSpinning: boolean;
-    error?: Error | string;
+    error?: AnyError;
     children: React.ReactNode;
 }
 
 // IMPLEMENTATIONS
 
-// eslint-disable-next-line
-function getTestResult(error: any /*Error*/ | string | undefined) {
+function getTestResult(error: AnyError | undefined) {
     if (!error) {
         return {
             wasSuccessful: true,
@@ -37,7 +40,7 @@ function getTestResult(error: any /*Error*/ | string | undefined) {
         };
     }
 
-    if (typeof error === 'string' || error.status !== 400) {
+    if (isFetchError(error) && error.status !== 400) {
         return {
             wasSuccessful: false,
             hasWarning: false,
@@ -45,7 +48,9 @@ function getTestResult(error: any /*Error*/ | string | undefined) {
         };
     }
 
-    const failures = error.responseJSON as ValidationFailure[];
+    // TODO:
+    /*
+    const failures = error.responseJSON;
 
     const { hasError, hasWarning } = failures.reduce(
         (acc, failure) => {
@@ -60,11 +65,12 @@ function getTestResult(error: any /*Error*/ | string | undefined) {
         },
         { hasWarning: false, hasError: false },
     );
+    */
 
     return {
         wasSuccessful: false,
-        hasWarning,
-        hasError,
+        hasWarning: false,
+        hasError: true,
     };
 }
 

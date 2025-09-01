@@ -6,6 +6,8 @@ import React, { type ElementType, type ReactNode } from 'react';
 // Misc
 import { inputTypes } from 'Helpers/Props';
 
+import { getErrorMessage } from 'Utilities/Object/error';
+
 import translate from 'Utilities/String/translate';
 
 // General Components
@@ -51,8 +53,8 @@ import styles from './index.module.css';
 
 // Types
 import type { InputType } from 'Helpers/Props/inputTypes';
-import type { Failure, ValidationError, ValidationWarning } from 'typings/Validation';
 import type { FormInputButtonProps } from '../FormInputButton';
+import type { AnyError } from 'typings/Api';
 
 type PickProps<V, C extends InputType, K extends string> = C extends 'text'
     ? TextInputProps<K, 'text'>
@@ -126,8 +128,8 @@ export type FormInputGroupProps<V, C extends InputType, K extends string> = Omit
     pending?: boolean;
     placeholder?: string;
     unit?: string;
-    errors?: (ValidationMessage | ValidationError | Failure)[];
-    warnings?: (ValidationMessage | ValidationWarning | Failure)[];
+    errors?: AnyError[];
+    warnings?: AnyError[];
 };
 
 // IMPLEMENTATIONS
@@ -235,19 +237,10 @@ function FormInputGroup<T, C extends InputType, K extends string>({
             {helpLink ? <Link to={helpLink}>{translate('MoreInfo')}</Link> : null}
 
             {errors.map((error, index) => {
-                return 'errorMessage' in error ? (
+                return (
                     <FormInputHelpText
                         key={index}
-                        text={error.errorMessage}
-                        link={error.infoLink}
-                        tooltip={error.detailedDescription}
-                        isError={true}
-                        isCheckInput={checkInput}
-                    />
-                ) : (
-                    <FormInputHelpText
-                        key={index}
-                        text={error.message}
+                        text={getErrorMessage(error)}
                         isError={true}
                         isCheckInput={checkInput}
                     />
@@ -255,19 +248,10 @@ function FormInputGroup<T, C extends InputType, K extends string>({
             })}
 
             {warnings.map((warning, index) => {
-                return 'errorMessage' in warning ? (
+                return (
                     <FormInputHelpText
                         key={index}
-                        text={warning.errorMessage}
-                        link={warning.infoLink}
-                        tooltip={warning.detailedDescription}
-                        isWarning={true}
-                        isCheckInput={checkInput}
-                    />
-                ) : (
-                    <FormInputHelpText
-                        key={index}
-                        text={warning.message}
+                        text={getErrorMessage(warning)}
                         isWarning={true}
                         isCheckInput={checkInput}
                     />

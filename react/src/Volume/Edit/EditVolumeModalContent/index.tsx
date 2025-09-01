@@ -242,7 +242,7 @@ function EditVolumeModalContent({
                 <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
                 <SpinnerErrorButton
-                    error={saveError ? 'error' : undefined}
+                    error={saveError}
                     isSpinning={isSaving}
                     onPress={handleSavePress}
                 >

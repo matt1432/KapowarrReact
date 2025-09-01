@@ -1,3 +1,4 @@
+import type { SerializedError } from '@reduxjs/toolkit';
 import type { ExtendableRecord } from 'typings/Misc';
 
 export interface ApiErrorResponse<Result extends ExtendableRecord = ExtendableRecord> {
@@ -46,3 +47,7 @@ export type NonApiError =
 export type FetchError<Result extends ExtendableRecord = ExtendableRecord> =
     | ApiError<Result>
     | NonApiError;
+
+export type AnyError<Result extends ExtendableRecord = ExtendableRecord> =
+    | FetchError<Result>
+    | SerializedError;
