@@ -56,48 +56,29 @@ import type { InputType } from 'Helpers/Props/inputTypes';
 import type { FormInputButtonProps } from '../FormInputButton';
 import type { AnyError } from 'typings/Api';
 
-type PickProps<V, C extends InputType, K extends string> = C extends 'text'
-    ? TextInputProps<K, 'text'>
-    : C extends 'autoComplete'
-      ? AutoCompleteInputProps<K>
-      : C extends 'check'
-        ? CheckInputProps<K>
-        : C extends 'date'
-          ? TextInputProps<K, 'date'>
-          : C extends 'downloadClientSelect'
-            ? DownloadClientSelectInputProps<K>
-            : C extends 'dynamicSelect'
-              ? ProviderOptionSelectInputProps<K>
-              : C extends 'file'
-                ? TextInputProps<K, 'file'>
-                : C extends 'float'
-                  ? TextInputProps<K, 'number'>
-                  : C extends 'keyValueList'
-                    ? KeyValueListInputProps<K>
-                    : C extends 'monitorIssuesSelect'
-                      ? MonitorIssuesSelectInputProps<K>
-                      : C extends 'monitorNewItemsSelect'
-                        ? MonitorNewItemsSelectInputProps<K>
-                        : C extends 'number'
-                          ? NumberInputProps<K>
-                          : C extends 'password'
-                            ? TextInputProps<K, 'password'>
-                            : C extends 'path'
-                              ? PathInputProps<K>
-                              : C extends 'rootFolderSelect'
-                                ? RootFolderSelectInputProps<K>
-                                : C extends 'select'
-                                  ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    EnhancedSelectInputProps<K, any, V>
-                                  : C extends 'specialVersionSelect'
-                                    ? SpecialVersionSelectInputProps<K>
-                                    : C extends 'text'
-                                      ? TextInputProps<K, 'text'>
-                                      : C extends 'textArea'
-                                        ? TextAreaProps<K>
-                                        : C extends 'umask'
-                                          ? UMaskInputProps<K>
-                                          : never;
+type InputTypeMap<V, K extends string> = {
+    text: TextInputProps<K, 'text'>;
+    autoComplete: AutoCompleteInputProps<K>;
+    check: CheckInputProps<K>;
+    date: TextInputProps<K, 'date'>;
+    downloadClientSelect: DownloadClientSelectInputProps<K>;
+    dynamicSelect: ProviderOptionSelectInputProps<K>;
+    file: TextInputProps<K, 'file'>;
+    float: TextInputProps<K, 'number'>;
+    keyValueList: KeyValueListInputProps<K>;
+    monitorIssuesSelect: MonitorIssuesSelectInputProps<K>;
+    monitorNewItemsSelect: MonitorNewItemsSelectInputProps<K>;
+    number: NumberInputProps<K>;
+    password: TextInputProps<K, 'password'>;
+    path: PathInputProps<K>;
+    rootFolderSelect: RootFolderSelectInputProps<K>;
+    select: EnhancedSelectInputProps<K, any, V>; // eslint-disable-line @typescript-eslint/no-explicit-any
+    specialVersionSelect: SpecialVersionSelectInputProps<K>;
+    textArea: TextAreaProps<K>;
+    umask: UMaskInputProps<K>;
+};
+
+type PickProps<V, C extends keyof InputTypeMap<V, K>, K extends string> = InputTypeMap<V, K>[C];
 
 export interface FormInputGroupValues<T> {
     key: T;

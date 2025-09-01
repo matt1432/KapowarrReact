@@ -5,13 +5,9 @@ import type { DownloadItem } from 'typings/Queue';
 import type { MassEditAction } from 'Helpers/Props/massEditActions';
 import type { SocketEvent } from 'Helpers/Props/socketEvents';
 import type { DownloadState } from 'Helpers/Props/downloadStates';
+import type { RawTask } from './Task';
 
-// TODO: get type from Task type once it's done
-interface TaskData {
-    action: string;
-    volume_id: number | null;
-    issue_id: number | null;
-}
+type TaskData = Pick<RawTask, 'action' | 'volume_id' | 'issue_id'>;
 
 interface TaskStatusData {
     message: string;
@@ -45,10 +41,7 @@ interface SpecificEventHandlers {
     task_added: (data: CamelCasedPropertiesDeep<TaskData>) => void;
     task_ended: (data: CamelCasedPropertiesDeep<TaskData>) => void;
     task_status: (data: CamelCasedPropertiesDeep<TaskStatusData>) => void;
-
-    // FIXME: ensure this is the correct type
     queue_added: (data: CamelCasedPropertiesDeep<DownloadItem>) => void;
-
     queue_ended: (data: CamelCasedPropertiesDeep<QueueEndedData>) => void;
     queue_status: (data: CamelCasedPropertiesDeep<QueueStatusData>) => void;
     mass_editor_status: (data: CamelCasedPropertiesDeep<MassEditorData>) => void;
