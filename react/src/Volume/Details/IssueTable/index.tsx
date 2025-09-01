@@ -11,11 +11,11 @@ import { useToggleIssueMonitoredMutation } from 'Store/Api/Issue';
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc
+import formatBytes from 'Utilities/Number/formatBytes';
 import getToggledRange from 'Utilities/Table/getToggledRange';
 
 // General Components
-import Table from 'Components/Table/Table';
-import TableBody from 'Components/Table/TableBody';
+import SortedTable from 'Components/Table/SortedTable';
 
 // Specific Components
 import IssueRow from '../IssueRow';
@@ -26,15 +26,18 @@ import styles from './index.module.css';
 // Types
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { TableOptionsChangePayload } from 'typings/Table';
-import type { IssueColumnName } from 'Issue/Issue';
+import type { IssueColumnName, IssueData, IssueFileData } from 'Issue/Issue';
 
-export type IssueTableSort =
-    | 'issueNumber'
-    | 'title'
-    | 'size'
-    | 'releaseGroup'
-    | 'path'
-    | 'relativePath';
+export interface IssueRowData extends IssueData {
+    issue: IssueData;
+    issueFile: IssueFileData | undefined;
+    path: string | undefined;
+    relativePath: string | undefined;
+    size: string;
+    releaseGroup: string | undefined;
+    status: undefined;
+    actions: undefined;
+}
 
 interface IssueTableProps {
     volumeId: number;
@@ -43,26 +46,45 @@ interface IssueTableProps {
 // IMPLEMENTATIONS
 
 function useIssuesSelector(volumeId: number) {
-    const { issues, refetch } = useSearchVolumeQuery(
+    return useSearchVolumeQuery(
         { volumeId },
         {
-            selectFromResult: ({ data, ...rest }) => ({
-                issues: data?.issues ?? [],
-                ...rest,
-            }),
+            selectFromResult: ({ data }) => {
+                const volumeFolder = data?.folder;
+
+                return {
+                    volumeMonitored: Boolean(data?.monitored),
+                    issues: (data?.issues ?? []).map((issue) => {
+                        const issueFile = issue.files?.find(
+                            (file) => !file.isImageFile && !file.isMetadataFile,
+                        );
+
+                        return {
+                            ...issue,
+                            issue,
+                            issueFile,
+                            path: issueFile?.filepath,
+                            relativePath:
+                                volumeFolder &&
+                                issueFile?.filepath?.replace(volumeFolder, '')?.slice(1),
+                            size: formatBytes(
+                                issue.files.reduce((acc, issue) => (acc += issue.size), 0),
+                            ),
+                            releaseGroup: issue?.files.find((f) => f.releaser)?.releaser ?? '',
+                            status: undefined,
+                            actions: undefined,
+                        } satisfies IssueRowData as IssueRowData;
+                    }),
+                };
+            },
         },
     );
-
-    return {
-        issues,
-        refetch,
-    };
 }
 
 function IssueTable({ volumeId }: IssueTableProps) {
     const dispatch = useRootDispatch();
 
-    const { issues, refetch } = useIssuesSelector(volumeId);
+    const { issues, volumeMonitored, refetch } = useIssuesSelector(volumeId);
     const { columns, sortKey, sortDirection } = useRootSelector((state) => state.issueTable);
 
     const [toggleIssueMonitored, toggleIssueMonitoredState] = useToggleIssueMonitoredMutation();
@@ -101,10 +123,10 @@ function IssueTable({ volumeId }: IssueTableProps) {
     );
 
     const handleSortPress = useCallback(
-        (sortKey: string, sortDirection?: SortDirection) => {
+        (sortKey: IssueColumnName, sortDirection?: SortDirection) => {
             dispatch(
                 setIssuesSort({
-                    sortKey: sortKey as IssueTableSort,
+                    sortKey: sortKey,
                     sortDirection,
                 }),
             );
@@ -121,30 +143,29 @@ function IssueTable({ volumeId }: IssueTableProps) {
 
     return (
         <div className={styles.issues}>
-            <Table
+            <SortedTable
                 columns={columns}
                 sortKey={sortKey}
                 sortDirection={sortDirection}
                 onSortPress={handleSortPress}
-                onTableOptionChange={handleTableOptionChange}
-            >
-                <TableBody>
-                    {issues.map((issue) => {
-                        return (
-                            <IssueRow
-                                key={issue.id}
-                                id={issue.id}
-                                title={issue.title ?? ''}
-                                issueNumber={issue.calculatedIssueNumber}
-                                volumeId={volumeId}
-                                columns={columns}
-                                monitored={issue.monitored}
-                                onMonitorIssuePress={handleMonitorIssuePress}
-                            />
-                        );
-                    })}
-                </TableBody>
-            </Table>
+                tableProps={{
+                    onTableOptionChange: handleTableOptionChange,
+                }}
+                items={issues}
+                itemRenderer={(issue) => (
+                    <IssueRow
+                        key={issue.id}
+                        columns={columns}
+                        isSaving={toggleIssueMonitoredState.isLoading}
+                        onMonitorIssuePress={handleMonitorIssuePress}
+                        volumeMonitored={volumeMonitored}
+                        {...issue}
+                    />
+                )}
+                predicates={{
+                    issueNumber: (a, b) => a.calculatedIssueNumber - b.calculatedIssueNumber,
+                }}
+            />
         </div>
     );
 }

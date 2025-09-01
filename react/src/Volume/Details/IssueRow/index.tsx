@@ -3,12 +3,6 @@
 // React
 import { useCallback } from 'react';
 
-// Redux
-import { useSearchVolumeQuery } from 'Store/Api/Volumes';
-
-// Misc
-import formatBytes from 'Utilities/Number/formatBytes';
-
 // General Components
 import MonitorToggleButton from 'Components/MonitorToggleButton';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
@@ -25,15 +19,12 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { IssueColumnName } from 'Issue/Issue';
+import type { IssueRowData } from '../IssueTable';
 
-interface IssueRowProps {
-    id: number;
-    volumeId: number;
-    monitored: boolean;
-    issueNumber: number;
-    title: string;
-    isSaving?: boolean;
+interface IssueRowProps extends IssueRowData {
     columns: Column<IssueColumnName>[];
+    volumeMonitored: boolean;
+    isSaving: boolean;
     onMonitorIssuePress: (
         issueId: number,
         value: boolean,
@@ -45,28 +36,21 @@ interface IssueRowProps {
 
 function IssueRow({
     id,
+    issue,
+    issueFile,
     volumeId,
+    volumeMonitored,
     monitored,
     issueNumber,
     title,
+    path,
+    relativePath,
+    releaseGroup,
+    size,
     isSaving,
     columns,
     onMonitorIssuePress,
 }: IssueRowProps) {
-    const { volumeFolder, volumeMonitored, issue, issueFile } = useSearchVolumeQuery(
-        { volumeId },
-        {
-            selectFromResult: ({ data }) => ({
-                volumeFolder: data?.folder,
-                volumeMonitored: Boolean(data?.monitored),
-                issue: data?.issues.find((issue) => issue.id === id),
-                issueFile: data?.issues
-                    ?.find((issue) => issue.id === id)
-                    ?.files?.find((file) => !file.isImageFile && !file.isMetadataFile),
-            }),
-        },
-    );
-
     const handleMonitorIssuePress = useCallback(
         (monitored: boolean, options: { shiftKey: boolean }) => {
             onMonitorIssuePress(id, monitored, options);
@@ -110,7 +94,7 @@ function IssueRow({
                             <IssueTitleLink
                                 issueId={id}
                                 volumeId={volumeId}
-                                issueTitle={title}
+                                issueTitle={title ?? ''}
                                 showOpenVolumeButton={false}
                             />
                         </TableRowCell>
@@ -118,25 +102,17 @@ function IssueRow({
                 }
 
                 if (name === 'path') {
-                    return <TableRowCell key={name}>{issueFile?.filepath}</TableRowCell>;
+                    return <TableRowCell key={name}>{path}</TableRowCell>;
                 }
 
                 if (name === 'relativePath') {
-                    return (
-                        <TableRowCell key={name}>
-                            {volumeFolder &&
-                                issueFile?.filepath?.replace(volumeFolder, '')?.slice(1)}
-                        </TableRowCell>
-                    );
+                    return <TableRowCell key={name}>{relativePath}</TableRowCell>;
                 }
 
                 if (name === 'size') {
                     return (
                         <TableRowCell key={name} className={styles.size}>
-                            {issue &&
-                                formatBytes(
-                                    issue.files.reduce((acc, issue) => (acc += issue.size), 0),
-                                )}
+                            {size}
                         </TableRowCell>
                     );
                 }
@@ -144,7 +120,7 @@ function IssueRow({
                 if (name === 'releaseGroup') {
                     return (
                         <TableRowCell key={name} className={styles.releaseGroup}>
-                            {issue?.files.find((f) => f.releaser)?.releaser ?? ''}
+                            {releaseGroup}
                         </TableRowCell>
                     );
                 }
@@ -163,7 +139,7 @@ function IssueRow({
                             key={name}
                             issueId={id}
                             volumeId={volumeId}
-                            issueTitle={title}
+                            issueTitle={title ?? ''}
                             showOpenVolumeButton={false}
                         />
                     );

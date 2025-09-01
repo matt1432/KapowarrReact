@@ -18,8 +18,7 @@ import translate from 'Utilities/String/translate';
 // General Components
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
-import Table from 'Components/Table/Table';
-import TableBody from 'Components/Table/TableBody';
+import SortedTable from 'Components/Table/SortedTable';
 
 // Specific Components
 import InteractiveSearchRow from './InteractiveSearchRow';
@@ -114,7 +113,7 @@ const columns: Column<InteractiveSearchSort>[] = [
     },*/
 ];
 
-function InteractiveSearch({ searchPayload }: InteractiveSearchProps) {
+export default function InteractiveSearch({ searchPayload }: InteractiveSearchProps) {
     const { isFetching, isPopulated, error, errorMessage, items, totalItems } =
         useManualSearchQuery(searchPayload, {
             refetchOnMountOrArgChange: true,
@@ -164,24 +163,30 @@ function InteractiveSearch({ searchPayload }: InteractiveSearchProps) {
             ) : null}
 
             {isPopulated && items.length ? (
-                <Table
+                <SortedTable
                     columns={columns}
+                    items={items}
+                    itemRenderer={(item) => (
+                        <InteractiveSearchRow
+                            key={item.link}
+                            result={item}
+                            searchPayload={searchPayload}
+                        />
+                    )}
+                    predicates={{
+                        issueNumber: (a, b) =>
+                            (Array.isArray(a.issueNumber)
+                                ? a.issueNumber[0]
+                                : (a.issueNumber ?? 0)) -
+                            (Array.isArray(b.issueNumber)
+                                ? b.issueNumber[0]
+                                : (b.issueNumber ?? 0)),
+                    }}
                     sortKey={sortKey}
+                    secondarySortKey="issueNumber"
                     sortDirection={sortDirection}
                     onSortPress={handleSortPress}
-                >
-                    <TableBody>
-                        {items.map((item) => {
-                            return (
-                                <InteractiveSearchRow
-                                    key={item.link}
-                                    result={item}
-                                    searchPayload={searchPayload}
-                                />
-                            );
-                        })}
-                    </TableBody>
-                </Table>
+                />
             ) : null}
 
             {totalItems !== items.length && items.length ? (
@@ -192,5 +197,3 @@ function InteractiveSearch({ searchPayload }: InteractiveSearchProps) {
         </div>
     );
 }
-
-export default InteractiveSearch;

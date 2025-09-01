@@ -14,16 +14,14 @@ import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { IssueColumnName } from 'Issue/Issue';
 import type { TableOptionsChangePayload } from 'typings/Table';
 
-import type { IssueTableSort } from 'Volume/Details/IssueTable';
-
 export interface IssueTableState {
-    sortKey: IssueTableSort;
+    sortKey: IssueColumnName;
     sortDirection: SortDirection;
     columns: Column<IssueColumnName>[];
 }
 
 export interface SetIssuesSortParams {
-    sortKey: IssueTableSort;
+    sortKey: IssueColumnName;
     sortDirection?: SortDirection;
 }
 
