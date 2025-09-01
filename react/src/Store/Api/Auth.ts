@@ -10,10 +10,9 @@ import { setApiKey, setLastLogin } from 'Store/Slices/Auth';
 import { baseApi } from './base';
 
 // Misc
-import snakeify from 'Utilities/Object/snakeify';
+import { isApiError } from 'Utilities/Object/error';
 
-// Types
-import type { FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
+import snakeify from 'Utilities/Object/snakeify';
 
 // IMPLEMENTATIONS
 
@@ -63,9 +62,7 @@ export const useApiKey = () => {
             return false;
         }
 
-        const e = error as FetchBaseQueryError;
-
-        if (e.status === 401) {
+        if (isApiError(error) && error.status === 401) {
             if (isFirstPost) {
                 setIsFirstPost(false);
                 return false;

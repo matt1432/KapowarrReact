@@ -3,9 +3,6 @@
 // Redux
 import { baseApi } from './base';
 
-// Misc
-import getQueryString from 'Utilities/Fetch/getQueryString';
-
 // Types
 import type { DownloadItem } from 'typings/Queue';
 
@@ -20,11 +17,12 @@ const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         // GET
         fetchQueueDetails: build.query<DownloadItem[], void>({
-            query: () =>
-                'activity/queue' +
-                getQueryString({
-                    api_key: window.Kapowarr.apiKey,
-                }),
+            query: () => ({
+                url: 'activity/queue',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
 
             transformResponse: (response: { result: DownloadItem[] }) => response.result,
         }),

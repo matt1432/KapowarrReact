@@ -14,11 +14,11 @@ import TableBody from './TableBody';
 import type { TableProps } from './Table';
 import type { Column } from './Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
+import type { ExtendableRecord } from 'typings/Misc';
 
 type Predicates<T, ColumnName extends string> = Partial<Record<ColumnName, (a: T, b: T) => number>>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Item<ColumnName extends string> = Record<ColumnName, any>;
+type Item<ColumnName extends string> = ExtendableRecord<ColumnName>;
 
 interface SortedTableProps<ColumnName extends string, T extends Item<ColumnName>> {
     columns: Column<ColumnName>[];

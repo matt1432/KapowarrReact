@@ -31,8 +31,7 @@ export type SelectContextAction =
 export type SelectDispatch = (action: SelectContextAction) => void;
 
 interface SelectProviderOptions<T extends SelectStateModel> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    children: any;
+    children: React.ReactNode;
     items: Array<T>;
 }
 

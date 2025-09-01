@@ -1,4 +1,3 @@
-// TODO:
 // IMPORTS
 
 // React
@@ -8,7 +7,6 @@ import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 // Redux
 import { useToggleIssueMonitoredMutation } from 'Store/Api/Issue';
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
-// import { cancelFetchReleases, clearReleases } from 'Store/Actions/releaseActions';
 
 // Misc
 import translate from 'Utilities/String/translate';
@@ -61,10 +59,9 @@ function IssueDetailsModalContent({
     const { volume, issue, refetch } = useSearchVolumeQuery(
         { volumeId },
         {
-            selectFromResult: ({ data, ...rest }) => ({
+            selectFromResult: ({ data }) => ({
                 volume: data,
                 issue: data?.issues.find((issue) => issue.id === issueId),
-                ...rest,
             }),
         },
     );

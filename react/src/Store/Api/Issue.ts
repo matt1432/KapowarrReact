@@ -4,7 +4,6 @@
 import { baseApi } from './base';
 
 // Misc
-import getQueryString from 'Utilities/Fetch/getQueryString';
 import snakeify from 'Utilities/Object/snakeify';
 
 // Types
@@ -21,11 +20,10 @@ const extendedApi = baseApi.injectEndpoints({
         toggleIssueMonitored: build.mutation<void, ToggleIssueParams>({
             query: ({ issueId, ...body }) => ({
                 method: 'PUT',
-                url:
-                    `issues/${issueId}` +
-                    getQueryString({
-                        api_key: window.Kapowarr.apiKey,
-                    }),
+                url: `issues/${issueId}`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
                 body: snakeify(body),
             }),
         }),
@@ -34,11 +32,10 @@ const extendedApi = baseApi.injectEndpoints({
         deleteFile: build.mutation<void, { fileId: number }>({
             query: ({ fileId }) => ({
                 method: 'DELETE',
-                url:
-                    `files/${fileId}` +
-                    getQueryString({
-                        api_key: window.Kapowarr.apiKey,
-                    }),
+                url: `files/${fileId}`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
             }),
         }),
     }),

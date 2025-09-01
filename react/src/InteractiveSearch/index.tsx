@@ -11,8 +11,8 @@ import { useManualSearchQuery } from 'Store/Api/Command';
 
 // Misc
 import { kinds } from 'Helpers/Props';
+import { getErrorMessage } from 'Utilities/Object/error';
 
-import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 
 // General Components

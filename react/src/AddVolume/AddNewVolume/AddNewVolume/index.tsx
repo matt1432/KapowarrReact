@@ -8,8 +8,8 @@ import { useGetVolumesQuery, useLazyLookupVolumeQuery } from 'Store/Api/Volumes'
 
 // Misc
 import { icons, kinds } from 'Helpers/Props';
+import { getErrorMessage } from 'Utilities/Object/error';
 
-import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import useQueryParams from 'Helpers/Hooks/useQueryParams';
 import translate from 'Utilities/String/translate';
 

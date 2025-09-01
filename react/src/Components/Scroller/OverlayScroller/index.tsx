@@ -10,6 +10,7 @@ import styles from './index.module.css';
 // Types
 import type { ScrollDirection } from 'Helpers/Props/scrollDirections';
 import type { OnScroll } from '../Scroller';
+import type { ExtendableRecord } from 'typings/Misc';
 
 interface OverlayScrollerProps {
     className?: string;
@@ -99,8 +100,7 @@ function OverlayScroller({
     }, []);
 
     const renderView = useCallback(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (props: any) => {
+        (props: ExtendableRecord) => {
             return <div className={className} {...props} />;
         },
         [className],

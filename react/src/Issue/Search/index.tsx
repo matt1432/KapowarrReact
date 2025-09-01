@@ -1,4 +1,3 @@
-// TODO:
 // IMPORTS
 
 // React
@@ -32,7 +31,9 @@ interface IssueSearchProps {
 
 // IMPLEMENTATIONS
 
-function IssueSearch({
+// TODO: add libgen file search
+
+export default function IssueSearch({
     issueId,
     volumeId,
     startInteractiveSearch,
@@ -89,5 +90,3 @@ function IssueSearch({
         </div>
     );
 }
-
-export default IssueSearch;

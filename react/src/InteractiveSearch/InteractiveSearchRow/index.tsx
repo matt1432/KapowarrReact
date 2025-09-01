@@ -8,10 +8,10 @@ import { useAddDownloadMutation } from 'Store/Api/Command';
 
 // Misc
 import { icons, kinds } from 'Helpers/Props';
+import { getErrorMessage } from 'Utilities/Object/error';
 
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
-import getErrorMessage from 'Utilities/Object/getErrorMessage';
 
 // General Components
 import Icon from 'Components/Icon';

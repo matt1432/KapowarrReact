@@ -3,9 +3,6 @@
 // Redux
 import { baseApi } from './base';
 
-// Misc
-import getQueryString from 'Utilities/Fetch/getQueryString';
-
 // Types
 import type { RootFolder } from 'typings/RootFolder';
 
@@ -15,11 +12,12 @@ const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         // GET
         getRootFolders: build.query<RootFolder[], void>({
-            query: () =>
-                'rootfolder' +
-                getQueryString({
-                    api_key: window.Kapowarr.apiKey,
-                }),
+            query: () => ({
+                url: 'rootfolder',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
 
             transformResponse: (response: { result: RootFolder[] }) => response.result,
         }),
@@ -28,11 +26,10 @@ const extendedApi = baseApi.injectEndpoints({
         deleteRootFolder: build.mutation<void, { id: number }>({
             query: ({ id }) => ({
                 method: 'DELETE',
-                url:
-                    `rootfolder/${id}` +
-                    getQueryString({
-                        api_key: window.Kapowarr.apiKey,
-                    }),
+                url: `rootfolder/${id}`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
             }),
         }),
     }),

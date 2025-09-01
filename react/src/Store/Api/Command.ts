@@ -4,7 +4,6 @@
 import { baseApi } from './base';
 
 // Misc
-import getQueryString from 'Utilities/Fetch/getQueryString';
 import snakeify from 'Utilities/Object/snakeify';
 import camelize from 'Utilities/Object/camelize';
 
@@ -63,13 +62,15 @@ const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         // GET
         manualSearch: build.query<SearchResult[], ManualSearchParams>({
-            query: ({ issueId, volumeId }) =>
-                (issueId !== undefined
-                    ? `issues/${issueId}/manualsearch`
-                    : `volumes/${volumeId}/manualsearch`) +
-                getQueryString({
-                    api_key: window.Kapowarr.apiKey,
-                }),
+            query: ({ issueId, volumeId }) => ({
+                url:
+                    issueId !== undefined
+                        ? `issues/${issueId}/manualsearch`
+                        : `volumes/${volumeId}/manualsearch`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
 
             transformResponse: (response: { result: RawSearchResult[] }) =>
                 camelize(response.result),
@@ -80,12 +81,12 @@ const extendedApi = baseApi.injectEndpoints({
             query: ({ issueId, volumeId, result, forceMatch = false }) => ({
                 method: 'POST',
                 url:
-                    (issueId !== undefined
+                    issueId !== undefined
                         ? `issues/${issueId}/download`
-                        : `volumes/${volumeId}/download`) +
-                    getQueryString({
-                        api_key: window.Kapowarr.apiKey,
-                    }),
+                        : `volumes/${volumeId}/download`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
                 body: snakeify({
                     ...result,
                     forceMatch,
@@ -96,11 +97,10 @@ const extendedApi = baseApi.injectEndpoints({
         massEdit: build.mutation<void, MassEditParams>({
             query: (body) => ({
                 method: 'POST',
-                url:
-                    'masseditor' +
-                    getQueryString({
-                        api_key: window.Kapowarr.apiKey,
-                    }),
+                url: 'masseditor',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
                 body: snakeify(body),
             }),
         }),
@@ -108,11 +108,10 @@ const extendedApi = baseApi.injectEndpoints({
         executeCommand: build.mutation<void, ExecuteCommandParams>({
             query: (body) => ({
                 method: 'POST',
-                url:
-                    'system/tasks' +
-                    getQueryString({
-                        api_key: window.Kapowarr.apiKey,
-                    }),
+                url: 'system/tasks',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
                 body: snakeify(body),
             }),
         }),

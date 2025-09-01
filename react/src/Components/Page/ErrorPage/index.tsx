@@ -2,7 +2,8 @@
 // IMPORTS
 
 // Misc
-import getErrorMessage from 'Utilities/Object/getErrorMessage';
+import { getErrorMessage } from 'Utilities/Object/error';
+
 import translate from 'Utilities/String/translate';
 
 // CSS
@@ -39,34 +40,36 @@ function ErrorPage({
     if (translationsError) {
         errorMessage = getErrorMessage(
             translationsError,
-            translate('FailedToLoadTranslationsFromApi'),
+            // translate('FailedToLoadTranslationsFromApi'),
         );
     }
     else if (volumesError) {
-        errorMessage = getErrorMessage(volumesError, translate('FailedToLoadVolumeFromApi'));
+        errorMessage = getErrorMessage(volumesError /*, translate('FailedToLoadVolumeFromApi')*/);
     }
     else if (customFiltersError) {
         errorMessage = getErrorMessage(
             customFiltersError,
-            translate('FailedToLoadCustomFiltersFromApi'),
+            // translate('FailedToLoadCustomFiltersFromApi'),
         );
     }
     else if (tagsError) {
-        errorMessage = getErrorMessage(tagsError, translate('FailedToLoadTagsFromApi'));
+        errorMessage = getErrorMessage(tagsError /*, translate('FailedToLoadTagsFromApi')*/);
     }
     else if (qualityProfilesError) {
         errorMessage = getErrorMessage(
             qualityProfilesError,
-            translate('FailedToLoadQualityProfilesFromApi'),
+            // translate('FailedToLoadQualityProfilesFromApi'),
         );
     }
     else if (uiSettingsError) {
-        errorMessage = getErrorMessage(uiSettingsError, translate('FailedToLoadUiSettingsFromApi'));
+        errorMessage = getErrorMessage(
+            uiSettingsError /*, translate('FailedToLoadUiSettingsFromApi')*/,
+        );
     }
     else if (systemStatusError) {
         errorMessage = getErrorMessage(
             systemStatusError,
-            translate('FailedToLoadSystemStatusFromApi'),
+            // translate('FailedToLoadSystemStatusFromApi'),
         );
     }
 

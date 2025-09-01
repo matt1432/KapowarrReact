@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { camelCase, isArray, transform, isObject } from 'lodash';
+
 import type { CamelCasedPropertiesDeep } from 'type-fest';
+import type { ExtendableRecord } from 'typings/Misc';
 
 export default function camelize<
-    T extends Record<string, any> = Record<string, any>,
+    T extends ExtendableRecord = ExtendableRecord,
     K extends CamelCasedPropertiesDeep<T> = CamelCasedPropertiesDeep<T>,
 >(obj: T) {
-    return transform(obj, (result: Record<string, any>, value: any, key: string, target) => {
+    return transform(obj, (result: ExtendableRecord, value: unknown, key: string, target) => {
         const camelKey = isArray(target) ? key : camelCase(key);
-        result[camelKey] = isObject(value) ? camelize(value as Record<string, unknown>) : value;
+        result[camelKey] = isObject(value) ? camelize(value) : value;
     }) as K;
 }
