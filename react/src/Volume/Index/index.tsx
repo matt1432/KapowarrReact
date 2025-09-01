@@ -56,8 +56,9 @@ import VolumeIndexTable from './Table/VolumeIndexTable';
 
 // CSS
 import styles from './index.module.css';
-import type { VolumePublicInfo } from 'Volume/Volume';
+import type { VolumeColumnName, VolumePublicInfo } from 'Volume/Volume';
 import VolumeIndexSearchVolumeButton from './VolumeIndexSearchVolumeButton';
+import type { Column } from 'Components/Table/Column';
 
 // Types
 export type IndexView = 'posters' | 'table';
@@ -76,6 +77,83 @@ interface VolumeIndexProps {
 }
 
 // IMPLEMENTATIONS
+
+const columns: Column<VolumeColumnName>[] = [
+    {
+        name: 'wanted',
+        columnLabel: () => translate('Status'),
+        isSortable: true,
+        isVisible: true,
+        isModifiable: false,
+    },
+    {
+        name: 'title',
+        label: () => translate('VolumeTitle'),
+        isSortable: true,
+        isVisible: true,
+        isModifiable: false,
+    },
+    {
+        name: 'specialVersion',
+        label: () => translate('SpecialVersion'),
+        isSortable: false,
+        isVisible: true,
+    },
+    {
+        name: 'year',
+        label: () => translate('Year'),
+        isSortable: true,
+        isVisible: true,
+    },
+    {
+        name: 'publisher',
+        label: () => translate('Publisher'),
+        isSortable: true,
+        isVisible: true,
+    },
+    {
+        name: 'issueProgress',
+        label: () => translate('Issues'),
+        isSortable: true,
+        isVisible: true,
+    },
+    {
+        name: 'issueCount',
+        label: () => translate('IssueCount'),
+        isSortable: true,
+        isVisible: false,
+    },
+    {
+        name: 'path',
+        label: () => translate('Path'),
+        isSortable: true,
+        isVisible: false,
+    },
+    {
+        name: 'sizeOnDisk',
+        label: () => translate('SizeOnDisk'),
+        isSortable: true,
+        isVisible: false,
+    },
+    {
+        name: 'releaseGroups',
+        label: () => translate('ReleaseGroups'),
+        isSortable: true,
+        isVisible: false,
+    },
+    {
+        name: 'monitorNewItems',
+        label: () => translate('MonitorNewItems'),
+        isSortable: true,
+        isVisible: false,
+    },
+    {
+        name: 'actions',
+        columnLabel: () => translate('Actions'),
+        isVisible: true,
+        isModifiable: false,
+    },
+];
 
 // eslint-disable-next-line
 export const useIndexVolumes = () => {
@@ -118,7 +196,7 @@ export const useIndexVolumes = () => {
 const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) => {
     const dispatch = useRootDispatch();
 
-    const { columns, filterKey, sortDirection, sortKey, view } = useRootSelector(
+    const { filterKey, sortDirection, sortKey, view } = useRootSelector(
         (state) => state.volumeIndex,
     );
 
@@ -345,6 +423,7 @@ const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) 
                                     jumpToCharacter={jumpToCharacter}
                                     isSelectMode={isSelectMode}
                                     isSmallScreen={isSmallScreen}
+                                    columns={columns}
                                 />
 
                                 <VolumeIndexFooter />

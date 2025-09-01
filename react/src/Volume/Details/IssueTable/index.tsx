@@ -13,6 +13,7 @@ import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 // Misc
 import formatBytes from 'Utilities/Number/formatBytes';
 import getToggledRange from 'Utilities/Table/getToggledRange';
+import translate from 'Utilities/String/translate';
 
 // General Components
 import SortedTable from 'Components/Table/SortedTable';
@@ -27,6 +28,7 @@ import styles from './index.module.css';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { TableOptionsChangePayload } from 'typings/Table';
 import type { IssueColumnName, IssueData, IssueFileData } from 'Issue/Issue';
+import type { Column } from 'Components/Table/Column';
 
 export interface IssueRowData extends IssueData {
     issue: IssueData;
@@ -44,6 +46,61 @@ interface IssueTableProps {
 }
 
 // IMPLEMENTATIONS
+
+const columns: Column<IssueColumnName>[] = [
+    {
+        name: 'monitored',
+        columnLabel: () => translate('Monitored'),
+        isVisible: true,
+        isModifiable: false,
+    },
+    {
+        name: 'issueNumber',
+        label: '#',
+        isVisible: true,
+        isSortable: true,
+    },
+    {
+        name: 'title',
+        label: () => translate('Title'),
+        isVisible: true,
+        isSortable: true,
+    },
+    {
+        name: 'path',
+        label: () => translate('Path'),
+        isVisible: false,
+        isSortable: true,
+    },
+    {
+        name: 'relativePath',
+        label: () => translate('RelativePath'),
+        isVisible: false,
+        isSortable: true,
+    },
+    {
+        name: 'size',
+        label: () => translate('Size'),
+        isVisible: false,
+        isSortable: true,
+    },
+    {
+        name: 'releaseGroup',
+        label: () => translate('ReleaseGroup'),
+        isVisible: false,
+    },
+    {
+        name: 'status',
+        label: () => translate('Status'),
+        isVisible: true,
+    },
+    {
+        name: 'actions',
+        columnLabel: () => translate('Actions'),
+        isVisible: true,
+        isModifiable: false,
+    },
+];
 
 function useIssuesSelector(volumeId: number) {
     return useSearchVolumeQuery(
@@ -85,7 +142,7 @@ function IssueTable({ volumeId }: IssueTableProps) {
     const dispatch = useRootDispatch();
 
     const { issues, volumeMonitored, refetch } = useIssuesSelector(volumeId);
-    const { columns, sortKey, sortDirection } = useRootSelector((state) => state.issueTable);
+    const { sortKey, sortDirection } = useRootSelector((state) => state.issueTable);
 
     const [toggleIssueMonitored, toggleIssueMonitoredState] = useToggleIssueMonitoredMutation();
 

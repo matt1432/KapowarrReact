@@ -4,9 +4,6 @@
 import { type RefObject, useEffect, useRef } from 'react';
 import { FixedSizeList, type ListChildComponentProps } from 'react-window';
 
-// Redux
-import { useRootSelector } from 'Store/createAppStore';
-
 // Misc
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
 
@@ -41,12 +38,14 @@ interface VolumeIndexTableProps {
     scrollerRef: RefObject<HTMLElement>;
     isSelectMode: boolean;
     isSmallScreen: boolean;
+    columns: Column<VolumeColumnName>[];
 }
 
 // IMPLEMENTATIONS
+//
 
 function Row({ index, style, data }: ListChildComponentProps<RowItemData>) {
-    const { items, sortKey, columns, isSelectMode } = data;
+    const { columns, items, sortKey, isSelectMode } = data;
 
     if (index >= items.length) {
         return null;
@@ -81,9 +80,8 @@ function VolumeIndexTable({
     isSelectMode,
     isSmallScreen,
     scrollerRef,
+    columns,
 }: VolumeIndexTableProps) {
-    const { columns } = useRootSelector((state) => state.volumeIndex);
-
     const listRef = useRef<FixedSizeList<RowItemData>>(undefined) as RefObject<
         FixedSizeList<RowItemData>
     >;
