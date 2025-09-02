@@ -218,10 +218,6 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     }, [refetch, refetchQueueDetails]);
 
     useEffect(() => {
-        populate();
-    }, [populate]);
-
-    useEffect(() => {
         if (!isRefreshing && wasRefreshing) {
             populate();
         }
