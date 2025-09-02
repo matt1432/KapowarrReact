@@ -12,7 +12,7 @@
         "@fortawesome/fontawesome-svg-core": "7.0.0",
         "@fortawesome/free-regular-svg-icons": "7.0.0",
         "@fortawesome/free-solid-svg-icons": "7.0.0",
-        "@fortawesome/react-fontawesome": "3.0.0",
+        "@fortawesome/react-fontawesome": "3.0.2",
         "@juggle/resize-observer": "3.4.0",
         "@reduxjs/toolkit": "2.8.2",
         "classnames": "2.5.1",
@@ -44,18 +44,18 @@
         "redux-remember": "5.2.0",
         "socket.io-client": "4.8.1",
         "stacktrace-js": "2.0.2",
-        "use-debounce": "10.0.5"
+        "use-debounce": "10.0.6"
     },
     "devDependencies": {
         "@types/lodash": "4.17.20",
         "@types/mousetrap": "1.6.15",
         "@types/node": "24.3.0",
-        "@types/react": "19.1.11",
+        "@types/react": "19.1.12",
         "@types/react-autosuggest": "10.1.11",
         "@types/react-dom": "19.1.8",
         "@types/react-lazy-load-image-component": "1.6.4",
         "@types/react-window": "1.8.8",
-        "@vitejs/plugin-react": "5.0.1",
+        "@vitejs/plugin-react": "5.0.2",
         "autoprefixer": "10.4.21",
         "eslint": "9.34.0",
         "eslint-config-prettier": "10.1.8",
@@ -66,7 +66,7 @@
         "jiti": "2.5.1",
         "postcss": "8.5.6",
         "postcss-color-mod-function": "4.1.1",
-        "postcss-loader": "8.1.1",
+        "postcss-loader": "8.2.0",
         "postcss-mixins": "12.1.2",
         "postcss-nested": "7.0.2",
         "postcss-simple-vars": "7.0.1",
@@ -75,8 +75,8 @@
         "prettier-plugin-brace-style": "0.8.1",
         "type-fest": "4.41.0",
         "typescript": "5.9.2",
-        "typescript-eslint": "8.41.0",
-        "vite": "7.1.3",
+        "typescript-eslint": "8.42.0",
+        "vite": "7.1.4",
         "vite-css-modules": "1.10.0"
     }
 }
