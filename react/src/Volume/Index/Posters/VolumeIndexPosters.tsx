@@ -1,8 +1,8 @@
 // IMPORTS
 
 // React
-import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
-import { FixedSizeGrid as Grid, type GridChildComponentProps } from 'react-window';
+import { type RefObject, useEffect, useMemo, useState } from 'react';
+import { Grid, useGridRef, type CellComponentProps } from 'react-window';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -66,8 +66,15 @@ const ADDITIONAL_COLUMN_COUNT: Record<string, number> = {
 
 const EXTRA_ROW_HEIGHT = 19;
 
-function Cell({ columnIndex, rowIndex, style, data }: GridChildComponentProps<CellItemData>) {
-    const { layout, items, sortKey, isSelectMode } = data;
+function Cell({
+    columnIndex,
+    rowIndex,
+    style,
+    layout,
+    items,
+    sortKey,
+    isSelectMode,
+}: CellComponentProps<CellItemData>) {
     const { columnCount, padding, posterWidth, posterHeight } = layout;
     const index = rowIndex * columnCount + columnIndex;
 
@@ -108,7 +115,7 @@ export default function VolumeIndexPosters({
     isSmallScreen,
 }: VolumeIndexPostersProps) {
     const { posterOptions } = useRootSelector((state) => state.volumeIndex);
-    const ref = useRef<Grid>(null);
+    const ref = useGridRef(null);
     const [measureRef, bounds] = useMeasure();
     const [size, setSize] = useState({ width: 0, height: 0 });
 
@@ -214,7 +221,7 @@ export default function VolumeIndexPosters({
                 (isSmallScreen ? getWindowScrollTopPosition() : currentScrollerRef.scrollTop) -
                 offsetTop;
 
-            ref.current?.scrollTo({ scrollLeft: 0, scrollTop });
+            ref.current?.element?.scrollTo(0, scrollTop);
         }, 10);
 
         currentScrollListener.addEventListener('scroll', handleScroll);
@@ -237,7 +244,7 @@ export default function VolumeIndexPosters({
 
                 const scrollTop = rowIndex * rowHeight + padding;
 
-                ref.current?.scrollTo({ scrollLeft: 0, scrollTop });
+                ref.current?.scrollToRow({ index });
                 scrollerRef.current?.scrollTo(0, scrollTop);
             }
         }
@@ -246,19 +253,19 @@ export default function VolumeIndexPosters({
     return (
         <div ref={measureRef}>
             <Grid<CellItemData>
-                ref={ref}
+                gridRef={ref}
                 style={{
                     width: '100%',
                     height: '100%',
                     overflow: 'none',
                 }}
-                width={size.width}
-                height={size.height}
+                defaultWidth={size.width}
+                defaultHeight={size.height}
                 columnCount={columnCount}
                 columnWidth={columnWidth}
                 rowCount={Math.ceil(items.length / columnCount)}
                 rowHeight={rowHeight}
-                itemData={{
+                cellProps={{
                     layout: {
                         columnCount,
                         padding,
@@ -269,9 +276,8 @@ export default function VolumeIndexPosters({
                     sortKey,
                     isSelectMode,
                 }}
-            >
-                {Cell}
-            </Grid>
+                cellComponent={Cell}
+            />
         </div>
     );
 }

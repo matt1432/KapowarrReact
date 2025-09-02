@@ -2,7 +2,7 @@
 
 // React
 import React, { type RefObject, useEffect, useState } from 'react';
-import { FixedSizeList, type ListChildComponentProps } from 'react-window';
+import { List, type ListImperativeAPI, type RowComponentProps } from 'react-window';
 
 // Misc
 import { throttle } from 'lodash';
@@ -17,14 +17,16 @@ import dimensions from 'Styles/Variables/dimensions';
 import styles from './index.module.css';
 
 // Types
-interface VirtualTableProps<T> {
+import type { ExtendableRecord } from 'typings/Misc';
+
+interface VirtualTableProps<T extends ExtendableRecord> {
     Header: React.JSX.Element;
     itemCount: number;
     itemData: T;
     isSmallScreen: boolean;
-    listRef: RefObject<FixedSizeList<T>>;
+    listRef: RefObject<ListImperativeAPI>;
     rowHeight: number;
-    Row({ index, style, data }: ListChildComponentProps<T>): React.JSX.Element | null;
+    Row(props: RowComponentProps<T>): React.JSX.Element | null;
     scrollerRef: RefObject<HTMLElement>;
 }
 
@@ -37,7 +39,7 @@ function getWindowScrollTopPosition() {
     return document.documentElement.scrollTop || document.body.scrollTop || 0;
 }
 
-function VirtualTable<T>({
+function VirtualTable<T extends ExtendableRecord>({
     Header,
     itemCount,
     itemData,
@@ -85,7 +87,7 @@ function VirtualTable<T>({
                 (isSmallScreen ? getWindowScrollTopPosition() : currentScrollerRef.scrollTop) -
                 offsetTop;
 
-            listRef.current?.scrollTo(scrollTop);
+            listRef.current?.element?.scrollTo(0, scrollTop);
         }, 10);
 
         currentScrollListener.addEventListener('scroll', handleScroll);
@@ -103,22 +105,20 @@ function VirtualTable<T>({
         <div ref={measureRef}>
             <Scroller className={styles.tableScroller} scrollDirection="horizontal">
                 {Header}
-                <FixedSizeList<T>
-                    ref={listRef}
+                <List<T>
+                    listRef={listRef}
                     style={{
                         width: '100%',
                         height: '100%',
                         overflow: 'none',
                     }}
-                    width={size.width}
-                    height={size.height}
-                    itemCount={itemCount}
-                    itemSize={rowHeight}
-                    itemData={itemData}
+                    defaultHeight={size.height}
+                    rowCount={itemCount}
+                    rowHeight={rowHeight}
+                    rowProps={itemData}
+                    rowComponent={Row}
                     overscanCount={20}
-                >
-                    {Row}
-                </FixedSizeList>
+                />
             </Scroller>
         </div>
     );

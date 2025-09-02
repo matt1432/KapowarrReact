@@ -1,8 +1,8 @@
 // IMPORTS
 
 // React
-import { type RefObject, useEffect, useRef } from 'react';
-import { FixedSizeList, type ListChildComponentProps } from 'react-window';
+import { useEffect, type RefObject } from 'react';
+import { useListRef, type ListImperativeAPI, type RowComponentProps } from 'react-window';
 
 // Misc
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
@@ -44,9 +44,14 @@ interface VolumeIndexTableProps {
 // IMPLEMENTATIONS
 //
 
-function Row({ index, style, data }: ListChildComponentProps<RowItemData>) {
-    const { columns, items, sortKey, isSelectMode } = data;
-
+function Row({
+    index,
+    style,
+    columns,
+    items,
+    sortKey,
+    isSelectMode,
+}: RowComponentProps<RowItemData>) {
     if (index >= items.length) {
         return null;
     }
@@ -82,9 +87,7 @@ function VolumeIndexTable({
     scrollerRef,
     columns,
 }: VolumeIndexTableProps) {
-    const listRef = useRef<FixedSizeList<RowItemData>>(undefined) as RefObject<
-        FixedSizeList<RowItemData>
-    >;
+    const listRef = useListRef(undefined) as RefObject<ListImperativeAPI>;
 
     useEffect(() => {
         if (jumpToCharacter) {
@@ -101,7 +104,7 @@ function VolumeIndexTable({
                     scrollTop += offset;
                 }
 
-                listRef.current?.scrollTo(scrollTop);
+                listRef.current?.scrollToRow({ index });
                 scrollerRef?.current?.scrollTo(0, scrollTop);
             }
         }
