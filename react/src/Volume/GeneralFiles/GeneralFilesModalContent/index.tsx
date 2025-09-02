@@ -1,0 +1,126 @@
+// IMPORTS
+
+// React
+import { useCallback, useEffect } from 'react';
+
+// Redux
+import { useSearchVolumeQuery } from 'Store/Api/Volumes';
+import { useDeleteFileMutation } from 'Store/Api/Issue';
+
+// Misc
+import translate from 'Utilities/String/translate';
+
+import usePrevious from 'Helpers/Hooks/usePrevious';
+
+// General Components
+import Button from 'Components/Link/Button';
+import ModalBody from 'Components/Modal/ModalBody';
+import ModalContent from 'Components/Modal/ModalContent';
+import ModalFooter from 'Components/Modal/ModalFooter';
+import ModalHeader from 'Components/Modal/ModalHeader';
+import Table from 'Components/Table/Table';
+import TableBody from 'Components/Table/TableBody';
+
+// Specific Components
+import GeneralFileRow from '../GeneralFileRow';
+
+// Types
+import type { Column } from 'Components/Table/Column';
+
+export type GeneralFilesColumnName = 'path' | 'fileType' | 'filesize' | 'actions';
+
+export interface GeneralFilesModalContentProps {
+    volumeId: number;
+    onModalClose: () => void;
+}
+
+// IMPLEMENTATIONS
+
+const COLUMNS: Column<GeneralFilesColumnName>[] = [
+    {
+        name: 'path',
+        label: () => translate('Path'),
+        isSortable: false,
+        isVisible: true,
+    },
+    {
+        name: 'fileType',
+        label: () => translate('FileType'),
+        isSortable: false,
+        isVisible: true,
+    },
+    {
+        name: 'filesize',
+        label: () => translate('Size'),
+        isSortable: false,
+        isVisible: true,
+    },
+    {
+        name: 'actions',
+        label: '',
+        isSortable: false,
+        isVisible: true,
+    },
+];
+
+function GeneralFilesModalContent({ volumeId, onModalClose }: GeneralFilesModalContentProps) {
+    const { generalFiles = [], refetch } = useSearchVolumeQuery(
+        { volumeId },
+        {
+            refetchOnMountOrArgChange: true,
+            selectFromResult: ({ data }) => ({
+                generalFiles: data?.generalFiles ?? [],
+            }),
+        },
+    );
+
+    const [deleteFile, { isLoading, isSuccess }] = useDeleteFileMutation();
+    const wasLoading = usePrevious(isLoading);
+
+    useEffect(() => {
+        if (!isLoading && wasLoading && isSuccess) {
+            refetch();
+        }
+    }, [isLoading, isSuccess, wasLoading, refetch]);
+
+    const handleDeleteGeneralFile = useCallback(
+        (fileId: number) => {
+            deleteFile({ fileId });
+        },
+        [deleteFile],
+    );
+
+    return (
+        <ModalContent onModalClose={onModalClose}>
+            <ModalHeader>{translate('GeneralFilesModalHeader')}</ModalHeader>
+
+            <ModalBody>
+                {generalFiles.length !== 0 ? (
+                    <Table columns={COLUMNS}>
+                        <TableBody>
+                            {generalFiles.map(({ id, fileType, filepath, size }) => (
+                                <GeneralFileRow
+                                    key={id}
+                                    id={id}
+                                    fileType={fileType}
+                                    path={filepath}
+                                    size={size}
+                                    columns={COLUMNS}
+                                    onDeleteGeneralFile={() => handleDeleteGeneralFile(id)}
+                                />
+                            ))}
+                        </TableBody>
+                    </Table>
+                ) : (
+                    <div>{translate('GeneralFilesNoFiles')}</div>
+                )}
+            </ModalBody>
+
+            <ModalFooter>
+                <Button onPress={onModalClose}>{translate('Cancel')}</Button>
+            </ModalFooter>
+        </ModalContent>
+    );
+}
+
+export default GeneralFilesModalContent;

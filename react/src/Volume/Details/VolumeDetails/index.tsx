@@ -48,6 +48,7 @@ import DeleteVolumeModal from 'Volume/Delete/DeleteVolumeModal';
 import EditVolumeModal from 'Volume/Edit/EditVolumeModal';
 import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
 import ConvertPreviewModal from 'Convert/ConvertPreviewModal';
+import GeneralFilesModal from 'Volume/GeneralFiles/GeneralFilesModal';
 import MonitoringOptionsModal from 'Volume/MonitoringOptions/MonitoringOptionsModal';
 import SearchVolumeModal from 'Volume/Search/SearchVolumeModal';
 
@@ -122,7 +123,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
     const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
-    // const [isGeneralFilesModalOpen, setIsGeneralFilesModalOpen] = useState(false);
+    const [isGeneralFilesModalOpen, setIsGeneralFilesModalOpen] = useState(false);
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
     const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);
     const [isMonitorOptionsModalOpen, setIsMonitorOptionsModalOpen] = useState(false);
@@ -146,7 +147,6 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         setIsConvertModalOpen(false);
     }, []);
 
-    /*
     const handleGeneralFilesPress = useCallback(() => {
         setIsGeneralFilesModalOpen(true);
     }, []);
@@ -154,7 +154,6 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     const handleGeneralFilesModalClose = useCallback(() => {
         setIsGeneralFilesModalOpen(false);
     }, []);
-    */
 
     const handleEditVolumePress = useCallback(() => {
         setIsEditVolumeModalOpen(true);
@@ -295,13 +294,12 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
                     <PageToolbarSeparator />
 
-                    {/* TODO: add GeneralFiles button
                     <PageToolbarButton
                         label={translate('GeneralFiles')}
                         iconName={icons.GENERAL_FILES}
                         isDisabled={issueFileCount === 0}
                         onPress={handleGeneralFilesPress}
-                    />*/}
+                    />
 
                     <PageToolbarButton
                         label={translate('IssueMonitoring')}
@@ -487,6 +485,12 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                     isOpen={isConvertModalOpen}
                     volumeId={volumeId}
                     onModalClose={handleConvertModalClose}
+                />
+
+                <GeneralFilesModal
+                    isOpen={isGeneralFilesModalOpen}
+                    volumeId={volumeId}
+                    onModalClose={handleGeneralFilesModalClose}
                 />
 
                 <EditVolumeModal

@@ -185,10 +185,14 @@ export const {
     useUpdateVolumeMutation,
 } = extendedApi;
 
-export const useGetVolumeQuery = (volumeId: number) => {
+export const useGetVolumeQuery = (
+    volumeId: number,
+    options?: Parameters<typeof extendedApi.useGetVolumesQuery>[1],
+) => {
     return extendedApi.useGetVolumesQuery(
         {},
         {
+            ...options,
             selectFromResult: ({ data, ...rest }) => ({
                 volume: data?.find((v) => v.id === volumeId),
                 ...rest,

@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 // Redux
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
@@ -9,6 +9,8 @@ import { useDeleteFileMutation } from 'Store/Api/Issue';
 
 // Misc
 import translate from 'Utilities/String/translate';
+
+import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
 import InnerHTML from 'Components/InnerHTML';
@@ -57,15 +59,27 @@ const COLUMNS: Column<IssueSummaryColumnName>[] = [
 // TODO: allow editing media info
 
 export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
-    const { description, files = [] } = useSearchVolumeQuery(
+    const {
+        description,
+        files = [],
+        refetch,
+    } = useSearchVolumeQuery(
         { volumeId },
         {
+            refetchOnMountOrArgChange: true,
             selectFromResult: ({ data }) =>
                 data?.issues.find((i) => i.id === issueId) ?? ({} as Partial<IssueData>),
         },
     );
 
-    const [deleteFile] = useDeleteFileMutation();
+    const [deleteFile, { isLoading, isSuccess }] = useDeleteFileMutation();
+    const wasLoading = usePrevious(isLoading);
+
+    useEffect(() => {
+        if (!isLoading && wasLoading && isSuccess) {
+            refetch();
+        }
+    }, [isLoading, isSuccess, wasLoading, refetch]);
 
     const handleDeleteIssueFile = useCallback(
         (issueFileId: number) => {

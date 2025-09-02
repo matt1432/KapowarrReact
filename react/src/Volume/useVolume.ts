@@ -3,7 +3,9 @@ import { useGetVolumeQuery, useSearchVolumeQuery } from 'Store/Api/Volumes';
 import type { Volume, VolumePublicInfo } from './Volume';
 
 export default function useVolume(volumeId: number) {
-    const { volume: publicVol, refetch: publicRefetch } = useGetVolumeQuery(volumeId);
+    const { volume: publicVol, refetch: publicRefetch } = useGetVolumeQuery(volumeId, {
+        refetchOnMountOrArgChange: true,
+    });
 
     const {
         issues,
@@ -16,6 +18,7 @@ export default function useVolume(volumeId: number) {
     } = useSearchVolumeQuery(
         { volumeId },
         {
+            refetchOnMountOrArgChange: true,
             selectFromResult: ({ data, ...rest }) => ({
                 volume: data,
                 issues: data?.issues ?? [],
