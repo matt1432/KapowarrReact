@@ -1,25 +1,36 @@
 // IMPORTS
 
+// Misc
+import translate from 'Utilities/String/translate';
+
 // General Components
 import DescriptionList from 'Components/DescriptionList/DescriptionList';
 import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem';
 
+// Types
+interface MediaInfoProps {
+    dpi?: string;
+    releaser?: string;
+    resolution?: string;
+    scanType?: string;
+}
+
 // IMPLEMENTATIONS
 
-export default function MediaInfo(props: Record<string, string | undefined>) {
+export default function MediaInfo({ dpi, releaser, resolution, scanType }: MediaInfoProps) {
     return (
         <DescriptionList>
-            {Object.entries(props).map(([key, value]) => {
-                const title = key
-                    .replace(/([A-Z])/g, ' $1')
-                    .replace(/^./, (str) => str.toUpperCase());
+            <DescriptionListItem key="dpi" title={translate('DPI')} data={dpi} />
 
-                if (!value) {
-                    return null;
-                }
+            <DescriptionListItem key="releaser" title={translate('ReleaseGroup')} data={releaser} />
 
-                return <DescriptionListItem key={key} title={title} data={value} />;
-            })}
+            <DescriptionListItem
+                key="resolution"
+                title={translate('Resolution')}
+                data={resolution}
+            />
+
+            <DescriptionListItem key="scanType" title={translate('ScanType')} data={scanType} />
         </DescriptionList>
     );
 }
