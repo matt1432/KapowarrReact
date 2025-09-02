@@ -26,6 +26,7 @@ interface IssueDetailsModalProps {
     showOpenVolumeButton?: boolean;
     selectedTab?: IssueDetailsTab;
     startInteractiveSearch?: boolean;
+    startLibgenFileSearch?: boolean;
     onModalClose(): void;
 }
 

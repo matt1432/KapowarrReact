@@ -1,22 +1,25 @@
 // IMPORTS
 
 // React
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { setInteractiveSearchSort } from 'Store/Slices/SearchResults';
 
-import { useManualSearchQuery } from 'Store/Api/Command';
+import { useLibgenFileSearchMutation, useManualSearchQuery } from 'Store/Api/Command';
 
 // Misc
-import { kinds } from 'Helpers/Props';
+import { inputTypes, kinds } from 'Helpers/Props';
 import { getErrorMessage } from 'Utilities/Object/error';
 
 import translate from 'Utilities/String/translate';
 
 // General Components
 import Alert from 'Components/Alert';
+import FormGroup from 'Components/Form/FormGroup';
+import FormInputGroup from 'Components/Form/FormInputGroup';
+import FormLabel from 'Components/Form/FormLabel';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import SortedTable from 'Components/Table/SortedTable';
 
@@ -29,12 +32,24 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 
-import type { InteractiveSearchPayload, InteractiveSearchSort } from 'typings/Search';
+import type { InteractiveSearchPayload, InteractiveSearchSort, SearchResult } from 'typings/Search';
 
 import type { SortDirection } from 'Helpers/Props/sortDirections';
+import type { AnyError } from 'typings/Api';
+import type { InputChanged } from 'typings/Inputs';
+import { Form } from 'react-router';
 
 export interface InteractiveSearchProps {
     searchPayload: InteractiveSearchPayload;
+}
+
+interface SearchProps extends InteractiveSearchProps {
+    isFetching: boolean;
+    isPopulated: boolean;
+    error: AnyError | undefined;
+    errorMessage: string;
+    items: SearchResult[];
+    totalItems: number;
 }
 
 // IMPLEMENTATIONS
@@ -113,20 +128,15 @@ const columns: Column<InteractiveSearchSort>[] = [
     },*/
 ];
 
-export default function InteractiveSearch({ searchPayload }: InteractiveSearchProps) {
-    const { isFetching, isPopulated, error, errorMessage, items, totalItems } =
-        useManualSearchQuery(searchPayload, {
-            refetchOnMountOrArgChange: true,
-            selectFromResult: ({ isFetching, isUninitialized, error, data }) => ({
-                isFetching,
-                isPopulated: !isUninitialized,
-                error,
-                errorMessage: getErrorMessage(error),
-                items: data ?? [],
-                totalItems: data?.length ?? 0,
-            }),
-        });
-
+function InternalSearch({
+    isFetching,
+    isPopulated,
+    error,
+    errorMessage,
+    items,
+    totalItems,
+    searchPayload,
+}: SearchProps) {
     const { sortKey, sortDirection } = useRootSelector((state) => state.searchResults);
 
     const dispatch = useRootDispatch();
@@ -196,4 +206,66 @@ export default function InteractiveSearch({ searchPayload }: InteractiveSearchPr
             ) : null}
         </div>
     );
+}
+
+export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
+    const [search, searchProps] = useLibgenFileSearchMutation({
+        selectFromResult: ({ isLoading, isUninitialized, error, data }) => ({
+            isFetching: isLoading,
+            isPopulated: !isUninitialized,
+            error,
+            errorMessage: getErrorMessage(error),
+            items: data ?? [],
+            totalItems: data?.length ?? 0,
+        }),
+    });
+
+    const [libgenFileUrl, setLibgenFileUrl] = useState('');
+
+    const onUrlChange = useCallback(({ value }: InputChanged<'url', string>) => {
+        setLibgenFileUrl(value);
+    }, []);
+
+    const startSearch = useCallback(() => {
+        search({
+            url: libgenFileUrl,
+            ...searchPayload,
+        });
+    }, [searchPayload, libgenFileUrl, search]);
+
+    if (!searchProps.isPopulated) {
+        return (
+            <Form onSubmit={startSearch}>
+                <FormGroup>
+                    <FormLabel>{translate('LibgenFileSearch')}</FormLabel>
+
+                    <FormInputGroup
+                        type={inputTypes.TEXT}
+                        name="url"
+                        value={libgenFileUrl}
+                        helpText={translate('LibgenFileSearchHelpText')}
+                        onChange={onUrlChange}
+                    />
+                </FormGroup>
+            </Form>
+        );
+    }
+
+    return <InternalSearch searchPayload={searchPayload} {...searchProps} />;
+}
+
+export default function InteractiveSearch({ searchPayload }: InteractiveSearchProps) {
+    const searchProps = useManualSearchQuery(searchPayload, {
+        refetchOnMountOrArgChange: true,
+        selectFromResult: ({ isFetching, isUninitialized, error, data }) => ({
+            isFetching,
+            isPopulated: !isUninitialized,
+            error,
+            errorMessage: getErrorMessage(error),
+            items: data ?? [],
+            totalItems: data?.length ?? 0,
+        }),
+    });
+
+    return <InternalSearch searchPayload={searchPayload} {...searchProps} />;
 }

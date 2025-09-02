@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import { useExecuteCommandMutation } from 'Store/Api/Command';
@@ -39,12 +39,25 @@ function IssueSearchCell({
     issueTitle,
     showOpenVolumeButton,
 }: IssueSearchCellProps) {
-    const [executeCommand, executeCommandState] = useExecuteCommandMutation();
-
-    const isSearching = executeCommandState.isLoading;
+    const [executeCommand, { isLoading: isSearching }] = useExecuteCommandMutation();
 
     const [isDetailsModalOpen, setDetailsModalOpen, setDetailsModalClosed] =
         useModalOpenState(false);
+
+    const [startInteractiveSearch, setStartInteractiveSearch] = useState(true);
+    const [startLibgenFileSearch, setStartLibgenFileSearch] = useState(false);
+
+    const handleInteractiveSearchPress = useCallback(() => {
+        setStartInteractiveSearch(true);
+        setStartLibgenFileSearch(false);
+        setDetailsModalOpen();
+    }, [setDetailsModalOpen]);
+
+    const handleLibgenFileSearchPress = useCallback(() => {
+        setStartInteractiveSearch(false);
+        setStartLibgenFileSearch(true);
+        setDetailsModalOpen();
+    }, [setDetailsModalOpen]);
 
     const handleSearchPress = useCallback(() => {
         executeCommand({
@@ -66,7 +79,13 @@ function IssueSearchCell({
             <IconButton
                 name={icons.INTERACTIVE}
                 title={translate('InteractiveSearch')}
-                onPress={setDetailsModalOpen}
+                onPress={handleInteractiveSearchPress}
+            />
+
+            <IconButton
+                name={icons.LIBGEN_FILE_SEARCH}
+                title={translate('LibgenFileSearch')}
+                onPress={handleLibgenFileSearchPress}
             />
 
             <IssueDetailsModal
@@ -75,7 +94,8 @@ function IssueSearchCell({
                 volumeId={volumeId}
                 issueTitle={issueTitle}
                 selectedTab="search"
-                startInteractiveSearch={true}
+                startInteractiveSearch={startInteractiveSearch}
+                startLibgenFileSearch={startLibgenFileSearch}
                 showOpenVolumeButton={showOpenVolumeButton}
                 onModalClose={setDetailsModalClosed}
             />

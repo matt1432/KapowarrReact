@@ -77,6 +77,23 @@ const extendedApi = baseApi.injectEndpoints({
         }),
 
         // POST
+        libgenFileSearch: build.mutation<SearchResult[], ManualSearchParams & { url: string }>({
+            query: ({ issueId, volumeId, url }) => ({
+                method: 'POST',
+                url:
+                    issueId !== undefined
+                        ? `issues/${issueId}/manualsearch`
+                        : `volumes/${volumeId}/manualsearch`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                    url,
+                },
+            }),
+
+            transformResponse: (response: { result: RawSearchResult[] }) =>
+                camelize(response.result),
+        }),
+
         addDownload: build.mutation<void, AddDownloadParams>({
             query: ({ issueId, volumeId, result, forceMatch = false }) => ({
                 method: 'POST',
@@ -118,8 +135,12 @@ const extendedApi = baseApi.injectEndpoints({
     }),
 });
 
-export const { useAddDownloadMutation, useExecuteCommandMutation, useManualSearchQuery } =
-    extendedApi;
+export const {
+    useAddDownloadMutation,
+    useExecuteCommandMutation,
+    useLibgenFileSearchMutation,
+    useManualSearchQuery,
+} = extendedApi;
 
 export const useMassEditMutation = () => {
     const [trigger, state] = extendedApi.useMassEditMutation();

@@ -37,6 +37,7 @@ export interface IssueDetailsModalContentProps {
     showOpenVolumeButton?: boolean;
     selectedTab?: IssueDetailsTab;
     startInteractiveSearch?: boolean;
+    startLibgenFileSearch?: boolean;
     onTabChange(isSearch: boolean): void;
     onModalClose(): void;
 }
@@ -51,7 +52,8 @@ function IssueDetailsModalContent({
     issueTitle,
     isSaving = false,
     showOpenVolumeButton = false,
-    startInteractiveSearch = false,
+    startInteractiveSearch: initialStartInteractiveSearch = false,
+    startLibgenFileSearch: initialStartLibgenFileSearch = false,
     selectedTab = 'details',
     onTabChange,
     onModalClose,
@@ -79,11 +81,20 @@ function IssueDetailsModalContent({
     const { title: volumeTitle, id: titleSlug, monitored: volumeMonitored } = volume!;
     const { monitored } = issue!;
 
+    const [startInteractiveSearch, setStartInteractiveSearch] = useState(
+        initialStartInteractiveSearch,
+    );
+    const [startLibgenFileSearch, setStartLibgenFileSearch] = useState(
+        initialStartLibgenFileSearch,
+    );
+
     const handleTabSelect = useCallback(
         (selectedIndex: number) => {
             const tab = TABS[selectedIndex];
             onTabChange(tab === 'search');
             setCurrentlySelectedTab(tab);
+            setStartInteractiveSearch(false);
+            setStartLibgenFileSearch(false);
         },
         [onTabChange],
     );
@@ -146,6 +157,7 @@ function IssueDetailsModalContent({
                             volumeId={volumeId}
                             issueId={issueId}
                             startInteractiveSearch={startInteractiveSearch}
+                            startLibgenFileSearch={startLibgenFileSearch}
                             onModalClose={onModalClose}
                         />
                     </TabPanel>

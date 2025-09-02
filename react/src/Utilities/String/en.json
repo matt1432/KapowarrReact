@@ -1046,6 +1046,8 @@
     "LastWriteTime": "Last Write Time",
     "Level": "Level",
     "LiberaWebchat": "Libera Webchat",
+    "LibgenFileSearch": "Libgen File Search",
+    "LibgenFileSearchHelpText": "https://libgen.??/file.php?id=...",
     "LibgenURL": "Libgen URL",
     "LibgenURLHelpText": "URL that corresponds to this volume on libgen",
     "LibraryImport": "Library Import",

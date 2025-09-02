@@ -16,7 +16,7 @@ import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
 
 // Specific Components
-import InteractiveSearch from 'InteractiveSearch';
+import InteractiveSearch, { LibgenFileSearch } from 'InteractiveSearch';
 
 // CSS
 import styles from './index.module.css';
@@ -26,22 +26,23 @@ interface IssueSearchProps {
     issueId: number;
     volumeId: number;
     startInteractiveSearch: boolean;
+    startLibgenFileSearch: boolean;
     onModalClose: () => void;
 }
 
 // IMPLEMENTATIONS
 
-// TODO: add libgen file search
-
 export default function IssueSearch({
     issueId,
     volumeId,
     startInteractiveSearch,
+    startLibgenFileSearch,
     onModalClose,
 }: IssueSearchProps) {
     const [executeCommand] = useExecuteCommandMutation();
 
     const [isInteractiveSearchOpen, setIsInteractiveSearchOpen] = useState(startInteractiveSearch);
+    const [isLibgenFileSearchOpen, setIsLibgenFileSearchOpen] = useState(startLibgenFileSearch);
 
     const handleQuickSearchPress = useCallback(() => {
         executeCommand({
@@ -57,8 +58,16 @@ export default function IssueSearch({
         setIsInteractiveSearchOpen(true);
     }, []);
 
-    if (isInteractiveSearchOpen) {
+    const handleLibgenFileSearchPress = useCallback(() => {
+        setIsLibgenFileSearchOpen(true);
+    }, []);
+
+    if (isInteractiveSearchOpen && startInteractiveSearch) {
         return <InteractiveSearch searchPayload={{ issueId }} />;
+    }
+
+    if (isLibgenFileSearchOpen && startLibgenFileSearch) {
+        return <LibgenFileSearch searchPayload={{ issueId }} />;
     }
 
     return (
@@ -85,6 +94,19 @@ export default function IssueSearch({
                     <Icon className={styles.buttonIcon} name={icons.INTERACTIVE} />
 
                     {translate('InteractiveSearch')}
+                </Button>
+            </div>
+
+            <div className={styles.buttonContainer}>
+                <Button
+                    className={styles.button}
+                    kind={kinds.PRIMARY}
+                    size={sizes.LARGE}
+                    onPress={handleLibgenFileSearchPress}
+                >
+                    <Icon className={styles.buttonIcon} name={icons.LIBGEN_FILE_SEARCH} />
+
+                    {translate('LibgenFileSearch')}
                 </Button>
             </div>
         </div>

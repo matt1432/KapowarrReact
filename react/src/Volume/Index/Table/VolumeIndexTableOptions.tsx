@@ -43,19 +43,17 @@ function VolumeIndexTableOptions({ onTableOptionChange }: VolumeIndexTableOption
     );
 
     return (
-        <>
-            <FormGroup>
-                <FormLabel>{translate('ShowSearch')}</FormLabel>
+        <FormGroup>
+            <FormLabel>{translate('ShowSearch')}</FormLabel>
 
-                <FormInputGroup
-                    type={inputTypes.CHECK}
-                    name="showSearchAction"
-                    value={showSearchAction}
-                    helpText={translate('ShowSearchHelpText')}
-                    onChange={onTableOptionChangeWrapper}
-                />
-            </FormGroup>
-        </>
+            <FormInputGroup
+                type={inputTypes.CHECK}
+                name="showSearchAction"
+                value={showSearchAction}
+                helpText={translate('ShowSearchHelpText')}
+                onChange={onTableOptionChangeWrapper}
+            />
+        </FormGroup>
     );
 }
 
