@@ -140,8 +140,9 @@ function EditVolumeModalContent({
             monitored,
             specialVersion,
             volumeFolder,
+            libgenUrl,
         });
-    }, [monitored, rootFolderId, specialVersion, updateVolume, volumeFolder, volumeId]);
+    }, [libgenUrl, monitored, rootFolderId, specialVersion, updateVolume, volumeFolder, volumeId]);
 
     const handleSavePress = useCallback(() => {
         if (isPathChanging && !isConfirmMoveModalOpen) {
