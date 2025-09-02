@@ -1,5 +1,3 @@
-// TODO:
-// FIXME: add the Kapowarr info
 // IMPORTS
 
 // Misc
@@ -15,13 +13,33 @@ function SpecialVersionPopoverContent() {
     return (
         <DescriptionList>
             <DescriptionListItem
-                title={translate('Daily')}
-                data={translate('DailyIssueTypeDescription')}
+                title={translate('SvTradePaperback')}
+                data={translate('SvTradePaperbackDescription')}
+            />
+            <DescriptionListItem
+                title={translate('SvOneShot')}
+                data={translate('SvOneShotDescription')}
+            />
+            <DescriptionListItem
+                title={translate('SvHardCover')}
+                data={translate('SvHardCoverDescription')}
+            />
+            <DescriptionListItem
+                title={translate('SvVolAsIssue')}
+                data={translate('SvVolAsIssueDescription')}
+            />
+            <DescriptionListItem
+                title={translate('SvCover')}
+                data={translate('SvCoverDescription')}
+            />
+            <DescriptionListItem
+                title={translate('SvMetadata')}
+                data={translate('SvMetadataDescription')}
             />
 
             <DescriptionListItem
-                title={translate('Standard')}
-                data={translate('StandardIssueTypeDescription')}
+                title={translate('SvStandard')}
+                data={translate('SvStandardDescription')}
             />
         </DescriptionList>
     );
