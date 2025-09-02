@@ -1,3 +1,5 @@
+import translate from 'Utilities/String/translate';
+
 import type { ApiError, NonApiError, FetchError } from 'typings/Api';
 
 export function isFetchError(error: unknown): error is FetchError {
@@ -14,8 +16,7 @@ export function isNonApiError(error: unknown): error is NonApiError {
 
 export function getErrorMessage(error: unknown) {
     if (isApiError(error)) {
-        // TODO: make a mapping of error to nice message
-        return error.data.error;
+        return translate(error.data.error);
     }
     if (isNonApiError(error)) {
         return error.error;
