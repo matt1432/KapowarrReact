@@ -64,9 +64,12 @@ const Scroller = forwardRef(
 
         useEffect(
             () => {
-                if (initialScrollTop) {
-                    internalRef.current!.scrollTop = initialScrollTop;
-                }
+                // FIXME: why is a timeout necessary?
+                setTimeout(() => {
+                    if (initialScrollTop) {
+                        internalRef.current!.scrollTop = initialScrollTop;
+                    }
+                });
             },
             // eslint-disable-next-line react-hooks/exhaustive-deps
             [],
