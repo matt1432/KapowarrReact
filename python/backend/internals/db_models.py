@@ -2,8 +2,9 @@
 Interacting with the database
 """
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping, Sequence
 from os import stat
+from typing import Any
 
 from backend.base.custom_exceptions import FileNotFound
 from backend.base.definitions import Download, FileData, GeneralFileData
@@ -197,6 +198,37 @@ class FilesDB:
             "UPDATE files SET filepath = ? WHERE filepath = ?;",
             ((new, old) for old, new in zip(old_filepaths, new_filepaths)),
         )
+        return
+
+    @staticmethod
+    def update(file_id: int, data: Mapping[str, Any]) -> None:
+        """Change aspects of a file, in a `dict.update()` type of way.
+
+        Args:
+            data (Mapping[str, Any]): The keys and their new values.
+
+        Raises:
+            KeyError: Key is not allowed.
+            InvalidKeyValue: Value of key is not allowed.
+        """
+        allowed_keys: Sequence[str] = (
+            "releaser",
+            "scan_type",
+            "resolution",
+            "dpi",
+        )
+
+        for key, value in data.items():
+            if key not in allowed_keys:
+                raise KeyError
+
+        cursor = get_db()
+        for key, value in data.items():
+            cursor.execute(
+                f"UPDATE files SET {key} = ? WHERE id = ?;", (value, file_id)
+            )
+
+        LOGGER.info(f"For file {file_id}, changed: {data}")
         return
 
     @staticmethod

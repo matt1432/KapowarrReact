@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 
 // Redux
-import { useToggleIssueMonitoredMutation } from 'Store/Api/Issue';
+import { useToggleIssueMonitoredMutation } from 'Store/Api/Issues';
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc

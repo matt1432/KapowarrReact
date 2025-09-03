@@ -7,9 +7,13 @@
 .actions {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
-    width: 55px;
+    width: 95px;
 }
 
 .pages {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.mediaInfoAnchor {
+    margin-right: 4.3px;
 }

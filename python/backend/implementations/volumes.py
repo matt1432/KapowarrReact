@@ -199,11 +199,23 @@ class Issue:
             KeyError: Key is not allowed.
             InvalidKeyValue: Value of key is not allowed.
         """
+        allowed_keys: Sequence[str] = (
+            "monitored",
+            "title",
+            "date",
+            "description",
+        )
+
         formatted_data = {}
+
         for key, value in data.items():
-            if key != "monitored":
+            if key not in allowed_keys:
                 raise KeyError
-            formatted_data[key] = self.__format_value(key, value)
+            if key in allowed_keys:
+                if key == "monitored":
+                    formatted_data[key] = self.__format_value(key, value)
+                else:
+                    formatted_data[key] = value
 
         cursor = get_db()
         for key, value in formatted_data.items():

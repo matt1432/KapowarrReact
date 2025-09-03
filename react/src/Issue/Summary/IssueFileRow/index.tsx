@@ -30,8 +30,10 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { IssueSummaryColumnName } from 'Issue/Issue';
+import EditFileModal from 'Issue/Edit/EditFileModal';
 
 interface IssueFileRowProps {
+    id: number;
     path: string | undefined;
     size: number | undefined;
     releaser: string | undefined;
@@ -40,18 +42,23 @@ interface IssueFileRowProps {
     dpi: string | undefined;
     columns: Column<IssueSummaryColumnName>[];
     onDeleteIssueFile(): void;
+    refetchFiles(): void;
 }
 
 // IMPLEMENTATIONS
 
 export default function IssueFileRow({
+    id,
     path,
     size = 0,
     columns,
     onDeleteIssueFile,
+    refetchFiles,
     ...mediaInfo
 }: IssueFileRowProps) {
     const [isRemoveIssueFileModalOpen, setRemoveIssueFileModalOpen, setRemoveIssueFileModalClosed] =
+        useModalOpenState(false);
+    const [isEditFileModalOpen, setEditFileModalOpen, setEditFileModalClosed] =
         useModalOpenState(false);
 
     const handleRemoveIssueFilePress = useCallback(() => {
@@ -78,14 +85,25 @@ export default function IssueFileRow({
                 if (name === 'actions') {
                     return (
                         <TableRowCell key={name} className={styles.actions}>
-                            {Object.values(mediaInfo).some((i) => i !== undefined) ? (
+                            {Object.values(mediaInfo).some((i) => i) ? (
                                 <Popover
-                                    anchor={<Icon name={icons.MEDIA_INFO} />}
+                                    anchor={
+                                        <Icon
+                                            className={styles.mediaInfoAnchor}
+                                            name={icons.MEDIA_INFO}
+                                        />
+                                    }
                                     title={translate('MediaInfo')}
                                     body={<MediaInfo {...mediaInfo} />}
                                     position={tooltipPositions.LEFT}
                                 />
                             ) : null}
+
+                            <IconButton
+                                title={translate('EditIssue')}
+                                name={icons.EDIT}
+                                onPress={setEditFileModalOpen}
+                            />
 
                             <IconButton
                                 title={translate('DeleteIssueFromDisk')}
@@ -107,6 +125,14 @@ export default function IssueFileRow({
                 confirmLabel={translate('Delete')}
                 onConfirm={handleRemoveIssueFilePress}
                 onCancel={setRemoveIssueFileModalClosed}
+            />
+
+            <EditFileModal
+                fileId={id}
+                isOpen={isEditFileModalOpen}
+                refetchFiles={refetchFiles}
+                onDeleteFilePress={setRemoveIssueFileModalOpen}
+                onModalClose={setEditFileModalClosed}
             />
         </TableRow>
     );

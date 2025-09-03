@@ -5,7 +5,7 @@ import { useCallback, useEffect } from 'react';
 
 // Redux
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
-import { useDeleteFileMutation } from 'Store/Api/Issue';
+import { useDeleteFileMutation } from 'Store/Api/Files';
 
 // Misc
 import translate from 'Utilities/String/translate';
@@ -56,8 +56,6 @@ const COLUMNS: Column<IssueSummaryColumnName>[] = [
     },
 ];
 
-// TODO: allow editing media info
-
 export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
     const {
         description,
@@ -103,6 +101,7 @@ export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
                         {files.map(
                             ({ id, filepath, size, releaser, scanType, resolution, dpi }) => (
                                 <IssueFileRow
+                                    id={id}
                                     path={filepath}
                                     size={size}
                                     releaser={releaser}
@@ -111,6 +110,7 @@ export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
                                     dpi={dpi}
                                     columns={COLUMNS}
                                     onDeleteIssueFile={() => handleDeleteIssueFile(id)}
+                                    refetchFiles={() => refetch()}
                                 />
                             ),
                         )}

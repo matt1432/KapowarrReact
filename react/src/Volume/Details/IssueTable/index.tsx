@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { setIssuesSort, setIssuesTableOption } from 'Store/Slices/IssueTable';
 
-import { useToggleIssueMonitoredMutation } from 'Store/Api/Issue';
+import { useToggleIssueMonitoredMutation } from 'Store/Api/Issues';
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc

@@ -1259,13 +1259,18 @@ def api_mass_editor() -> ApiReturn:
 # =====================
 # Files
 # =====================
-@api.route("/files/<int:f_id>", methods=["GET", "DELETE"])
+@api.route("/files/<int:f_id>", methods=["GET", "PUT", "DELETE"])
 @error_handler
 @auth
 def api_files(f_id: int) -> ApiReturn:
     if request.method == "GET":
         result = FilesDB.fetch(file_id=f_id)[0]
         return return_api(result)
+
+    elif request.method == "PUT":
+        edit_info: dict[str, Any] = request.get_json()
+        FilesDB.update(file_id=f_id, data={k: v for k, v in edit_info.items()})
+        return return_api({})
 
     else:  # if request.method == "DELETE":
         delete_issue_file(f_id)
