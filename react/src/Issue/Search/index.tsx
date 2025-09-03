@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 // Redux
 import { useExecuteCommandMutation } from 'Store/Api/Command';
@@ -42,7 +42,14 @@ export default function IssueSearch({
     const [executeCommand] = useExecuteCommandMutation();
 
     const [isInteractiveSearchOpen, setIsInteractiveSearchOpen] = useState(startInteractiveSearch);
+    useEffect(() => {
+        setIsInteractiveSearchOpen(startInteractiveSearch);
+    }, [startInteractiveSearch]);
+
     const [isLibgenFileSearchOpen, setIsLibgenFileSearchOpen] = useState(startLibgenFileSearch);
+    useEffect(() => {
+        setIsLibgenFileSearchOpen(startLibgenFileSearch);
+    }, [startLibgenFileSearch]);
 
     const handleQuickSearchPress = useCallback(() => {
         executeCommand({
@@ -62,11 +69,11 @@ export default function IssueSearch({
         setIsLibgenFileSearchOpen(true);
     }, []);
 
-    if (isInteractiveSearchOpen && startInteractiveSearch) {
+    if (isInteractiveSearchOpen) {
         return <InteractiveSearch searchPayload={{ issueId }} />;
     }
 
-    if (isLibgenFileSearchOpen && startLibgenFileSearch) {
+    if (isLibgenFileSearchOpen) {
         return <LibgenFileSearch searchPayload={{ issueId }} />;
     }
 

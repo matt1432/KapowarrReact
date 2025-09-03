@@ -53,7 +53,7 @@
         }));
 
     pyEnv = pkgs:
-      pkgs.python3.withPackages (_: pkgs.kapowarr.dependencies ++ [pkgs.kapowarr]);
+      pkgs.python3.withPackages (_: pkgs.kapowarr.dependencies);
   in {
     overlays.default = final: _prev: let
       pyPkgs = final.python3Packages.override (o: {

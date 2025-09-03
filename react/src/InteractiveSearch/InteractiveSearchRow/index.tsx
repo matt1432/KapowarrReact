@@ -7,17 +7,18 @@ import { useCallback, useState } from 'react';
 import { useAddDownloadMutation } from 'Store/Api/Command';
 
 // Misc
-import { icons, kinds } from 'Helpers/Props';
+import { icons, kinds, tooltipPositions } from 'Helpers/Props';
 import { getErrorMessage } from 'Utilities/Object/error';
 
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 
 // General Components
+import ConfirmModal from 'Components/Modal/ConfirmModal';
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
-import ConfirmModal from 'Components/Modal/ConfirmModal';
+import Popover from 'Components/Tooltip/Popover';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
 
@@ -127,7 +128,10 @@ function InteractiveSearchRow({ searchPayload, result }: InteractiveSearchRowPro
     return (
         <TableRow>
             <TableRowCell className={styles.match}>
-                <Icon name={result.match ? 'check' : 'xmark'} />
+                <Icon
+                    name={result.match ? icons.CHECK : icons.CHECK_SQUARE}
+                    className={styles.matchIcon}
+                />
             </TableRowCell>
 
             <TableRowCell className={styles.issueNumber}>{result.issueNumber}</TableRowCell>
@@ -148,15 +152,14 @@ function InteractiveSearchRow({ searchPayload, result }: InteractiveSearchRowPro
 
             <TableRowCell className={styles.source}>{result.source}</TableRowCell>
 
-            {/* TODO:?
             <TableRowCell className={styles.rejected}>
-                {rejections.length ? (
+                {result.matchRejections.length ? (
                     <Popover
                         anchor={<Icon name={icons.DANGER} kind={kinds.DANGER} />}
                         title={translate('ReleaseRejected')}
                         body={
                             <ul>
-                                {rejections.map((rejection, index) => {
+                                {result.matchRejections.map((rejection, index) => {
                                     return <li key={index}>{rejection}</li>;
                                 })}
                             </ul>
@@ -165,7 +168,6 @@ function InteractiveSearchRow({ searchPayload, result }: InteractiveSearchRowPro
                     />
                 ) : null}
             </TableRowCell>
-            */}
 
             <TableRowCell className={styles.download}>
                 <SpinnerIconButton

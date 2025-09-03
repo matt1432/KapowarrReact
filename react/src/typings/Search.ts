@@ -1,5 +1,7 @@
 import type { CamelCasedProperties } from 'type-fest';
 
+import type { MatchRejection } from 'Helpers/Props/matchRejections';
+
 export interface RawSearchResult {
     series: string;
     year: number | null;
@@ -10,7 +12,7 @@ export interface RawSearchResult {
     annual: boolean;
 
     match: boolean;
-    match_issue: string | null;
+    match_rejections: MatchRejection[];
 
     link: string;
     display_title: string;
@@ -40,7 +42,8 @@ export type InteractiveSearchSort =
     | 'scanType'
     | 'resolution'
     | 'dpi'
-    | 'source';
+    | 'source'
+    | 'matchRejections';
 
 interface IssueSearchPayload {
     issueId: number;

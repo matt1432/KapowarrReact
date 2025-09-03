@@ -1,6 +1,7 @@
 // IMPORTS
 
 // React
+import { Form } from 'react-router';
 import { useCallback, useState } from 'react';
 
 // Redux
@@ -10,7 +11,7 @@ import { setInteractiveSearchSort } from 'Store/Slices/SearchResults';
 import { useLibgenFileSearchMutation, useManualSearchQuery } from 'Store/Api/Command';
 
 // Misc
-import { inputTypes, kinds } from 'Helpers/Props';
+import { icons, inputTypes, kinds, sortDirections } from 'Helpers/Props';
 import { getErrorMessage } from 'Utilities/Object/error';
 
 import translate from 'Utilities/String/translate';
@@ -20,6 +21,7 @@ import Alert from 'Components/Alert';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
+import Icon from 'Components/Icon';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import SortedTable from 'Components/Table/SortedTable';
 
@@ -37,7 +39,6 @@ import type { InteractiveSearchPayload, InteractiveSearchSort, SearchResult } fr
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { AnyError } from 'typings/Api';
 import type { InputChanged } from 'typings/Inputs';
-import { Form } from 'react-router';
 
 export interface InteractiveSearchProps {
     searchPayload: InteractiveSearchPayload;
@@ -115,17 +116,13 @@ const columns: Column<InteractiveSearchSort>[] = [
         isSortable: true,
         isVisible: true,
     },
-    // TODO: link with blocked releases
-    /*{
-        name: 'rejections',
-        label: React.createElement(Icon, {
-            name: icons.DANGER,
-            title: () => translate('Rejections'),
-        }),
+    {
+        name: 'matchRejections',
+        label: <Icon name={icons.DANGER} title={() => translate('Rejections')} />,
         isSortable: true,
         fixedSortDirection: sortDirections.ASCENDING,
         isVisible: true,
-    },*/
+    },
 ];
 
 function InternalSearch({
@@ -191,6 +188,8 @@ function InternalSearch({
                             (Array.isArray(b.issueNumber)
                                 ? b.issueNumber[0]
                                 : (b.issueNumber ?? 0)),
+                        matchRejections: (a, b) =>
+                            a.matchRejections.length - b.matchRejections.length,
                     }}
                     sortKey={sortKey}
                     secondarySortKey="issueNumber"

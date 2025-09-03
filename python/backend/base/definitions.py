@@ -231,6 +231,22 @@ class BlocklistReason(BaseEnum):
     ADDED_BY_USER = "Added by user"
 
 
+class MatchRejections(BaseEnum):
+    BLOCKLISTED = "Link is blocklisted"
+
+    ANNUAL = "Annual conflict"
+
+    TITLE = "Titles don't match"
+
+    VOLUME_NUMBER = "Volume numbers don't match"
+
+    ISSUE_NUMBER = "Issue numbers don't match"
+
+    SPECIAL_VERSION = "Special version conflict"
+
+    YEAR = "Year doesn't match"
+
+
 class SpecialVersion(BaseEnum):
     TPB = "tpb"
 
@@ -463,7 +479,7 @@ class SearchResultData(FilenameData):
 
 class SearchResultMatchData(TypedDict):
     match: bool
-    match_issue: str | None
+    match_rejections: list[MatchRejections]
 
 
 class MatchedSearchResultData(SearchResultMatchData, SearchResultData, total=False):

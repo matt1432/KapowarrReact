@@ -1,9 +1,18 @@
 .match {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    width: 85px;
+}
+
+.matchIcon {
+    margin-left: 12px;
+    margin-bottom: 1px;
 }
 
 .issueNumber {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 55px;
 }
 
 .displayTitle {
@@ -20,26 +29,38 @@
 
 .pages {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 85px;
 }
 
 .releaser {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 155px;
 }
 
 .scanType {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 115px;
 }
 
 .resolution {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 115px;
 }
 
 .dpi {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 75px;
 }
 
 .source {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 90px;
 }
 
 .download {
@@ -51,7 +72,7 @@
 .manualDownloadContent {
     position: relative;
     display: inline-block;
-    margin: 0 2px;
+    margin: 0 2px 2px 2px;
     width: 22px;
     height: 20.39px;
     vertical-align: middle;
@@ -77,5 +98,7 @@
 }
 
 .rejected {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
     width: 50px;
 }

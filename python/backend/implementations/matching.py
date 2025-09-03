@@ -9,7 +9,7 @@ from collections.abc import Mapping
 from re import compile
 from typing import TYPE_CHECKING
 
-from backend.base.definitions import IssueData, SpecialVersion
+from backend.base.definitions import IssueData, MatchRejections, SpecialVersion
 from backend.base.helpers import create_range
 from backend.implementations.blocklist import blocklist_contains
 
@@ -357,28 +357,29 @@ def check_search_result_match(
         SearchResultMatchData: Whether the search result passes the filter.
     """
     annual = "annual" in volume_data.title.lower()
+    rejections: list[MatchRejections] = []
 
     if blocklist_contains(result["link"]):
-        return {"match": False, "match_issue": "Link is blocklisted"}
+        rejections.append(MatchRejections.BLOCKLISTED)
 
     if result["annual"] != annual:
-        return {"match": False, "match_issue": "Annual conflict"}
+        rejections.append(MatchRejections.ANNUAL)
 
     if not (
         _match_title(volume_data.title, result["series"])
         or _match_title(volume_data.alt_title or "", result["series"])
     ):
-        return {"match": False, "match_issue": "Titles don't match"}
+        rejections.append(MatchRejections.TITLE)
 
     if not _match_volume_number(
         volume_data, volume_issues, result["volume_number"], conservative=True
     ):
-        return {"match": False, "match_issue": "Volume numbers don't match"}
+        rejections.append(MatchRejections.VOLUME_NUMBER)
 
     if not _match_special_version(
         volume_data.special_version, result["special_version"], result["issue_number"]
     ):
-        return {"match": False, "match_issue": "Special version conflict"}
+        rejections.append(MatchRejections.SPECIAL_VERSION)
 
     if result["issue_number"] is not None:
         issue_number = result["issue_number"]
@@ -400,12 +401,12 @@ def check_search_result_match(
             # Volume search
             if not all(i in number_to_year for i in create_range(issue_number)):
                 # One of the extracted issue numbers is not found in volume
-                return {"match": False, "match_issue": "Issue numbers don't match"}
+                rejections.append(MatchRejections.ISSUE_NUMBER)
 
         elif issue_number != calculated_issue_number:
             # Issue search, but
             # extracted issue number(s) don't match number of searched issue
-            return {"match": False, "match_issue": "Issue numbers don't match"}
+            rejections.append(MatchRejections.ISSUE_NUMBER)
 
     if not _match_year(
         volume_data.year,
@@ -413,6 +414,6 @@ def check_search_result_match(
         number_to_year.get(create_range(issue_number)[-1]),
         conservative=True,
     ):
-        return {"match": False, "match_issue": "Year doesn't match"}
+        rejections.append(MatchRejections.YEAR)
 
-    return {"match": True, "match_issue": None}
+    return {"match": len(rejections) == 0, "match_rejections": rejections}
