@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 
 // Redux
-import { useToggleIssueMonitoredMutation } from 'Store/Api/Issues';
+import { useUpdateIssueMutation } from 'Store/Api/Issues';
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc
@@ -68,13 +68,13 @@ function IssueDetailsModalContent({
         },
     );
 
-    const [toggleIssueMonitored, toggleIssueMonitoredState] = useToggleIssueMonitoredMutation();
+    const [updateIssue, { isSuccess }] = useUpdateIssueMutation();
 
     useEffect(() => {
-        if (toggleIssueMonitoredState.isSuccess) {
+        if (isSuccess) {
             refetch();
         }
-    }, [refetch, toggleIssueMonitoredState]);
+    }, [refetch, isSuccess]);
 
     const [currentlySelectedTab, setCurrentlySelectedTab] = useState(selectedTab);
 
@@ -101,12 +101,12 @@ function IssueDetailsModalContent({
 
     const handleMonitorIssuePress = useCallback(
         (monitored: boolean) => {
-            toggleIssueMonitored({
+            updateIssue({
                 issueId,
                 monitored,
             });
         },
-        [issueId, toggleIssueMonitored],
+        [issueId, updateIssue],
     );
 
     const volumeLink = `/volumes/${titleSlug}`;

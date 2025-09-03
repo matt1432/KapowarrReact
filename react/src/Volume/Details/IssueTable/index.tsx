@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { setIssuesSort, setIssuesTableOption } from 'Store/Slices/IssueTable';
 
-import { useToggleIssueMonitoredMutation } from 'Store/Api/Issues';
+import { useUpdateIssueMutation } from 'Store/Api/Issues';
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc
@@ -144,13 +144,13 @@ function IssueTable({ volumeId }: IssueTableProps) {
     const { issues, volumeMonitored, refetch } = useIssuesSelector(volumeId);
     const { sortKey, sortDirection } = useRootSelector((state) => state.issueTable);
 
-    const [toggleIssueMonitored, toggleIssueMonitoredState] = useToggleIssueMonitoredMutation();
+    const [updateIssue, { isSuccess, isLoading }] = useUpdateIssueMutation();
 
     useEffect(() => {
-        if (toggleIssueMonitoredState.isSuccess) {
+        if (isSuccess) {
             refetch();
         }
-    }, [refetch, toggleIssueMonitoredState]);
+    }, [refetch, isSuccess]);
 
     const lastToggledIssue = useRef<number | null>(null);
 
@@ -170,13 +170,13 @@ function IssueTable({ volumeId }: IssueTableProps) {
             lastToggledIssue.current = issueId;
 
             issueIds.forEach((issueId) => {
-                toggleIssueMonitored({
+                updateIssue({
                     issueId,
                     monitored,
                 });
             });
         },
-        [issues, toggleIssueMonitored],
+        [issues, updateIssue],
     );
 
     const handleSortPress = useCallback(
@@ -213,7 +213,7 @@ function IssueTable({ volumeId }: IssueTableProps) {
                     <IssueRow
                         key={issue.id}
                         columns={columns}
-                        isSaving={toggleIssueMonitoredState.isLoading}
+                        isSaving={isLoading}
                         onMonitorIssuePress={handleMonitorIssuePress}
                         volumeMonitored={volumeMonitored}
                         {...issue}

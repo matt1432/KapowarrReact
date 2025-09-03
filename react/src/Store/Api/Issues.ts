@@ -39,17 +39,6 @@ const extendedApi = baseApi.injectEndpoints({
         }),
 
         // PUT
-        toggleIssueMonitored: build.mutation<void, ToggleIssueParams>({
-            query: ({ issueId, ...body }) => ({
-                method: 'PUT',
-                url: `issues/${issueId}`,
-                params: {
-                    apiKey: window.Kapowarr.apiKey,
-                },
-                body: snakeify(body),
-            }),
-        }),
-
         updateIssue: build.mutation<void, UpdateIssueParams>({
             query: ({ issueId, ...body }) => ({
                 method: 'PUT',
@@ -63,5 +52,4 @@ const extendedApi = baseApi.injectEndpoints({
     }),
 });
 
-export const { useGetIssueQuery, useToggleIssueMonitoredMutation, useUpdateIssueMutation } =
-    extendedApi;
+export const { useGetIssueQuery, useUpdateIssueMutation } = extendedApi;
