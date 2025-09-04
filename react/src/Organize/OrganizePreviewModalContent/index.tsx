@@ -1,11 +1,11 @@
 // IMPORTS
 
 // React
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 // Redux
 import { useGetSettingsQuery } from 'Store/Api/Settings';
-import { usePreviewRenameVolumeQuery } from 'Store/Api/Volumes';
+import { usePreviewRenameVolumeQuery, useSearchVolumeQuery } from 'Store/Api/Volumes';
 import { useExecuteCommandMutation } from 'Store/Api/Command';
 
 // Misc
@@ -15,7 +15,6 @@ import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 
 import useSelectState from 'Helpers/Hooks/useSelectState';
-import useVolume from 'Volume/useVolume';
 
 // General Components
 import Alert from 'Components/Alert';
@@ -61,6 +60,17 @@ export default function OrganizePreviewModalContent({
 }: OrganizePreviewModalContentProps) {
     const [executeCommand] = useExecuteCommandMutation();
 
+    const { folder, specialVersion } = useSearchVolumeQuery(
+        { volumeId },
+        {
+            refetchOnMountOrArgChange: true,
+            selectFromResult: ({ data }) => ({
+                folder: data?.folder,
+                specialVersion: data?.specialVersion,
+            }),
+        },
+    );
+
     const { items, isPreviewFetching, isPreviewPopulated, previewError } =
         usePreviewRenameVolumeQuery(
             { volumeId },
@@ -78,6 +88,7 @@ export default function OrganizePreviewModalContent({
     const { isNamingFetching, isNamingPopulated, namingError, naming } = useGetSettingsQuery(
         undefined,
         {
+            refetchOnMountOrArgChange: true,
             selectFromResult: ({ data, error, isFetching, isUninitialized }) => ({
                 isNamingFetching: isFetching,
                 isNamingPopulated: !isUninitialized,
@@ -93,17 +104,19 @@ export default function OrganizePreviewModalContent({
         },
     );
 
-    const { volume } = useVolume(volumeId);
     const [{ allSelected, allUnselected, selectedState }, setSelectState] = useSelectState();
 
     const isFetching = isPreviewFetching || isNamingFetching;
     const isPopulated = isPreviewPopulated && isNamingPopulated;
     const error = previewError || namingError;
 
-    const issueFormat =
-        naming[`${volume?.specialVersion}IssueFormat`] ??
-        naming[`naming${specialVersions.NORMAL}`] ??
-        '';
+    const issueFormat = useMemo(
+        () =>
+            naming[`${specialVersion}IssueFormat`] ??
+            naming[`naming${specialVersions.NORMAL}`] ??
+            '',
+        [naming, specialVersion],
+    );
 
     const selectAllValue = getValue(allSelected, allUnselected);
 
@@ -141,7 +154,7 @@ export default function OrganizePreviewModalContent({
         onModalClose();
     }, [executeCommand, items, onModalClose, selectedState, volumeId]);
 
-    if (!volume) {
+    if (!folder) {
         return null;
     }
 
@@ -168,7 +181,7 @@ export default function OrganizePreviewModalContent({
                             <div>
                                 <InlineMarkdown
                                     data={translate('OrganizeRelativePaths', {
-                                        path: volume.folder,
+                                        path: folder,
                                     })}
                                     blockClassName={styles.path}
                                 />
@@ -188,11 +201,8 @@ export default function OrganizePreviewModalContent({
                                     <OrganizePreviewRow
                                         key={item.id}
                                         id={item.id}
-                                        existingPath={item.existingPath.replace(
-                                            volume.folder + '/',
-                                            '',
-                                        )}
-                                        newPath={item.newPath.replace(volume.folder + '/', '')}
+                                        existingPath={item.existingPath.replace(folder + '/', '')}
+                                        newPath={item.newPath.replace(folder + '/', '')}
                                         isSelected={selectedState[item.id]}
                                         onSelectedChange={handleSelectedChange}
                                     />

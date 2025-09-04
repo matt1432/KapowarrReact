@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 
 // Redux
 import { useGetSettingsQuery } from 'Store/Api/Settings';
-import { usePreviewConvertVolumeQuery } from 'Store/Api/Volumes';
+import { usePreviewConvertVolumeQuery, useSearchVolumeQuery } from 'Store/Api/Volumes';
 import { useExecuteCommandMutation } from 'Store/Api/Command';
 
 // Misc
@@ -15,7 +15,6 @@ import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 
 import useSelectState from 'Helpers/Hooks/useSelectState';
-import useVolume from 'Volume/useVolume';
 
 // General Components
 import Alert from 'Components/Alert';
@@ -61,6 +60,16 @@ export default function ConvertPreviewModalContent({
 }: ConvertPreviewModalContentProps) {
     const [executeCommand] = useExecuteCommandMutation();
 
+    const { folder } = useSearchVolumeQuery(
+        { volumeId },
+        {
+            refetchOnMountOrArgChange: true,
+            selectFromResult: ({ data }) => ({
+                folder: data?.folder,
+            }),
+        },
+    );
+
     const { items, isPreviewFetching, isPreviewPopulated, previewError } =
         usePreviewConvertVolumeQuery(
             { volumeId },
@@ -77,6 +86,7 @@ export default function ConvertPreviewModalContent({
 
     const { isFormatFetching, isFormatPopulated, formatError, format, convertFiles } =
         useGetSettingsQuery(undefined, {
+            refetchOnMountOrArgChange: true,
             selectFromResult: ({ data, error, isFetching, isUninitialized }) => ({
                 isFormatFetching: isFetching,
                 isFormatPopulated: !isUninitialized,
@@ -86,7 +96,6 @@ export default function ConvertPreviewModalContent({
             }),
         });
 
-    const { volume } = useVolume(volumeId);
     const [{ allSelected, allUnselected, selectedState }, setSelectState] = useSelectState();
 
     const isFetching = isPreviewFetching || isFormatFetching;
@@ -129,7 +138,7 @@ export default function ConvertPreviewModalContent({
         onModalClose();
     }, [executeCommand, items, onModalClose, selectedState, volumeId]);
 
-    if (!volume) {
+    if (!folder) {
         return null;
     }
 
@@ -158,7 +167,7 @@ export default function ConvertPreviewModalContent({
                             <div>
                                 <InlineMarkdown
                                     data={translate('ConvertRelativePaths', {
-                                        path: volume.folder,
+                                        path: folder,
                                     })}
                                     blockClassName={styles.path}
                                 />
@@ -180,11 +189,8 @@ export default function ConvertPreviewModalContent({
                                     <ConvertPreviewRow
                                         key={item.id}
                                         id={item.id}
-                                        existingPath={item.existingPath.replace(
-                                            volume.folder + '/',
-                                            '',
-                                        )}
-                                        newPath={item.newPath.replace(volume.folder + '/', '')}
+                                        existingPath={item.existingPath.replace(folder + '/', '')}
+                                        newPath={item.newPath.replace(folder + '/', '')}
                                         isSelected={selectedState[item.id]}
                                         onSelectedChange={handleSelectedChange}
                                     />

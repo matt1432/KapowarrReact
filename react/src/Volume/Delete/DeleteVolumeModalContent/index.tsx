@@ -4,10 +4,13 @@
 import { useCallback, useState } from 'react';
 
 // Redux
-import { useDeleteVolumeMutation, useGetVolumesQuery } from 'Store/Api/Volumes';
+import {
+    useDeleteVolumeMutation,
+    useGetVolumesQuery,
+    useSearchVolumeQuery,
+} from 'Store/Api/Volumes';
 
 import { useIndexVolumes } from 'Volume/Index';
-import useVolume from 'Volume/useVolume';
 
 // Misc
 import { useNavigate } from 'react-router';
@@ -45,8 +48,18 @@ export interface DeleteVolumeModalContentProps {
 function DeleteVolumeModalContent({ volumeId, onModalClose }: DeleteVolumeModalContentProps) {
     const navigate = useNavigate();
 
-    const { volume } = useVolume(volumeId);
-    const { title, issueFileCount, totalSize: sizeOnDisk, folder: path } = volume!;
+    const { title, issueFileCount, sizeOnDisk, path } = useSearchVolumeQuery(
+        { volumeId },
+        {
+            refetchOnMountOrArgChange: true,
+            selectFromResult: ({ data }) => ({
+                title: data?.title ?? '',
+                issueFileCount: data?.issues.reduce((acc, v) => (acc += v.files.length), 0) ?? 0,
+                sizeOnDisk: data?.totalSize ?? 0,
+                path: data?.folder ?? '',
+            }),
+        },
+    );
 
     const { refetch } = useGetVolumesQuery();
     const { refetch: refetchIndex } = useIndexVolumes();

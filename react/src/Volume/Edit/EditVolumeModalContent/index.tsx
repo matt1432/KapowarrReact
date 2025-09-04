@@ -5,14 +5,16 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
 import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
-import { useUpdateVolumeMutation, type UpdateVolumeParams } from 'Store/Api/Volumes';
+import {
+    useSearchVolumeQuery,
+    useUpdateVolumeMutation,
+    type UpdateVolumeParams,
+} from 'Store/Api/Volumes';
 
 // Misc
 import { icons, inputTypes, kinds, sizes } from 'Helpers/Props';
 
 import usePrevious from 'Helpers/Hooks/usePrevious';
-import useVolume from 'Volume/useVolume';
-
 import translate from 'Utilities/String/translate';
 
 // General Components
@@ -58,7 +60,10 @@ function EditVolumeModalContent({
 
     const { data: rootFolders = [] } = useGetRootFoldersQuery();
 
-    const { volume } = useVolume(volumeId);
+    const { data: volume } = useSearchVolumeQuery(
+        { volumeId },
+        { refetchOnMountOrArgChange: true },
+    );
     const {
         title,
         libgenUrl: initialLibgenUrl,
