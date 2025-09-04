@@ -46,7 +46,7 @@ export interface TableOptionsModalProps<T extends string> {
 
 // IMPLEMENTATIONS
 
-function TableOptionsModal<T extends string>({
+export default function TableOptionsModal<T extends string>({
     isOpen,
     columns,
     canModifyColumns = true,
@@ -217,5 +217,3 @@ function TableOptionsModal<T extends string>({
         </DndProvider>
     );
 }
-
-export default TableOptionsModal;

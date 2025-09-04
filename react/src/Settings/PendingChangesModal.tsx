@@ -27,7 +27,11 @@ interface PendingChangesModalProps {
 
 // IMPLEMENTATIONS
 
-function PendingChangesModal({ isOpen, onConfirm, onCancel }: PendingChangesModalProps) {
+export default function PendingChangesModal({
+    isOpen,
+    onConfirm,
+    onCancel,
+}: PendingChangesModalProps) {
     const { bindShortcut, unbindShortcut } = useKeyboardShortcuts();
 
     useEffect(() => {
@@ -58,5 +62,3 @@ function PendingChangesModal({ isOpen, onConfirm, onCancel }: PendingChangesModa
         </Modal>
     );
 }
-
-export default PendingChangesModal;

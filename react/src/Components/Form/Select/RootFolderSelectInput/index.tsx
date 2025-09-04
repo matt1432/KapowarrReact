@@ -27,7 +27,7 @@ export type RootFolderSelectInputProps<K extends string> = Omit<
 
 // IMPLEMENTATIONS
 
-function RootFolderSelectInput<K extends string>({
+export default function RootFolderSelectInput<K extends string>({
     name,
     onChange,
     value,
@@ -60,5 +60,3 @@ function RootFolderSelectInput<K extends string>({
         </>
     );
 }
-
-export default RootFolderSelectInput;

@@ -24,7 +24,11 @@ interface PageContentProps {
 
 // IMPLEMENTATIONS
 
-function PageContent({ className = styles.content, title, children }: PageContentProps) {
+export default function PageContent({
+    className = styles.content,
+    title,
+    children,
+}: PageContentProps) {
     useTitle(title ? `${title} - Kapowarr` : 'Kapowarr');
 
     return (
@@ -33,5 +37,3 @@ function PageContent({ className = styles.content, title, children }: PageConten
         </ErrorBoundary>
     );
 }
-
-export default PageContent;

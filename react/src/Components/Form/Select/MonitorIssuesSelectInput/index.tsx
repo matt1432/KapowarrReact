@@ -22,7 +22,7 @@ export interface MonitorIssuesSelectInputProps<K extends string>
 
 // IMPLEMENTATIONS
 
-function MonitorIssuesSelectInput<K extends string>({
+export default function MonitorIssuesSelectInput<K extends string>({
     includeNoChange = false,
     ...otherProps
 }: MonitorIssuesSelectInputProps<K>) {
@@ -40,5 +40,3 @@ function MonitorIssuesSelectInput<K extends string>({
 
     return <EnhancedSelectInput {...otherProps} values={values} />;
 }
-
-export default MonitorIssuesSelectInput;

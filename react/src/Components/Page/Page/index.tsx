@@ -31,7 +31,7 @@ interface PageProps {
 
 // IMPLEMENTATIONS
 
-function Page({ children = [] }: PageProps) {
+export default function Page({ children = [] }: PageProps) {
     const dispatch = useRootDispatch();
 
     const { isConnected } = useRootSelector((state) => state.socketEvents);
@@ -90,5 +90,3 @@ function Page({ children = [] }: PageProps) {
         </ColorImpairedContext.Provider>
     );
 }
-
-export default Page;

@@ -18,7 +18,7 @@ interface TableOptionsModalWrapperProps<T extends string>
 
 // IMPLEMENTATIONS
 
-function TableOptionsModalWrapper<T extends string>({
+export default function TableOptionsModalWrapper<T extends string>({
     columns,
     children,
     ...otherProps
@@ -48,5 +48,3 @@ function TableOptionsModalWrapper<T extends string>({
         </>
     );
 }
-
-export default TableOptionsModalWrapper;

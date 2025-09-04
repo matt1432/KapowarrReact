@@ -51,7 +51,7 @@ export interface EditVolumeModalContentProps {
 
 // IMPLEMENTATIONS
 
-function EditVolumeModalContent({
+export default function EditVolumeModalContent({
     volumeId,
     onModalClose,
     onDeleteVolumePress,
@@ -275,5 +275,3 @@ function EditVolumeModalContent({
         </ModalContent>
     );
 }
-
-export default EditVolumeModalContent;

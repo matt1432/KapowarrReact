@@ -25,7 +25,7 @@ interface AppProps {
 
 // IMPLEMENTATIONS
 
-function App({ store }: AppProps) {
+export default function App({ store }: AppProps) {
     useTitle('Kapowarr');
 
     return (
@@ -40,5 +40,3 @@ function App({ store }: AppProps) {
         </Provider>
     );
 }
-
-export default App;

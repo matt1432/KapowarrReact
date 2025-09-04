@@ -15,12 +15,14 @@ interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
 
 // IMPLEMENTATIONS
 
-function TableRow({ className = styles.row, children, ...otherProps }: TableRowProps) {
+export default function TableRow({
+    className = styles.row,
+    children,
+    ...otherProps
+}: TableRowProps) {
     return (
         <tr className={className} {...otherProps}>
             {children}
         </tr>
     );
 }
-
-export default TableRow;

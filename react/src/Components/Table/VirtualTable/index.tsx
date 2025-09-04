@@ -39,7 +39,7 @@ function getWindowScrollTopPosition() {
     return document.documentElement.scrollTop || document.body.scrollTop || 0;
 }
 
-function VirtualTable<T extends ExtendableRecord>({
+export default function VirtualTable<T extends ExtendableRecord>({
     Header,
     itemCount,
     itemData,
@@ -123,5 +123,3 @@ function VirtualTable<T extends ExtendableRecord>({
         </div>
     );
 }
-
-export default VirtualTable;

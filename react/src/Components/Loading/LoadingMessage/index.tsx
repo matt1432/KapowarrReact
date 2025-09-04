@@ -21,7 +21,7 @@ const messages = [
 
 let message: string | null = null;
 
-function LoadingMessage() {
+export default function LoadingMessage() {
     if (!message) {
         const index = Math.floor(Math.random() * messages.length);
         message = messages[index];
@@ -29,5 +29,3 @@ function LoadingMessage() {
 
     return <div className={styles.loadingMessage}>{message}</div>;
 }
-
-export default LoadingMessage;

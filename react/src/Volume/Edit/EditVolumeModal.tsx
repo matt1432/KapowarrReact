@@ -13,12 +13,14 @@ interface EditVolumeModalProps extends EditVolumeModalContentProps {
 
 // IMPLEMENTATIONS
 
-function EditVolumeModal({ isOpen, onModalClose, ...otherProps }: EditVolumeModalProps) {
+export default function EditVolumeModal({
+    isOpen,
+    onModalClose,
+    ...otherProps
+}: EditVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
             <EditVolumeModalContent {...otherProps} onModalClose={onModalClose} />
         </Modal>
     );
 }
-
-export default EditVolumeModal;

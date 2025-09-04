@@ -47,7 +47,7 @@ export interface TableProps<T extends string> {
 
 // IMPLEMENTATIONS
 
-function Table<T extends string>({
+export default function Table<T extends string>({
     className = styles.table,
     horizontalScroll = true,
     selectAll = false,
@@ -129,5 +129,3 @@ function Table<T extends string>({
         </Scroller>
     );
 }
-
-export default Table;

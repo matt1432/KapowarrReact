@@ -61,7 +61,7 @@ const monitoredOptions: EnhancedSelectInputValue<string>[] = [
     },
 ];
 
-function EditVolumeModalContent({
+export default function EditVolumeModalContent({
     volumeIds,
     onSavePress,
     onModalClose,
@@ -173,5 +173,3 @@ function EditVolumeModalContent({
         </ModalContent>
     );
 }
-
-export default EditVolumeModalContent;

@@ -43,7 +43,7 @@ interface VolumeIndexTableHeaderProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexTableHeader({
+export default function VolumeIndexTableHeader({
     columns,
     sortKey,
     sortDirection,
@@ -128,5 +128,3 @@ function VolumeIndexTableHeader({
         </VirtualTableHeader>
     );
 }
-
-export default VolumeIndexTableHeader;

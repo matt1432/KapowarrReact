@@ -33,7 +33,7 @@ interface IssueSearchCellProps {
 
 // IMPLEMENTATIONS
 
-function IssueSearchCell({
+export default function IssueSearchCell({
     issueId,
     volumeId,
     issueTitle,
@@ -102,5 +102,3 @@ function IssueSearchCell({
         </TableRowCell>
     );
 }
-
-export default IssueSearchCell;

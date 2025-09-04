@@ -22,7 +22,7 @@ interface FormLabelProps {
 
 // IMPLEMENTATIONS
 
-function FormLabel({
+export default function FormLabel({
     children,
     className = styles.label,
     errorClassName = styles.hasError,
@@ -45,5 +45,3 @@ function FormLabel({
         </label>
     );
 }
-
-export default FormLabel;

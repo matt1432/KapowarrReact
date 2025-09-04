@@ -23,7 +23,7 @@ export interface SpinnerButtonProps extends ButtonProps {
 
 // IMPLEMENTATIONS
 
-function SpinnerButton({
+export default function SpinnerButton({
     className = styles.button,
     isSpinning,
     isDisabled,
@@ -45,5 +45,3 @@ function SpinnerButton({
         </Button>
     );
 }
-
-export default SpinnerButton;

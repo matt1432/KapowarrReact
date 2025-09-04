@@ -36,7 +36,7 @@ interface AddNewVolumeSearchResultProps {
 
 // IMPLEMENTATIONS
 
-function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
+export default function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
     const { comicvineId, title, description, publisher, year, siteUrl } = volume;
 
     const { isExistingVolume, titleSlug } = useGetVolumesQuery(undefined, {
@@ -150,5 +150,3 @@ function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
         </div>
     );
 }
-
-export default AddNewVolumeSearchResult;

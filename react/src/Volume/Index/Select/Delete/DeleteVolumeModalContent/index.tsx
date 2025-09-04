@@ -36,7 +36,10 @@ interface DeleteVolumeModalContentProps {
 
 // IMPLEMENTATIONS
 
-function DeleteVolumeModalContent({ volumeIds, onModalClose }: DeleteVolumeModalContentProps) {
+export default function DeleteVolumeModalContent({
+    volumeIds,
+    onModalClose,
+}: DeleteVolumeModalContentProps) {
     const [runMassEditAction] = useMassEditMutation();
 
     const [deleteFiles, setDeleteFiles] = useState(false);
@@ -165,5 +168,3 @@ function DeleteVolumeModalContent({ volumeIds, onModalClose }: DeleteVolumeModal
         </ModalContent>
     );
 }
-
-export default DeleteVolumeModalContent;

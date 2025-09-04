@@ -16,7 +16,12 @@ interface EditVolumeModalProps {
 
 // IMPLEMENTATIONS
 
-function EditVolumeModal({ isOpen, volumeIds, onSavePress, onModalClose }: EditVolumeModalProps) {
+export default function EditVolumeModal({
+    isOpen,
+    volumeIds,
+    onSavePress,
+    onModalClose,
+}: EditVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
             <EditVolumeModalContent
@@ -27,5 +32,3 @@ function EditVolumeModal({ isOpen, volumeIds, onSavePress, onModalClose }: EditV
         </Modal>
     );
 }
-
-export default EditVolumeModal;

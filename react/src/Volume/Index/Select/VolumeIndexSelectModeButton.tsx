@@ -19,7 +19,7 @@ interface VolumeIndexSelectModeButtonProps extends PageToolbarButtonProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexSelectModeButton({
+export default function VolumeIndexSelectModeButton({
     label,
     iconName,
     isSelectMode,
@@ -47,5 +47,3 @@ function VolumeIndexSelectModeButton({
         />
     );
 }
-
-export default VolumeIndexSelectModeButton;

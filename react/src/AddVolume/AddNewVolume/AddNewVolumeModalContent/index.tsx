@@ -50,7 +50,10 @@ export interface AddNewVolumeModalContentProps {
 
 // IMPLEMENTATIONS
 
-function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalContentProps) {
+export default function AddNewVolumeModalContent({
+    volume,
+    onModalClose,
+}: AddNewVolumeModalContentProps) {
     const { title, year, description } = volume;
 
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
@@ -227,5 +230,3 @@ function AddNewVolumeModalContent({ volume, onModalClose }: AddNewVolumeModalCon
         </ModalContent>
     );
 }
-
-export default AddNewVolumeModalContent;

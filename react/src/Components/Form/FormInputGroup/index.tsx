@@ -137,7 +137,7 @@ const componentMap: Record<InputType, ElementType> = {
     umask: UMaskInput,
 } as const;
 
-function FormInputGroup<T, C extends InputType, K extends string>({
+export default function FormInputGroup<T, C extends InputType, K extends string>({
     className = styles.inputGroup,
     containerClassName = styles.inputGroupContainer,
     inputClassName,
@@ -241,5 +241,3 @@ function FormInputGroup<T, C extends InputType, K extends string>({
         </div>
     );
 }
-
-export default FormInputGroup;

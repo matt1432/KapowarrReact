@@ -26,7 +26,7 @@ interface VolumeIndexRefreshVolumeButtonProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexRefreshVolumeButton({
+export default function VolumeIndexRefreshVolumeButton({
     isSelectMode,
     filterKey,
 }: VolumeIndexRefreshVolumeButtonProps) {
@@ -83,5 +83,3 @@ function VolumeIndexRefreshVolumeButton({
         />
     );
 }
-
-export default VolumeIndexRefreshVolumeButton;

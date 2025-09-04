@@ -42,7 +42,7 @@ function getIconName(type: string) {
     }
 }
 
-function FileBrowserRow({ type, name, path, onPress }: FileBrowserRowProps) {
+export default function FileBrowserRow({ type, name, path, onPress }: FileBrowserRowProps) {
     const handlePress = useCallback(() => {
         onPress(path);
     }, [path, onPress]);
@@ -57,5 +57,3 @@ function FileBrowserRow({ type, name, path, onPress }: FileBrowserRowProps) {
         </TableRowButton>
     );
 }
-
-export default FileBrowserRow;

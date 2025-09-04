@@ -22,7 +22,7 @@ interface FormGroupProps extends ComponentPropsWithoutRef<'div'> {
 
 // IMPLEMENTATIONS
 
-function FormGroup({
+export default function FormGroup({
     className = styles.group,
     children,
     size = 'small',
@@ -48,5 +48,3 @@ function FormGroup({
         </div>
     );
 }
-
-export default FormGroup;

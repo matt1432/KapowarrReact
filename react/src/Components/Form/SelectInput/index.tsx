@@ -33,7 +33,7 @@ interface SelectInputProps<K extends string, T> {
 
 // IMPLEMENTATIONS
 
-function SelectInput<K extends string, T>({
+export default function SelectInput<K extends string, T>({
     className = styles.select,
     disabledClassName = styles.isDisabled,
     name,
@@ -83,5 +83,3 @@ function SelectInput<K extends string, T>({
         </select>
     );
 }
-
-export default SelectInput;

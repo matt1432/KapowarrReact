@@ -55,7 +55,9 @@ function getShortcutKey(combo: string, isOsx: boolean) {
     return `${osModifier} + ${key}`;
 }
 
-function KeyboardShortcutsModalContent({ onModalClose }: KeyboardShortcutsModalContentProps) {
+export default function KeyboardShortcutsModalContent({
+    onModalClose,
+}: KeyboardShortcutsModalContentProps) {
     // const { isOsx } = useSelector(createSystemStatusSelector());
     const allShortcuts = getShortcuts();
 
@@ -83,5 +85,3 @@ function KeyboardShortcutsModalContent({ onModalClose }: KeyboardShortcutsModalC
         </ModalContent>
     );
 }
-
-export default KeyboardShortcutsModalContent;

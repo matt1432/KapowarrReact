@@ -30,7 +30,7 @@ interface RootFolderRowProps {
 
 // IMPLEMENTATIONS
 
-function RootFolderRow({ id, path, freeSpace = 0 }: RootFolderRowProps) {
+export default function RootFolderRow({ id, path, freeSpace = 0 }: RootFolderRowProps) {
     const [deleteRootFolder] = useDeleteRootFolderMutation();
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -78,5 +78,3 @@ function RootFolderRow({ id, path, freeSpace = 0 }: RootFolderRowProps) {
         </TableRow>
     );
 }
-
-export default RootFolderRow;

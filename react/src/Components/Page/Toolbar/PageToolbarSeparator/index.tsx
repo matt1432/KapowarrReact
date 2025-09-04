@@ -5,8 +5,6 @@ import styles from './index.module.css';
 
 // IMPLEMENTATIONS
 
-function PageToolbarSeparator() {
+export default function PageToolbarSeparator() {
     return <div className={styles.separator} />;
 }
-
-export default PageToolbarSeparator;

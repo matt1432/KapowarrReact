@@ -30,7 +30,7 @@ interface ConfirmModalProps extends Omit<ModalProps, 'onModalClose'> {
 
 // IMPLEMENTATIONS
 
-function ConfirmModal({
+export default function ConfirmModal({
     isOpen,
     kind = 'primary',
     size = 'medium',
@@ -80,5 +80,3 @@ function ConfirmModal({
         </Modal>
     );
 }
-
-export default ConfirmModal;

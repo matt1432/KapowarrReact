@@ -25,7 +25,7 @@ export interface MenuItemProps extends LinkProps {
 
 // IMPLEMENTATIONS
 
-function MenuItem({
+export default function MenuItem({
     className = styles.menuItem,
     children,
     isDisabled = false,
@@ -41,5 +41,3 @@ function MenuItem({
         </Link>
     );
 }
-
-export default MenuItem;

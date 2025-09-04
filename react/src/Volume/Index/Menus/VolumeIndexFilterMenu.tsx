@@ -21,7 +21,7 @@ interface VolumeIndexFilterMenuProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexFilterMenu({
+export default function VolumeIndexFilterMenu({
     filterKey,
     isDisabled,
     onFilterSelect,
@@ -44,5 +44,3 @@ function VolumeIndexFilterMenu({
         </FilterMenu>
     );
 }
-
-export default VolumeIndexFilterMenu;

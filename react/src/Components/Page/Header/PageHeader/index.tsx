@@ -27,7 +27,7 @@ import styles from './index.module.css';
 
 // IMPLEMENTATIONS
 
-function PageHeader() {
+export default function PageHeader() {
     const dispatch = useRootDispatch();
 
     const isSidebarVisible = useRootSelector((state) => state.app.isSidebarVisible);
@@ -87,5 +87,3 @@ function PageHeader() {
         </div>
     );
 }
-
-export default PageHeader;

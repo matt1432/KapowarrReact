@@ -20,8 +20,6 @@ interface AlertProps {
 
 // IMPLEMENTATIONS
 
-function Alert({ className = styles.alert, kind = 'info', children }: AlertProps) {
+export default function Alert({ className = styles.alert, kind = 'info', children }: AlertProps) {
     return <div className={classNames(className, styles[kind])}>{children}</div>;
 }
-
-export default Alert;

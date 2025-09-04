@@ -24,7 +24,7 @@ interface PageToolbarOverflowMenuItemProps {
 
 // IMPLEMENTATIONS
 
-function PageToolbarOverflowMenuItem({
+export default function PageToolbarOverflowMenuItem({
     iconName,
     spinningName,
     label,
@@ -44,5 +44,3 @@ function PageToolbarOverflowMenuItem({
         </MenuItem>
     );
 }
-
-export default PageToolbarOverflowMenuItem;

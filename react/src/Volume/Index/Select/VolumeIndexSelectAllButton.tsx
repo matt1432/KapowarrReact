@@ -21,7 +21,7 @@ interface VolumeIndexSelectAllButtonProps extends Omit<PageToolbarButtonProps, '
 
 // IMPLEMENTATIONS
 
-function VolumeIndexSelectAllButton({
+export default function VolumeIndexSelectAllButton({
     isSelectMode,
     overflowComponent,
 }: VolumeIndexSelectAllButtonProps) {
@@ -52,5 +52,3 @@ function VolumeIndexSelectAllButton({
         />
     ) : null;
 }
-
-export default VolumeIndexSelectAllButton;

@@ -33,7 +33,7 @@ interface TableHeaderCellProps<T extends string> {
 
 // IMPLEMENTATIONS
 
-function TableHeaderCell<T extends string>({
+export default function TableHeaderCell<T extends string>({
     className = styles.headerCell,
     name,
     columnLabel,
@@ -74,5 +74,3 @@ function TableHeaderCell<T extends string>({
         <th className={className}>{children}</th>
     );
 }
-
-export default TableHeaderCell;

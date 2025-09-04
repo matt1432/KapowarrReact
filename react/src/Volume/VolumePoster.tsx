@@ -7,8 +7,6 @@ interface VolumePosterProps extends Omit<VolumeImageProps, 'coverType' | 'placeh
     size?: 250 | 500;
 }
 
-function VolumePoster({ size = 250, ...otherProps }: VolumePosterProps) {
+export default function VolumePoster({ size = 250, ...otherProps }: VolumePosterProps) {
     return <VolumeImage {...otherProps} size={size} placeholder={posterPlaceholder} />;
 }
-
-export default VolumePoster;

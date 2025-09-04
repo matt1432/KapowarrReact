@@ -15,7 +15,7 @@ import styles from './index.module.css';
 
 // IMPLEMENTATIONS
 
-function Messages() {
+export default function Messages() {
     /* const items = useSelector((state: AppState) => state.app.messages.items);
 
     const messages = useMemo(() => {
@@ -35,5 +35,3 @@ function Messages() {
         </div>
     );
 }
-
-export default Messages;

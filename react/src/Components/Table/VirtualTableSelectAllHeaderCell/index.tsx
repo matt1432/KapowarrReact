@@ -23,7 +23,7 @@ interface VirtualTableSelectAllHeaderCellProps {
 
 // IMPLEMENTATIONS
 
-function VirtualTableSelectAllHeaderCell({
+export default function VirtualTableSelectAllHeaderCell({
     allSelected,
     allUnselected,
     onSelectAllChange,
@@ -50,5 +50,3 @@ function VirtualTableSelectAllHeaderCell({
         </VirtualTableHeaderCell>
     );
 }
-
-export default VirtualTableSelectAllHeaderCell;

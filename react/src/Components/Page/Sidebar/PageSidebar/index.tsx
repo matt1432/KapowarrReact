@@ -150,7 +150,7 @@ function hasActiveChildLink(link: SidebarItem, pathname: string) {
     });
 }
 
-function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSidebarProps) {
+export default function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSidebarProps) {
     const { pathname } = useLocation();
 
     const dispatch = useRootDispatch();
@@ -448,5 +448,3 @@ function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSidebarProps) {
         </div>
     );
 }
-
-export default PageSidebar;

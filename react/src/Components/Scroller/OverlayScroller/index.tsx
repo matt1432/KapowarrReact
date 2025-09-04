@@ -32,7 +32,7 @@ interface ScrollbarTrackProps {
 
 const SCROLLBAR_SIZE = 10;
 
-function OverlayScroller({
+export default function OverlayScroller({
     autoHide = false,
     autoScroll = true,
     className = styles.scroller,
@@ -124,5 +124,3 @@ function OverlayScroller({
         </Scrollbars>
     );
 }
-
-export default OverlayScroller;

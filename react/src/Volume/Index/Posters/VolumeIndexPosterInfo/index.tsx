@@ -18,7 +18,7 @@ interface VolumeIndexPosterInfoProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexPosterInfo({
+export default function VolumeIndexPosterInfo({
     publisher,
     sortKey,
     volumeNumber,
@@ -65,5 +65,3 @@ function VolumeIndexPosterInfo({
 
     return null;
 }
-
-export default VolumeIndexPosterInfo;

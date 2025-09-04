@@ -45,7 +45,7 @@ const rootFolderColumns: Column<string>[] = [
     },
 ];
 
-function RootFolders() {
+export default function RootFolders() {
     const { isFetching, isUninitialized, error, data: items = [] } = useGetRootFoldersQuery();
 
     if (isFetching && isUninitialized) {
@@ -73,5 +73,3 @@ function RootFolders() {
         </Table>
     );
 }
-
-export default RootFolders;

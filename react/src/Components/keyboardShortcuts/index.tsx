@@ -65,7 +65,7 @@ export const shortcuts: Record<string, Shortcut> = {
     },
 };
 
-function keyboardShortcuts(WrappedComponent: ComponentType<KeyboardShortcutsProps>) {
+export default function keyboardShortcuts(WrappedComponent: ComponentType<KeyboardShortcutsProps>) {
     class KeyboardShortcuts extends Component {
         //
         // Lifecycle
@@ -149,5 +149,3 @@ function keyboardShortcuts(WrappedComponent: ComponentType<KeyboardShortcutsProp
 
     return KeyboardShortcuts;
 }
-
-export default keyboardShortcuts;

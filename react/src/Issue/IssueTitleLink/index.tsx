@@ -22,7 +22,7 @@ interface IssueTitleLinkProps {
 
 // IMPLEMENTATIONS
 
-function IssueTitleLink({ issueTitle, ...otherProps }: IssueTitleLinkProps) {
+export default function IssueTitleLink({ issueTitle, ...otherProps }: IssueTitleLinkProps) {
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const handleLinkPress = useCallback(() => {
         setIsDetailsModalOpen(true);
@@ -46,5 +46,3 @@ function IssueTitleLink({ issueTitle, ...otherProps }: IssueTitleLinkProps) {
         </div>
     );
 }
-
-export default IssueTitleLink;

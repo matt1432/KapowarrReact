@@ -25,7 +25,7 @@ interface TableSelectCellProps extends Omit<TableRowCellProps, 'id'> {
 
 // IMPLEMENTATIONS
 
-function TableSelectCell({
+export default function TableSelectCell({
     className = styles.selectCell,
     id,
     isSelected = false,
@@ -68,5 +68,3 @@ function TableSelectCell({
         </TableRowCell>
     );
 }
-
-export default TableSelectCell;

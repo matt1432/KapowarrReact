@@ -23,7 +23,7 @@ export interface AutoCompleteInputProps<K extends string> {
 
 // IMPLEMENTATIONS
 
-function AutoCompleteInput<K extends string>({
+export default function AutoCompleteInput<K extends string>({
     name,
     value = '',
     values,
@@ -86,5 +86,3 @@ function AutoCompleteInput<K extends string>({
         />
     );
 }
-
-export default AutoCompleteInput;

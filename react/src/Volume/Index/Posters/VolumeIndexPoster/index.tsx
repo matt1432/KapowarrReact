@@ -45,7 +45,7 @@ interface VolumeIndexPosterProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexPoster({
+export default function VolumeIndexPoster({
     volumeId,
     isSelectMode,
     posterWidth,
@@ -230,5 +230,3 @@ function VolumeIndexPoster({
         </div>
     );
 }
-
-export default VolumeIndexPoster;

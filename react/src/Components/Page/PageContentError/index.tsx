@@ -16,7 +16,7 @@ import styles from './index.module.css';
 
 // IMPLEMENTATIONS
 
-function PageContentError(props: ErrorBoundaryErrorProps) {
+export default function PageContentError(props: ErrorBoundaryErrorProps) {
     return (
         <div className={styles.content}>
             <PageContentBody>
@@ -25,5 +25,3 @@ function PageContentError(props: ErrorBoundaryErrorProps) {
         </div>
     );
 }
-
-export default PageContentError;

@@ -34,7 +34,7 @@ interface IssueRowProps extends IssueRowData {
 
 // IMPLEMENTATIONS
 
-function IssueRow({
+export default function IssueRow({
     id,
     issue,
     issueFile,
@@ -150,5 +150,3 @@ function IssueRow({
         </TableRow>
     );
 }
-
-export default IssueRow;

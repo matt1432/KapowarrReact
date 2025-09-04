@@ -67,7 +67,7 @@ const columns: Column<string>[] = [
 
 const handleClearPaths = () => {};
 
-function FileBrowserModalContent<K extends string>({
+export default function FileBrowserModalContent<K extends string>({
     name,
     value,
     includeFiles = true,
@@ -268,5 +268,3 @@ function FileBrowserModalContent<K extends string>({
         </ModalContent>
     );
 }
-
-export default FileBrowserModalContent;

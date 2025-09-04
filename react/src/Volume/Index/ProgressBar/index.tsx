@@ -27,7 +27,7 @@ interface VolumeIndexProgressBarProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexProgressBar({
+export default function VolumeIndexProgressBar({
     volume,
     width,
     detailedProgressBar,
@@ -58,5 +58,3 @@ function VolumeIndexProgressBar({
         />
     );
 }
-
-export default VolumeIndexProgressBar;

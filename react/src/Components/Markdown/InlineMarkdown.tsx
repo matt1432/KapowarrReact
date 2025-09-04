@@ -14,7 +14,7 @@ interface InlineMarkdownProps {
 
 // IMPLEMENTATIONS
 
-function InlineMarkdown({ className, data, blockClassName }: InlineMarkdownProps) {
+export default function InlineMarkdown({ className, data, blockClassName }: InlineMarkdownProps) {
     // For now only replace links or code blocks (not both)
     const markdownBlocks: (ReactElement | string)[] = [];
 
@@ -73,5 +73,3 @@ function InlineMarkdown({ className, data, blockClassName }: InlineMarkdownProps
 
     return <span className={className}>{markdownBlocks}</span>;
 }
-
-export default InlineMarkdown;

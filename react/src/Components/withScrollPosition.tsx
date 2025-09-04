@@ -16,7 +16,7 @@ interface WrappedComponentProps {
 
 // IMPLEMENTATIONS
 
-function withScrollPosition(
+export default function withScrollPosition(
     WrappedComponent: React.FC<WrappedComponentProps>,
     scrollPositionKey: ScrollPositionKey,
 ) {
@@ -32,5 +32,3 @@ function withScrollPosition(
 
     return ScrollPosition;
 }
-
-export default withScrollPosition;

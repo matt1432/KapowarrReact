@@ -29,7 +29,7 @@ import NotFound from 'Components/NotFound';
 
 // IMPLEMENTATIONS
 
-function AppRoutes() {
+export default function AppRoutes() {
     return (
         <Routes>
             {/*Volume*/}
@@ -72,5 +72,3 @@ function AppRoutes() {
         </Routes>
     );
 }
-
-export default AppRoutes;

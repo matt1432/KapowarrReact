@@ -18,7 +18,7 @@ interface NoVolumeProps {
 
 // IMPLEMENTATIONS
 
-function NoVolume({ totalItems }: NoVolumeProps) {
+export default function NoVolume({ totalItems }: NoVolumeProps) {
     if (totalItems > 0) {
         return (
             <div>
@@ -47,5 +47,3 @@ function NoVolume({ totalItems }: NoVolumeProps) {
         </div>
     );
 }
-
-export default NoVolume;

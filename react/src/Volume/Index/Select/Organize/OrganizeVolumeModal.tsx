@@ -15,12 +15,14 @@ interface OrganizeVolumeModalProps {
 
 // IMPLEMENTATIONS
 
-function OrganizeVolumeModal({ isOpen, onModalClose, ...otherProps }: OrganizeVolumeModalProps) {
+export default function OrganizeVolumeModal({
+    isOpen,
+    onModalClose,
+    ...otherProps
+}: OrganizeVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
             <OrganizeVolumeModalContent {...otherProps} onModalClose={onModalClose} />
         </Modal>
     );
 }
-
-export default OrganizeVolumeModal;

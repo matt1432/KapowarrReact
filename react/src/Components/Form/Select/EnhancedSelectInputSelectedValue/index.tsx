@@ -17,12 +17,10 @@ interface EnhancedSelectInputSelectedValueProps {
 
 // IMPLEMENTATIONS
 
-function EnhancedSelectInputSelectedValue({
+export default function EnhancedSelectInputSelectedValue({
     className = styles.selectedValue,
     children,
     isDisabled = false,
 }: EnhancedSelectInputSelectedValueProps) {
     return <div className={classNames(className, isDisabled && styles.isDisabled)}>{children}</div>;
 }
-
-export default EnhancedSelectInputSelectedValue;

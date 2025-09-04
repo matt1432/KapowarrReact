@@ -13,8 +13,9 @@ interface DescriptionListProps {
     children?: React.ReactNode;
 }
 
-function DescriptionList({ className = styles.descriptionList, children }: DescriptionListProps) {
+export default function DescriptionList({
+    className = styles.descriptionList,
+    children,
+}: DescriptionListProps) {
     return <dl className={className}>{children}</dl>;
 }
-
-export default DescriptionList;

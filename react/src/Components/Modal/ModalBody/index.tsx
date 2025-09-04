@@ -21,7 +21,7 @@ interface ModalBodyProps {
 
 // IMPLEMENTATIONS
 
-function ModalBody({
+export default function ModalBody({
     innerClassName = styles.innerModalBody,
     scrollDirection = 'vertical',
     children,
@@ -45,5 +45,3 @@ function ModalBody({
         </Scroller>
     );
 }
-
-export default ModalBody;

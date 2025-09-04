@@ -70,7 +70,7 @@ function createDownloadClientsSelector(includeAny: boolean, protocol: Protocol) 
 }
 */
 
-function DownloadClientSelectInput<K extends string>({
+export default function DownloadClientSelectInput<K extends string>({
     // includeAny = false,
     // protocol = 'torrent',
     ...otherProps
@@ -94,5 +94,3 @@ function DownloadClientSelectInput<K extends string>({
     // @ts-expect-error TODO:
     return <EnhancedSelectInput {...otherProps} isFetching={isFetching} values={values} />;
 }
-
-export default DownloadClientSelectInput;

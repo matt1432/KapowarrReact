@@ -35,7 +35,7 @@ interface SettingsToolbarProps {
 
 // IMPLEMENTATIONS
 
-function SettingsToolbar({
+export default function SettingsToolbar({
     showSave = true,
     isSaving,
     hasPendingChanges,
@@ -117,5 +117,3 @@ function SettingsToolbar({
         </PageToolbar>
     );
 }
-
-export default SettingsToolbar;

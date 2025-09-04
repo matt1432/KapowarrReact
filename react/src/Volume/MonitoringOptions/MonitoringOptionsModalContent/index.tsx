@@ -45,7 +45,7 @@ export interface MonitoringOptionsModalContentProps {
 
 const NO_CHANGE = 'noChange';
 
-function MonitoringOptionsModalContent({
+export default function MonitoringOptionsModalContent({
     volumeId,
     onModalClose,
     refetch,
@@ -131,5 +131,3 @@ function MonitoringOptionsModalContent({
         </ModalContent>
     );
 }
-
-export default MonitoringOptionsModalContent;

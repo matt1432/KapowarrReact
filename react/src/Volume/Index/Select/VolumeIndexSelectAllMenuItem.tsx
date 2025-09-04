@@ -20,7 +20,9 @@ interface VolumeIndexSelectAllMenuItemProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexSelectAllMenuItem({ isSelectMode }: VolumeIndexSelectAllMenuItemProps) {
+export default function VolumeIndexSelectAllMenuItem({
+    isSelectMode,
+}: VolumeIndexSelectAllMenuItemProps) {
     const [selectState, selectDispatch] = useSelect();
     const { allSelected, allUnselected } = selectState;
 
@@ -47,5 +49,3 @@ function VolumeIndexSelectAllMenuItem({ isSelectMode }: VolumeIndexSelectAllMenu
         />
     ) : null;
 }
-
-export default VolumeIndexSelectAllMenuItem;

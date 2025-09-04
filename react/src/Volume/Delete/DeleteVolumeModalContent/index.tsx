@@ -45,7 +45,10 @@ export interface DeleteVolumeModalContentProps {
     onModalClose: () => void;
 }
 
-function DeleteVolumeModalContent({ volumeId, onModalClose }: DeleteVolumeModalContentProps) {
+export default function DeleteVolumeModalContent({
+    volumeId,
+    onModalClose,
+}: DeleteVolumeModalContentProps) {
     const navigate = useNavigate();
 
     const { title, issueFileCount, sizeOnDisk, path } = useSearchVolumeQuery(
@@ -145,5 +148,3 @@ function DeleteVolumeModalContent({ volumeId, onModalClose }: DeleteVolumeModalC
         </ModalContent>
     );
 }
-
-export default DeleteVolumeModalContent;

@@ -71,7 +71,7 @@ interface Section {
 
 const ADD_NEW_TYPE = 'addNew';
 
-function VolumeSearchInput() {
+export default function VolumeSearchInput() {
     const navigate = useNavigate();
 
     const { volumes } = useGetVolumesQuery(undefined, {
@@ -398,5 +398,3 @@ function VolumeSearchInput() {
         </div>
     );
 }
-
-export default VolumeSearchInput;

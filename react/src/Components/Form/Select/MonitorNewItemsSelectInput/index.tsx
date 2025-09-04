@@ -19,7 +19,7 @@ export interface MonitorNewItemsSelectInputProps<K extends string>
 
 // IMPLEMENTATIONS
 
-function MonitorNewItemsSelectInput<K extends string>({
+export default function MonitorNewItemsSelectInput<K extends string>({
     includeNoChange = false,
     includeNoChangeDisabled = true,
     includeMixed = false,
@@ -45,5 +45,3 @@ function MonitorNewItemsSelectInput<K extends string>({
 
     return <EnhancedSelectInput {...otherProps} values={values} />;
 }
-
-export default MonitorNewItemsSelectInput;

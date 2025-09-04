@@ -42,7 +42,7 @@ const BUTTON_WIDTH = parseInt(dimensions.toolbarButtonWidth);
 const SEPARATOR_MARGIN = parseInt(dimensions.toolbarSeparatorMargin);
 const SEPARATOR_WIDTH = 2 * SEPARATOR_MARGIN + 1;
 
-function PageToolbarSection({
+export default function PageToolbarSection({
     children,
     alignContent = 'left',
     collapseButtons = true,
@@ -168,5 +168,3 @@ function PageToolbarSection({
         </div>
     );
 }
-
-export default PageToolbarSection;

@@ -22,7 +22,11 @@ interface FilterMenuProps extends Omit<ToolbarMenuButtonProps, 'iconName'> {
 
 // IMPLEMENTATIONS
 
-function FilterMenu({ children, isDisabled = false, ...otherProps }: FilterMenuProps) {
+export default function FilterMenu({
+    children,
+    isDisabled = false,
+    ...otherProps
+}: FilterMenuProps) {
     return (
         <Menu {...otherProps}>
             <ToolbarMenuButton
@@ -34,5 +38,3 @@ function FilterMenu({ children, isDisabled = false, ...otherProps }: FilterMenuP
         </Menu>
     );
 }
-
-export default FilterMenu;

@@ -10,12 +10,10 @@ interface TableHeaderProps {
 
 // IMPLEMENTATIONS
 
-function TableHeader({ children }: TableHeaderProps) {
+export default function TableHeader({ children }: TableHeaderProps) {
     return (
         <thead>
             <tr>{children}</tr>
         </thead>
     );
 }
-
-export default TableHeader;

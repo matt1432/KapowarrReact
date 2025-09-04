@@ -25,7 +25,7 @@ interface ModalContentProps extends React.HTMLAttributes<HTMLDivElement> {
 
 // IMPLEMENTATIONS
 
-function ModalContent({
+export default function ModalContent({
     className = styles.modalContent,
     children,
     showCloseButton = true,
@@ -44,5 +44,3 @@ function ModalContent({
         </div>
     );
 }
-
-export default ModalContent;

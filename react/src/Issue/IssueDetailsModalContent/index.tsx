@@ -47,7 +47,7 @@ export interface IssueDetailsModalContentProps {
 
 const TABS: IssueDetailsTab[] = ['details', 'search'];
 
-function IssueDetailsModalContent({
+export default function IssueDetailsModalContent({
     issueId,
     volumeId,
     issueTitle,
@@ -185,5 +185,3 @@ function IssueDetailsModalContent({
         </ModalContent>
     );
 }
-
-export default IssueDetailsModalContent;

@@ -23,7 +23,7 @@ interface TableSelectAllHeaderCellProps {
 
 // IMPLEMENTATIONS
 
-function TableSelectAllHeaderCell({
+export default function TableSelectAllHeaderCell({
     allSelected,
     allUnselected,
     onSelectAllChange,
@@ -50,5 +50,3 @@ function TableSelectAllHeaderCell({
         </VirtualTableHeaderCell>
     );
 }
-
-export default TableSelectAllHeaderCell;

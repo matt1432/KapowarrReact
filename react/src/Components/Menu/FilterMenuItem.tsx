@@ -17,7 +17,7 @@ interface FilterMenuItemProps<T extends string>
 
 // IMPLEMENTATIONS
 
-function FilterMenuItem<T extends string>({
+export default function FilterMenuItem<T extends string>({
     name,
     filterKey,
     ...otherProps
@@ -26,5 +26,3 @@ function FilterMenuItem<T extends string>({
 
     return <SelectedMenuItem name={name} isSelected={isSelected} {...otherProps} />;
 }
-
-export default FilterMenuItem;

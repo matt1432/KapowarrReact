@@ -29,7 +29,7 @@ export interface TextAreaProps<K extends string> {
 
 // IMPLEMENTATIONS
 
-function TextArea<K extends string>({
+export default function TextArea<K extends string>({
     className = styles.input,
     readOnly = false,
     autoFocus = false,
@@ -144,5 +144,3 @@ function TextArea<K extends string>({
         />
     );
 }
-
-export default TextArea;

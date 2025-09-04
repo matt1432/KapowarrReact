@@ -25,7 +25,7 @@ interface ErrorPageProps {
 
 // IMPLEMENTATIONS
 
-function ErrorPage({
+export default function ErrorPage({
     version,
     translationsError,
     volumesError,
@@ -81,5 +81,3 @@ function ErrorPage({
         </div>
     );
 }
-
-export default ErrorPage;

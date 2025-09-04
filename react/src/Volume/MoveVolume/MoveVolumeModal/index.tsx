@@ -29,7 +29,7 @@ interface MoveVolumeModalProps {
 
 // IMPLEMENTATIONS
 
-function MoveVolumeModal({
+export default function MoveVolumeModal({
     originalPath,
     destinationPath,
     destinationRootFolder,
@@ -80,5 +80,3 @@ function MoveVolumeModal({
         </Modal>
     );
 }
-
-export default MoveVolumeModal;

@@ -26,7 +26,7 @@ export interface FormInputButtonProps extends ButtonProps {
 
 // IMPLEMENTATIONS
 
-function FormInputButton({
+export default function FormInputButton({
     className = styles.button,
     canSpin = false,
     isLastButton = true,
@@ -53,5 +53,3 @@ function FormInputButton({
         />
     );
 }
-
-export default FormInputButton;

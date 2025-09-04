@@ -13,7 +13,7 @@ interface RootFolderModalProps extends RootFolderModalContentProps {
 
 // IMPLEMENTATIONS
 
-function RootFolderModal({
+export default function RootFolderModal({
     isOpen,
     rootFolderPath,
     volumeId,
@@ -31,5 +31,3 @@ function RootFolderModal({
         </Modal>
     );
 }
-
-export default RootFolderModal;

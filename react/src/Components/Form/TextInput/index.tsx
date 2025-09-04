@@ -49,7 +49,7 @@ export interface TextInputProps<K extends string, Type extends TextInputType> {
 
 // IMPLEMENTATIONS
 
-function TextInput<K extends string, Type extends TextInputType = 'text'>({
+export default function TextInput<K extends string, Type extends TextInputType = 'text'>({
     className = styles.input,
     type,
     readOnly = false,
@@ -199,5 +199,3 @@ function TextInput<K extends string, Type extends TextInputType = 'text'>({
         />
     );
 }
-
-export default TextInput;

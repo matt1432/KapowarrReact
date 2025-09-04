@@ -11,7 +11,7 @@ import themes from 'Styles/Themes';
 
 // IMPLEMENTATIONS
 
-function ApplyTheme() {
+export default function ApplyTheme() {
     const theme = useTheme();
 
     const updateCSSVariables = useCallback(() => {
@@ -27,5 +27,3 @@ function ApplyTheme() {
 
     return null;
 }
-
-export default ApplyTheme;

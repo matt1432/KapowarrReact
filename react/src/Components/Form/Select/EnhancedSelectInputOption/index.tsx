@@ -38,7 +38,7 @@ function handleCheckPress() {
     // CheckInput requires a handler. Swallow the change event because onPress will already handle it via event propagation.
 }
 
-function EnhancedSelectInputOption({
+export default function EnhancedSelectInputOption({
     className = styles.option,
     id,
     depth = 0,
@@ -95,5 +95,3 @@ function EnhancedSelectInputOption({
         </Link>
     );
 }
-
-export default EnhancedSelectInputOption;

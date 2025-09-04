@@ -19,7 +19,7 @@ interface FileBrowserModalProps<K extends string> extends FileBrowserModalConten
 
 // IMPLEMENTATIONS
 
-function FileBrowserModal<K extends string>({
+export default function FileBrowserModal<K extends string>({
     isOpen,
     onModalClose,
     ...otherProps
@@ -30,5 +30,3 @@ function FileBrowserModal<K extends string>({
         </Modal>
     );
 }
-
-export default FileBrowserModal;

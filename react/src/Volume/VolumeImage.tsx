@@ -28,7 +28,7 @@ function getUrl(volume: Volume | AddVolume | { id: number }) {
         : volume.coverLink;
 }
 
-function VolumeImage({
+export default function VolumeImage({
     volume,
     className,
     style,
@@ -85,5 +85,3 @@ function VolumeImage({
         />
     );
 }
-
-export default VolumeImage;

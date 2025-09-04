@@ -25,7 +25,7 @@ export interface ErrorBoundaryErrorProps {
 
 // IMPLEMENTATIONS
 
-function ErrorBoundaryError({
+export default function ErrorBoundaryError({
     className = styles.container,
     messageClassName = styles.message,
     detailsClassName = styles.details,
@@ -77,5 +77,3 @@ function ErrorBoundaryError({
         </div>
     );
 }
-
-export default ErrorBoundaryError;

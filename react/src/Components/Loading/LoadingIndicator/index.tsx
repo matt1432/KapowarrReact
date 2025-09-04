@@ -12,7 +12,7 @@ interface LoadingIndicatorProps {
 
 // IMPLEMENTATIONS
 
-function LoadingIndicator({
+export default function LoadingIndicator({
     className = styles.loading,
     rippleClassName = styles.ripple,
     size = 50,
@@ -33,5 +33,3 @@ function LoadingIndicator({
         </div>
     );
 }
-
-export default LoadingIndicator;

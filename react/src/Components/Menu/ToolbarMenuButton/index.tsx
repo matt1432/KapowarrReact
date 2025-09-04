@@ -22,7 +22,7 @@ export interface ToolbarMenuButtonProps extends Omit<MenuButtonProps, 'children'
 
 // IMPLEMENTATIONS
 
-function ToolbarMenuButton({
+export default function ToolbarMenuButton({
     iconName,
     showIndicator = false,
     text,
@@ -46,5 +46,3 @@ function ToolbarMenuButton({
         </MenuButton>
     );
 }
-
-export default ToolbarMenuButton;

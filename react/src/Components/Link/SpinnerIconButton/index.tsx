@@ -15,7 +15,7 @@ interface SpinnerIconButtonProps extends IconButtonProps {
 
 // IMPLEMENTATIONS
 
-function SpinnerIconButton({
+export default function SpinnerIconButton({
     name,
     spinningName = icons.SPINNER,
     isDisabled = false,
@@ -31,5 +31,3 @@ function SpinnerIconButton({
         />
     );
 }
-
-export default SpinnerIconButton;

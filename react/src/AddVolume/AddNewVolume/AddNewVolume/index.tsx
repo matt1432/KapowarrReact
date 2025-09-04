@@ -34,7 +34,7 @@ import type { AddVolume } from 'AddVolume/AddVolume';
 
 // IMPLEMENTATIONS
 
-function AddNewVolume() {
+export default function AddNewVolume() {
     const { term: initialTerm = '' } = useQueryParams<{ term: string }>();
 
     const { volumeCount } = useGetVolumesQuery(undefined, {
@@ -163,5 +163,3 @@ function AddNewVolume() {
         </PageContent>
     );
 }
-
-export default AddNewVolume;

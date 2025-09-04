@@ -9,7 +9,7 @@ import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem'
 
 // IMPLEMENTATIONS
 
-function SpecialVersionPopoverContent() {
+export default function SpecialVersionPopoverContent() {
     return (
         <DescriptionList>
             <DescriptionListItem
@@ -44,5 +44,3 @@ function SpecialVersionPopoverContent() {
         </DescriptionList>
     );
 }
-
-export default SpecialVersionPopoverContent;

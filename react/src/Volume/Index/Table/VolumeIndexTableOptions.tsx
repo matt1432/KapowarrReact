@@ -25,7 +25,9 @@ interface VolumeIndexTableOptionsProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexTableOptions({ onTableOptionChange }: VolumeIndexTableOptionsProps) {
+export default function VolumeIndexTableOptions({
+    onTableOptionChange,
+}: VolumeIndexTableOptionsProps) {
     const { tableOptions } = useRootSelector((state) => state.volumeIndex);
 
     const { showSearchAction } = tableOptions;
@@ -56,5 +58,3 @@ function VolumeIndexTableOptions({ onTableOptionChange }: VolumeIndexTableOption
         </FormGroup>
     );
 }
-
-export default VolumeIndexTableOptions;

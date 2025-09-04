@@ -63,7 +63,10 @@ const COLUMNS: Column<GeneralFilesColumnName>[] = [
     },
 ];
 
-function GeneralFilesModalContent({ volumeId, onModalClose }: GeneralFilesModalContentProps) {
+export default function GeneralFilesModalContent({
+    volumeId,
+    onModalClose,
+}: GeneralFilesModalContentProps) {
     const { generalFiles = [], refetch } = useSearchVolumeQuery(
         { volumeId },
         {
@@ -122,5 +125,3 @@ function GeneralFilesModalContent({ volumeId, onModalClose }: GeneralFilesModalC
         </ModalContent>
     );
 }
-
-export default GeneralFilesModalContent;

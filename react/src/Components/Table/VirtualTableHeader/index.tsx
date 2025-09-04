@@ -13,8 +13,6 @@ interface VirtualTableHeaderProps {
 
 // IMPLEMENTATIONS
 
-function VirtualTableHeader({ children }: VirtualTableHeaderProps) {
+export default function VirtualTableHeader({ children }: VirtualTableHeaderProps) {
     return <div className={styles.header}>{children}</div>;
 }
-
-export default VirtualTableHeader;

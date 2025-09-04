@@ -29,7 +29,7 @@ interface PageJumpBarProps {
 
 const ITEM_HEIGHT = parseInt(dimensions.jumpBarItemHeight);
 
-function PageJumpBar({ items, minimumItems = 5, onItemPress }: PageJumpBarProps) {
+export default function PageJumpBar({ items, minimumItems = 5, onItemPress }: PageJumpBarProps) {
     const [jumpBarRef, { height }] = useMeasure();
 
     const visibleItems = useMemo(() => {
@@ -86,5 +86,3 @@ function PageJumpBar({ items, minimumItems = 5, onItemPress }: PageJumpBarProps)
         </div>
     );
 }
-
-export default PageJumpBar;

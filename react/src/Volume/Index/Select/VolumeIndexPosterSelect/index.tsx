@@ -21,7 +21,7 @@ interface VolumeIndexPosterSelectProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexPosterSelect({ volumeId }: VolumeIndexPosterSelectProps) {
+export default function VolumeIndexPosterSelect({ volumeId }: VolumeIndexPosterSelectProps) {
     const [selectState, selectDispatch] = useSelect();
     const isSelected = selectState.selectedState[volumeId];
 
@@ -51,5 +51,3 @@ function VolumeIndexPosterSelect({ volumeId }: VolumeIndexPosterSelectProps) {
         </Link>
     );
 }
-
-export default VolumeIndexPosterSelect;

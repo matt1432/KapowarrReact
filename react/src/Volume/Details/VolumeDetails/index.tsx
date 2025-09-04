@@ -68,7 +68,7 @@ interface VolumeDetailsProps {
 
 // IMPLEMENTATIONS
 
-function VolumeDetails({ volumeId }: VolumeDetailsProps) {
+export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     const { data: allVolumes = [] } = useGetVolumesQuery();
 
     const {
@@ -538,5 +538,3 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         </PageContent>
     );
 }
-
-export default VolumeDetails;

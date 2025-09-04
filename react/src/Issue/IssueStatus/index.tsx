@@ -25,7 +25,7 @@ interface IssueStatusProps {
 
 // IMPLEMENTATIONS
 
-function IssueStatus({ issue, issueFile }: IssueStatusProps) {
+export default function IssueStatus({ issue, issueFile }: IssueStatusProps) {
     const { queue } = useFetchQueueDetails({ volumeId: issue.volumeId, issueId: issue.id });
 
     const hasIssueFile = Boolean(issueFile);
@@ -63,5 +63,3 @@ function IssueStatus({ issue, issueFile }: IssueStatusProps) {
         </div>
     );
 }
-
-export default IssueStatus;

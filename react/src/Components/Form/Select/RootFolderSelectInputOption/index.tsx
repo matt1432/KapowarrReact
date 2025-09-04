@@ -25,7 +25,7 @@ interface RootFolderSelectInputOptionProps extends EnhancedSelectInputOptionProp
 
 // IMPLEMENTATIONS
 
-function RootFolderSelectInputOption({
+export default function RootFolderSelectInputOption({
     id,
     value,
     freeSpace,
@@ -55,5 +55,3 @@ function RootFolderSelectInputOption({
         </EnhancedSelectInputOption>
     );
 }
-
-export default RootFolderSelectInputOption;

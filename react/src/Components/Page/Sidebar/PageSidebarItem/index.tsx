@@ -29,7 +29,7 @@ export interface PageSidebarItemProps {
 
 // IMPLEMENTATIONS
 
-function PageSidebarItem({
+export default function PageSidebarItem({
     iconName,
     title,
     to,
@@ -89,5 +89,3 @@ function PageSidebarItem({
         </div>
     );
 }
-
-export default PageSidebarItem;

@@ -15,7 +15,7 @@ interface MonitoringOptionsModalProps extends MonitoringOptionsModalContentProps
 
 // IMPLEMENTATIONS
 
-function MonitoringOptionsModal({
+export default function MonitoringOptionsModal({
     isOpen,
     onModalClose,
     ...otherProps
@@ -26,5 +26,3 @@ function MonitoringOptionsModal({
         </Modal>
     );
 }
-
-export default MonitoringOptionsModal;

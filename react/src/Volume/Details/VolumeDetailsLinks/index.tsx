@@ -17,7 +17,7 @@ type VolumeDetailsLinksProps = Pick<Volume, 'siteUrl'>;
 
 // IMPLEMENTATIONS
 
-function VolumeDetailsLinks({ siteUrl }: VolumeDetailsLinksProps) {
+export default function VolumeDetailsLinks({ siteUrl }: VolumeDetailsLinksProps) {
     return (
         <div className={styles.links}>
             <Link className={styles.link} to={siteUrl}>
@@ -28,5 +28,3 @@ function VolumeDetailsLinks({ siteUrl }: VolumeDetailsLinksProps) {
         </div>
     );
 }
-
-export default VolumeDetailsLinks;

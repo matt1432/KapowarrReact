@@ -30,7 +30,7 @@ interface MessageProps {
 
 // IMPLEMENTATIONS
 
-function Message({ id, hideAfter, name, message, type }: MessageProps) {
+export default function Message({ id, hideAfter, name, message, type }: MessageProps) {
     // const dispatch = useDispatch();
     const dismissTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -85,5 +85,3 @@ function Message({ id, hideAfter, name, message, type }: MessageProps) {
         </div>
     );
 }
-
-export default Message;

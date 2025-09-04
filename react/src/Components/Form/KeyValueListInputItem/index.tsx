@@ -31,7 +31,7 @@ interface KeyValueListInputItemProps {
 
 // IMPLEMENTATIONS
 
-function KeyValueListInputItem({
+export default function KeyValueListInputItem({
     index,
     keyValue,
     value,
@@ -95,5 +95,3 @@ function KeyValueListInputItem({
         </div>
     );
 }
-
-export default KeyValueListInputItem;

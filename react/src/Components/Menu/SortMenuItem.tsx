@@ -24,7 +24,12 @@ interface SortMenuItemProps
 
 // IMPLEMENTATIONS
 
-function SortMenuItem({ name, sortKey, sortDirection, ...otherProps }: SortMenuItemProps) {
+export default function SortMenuItem({
+    name,
+    sortKey,
+    sortDirection,
+    ...otherProps
+}: SortMenuItemProps) {
     const isSelected = name === sortKey;
 
     return (
@@ -38,5 +43,3 @@ function SortMenuItem({ name, sortKey, sortDirection, ...otherProps }: SortMenuI
         />
     );
 }
-
-export default SortMenuItem;

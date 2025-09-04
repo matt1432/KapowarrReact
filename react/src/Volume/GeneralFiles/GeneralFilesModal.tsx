@@ -15,12 +15,14 @@ interface GeneralFilesModalProps extends GeneralFilesModalContentProps {
 
 // IMPLEMENTATIONS
 
-function GeneralFilesModal({ isOpen, onModalClose, ...otherProps }: GeneralFilesModalProps) {
+export default function GeneralFilesModal({
+    isOpen,
+    onModalClose,
+    ...otherProps
+}: GeneralFilesModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
             <GeneralFilesModalContent {...otherProps} onModalClose={onModalClose} />
         </Modal>
     );
 }
-
-export default GeneralFilesModal;

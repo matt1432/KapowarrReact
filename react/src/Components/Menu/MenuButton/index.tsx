@@ -22,7 +22,7 @@ export interface MenuButtonProps {
 
 // IMPLEMENTATIONS
 
-function MenuButton({
+export default function MenuButton({
     className = styles.menuButton,
     children,
     isDisabled = false,
@@ -38,5 +38,3 @@ function MenuButton({
         </Link>
     );
 }
-
-export default MenuButton;

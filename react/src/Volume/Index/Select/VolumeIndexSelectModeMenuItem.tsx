@@ -21,7 +21,7 @@ interface VolumeIndexSelectModeMenuItemProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexSelectModeMenuItem({
+export default function VolumeIndexSelectModeMenuItem({
     label,
     iconName,
     isSelectMode,
@@ -43,5 +43,3 @@ function VolumeIndexSelectModeMenuItem({
         <PageToolbarOverflowMenuItem label={label} iconName={iconName} onPress={onPressWrapper} />
     );
 }
-
-export default VolumeIndexSelectModeMenuItem;

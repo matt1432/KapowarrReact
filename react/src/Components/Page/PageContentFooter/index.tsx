@@ -14,8 +14,9 @@ interface PageContentFooterProps {
 
 // IMPLEMENTATIONS
 
-function PageContentFooter({ className = styles.contentFooter, children }: PageContentFooterProps) {
+export default function PageContentFooter({
+    className = styles.contentFooter,
+    children,
+}: PageContentFooterProps) {
     return <div className={className}>{children}</div>;
 }
-
-export default PageContentFooter;

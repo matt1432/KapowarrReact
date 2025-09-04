@@ -17,7 +17,7 @@ export interface PageJumpBarItemProps {
 
 // IMPLEMENTATIONS
 
-function PageJumpBarItem({ label, onItemPress }: PageJumpBarItemProps) {
+export default function PageJumpBarItem({ label, onItemPress }: PageJumpBarItemProps) {
     const handlePress = useCallback(() => {
         onItemPress(label);
     }, [label, onItemPress]);
@@ -28,5 +28,3 @@ function PageJumpBarItem({ label, onItemPress }: PageJumpBarItemProps) {
         </Link>
     );
 }
-
-export default PageJumpBarItem;

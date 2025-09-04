@@ -83,7 +83,7 @@ export interface ProviderOptionSelectInputProps<K extends string>
     selectOptionsProviderAction: string; // keyof Omit<ProviderOptionsAppState, 'devices'>;
 }
 
-function ProviderOptionSelectInput<K extends string>(
+export default function ProviderOptionSelectInput<K extends string>(
     // eslint-disable-next-line
     {
         // provider,
@@ -162,5 +162,3 @@ function ProviderOptionSelectInput<K extends string>(
         */
     return null;
 }
-
-export default ProviderOptionSelectInput;

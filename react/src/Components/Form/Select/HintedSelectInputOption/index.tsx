@@ -23,7 +23,7 @@ interface HintedSelectInputOptionProps extends Omit<EnhancedSelectInputOptionPro
 
 // IMPLEMENTATIONS
 
-function HintedSelectInputOption({
+export default function HintedSelectInputOption({
     id,
     value,
     hint,
@@ -48,5 +48,3 @@ function HintedSelectInputOption({
         </EnhancedSelectInputOption>
     );
 }
-
-export default HintedSelectInputOption;

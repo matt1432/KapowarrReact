@@ -27,7 +27,7 @@ interface MonitorToggleButtonProps {
 
 // IMPLEMENTATIONS
 
-function MonitorToggleButton({
+export default function MonitorToggleButton({
     className = styles.toggleButton,
     monitored,
     isDisabled = false,
@@ -72,5 +72,3 @@ function MonitorToggleButton({
         />
     );
 }
-
-export default MonitorToggleButton;

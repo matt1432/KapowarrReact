@@ -14,7 +14,7 @@ interface VolumeIndexPosterOptionsModalProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexPosterOptionsModal({
+export default function VolumeIndexPosterOptionsModal({
     isOpen,
     onModalClose,
 }: VolumeIndexPosterOptionsModalProps) {
@@ -24,5 +24,3 @@ function VolumeIndexPosterOptionsModal({
         </Modal>
     );
 }
-
-export default VolumeIndexPosterOptionsModal;

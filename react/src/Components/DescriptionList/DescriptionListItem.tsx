@@ -19,7 +19,7 @@ interface DescriptionListItemProps {
 
 // IMPLEMENTATIONS
 
-function DescriptionListItem({
+export default function DescriptionListItem({
     className,
     titleClassName,
     descriptionClassName,
@@ -36,5 +36,3 @@ function DescriptionListItem({
         </div>
     );
 }
-
-export default DescriptionListItem;

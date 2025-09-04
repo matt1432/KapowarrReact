@@ -10,7 +10,7 @@ import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem'
 
 // IMPLEMENTATIONS
 
-function VolumeMonitoringOptionsPopoverContent() {
+export default function VolumeMonitoringOptionsPopoverContent() {
     return (
         <DescriptionList>
             <DescriptionListItem
@@ -55,5 +55,3 @@ function VolumeMonitoringOptionsPopoverContent() {
         </DescriptionList>
     );
 }
-
-export default VolumeMonitoringOptionsPopoverContent;

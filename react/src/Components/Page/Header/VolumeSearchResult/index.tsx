@@ -20,7 +20,12 @@ interface VolumeSearchResultProps extends SuggestedVolume {
 
 // IMPLEMENTATIONS
 
-function VolumeSearchResult({ match, title, comicvineId, id }: VolumeSearchResultProps) {
+export default function VolumeSearchResult({
+    match,
+    title,
+    comicvineId,
+    id,
+}: VolumeSearchResultProps) {
     return (
         <div className={styles.result}>
             <VolumePoster volume={{ id }} className={styles.poster} size={250} lazy={false} />
@@ -35,5 +40,3 @@ function VolumeSearchResult({ match, title, comicvineId, id }: VolumeSearchResul
         </div>
     );
 }
-
-export default VolumeSearchResult;

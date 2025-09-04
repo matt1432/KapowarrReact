@@ -26,7 +26,7 @@ interface VirtualTableSelectCellProps extends VirtualTableRowCellProps {
 
 // IMPLEMENTATIONS
 
-function VirtualTableSelectCell({
+export default function VirtualTableSelectCell({
     inputClassName = styles.input,
     id,
     isSelected = false,
@@ -53,5 +53,3 @@ function VirtualTableSelectCell({
         </VirtualTableRowCell>
     );
 }
-
-export default VirtualTableSelectCell;

@@ -18,12 +18,14 @@ interface DeleteVolumeModalProps extends DeleteVolumeModalContentProps {
 
 // IMPLEMENTATIONS
 
-function DeleteVolumeModal({ isOpen, onModalClose, ...otherProps }: DeleteVolumeModalProps) {
+export default function DeleteVolumeModal({
+    isOpen,
+    onModalClose,
+    ...otherProps
+}: DeleteVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} size={sizes.MEDIUM} onModalClose={onModalClose}>
             <DeleteVolumeModalContent {...otherProps} onModalClose={onModalClose} />
         </Modal>
     );
 }
-
-export default DeleteVolumeModal;

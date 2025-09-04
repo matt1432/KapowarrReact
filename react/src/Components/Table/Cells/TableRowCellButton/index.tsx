@@ -19,8 +19,9 @@ interface TableRowCellButtonProps extends LinkProps {
 
 // IMPLEMENTATIONS
 
-function TableRowCellButton({ className = styles.cell, ...otherProps }: TableRowCellButtonProps) {
+export default function TableRowCellButton({
+    className = styles.cell,
+    ...otherProps
+}: TableRowCellButtonProps) {
     return <Link className={className} component={TableRowCell} {...otherProps} />;
 }
-
-export default TableRowCellButton;

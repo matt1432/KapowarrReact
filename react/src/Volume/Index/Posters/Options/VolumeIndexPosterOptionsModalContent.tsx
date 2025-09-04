@@ -54,7 +54,7 @@ const posterSizeOptions: EnhancedSelectInputValue<string>[] = [
     },
 ];
 
-function VolumeIndexPosterOptionsModalContent({
+export default function VolumeIndexPosterOptionsModalContent({
     onModalClose,
 }: VolumeIndexPosterOptionsModalContentProps) {
     const {
@@ -177,5 +177,3 @@ function VolumeIndexPosterOptionsModalContent({
         </ModalContent>
     );
 }
-
-export default VolumeIndexPosterOptionsModalContent;

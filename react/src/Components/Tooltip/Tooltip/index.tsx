@@ -44,7 +44,7 @@ export interface TooltipProps {
 
 // IMPLEMENTATIONS
 
-function Tooltip({
+export default function Tooltip({
     className,
     bodyClassName = styles.body,
     anchor,
@@ -111,5 +111,3 @@ function Tooltip({
         </>
     );
 }
-
-export default Tooltip;

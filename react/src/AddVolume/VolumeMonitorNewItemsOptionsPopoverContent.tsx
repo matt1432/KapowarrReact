@@ -9,7 +9,7 @@ import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem'
 
 // IMPLEMENTATIONS
 
-function VolumeMonitorNewItemsOptionsPopoverContent() {
+export default function VolumeMonitorNewItemsOptionsPopoverContent() {
     return (
         <DescriptionList>
             <DescriptionListItem
@@ -24,5 +24,3 @@ function VolumeMonitorNewItemsOptionsPopoverContent() {
         </DescriptionList>
     );
 }
-
-export default VolumeMonitorNewItemsOptionsPopoverContent;

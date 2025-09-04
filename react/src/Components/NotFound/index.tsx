@@ -16,7 +16,7 @@ interface NotFoundProps {
 
 // IMPLEMENTATIONS
 
-function NotFound({ message = translate('DefaultNotFoundMessage') }: NotFoundProps) {
+export default function NotFound({ message = translate('DefaultNotFoundMessage') }: NotFoundProps) {
     return (
         <PageContent title="MIA">
             <div className={styles.container}>
@@ -30,5 +30,3 @@ function NotFound({ message = translate('DefaultNotFoundMessage') }: NotFoundPro
         </PageContent>
     );
 }
-
-export default NotFound;

@@ -41,7 +41,7 @@ export interface CheckInputProps<K extends string> {
 
 // IMPLEMENTATIONS
 
-function CheckInput<K extends string>({
+export default function CheckInput<K extends string>({
     className = styles.input,
     containerClassName = styles.container,
     name,
@@ -149,5 +149,3 @@ function CheckInput<K extends string>({
         </div>
     );
 }
-
-export default CheckInput;

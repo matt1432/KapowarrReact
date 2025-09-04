@@ -33,7 +33,7 @@ export interface KeyValueListInputProps<K extends string> {
 
 // IMPLEMENTATIONS
 
-function KeyValueListInput<K extends string>({
+export default function KeyValueListInput<K extends string>({
     className = styles.inputContainer,
     name,
     value = [],
@@ -114,5 +114,3 @@ function KeyValueListInput<K extends string>({
         </div>
     );
 }
-
-export default KeyValueListInput;

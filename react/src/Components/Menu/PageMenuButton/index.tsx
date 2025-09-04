@@ -23,7 +23,7 @@ interface PageMenuButtonProps {
 
 // IMPLEMENTATIONS
 
-function PageMenuButton({
+export default function PageMenuButton({
     iconName,
     showIndicator = false,
     text,
@@ -43,5 +43,3 @@ function PageMenuButton({
         </MenuButton>
     );
 }
-
-export default PageMenuButton;

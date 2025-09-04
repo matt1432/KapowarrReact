@@ -30,7 +30,7 @@ export interface PageToolbarButtonProps extends LinkProps {
 
 // IMPLEMENTATIONS
 
-function PageToolbarButton({
+export default function PageToolbarButton({
     label,
     iconName,
     spinningName = icons.SPINNER,
@@ -57,5 +57,3 @@ function PageToolbarButton({
         </Link>
     );
 }
-
-export default PageToolbarButton;

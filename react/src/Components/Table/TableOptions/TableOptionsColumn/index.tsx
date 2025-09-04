@@ -42,7 +42,7 @@ interface TableOptionsColumnProps<T extends string> {
 
 // IMPLEMENTATIONS
 
-function TableOptionsColumn<T extends string>({
+export default function TableOptionsColumn<T extends string>({
     name,
     label,
     index,
@@ -170,5 +170,3 @@ function TableOptionsColumn<T extends string>({
         </div>
     );
 }
-
-export default TableOptionsColumn;

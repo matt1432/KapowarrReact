@@ -13,11 +13,9 @@ export interface DescriptionListItemDescriptionProps {
 
 // IMPLEMENTATIONS
 
-function DescriptionListItemDescription({
+export default function DescriptionListItemDescription({
     className = styles.description,
     children,
 }: DescriptionListItemDescriptionProps) {
     return <dd className={className}>{children}</dd>;
 }
-
-export default DescriptionListItemDescription;

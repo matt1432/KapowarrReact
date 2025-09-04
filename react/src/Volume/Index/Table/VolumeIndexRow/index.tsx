@@ -48,7 +48,7 @@ interface VolumeIndexRowProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexRow({ volumeId, columns, isSelectMode }: VolumeIndexRowProps) {
+export default function VolumeIndexRow({ volumeId, columns, isSelectMode }: VolumeIndexRowProps) {
     const { data: volume } = useSearchVolumeQuery({ volumeId });
 
     const { showSearchAction } = useRootSelector((state) => state.volumeIndex.tableOptions);
@@ -298,5 +298,3 @@ function VolumeIndexRow({ volumeId, columns, isSelectMode }: VolumeIndexRowProps
         </>
     );
 }
-
-export default VolumeIndexRow;

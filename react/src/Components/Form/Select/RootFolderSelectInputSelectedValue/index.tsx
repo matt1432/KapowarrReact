@@ -21,7 +21,7 @@ interface RootFolderSelectInputSelectedValueProps {
 
 // IMPLEMENTATIONS
 
-function RootFolderSelectInputSelectedValue({
+export default function RootFolderSelectInputSelectedValue({
     selectedValue,
     values,
     volumeFolder,
@@ -48,5 +48,3 @@ function RootFolderSelectInputSelectedValue({
         </EnhancedSelectInputSelectedValue>
     );
 }
-
-export default RootFolderSelectInputSelectedValue;

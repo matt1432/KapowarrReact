@@ -9,7 +9,7 @@ import styles from './index.module.css';
 
 // IMPLEMENTATIONS
 
-function LoadingPage() {
+export default function LoadingPage() {
     return (
         <div className={styles.page}>
             <img
@@ -21,5 +21,3 @@ function LoadingPage() {
         </div>
     );
 }
-
-export default LoadingPage;

@@ -25,7 +25,7 @@ interface FormInputHelpTextProps {
 
 // IMPLEMENTATIONS
 
-function FormInputHelpText({
+export default function FormInputHelpText({
     className = styles.helpText,
     text,
     link,
@@ -57,5 +57,3 @@ function FormInputHelpText({
         </div>
     );
 }
-
-export default FormInputHelpText;

@@ -20,7 +20,7 @@ interface SpecialVersionSelectInputOptionProps extends EnhancedSelectInputOption
 
 // IMPLEMENTATIONS
 
-function SpecialVersionSelectInputOption({
+export default function SpecialVersionSelectInputOption({
     id,
     value,
     isMobile,
@@ -34,5 +34,3 @@ function SpecialVersionSelectInputOption({
         </EnhancedSelectInputOption>
     );
 }
-
-export default SpecialVersionSelectInputOption;

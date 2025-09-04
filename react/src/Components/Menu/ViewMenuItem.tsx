@@ -18,10 +18,8 @@ interface ViewMenuItemProps extends Omit<SelectedMenuItemProps<IndexView>, 'isSe
 
 // IMPLEMENTATIONS
 
-function ViewMenuItem({ name, selectedView, ...otherProps }: ViewMenuItemProps) {
+export default function ViewMenuItem({ name, selectedView, ...otherProps }: ViewMenuItemProps) {
     const isSelected = name === selectedView;
 
     return <SelectedMenuItem name={name} isSelected={isSelected} {...otherProps} />;
 }
-
-export default ViewMenuItem;

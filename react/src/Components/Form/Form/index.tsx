@@ -10,8 +10,6 @@ export interface FormProps {
 
 // IMPLEMENTATIONS
 
-function Form({ id, children }: FormProps) {
+export default function Form({ id, children }: FormProps) {
     return <div id={id}>{children}</div>;
 }
-
-export default Form;

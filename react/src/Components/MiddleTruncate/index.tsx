@@ -17,7 +17,7 @@ function getTruncatedText(text: string, length: number) {
     return `${text.slice(0, length)}...${text.slice(text.length - length)}`;
 }
 
-function MiddleTruncate({ text }: MiddleTruncateProps) {
+export default function MiddleTruncate({ text }: MiddleTruncateProps) {
     const [containerRef, { width: containerWidth }] = useMeasure();
     const [textRef, { width: textWidth }] = useMeasure();
     const [truncatedText, setTruncatedText] = useState(text);
@@ -63,5 +63,3 @@ function MiddleTruncate({ text }: MiddleTruncateProps) {
         </div>
     );
 }
-
-export default MiddleTruncate;

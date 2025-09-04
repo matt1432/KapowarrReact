@@ -10,8 +10,6 @@ interface TableBodyProps {
 
 // IMPLEMENTATIONS
 
-function TableBody({ children }: TableBodyProps) {
+export default function TableBody({ children }: TableBodyProps) {
     return <tbody>{children}</tbody>;
 }
-
-export default TableBody;

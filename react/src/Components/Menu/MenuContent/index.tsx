@@ -21,7 +21,7 @@ interface MenuContentProps {
 
 // IMPLEMENTATIONS
 
-function MenuContent({
+export default function MenuContent({
     forwardedRef,
     className = styles.menuContent,
     id,
@@ -37,5 +37,3 @@ function MenuContent({
         </div>
     );
 }
-
-export default MenuContent;

@@ -14,8 +14,9 @@ export interface VirtualTableRowCellProps {
 
 // IMPLEMENTATIONS
 
-function VirtualTableRowCell({ className = styles.cell, children }: VirtualTableRowCellProps) {
+export default function VirtualTableRowCell({
+    className = styles.cell,
+    children,
+}: VirtualTableRowCellProps) {
     return <div className={className}>{children}</div>;
 }
-
-export default VirtualTableRowCell;

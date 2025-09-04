@@ -22,7 +22,12 @@ interface SortMenuProps extends Omit<ToolbarMenuButtonProps, 'iconName'> {
 
 // IMPLEMENTATIONS
 
-function SortMenu({ className, children, isDisabled = false, ...otherProps }: SortMenuProps) {
+export default function SortMenu({
+    className,
+    children,
+    isDisabled = false,
+    ...otherProps
+}: SortMenuProps) {
     return (
         <Menu className={className} {...otherProps}>
             <ToolbarMenuButton
@@ -34,5 +39,3 @@ function SortMenu({ className, children, isDisabled = false, ...otherProps }: So
         </Menu>
     );
 }
-
-export default SortMenu;

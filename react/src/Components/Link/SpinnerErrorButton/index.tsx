@@ -74,7 +74,7 @@ function getTestResult(error: AnyError | undefined) {
     };
 }
 
-function SpinnerErrorButton({
+export default function SpinnerErrorButton({
     kind,
     isSpinning,
     error,
@@ -159,5 +159,3 @@ function SpinnerErrorButton({
         </SpinnerButton>
     );
 }
-
-export default SpinnerErrorButton;

@@ -22,7 +22,7 @@ interface FieldSetProps {
 
 // IMPLEMENTATIONS
 
-function FieldSet({ size = sizes.MEDIUM, legend, children }: FieldSetProps) {
+export default function FieldSet({ size = sizes.MEDIUM, legend, children }: FieldSetProps) {
     return (
         <fieldset className={styles.fieldSet}>
             <legend className={classNames(styles.legend, size === sizes.SMALL && styles.small)}>
@@ -32,5 +32,3 @@ function FieldSet({ size = sizes.MEDIUM, legend, children }: FieldSetProps) {
         </fieldset>
     );
 }
-
-export default FieldSet;

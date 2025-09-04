@@ -45,7 +45,7 @@ function parseValue(
     return newValue;
 }
 
-function NumberInput<K extends string>({
+export default function NumberInput<K extends string>({
     name,
     value: inputValue = null,
     isFloat = false,
@@ -113,5 +113,3 @@ function NumberInput<K extends string>({
         />
     );
 }
-
-export default NumberInput;

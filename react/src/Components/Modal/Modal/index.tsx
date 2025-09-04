@@ -70,7 +70,7 @@ function findEventTarget(event: TouchEvent | MouseEvent) {
     return event.target;
 }
 
-function Modal({
+export default function Modal({
     className = styles.modal,
     style,
     backdropClassName = styles.modalBackdrop,
@@ -194,5 +194,3 @@ function Modal({
         node!,
     );
 }
-
-export default Modal;

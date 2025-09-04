@@ -21,7 +21,11 @@ interface VolumeIndexViewMenuProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexViewMenu({ view, isDisabled, onViewSelect }: VolumeIndexViewMenuProps) {
+export default function VolumeIndexViewMenu({
+    view,
+    isDisabled,
+    onViewSelect,
+}: VolumeIndexViewMenuProps) {
     return (
         <ViewMenu isDisabled={isDisabled} alignMenu={align.RIGHT}>
             <MenuContent>
@@ -36,5 +40,3 @@ function VolumeIndexViewMenu({ view, isDisabled, onViewSelect }: VolumeIndexView
         </ViewMenu>
     );
 }
-
-export default VolumeIndexViewMenu;

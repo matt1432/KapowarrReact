@@ -22,7 +22,7 @@ interface VolumeIndexSortMenuProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexSortMenu({
+export default function VolumeIndexSortMenu({
     sortKey,
     sortDirection,
     isDisabled,
@@ -97,5 +97,3 @@ function VolumeIndexSortMenu({
         </SortMenu>
     );
 }
-
-export default VolumeIndexSortMenu;

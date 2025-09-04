@@ -29,7 +29,7 @@ interface IssueDetailsModalProps {
     onModalClose(): void;
 }
 
-function IssueDetailsModal({
+export default function IssueDetailsModal({
     selectedTab,
     isOpen,
     onModalClose,
@@ -60,5 +60,3 @@ function IssueDetailsModal({
         </Modal>
     );
 }
-
-export default IssueDetailsModal;

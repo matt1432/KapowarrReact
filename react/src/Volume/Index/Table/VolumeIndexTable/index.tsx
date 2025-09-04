@@ -77,7 +77,7 @@ function Row({
     );
 }
 
-function VolumeIndexTable({
+export default function VolumeIndexTable({
     items,
     sortKey,
     sortDirection,
@@ -135,5 +135,3 @@ function VolumeIndexTable({
         />
     );
 }
-
-export default VolumeIndexTable;

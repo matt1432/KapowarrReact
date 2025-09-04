@@ -59,7 +59,7 @@ interface AutoSuggestInputProps<K extends string, T>
 
 // IMPLEMENTATIONS
 
-function AutoSuggestInput<T, K extends string>({
+export default function AutoSuggestInput<T, K extends string>({
     forwardedRef,
     className = styles.input,
     inputContainerClassName = styles.inputContainer,
@@ -211,5 +211,3 @@ function AutoSuggestInput<T, K extends string>({
         />
     );
 }
-
-export default AutoSuggestInput;

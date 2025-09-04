@@ -17,7 +17,7 @@ interface PopoverProps extends Omit<TooltipProps, 'tooltip' | 'bodyClassName'> {
 
 // IMPLEMENTATIONS
 
-function Popover({ title, body, ...otherProps }: PopoverProps) {
+export default function Popover({ title, body, ...otherProps }: PopoverProps) {
     return (
         <Tooltip
             {...otherProps}
@@ -32,5 +32,3 @@ function Popover({ title, body, ...otherProps }: PopoverProps) {
         />
     );
 }
-
-export default Popover;

@@ -26,7 +26,7 @@ interface ConnectionLostModalProps {
 
 // IMPLEMENTATIONS
 
-function ConnectionLostModal({ isOpen }: ConnectionLostModalProps) {
+export default function ConnectionLostModal({ isOpen }: ConnectionLostModalProps) {
     const handleModalClose = useCallback(() => {
         location.reload();
     }, []);
@@ -50,5 +50,3 @@ function ConnectionLostModal({ isOpen }: ConnectionLostModalProps) {
         </Modal>
     );
 }
-
-export default ConnectionLostModal;

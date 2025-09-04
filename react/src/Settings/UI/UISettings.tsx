@@ -33,7 +33,7 @@ import type { InputChanged } from 'typings/Inputs';
 
 // IMPLEMENTATIONS
 
-function UISettings() {
+export default function UISettings() {
     const dispatch = useRootDispatch();
 
     const { theme, enableColorImpairedMode } = useRootSelector((state) => state.uiSettings);
@@ -94,5 +94,3 @@ function UISettings() {
         </PageContent>
     );
 }
-
-export default UISettings;

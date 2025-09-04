@@ -21,7 +21,7 @@ interface ViewMenuProps extends Omit<ToolbarMenuButtonProps, 'iconName'> {
 
 // IMPLEMENTATIONS
 
-function ViewMenu({ children, isDisabled = false, ...otherProps }: ViewMenuProps) {
+export default function ViewMenu({ children, isDisabled = false, ...otherProps }: ViewMenuProps) {
     return (
         <Menu {...otherProps}>
             <ToolbarMenuButton
@@ -33,5 +33,3 @@ function ViewMenu({ children, isDisabled = false, ...otherProps }: ViewMenuProps
         </Menu>
     );
 }
-
-export default ViewMenu;

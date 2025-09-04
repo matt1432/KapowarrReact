@@ -21,7 +21,7 @@ interface VolumeProgressLabelProps {
 
 // IMPLEMENTATIONS
 
-function VolumeProgressLabel({ className, volume }: VolumeProgressLabelProps) {
+export default function VolumeProgressLabel({ className, volume }: VolumeProgressLabelProps) {
     const { queue } = useFetchQueueDetails({ volumeId: volume.id });
     const { kind, text } = getDownloadedIssuesProgress({ queue, volume });
 
@@ -31,5 +31,3 @@ function VolumeProgressLabel({ className, volume }: VolumeProgressLabelProps) {
         </Label>
     );
 }
-
-export default VolumeProgressLabel;

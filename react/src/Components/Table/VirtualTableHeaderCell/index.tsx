@@ -29,7 +29,7 @@ interface VirtualTableHeaderCellProps {
 
 // IMPLEMENTATIONS
 
-function VirtualTableHeaderCell({
+export default function VirtualTableHeaderCell({
     className = styles.headerCell,
     name,
     isSortable = false,
@@ -63,5 +63,3 @@ function VirtualTableHeaderCell({
         <div className={className}>{children}</div>
     );
 }
-
-export default VirtualTableHeaderCell;

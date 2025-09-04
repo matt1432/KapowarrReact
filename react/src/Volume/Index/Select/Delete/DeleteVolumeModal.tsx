@@ -15,12 +15,14 @@ interface DeleteVolumeModalProps {
 
 // IMPLEMENTATIONS
 
-function DeleteVolumeModal({ isOpen, volumeIds, onModalClose }: DeleteVolumeModalProps) {
+export default function DeleteVolumeModal({
+    isOpen,
+    volumeIds,
+    onModalClose,
+}: DeleteVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
             <DeleteVolumeModalContent volumeIds={volumeIds} onModalClose={onModalClose} />
         </Modal>
     );
 }
-
-export default DeleteVolumeModal;

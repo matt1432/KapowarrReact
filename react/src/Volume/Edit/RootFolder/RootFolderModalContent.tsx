@@ -38,7 +38,7 @@ export interface RootFolderModalContentProps {
 
 // IMPLEMENTATIONS
 
-function RootFolderModalContent({
+export default function RootFolderModalContent({
     volumeId,
     onSavePress,
     onModalClose,
@@ -96,5 +96,3 @@ function RootFolderModalContent({
         </ModalContent>
     );
 }
-
-export default RootFolderModalContent;

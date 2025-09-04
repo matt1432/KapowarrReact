@@ -36,7 +36,7 @@ import styles from './index.module.css';
 
 // IMPLEMENTATIONS
 
-function VolumeIndexSelectFooter() {
+export default function VolumeIndexSelectFooter() {
     const { massEditorStatus } = useRootSelector((state) => state.socketEvents);
 
     const { refetch } = useGetVolumesQuery();
@@ -225,5 +225,3 @@ function VolumeIndexSelectFooter() {
         </PageContentFooter>
     );
 }
-
-export default VolumeIndexSelectFooter;

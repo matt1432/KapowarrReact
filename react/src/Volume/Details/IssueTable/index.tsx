@@ -138,7 +138,7 @@ function useIssuesSelector(volumeId: number) {
     );
 }
 
-function IssueTable({ volumeId }: IssueTableProps) {
+export default function IssueTable({ volumeId }: IssueTableProps) {
     const dispatch = useRootDispatch();
 
     const { issues, volumeMonitored, refetch } = useIssuesSelector(volumeId);
@@ -238,5 +238,3 @@ function IssueTable({ volumeId }: IssueTableProps) {
         </div>
     );
 }
-
-export default IssueTable;

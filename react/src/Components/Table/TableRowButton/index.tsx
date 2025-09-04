@@ -11,8 +11,6 @@ import styles from './index.module.css';
 
 // IMPLEMENTATIONS
 
-function TableRowButton(props: LinkProps) {
+export default function TableRowButton(props: LinkProps) {
     return <Link className={styles.row} component={TableRow} {...props} />;
 }
-
-export default TableRowButton;

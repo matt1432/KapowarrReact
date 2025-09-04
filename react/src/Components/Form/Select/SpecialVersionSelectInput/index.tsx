@@ -56,7 +56,9 @@ const specialVersionOptions: ISpecialVersionOption[] = [
     },
 ];
 
-function SpecialVersionSelectInput<K extends string>(props: SpecialVersionSelectInputProps<K>) {
+export default function SpecialVersionSelectInput<K extends string>(
+    props: SpecialVersionSelectInputProps<K>,
+) {
     const { includeNoChange = false, includeNoChangeDisabled = true, includeMixed = false } = props;
 
     const values = useMemo(() => {
@@ -90,5 +92,3 @@ function SpecialVersionSelectInput<K extends string>(props: SpecialVersionSelect
         />
     );
 }
-
-export default SpecialVersionSelectInput;

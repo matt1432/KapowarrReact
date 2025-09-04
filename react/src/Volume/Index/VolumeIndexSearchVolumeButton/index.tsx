@@ -27,7 +27,7 @@ interface VolumeIndexSearchVolumeButtonProps {
 
 // IMPLEMENTATIONS
 
-function VolumeIndexSearchVolumeButton({
+export default function VolumeIndexSearchVolumeButton({
     isSelectMode,
     filterKey,
 }: VolumeIndexSearchVolumeButtonProps) {
@@ -84,5 +84,3 @@ function VolumeIndexSearchVolumeButton({
         />
     );
 }
-
-export default VolumeIndexSearchVolumeButton;

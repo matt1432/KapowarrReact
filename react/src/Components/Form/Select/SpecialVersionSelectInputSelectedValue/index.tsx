@@ -13,7 +13,7 @@ interface SpecialVersionSelectInputOptionProps {
 
 // IMPLEMENTATIONS
 
-function SpecialVersionSelectInputSelectedValue({
+export default function SpecialVersionSelectInputSelectedValue({
     selectedValue,
     values,
     ...otherProps
@@ -26,5 +26,3 @@ function SpecialVersionSelectInputSelectedValue({
         />
     );
 }
-
-export default SpecialVersionSelectInputSelectedValue;

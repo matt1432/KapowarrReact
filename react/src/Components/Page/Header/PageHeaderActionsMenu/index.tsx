@@ -33,7 +33,9 @@ interface PageHeaderActionsMenuProps {
 
 // IMPLEMENTATIONS
 
-function PageHeaderActionsMenu({ onKeyboardShortcutsPress }: PageHeaderActionsMenuProps) {
+export default function PageHeaderActionsMenu({
+    onKeyboardShortcutsPress,
+}: PageHeaderActionsMenuProps) {
     // const dispatch = useDispatch();
 
     // const { authentication, isDocker } = useSelector((state: AppState) => state.system.status.item);
@@ -100,5 +102,3 @@ function PageHeaderActionsMenu({ onKeyboardShortcutsPress }: PageHeaderActionsMe
         </div>
     );
 }
-
-export default PageHeaderActionsMenu;

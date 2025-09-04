@@ -29,7 +29,7 @@ interface ProgressBarProps {
 
 // IMPLEMENTATIONS
 
-function ProgressBar({
+export default function ProgressBar({
     className = styles.progressBar,
     containerClassName = styles.container,
     title,
@@ -97,5 +97,3 @@ function ProgressBar({
         </ColorImpairedConsumer>
     );
 }
-
-export default ProgressBar;

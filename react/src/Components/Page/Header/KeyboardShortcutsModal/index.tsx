@@ -17,12 +17,13 @@ interface KeyboardShortcutsModalProps {
 
 // IMPLEMENTATIONS
 
-function KeyboardShortcutsModal({ isOpen, onModalClose }: KeyboardShortcutsModalProps) {
+export default function KeyboardShortcutsModal({
+    isOpen,
+    onModalClose,
+}: KeyboardShortcutsModalProps) {
     return (
         <Modal isOpen={isOpen} size={sizes.SMALL} onModalClose={onModalClose}>
             <KeyboardShortcutsModalContent onModalClose={onModalClose} />
         </Modal>
     );
 }
-
-export default KeyboardShortcutsModal;

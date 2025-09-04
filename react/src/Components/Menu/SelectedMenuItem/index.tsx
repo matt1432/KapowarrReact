@@ -28,7 +28,7 @@ export interface SelectedMenuItemProps<T> extends Omit<MenuItemProps, 'onPress' 
 
 // IMPLEMENTATIONS
 
-function SelectedMenuItem<T>({
+export default function SelectedMenuItem<T>({
     children,
     name,
     selectedIconName = icons.CHECK,
@@ -53,5 +53,3 @@ function SelectedMenuItem<T>({
         </MenuItem>
     );
 }
-
-export default SelectedMenuItem;

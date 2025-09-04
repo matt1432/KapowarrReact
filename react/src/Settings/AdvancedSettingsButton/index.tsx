@@ -30,7 +30,7 @@ interface AdvancedSettingsButtonProps {
 
 // IMPLEMENTATIONS
 
-function AdvancedSettingsButton({ showLabel }: AdvancedSettingsButtonProps) {
+export default function AdvancedSettingsButton({ showLabel }: AdvancedSettingsButtonProps) {
     const showAdvancedSettings = useRootSelector((state) => state.settings.advancedSettings);
     const dispatch = useRootDispatch();
 
@@ -72,5 +72,3 @@ function AdvancedSettingsButton({ showLabel }: AdvancedSettingsButtonProps) {
         </Link>
     );
 }
-
-export default AdvancedSettingsButton;

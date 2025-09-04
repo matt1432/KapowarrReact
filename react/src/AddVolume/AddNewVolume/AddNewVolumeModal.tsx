@@ -14,12 +14,14 @@ interface AddNewVolumeModalProps extends AddNewVolumeModalContentProps {
 
 // IMPLEMENTATIONS
 
-function AddNewVolumeModal({ isOpen, onModalClose, ...otherProps }: AddNewVolumeModalProps) {
+export default function AddNewVolumeModal({
+    isOpen,
+    onModalClose,
+    ...otherProps
+}: AddNewVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
             <AddNewVolumeModalContent {...otherProps} onModalClose={onModalClose} />
         </Modal>
     );
 }
-
-export default AddNewVolumeModal;

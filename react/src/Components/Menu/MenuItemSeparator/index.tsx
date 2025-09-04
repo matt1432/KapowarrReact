@@ -5,8 +5,6 @@ import styles from './index.module.css';
 
 // IMPLEMENTATIONS
 
-function MenuItemSeparator() {
+export default function MenuItemSeparator() {
     return <div className={styles.separator} />;
 }
-
-export default MenuItemSeparator;

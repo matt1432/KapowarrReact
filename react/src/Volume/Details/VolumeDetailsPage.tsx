@@ -19,7 +19,7 @@ import VolumeDetails from './VolumeDetails';
 
 // IMPLEMENTATIONS
 
-function VolumeDetailsPage() {
+export default function VolumeDetailsPage() {
     const { data: allVolumes = [] } = useGetVolumesQuery();
     const { titleSlug } = useParams<{ titleSlug: string }>();
 
@@ -43,5 +43,3 @@ function VolumeDetailsPage() {
 
     return <VolumeDetails volumeId={allVolumes[volumeIndex].id} />;
 }
-
-export default VolumeDetailsPage;

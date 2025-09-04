@@ -27,7 +27,7 @@ interface HintedSelectInputSelectedValueProps<T, V> {
 
 // IMPLEMENTATIONS
 
-function HintedSelectInputSelectedValue<
+export default function HintedSelectInputSelectedValue<
     T extends EnhancedSelectInputValue<V>,
     V extends number | string,
 >({
@@ -58,5 +58,3 @@ function HintedSelectInputSelectedValue<
         </EnhancedSelectInputSelectedValue>
     );
 }
-
-export default HintedSelectInputSelectedValue;

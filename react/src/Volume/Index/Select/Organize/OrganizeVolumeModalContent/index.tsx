@@ -35,7 +35,10 @@ interface OrganizeVolumeModalContentProps {
 
 // IMPLEMENTATIONS
 
-function OrganizeVolumeModalContent({ volumeIds, onModalClose }: OrganizeVolumeModalContentProps) {
+export default function OrganizeVolumeModalContent({
+    volumeIds,
+    onModalClose,
+}: OrganizeVolumeModalContentProps) {
     const { data: allVolumes = [] } = useGetVolumesQuery();
     const [runMassEditAction] = useMassEditMutation();
 
@@ -97,5 +100,3 @@ function OrganizeVolumeModalContent({ volumeIds, onModalClose }: OrganizeVolumeM
         </ModalContent>
     );
 }
-
-export default OrganizeVolumeModalContent;

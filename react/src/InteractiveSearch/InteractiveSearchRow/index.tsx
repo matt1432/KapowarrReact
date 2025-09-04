@@ -80,7 +80,7 @@ function getDownloadTooltip(
     return translate('AddToDownloadQueue');
 }
 
-function InteractiveSearchRow({ searchPayload, result }: InteractiveSearchRowProps) {
+export default function InteractiveSearchRow({ searchPayload, result }: InteractiveSearchRowProps) {
     const [
         grabRelease,
         { isLoading: isGrabbing, isSuccess: isGrabbed, isError, error: grabError },
@@ -214,5 +214,3 @@ function InteractiveSearchRow({ searchPayload, result }: InteractiveSearchRowPro
         </TableRow>
     );
 }
-
-export default InteractiveSearchRow;

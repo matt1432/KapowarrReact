@@ -26,7 +26,7 @@ interface MenuProps {
 
 // IMPLEMENTATIONS
 
-function Menu({
+export default function Menu({
     className = styles.menu,
     children,
     alignMenu = 'left',
@@ -165,5 +165,3 @@ function Menu({
         </>
     );
 }
-
-export default Menu;

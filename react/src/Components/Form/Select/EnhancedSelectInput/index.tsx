@@ -158,7 +158,11 @@ function isSelectedItem<T extends EnhancedSelectInputValue<V>, V>(
     return values[index].key === value;
 }
 
-function EnhancedSelectInput<K extends string, T extends EnhancedSelectInputValue<V>, V>({
+export default function EnhancedSelectInput<
+    K extends string,
+    T extends EnhancedSelectInputValue<V>,
+    V,
+>({
     className = styles.enhancedSelect,
     disabledClassName = styles.isDisabled,
     name,
@@ -550,5 +554,3 @@ function EnhancedSelectInput<K extends string, T extends EnhancedSelectInputValu
         </>
     );
 }
-
-export default EnhancedSelectInput;

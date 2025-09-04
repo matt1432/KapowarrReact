@@ -88,7 +88,11 @@ function formatPermissions(permissions: number) {
     return result;
 }
 
-function UMaskInput<K extends string>({ name, value, onChange }: UMaskInputProps<K>) {
+export default function UMaskInput<K extends string>({
+    name,
+    value,
+    onChange,
+}: UMaskInputProps<K>) {
     const valueNum = parseInt(value, 8);
     const umaskNum = 0o777 & ~valueNum;
     const umask = umaskNum.toString(8).padStart(4, '0');
@@ -139,5 +143,3 @@ function UMaskInput<K extends string>({ name, value, onChange }: UMaskInputProps
         </div>
     );
 }
-
-export default UMaskInput;
