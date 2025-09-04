@@ -50,16 +50,14 @@ function MonitoringOptionsModalContent({
     onModalClose,
     refetch,
 }: MonitoringOptionsModalContentProps) {
-    const [updateVolumeMonitoringScheme, updateVolumeMonitoringSchemeState] =
+    const [updateVolumeMonitoringScheme, { isLoading: isSaving, error: saveError, isSuccess }] =
         useUpdateVolumeMutation();
 
     useEffect(() => {
-        if (updateVolumeMonitoringSchemeState.isSuccess) {
+        if (isSuccess) {
             refetch();
         }
-    }, [refetch, updateVolumeMonitoringSchemeState]);
-
-    const { isLoading: isSaving, error: saveError } = updateVolumeMonitoringSchemeState;
+    }, [refetch, isSuccess]);
 
     const [monitoringScheme, setMonitoringScheme] = useState<MonitoringScheme | typeof NO_CHANGE>(
         NO_CHANGE,

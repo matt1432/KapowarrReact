@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -144,11 +144,22 @@ function IssueTable({ volumeId }: IssueTableProps) {
     const { issues, volumeMonitored, refetch } = useIssuesSelector(volumeId);
     const { sortKey, sortDirection } = useRootSelector((state) => state.issueTable);
 
-    const [updateIssue, { isSuccess, isLoading }] = useUpdateIssueMutation();
+    const [updateIssue, { isSuccess, originalArgs }] = useUpdateIssueMutation();
+
+    const [isToggling, setIsToggling] = useState(false);
+
+    const getIsSaving = useCallback(
+        (issueId: number) => {
+            return originalArgs?.issueId === issueId ? isToggling : false;
+        },
+        [isToggling, originalArgs],
+    );
 
     useEffect(() => {
         if (isSuccess) {
-            refetch();
+            refetch().finally(() => {
+                setIsToggling(false);
+            });
         }
     }, [refetch, isSuccess]);
 
@@ -170,6 +181,7 @@ function IssueTable({ volumeId }: IssueTableProps) {
             lastToggledIssue.current = issueId;
 
             issueIds.forEach((issueId) => {
+                setIsToggling(true);
                 updateIssue({
                     issueId,
                     monitored,
@@ -213,7 +225,7 @@ function IssueTable({ volumeId }: IssueTableProps) {
                     <IssueRow
                         key={issue.id}
                         columns={columns}
-                        isSaving={isLoading}
+                        isSaving={getIsSaving(issue.id)}
                         onMonitorIssuePress={handleMonitorIssuePress}
                         volumeMonitored={volumeMonitored}
                         {...issue}

@@ -22,7 +22,6 @@ interface IssueDetailsModalProps {
     issueId: number;
     volumeId: number;
     issueTitle: string;
-    isSaving?: boolean;
     showOpenVolumeButton?: boolean;
     selectedTab?: IssueDetailsTab;
     startInteractiveSearch?: boolean;

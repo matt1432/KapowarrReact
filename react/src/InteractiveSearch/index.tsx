@@ -55,6 +55,8 @@ interface SearchProps extends InteractiveSearchProps {
 
 // IMPLEMENTATIONS
 
+// TODO: add ranking
+
 const columns: Column<InteractiveSearchSort>[] = [
     {
         name: 'match',

@@ -6,9 +6,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 // Redux
 import { useExecuteCommandMutation } from 'Store/Api/Command';
 import { useFetchQueueDetails } from 'Store/Api/Queue';
-import { useGetVolumesQuery, useUpdateVolumeMutation } from 'Store/Api/Volumes';
-
-import useVolume from 'Volume/useVolume';
+import {
+    useGetVolumesQuery,
+    useSearchVolumeQuery,
+    useUpdateVolumeMutation,
+} from 'Store/Api/Volumes';
 
 // Misc
 import {
@@ -20,7 +22,6 @@ import {
     tooltipPositions,
 } from 'Helpers/Props';
 
-import usePrevious from 'Helpers/Hooks/usePrevious';
 import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
 import formatBytes from 'Utilities/Number/formatBytes';
@@ -70,30 +71,62 @@ interface VolumeDetailsProps {
 function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     const { data: allVolumes = [] } = useGetVolumesQuery();
 
-    const { volume, refetch, isFetching, isPopulated, error, hasIssues, hasMonitoredIssues } =
-        useVolume(volumeId);
-
-    const [executeCommand, executeCommandState] = useExecuteCommandMutation();
-
-    const [toggleVolumeMonitored, toggleVolumeMonitoredState] = useUpdateVolumeMutation();
-
-    useEffect(() => {
-        if (toggleVolumeMonitoredState.isSuccess) {
-            refetch();
-        }
-    }, [refetch, toggleVolumeMonitoredState.isSuccess]);
+    const {
+        volume,
+        refetch,
+        isFetching,
+        isPopulated,
+        error,
+        hasIssues,
+        issueFileCount,
+        hasMonitoredIssues,
+    } = useSearchVolumeQuery(
+        { volumeId },
+        {
+            refetchOnMountOrArgChange: true,
+            selectFromResult: ({ data, error, isFetching, isUninitialized }) => ({
+                volume: data,
+                hasIssues: Boolean(data?.issues.length),
+                issueFileCount: data?.issues.reduce((acc, v) => (acc += v.files.length), 0) ?? 0,
+                hasMonitoredIssues: data?.issues.some((e) => e.monitored),
+                error,
+                isFetching,
+                isPopulated: !isUninitialized,
+            }),
+        },
+    );
 
     const { refetch: refetchQueueDetails } = useFetchQueueDetails({ volumeId });
 
+    const [executeCommand, { originalArgs, isLoading: isCmdLoading, isSuccess: isCmdSuccess }] =
+        useExecuteCommandMutation();
+
+    const [isToggling, setIsToggling] = useState(false);
+    const [toggleVolumeMonitored, { isSuccess: isToggleSuccess }] = useUpdateVolumeMutation();
+
+    useEffect(() => {
+        if (isToggleSuccess) {
+            refetch().finally(() => {
+                setIsToggling(false);
+            });
+        }
+    }, [refetch, isToggleSuccess]);
+
+    useEffect(() => {
+        if (isCmdSuccess) {
+            refetch();
+            refetchQueueDetails();
+        }
+    }, [refetch, refetchQueueDetails, isCmdSuccess]);
+
     const { isRefreshing, isSearching } = useMemo(() => {
-        const isRunning = (cmd: string) =>
-            executeCommandState.originalArgs?.cmd === cmd && executeCommandState.isLoading;
+        const isRunning = (cmd: string) => originalArgs?.cmd === cmd && isCmdLoading;
 
         return {
             isRefreshing: isRunning(commandNames.REFRESH_VOLUME),
             isSearching: isRunning(commandNames.VOLUME_SEARCH),
         };
-    }, [executeCommandState]);
+    }, [isCmdLoading, originalArgs]);
 
     const { nextVolume, previousVolume } = useMemo(() => {
         const sortedVolume = allVolumes.toSorted(sortByProp('title'));
@@ -128,8 +161,6 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);
     const [isMonitorOptionsModalOpen, setIsMonitorOptionsModalOpen] = useState(false);
     const [isSearchVolumeModalOpen, setIsSearchVolumeModalOpen] = useState(false);
-
-    const wasRefreshing = usePrevious(isRefreshing);
 
     const handleOrganizePress = useCallback(() => {
         setIsOrganizeModalOpen(true);
@@ -190,6 +221,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const handleMonitorTogglePress = useCallback(
         (value: boolean) => {
+            setIsToggling(true);
             toggleVolumeMonitored({
                 volumeId,
                 monitored: value,
@@ -212,23 +244,11 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         });
     }, [volumeId, executeCommand]);
 
-    const populate = useCallback(() => {
-        refetch();
-        refetchQueueDetails();
-    }, [refetch, refetchQueueDetails]);
-
-    useEffect(() => {
-        if (!isRefreshing && wasRefreshing) {
-            populate();
-        }
-    }, [isRefreshing, wasRefreshing, populate]);
-
     if (!volume) {
         return null;
     }
 
-    const { title, folder, monitored, publisher, siteUrl, description, issueFileCount, totalSize } =
-        volume;
+    const { title, folder, monitored, publisher, siteUrl, description, totalSize } = volume;
 
     let issueFilesCountMessage = translate('VolumeDetailsNoIssueFiles');
 
@@ -338,7 +358,7 @@ function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                         <MonitorToggleButton
                                             className={styles.monitorToggleButton}
                                             monitored={monitored}
-                                            isSaving={toggleVolumeMonitoredState.isLoading}
+                                            isSaving={isToggling}
                                             size={40}
                                             onPress={handleMonitorTogglePress}
                                         />

@@ -33,7 +33,6 @@ export interface IssueDetailsModalContentProps {
     issueId: number;
     volumeId: number;
     issueTitle: string;
-    isSaving?: boolean;
     showOpenVolumeButton?: boolean;
     selectedTab?: IssueDetailsTab;
     startInteractiveSearch?: boolean;
@@ -44,13 +43,14 @@ export interface IssueDetailsModalContentProps {
 
 // IMPLEMENTATIONS
 
+// TODO: add history
+
 const TABS: IssueDetailsTab[] = ['details', 'search'];
 
 function IssueDetailsModalContent({
     issueId,
     volumeId,
     issueTitle,
-    isSaving = false,
     showOpenVolumeButton = false,
     startInteractiveSearch: initialStartInteractiveSearch = false,
     startLibgenFileSearch: initialStartLibgenFileSearch = false,
@@ -68,11 +68,15 @@ function IssueDetailsModalContent({
         },
     );
 
+    const [isToggling, setIsToggling] = useState(false);
+
     const [updateIssue, { isSuccess }] = useUpdateIssueMutation();
 
     useEffect(() => {
         if (isSuccess) {
-            refetch();
+            refetch().finally(() => {
+                setIsToggling(false);
+            });
         }
     }, [refetch, isSuccess]);
 
@@ -101,6 +105,7 @@ function IssueDetailsModalContent({
 
     const handleMonitorIssuePress = useCallback(
         (monitored: boolean) => {
+            setIsToggling(true);
             updateIssue({
                 issueId,
                 monitored,
@@ -118,7 +123,7 @@ function IssueDetailsModalContent({
                     monitored={monitored}
                     size={18}
                     isDisabled={!volumeMonitored}
-                    isSaving={isSaving}
+                    isSaving={isToggling}
                     onPress={handleMonitorIssuePress}
                 />
 
