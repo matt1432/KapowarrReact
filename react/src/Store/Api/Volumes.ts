@@ -22,12 +22,10 @@ import type { IndexFilter, IndexSort } from 'Volume/Index';
 
 import type { SpecialVersion } from 'Helpers/Props/specialVersions';
 
-export type GetVolumesParams =
-    | {
-          filter?: IndexFilter;
-          sort?: IndexSort;
-      }
-    | undefined;
+export interface GetVolumesParams {
+    filter?: IndexFilter;
+    sort?: IndexSort;
+}
 
 export interface AddVolumeParams {
     comicvineId: number;
@@ -189,26 +187,24 @@ export const useGetVolumeQuery = (
     volumeId: number,
     options?: Parameters<typeof extendedApi.useGetVolumesQuery>[1],
 ) => {
-    return extendedApi.useGetVolumesQuery(
-        {},
-        {
-            ...options,
-            selectFromResult: ({ data, ...rest }) => ({
-                volume: data?.find((v) => v.id === volumeId),
-                ...rest,
-            }),
-        },
-    );
+    return extendedApi.useGetVolumesQuery(undefined, {
+        ...options,
+        selectFromResult: ({ data, ...rest }) => ({
+            volume: data?.find((v) => v.id === volumeId),
+            ...rest,
+        }),
+    });
 };
 
-export const useExistingVolumeQuery = (comicvineId: number) => {
-    return extendedApi.useGetVolumesQuery(
-        {},
-        {
-            selectFromResult: ({ data, ...rest }) => ({
-                isExistingVolume: Boolean(data?.some((v) => v.comicvineId === comicvineId)),
-                ...rest,
-            }),
-        },
-    );
+export const useExistingVolumeQuery = (
+    comicvineId: number,
+    options?: Parameters<typeof extendedApi.useGetVolumesQuery>[1],
+) => {
+    return extendedApi.useGetVolumesQuery(undefined, {
+        ...options,
+        selectFromResult: ({ data, ...rest }) => ({
+            isExistingVolume: Boolean(data?.some((v) => v.comicvineId === comicvineId)),
+            ...rest,
+        }),
+    });
 };

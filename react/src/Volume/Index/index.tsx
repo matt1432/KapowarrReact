@@ -161,14 +161,15 @@ export const useIndexVolumes = () => {
     const { filterKey, sortKey, sortDirection } = useRootSelector((state) => state.volumeIndex);
 
     const { isFetching, isPopulated, error, data, refetch } = useGetVolumesQuery(
+        // TODO: sort and filter with JS instead?
         {
             sort: sortKey,
             filter: filterKey,
         },
         {
-            selectFromResult: ({ isFetching, isSuccess, error, data }) => ({
+            selectFromResult: ({ isFetching, isUninitialized, error, data }) => ({
                 isFetching,
-                isPopulated: isSuccess,
+                isPopulated: !isUninitialized,
                 error,
                 data: data ?? [],
             }),

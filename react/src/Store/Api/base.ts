@@ -11,12 +11,19 @@ import type { BaseQueryFn, FetchArgs } from '@reduxjs/toolkit/query/react';
 import type { SerializedError } from '@reduxjs/toolkit';
 import type { FetchError } from 'typings/Api';
 
+export type CustomBaseQuery = BaseQueryFn<
+    string | FetchArgs,
+    unknown,
+    FetchError | SerializedError
+>;
+
 // IMPLEMENTATIONS
 
 export const baseApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: window.Kapowarr.urlBase + window.Kapowarr.apiRoot,
+
         paramsSerializer: (params) => new URLSearchParams(snakeify(params)).toString(),
-    }) as BaseQueryFn<string | FetchArgs, unknown, FetchError | SerializedError>,
+    }) as CustomBaseQuery,
     endpoints: () => ({}),
 });
