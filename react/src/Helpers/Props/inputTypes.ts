@@ -9,7 +9,6 @@ export const inputTypes = {
     FLOAT: 'float',
     NUMBER: 'number',
     PASSWORD: 'password',
-    PATH: 'path',
     DOWNLOAD_CLIENT_SELECT: 'downloadClientSelect',
     ROOT_FOLDER_SELECT: 'rootFolderSelect',
     SELECT: 'select',

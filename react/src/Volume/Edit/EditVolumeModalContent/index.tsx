@@ -218,7 +218,7 @@ export default function EditVolumeModalContent({
                         <FormLabel>{translate('Path')}</FormLabel>
 
                         <FormInputGroup
-                            type={inputTypes.PATH}
+                            type={inputTypes.TEXT}
                             name="volumeFolder"
                             value={volumeFolder}
                             buttons={[
@@ -231,7 +231,6 @@ export default function EditVolumeModalContent({
                                     <Icon name={icons.ROOT_FOLDER} />
                                 </FormInputButton>,
                             ]}
-                            includeFiles={false}
                             onChange={handleInputChange}
                         />
                     </FormGroup>

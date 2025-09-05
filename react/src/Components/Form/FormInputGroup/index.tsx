@@ -20,7 +20,6 @@ import FormInputHelpText from '../FormInputHelpText';
 import KeyValueListInput, { type KeyValueListInputProps } from '../KeyValueListInput';
 import NumberInput, { type NumberInputProps } from '../NumberInput';
 import PasswordInput from '../PasswordInput';
-import PathInput, { type PathInputProps } from '../PathInput';
 import TextArea, { type TextAreaProps } from '../TextArea';
 import TextInput, { type TextInputProps } from '../TextInput';
 
@@ -70,7 +69,6 @@ type InputTypeMap<V, K extends string> = {
     monitorNewItemsSelect: MonitorNewItemsSelectInputProps<K>;
     number: NumberInputProps<K>;
     password: TextInputProps<K, 'password'>;
-    path: PathInputProps<K>;
     rootFolderSelect: RootFolderSelectInputProps<K>;
     select: EnhancedSelectInputProps<K, any, V>; // eslint-disable-line @typescript-eslint/no-explicit-any
     specialVersionSelect: SpecialVersionSelectInputProps<K>;
@@ -128,7 +126,6 @@ const componentMap: Record<InputType, ElementType> = {
     monitorNewItemsSelect: MonitorNewItemsSelectInput,
     number: NumberInput,
     password: PasswordInput,
-    path: PathInput,
     rootFolderSelect: RootFolderSelectInput,
     select: EnhancedSelectInput,
     specialVersionSelect: SpecialVersionSelectInput,
