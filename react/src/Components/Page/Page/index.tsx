@@ -7,7 +7,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { saveDimensions } from 'Store/Slices/App';
 
-// Misc
+// Hooks
 import useAppPage from 'Helpers/Hooks/useAppPage';
 
 // General Components

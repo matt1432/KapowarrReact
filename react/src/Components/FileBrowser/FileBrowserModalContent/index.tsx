@@ -13,8 +13,10 @@ import { useDispatch /*, useSelector*/ } from 'react-redux';
 // Misc
 import { kinds, scrollDirections } from 'Helpers/Props';
 
-import usePrevious from 'Helpers/Hooks/usePrevious';
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
 import { PathInputInternal } from 'Components/Form/PathInput';

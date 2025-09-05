@@ -11,6 +11,7 @@ import { setIsConnected, setMassEditorState } from 'Store/Slices/SocketEvents';
 // Misc
 import { socketEvents } from 'Helpers/Props';
 
+// Hooks
 import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
 
 // Types

@@ -11,6 +11,7 @@ import { icons, kinds, tooltipPositions } from 'Helpers/Props';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 
+// Hooks
 import useModalOpenState from 'Helpers/Hooks/useModalOpenState';
 
 // General Components

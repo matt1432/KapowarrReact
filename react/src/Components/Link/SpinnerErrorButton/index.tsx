@@ -6,21 +6,23 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 // Misc
 import { icons } from 'Helpers/Props';
-
 import { isFetchError } from 'Utilities/Object/error';
 
+// Hooks
 import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
-import Icon, { type IconKind, type IconName } from 'Components/Icon';
+import Icon from 'Components/Icon';
 
 // Specific Components
-import SpinnerButton, { type SpinnerButtonProps } from 'Components/Link/SpinnerButton';
+import SpinnerButton from 'Components/Link/SpinnerButton';
 
 // CSS
 import styles from './index.module.css';
 
 // Types
+import type { SpinnerButtonProps } from 'Components/Link/SpinnerButton';
+import type { IconKind, IconName } from 'Components/Icon';
 import type { AnyError } from 'typings/Api';
 
 interface SpinnerErrorButtonProps extends SpinnerButtonProps {

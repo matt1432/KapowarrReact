@@ -25,6 +25,8 @@ import { autoUpdate, flip, size, useFloating } from '@floating-ui/react-dom';
 
 // Misc
 import classNames from 'classnames';
+
+// Hooks
 import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // CSS

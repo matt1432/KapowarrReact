@@ -18,16 +18,22 @@ import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 
 // Specific Components
-import IssueHistoryRow from './IssueHistoryRow';
+import HistoryRow from './HistoryRow';
 
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { DownloadHistoryItem } from 'typings/Queue';
-export type IssueHistoryColumnName = keyof DownloadHistoryItem | 'actions';
+
+export type HistoryColumnName = keyof DownloadHistoryItem | 'actions';
+
+interface HistoryProps {
+    issueId?: number;
+    volumeId?: number;
+}
 
 // IMPLEMENTATIONS
 
-const columns: Column<IssueHistoryColumnName>[] = [
+const columns: Column<HistoryColumnName>[] = [
     {
         name: 'source',
         label: () => translate('SourceTitle'),
@@ -65,26 +71,24 @@ const columns: Column<IssueHistoryColumnName>[] = [
     },
 ];
 
-interface IssueHistoryProps {
-    issueId: number;
-}
-
-export default function IssueHistory({ issueId }: IssueHistoryProps) {
-    const [fetchIssueHistory, { items, isFetching, isPopulated, error }] =
-        useGetDownloadHistoryMutation({
+export default function History({ volumeId, issueId }: HistoryProps) {
+    const [fetchHistory, { items, isFetching, isPopulated, error }] = useGetDownloadHistoryMutation(
+        {
             selectFromResult: ({ data, isLoading, isUninitialized, error }) => ({
                 items: data ?? [],
                 isFetching: isLoading,
                 isPopulated: !isUninitialized,
                 error,
             }),
-        });
+        },
+    );
 
     const hasItems = !!items.length;
 
     useEffect(() => {
-        fetchIssueHistory({ issueId });
-    }, [fetchIssueHistory, issueId]);
+        // TODO: handle offset with pages
+        fetchHistory({ volumeId, issueId });
+    }, [fetchHistory, volumeId, issueId]);
 
     if (isFetching) {
         return <LoadingIndicator />;
@@ -103,7 +107,7 @@ export default function IssueHistory({ issueId }: IssueHistoryProps) {
             <Table columns={columns}>
                 <TableBody>
                     {items.map((item) => {
-                        return <IssueHistoryRow key={item.webLink} {...item} />;
+                        return <HistoryRow key={item.webLink} {...item} />;
                     })}
                 </TableBody>
             </Table>

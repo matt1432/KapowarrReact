@@ -21,6 +21,9 @@ import { align, icons, kinds, sortDirections } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
+// Hooks
+import useSort from 'Helpers/Hooks/useSort';
+
 // General Components
 import { SelectProvider } from 'App/SelectContext';
 
@@ -44,6 +47,7 @@ import VolumeIndexSortMenu from './Menus/VolumeIndexSortMenu';
 import VolumeIndexViewMenu from './Menus/VolumeIndexViewMenu';
 import VolumeIndexPosterOptionsModal from './Posters/Options/VolumeIndexPosterOptionsModal';
 import VolumeIndexPosters from './Posters/VolumeIndexPosters';
+import VolumeIndexSearchVolumeButton from './VolumeIndexSearchVolumeButton';
 import VolumeIndexSelectAllButton from './Select/VolumeIndexSelectAllButton';
 import VolumeIndexSelectAllMenuItem from './Select/VolumeIndexSelectAllMenuItem';
 import VolumeIndexSelectFooter from './Select/VolumeIndexSelectFooter';
@@ -56,12 +60,11 @@ import VolumeIndexTable from './Table/VolumeIndexTable';
 
 // CSS
 import styles from './index.module.css';
-import type { VolumeColumnName } from 'Volume/Volume';
-import VolumeIndexSearchVolumeButton from './VolumeIndexSearchVolumeButton';
-import type { Column } from 'Components/Table/Column';
-import useSort from 'Helpers/Hooks/useSort';
 
 // Types
+import type { Column } from 'Components/Table/Column';
+import type { VolumeColumnName } from 'Volume/Volume';
+
 export type IndexView = 'posters' | 'table';
 export type IndexFilter = '' | 'wanted' | 'monitored';
 export type IndexSort = VolumeColumnName;

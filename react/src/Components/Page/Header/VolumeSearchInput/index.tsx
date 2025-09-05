@@ -13,17 +13,20 @@ import {
 } from 'react';
 import Autosuggest from 'react-autosuggest';
 
+import { useNavigate } from 'react-router';
+
 // Redux
 import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
-import { useDebouncedCallback } from 'use-debounce';
-import { useNavigate } from 'react-router';
-
 import { icons } from 'Helpers/Props';
 
-import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import { useDebouncedCallback } from 'use-debounce';
+
+import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 
 // General Components
 import Icon from 'Components/Icon';

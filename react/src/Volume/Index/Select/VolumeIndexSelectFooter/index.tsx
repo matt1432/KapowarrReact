@@ -11,14 +11,16 @@ import { useGetVolumesQuery } from 'Store/Api/Volumes';
 import { useMassEditMutation } from 'Store/Api/Command';
 
 // Misc
-import { useSelect } from 'App/SelectContext';
-
 import { kinds, massEditActions } from 'Helpers/Props';
 
-import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
-import usePrevious from 'Helpers/Hooks/usePrevious';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
+
+// Hooks
+import { useSelect } from 'App/SelectContext';
+
+import usePrevious from 'Helpers/Hooks/usePrevious';
+import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
 
 // General Components
 import SpinnerButton from 'Components/Link/SpinnerButton';

@@ -11,18 +11,18 @@ import styles from './index.module.css';
 // Types
 import type { DownloadHistoryItem } from 'typings/Queue';
 
-type IssueHistoryRowProps = DownloadHistoryItem;
+type HistoryRowProps = DownloadHistoryItem;
 
 // IMPLEMENTATIONS
 
-export default function IssueHistoryRow({
+export default function HistoryRow({
     source,
     webLink,
     webTitle,
     webSubTitle,
     fileTitle,
     downloadedAt,
-}: IssueHistoryRowProps) {
+}: HistoryRowProps) {
     return (
         <TableRow>
             <TableRowCell>{source}</TableRowCell>

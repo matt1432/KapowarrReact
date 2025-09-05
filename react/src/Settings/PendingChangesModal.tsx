@@ -6,8 +6,10 @@ import { useEffect } from 'react';
 // Misc
 import { kinds } from 'Helpers/Props';
 
-import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 
 // General Components
 import Button from 'Components/Link/Button';

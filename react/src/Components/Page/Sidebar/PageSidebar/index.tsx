@@ -12,8 +12,10 @@ import { setIsSidebarVisible } from 'Store/Slices/App';
 import { icons } from 'Helpers/Props';
 
 import classNames from 'classnames';
-import usePrevious from 'Helpers/Hooks/usePrevious';
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
 import OverlayScroller from 'Components/Scroller/OverlayScroller';

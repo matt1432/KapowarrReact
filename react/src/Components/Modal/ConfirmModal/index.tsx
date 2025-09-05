@@ -3,7 +3,7 @@
 // React
 import React, { useEffect } from 'react';
 
-// Misc
+// Hooks
 import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 
 // General Components

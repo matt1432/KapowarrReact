@@ -3,7 +3,7 @@
 // React
 import React, { useCallback, useEffect } from 'react';
 
-// Misc
+// Hooks
 import useSelectState from 'Helpers/Hooks/useSelectState';
 
 // Types

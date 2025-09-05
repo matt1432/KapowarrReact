@@ -10,6 +10,7 @@ import { useDeleteFileMutation } from 'Store/Api/Files';
 // Misc
 import translate from 'Utilities/String/translate';
 
+// Hooks
 import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components

@@ -3,7 +3,7 @@
 // React
 import { useMemo } from 'react';
 
-// Misc
+// Hooks
 import useMeasure from 'Helpers/Hooks/useMeasure';
 
 // Specific Components

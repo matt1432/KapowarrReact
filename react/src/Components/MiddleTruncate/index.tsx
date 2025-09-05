@@ -3,7 +3,7 @@
 // React
 import { useEffect, useRef, useState } from 'react';
 
-// Misc
+// Hooks
 import useMeasure from 'Helpers/Hooks/useMeasure';
 
 // Types

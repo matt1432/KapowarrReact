@@ -10,6 +10,7 @@ import { setIsSidebarVisible } from 'Store/Slices/App';
 // Misc
 import { icons } from 'Helpers/Props';
 
+// Hooks
 import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 
 // General Components

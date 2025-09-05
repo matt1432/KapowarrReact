@@ -9,8 +9,10 @@ import React, { type ReactElement, useMemo } from 'react';
 import { icons } from 'Helpers/Props';
 
 import classNames from 'classnames';
-import useMeasure from 'Helpers/Hooks/useMeasure';
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import useMeasure from 'Helpers/Hooks/useMeasure';
 
 // General Components
 import Menu from 'Components/Menu/Menu';

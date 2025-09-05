@@ -52,6 +52,7 @@ import ConvertPreviewModal from 'Convert/ConvertPreviewModal';
 import GeneralFilesModal from 'Volume/GeneralFiles/GeneralFilesModal';
 import MonitoringOptionsModal from 'Volume/MonitoringOptions/MonitoringOptionsModal';
 import SearchVolumeModal from 'Volume/Search/SearchVolumeModal';
+import VolumeHistoryModal from 'Volume/History/VolumeHistoryModal';
 
 import IssueTable from '../IssueTable';
 import VolumeDetailsLinks from '../VolumeDetailsLinks';
@@ -67,8 +68,6 @@ interface VolumeDetailsProps {
 }
 
 // IMPLEMENTATIONS
-
-// TODO: add history
 
 export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     const { data: allVolumes = [] } = useGetVolumesQuery();
@@ -158,6 +157,7 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
     const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
+    const [isVolumeHistoryModalOpen, setIsVolumeHistoryModalOpen] = useState(false);
     const [isGeneralFilesModalOpen, setIsGeneralFilesModalOpen] = useState(false);
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
     const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);
@@ -178,6 +178,14 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const handleConvertModalClose = useCallback(() => {
         setIsConvertModalOpen(false);
+    }, []);
+
+    const handleVolumeHistoryPress = useCallback(() => {
+        setIsVolumeHistoryModalOpen(true);
+    }, []);
+
+    const handleVolumeHistoryModalClose = useCallback(() => {
+        setIsVolumeHistoryModalOpen(false);
     }, []);
 
     const handleGeneralFilesPress = useCallback(() => {
@@ -308,6 +316,13 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                         iconName={icons.CONVERT}
                         isDisabled={issueFileCount === 0}
                         onPress={handleConvertPress}
+                    />
+
+                    <PageToolbarButton
+                        label={translate('History')}
+                        iconName={icons.HISTORY}
+                        isDisabled={!hasIssues}
+                        onPress={handleVolumeHistoryPress}
                     />
 
                     <PageToolbarSeparator />
@@ -503,6 +518,12 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                     isOpen={isConvertModalOpen}
                     volumeId={volumeId}
                     onModalClose={handleConvertModalClose}
+                />
+
+                <VolumeHistoryModal
+                    isOpen={isVolumeHistoryModalOpen}
+                    volumeId={volumeId}
+                    onModalClose={handleVolumeHistoryModalClose}
                 />
 
                 <GeneralFilesModal

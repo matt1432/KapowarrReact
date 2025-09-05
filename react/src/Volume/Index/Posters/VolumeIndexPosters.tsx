@@ -10,8 +10,10 @@ import { useRootSelector } from 'Store/createAppStore';
 // Misc
 import { throttle } from 'lodash';
 
-import useMeasure from 'Helpers/Hooks/useMeasure';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
+
+// Hooks
+import useMeasure from 'Helpers/Hooks/useMeasure';
 
 // General Components
 

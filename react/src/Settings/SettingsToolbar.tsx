@@ -2,20 +2,19 @@
 
 // React
 import { type ReactElement, useCallback, useEffect, useRef } from 'react';
-
-// Misc
 import { useBlocker } from 'react-router-dom';
 
+// Misc
 import { icons } from 'Helpers/Props';
 
-import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 
 // General Components
 import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
-import PageToolbarButton, {
-    type PageToolbarButtonProps,
-} from 'Components/Page/Toolbar/PageToolbarButton';
+import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 
 // Specific Components
@@ -24,6 +23,7 @@ import PendingChangesModal from './PendingChangesModal';
 
 // Types
 import type { BlockerFunction } from 'react-router-dom';
+import type { PageToolbarButtonProps } from 'Components/Page/Toolbar/PageToolbarButton';
 
 interface SettingsToolbarProps {
     showSave?: boolean;

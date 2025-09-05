@@ -2,13 +2,16 @@
 
 // Misc
 import { sortDirections } from 'Helpers/Props';
-import useSort, { type Item, type Predicates } from 'Helpers/Hooks/useSort';
+
+// Hooks
+import useSort from 'Helpers/Hooks/useSort';
 
 // Specific Components
 import Table from './Table';
 import TableBody from './TableBody';
 
 // Types
+import type { Item, Predicates } from 'Helpers/Hooks/useSort';
 import type { TableProps } from './Table';
 import type { Column } from './Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';

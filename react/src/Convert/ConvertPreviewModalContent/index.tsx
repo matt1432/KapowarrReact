@@ -14,6 +14,7 @@ import { commandNames, kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 
+// Hooks
 import useSelectState from 'Helpers/Hooks/useSelectState';
 
 // General Components

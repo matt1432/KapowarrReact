@@ -8,8 +8,10 @@ import { useNavigate, useParams } from 'react-router';
 import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
-import usePrevious from 'Helpers/Hooks/usePrevious';
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
 import NotFound from 'Components/NotFound';

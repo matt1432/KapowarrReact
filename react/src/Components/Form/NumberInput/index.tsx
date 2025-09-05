@@ -3,14 +3,15 @@
 // React
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-// Misc
+// Hooks
 import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // Specific Components
-import TextInput, { type TextInputProps } from '../TextInput';
+import TextInput from '../TextInput';
 
 // Types
 import type { InputChanged } from 'typings/Inputs';
+import type { TextInputProps } from '../TextInput';
 
 export interface NumberInputProps<K extends string>
     extends Omit<TextInputProps<K, 'number'>, 'value' | 'onChange'> {

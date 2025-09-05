@@ -9,9 +9,10 @@ import { useGetFileQuery, useUpdateFileMutation, type UpdateFileParams } from 'S
 // Misc
 import { inputTypes, kinds, sizes } from 'Helpers/Props';
 
-import usePrevious from 'Helpers/Hooks/usePrevious';
-
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
 import Form from 'Components/Form/Form';

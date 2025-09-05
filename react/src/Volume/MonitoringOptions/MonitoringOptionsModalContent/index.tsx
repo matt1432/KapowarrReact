@@ -9,8 +9,10 @@ import { useUpdateVolumeMutation } from 'Store/Api/Volumes';
 // Misc
 import { icons, kinds, tooltipPositions } from 'Helpers/Props';
 
-import usePrevious from 'Helpers/Hooks/usePrevious';
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
 import VolumeMonitoringOptionsPopoverContent from 'AddVolume/VolumeMonitoringOptionsPopoverContent';

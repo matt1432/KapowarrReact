@@ -14,6 +14,8 @@ import { setScrollLock } from 'Utilities/scrollLock';
 import * as keyCodes from 'Utilities/Constants/keyCodes';
 
 import classNames from 'classnames';
+
+// Hooks
 import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components

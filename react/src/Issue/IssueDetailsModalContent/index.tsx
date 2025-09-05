@@ -20,7 +20,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import MonitorToggleButton from 'Components/MonitorToggleButton';
 
 // Specific Components
-import IssueHistory from 'Issue/History/IssueHistory';
+import IssueHistory from 'History';
 import IssueSearch from '../Search';
 import IssueSummary from '../Summary/IssueSummary';
 

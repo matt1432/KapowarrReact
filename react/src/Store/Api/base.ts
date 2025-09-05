@@ -4,6 +4,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 // Misc
+import filterObject from 'Utilities/Object/filterObject';
 import snakeify from 'Utilities/Object/snakeify';
 
 // Types
@@ -23,7 +24,10 @@ export const baseApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: window.Kapowarr.urlBase + window.Kapowarr.apiRoot,
 
-        paramsSerializer: (params) => new URLSearchParams(snakeify(params)).toString(),
+        paramsSerializer: (params) =>
+            new URLSearchParams(
+                snakeify(filterObject(params, ([, v]) => typeof v !== 'undefined')),
+            ).toString(),
     }) as CustomBaseQuery,
     endpoints: () => ({}),
 });

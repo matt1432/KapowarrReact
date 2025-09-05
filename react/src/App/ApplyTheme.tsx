@@ -3,7 +3,7 @@
 // React
 import { useCallback, useEffect } from 'react';
 
-// Misc
+// Hooks
 import useTheme from 'Helpers/Hooks/useTheme';
 
 // CSS
