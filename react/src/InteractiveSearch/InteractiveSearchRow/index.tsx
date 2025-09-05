@@ -100,14 +100,14 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
     const [isConfirmGrabModalOpen, setIsConfirmGrabModalOpen] = useState(false);
 
     const onGrabPressWrapper = useCallback(() => {
-        // if (downloadAllowed) {
-        onGrabPress();
+        if (result.matchRejections.length === 0) {
+            onGrabPress();
 
-        //    return;
-        // }
+            return;
+        }
 
         setIsConfirmGrabModalOpen(true);
-    }, [/*downloadAllowed, */ onGrabPress]);
+    }, [onGrabPress, result.matchRejections]);
 
     const onOverridePress = useCallback(() => {
         onGrabPress(true);
