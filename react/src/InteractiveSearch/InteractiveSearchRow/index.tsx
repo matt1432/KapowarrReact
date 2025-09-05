@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useAddDownloadMutation } from 'Store/Api/Command';
@@ -17,15 +17,18 @@ import translate from 'Utilities/String/translate';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
+import NumberInput from 'Components/Form/NumberInput';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import Popover from 'Components/Tooltip/Popover';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
+import TextInput from 'Components/Form/TextInput';
 
 // CSS
 import styles from './index.module.css';
 
 // Types
+import type { InputChanged } from 'typings/Inputs';
 import type { InteractiveSearchPayload, SearchResult } from 'typings/Search';
 
 interface InteractiveSearchRowProps {
@@ -81,6 +84,16 @@ function getDownloadTooltip(
 }
 
 export default function InteractiveSearchRow({ searchPayload, result }: InteractiveSearchRowProps) {
+    const initialIssueNumber = useMemo(
+        () => (Array.isArray(result.issueNumber) ? result.issueNumber[0] : result.issueNumber),
+        [result.issueNumber],
+    );
+    const [issueNumber, setIssueNumber] = useState(initialIssueNumber);
+    const [releaser, setReleaser] = useState(result.releaser ?? '');
+    const [scanType, setScanType] = useState(result.scanType ?? '');
+    const [resolution, setResolution] = useState(result.resolution ?? '');
+    const [dpi, setDpi] = useState(result.dpi ?? '');
+
     const [
         grabRelease,
         { isLoading: isGrabbing, isSuccess: isGrabbed, isError, error: grabError },
@@ -90,11 +103,19 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
         (forceMatch = false) => {
             grabRelease({
                 ...searchPayload,
-                result,
+                result: Object.assign(result, {
+                    issueNumber: Array.isArray(result.issueNumber)
+                        ? result.issueNumber
+                        : issueNumber,
+                    releaser,
+                    scanType,
+                    resolution,
+                    dpi,
+                }),
                 forceMatch,
             });
         },
-        [grabRelease, result, searchPayload],
+        [grabRelease, result, searchPayload, issueNumber, releaser, scanType, resolution, dpi],
     );
 
     const [isConfirmGrabModalOpen, setIsConfirmGrabModalOpen] = useState(false);
@@ -123,7 +144,28 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
         setIsConfirmGrabModalOpen(false);
     }, [setIsConfirmGrabModalOpen]);
 
-    // TODO: allow editing values before grabbing release
+    const handleIssueNumberChange = useCallback(
+        ({ value }: InputChanged<'issueNumber', number | null>) => {
+            setIssueNumber(value);
+        },
+        [],
+    );
+
+    const handleReleaserChange = useCallback(({ value }: InputChanged<'releaser', string>) => {
+        setReleaser(value);
+    }, []);
+
+    const handleScanTypeChange = useCallback(({ value }: InputChanged<'scanType', string>) => {
+        setScanType(value);
+    }, []);
+
+    const handleResolutionChange = useCallback(({ value }: InputChanged<'resolution', string>) => {
+        setResolution(value);
+    }, []);
+
+    const handleDpiChange = useCallback(({ value }: InputChanged<'dpi', string>) => {
+        setDpi(value);
+    }, []);
 
     return (
         <TableRow>
@@ -134,7 +176,15 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
                 />
             </TableRowCell>
 
-            <TableRowCell className={styles.issueNumber}>{result.issueNumber}</TableRowCell>
+            <TableRowCell className={styles.issueNumber}>
+                {Array.isArray(result.issueNumber) ? null : (
+                    <NumberInput
+                        name="issueNumber"
+                        value={issueNumber}
+                        onChange={handleIssueNumberChange}
+                    />
+                )}
+            </TableRowCell>
 
             <TableRowCell className={styles.displayTitle}>{result.displayTitle}</TableRowCell>
 
@@ -142,13 +192,21 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
 
             <TableRowCell className={styles.pages}>{result.pages}</TableRowCell>
 
-            <TableRowCell className={styles.releaser}>{result.releaser}</TableRowCell>
+            <TableRowCell className={styles.releaser}>
+                <TextInput name="releaser" value={releaser} onChange={handleReleaserChange} />
+            </TableRowCell>
 
-            <TableRowCell className={styles.scanType}>{result.scanType}</TableRowCell>
+            <TableRowCell className={styles.scanType}>
+                <TextInput name="scanType" value={scanType} onChange={handleScanTypeChange} />
+            </TableRowCell>
 
-            <TableRowCell className={styles.resolution}>{result.resolution}</TableRowCell>
+            <TableRowCell className={styles.resolution}>
+                <TextInput name="resolution" value={resolution} onChange={handleResolutionChange} />
+            </TableRowCell>
 
-            <TableRowCell className={styles.dpi}>{result.dpi}</TableRowCell>
+            <TableRowCell className={styles.dpi}>
+                <TextInput name="dpi" value={dpi} onChange={handleDpiChange} />
+            </TableRowCell>
 
             <TableRowCell className={styles.source}>{result.source}</TableRowCell>
 

@@ -12,7 +12,8 @@
 .issueNumber {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
-    min-width: 55px;
+    width: 95px;
+    min-width: 95px;
 }
 
 .displayTitle {
@@ -54,7 +55,7 @@
 .dpi {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
-    min-width: 75px;
+    min-width: 105px;
 }
 
 .source {
