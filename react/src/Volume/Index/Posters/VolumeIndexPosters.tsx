@@ -133,9 +133,12 @@ export default function VolumeIndexPosters({
         () => Math.max(Math.floor(size.width / columnWidth), 1),
         [size, columnWidth],
     );
-    const padding = isSmallScreen ? columnPaddingSmallScreen : columnPadding;
-    const posterWidth = columnWidth - padding * 2;
-    const posterHeight = Math.ceil((250 / 170) * posterWidth);
+    const padding = useMemo(
+        () => (isSmallScreen ? columnPaddingSmallScreen : columnPadding),
+        [isSmallScreen],
+    );
+    const posterWidth = useMemo(() => columnWidth - padding * 2, [columnWidth, padding]);
+    const posterHeight = useMemo(() => Math.ceil((250 / 170) * posterWidth), [posterWidth]);
 
     const rowHeight = useMemo(() => {
         const { detailedProgressBar, showFolder, showMonitored, showSizeOnDisk, showTitle } =
@@ -244,7 +247,7 @@ export default function VolumeIndexPosters({
 
                 const scrollTop = rowIndex * rowHeight + padding;
 
-                ref.current?.scrollToRow({ index });
+                ref.current?.element?.scrollTo(0, scrollTop);
                 scrollerRef.current?.scrollTo(0, scrollTop);
             }
         }

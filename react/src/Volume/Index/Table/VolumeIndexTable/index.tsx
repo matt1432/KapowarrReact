@@ -104,7 +104,7 @@ export default function VolumeIndexTable({
                     scrollTop += offset;
                 }
 
-                listRef.current?.scrollToRow({ index });
+                listRef.current?.element?.scrollTo(0, scrollTop);
                 scrollerRef?.current?.scrollTo(0, scrollTop);
             }
         }
