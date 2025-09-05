@@ -28,7 +28,6 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import Popover from 'Components/Tooltip/Popover';
 import SpinnerButton from 'Components/Link/SpinnerButton';
-import VolumeMonitoringOptionsPopoverContent from 'AddVolume/VolumeMonitoringOptionsPopoverContent';
 import VolumePoster from 'Volume/VolumePoster';
 import SpecialVersionPopoverContent from 'AddVolume/SpecialVersionPopoverContent';
 
@@ -181,18 +180,7 @@ export default function AddNewVolumeModalContent({
                             </FormGroup>
 
                             <FormGroup>
-                                <FormLabel>
-                                    {translate('Monitor')}
-
-                                    <Popover
-                                        anchor={
-                                            <Icon className={styles.labelIcon} name={icons.INFO} />
-                                        }
-                                        title={translate('MonitoringOptions')}
-                                        body={<VolumeMonitoringOptionsPopoverContent />}
-                                        position={tooltipPositions.RIGHT}
-                                    />
-                                </FormLabel>
+                                <FormLabel>{translate('Monitor')}</FormLabel>
 
                                 <FormInputGroup
                                     type={inputTypes.MONITOR_ISSUES_SELECT}

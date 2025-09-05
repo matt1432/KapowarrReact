@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useUpdateVolumeMutation } from 'Store/Api/Volumes';
 
 // Misc
-import { icons, kinds, tooltipPositions } from 'Helpers/Props';
+import { kinds } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
@@ -15,23 +15,17 @@ import translate from 'Utilities/String/translate';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
-import VolumeMonitoringOptionsPopoverContent from 'AddVolume/VolumeMonitoringOptionsPopoverContent';
 import Alert from 'Components/Alert';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
-import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
 import SpinnerButton from 'Components/Link/SpinnerButton';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import Popover from 'Components/Tooltip/Popover';
-
-// CSS
-import styles from './index.module.css';
 
 // Types
 import type { InputChanged } from 'typings/Inputs';
@@ -101,16 +95,7 @@ export default function MonitoringOptionsModalContent({
                 </Alert>
                 <Form>
                     <FormGroup>
-                        <FormLabel>
-                            {translate('Monitoring')}
-
-                            <Popover
-                                anchor={<Icon className={styles.labelIcon} name={icons.INFO} />}
-                                title={translate('MonitoringOptions')}
-                                body={<VolumeMonitoringOptionsPopoverContent />}
-                                position={tooltipPositions.RIGHT}
-                            />
-                        </FormLabel>
+                        <FormLabel>{translate('Monitoring')}</FormLabel>
 
                         <FormInputGroup
                             type="monitorIssuesSelect"
