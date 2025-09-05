@@ -3,6 +3,7 @@ from asyncio import gather, run
 from backend.base.definitions import (
     MatchedSearchResultData,
     SearchResultData,
+    SearchResultMatchData,
     SearchSource,
     SpecialVersion,
     query_formats,
@@ -23,7 +24,8 @@ from libgencomics import LibgenSearch, ResultFile
 
 
 def _rank_search_result(
-    result: MatchedSearchResultData,
+    result: SearchResultData,
+    match_data: SearchResultMatchData,
     title: str,
     volume_number: int,
     year: tuple[int | None, int | None] = (None, None),
@@ -53,7 +55,7 @@ def _rank_search_result(
     rating: list[int] = []
 
     # Prefer matches (False == 0 == higher rank)
-    rating.append(not result["match"])
+    rating.append(int(not match_data["match"]))
 
     # The more words in the search term that are present in
     # the search results' title, the higher ranked it gets
@@ -375,32 +377,35 @@ def manual_search(
         if not search_results and not libgen_results:
             continue
 
-        results: list[MatchedSearchResultData] = [
-            {
+        results: list[MatchedSearchResultData] = []
+
+        for result in [*search_results, *libgen_results]:
+            match_data = check_search_result_match(
+                result,
+                volume_data,
+                volume_issues,
+                number_to_year,
+                calculated_issue_number,
+            )
+            results.append({
                 **result,
-                **check_search_result_match(
+                **match_data,
+                "rank": _rank_search_result(
                     result,
-                    volume_data,
-                    volume_issues,
-                    number_to_year,
+                    match_data,
+                    search_title,
+                    volume_data.volume_number,
+                    (
+                        volume_data.year,
+                        number_to_year.get(calculated_issue_number),  # type: ignore
+                    ),
                     calculated_issue_number,
-                ),
-            }
-            for result in [*search_results, *libgen_results]
-        ]
+                )
+            })
 
         # Sort results; put best result at top
         results.sort(
-            key=lambda r: _rank_search_result(
-                r,
-                search_title,
-                volume_data.volume_number,
-                (
-                    volume_data.year,
-                    number_to_year.get(calculated_issue_number),  # type: ignore
-                ),
-                calculated_issue_number,
-            )
+            key=lambda r: r["rank"] # type: ignore
         )
 
         LOGGER.debug("Manual search results: %s", results)

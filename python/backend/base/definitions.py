@@ -484,6 +484,7 @@ class SearchResultMatchData(TypedDict):
 
 class MatchedSearchResultData(SearchResultMatchData, SearchResultData, total=False):
     _issue_number: float | tuple[float, float]
+    rank: list[int]
 
 
 class VolumeMetadata(TypedDict):

@@ -13,6 +13,7 @@ export interface RawSearchResult {
 
     match: boolean;
     match_rejections: MatchRejection[];
+    rank: number[];
 
     link: string;
     display_title: string;
