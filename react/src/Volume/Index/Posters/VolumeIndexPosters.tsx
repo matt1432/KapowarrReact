@@ -166,7 +166,7 @@ export default function VolumeIndexPosters({
 
         switch (sortKey) {
             case 'year':
-            case 'volume_number':
+            case 'volumeNumber':
             case 'publisher':
                 heights.push(EXTRA_ROW_HEIGHT);
                 break;

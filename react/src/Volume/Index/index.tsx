@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { useCallback, useMemo, useRef, useState, type RefObject } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -56,21 +56,15 @@ import VolumeIndexTable from './Table/VolumeIndexTable';
 
 // CSS
 import styles from './index.module.css';
-import type { VolumeColumnName, VolumePublicInfo } from 'Volume/Volume';
+import type { VolumeColumnName } from 'Volume/Volume';
 import VolumeIndexSearchVolumeButton from './VolumeIndexSearchVolumeButton';
 import type { Column } from 'Components/Table/Column';
+import useSort from 'Helpers/Hooks/useSort';
 
 // Types
 export type IndexView = 'posters' | 'table';
 export type IndexFilter = '' | 'wanted' | 'monitored';
-export type IndexSort =
-    | 'title'
-    | 'year'
-    | 'volume_number'
-    | 'recently_added'
-    | 'publisher'
-    | 'wanted'
-    | 'recently_released';
+export type IndexSort = VolumeColumnName;
 
 interface VolumeIndexProps {
     initialScrollTop?: number;
@@ -80,7 +74,7 @@ interface VolumeIndexProps {
 
 const columns: Column<VolumeColumnName>[] = [
     {
-        name: 'wanted',
+        name: 'monitored',
         columnLabel: () => translate('Status'),
         isSortable: true,
         isVisible: true,
@@ -92,12 +86,6 @@ const columns: Column<VolumeColumnName>[] = [
         isSortable: true,
         isVisible: true,
         isModifiable: false,
-    },
-    {
-        name: 'specialVersion',
-        label: () => translate('SpecialVersion'),
-        isSortable: false,
-        isVisible: true,
     },
     {
         name: 'year',
@@ -112,37 +100,31 @@ const columns: Column<VolumeColumnName>[] = [
         isVisible: true,
     },
     {
-        name: 'issueProgress',
+        name: 'issuesDownloadedMonitored',
         label: () => translate('Issues'),
         isSortable: true,
         isVisible: true,
     },
     {
-        name: 'issueCount',
+        name: 'issueCountMonitored',
         label: () => translate('IssueCount'),
         isSortable: true,
         isVisible: false,
     },
     {
-        name: 'path',
+        name: 'folder',
         label: () => translate('Path'),
         isSortable: true,
         isVisible: false,
     },
     {
-        name: 'sizeOnDisk',
+        name: 'totalSize',
         label: () => translate('SizeOnDisk'),
         isSortable: true,
         isVisible: false,
     },
     {
-        name: 'releaseGroups',
-        label: () => translate('ReleaseGroups'),
-        isSortable: true,
-        isVisible: false,
-    },
-    {
-        name: 'monitorNewItems',
+        name: 'monitorNewIssues',
         label: () => translate('MonitorNewItems'),
         isSortable: true,
         isVisible: false,
@@ -155,35 +137,43 @@ const columns: Column<VolumeColumnName>[] = [
     },
 ];
 
-// eslint-disable-next-line
-export const useIndexVolumes = () => {
-    const [items, setItems] = useState<VolumePublicInfo[]>([]);
+const useIndexVolumes = () => {
     const { filterKey, sortKey, sortDirection } = useRootSelector((state) => state.volumeIndex);
 
-    const { isFetching, isPopulated, error, data, refetch } = useGetVolumesQuery(
-        // TODO: sort and filter with JS instead?
-        {
-            sort: sortKey,
-            filter: filterKey,
-        },
-        {
-            selectFromResult: ({ isFetching, isUninitialized, error, data }) => ({
-                isFetching,
-                isPopulated: !isUninitialized,
-                error,
-                data: data ?? [],
-            }),
-        },
-    );
+    const { isFetching, isPopulated, error, data, refetch } = useGetVolumesQuery(undefined, {
+        selectFromResult: ({ isFetching, isUninitialized, error, data }) => ({
+            isFetching,
+            isPopulated: !isUninitialized,
+            error,
+            data: data ?? [],
+        }),
+    });
 
-    useEffect(() => {
-        if (sortDirection === sortDirections.DESCENDING) {
-            setItems(data.toReversed());
+    const sortedItems = useSort({
+        columns,
+        items: data,
+        sortKey,
+        secondarySortKey: 'title',
+        sortDirection,
+        predicates: {
+            issueCountMonitored: (a, b) =>
+                a.issueCountMonitored -
+                a.issuesDownloadedMonitored -
+                (b.issueCountMonitored - b.issuesDownloadedMonitored),
+        },
+    });
+
+    const items = useMemo(() => {
+        if (filterKey === 'monitored') {
+            return sortedItems.filter((item) => item.monitored);
         }
-        else {
-            setItems(data);
+        if (filterKey === 'wanted') {
+            return sortedItems.filter(
+                (item) => item.issuesDownloadedMonitored < item.issueCountMonitored,
+            );
         }
-    }, [data, sortDirection]);
+        return sortedItems;
+    }, [filterKey, sortedItems]);
 
     return {
         isFetching,

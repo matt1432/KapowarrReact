@@ -10,8 +10,6 @@ import {
     useSearchVolumeQuery,
 } from 'Store/Api/Volumes';
 
-import { useIndexVolumes } from 'Volume/Index';
-
 // Misc
 import { useNavigate } from 'react-router';
 
@@ -65,7 +63,6 @@ export default function DeleteVolumeModalContent({
     );
 
     const { refetch } = useGetVolumesQuery();
-    const { refetch: refetchIndex } = useIndexVolumes();
 
     const [deleteVolume] = useDeleteVolumeMutation();
 
@@ -78,12 +75,11 @@ export default function DeleteVolumeModalContent({
     const handleDeleteVolumeConfirmed = useCallback(() => {
         deleteVolume({ volumeId, deleteFolder: deleteFiles }).then(() => {
             refetch();
-            refetchIndex();
 
             onModalClose();
             navigate('/');
         });
-    }, [volumeId, deleteFiles, deleteVolume, navigate, onModalClose, refetch, refetchIndex]);
+    }, [volumeId, deleteFiles, deleteVolume, navigate, onModalClose, refetch]);
 
     return (
         <ModalContent onModalClose={onModalClose}>

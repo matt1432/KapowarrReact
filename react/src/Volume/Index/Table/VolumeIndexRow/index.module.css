@@ -17,12 +17,6 @@
     flex: 4 0 110px;
 }
 
-.specialVersion {
-    composes: cell;
-
-    flex: 0 0 100px;
-}
-
 .banner {
     flex: 0 0 379px;
 }
@@ -66,7 +60,6 @@
     flex: 2 0 90px;
 }
 
-.releaseGroups,
 .added {
     composes: cell;
 
@@ -79,7 +72,7 @@
     flex: 0 0 100px;
 }
 
-.issueProgress {
+.issuesDownloadedMonitored {
     composes: cell;
 
     display: flex;
@@ -88,7 +81,7 @@
     flex-direction: column;
 }
 
-.issueCount {
+.issueCountMonitored {
     composes: cell;
 
     flex: 0 0 130px;
@@ -100,13 +93,13 @@
     flex: 0 0 80px;
 }
 
-.path {
+.folder {
     composes: cell;
 
     flex: 1 0 150px;
 }
 
-.sizeOnDisk {
+.totalSize {
     composes: cell;
 
     flex: 0 0 120px;
@@ -124,7 +117,7 @@
     flex: 1 0 60px;
 }
 
-.monitorNewItems {
+.monitorNewIssues {
     composes: cell;
 
     flex: 0 0 175px;

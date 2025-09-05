@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -9,8 +9,6 @@ import { useRootSelector } from 'Store/createAppStore';
 import { setAddVolumeOption } from 'Store/Slices/AddVolume';
 import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import { useAddVolumeMutation, useGetVolumesQuery } from 'Store/Api/Volumes';
-
-import { useIndexVolumes } from 'Volume/Index';
 
 // Misc
 import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
@@ -63,13 +61,8 @@ export default function AddNewVolumeModalContent({
 
     const { data: rootFolders = [] } = useGetRootFoldersQuery();
     const { refetch } = useGetVolumesQuery();
-    const { refetch: refetchIndex } = useIndexVolumes();
 
-    const [addVolume, addVolumeState] = useAddVolumeMutation();
-
-    const isAdding = useMemo(() => {
-        return addVolumeState.isLoading;
-    }, [addVolumeState]);
+    const [addVolume, { isLoading: isAdding }] = useAddVolumeMutation();
 
     const [rootFolderPath, setRootFolderPath] = useState('');
 
@@ -107,10 +100,9 @@ export default function AddNewVolumeModalContent({
 
     const handleAddVolumeSuccess = useCallback(() => {
         refetch();
-        refetchIndex();
 
         onModalClose();
-    }, [onModalClose, refetch, refetchIndex]);
+    }, [onModalClose, refetch]);
 
     const handleAddVolumePress = useCallback(() => {
         addVolume({
@@ -119,6 +111,8 @@ export default function AddNewVolumeModalContent({
             monitoringScheme,
             monitor: monitoringScheme !== 'none',
             specialVersion,
+            // TODO: auto search toggle
+            autoSearch: false,
         }).then(() => handleAddVolumeSuccess());
     }, [volume, specialVersion, monitoringScheme, addVolume, rootFolder, handleAddVolumeSuccess]);
 

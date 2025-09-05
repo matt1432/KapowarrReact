@@ -4,17 +4,16 @@ import type { GeneralFileData, Issue, RawIssue } from 'Issue/Issue';
 import type { SpecialVersion } from 'Helpers/Props/specialVersions';
 
 export type VolumeColumnName =
-    | 'wanted'
+    | 'monitored'
     | 'title'
-    | 'specialVersion'
+    | 'volumeNumber'
     | 'year'
     | 'publisher'
-    | 'issueProgress'
-    | 'issueCount'
-    | 'path'
-    | 'sizeOnDisk'
-    | 'releaseGroups'
-    | 'monitorNewItems'
+    | 'issuesDownloadedMonitored'
+    | 'issueCountMonitored'
+    | 'folder'
+    | 'totalSize'
+    | 'monitorNewIssues'
     | 'actions';
 
 export type MonitoringScheme = 'all' | 'missing' | 'none' | 'noChange';
@@ -69,6 +68,8 @@ export type RawVolumePublicInfo = Pick<
     issue_count_monitored: number;
     issue_file_count: number;
     issues_downloaded_monitored: number;
+} & {
+    actions: never; // for columns
 };
 
 export type VolumePublicInfo = CamelCasedProperties<RawVolumePublicInfo>;

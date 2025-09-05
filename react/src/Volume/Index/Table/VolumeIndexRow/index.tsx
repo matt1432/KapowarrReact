@@ -6,7 +6,6 @@ import { useCallback, useMemo, useState } from 'react';
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
 
-import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 import { useExecuteCommandMutation } from 'Store/Api/Command';
 
 // Misc
@@ -15,7 +14,6 @@ import { useSelect } from 'App/SelectContext';
 
 import classNames from 'classnames';
 import formatBytes from 'Utilities/Number/formatBytes';
-import titleCase from 'Utilities/String/titleCase';
 import translate from 'Utilities/String/translate';
 
 // General Components
@@ -37,10 +35,10 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { SelectStateInputProps } from 'typings/Inputs';
-import type { VolumeColumnName } from 'Volume/Volume';
+import type { VolumeColumnName, VolumePublicInfo } from 'Volume/Volume';
 
 interface VolumeIndexRowProps {
-    volumeId: number;
+    volume: VolumePublicInfo;
     sortKey: string;
     columns: Column<VolumeColumnName>[];
     isSelectMode: boolean;
@@ -48,9 +46,7 @@ interface VolumeIndexRowProps {
 
 // IMPLEMENTATIONS
 
-export default function VolumeIndexRow({ volumeId, columns, isSelectMode }: VolumeIndexRowProps) {
-    const { data: volume } = useSearchVolumeQuery({ volumeId });
-
+export default function VolumeIndexRow({ volume, columns, isSelectMode }: VolumeIndexRowProps) {
     const { showSearchAction } = useRootSelector((state) => state.volumeIndex.tableOptions);
 
     const [executeCommand, executeCommandState] = useExecuteCommandMutation();
@@ -72,16 +68,16 @@ export default function VolumeIndexRow({ volumeId, columns, isSelectMode }: Volu
     const onRefreshPress = useCallback(() => {
         executeCommand({
             cmd: commandNames.REFRESH_VOLUME,
-            volumeId,
+            volumeId: volume.id,
         });
-    }, [executeCommand, volumeId]);
+    }, [executeCommand, volume.id]);
 
     const onSearchPress = useCallback(() => {
         executeCommand({
             cmd: commandNames.VOLUME_SEARCH,
-            volumeId,
+            volumeId: volume.id,
         });
-    }, [executeCommand, volumeId]);
+    }, [executeCommand, volume.id]);
 
     const onEditVolumePress = useCallback(() => {
         setIsEditVolumeModalOpen(true);
@@ -116,31 +112,12 @@ export default function VolumeIndexRow({ volumeId, columns, isSelectMode }: Volu
         return null;
     }
 
-    const {
-        title,
-        monitorNewIssues: monitorNewItems,
-        folder: path,
-        id: titleSlug,
-        specialVersion,
-        publisher,
-        year,
-        totalSize: sizeOnDisk,
-        issues,
-    } = volume;
-
-    const totalIssueCount = issues.length;
-
-    const releaseGroups = issues
-        .map((is) => is.files.map((f) => f.releaser ?? ''))
-        .flat()
-        .filter((r) => r !== '');
-
     return (
         <>
             {isSelectMode ? (
                 <VirtualTableSelectCell
-                    id={volumeId}
-                    isSelected={selectState.selectedState[volumeId]}
+                    id={volume.id}
+                    isSelected={selectState.selectedState[volume.id]}
                     isDisabled={false}
                     onSelectedChange={onSelectedChange}
                 />
@@ -155,39 +132,28 @@ export default function VolumeIndexRow({ volumeId, columns, isSelectMode }: Volu
 
                 if (name === 'title') {
                     return (
-                        <VirtualTableRowCell
-                            key={name}
-                            className={classNames(styles[name as keyof typeof styles])}
-                        >
-                            <VolumeTitleLink titleSlug={titleSlug.toString()} title={title} />
-                        </VirtualTableRowCell>
-                    );
-                }
-
-                if (name === 'specialVersion') {
-                    return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
-                            {titleCase(specialVersion ?? '')}
+                        <VirtualTableRowCell key={name} className={classNames(styles[name])}>
+                            <VolumeTitleLink
+                                titleSlug={volume.id.toString()}
+                                title={volume.title}
+                            />
                         </VirtualTableRowCell>
                     );
                 }
 
                 if (name === 'publisher') {
                     return (
-                        <VirtualTableRowCell
-                            key={name}
-                            className={styles[name as keyof typeof styles]}
-                        >
-                            {publisher}
+                        <VirtualTableRowCell key={name} className={styles[name]}>
+                            {volume.publisher}
                         </VirtualTableRowCell>
                     );
                 }
 
-                if (name === 'issueProgress') {
+                if (name === 'issuesDownloadedMonitored') {
                     return (
                         <VirtualTableRowCell key={name} className={styles[name]}>
                             <VolumeIndexProgressBar
-                                volume={volume!}
+                                volume={volume}
                                 width={125}
                                 detailedProgressBar={true}
                                 isStandalone={true}
@@ -196,10 +162,10 @@ export default function VolumeIndexRow({ volumeId, columns, isSelectMode }: Volu
                     );
                 }
 
-                if (name === 'issueCount') {
+                if (name === 'issueCountMonitored') {
                     return (
                         <VirtualTableRowCell key={name} className={styles[name]}>
-                            {totalIssueCount}
+                            {volume.issueCountMonitored}
                         </VirtualTableRowCell>
                     );
                 }
@@ -207,45 +173,31 @@ export default function VolumeIndexRow({ volumeId, columns, isSelectMode }: Volu
                 if (name === 'year') {
                     return (
                         <VirtualTableRowCell key={name} className={styles[name]}>
-                            {year}
+                            {volume.year}
                         </VirtualTableRowCell>
                     );
                 }
 
-                if (name === 'path') {
+                if (name === 'folder') {
                     return (
                         <VirtualTableRowCell key={name} className={styles[name]}>
-                            {path}
+                            {volume.folder}
                         </VirtualTableRowCell>
                     );
                 }
 
-                if (name === 'sizeOnDisk') {
+                if (name === 'totalSize') {
                     return (
                         <VirtualTableRowCell key={name} className={styles[name]}>
-                            {formatBytes(sizeOnDisk)}
+                            {formatBytes(volume.totalSize)}
                         </VirtualTableRowCell>
                     );
                 }
 
-                if (name === 'releaseGroups') {
-                    const joinedReleaseGroups = releaseGroups.join(', ');
-                    const truncatedReleaseGroups =
-                        releaseGroups.length > 3
-                            ? `${releaseGroups.slice(0, 3).join(', ')}...`
-                            : joinedReleaseGroups;
-
+                if (name === 'monitorNewIssues') {
                     return (
                         <VirtualTableRowCell key={name} className={styles[name]}>
-                            <span title={joinedReleaseGroups}>{truncatedReleaseGroups}</span>
-                        </VirtualTableRowCell>
-                    );
-                }
-
-                if (name === 'monitorNewItems') {
-                    return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
-                            {monitorNewItems
+                            {volume.monitorNewIssues
                                 ? translate('MonitorFutureIssues')
                                 : translate('MonitorNoFutureIssues')}
                         </VirtualTableRowCell>
@@ -285,14 +237,14 @@ export default function VolumeIndexRow({ volumeId, columns, isSelectMode }: Volu
 
             <EditVolumeModal
                 isOpen={isEditVolumeModalOpen}
-                volumeId={volumeId}
+                volumeId={volume.id}
                 onModalClose={onEditVolumeModalClose}
                 onDeleteVolumePress={onDeleteVolumePress}
             />
 
             <DeleteVolumeModal
                 isOpen={isDeleteVolumeModalOpen}
-                volumeId={volumeId}
+                volumeId={volume.id}
                 onModalClose={onDeleteVolumeModalClose}
             />
         </>

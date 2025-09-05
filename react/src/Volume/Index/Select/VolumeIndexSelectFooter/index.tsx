@@ -10,8 +10,6 @@ import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import { useGetVolumesQuery } from 'Store/Api/Volumes';
 import { useMassEditMutation } from 'Store/Api/Command';
 
-import { useIndexVolumes } from 'Volume/Index';
-
 // Misc
 import { useSelect } from 'App/SelectContext';
 
@@ -40,7 +38,6 @@ export default function VolumeIndexSelectFooter() {
     const { massEditorStatus } = useRootSelector((state) => state.socketEvents);
 
     const { refetch } = useGetVolumesQuery();
-    const { refetch: refetchIndex } = useIndexVolumes();
 
     const isSaving = useMemo(
         () =>
@@ -75,7 +72,6 @@ export default function VolumeIndexSelectFooter() {
         massEditorStatus: ({ currentItem, totalItems }) => {
             if (currentItem === totalItems) {
                 refetch();
-                refetchIndex();
             }
         },
     });

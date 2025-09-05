@@ -16,16 +16,18 @@ import ProgressBar from 'Components/ProgressBar';
 import styles from './index.module.css';
 
 // Types
-import type { Volume } from 'Volume/Volume';
+import type { VolumePublicInfo } from 'Volume/Volume';
 
 interface VolumeIndexProgressBarProps {
-    volume: Volume;
+    volume: VolumePublicInfo;
     width: number;
     detailedProgressBar: boolean;
     isStandalone: boolean;
 }
 
 // IMPLEMENTATIONS
+
+// FIXME: after changing sorting, empty bars show red background
 
 export default function VolumeIndexProgressBar({
     volume,

@@ -37,7 +37,7 @@ export default function VolumeIndexPosterInfo({
     }
 
     // 'volume_number'
-    if (sortKey === 'volume_number') {
+    if (sortKey === 'volumeNumber') {
         return (
             <div className={styles.info} title={translate('VolumeNumber')}>
                 {`Volume #${volumeNumber}`}

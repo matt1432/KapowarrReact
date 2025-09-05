@@ -50,21 +50,12 @@ export default function VolumeIndexSortMenu({
                 </SortMenuItem>
 
                 <SortMenuItem
-                    name="volume_number"
+                    name="volumeNumber"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
                 >
                     {translate('VolumeNumber')}
-                </SortMenuItem>
-
-                <SortMenuItem
-                    name="recently_added"
-                    sortKey={sortKey}
-                    sortDirection={sortDirection}
-                    onPress={onSortSelect}
-                >
-                    {translate('RecentlyAdded')}
                 </SortMenuItem>
 
                 <SortMenuItem
@@ -77,7 +68,7 @@ export default function VolumeIndexSortMenu({
                 </SortMenuItem>
 
                 <SortMenuItem
-                    name="wanted"
+                    name="issueCountMonitored"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
@@ -86,12 +77,12 @@ export default function VolumeIndexSortMenu({
                 </SortMenuItem>
 
                 <SortMenuItem
-                    name="recently_released"
+                    name="totalSize"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
                     onPress={onSortSelect}
                 >
-                    {translate('RecentlyReleased')}
+                    {translate('SizeOnDisk')}
                 </SortMenuItem>
             </MenuContent>
         </SortMenu>

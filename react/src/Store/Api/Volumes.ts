@@ -18,14 +18,7 @@ import type {
 
 import type { RawVolumeMetadata, VolumeMetadata } from 'AddVolume/AddVolume';
 
-import type { IndexFilter, IndexSort } from 'Volume/Index';
-
 import type { SpecialVersion } from 'Helpers/Props/specialVersions';
-
-export interface GetVolumesParams {
-    filter?: IndexFilter;
-    sort?: IndexSort;
-}
 
 export interface AddVolumeParams {
     comicvineId: number;
@@ -60,12 +53,12 @@ export interface DeleteVolumeParams {
 const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         // GET
-        getVolumes: build.query<VolumePublicInfo[], GetVolumesParams | void>({
-            query: ({ filter, sort } = {}) => ({
+        getVolumes: build.query<VolumePublicInfo[], void>({
+            query: () => ({
                 url: 'volumes',
                 params: {
-                    filter: filter ?? '',
-                    sort: sort ?? 'title',
+                    filter: '',
+                    sort: 'title',
                     apiKey: window.Kapowarr.apiKey,
                 },
             }),

@@ -7,7 +7,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useRootSelector } from 'Store/createAppStore';
 
 import { useExecuteCommandMutation } from 'Store/Api/Command';
-import { useSearchVolumeQuery } from 'Store/Api/Volumes';
+import { useGetVolumesQuery, useSearchVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc
 import { commandNames, icons } from 'Helpers/Props';
@@ -52,6 +52,11 @@ export default function VolumeIndexPoster({
     posterHeight,
     sortKey,
 }: VolumeIndexPosterProps) {
+    const { volumePublicInfo } = useGetVolumesQuery(undefined, {
+        selectFromResult: ({ data }) => ({
+            volumePublicInfo: data!.find((item) => item.id === volumeId)!,
+        }),
+    });
     const { data: volume } = useSearchVolumeQuery({ volumeId });
 
     const {
@@ -178,7 +183,7 @@ export default function VolumeIndexPoster({
             </div>
 
             <VolumeIndexProgressBar
-                volume={volume}
+                volume={volumePublicInfo}
                 width={posterWidth}
                 detailedProgressBar={detailedProgressBar}
                 isStandalone={false}

@@ -68,7 +68,7 @@ function Row({
             className={styles.row}
         >
             <VolumeIndexRow
-                volumeId={volume.id}
+                volume={volume}
                 sortKey={sortKey}
                 columns={columns}
                 isSelectMode={isSelectMode}

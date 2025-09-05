@@ -2,11 +2,11 @@ import { downloadStates, type DownloadState } from 'Helpers/Props/downloadStates
 import getProgressBarKind from './getProgressBarKind';
 
 import type { DownloadItem } from 'typings/Queue';
-import type { Volume } from 'Volume/Volume';
+import type { VolumePublicInfo } from 'Volume/Volume';
 
 interface GetDownloadedIssuesProgressParams {
     queue: DownloadItem[];
-    volume: Volume;
+    volume: VolumePublicInfo;
 }
 
 interface GetDownloadedIssuesProgressReturn {
@@ -27,25 +27,23 @@ export function getDownloadedIssuesProgress({
     queue,
     volume,
 }: GetDownloadedIssuesProgressParams): GetDownloadedIssuesProgressReturn {
-    const { issues, issuesDownloaded: issueFileCount } = volume;
-
-    const issueCount = issues.filter(
-        (issue) => issue.monitored || issue.files.some((f) => !f.isMetadataFile && !f.isImageFile),
-    ).length;
+    const { issuesDownloadedMonitored, issueCountMonitored } = volume;
 
     const newDownloads =
         queue.length - queue.filter((item) => FAILED_STATE.includes(item.status)).length;
 
-    const progress = issueCount ? (issueFileCount / issueCount) * 100 : 100;
+    const progress = issueCountMonitored
+        ? (issuesDownloadedMonitored / issuesDownloadedMonitored) * 100
+        : 100;
     const text = newDownloads
-        ? `${issueFileCount} + ${newDownloads} / ${issueCount}`
-        : `${issueFileCount} / ${issueCount}`;
+        ? `${issuesDownloadedMonitored} + ${newDownloads} / ${issueCountMonitored}`
+        : `${issuesDownloadedMonitored} / ${issueCountMonitored}`;
 
     const kind = getProgressBarKind(volume.monitored, progress, queue.length > 0);
 
     return {
-        issueCount,
-        issueFileCount,
+        issueCount: issueCountMonitored,
+        issueFileCount: issuesDownloadedMonitored,
         kind,
         progress,
         text,
