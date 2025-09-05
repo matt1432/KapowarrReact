@@ -68,6 +68,8 @@ interface VolumeDetailsProps {
 
 // IMPLEMENTATIONS
 
+// TODO: add history
+
 export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     const { data: allVolumes = [] } = useGetVolumesQuery();
 

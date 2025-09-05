@@ -7,6 +7,10 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 export interface UISettingsState {
     theme: 'auto' | 'dark' | 'light';
     enableColorImpairedMode: boolean;
+    showRelativeDates: boolean;
+    shortDateFormat: string;
+    longDateFormat: string;
+    timeFormat: string;
 }
 
 // IMPLEMENTATIONS
@@ -14,6 +18,10 @@ export interface UISettingsState {
 const initialState = {
     theme: 'auto',
     enableColorImpairedMode: false,
+    showRelativeDates: true,
+    shortDateFormat: 'MMM D YYYY',
+    longDateFormat: 'dddd, MMMM D YYYY',
+    timeFormat: 'h(:mm)a',
 } satisfies UISettingsState as UISettingsState;
 
 const UISettingsSlice = createSlice({

@@ -58,6 +58,8 @@ const extendedApi = baseApi.injectEndpoints({
     }),
 });
 
+export const { useGetDownloadHistoryMutation } = extendedApi;
+
 export const useFetchQueueDetails = (
     { volumeId, issueId }: FetchQueueParams = {},
     options?: Parameters<typeof extendedApi.useFetchQueueDetailsQuery>[1],

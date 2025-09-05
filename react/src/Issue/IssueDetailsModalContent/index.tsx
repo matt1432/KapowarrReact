@@ -20,6 +20,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import MonitorToggleButton from 'Components/MonitorToggleButton';
 
 // Specific Components
+import IssueHistory from 'Issue/History/IssueHistory';
 import IssueSearch from '../Search';
 import IssueSummary from '../Summary/IssueSummary';
 
@@ -43,9 +44,7 @@ export interface IssueDetailsModalContentProps {
 
 // IMPLEMENTATIONS
 
-// TODO: add history
-
-const TABS: IssueDetailsTab[] = ['details', 'search'];
+const TABS: IssueDetailsTab[] = ['details', 'history', 'search'];
 
 export default function IssueDetailsModalContent({
     issueId,
@@ -146,6 +145,10 @@ export default function IssueDetailsModalContent({
                         </Tab>
 
                         <Tab className={styles.tab} selectedClassName={styles.selectedTab}>
+                            {translate('History')}
+                        </Tab>
+
+                        <Tab className={styles.tab} selectedClassName={styles.selectedTab}>
                             {translate('Search')}
                         </Tab>
                     </TabList>
@@ -153,6 +156,12 @@ export default function IssueDetailsModalContent({
                     <TabPanel>
                         <div className={styles.tabContent}>
                             <IssueSummary issueId={issueId} volumeId={volumeId} />
+                        </div>
+                    </TabPanel>
+
+                    <TabPanel>
+                        <div className={styles.tabContent}>
+                            <IssueHistory issueId={issueId} />
                         </div>
                     </TabPanel>
 

@@ -1,1 +1,1 @@
-export type IssueDetailsTab = 'details' | 'search';
+export type IssueDetailsTab = 'details' | 'history' | 'search';
