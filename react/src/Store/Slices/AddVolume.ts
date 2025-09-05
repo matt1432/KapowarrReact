@@ -9,6 +9,7 @@ import type { MonitoringScheme } from 'Volume/Volume';
 import type { SpecialVersion } from 'Helpers/Props/specialVersions';
 
 export interface AddVolumeState {
+    autoSearch: boolean;
     rootFolder: RootFolder | null;
     monitor: boolean;
     monitoringScheme: MonitoringScheme;
@@ -18,6 +19,7 @@ export interface AddVolumeState {
 // IMPLEMENTATIONS
 
 const initialState = {
+    autoSearch: false,
     rootFolder: null,
     monitor: true,
     monitoringScheme: 'all',

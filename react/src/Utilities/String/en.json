@@ -69,6 +69,7 @@
     "AddNewVolumeError": "The Comic Vine api key is not set or is invalid.",
     "AddNewVolumeHelpText": "It's easy to add a new volume, just type the name of the volume you want to add and press enter.",
     "AddNewVolumeRootFolderHelpText": "'{folder}' subfolder will be created automatically",
+    "AddNewVolumeSearchForMissingIssues": "Start search for missing issues",
     "AddRemotePathMapping": "Add Remote Path Mapping",
     "AddRemotePathMappingError": "Unable to add a new remote path mapping, please try again.",
     "AddRootFolder": "Add Root Folder",

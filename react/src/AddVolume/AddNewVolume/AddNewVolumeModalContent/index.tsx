@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 // Redux
-import { useRootSelector } from 'Store/createAppStore';
+import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 
 import { setAddVolumeOption } from 'Store/Slices/AddVolume';
 import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
@@ -37,9 +37,10 @@ import styles from './index.module.css';
 
 // Types
 import type { AddVolume } from 'AddVolume/AddVolume';
-import type { InputChanged } from 'typings/Inputs';
+import type { CheckInputChanged, InputChanged } from 'typings/Inputs';
 import type { MonitoringScheme } from 'Volume/Volume';
 import type { SpecialVersion } from 'Helpers/Props/specialVersions';
+import CheckInput from 'Components/Form/CheckInput';
 
 export interface AddNewVolumeModalContentProps {
     volume: AddVolume;
@@ -52,10 +53,13 @@ export default function AddNewVolumeModalContent({
     volume,
     onModalClose,
 }: AddNewVolumeModalContentProps) {
+    const dispatch = useRootDispatch();
+
     const { title, year, description } = volume;
 
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
-    const { monitoringScheme, rootFolder, specialVersion } = useRootSelector(
+
+    const { monitoringScheme, rootFolder, specialVersion, autoSearch } = useRootSelector(
         (state) => state.addVolume,
     );
 
@@ -78,24 +82,31 @@ export default function AddNewVolumeModalContent({
 
             if (folder) {
                 setRootFolderPath(folder.folder);
-                setAddVolumeOption('rootFolder', folder);
+                dispatch(setAddVolumeOption('rootFolder', folder));
             }
         },
-        [rootFolders],
+        [dispatch, rootFolders],
     );
 
     const handleMonitoringSchemeChange = useCallback(
         ({ value }: InputChanged<'monitoringScheme', MonitoringScheme>) => {
-            setAddVolumeOption('monitoringScheme', value);
+            dispatch(setAddVolumeOption('monitoringScheme', value));
         },
-        [],
+        [dispatch],
     );
 
     const handleSpecialVersionChange = useCallback(
         ({ value }: InputChanged<'specialVersion', SpecialVersion>) => {
-            setAddVolumeOption('specialVersion', value);
+            dispatch(setAddVolumeOption('specialVersion', value));
         },
-        [],
+        [dispatch],
+    );
+
+    const handleAutoSearchChange = useCallback(
+        ({ value }: CheckInputChanged<'autoSearch'>) => {
+            dispatch(setAddVolumeOption('autoSearch', value));
+        },
+        [dispatch],
     );
 
     const handleAddVolumeSuccess = useCallback(() => {
@@ -111,10 +122,17 @@ export default function AddNewVolumeModalContent({
             monitoringScheme,
             monitor: monitoringScheme !== 'none',
             specialVersion,
-            // TODO: auto search toggle
-            autoSearch: false,
+            autoSearch,
         }).then(() => handleAddVolumeSuccess());
-    }, [volume, specialVersion, monitoringScheme, addVolume, rootFolder, handleAddVolumeSuccess]);
+    }, [
+        volume,
+        specialVersion,
+        monitoringScheme,
+        addVolume,
+        rootFolder,
+        handleAddVolumeSuccess,
+        autoSearch,
+    ]);
 
     return (
         <ModalContent onModalClose={onModalClose}>
@@ -212,6 +230,19 @@ export default function AddNewVolumeModalContent({
             </ModalBody>
 
             <ModalFooter className={styles.modalFooter}>
+                <label className={styles.searchLabelContainer}>
+                    <span className={styles.searchLabel}>
+                        {translate('AddNewVolumeSearchForMissingIssues')}
+                    </span>
+
+                    <CheckInput
+                        containerClassName={styles.searchInputContainer}
+                        className={styles.searchInput}
+                        name="autoSearch"
+                        onChange={handleAutoSearchChange}
+                        value={autoSearch}
+                    />
+                </label>
                 <SpinnerButton
                     className={styles.addButton}
                     kind={kinds.SUCCESS}
