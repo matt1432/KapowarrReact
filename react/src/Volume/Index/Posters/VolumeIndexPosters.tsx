@@ -27,6 +27,7 @@ import dimensions from 'Styles/Variables/dimensions';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { VolumePublicInfo } from 'Volume/Volume';
 import type { IndexSort } from '..';
+import type { Size } from 'Helpers/Props/sizes';
 
 interface CellItemData {
     layout: {
@@ -60,11 +61,11 @@ const columnPaddingSmallScreen = parseInt(dimensions.volumeIndexColumnPaddingSma
 const progressBarHeight = parseInt(dimensions.progressBarSmallHeight);
 const detailedProgressBarHeight = parseInt(dimensions.progressBarMediumHeight);
 
-const ADDITIONAL_COLUMN_COUNT: Record<string, number> = {
+const ADDITIONAL_COLUMN_COUNT = {
     small: 3,
     medium: 2,
     large: 1,
-};
+} as Record<Size, number>;
 
 const EXTRA_ROW_HEIGHT = 19;
 
@@ -268,6 +269,7 @@ export default function VolumeIndexPosters({
                 defaultHeight={size.height}
                 columnCount={columnCount}
                 columnWidth={columnWidth}
+                overscanCount={5}
                 rowCount={Math.ceil(items.length / columnCount)}
                 rowHeight={rowHeight}
                 cellProps={{

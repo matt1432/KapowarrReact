@@ -7,6 +7,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { sortDirections } from 'Helpers/Props';
 
 // Types
+import type { Size } from 'Helpers/Props/sizes';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { TableOptionsChangePayload } from 'typings/Table';
 import type { IndexFilter, IndexSort, IndexView } from 'Volume/Index';
@@ -29,7 +30,7 @@ export interface VolumeIndexState {
 
     posterOptions: {
         detailedProgressBar: boolean;
-        size: string;
+        size: Size;
         showFolder: boolean;
         showMonitored: boolean;
         showSearchAction: boolean;

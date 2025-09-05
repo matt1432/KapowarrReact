@@ -173,7 +173,7 @@ export default function VolumeIndexPoster({
                         volume={volume}
                         style={elementStyle}
                         size={250}
-                        lazy={false}
+                        lazy
                         onError={onPosterLoadError}
                         onLoad={onPosterLoad}
                     />
