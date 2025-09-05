@@ -5,9 +5,6 @@ import RelativeDateCell from 'Components/Table/Cells/RelativeDateCell';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
 
-// CSS
-import styles from './index.module.css';
-
 // Types
 import type { DownloadHistoryItem } from 'typings/Queue';
 
@@ -36,25 +33,6 @@ export default function HistoryRow({
             <TableRowCell>{fileTitle}</TableRowCell>
 
             <RelativeDateCell date={downloadedAt * 1000} includeSeconds={true} includeTime={true} />
-
-            <TableRowCell className={styles.actions}>
-                {/*
-                TODO: add to blocklist button?
-                <Popover
-                    anchor={<Icon name={icons.INFO} />}
-                    title={getTitle(eventType)}
-                    body={
-                        <HistoryDetails
-                            eventType={eventType}
-                            sourceTitle={sourceTitle}
-                            data={data}
-                            downloadId={downloadId}
-                        />
-                    }
-                    position={tooltipPositions.LEFT}
-                />
-                */}
-            </TableRowCell>
         </TableRow>
     );
 }
