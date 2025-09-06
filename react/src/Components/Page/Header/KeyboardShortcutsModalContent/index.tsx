@@ -1,12 +1,9 @@
-// TODO:
 // IMPORTS
-
-// Redux
-// import { useSelector } from 'react-redux';
-// import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
 
 // Misc
 import { type Shortcut, shortcuts } from 'Components/keyboardShortcuts';
+
+import { isOSX } from 'Utilities/browser';
 
 import translate from 'Utilities/String/translate';
 
@@ -58,7 +55,6 @@ function getShortcutKey(combo: string, isOsx: boolean) {
 export default function KeyboardShortcutsModalContent({
     onModalClose,
 }: KeyboardShortcutsModalContentProps) {
-    // const { isOsx } = useSelector(createSystemStatusSelector());
     const allShortcuts = getShortcuts();
 
     return (
@@ -70,7 +66,7 @@ export default function KeyboardShortcutsModalContent({
                     return (
                         <div key={shortcut.name} className={styles.shortcut}>
                             <div className={styles.key}>
-                                {getShortcutKey(shortcut.key, false /*isOsx*/)}
+                                {getShortcutKey(shortcut.key, isOSX())}
                             </div>
 
                             <div>{shortcut.name}</div>

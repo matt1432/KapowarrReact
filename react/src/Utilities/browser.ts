@@ -3,6 +3,7 @@ const getMobileDetect = (userAgent: string) => {
     const isIos = (): boolean => Boolean(userAgent.match(/iPhone|iPad|iPod/i));
     const isOpera = (): boolean => Boolean(userAgent.match(/Opera Mini/i));
     const isWindows = (): boolean => Boolean(userAgent.match(/IEMobile/i));
+    const isOSX = (): boolean => Boolean(userAgent.match(/Macintosh/i));
     const isSSR = (): boolean => Boolean(userAgent.match(/SSR/i));
 
     const isMobile = (): boolean => Boolean(isAndroid() || isIos() || isOpera() || isWindows());
@@ -13,6 +14,8 @@ const getMobileDetect = (userAgent: string) => {
         isAndroid,
         isIos,
         isSSR,
+        isWindows,
+        isOSX,
     };
 };
 const mobileDetect = getMobileDetect(window.navigator.userAgent);
@@ -23,6 +26,14 @@ export function isMobile() {
 
 export function isIOS() {
     return mobileDetect.isIos();
+}
+
+export function isWindows() {
+    return mobileDetect.isWindows();
+}
+
+export function isOSX() {
+    return mobileDetect.isOSX();
 }
 
 export function isFirefox() {
