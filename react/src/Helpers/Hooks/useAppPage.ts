@@ -1,9 +1,22 @@
+// IMPORTS
+
+// React
 import { useEffect, useMemo } from 'react';
+
+// Redux
+import { useRootSelector } from 'Store/createAppStore';
+
 import { useLazyGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import { useLazyGetSettingsQuery } from 'Store/Api/Settings';
-
 import { useLazyGetVolumesQuery } from 'Store/Api/Volumes';
-import { useRootSelector } from 'Store/createAppStore';
+
+// Misc
+import filterObject from 'Utilities/Object/filterObject';
+
+// Types
+import type { AnyError } from 'typings/Api';
+
+// IMPLEMENTATIONS
 
 export default function useAppPage() {
     const { apiKey } = useRootSelector((state) => state.auth);
@@ -40,10 +53,24 @@ export default function useAppPage() {
 
     return useMemo(() => {
         return {
-            errors: erroredQueries.map(({ error }) => error),
+            errors: filterObject(
+                {
+                    rootFoldersError: getRootFoldersState.error,
+                    settingsError: getSettingsState.error,
+                    volumesError: getVolumesState.error,
+                },
+                (item) => typeof item !== 'undefined',
+            ) as Partial<Record<'rootFoldersError' | 'settingsError' | 'volumesError', AnyError>>,
             needsAuth: !apiKey,
             hasError,
             isPopulated,
         };
-    }, [apiKey, erroredQueries, hasError, isPopulated]);
+    }, [
+        apiKey,
+        hasError,
+        isPopulated,
+        getRootFoldersState.error,
+        getSettingsState.error,
+        getVolumesState.error,
+    ]);
 }

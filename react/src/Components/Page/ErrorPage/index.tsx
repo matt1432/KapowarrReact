@@ -1,4 +1,3 @@
-// TODO:
 // IMPORTS
 
 // Misc
@@ -10,66 +9,35 @@ import translate from 'Utilities/String/translate';
 import styles from './index.module.css';
 
 // Types
-// import type { Error } from 'App/State/AppSectionState';
+import type { AnyError } from 'typings/Api';
 
 interface ErrorPageProps {
     version: string;
-    translationsError?: Error;
-    volumesError?: Error;
-    customFiltersError?: Error;
-    tagsError?: Error;
-    qualityProfilesError?: Error;
-    uiSettingsError?: Error;
-    systemStatusError?: Error;
+    volumesError?: AnyError;
+    settingsError?: AnyError;
+    rootFoldersError?: AnyError;
 }
 
 // IMPLEMENTATIONS
 
 export default function ErrorPage({
     version,
-    translationsError,
     volumesError,
-    customFiltersError,
-    tagsError,
-    qualityProfilesError,
-    uiSettingsError,
-    systemStatusError,
+    settingsError,
+    rootFoldersError,
 }: ErrorPageProps) {
     let errorMessage = translate('FailedToLoadKapowarr');
 
-    if (translationsError) {
+    if (volumesError) {
+        errorMessage = getErrorMessage(volumesError, translate('FailedToLoadVolumeFromApi'));
+    }
+    else if (settingsError) {
+        errorMessage = getErrorMessage(settingsError, translate('FailedToLoadSettingsFromApi'));
+    }
+    else if (rootFoldersError) {
         errorMessage = getErrorMessage(
-            translationsError,
-            // translate('FailedToLoadTranslationsFromApi'),
-        );
-    }
-    else if (volumesError) {
-        errorMessage = getErrorMessage(volumesError /*, translate('FailedToLoadVolumeFromApi')*/);
-    }
-    else if (customFiltersError) {
-        errorMessage = getErrorMessage(
-            customFiltersError,
-            // translate('FailedToLoadCustomFiltersFromApi'),
-        );
-    }
-    else if (tagsError) {
-        errorMessage = getErrorMessage(tagsError /*, translate('FailedToLoadTagsFromApi')*/);
-    }
-    else if (qualityProfilesError) {
-        errorMessage = getErrorMessage(
-            qualityProfilesError,
-            // translate('FailedToLoadQualityProfilesFromApi'),
-        );
-    }
-    else if (uiSettingsError) {
-        errorMessage = getErrorMessage(
-            uiSettingsError /*, translate('FailedToLoadUiSettingsFromApi')*/,
-        );
-    }
-    else if (systemStatusError) {
-        errorMessage = getErrorMessage(
-            systemStatusError,
-            // translate('FailedToLoadSystemStatusFromApi'),
+            rootFoldersError,
+            translate('FailedToLoadRootFoldersFromApi'),
         );
     }
 

@@ -14,12 +14,12 @@ export function isNonApiError(error: unknown): error is NonApiError {
     return isFetchError(error) && typeof error.status === 'number';
 }
 
-export function getErrorMessage(error: unknown) {
+export function getErrorMessage(error: unknown, fallbackErrorMessage = 'Unknown error') {
     if (isApiError(error)) {
         return translate(error.data.error);
     }
     if (isNonApiError(error)) {
         return error.error;
     }
-    return 'Unknown error';
+    return fallbackErrorMessage;
 }
