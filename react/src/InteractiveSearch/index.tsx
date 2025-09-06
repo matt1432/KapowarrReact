@@ -55,8 +55,6 @@ interface SearchProps extends InteractiveSearchProps {
 
 // IMPLEMENTATIONS
 
-// TODO: add ranking
-
 const columns: Column<InteractiveSearchSort>[] = [
     {
         name: 'match',
@@ -183,6 +181,7 @@ function InternalSearch({
                         />
                     )}
                     predicates={{
+                        match: (a, b) => parseInt(a.rank.join('')) - parseInt(b.rank.join('')),
                         issueNumber: (a, b) =>
                             (Array.isArray(a.issueNumber)
                                 ? a.issueNumber[0]
