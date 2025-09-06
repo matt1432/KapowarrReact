@@ -23,9 +23,6 @@ import PasswordInput from '../PasswordInput';
 import TextArea, { type TextAreaProps } from '../TextArea';
 import TextInput, { type TextInputProps } from '../TextInput';
 
-import DownloadClientSelectInput from '../Select/DownloadClientSelectInput';
-import type { DownloadClientSelectInputProps } from '../Select/DownloadClientSelectInput';
-
 import EnhancedSelectInput from '../Select/EnhancedSelectInput';
 import type { EnhancedSelectInputProps } from '../Select/EnhancedSelectInput';
 
@@ -34,9 +31,6 @@ import type { MonitorIssuesSelectInputProps } from '../Select/MonitorIssuesSelec
 
 import MonitorNewItemsSelectInput from '../Select/MonitorNewItemsSelectInput';
 import type { MonitorNewItemsSelectInputProps } from '../Select/MonitorNewItemsSelectInput';
-
-import ProviderDataSelectInput from '../Select/ProviderOptionSelectInput';
-import type { ProviderOptionSelectInputProps } from '../Select/ProviderOptionSelectInput';
 
 import RootFolderSelectInput from '../Select/RootFolderSelectInput';
 import type { RootFolderSelectInputProps } from '../Select/RootFolderSelectInput';
@@ -60,8 +54,6 @@ type InputTypeMap<V, K extends string> = {
     autoComplete: AutoCompleteInputProps<K>;
     check: CheckInputProps<K>;
     date: TextInputProps<K, 'date'>;
-    downloadClientSelect: DownloadClientSelectInputProps<K>;
-    dynamicSelect: ProviderOptionSelectInputProps<K>;
     file: TextInputProps<K, 'file'>;
     float: TextInputProps<K, 'number'>;
     keyValueList: KeyValueListInputProps<K>;
@@ -117,8 +109,6 @@ const componentMap: Record<InputType, ElementType> = {
     autoComplete: AutoCompleteInput,
     check: CheckInput,
     date: TextInput,
-    downloadClientSelect: DownloadClientSelectInput,
-    dynamicSelect: ProviderDataSelectInput,
     file: TextInput,
     float: NumberInput,
     keyValueList: KeyValueListInput,
