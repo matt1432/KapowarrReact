@@ -4,6 +4,7 @@ import icons from './icons';
 import inputTypes from './inputTypes';
 import kinds from './kinds';
 import massEditActions from './massEditActions';
+import messageTypes from './messageTypes';
 import scrollDirections from './scrollDirections';
 import seedingHandlingValues from './seedingHandlingValues';
 import sizes from './sizes';
@@ -21,6 +22,7 @@ export {
     inputTypes,
     kinds,
     massEditActions,
+    messageTypes,
     scrollDirections,
     seedingHandlingValues,
     sizes,

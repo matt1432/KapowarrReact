@@ -1,14 +1,13 @@
-// TODO:
 // IMPORTS
 
 // React
-// import { useMemo } from 'react';
+import { useMemo } from 'react';
 
 // Redux
-// import { useSelector } from 'react-redux';
+import { useRootSelector } from 'Store/createAppStore';
 
 // Specific Components
-// import Message from './Message';
+import Message, { type Message as MessageModel } from '../Message';
 
 // CSS
 import styles from './index.module.css';
@@ -16,7 +15,7 @@ import styles from './index.module.css';
 // IMPLEMENTATIONS
 
 export default function Messages() {
-    /* const items = useSelector((state: AppState) => state.app.messages.items);
+    const items = useRootSelector((state) => state.messages.items);
 
     const messages = useMemo(() => {
         return items.reduce<MessageModel[]>((acc, item) => {
@@ -25,13 +24,12 @@ export default function Messages() {
             return acc;
         }, []);
     }, [items]);
-    */
 
     return (
         <div className={styles.messages}>
-            {/*messages.map((message) => {
+            {messages.map((message) => {
                 return <Message key={message.id} {...message} />;
-            })*/}
+            })}
         </div>
     );
 }

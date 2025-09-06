@@ -1,68 +1,45 @@
-// TODO:
 // IMPORTS
 
 // React
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 // Redux
-// import { useDispatch } from 'react-redux';
-// import { hideMessage } from 'Store/Actions/appActions';
-
-// Misc
-import { icons } from 'Helpers/Props';
+import { useRootDispatch } from 'Store/createAppStore';
+import { hideMessage } from 'Store/Slices/Messages';
 
 import classNames from 'classnames';
 
 // General Components
-import Icon, { type IconName } from 'Components/Icon';
+import Icon from 'Components/Icon';
 
 // CSS
 import styles from './index.module.css';
 
 // Types
-interface MessageProps {
+import type { IconName } from 'Components/Icon';
+import type { MessageType } from 'Helpers/Props/messageTypes';
+
+export interface Message {
     id: number;
     hideAfter: number;
-    name: string;
+    name: IconName;
     message: string;
-    type: keyof typeof styles; // Extract<MessageType, keyof typeof styles>;
+    type: Extract<MessageType, keyof typeof styles>;
 }
+
+type MessageProps = Message;
 
 // IMPLEMENTATIONS
 
 export default function Message({ id, hideAfter, name, message, type }: MessageProps) {
-    // const dispatch = useDispatch();
-    const dismissTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
+    const dispatch = useRootDispatch();
 
-    const icon: IconName = useMemo(() => {
-        switch (name) {
-            case 'ApplicationUpdate':
-                return icons.RESTART;
-            case 'Backup':
-                return icons.BACKUP;
-            case 'CheckHealth':
-                return icons.HEALTH;
-            case 'IssueSearch':
-                return icons.SEARCH;
-            case 'Housekeeping':
-                return icons.HOUSEKEEPING;
-            case 'RefreshVolume':
-                return icons.REFRESH;
-            case 'RssSync':
-                return icons.RSS;
-            case 'VolumeSearch':
-                return icons.SEARCH;
-            case 'UpdateSceneMapping':
-                return icons.REFRESH;
-            default:
-                return icons.SPINNER;
-        }
-    }, [name]);
+    const dismissTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
     useEffect(() => {
         if (hideAfter) {
             dismissTimeout.current = setTimeout(() => {
-                // dispatch(hideMessage({ id }));
+                dispatch(hideMessage({ id }));
 
                 dismissTimeout.current = undefined;
             }, hideAfter * 1000);
@@ -73,12 +50,12 @@ export default function Message({ id, hideAfter, name, message, type }: MessageP
                 clearTimeout(dismissTimeout.current);
             }
         };
-    }, [id, hideAfter, message, type /*, dispatch*/]);
+    }, [id, hideAfter, message, type, dispatch]);
 
     return (
         <div className={classNames(styles.message, styles[type])}>
             <div className={styles.iconContainer}>
-                <Icon name={icon} title={name} />
+                <Icon name={name} />
             </div>
 
             <div className={styles.text}>{message}</div>
