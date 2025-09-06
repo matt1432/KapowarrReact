@@ -2,11 +2,11 @@
 // IMPORTS
 
 // React
-// import { useCallback } from 'react';
+import { useCallback } from 'react';
 
 // Redux
-// import { useDispatch, useSelector } from 'react-redux';
-// import { restart, shutdown } from 'Store/Actions/systemActions';
+// import { useSelector } from 'react-redux';
+import { useRestartMutation, useShutdownMutation } from 'Store/Api/Command';
 
 // Misc
 import { align, icons, kinds } from 'Helpers/Props';
@@ -36,7 +36,8 @@ interface PageHeaderActionsMenuProps {
 export default function PageHeaderActionsMenu({
     onKeyboardShortcutsPress,
 }: PageHeaderActionsMenuProps) {
-    // const dispatch = useDispatch();
+    const [restart] = useRestartMutation();
+    const [shutdown] = useShutdownMutation();
 
     // const { authentication, isDocker } = useSelector((state: AppState) => state.system.status.item);
     const isDocker = false;
@@ -44,15 +45,13 @@ export default function PageHeaderActionsMenu({
     // const formsAuth = authentication === 'forms';
     const formsAuth = false;
 
-    /*
     const handleRestartPress = useCallback(() => {
-        dispatch(restart());
-    }, [dispatch]);
+        restart();
+    }, [restart]);
 
     const handleShutdownPress = useCallback(() => {
-        dispatch(shutdown());
-    }, [dispatch]);
-    */
+        shutdown();
+    }, [shutdown]);
 
     return (
         <div>
@@ -71,12 +70,12 @@ export default function PageHeaderActionsMenu({
                         <>
                             <MenuItemSeparator />
 
-                            <MenuItem onPress={() => {} /*handleRestartPress*/}>
+                            <MenuItem onPress={handleRestartPress}>
                                 <Icon className={styles.itemIcon} name={icons.RESTART} />
                                 {translate('Restart')}
                             </MenuItem>
 
-                            <MenuItem onPress={() => {} /*handleShutdownPress*/}>
+                            <MenuItem onPress={handleShutdownPress}>
                                 <Icon
                                     className={styles.itemIcon}
                                     name={icons.SHUTDOWN}

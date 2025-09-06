@@ -132,6 +132,26 @@ const extendedApi = baseApi.injectEndpoints({
                 body: snakeify(body),
             }),
         }),
+
+        restart: build.mutation<void, void>({
+            query: () => ({
+                method: 'POST',
+                url: '/system/power/restart',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+        }),
+
+        shutdown: build.mutation<void, void>({
+            query: () => ({
+                method: 'POST',
+                url: '/system/power/shutdown',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+        }),
     }),
 });
 
@@ -140,6 +160,8 @@ export const {
     useExecuteCommandMutation,
     useLibgenFileSearchMutation,
     useManualSearchQuery,
+    useRestartMutation,
+    useShutdownMutation,
 } = extendedApi;
 
 export const useMassEditMutation = () => {
