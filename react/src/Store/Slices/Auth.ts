@@ -7,6 +7,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 export interface AuthState {
     apiKey: string | null;
     lastLogin: number;
+    formsAuth: boolean;
 }
 
 // IMPLEMENTATIONS
@@ -14,6 +15,7 @@ export interface AuthState {
 const initialState = {
     apiKey: null,
     lastLogin: 0,
+    formsAuth: false,
 } satisfies AuthState as AuthState;
 
 const AuthSlice = createSlice({
@@ -26,11 +28,16 @@ const AuthSlice = createSlice({
                 window.Kapowarr.apiKey = value;
             }
         },
+
         setLastLogin(state, { payload: value }: PayloadAction<number>) {
             state.lastLogin = value;
+        },
+
+        setFormsAuth(state, { payload: value }: PayloadAction<boolean>) {
+            state.formsAuth = value;
         },
     },
 });
 
-export const { setApiKey, setLastLogin } = AuthSlice.actions;
+export const { setApiKey, setLastLogin, setFormsAuth } = AuthSlice.actions;
 export default AuthSlice;

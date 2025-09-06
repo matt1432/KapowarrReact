@@ -1,11 +1,10 @@
-// TODO:
 // IMPORTS
 
 // React
 import { useCallback } from 'react';
 
 // Redux
-// import { useSelector } from 'react-redux';
+import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { useRestartMutation, useShutdownMutation } from 'Store/Api/Command';
 
 // Misc
@@ -25,6 +24,7 @@ import MenuItemSeparator from 'Components/Menu/MenuItemSeparator';
 
 // CSS
 import styles from './index.module.css';
+import { setApiKey } from 'Store/Slices/Auth';
 
 // Types
 interface PageHeaderActionsMenuProps {
@@ -36,14 +36,12 @@ interface PageHeaderActionsMenuProps {
 export default function PageHeaderActionsMenu({
     onKeyboardShortcutsPress,
 }: PageHeaderActionsMenuProps) {
+    const dispatch = useRootDispatch();
+
+    const { formsAuth } = useRootSelector((state) => state.auth);
+
     const [restart] = useRestartMutation();
     const [shutdown] = useShutdownMutation();
-
-    // const { authentication, isDocker } = useSelector((state: AppState) => state.system.status.item);
-    const isDocker = false;
-
-    // const formsAuth = authentication === 'forms';
-    const formsAuth = false;
 
     const handleRestartPress = useCallback(() => {
         restart();
@@ -52,6 +50,10 @@ export default function PageHeaderActionsMenu({
     const handleShutdownPress = useCallback(() => {
         shutdown();
     }, [shutdown]);
+
+    const handleLogoutPress = useCallback(() => {
+        dispatch(setApiKey(''));
+    }, [dispatch]);
 
     return (
         <div>
@@ -66,31 +68,27 @@ export default function PageHeaderActionsMenu({
                         {translate('KeyboardShortcuts')}
                     </MenuItem>
 
-                    {isDocker ? null : (
-                        <>
-                            <MenuItemSeparator />
+                    <MenuItemSeparator />
 
-                            <MenuItem onPress={handleRestartPress}>
-                                <Icon className={styles.itemIcon} name={icons.RESTART} />
-                                {translate('Restart')}
-                            </MenuItem>
+                    <MenuItem onPress={handleRestartPress}>
+                        <Icon className={styles.itemIcon} name={icons.RESTART} />
+                        {translate('Restart')}
+                    </MenuItem>
 
-                            <MenuItem onPress={handleShutdownPress}>
-                                <Icon
-                                    className={styles.itemIcon}
-                                    name={icons.SHUTDOWN}
-                                    kind={kinds.DANGER}
-                                />
-                                {translate('Shutdown')}
-                            </MenuItem>
-                        </>
-                    )}
+                    <MenuItem onPress={handleShutdownPress}>
+                        <Icon
+                            className={styles.itemIcon}
+                            name={icons.SHUTDOWN}
+                            kind={kinds.DANGER}
+                        />
+                        {translate('Shutdown')}
+                    </MenuItem>
 
                     {formsAuth ? (
                         <>
                             <MenuItemSeparator />
 
-                            <MenuItem to={`${window.Kapowarr.urlBase}/logout`}>
+                            <MenuItem onPress={handleLogoutPress}>
                                 <Icon className={styles.itemIcon} name={icons.LOGOUT} />
                                 {translate('Logout')}
                             </MenuItem>
