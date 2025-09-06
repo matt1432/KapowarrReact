@@ -2,6 +2,7 @@
 
 // React
 import { useCallback, useState } from 'react';
+import { Form } from 'react-router';
 
 // Redux
 import { useApiKey } from 'Store/Api/Auth';
@@ -51,28 +52,30 @@ export default function LoginPage() {
                     <div className={styles.signIn}>{translate('SignInMessage')}</div>
 
                     <div className={styles.formGroup}>
-                        <FormInputGroup
-                            type={inputTypes.PASSWORD}
-                            name="password"
-                            placeholder={translate('Password')}
-                            onChange={onInputChange}
-                            value={password}
-                        />
+                        <Form onSubmit={onPress}>
+                            <FormInputGroup
+                                type={inputTypes.PASSWORD}
+                                name="password"
+                                placeholder={translate('Password')}
+                                onChange={onInputChange}
+                                value={password}
+                            />
 
-                        <SpinnerButton
-                            kind={kinds.PRIMARY}
-                            isSpinning={isLoading}
-                            onPress={onPress}
-                            className={styles.button}
-                        >
-                            {translate('Login')}
-                        </SpinnerButton>
+                            <SpinnerButton
+                                kind={kinds.PRIMARY}
+                                isSpinning={isLoading}
+                                onPress={onPress}
+                                className={styles.button}
+                            >
+                                {translate('Login')}
+                            </SpinnerButton>
 
-                        {isInvalidPassword && (
-                            <div className={styles.loginFailed}>
-                                {translate('IncorrectPassword')}
-                            </div>
-                        )}
+                            {isInvalidPassword && (
+                                <div className={styles.loginFailed}>
+                                    {translate('IncorrectPassword')}
+                                </div>
+                            )}
+                        </Form>
                     </div>
                 </div>
             </div>
