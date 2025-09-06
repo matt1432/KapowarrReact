@@ -72,7 +72,7 @@ const columns: Column<HistoryColumnName>[] = [
     },
 ];
 
-export default function History({ volumeId, issueId }: HistoryProps) {
+export default function History({ volumeId, issueId }: HistoryProps = {}) {
     const [fetchHistory, { items, isFetching, isPopulated, error }] = useGetDownloadHistoryMutation(
         {
             selectFromResult: ({ data, isLoading, isUninitialized, error }) => ({

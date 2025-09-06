@@ -14,7 +14,7 @@ import AddNewVolume from 'AddVolume/AddNewVolume/AddNewVolume';
 // import ImportVolumePage from 'AddVolume/ImportVolume/ImportVolumePage';
 
 // import Queue from 'Activity/Queue/Queue';
-// import History from 'Activity/History/History';
+import History from 'Activity/History';
 // import Blocklist from 'Activity/Blocklist/Blocklist';
 
 import UISettings from 'Settings/UI/UISettings';
@@ -42,12 +42,13 @@ export default function AppRoutes() {
             {/*
             <Route path="/add/import" element={<ImportVolumePage />} />
 
-            {/*Activity*/
-            /*}
-            <Route path="/activity/queue" element={<Queue />} />
+            {/*Activity*/}
+            {/*
+            <Route path="/activity/queue" element={<Queue />} />*/}
 
             <Route path="/activity/history" element={<History />} />
 
+            {/*
             <Route path="/activity/blocklist" element={<Blocklist />} />
 
             {/*Settings*/}
