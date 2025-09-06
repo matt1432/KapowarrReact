@@ -1,4 +1,3 @@
-// TODO:
 // IMPORTS
 
 // React
@@ -33,11 +32,12 @@ interface SpinnerErrorButtonProps extends SpinnerButtonProps {
 
 // IMPLEMENTATIONS
 
+// What about warnings?
+
 function getTestResult(error: AnyError | undefined) {
     if (!error) {
         return {
             wasSuccessful: true,
-            hasWarning: false,
             hasError: false,
         };
     }
@@ -45,33 +45,12 @@ function getTestResult(error: AnyError | undefined) {
     if (isFetchError(error) && error.status !== 400) {
         return {
             wasSuccessful: false,
-            hasWarning: false,
             hasError: true,
         };
     }
 
-    // TODO:
-    /*
-    const failures = error.responseJSON;
-
-    const { hasError, hasWarning } = failures.reduce(
-        (acc, failure) => {
-            if (failure.isWarning) {
-                acc.hasWarning = true;
-            }
-            else {
-                acc.hasError = true;
-            }
-
-            return acc;
-        },
-        { hasWarning: false, hasError: false },
-    );
-    */
-
     return {
         wasSuccessful: false,
-        hasWarning: false,
         hasError: true,
     };
 }
@@ -88,24 +67,16 @@ export default function SpinnerErrorButton({
 
     const [result, setResult] = useState({
         wasSuccessful: false,
-        hasWarning: false,
         hasError: false,
     });
-    const { wasSuccessful, hasWarning, hasError } = result;
+    const { wasSuccessful, hasError } = result;
 
-    const showIcon = wasSuccessful || hasWarning || hasError;
+    const showIcon = wasSuccessful || hasError;
 
     const { iconName, iconKind } = useMemo<{
         iconName: IconName;
         iconKind: IconKind;
     }>(() => {
-        if (hasWarning) {
-            return {
-                iconName: icons.WARNING,
-                iconKind: 'warning',
-            };
-        }
-
         if (hasError) {
             return {
                 iconName: icons.DANGER,
@@ -117,7 +88,7 @@ export default function SpinnerErrorButton({
             iconName: icons.CHECK,
             iconKind: kind === 'primary' ? 'defaultKind' : 'success',
         };
-    }, [kind, hasError, hasWarning]);
+    }, [kind, hasError]);
 
     useEffect(() => {
         if (wasSpinning && !isSpinning) {
@@ -125,13 +96,12 @@ export default function SpinnerErrorButton({
 
             setResult(testResult);
 
-            const { wasSuccessful, hasWarning, hasError } = testResult;
+            const { wasSuccessful, hasError } = testResult;
 
-            if (wasSuccessful || hasWarning || hasError) {
+            if (wasSuccessful || hasError) {
                 updateTimeout.current = setTimeout(() => {
                     setResult({
                         wasSuccessful: false,
-                        hasWarning: false,
                         hasError: false,
                     });
                 }, 3000);
