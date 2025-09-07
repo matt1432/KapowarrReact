@@ -30,7 +30,6 @@ import styles from './index.module.css';
 
 // Types
 import type { InputChanged } from 'typings/Inputs';
-import type { AddVolume } from 'AddVolume/AddVolume';
 
 // IMPLEMENTATIONS
 
@@ -45,7 +44,7 @@ export default function AddNewVolume() {
 
     const [_term, _setTerm] = useState(initialTerm);
     const [term, setTerm] = useState(initialTerm);
-    const [searchResults, setSearchResults] = useState<AddVolume[]>([]);
+    const [showResults, setShowResults] = useState(false);
 
     const handleSearchInputChange = useCallback(({ value }: InputChanged<string, string>) => {
         _setTerm(value);
@@ -54,13 +53,13 @@ export default function AddNewVolume() {
     const handleClearVolumeLookupPress = useCallback(() => {
         _setTerm('');
         setTerm('');
-        setSearchResults([]);
+        setShowResults(false);
     }, []);
 
     const [lookupVolume, { isFetching, error, data = [] }] = useLazyLookupVolumeQuery();
 
     useEffect(() => {
-        setSearchResults(data);
+        setShowResults(true);
     }, [data]);
 
     const handleSubmit = useCallback(() => {
@@ -70,7 +69,7 @@ export default function AddNewVolume() {
             lookupVolume({ query: _term });
         }
         else {
-            setSearchResults([]);
+            setShowResults(false);
         }
     }, [lookupVolume, _term]);
 
@@ -118,9 +117,9 @@ export default function AddNewVolume() {
                     </div>
                 ) : null}
 
-                {!isFetching && !error && searchResults.length ? (
+                {!isFetching && !error && showResults ? (
                     <div className={styles.searchResults}>
-                        {searchResults.map((item) => {
+                        {data.map((item) => {
                             return (
                                 <AddNewVolumeSearchResult key={item.comicvineId} volume={item} />
                             );
