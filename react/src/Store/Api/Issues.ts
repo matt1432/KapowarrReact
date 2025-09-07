@@ -52,4 +52,4 @@ const extendedApi = baseApi.injectEndpoints({
     }),
 });
 
-export const { useGetIssueQuery, useUpdateIssueMutation } = extendedApi;
+export const { useGetIssueQuery, useLazyGetIssueQuery, useUpdateIssueMutation } = extendedApi;

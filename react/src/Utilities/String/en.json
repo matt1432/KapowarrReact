@@ -1835,6 +1835,7 @@
     "SelectReleaseType": "Select Release Type",
     "SelectVolume": "Select Volume",
     "SendAnonymousUsageData": "Send Anonymous Usage Data",
+    "Volume": "Volume",
     "Volumes": "Volumes",
     "VolumeAndIssueInformationIsProvidedByTheTVDB": "Volume and issue information is provided by TheTVDB.com. [Please consider supporting them]({url}) .",
     "VolumeCannotBeFound": "Sorry, that volume cannot be found.",

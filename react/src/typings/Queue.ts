@@ -37,3 +37,21 @@ export interface RawDownloadHistoryItem {
 }
 
 export type DownloadHistoryItem = CamelCasedProperties<RawDownloadHistoryItem>;
+
+export interface RawBlocklistItem {
+    id: number;
+    volume_id: number | null;
+    issue_id: number | null;
+
+    web_link: string | null;
+    web_title: string | null;
+    web_sub_title: string | null;
+
+    download_link: string | null;
+    source: string | null;
+
+    reason: string;
+    added_at: number;
+}
+
+export type BlocklistItem = CamelCasedProperties<RawBlocklistItem>;

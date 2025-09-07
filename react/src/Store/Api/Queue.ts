@@ -8,8 +8,10 @@ import camelize from 'Utilities/Object/camelize';
 
 // Types
 import type {
+    BlocklistItem,
     DownloadHistoryItem,
     DownloadItem,
+    RawBlocklistItem,
     RawDownloadHistoryItem,
     RawDownloadItem,
 } from 'typings/Queue';
@@ -22,6 +24,10 @@ export interface FetchQueueParams {
 export interface GetDownloadHistoryParams {
     volumeId?: number;
     issueId?: number;
+    offset?: number;
+}
+
+export interface GetBlocklistParams {
     offset?: number;
 }
 
@@ -55,10 +61,50 @@ const extendedApi = baseApi.injectEndpoints({
             transformResponse: (response: { result: RawDownloadHistoryItem[] }) =>
                 camelize(response.result),
         }),
+
+        getBlocklist: build.mutation<BlocklistItem[], GetBlocklistParams>({
+            query: ({ offset = 0 }) => ({
+                method: 'GET',
+                url: 'blocklist',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                    offset,
+                },
+            }),
+
+            transformResponse: (response: { result: RawBlocklistItem[] }) =>
+                camelize(response.result),
+        }),
+
+        // DELETE
+        clearBlocklist: build.mutation<void, void>({
+            query: () => ({
+                method: 'DELETE',
+                url: 'blocklist',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+        }),
+
+        deleteBlocklistItem: build.mutation<void, { id: number }>({
+            query: ({ id }) => ({
+                method: 'DELETE',
+                url: `blocklist/${id}`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+        }),
     }),
 });
 
-export const { useGetDownloadHistoryMutation } = extendedApi;
+export const {
+    useGetDownloadHistoryMutation,
+    useGetBlocklistMutation,
+    useClearBlocklistMutation,
+    useDeleteBlocklistItemMutation,
+} = extendedApi;
 
 export const useFetchQueueDetails = (
     { volumeId, issueId }: FetchQueueParams = {},

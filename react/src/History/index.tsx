@@ -30,49 +30,66 @@ export type HistoryColumnName = keyof DownloadHistoryItem | 'actions';
 interface HistoryProps {
     issueId?: number;
     volumeId?: number;
+    showIssues?: boolean;
+    showVolumes?: boolean;
 }
 
 // IMPLEMENTATIONS
 
-const columns: Column<HistoryColumnName>[] = [
-    {
-        name: 'source',
-        label: () => translate('SourceTitle'),
-        isVisible: true,
-    },
-    {
-        name: 'webLink',
-        label: () => translate('WebLink'),
-        isVisible: true,
-    },
-    {
-        name: 'webTitle',
-        label: () => translate('WebTitle'),
-        isVisible: true,
-    },
-    {
-        name: 'webSubTitle',
-        label: () => translate('WebSubtitle'),
-        isVisible: true,
-    },
-    {
-        name: 'fileTitle',
-        label: () => translate('Filename'),
-        isVisible: true,
-    },
-    {
-        name: 'downloadedAt',
-        label: () => translate('Date'),
-        isVisible: true,
-    },
-    {
-        name: 'actions',
-        label: '',
-        isVisible: true,
-    },
-];
+export default function History({
+    volumeId,
+    issueId,
+    showIssues = false,
+    showVolumes = false,
+}: HistoryProps = {}) {
+    const columns: Column<HistoryColumnName>[] = [
+        {
+            name: 'source',
+            label: () => translate('SourceTitle'),
+            isVisible: true,
+        },
+        {
+            name: 'volumeId',
+            label: () => translate('Volume'),
+            isVisible: showVolumes,
+        },
+        {
+            name: 'issueId',
+            label: () => translate('Issue'),
+            isVisible: showIssues,
+        },
+        {
+            name: 'webLink',
+            label: () => translate('WebLink'),
+            isVisible: true,
+        },
+        {
+            name: 'webTitle',
+            label: () => translate('WebTitle'),
+            isVisible: true,
+        },
+        {
+            name: 'webSubTitle',
+            label: () => translate('WebSubtitle'),
+            isVisible: true,
+        },
+        {
+            name: 'fileTitle',
+            label: () => translate('Filename'),
+            isVisible: true,
+        },
+        {
+            name: 'downloadedAt',
+            label: () => translate('Date'),
+            isVisible: true,
+        },
+        {
+            name: 'actions',
+            label: '',
+            isVisible: true,
+        },
+    ];
 
-export default function History({ volumeId, issueId }: HistoryProps = {}) {
     const [fetchHistory, { items, isFetching, isPopulated, error }] = useGetDownloadHistoryMutation(
         {
             selectFromResult: ({ data, isLoading, isUninitialized, error }) => ({
@@ -130,7 +147,14 @@ export default function History({ volumeId, issueId }: HistoryProps = {}) {
                 <Table columns={columns}>
                     <TableBody>
                         {items.map((item) => {
-                            return <HistoryRow key={item.webLink} {...item} />;
+                            return (
+                                <HistoryRow
+                                    key={item.webLink}
+                                    {...item}
+                                    showVolumes={showVolumes}
+                                    showIssues={showIssues}
+                                />
+                            );
                         })}
                     </TableBody>
                 </Table>

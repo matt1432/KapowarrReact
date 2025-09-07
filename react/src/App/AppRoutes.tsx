@@ -15,7 +15,7 @@ import AddNewVolume from 'AddVolume/AddNewVolume/AddNewVolume';
 
 // import Queue from 'Activity/Queue/Queue';
 import History from 'Activity/History';
-// import Blocklist from 'Activity/Blocklist/Blocklist';
+import Blocklist from 'Activity/Blocklist';
 
 import UISettings from 'Settings/UI/UISettings';
 // import MediaManagement from 'Settings/MediaManagement/MediaManagement';
@@ -48,7 +48,6 @@ export default function AppRoutes() {
 
             <Route path="/activity/history" element={<History />} />
 
-            {/*
             <Route path="/activity/blocklist" element={<Blocklist />} />
 
             {/*Settings*/}

@@ -8,15 +8,15 @@ import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 
 // Specific Components
-import History from 'History';
+import BlocklistTable from './BlocklistTable';
 
 // IMPLEMENTATIONS
 
 export default function HistoryPage() {
     return (
-        <PageContent title={translate('History')}>
+        <PageContent title={translate('Blocklist')}>
             <PageContentBody>
-                <History showVolumes showIssues />
+                <BlocklistTable />
             </PageContentBody>
         </PageContent>
     );
