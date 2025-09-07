@@ -82,7 +82,7 @@ export default function UISettings() {
 
     return (
         <PageContent title={translate('UiSettings')}>
-            <SettingsToolbar hasPendingChanges={false} isSaving={false} />
+            <SettingsToolbar showSave={false} />
 
             <PageContentBody>
                 <Form id="uiSettings">
@@ -155,7 +155,7 @@ export default function UISettings() {
                                 type={inputTypes.CHECK}
                                 name="showRelativeDates"
                                 helpText={translate('ShowRelativeDatesHelpText')}
-                                onChange={handleInputChange}
+                                onChange={handleInputChange<'showRelativeDates'>}
                                 value={showRelativeDates}
                             />
                         </FormGroup>

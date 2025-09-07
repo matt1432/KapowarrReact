@@ -13,11 +13,11 @@ import AddNewVolume from 'AddVolume/AddNewVolume/AddNewVolume';
 // TODO: do this one from scratch to follow how it works in Kapowarr
 // import ImportVolumePage from 'AddVolume/ImportVolume/ImportVolumePage';
 
-// import Queue from 'Activity/Queue/Queue';
+// import Queue from 'Activity/Queue';
 import History from 'Activity/History';
 import Blocklist from 'Activity/Blocklist';
 
-import UISettings from 'Settings/UI/UISettings';
+import UISettings from 'Settings/UISettings';
 // import MediaManagement from 'Settings/MediaManagement/MediaManagement';
 // import DownloadClientSettings from 'Settings/DownloadClients/DownloadClientSettings';
 // import GeneralSettings from 'Settings/General/GeneralSettings';
