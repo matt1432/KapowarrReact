@@ -19,8 +19,8 @@ import Blocklist from 'Activity/Blocklist';
 
 import UISettings from 'Settings/UISettings';
 import MediaManagement from 'Settings/MediaManagement';
+import DownloadSettings from 'Settings/DownloadSettings';
 // import DownloadClientSettings from 'Settings/DownloadClientSettings';
-// import GeneralSettings from 'Settings/GeneralSettings';
 
 // import Status from 'System/Status/Status';
 // import Tasks from 'System/Tasks/Tasks';
@@ -55,10 +55,10 @@ export default function AppRoutes() {
 
             <Route path="/settings/mediamanagement" element={<MediaManagement />} />
 
+            <Route path="/settings/download" element={<DownloadSettings />} />
+
             {/*
             <Route path="/settings/downloadclients" element={<DownloadClientSettings />} />
-
-            <Route path="/settings/general" element={<GeneralSettings />} />
 
             {/*System*/
             /*}

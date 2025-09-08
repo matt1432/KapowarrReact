@@ -53,10 +53,22 @@ const extendedApi = baseApi.injectEndpoints({
             transformResponse: (response: { result: RawSettingsValue }) =>
                 camelize(response.result),
         }),
+
+        // DELETE
+        emptyDownloadFolder: build.mutation<void, void>({
+            query: () => ({
+                method: 'DELETE',
+                url: 'activity/folder',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+        }),
     }),
 });
 
 export const {
+    useEmptyDownloadFolderMutation,
     useGetAvailableFormatsQuery,
     useGetSettingsQuery,
     useLazyGetSettingsQuery,

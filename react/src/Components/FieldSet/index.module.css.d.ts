@@ -4,6 +4,9 @@ interface CssExports {
     fieldSet: string;
     legend: string;
     small: string;
+    legendTitle: string;
+    title: string;
+    subtitle: string;
 }
 export const cssExports: CssExports;
 export default cssExports;

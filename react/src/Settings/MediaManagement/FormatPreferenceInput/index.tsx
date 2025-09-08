@@ -5,6 +5,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { HTML5toTouch } from 'rdndmb-html5-to-touch';
 import { DndProvider } from 'react-dnd-multi-backend';
 
+// Redux
+import { useGetAvailableFormatsQuery } from 'Store/Api/Settings';
+
 // Misc
 import translate, { type TranslateKey } from 'Utilities/String/translate';
 
@@ -19,7 +22,6 @@ import styles from './index.module.css';
 
 // Types
 import type { CheckInputChanged } from 'typings/Inputs';
-import { useGetAvailableFormatsQuery } from 'Store/Api/Settings';
 
 interface Format {
     name: TranslateKey;

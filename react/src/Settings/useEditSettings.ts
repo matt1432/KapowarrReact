@@ -41,6 +41,18 @@ export default function useEditSettings() {
         [changes],
     );
 
+    const handleNonNullInputChange = useCallback(
+        <Key extends keyof SettingsValue>({
+            name,
+            value,
+        }: InputChanged<Key, SettingsValue[Key] | null>) => {
+            if (value !== null) {
+                handleInputChange({ name, value });
+            }
+        },
+        [handleInputChange],
+    );
+
     const hasPendingChanges = useMemo(() => {
         return JSON.stringify(changes) !== JSON.stringify(settings);
     }, [changes, settings]);
@@ -49,6 +61,7 @@ export default function useEditSettings() {
         isSaving,
         onSavePress,
         handleInputChange,
+        handleNonNullInputChange,
         hasPendingChanges,
         changes,
     };

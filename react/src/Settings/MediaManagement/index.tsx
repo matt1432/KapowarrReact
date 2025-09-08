@@ -23,9 +23,6 @@ import AddRootFolder from './AddRootFolder';
 import FormatPreferenceInput from './FormatPreferenceInput';
 import RootFolders from './RootFolders';
 
-// CSS
-import styles from './index.module.css';
-
 // Types
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 
@@ -207,14 +204,8 @@ export default function MediaManagement() {
                     </FieldSet>
 
                     <FieldSet
-                        legend={
-                            <div className={styles.legend}>
-                                <span className={styles.title}>{translate('Converting')}</span>
-                                <span className={styles.subtitle}>
-                                    {translate('ConvertingInfo')}
-                                </span>
-                            </div>
-                        }
+                        legend={translate('Converting')}
+                        subLegend={translate('ConvertingInfo')}
                     >
                         <FormGroup>
                             <FormLabel>{translate('ConvertToggle')}</FormLabel>
