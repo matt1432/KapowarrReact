@@ -57,7 +57,7 @@ export default function MediaManagement() {
     }, [emptyDownloadFolder]);
 
     return (
-        <PageContent title={translate('MediaManagementSettings')}>
+        <PageContent title={translate('DownloadSettings')}>
             <SettingsToolbar
                 isSaving={isSaving}
                 hasPendingChanges={hasPendingChanges}

@@ -119,6 +119,10 @@ const LINKS: SidebarItem[] = [
                 title: () => translate('DownloadClients'),
                 to: '/settings/downloadclients',
             },
+            {
+                title: () => translate('UiSettings'),
+                to: '/settings/ui',
+            },
         ],
     },
 

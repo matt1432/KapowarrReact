@@ -17,10 +17,11 @@ import AddNewVolume from 'AddVolume/AddNewVolume/AddNewVolume';
 import History from 'Activity/History';
 import Blocklist from 'Activity/Blocklist';
 
-import UISettings from 'Settings/UISettings';
+import GeneralSettings from 'Settings/GeneralSettings';
 import MediaManagement from 'Settings/MediaManagement';
 import DownloadSettings from 'Settings/DownloadSettings';
-// import DownloadClientSettings from 'Settings/DownloadClientSettings';
+import DownloadClientSettings from 'Settings/DownloadClientSettings';
+import UISettings from 'Settings/UISettings';
 
 // import Status from 'System/Status/Status';
 // import Tasks from 'System/Tasks/Tasks';
@@ -51,14 +52,15 @@ export default function AppRoutes() {
             <Route path="/activity/blocklist" element={<Blocklist />} />
 
             {/*Settings*/}
-            <Route path="/settings" element={<UISettings />} />
+            <Route path="/settings" element={<GeneralSettings />} />
 
             <Route path="/settings/mediamanagement" element={<MediaManagement />} />
 
             <Route path="/settings/download" element={<DownloadSettings />} />
 
-            {/*
             <Route path="/settings/downloadclients" element={<DownloadClientSettings />} />
+
+            <Route path="/settings/ui" element={<UISettings />} />
 
             {/*System*/
             /*}
