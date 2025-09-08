@@ -1,15 +1,12 @@
 // IMPORTS
 
-// React
-import { useCallback, useEffect, useMemo, useState } from 'react';
-
-// Redux
-import { useGetSettingsQuery, useSaveSettingsMutation } from 'Store/Api/Settings';
-
-// Hooks
+// Misc
 import { inputTypes } from 'Helpers/Props';
 
 import translate, { type TranslateKey } from 'Utilities/String/translate';
+
+// Hooks
+import useEditSettings from 'Settings/useEditSettings';
 
 // General Components
 import FieldSet from 'Components/FieldSet';
@@ -30,8 +27,6 @@ import RootFolders from './RootFolders';
 import styles from './index.module.css';
 
 // Types
-import type { SettingsValue } from 'typings/Settings';
-import type { InputChanged } from 'typings/Inputs';
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 
 // IMPLEMENTATIONS
@@ -50,46 +45,8 @@ const volumePaddingOptions: EnhancedSelectInputValue<number>[] = [
 ];
 
 export default function MediaManagement() {
-    const { settings, isSuccess } = useGetSettingsQuery(undefined, {
-        selectFromResult: ({ data, isSuccess }) => ({
-            settings: data,
-            isSuccess,
-        }),
-    });
-
-    const [saveSettings] = useSaveSettingsMutation();
-
-    const [isSaving, setIsSaving] = useState(false);
-    const [changes, setChanges] = useState<SettingsValue>(settings!);
-
-    useEffect(() => {
-        if (isSuccess) {
-            setIsSaving(false);
-            setChanges(settings!);
-        }
-    }, [isSuccess, settings]);
-
-    const onSavePress = useCallback(() => {
-        setIsSaving(true);
-        saveSettings(changes);
-    }, [changes, saveSettings]);
-
-    const handleInputChange = useCallback(
-        <Key extends keyof SettingsValue>({
-            name,
-            value,
-        }: InputChanged<Key, SettingsValue[Key]>) => {
-            setChanges({
-                ...changes,
-                [name]: value,
-            });
-        },
-        [changes],
-    );
-
-    const hasPendingChanges = useMemo(() => {
-        return JSON.stringify(changes) !== JSON.stringify(settings);
-    }, [changes, settings]);
+    const { isSaving, hasPendingChanges, onSavePress, handleInputChange, changes } =
+        useEditSettings();
 
     return (
         <PageContent title={translate('MediaManagementSettings')}>
