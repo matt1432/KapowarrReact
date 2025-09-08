@@ -1,7 +1,6 @@
 // IMPORTS
 
 // React
-import { Form } from 'react-router';
 import { useCallback, useState } from 'react';
 
 // Redux
@@ -18,7 +17,9 @@ import translate from 'Utilities/String/translate';
 
 // General Components
 import Alert from 'Components/Alert';
+import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
+import FormInputButton from 'Components/Form/FormInputButton';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
 import Icon from 'Components/Icon';
@@ -235,7 +236,7 @@ export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
 
     if (!searchProps.isPopulated) {
         return (
-            <Form onSubmit={startSearch}>
+            <Form>
                 <FormGroup>
                     <FormLabel>{translate('LibgenFileSearch')}</FormLabel>
 
@@ -244,7 +245,13 @@ export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
                         name="url"
                         value={libgenFileUrl}
                         helpText={translate('LibgenFileSearchHelpText')}
+                        buttons={[
+                            <FormInputButton title={translate('Search')} onPress={startSearch}>
+                                <Icon name={icons.SEARCH} />
+                            </FormInputButton>,
+                        ]}
                         onChange={onUrlChange}
+                        onSubmit={startSearch}
                     />
                 </FormGroup>
             </Form>

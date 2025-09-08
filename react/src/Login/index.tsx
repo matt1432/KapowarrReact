@@ -2,7 +2,6 @@
 
 // React
 import { useCallback, useState } from 'react';
-import { Form } from 'react-router';
 
 // Redux
 import { useApiKey } from 'Store/Api/Auth';
@@ -13,6 +12,7 @@ import { inputTypes, kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 
 // General Components
+import Form from 'Components/Form/Form';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import SpinnerButton from 'Components/Link/SpinnerButton';
 import Logo from 'Components/Page/Header/Logo';
@@ -52,13 +52,14 @@ export default function LoginPage() {
                     <div className={styles.signIn}>{translate('SignInMessage')}</div>
 
                     <div className={styles.formGroup}>
-                        <Form onSubmit={onPress}>
+                        <Form>
                             <FormInputGroup
                                 type={inputTypes.PASSWORD}
                                 name="password"
                                 placeholder={translate('Password')}
                                 onChange={onInputChange}
                                 value={password}
+                                onSubmit={onPress}
                             />
 
                             <SpinnerButton
