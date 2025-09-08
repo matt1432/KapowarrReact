@@ -22,7 +22,7 @@ export interface RawSettingsValue {
     file_naming_special_version: string;
     file_naming_vai: string;
     flaresolverr_base_url: string;
-    format_preference: string; // improve type?
+    format_preference: string[]; // improve type?
     host: string;
     issue_padding: number;
     log_level: number;

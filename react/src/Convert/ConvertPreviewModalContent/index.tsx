@@ -92,7 +92,7 @@ export default function ConvertPreviewModalContent({
                 isFormatFetching: isFetching,
                 isFormatPopulated: !isUninitialized,
                 formatError: error,
-                format: data?.formatPreference,
+                format: String(data?.formatPreference),
                 convertFiles: data?.convert,
             }),
         });
