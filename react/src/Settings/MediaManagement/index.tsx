@@ -17,13 +17,15 @@ import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormLabel from 'Components/Form/FormLabel';
 import FormInputGroup from 'Components/Form/FormInputGroup';
-import Label from 'Components/Label';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 
 // Specific Components
 import FormatPreferenceInput from './FormatPreferenceInput';
 import SettingsToolbar from 'Settings/SettingsToolbar';
+
+// CSS
+import styles from './index.module.css';
 
 // Types
 import type { SettingsValue } from 'typings/Settings';
@@ -246,9 +248,16 @@ export default function MediaManagement() {
                         </FormGroup>
                     </FieldSet>
 
-                    <FieldSet legend={translate('Converting')}>
-                        <Label>{translate('ConvertingInfo')}</Label>
-
+                    <FieldSet
+                        legend={
+                            <div className={styles.legend}>
+                                <span className={styles.title}>{translate('Converting')}</span>
+                                <span className={styles.subtitle}>
+                                    {translate('ConvertingInfo')}
+                                </span>
+                            </div>
+                        }
+                    >
                         <FormGroup>
                             <FormLabel>{translate('ConvertToggle')}</FormLabel>
                             <FormInputGroup
