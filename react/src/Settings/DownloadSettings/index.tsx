@@ -26,10 +26,6 @@ import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import SettingsToolbar from 'Settings/SettingsToolbar';
 
-// Specific Components
-
-// CSS
-
 // Types
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 import ServicePreferenceInput from './ServicePreferenceInput';
@@ -80,13 +76,21 @@ export default function MediaManagement() {
 
                         <FormGroup>
                             <FormLabel>{translate('DownloadTempFolderEmpty')}</FormLabel>
-                            <FormInputButton onPress={onEmptyFolderPress}>
-                                {translate('Reset')}
-                            </FormInputButton>
-                            <FormInputHelpText
-                                // FIXME: check if this is well placed
-                                text={translate('DownloadTempFolderEmptyHelpText')}
-                            />
+                            <div>
+                                <FormInputButton
+                                    style={{
+                                        borderLeft: 'currentColor',
+                                        borderTopLeftRadius: '4px',
+                                        borderBottomLeftRadius: '4px',
+                                    }}
+                                    onPress={onEmptyFolderPress}
+                                >
+                                    {translate('Reset')}
+                                </FormInputButton>
+                                <FormInputHelpText
+                                    text={translate('DownloadTempFolderEmptyHelpText')}
+                                />
+                            </div>
                         </FormGroup>
                     </FieldSet>
 

@@ -21,9 +21,10 @@ import TextInput from 'Components/Form/TextInput';
 
 // CSS
 import styles from './index.module.css';
-import type { InputChanged } from 'typings/Inputs';
 
 // Types
+import type { InputChanged } from 'typings/Inputs';
+
 interface RootFolderRowProps {
     id: number;
     path: string;

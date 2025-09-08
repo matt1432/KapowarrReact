@@ -18,8 +18,6 @@ import translate from 'Utilities/String/translate';
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 
-// Specific Components
-
 // CSS
 import styles from './index.module.css';
 
