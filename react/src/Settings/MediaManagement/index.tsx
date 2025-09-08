@@ -19,10 +19,12 @@ import FormLabel from 'Components/Form/FormLabel';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
+import SettingsToolbar from 'Settings/SettingsToolbar';
 
 // Specific Components
+import AddRootFolder from './AddRootFolder';
 import FormatPreferenceInput from './FormatPreferenceInput';
-import SettingsToolbar from 'Settings/SettingsToolbar';
+import RootFolders from './RootFolders';
 
 // CSS
 import styles from './index.module.css';
@@ -291,47 +293,11 @@ export default function MediaManagement() {
                         </FormGroup>
                     </FieldSet>
 
-                    <FieldSet legend={translate('RootFolders')}></FieldSet>
+                    <FieldSet legend={translate('RootFolders')}>
+                        <RootFolders />
+                        <AddRootFolder />
+                    </FieldSet>
                 </Form>
-
-                {/* TODO:
-                <h2>Root Folders</h2>
-                <div id="root-folder-container">
-                    <table id="root-folder-table" className="icon-text-color">
-                        <thead>
-                            <tr>
-                                <th>Path</th>
-                                <th className="number-column">Free Space</th>
-                                <th className="number-column">Total Space</th>
-                                <th className="action-column">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="root-folder-list"></tbody>
-                        <tbody>
-                            <tr id="add-row" className="hidden">
-                                <td>
-                                    <input type="text" id="folder-input" />
-                                    <p className="error" id="folder-error">
-                                        *Folder doesn't exist
-                                    </p>
-                                    <p className="error" id="folder-in-folder-error">
-                                        *Folder is in other root folder or download folder
-                                    </p>
-                                </td>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <button id="add-folder" type="button">
-                                        Add
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <button type="button" id="toggle-root-folder">
-                    Add Root Folder
-                </button> */}
             </PageContentBody>
         </PageContent>
     );

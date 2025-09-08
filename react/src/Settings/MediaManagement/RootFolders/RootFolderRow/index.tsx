@@ -4,7 +4,7 @@
 import { useCallback, useState } from 'react';
 
 // Redux
-import { useDeleteRootFolderMutation } from 'Store/Api/RootFolders';
+import { useDeleteRootFolderMutation, useEditRootFolderMutation } from 'Store/Api/RootFolders';
 
 // Misc
 import { icons, kinds } from 'Helpers/Props';
@@ -13,26 +13,49 @@ import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 
 // General Components
-import ConfirmModal from 'Components/Modal/ConfirmModal';
 import IconButton from 'Components/Link/IconButton';
+import ConfirmModal from 'Components/Modal/ConfirmModal';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
+import TextInput from 'Components/Form/TextInput';
 
 // CSS
 import styles from './index.module.css';
+import type { InputChanged } from 'typings/Inputs';
 
 // Types
 interface RootFolderRowProps {
     id: number;
     path: string;
     freeSpace?: number;
+    totalSpace?: number;
 }
 
 // IMPLEMENTATIONS
 
-export default function RootFolderRow({ id, path, freeSpace = 0 }: RootFolderRowProps) {
+function RootFolderRow({ id, path, freeSpace = 0, totalSpace = 0 }: RootFolderRowProps) {
+    const [editRootFolder] = useEditRootFolderMutation();
     const [deleteRootFolder] = useDeleteRootFolderMutation();
+
+    const [pathChange, setPathChange] = useState(path);
+    const [isEditing, setIsEditing] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const onEditPress = useCallback(() => {
+        if (isEditing) {
+            if (path !== pathChange) {
+                editRootFolder({ id, folder: pathChange });
+            }
+            setIsEditing(false);
+        }
+        else {
+            setIsEditing(true);
+        }
+    }, [editRootFolder, id, isEditing, path, pathChange]);
+
+    const handlePathChange = useCallback(({ value }: InputChanged<'path', string>) => {
+        setPathChange(value);
+    }, []);
 
     const onDeletePress = useCallback(() => {
         setIsDeleteModalOpen(true);
@@ -51,14 +74,28 @@ export default function RootFolderRow({ id, path, freeSpace = 0 }: RootFolderRow
     return (
         <TableRow>
             <TableRowCell>
-                <div className={styles.link}>{path}</div>
+                {isEditing ? (
+                    <TextInput name="path" value={pathChange} onChange={handlePathChange} />
+                ) : (
+                    path
+                )}
             </TableRowCell>
 
             <TableRowCell className={styles.freeSpace}>
                 {isNaN(Number(freeSpace)) ? '-' : formatBytes(freeSpace)}
             </TableRowCell>
 
+            <TableRowCell className={styles.freeSpace}>
+                {isNaN(Number(totalSpace)) ? '-' : formatBytes(totalSpace)}
+            </TableRowCell>
+
             <TableRowCell className={styles.actions}>
+                <IconButton
+                    title={translate('EditRootFolder')}
+                    name={icons.EDIT}
+                    onPress={onEditPress}
+                />
+
                 <IconButton
                     title={translate('RemoveRootFolder')}
                     name={icons.REMOVE}
@@ -78,3 +115,5 @@ export default function RootFolderRow({ id, path, freeSpace = 0 }: RootFolderRow
         </TableRow>
     );
 }
+
+export default RootFolderRow;

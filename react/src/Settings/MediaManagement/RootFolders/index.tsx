@@ -34,8 +34,8 @@ const rootFolderColumns: Column<string>[] = [
         isVisible: true,
     },
     {
-        name: 'unmappedFolders',
-        label: () => translate('UnmappedFolders'),
+        name: 'totalSpace',
+        label: () => translate('TotalSpace'),
         isVisible: true,
     },
     {
@@ -66,6 +66,7 @@ export default function RootFolders() {
                             id={rootFolder.id}
                             path={rootFolder.folder}
                             freeSpace={rootFolder.size.free}
+                            totalSpace={rootFolder.size.total}
                         />
                     );
                 })}

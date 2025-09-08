@@ -37,6 +37,8 @@
     "VolumeDownloadedFor": "The volume is desired to be deleted but there is a download for it going",
     "VolumeNotFound": "The volume with the given (comicvine-) key was not found",
 
+    "EditRootFolder": "Edit Root Folder",
+
     "About": "About",
     "Absolute": "Absolute",
     "AbsoluteIssueNumber": "Absolute Issue Number",

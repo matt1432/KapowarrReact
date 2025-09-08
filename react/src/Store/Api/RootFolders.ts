@@ -32,8 +32,36 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
         }),
+
+        // POST
+        addRootFolder: build.mutation<void, { folder: string }>({
+            query: (body) => ({
+                method: 'POST',
+                url: 'rootfolder',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+                body,
+            }),
+        }),
+
+        editRootFolder: build.mutation<void, { id: number; folder: string }>({
+            query: ({ id, ...body }) => ({
+                method: 'POST',
+                url: `rootfolder/${id}`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+                body,
+            }),
+        }),
     }),
 });
 
-export const { useDeleteRootFolderMutation, useGetRootFoldersQuery, useLazyGetRootFoldersQuery } =
-    extendedApi;
+export const {
+    useAddRootFolderMutation,
+    useEditRootFolderMutation,
+    useDeleteRootFolderMutation,
+    useGetRootFoldersQuery,
+    useLazyGetRootFoldersQuery,
+} = extendedApi;
