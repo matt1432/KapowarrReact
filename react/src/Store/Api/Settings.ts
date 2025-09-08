@@ -39,6 +39,20 @@ const extendedApi = baseApi.injectEndpoints({
             transformResponse: (response: { result: TranslateKey[] }) => response.result,
         }),
 
+        // POST
+        resetApiKey: build.mutation<string, void>({
+            query: () => ({
+                method: 'POST',
+                url: 'settings/api_key',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+
+            transformResponse: (response: { result: { api_key: string } }) =>
+                response.result.api_key,
+        }),
+
         // PUT
         saveSettings: build.mutation<SettingsValue, Partial<SettingsValue>>({
             query: (body) => ({
@@ -72,5 +86,6 @@ export const {
     useGetAvailableFormatsQuery,
     useGetSettingsQuery,
     useLazyGetSettingsQuery,
+    useResetApiKeyMutation,
     useSaveSettingsMutation,
 } = extendedApi;
