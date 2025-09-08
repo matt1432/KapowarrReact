@@ -34,18 +34,17 @@ import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSe
 
 // IMPLEMENTATIONS
 
-// FIXME: make sure these are correct
-const issuePaddingOptions: EnhancedSelectInputValue<string>[] = [
-    { key: '4', value: '000x' },
-    { key: '3', value: '00x' },
-    { key: '2', value: '0x' },
-    { key: '1', value: 'x' },
+const issuePaddingOptions: EnhancedSelectInputValue<number>[] = [
+    { key: 4, value: '000x' },
+    { key: 3, value: '00x' },
+    { key: 2, value: '0x' },
+    { key: 1, value: 'x' },
 ];
 
-const volumePaddingOptions: EnhancedSelectInputValue<string>[] = [
-    { key: '3', value: '00x' },
-    { key: '2', value: '0x' },
-    { key: '1', value: 'x' },
+const volumePaddingOptions: EnhancedSelectInputValue<number>[] = [
+    { key: 3, value: '00x' },
+    { key: 2, value: '0x' },
+    { key: 1, value: 'x' },
 ];
 
 export default function MediaManagement() {

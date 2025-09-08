@@ -47,12 +47,10 @@ import HintedSelectInputSelectedValue from '../HintedSelectInputSelectedValue';
 import styles from './index.module.css';
 
 // Types
-import type { IterableElement } from 'type-fest';
-
 import type { EnhancedSelectInputChanged, InputChanged } from 'typings/Inputs';
 
 export interface EnhancedSelectInputValue<V> {
-    key: IterableElement<V>;
+    key: V;
     value: string;
     hint?: ReactNode;
     isDisabled?: boolean;
@@ -236,7 +234,7 @@ export default function EnhancedSelectInput<
     }, []);
 
     const handleSelect = useCallback(
-        (newValue: IterableElement<V>) => {
+        (newValue: V) => {
             const additionalProperties = values.find(
                 (v) => v.key === newValue,
             )?.additionalProperties;

@@ -30,7 +30,7 @@ export interface SpecialVersionSelectInputProps<K extends string>
 }
 
 export interface ISpecialVersionOption {
-    key: string;
+    key: SpecialVersion;
     value: string;
     isDisabled?: boolean;
 }
@@ -66,7 +66,7 @@ export default function SpecialVersionSelectInput<K extends string>(
 
         if (includeNoChange) {
             result.unshift({
-                key: 'noChange',
+                key: 'noChange' as SpecialVersion,
                 value: translate('NoChange'),
                 isDisabled: includeNoChangeDisabled,
             });
@@ -74,7 +74,7 @@ export default function SpecialVersionSelectInput<K extends string>(
 
         if (includeMixed) {
             result.unshift({
-                key: 'mixed',
+                key: 'mixed' as SpecialVersion,
                 value: `(${translate('Mixed')})`,
                 isDisabled: true,
             });

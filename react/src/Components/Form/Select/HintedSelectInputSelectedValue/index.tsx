@@ -13,8 +13,6 @@ import EnhancedSelectInputSelectedValue from '../EnhancedSelectInputSelectedValu
 import styles from './index.module.css';
 
 // Types
-import type { IterableElement } from 'type-fest';
-
 import type { EnhancedSelectInputValue } from '../EnhancedSelectInput';
 
 interface HintedSelectInputSelectedValueProps<T, V> {
@@ -51,7 +49,7 @@ export default function HintedSelectInputSelectedValue<
 
                           return <Label key={key}>{v ? v : key}</Label>;
                       })
-                    : valuesMap.get(selectedValue as IterableElement<V>)}
+                    : valuesMap.get(selectedValue as V)}
             </div>
 
             {hint && includeHint ? <div className={styles.hintText}>{hint}</div> : null}
