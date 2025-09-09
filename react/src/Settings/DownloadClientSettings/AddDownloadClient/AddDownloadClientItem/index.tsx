@@ -61,8 +61,8 @@ export default function AddDownloadClientItem({
                                     {presets.map((preset) => {
                                         return (
                                             <AddDownloadClientPresetMenuItem
-                                                key={preset.name}
-                                                name={preset.name}
+                                                key={preset.title}
+                                                name={preset.title}
                                                 implementation={implementation}
                                                 implementationName={implementationName}
                                                 onPress={onDownloadClientSelect}

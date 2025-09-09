@@ -1,22 +1,39 @@
-// TODO:
+// IMPORTS
+
+// React
 import { useCallback, useState } from 'react';
-import Card from 'Components/Card';
-import Label from 'Components/Label';
-import ConfirmModal from 'Components/Modal/ConfirmModal';
+
+// Redux
+import { useDeleteDownloadClientMutation } from 'Store/Api/DownloadClients';
+
+// Misc
 import { kinds } from 'Helpers/Props';
-// import { deleteDownloadClient } from 'Store/Actions/settingsActions';
+
 import translate from 'Utilities/String/translate';
+
+// Hooks
+
+// General Components
+import Card from 'Components/Card';
+import ConfirmModal from 'Components/Modal/ConfirmModal';
+
+// Specific Components
 import EditDownloadClientModal from '../EditDownloadClient';
+
+// CSS
 import styles from './index.module.css';
 
+// Types
 interface DownloadClientProps {
     id: number;
-    name: string;
-    enable: boolean;
-    priority: number;
+    title: string;
 }
 
-export default function DownloadClient({ id, name, enable, priority }: DownloadClientProps) {
+// IMPLEMENTATIONS
+
+export default function DownloadClient({ id, title }: DownloadClientProps) {
+    const [deleteDownloadClient] = useDeleteDownloadClientMutation();
+
     const [isEditDownloadClientModalOpen, setIsEditDownloadClientModalOpen] = useState(false);
 
     const [isDeleteDownloadClientModalOpen, setIsDeleteDownloadClientModalOpen] = useState(false);
@@ -39,8 +56,8 @@ export default function DownloadClient({ id, name, enable, priority }: DownloadC
     }, []);
 
     const handleConfirmDeleteDownloadClient = useCallback(() => {
-        // dispatch(deleteDownloadClient({ id }));
-    }, [id]);
+        deleteDownloadClient({ id });
+    }, [deleteDownloadClient, id]);
 
     return (
         <Card
@@ -48,23 +65,7 @@ export default function DownloadClient({ id, name, enable, priority }: DownloadC
             overlayContent={true}
             onPress={handleEditDownloadClientPress}
         >
-            <div className={styles.name}>{name}</div>
-
-            <div className={styles.enabled}>
-                {enable ? (
-                    <Label kind={kinds.SUCCESS}>{translate('Enabled')}</Label>
-                ) : (
-                    <Label kind={kinds.DISABLED} outline={true}>
-                        {translate('Disabled')}
-                    </Label>
-                )}
-
-                {priority > 1 ? (
-                    <Label kind={kinds.DISABLED} outline={true}>
-                        {translate('PrioritySettings', { priority })}
-                    </Label>
-                ) : null}
-            </div>
+            <div className={styles.name}>{title}</div>
 
             <EditDownloadClientModal
                 id={id}
@@ -77,7 +78,7 @@ export default function DownloadClient({ id, name, enable, priority }: DownloadC
                 isOpen={isDeleteDownloadClientModalOpen}
                 kind={kinds.DANGER}
                 title={translate('DeleteDownloadClient')}
-                message={translate('DeleteDownloadClientMessageText', { name })}
+                message={translate('DeleteDownloadClientMessageText', { name: title })}
                 confirmLabel={translate('Delete')}
                 onConfirm={handleConfirmDeleteDownloadClient}
                 onCancel={handleDeleteDownloadClientModalClose}

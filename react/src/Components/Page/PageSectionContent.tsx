@@ -11,10 +11,12 @@ import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 
 // Types
+import type { AnyError } from 'typings/Api';
+
 interface PageSectionContentProps {
     isFetching: boolean;
     isPopulated: boolean;
-    error?: Error;
+    error?: AnyError;
     errorMessage: string;
     children: React.ReactNode;
 }
