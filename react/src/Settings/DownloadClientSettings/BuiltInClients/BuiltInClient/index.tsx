@@ -3,8 +3,12 @@
 // React
 import { useCallback, useState, type ReactNode } from 'react';
 
+// Misc
+import translate from 'Utilities/String/translate';
+
 // General Components
 import Card from 'Components/Card';
+import ModalHeader from 'Components/Modal/ModalHeader';
 
 // Specific Components
 import EditBuiltInClientModal from '../EditBuiltInClient';
@@ -17,7 +21,7 @@ import type { BuiltInType } from 'typings/DownloadClient';
 
 interface BuiltInClientProps {
     title: BuiltInType;
-    children: ReactNode;
+    children: (onModalClose: () => void) => ReactNode;
 }
 
 // IMPLEMENTATIONS
@@ -45,7 +49,12 @@ export default function BuiltInClient({ title, children }: BuiltInClientProps) {
                 isOpen={isEditBuiltInClientModalOpen}
                 onModalClose={handleEditBuiltInClientModalClose}
             >
-                {children}
+                <ModalHeader>
+                    {translate('EditDownloadClientImplementation', {
+                        implementationName: title,
+                    })}
+                </ModalHeader>
+                {children(handleEditBuiltInClientModalClose)}
             </EditBuiltInClientModal>
         </Card>
     );

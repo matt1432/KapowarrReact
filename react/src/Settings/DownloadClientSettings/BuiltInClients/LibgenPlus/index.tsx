@@ -2,5 +2,5 @@
 import BuiltInClient from '../BuiltInClient';
 
 export default function LibgenPlus() {
-    return <BuiltInClient title="Libgen+">TODO</BuiltInClient>;
+    return <BuiltInClient title="Libgen+">{() => <></>}</BuiltInClient>;
 }
