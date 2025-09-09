@@ -17,9 +17,9 @@ import Icon from 'Components/Icon';
 import PageSectionContent from 'Components/Page/PageSectionContent';
 
 // Specific Components
-import AddDownloadClientModal from '../AddDownloadClient';
-import DownloadClient from '../DownloadClient';
-import EditDownloadClientModal from '../EditDownloadClient';
+import AddDownloadClientModal from './AddDownloadClient';
+import DownloadClient from './DownloadClient';
+import EditDownloadClientModal from './EditDownloadClient';
 
 // CSS
 import styles from './index.module.css';
