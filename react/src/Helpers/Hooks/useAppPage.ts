@@ -5,7 +5,9 @@ import { useEffect, useMemo } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
+import { setFormsAuth } from 'Store/Slices/Auth';
 
+import { useLazyGetDownloadClientsQuery } from 'Store/Api/DownloadClients';
 import { useLazyGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import { useLazyGetSettingsQuery } from 'Store/Api/Settings';
 import { useLazyGetVolumesQuery } from 'Store/Api/Volumes';
@@ -15,7 +17,6 @@ import filterObject from 'Utilities/Object/filterObject';
 
 // Types
 import type { AnyError } from 'typings/Api';
-import { setFormsAuth } from 'Store/Slices/Auth';
 
 // IMPLEMENTATIONS
 
@@ -25,6 +26,7 @@ export default function useAppPage() {
     const { apiKey } = useRootSelector((state) => state.auth);
 
     // all queries needed before page is loaded
+    const [getDownloadClients, getDownloadClientsState] = useLazyGetDownloadClientsQuery();
     const [getRootFolders, getRootFoldersState] = useLazyGetRootFoldersQuery();
     const [getSettings, getSettingsState] = useLazyGetSettingsQuery();
     const [getVolumes, getVolumesState] = useLazyGetVolumesQuery();
@@ -38,12 +40,17 @@ export default function useAppPage() {
     }, [dispatch, getSettingsState.data]);
 
     const queries = useMemo(
-        () => [getRootFoldersState, getSettingsState, getVolumesState],
-        [getRootFoldersState, getSettingsState, getVolumesState],
+        () => [getDownloadClientsState, getRootFoldersState, getSettingsState, getVolumesState],
+        [getDownloadClientsState, getRootFoldersState, getSettingsState, getVolumesState],
     );
     const triggers = useMemo(
-        () => [() => getRootFolders(), () => getSettings(), () => getVolumes()],
-        [getRootFolders, getSettings, getVolumes],
+        () => [
+            () => getDownloadClients(),
+            () => getRootFolders(),
+            () => getSettings(),
+            () => getVolumes(),
+        ],
+        [getDownloadClients, getRootFolders, getSettings, getVolumes],
     );
 
     const erroredQueries = useMemo(() => queries.filter(({ isError }) => isError), [queries]);

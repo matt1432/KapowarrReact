@@ -103,6 +103,7 @@ export const {
     useDeleteDownloadClientMutation,
     useSaveDownloadClientMutation,
     useGetDownloadClientsQuery,
+    useLazyGetDownloadClientsQuery,
     useGetDownloadClientOptionsQuery,
     useTestDownloadClientMutation,
 } = extendedApi;
