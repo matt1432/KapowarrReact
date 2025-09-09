@@ -18,7 +18,6 @@ import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 
 // Specific Components
-import AdvancedSettingsButton from './AdvancedSettingsButton';
 import PendingChangesModal from './PendingChangesModal';
 
 // Types
@@ -92,8 +91,6 @@ export default function SettingsToolbar({
     return (
         <PageToolbar>
             <PageToolbarSection>
-                <AdvancedSettingsButton showLabel={true} />
-
                 {showSave ? (
                     <PageToolbarButton
                         label={
