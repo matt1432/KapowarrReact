@@ -3,6 +3,7 @@ import type { CamelCasedProperties } from 'type-fest';
 import type { DownloadType } from 'Helpers/Props/downloadTypes';
 import type { Nullable } from './Misc';
 
+export type BuiltInType = 'Mega' | 'MediaFire' | 'WeTransfer' | 'Pixeldrain' | 'GetComics' | 'Libgen+';
 export type ClientType = 'qBittorrent';
 
 export interface RawDownloadClient {

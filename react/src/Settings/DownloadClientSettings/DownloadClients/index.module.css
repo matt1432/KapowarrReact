@@ -4,7 +4,7 @@
 }
 
 .addDownloadClient {
-    composes: downloadClient from '../DownloadClient/index.module.css';
+    composes: downloadClient from './DownloadClient/index.module.css';
 
     background-color: var(--cardAlternateBackgroundColor);
     color: var(--gray);
