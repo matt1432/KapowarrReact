@@ -1,4 +1,3 @@
-// TODO:
 // IMPORTS
 
 // React
@@ -16,6 +15,7 @@ import {
 import { inputTypes, kinds } from 'Helpers/Props';
 import { getErrorMessage } from 'Utilities/Object/error';
 
+import pickProps from 'Utilities/Object/pickProps';
 import translate from 'Utilities/String/translate';
 
 // General Components
@@ -123,10 +123,7 @@ export default function EditDownloadClientModalContent({
     const handleTestPress = useCallback(async () => {
         return await testDownloadClient({
             clientType,
-            baseUrl: changes.baseUrl,
-            username: changes.username,
-            password: changes.password,
-            apiToken: changes.apiToken,
+            ...pickProps(changes, 'baseUrl', 'username', 'password', 'apiToken'),
         });
     }, [changes, clientType, testDownloadClient]);
 
@@ -143,11 +140,7 @@ export default function EditDownloadClientModalContent({
 
         const { error } = await saveDownloadClient({
             ...identifier,
-            title: changes.title,
-            baseUrl: changes.baseUrl,
-            username: changes.username,
-            password: changes.password,
-            apiToken: changes.apiToken,
+            ...pickProps(changes, 'title', 'baseUrl', 'username', 'password', 'apiToken'),
         });
         if (error) {
             setIsSaving(false);
