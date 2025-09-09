@@ -1998,8 +1998,6 @@
     "Sunday": "Sunday",
     "SupportedAutoTaggingProperties": "{appName} supports the follow properties for auto tagging rules",
     "SupportedCustomConditions": "{appName} supports custom conditions against the release properties below.",
-    "SupportedDownloadClients": "{appName} supports many popular torrent and usenet download clients.",
-    "SupportedDownloadClientsMoreInfo": "For more information on the individual download clients, click the more info buttons.",
     "SupportedImportListsMoreInfo": "For more information on the individual import lists, click on the more info buttons.",
     "SupportedIndexers": "{appName} supports any indexer that uses the Newznab standard, as well as other indexers listed below.",
     "SupportedIndexersMoreInfo": "For more information on the individual indexers, click on the more info buttons.",

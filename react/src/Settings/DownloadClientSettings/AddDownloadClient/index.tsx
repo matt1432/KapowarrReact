@@ -1,12 +1,19 @@
-// TODO:
+// IMPORTS
+
+// General Components
 import Modal from 'Components/Modal/Modal';
-import AddDownloadClientModalContent, {
-    type AddDownloadClientModalContentProps,
-} from './AddDownloadClientModalContent';
+
+// Specific Components
+import AddDownloadClientModalContent from './AddDownloadClientModalContent';
+
+// Types
+import type { AddDownloadClientModalContentProps } from './AddDownloadClientModalContent';
 
 interface AddDownloadClientModalProps extends AddDownloadClientModalContentProps {
     isOpen: boolean;
 }
+
+// IMPLEMENTATIONS
 
 function AddDownloadClientModal({
     isOpen,

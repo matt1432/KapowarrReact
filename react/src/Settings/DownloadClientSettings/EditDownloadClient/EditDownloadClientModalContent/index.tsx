@@ -52,12 +52,6 @@ export interface EditDownloadClientModalContentProps {
 
 // IMPLEMENTATIONS
 
-function isPotentialClient(
-    client: DownloadClient | PotentialDownloadClient,
-): client is PotentialDownloadClient {
-    return !('id' in client);
-}
-
 export default function EditDownloadClientModalContent({
     id,
     clientType: initialClientType,
@@ -103,7 +97,16 @@ export default function EditDownloadClientModalContent({
     useEffect(() => {
         if (isSuccess) {
             setIsSaving(false);
-            setChanges(client!);
+            setChanges(
+                client ?? {
+                    title: '',
+                    clientType: '' as ClientType,
+                    baseUrl: '',
+                    username: undefined,
+                    password: undefined,
+                    apiToken: undefined,
+                },
+            );
         }
     }, [isSuccess, client]);
 
@@ -136,7 +139,7 @@ export default function EditDownloadClientModalContent({
             return;
         }
 
-        const identifier = isPotentialClient(changes) ? { clientType } : { id };
+        const identifier = typeof id === 'number' ? { id } : { clientType };
 
         const { error } = await saveDownloadClient({
             ...identifier,

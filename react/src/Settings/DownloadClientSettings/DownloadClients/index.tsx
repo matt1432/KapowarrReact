@@ -24,10 +24,15 @@ import EditDownloadClientModal from '../EditDownloadClient';
 // CSS
 import styles from './index.module.css';
 
+// Types
+import type { ClientType } from 'typings/DownloadClient';
+
 // IMPLEMENTATIONS
 
 export default function DownloadClients() {
     const { error, isFetching, isUninitialized, data: items = [] } = useGetDownloadClientsQuery();
+
+    const [newClientType, setNewClientType] = useState<ClientType | undefined>(undefined);
 
     const [isAddDownloadClientModalOpen, setIsAddDownloadClientModalOpen] = useState(false);
 
@@ -37,7 +42,8 @@ export default function DownloadClients() {
         setIsAddDownloadClientModalOpen(true);
     }, []);
 
-    const handleDownloadClientSelect = useCallback(() => {
+    const handleDownloadClientSelect = useCallback((clientType: ClientType) => {
+        setNewClientType(clientType);
         setIsAddDownloadClientModalOpen(false);
         setIsEditDownloadClientModalOpen(true);
     }, []);
@@ -76,6 +82,7 @@ export default function DownloadClients() {
             />
 
             <EditDownloadClientModal
+                clientType={newClientType}
                 isOpen={isEditDownloadClientModalOpen}
                 onModalClose={handleEditDownloadClientModalClose}
             />
