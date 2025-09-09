@@ -39,13 +39,13 @@ import styles from './index.module.css';
 
 // Types
 import type { InputChanged } from 'typings/Inputs';
-import type { DownloadClient } from 'typings/DownloadClient';
+import type { ClientType, DownloadClient } from 'typings/DownloadClient';
 
 type PotentialDownloadClient = Omit<DownloadClient, 'id' | 'downloadType'>;
 
 export interface EditDownloadClientModalContentProps {
     id?: number;
-    clientType?: string;
+    clientType?: ClientType;
     onModalClose: () => void;
     onDeleteDownloadClientPress?: () => void;
 }
@@ -77,7 +77,7 @@ export default function EditDownloadClientModalContent({
     const [saveDownloadClient, { error: saveError }] = useSaveDownloadClientMutation();
 
     const clientType = useMemo(
-        () => initialClientType ?? client?.clientType ?? '',
+        () => initialClientType ?? client?.clientType ?? ('' as ClientType),
         [client, initialClientType],
     );
 
@@ -93,7 +93,7 @@ export default function EditDownloadClientModalContent({
     const [changes, setChanges] = useState<DownloadClient | PotentialDownloadClient>(
         client ?? {
             title: '',
-            clientType: '',
+            clientType: '' as ClientType,
             baseUrl: '',
             username: undefined,
             password: undefined,
