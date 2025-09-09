@@ -1,3 +1,4 @@
+// TODO:
 // IMPORTS
 
 // React
@@ -5,23 +6,15 @@
 // Redux
 
 // Misc
-// import { inputTypes } from 'Helpers/Props';
+import { icons } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
-// Hooks
-import useEditSettings from 'Settings/useEditSettings';
-
 // General Components
-// import FieldSet from 'Components/FieldSet';
-import Form from 'Components/Form/Form';
-// import FormGroup from 'Components/Form/FormGroup';
-// import FormInputButton from 'Components/Form/FormInputButton';
-// import FormInputGroup from 'Components/Form/FormInputGroup';
-// import FormInputHelpText from 'Components/Form/FormInputHelpText';
-// import FormLabel from 'Components/Form/FormLabel';
+import FieldSet from 'Components/FieldSet';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
+import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import SettingsToolbar from 'Settings/SettingsToolbar';
 
 // Specific Components
@@ -33,25 +26,27 @@ import SettingsToolbar from 'Settings/SettingsToolbar';
 // IMPLEMENTATIONS
 
 export default function MediaManagement() {
-    const {
-        isSaving,
-        hasPendingChanges,
-        onSavePress,
-        // handleInputChange,
-        // handleNonNullInputChange,
-        // changes,
-    } = useEditSettings();
+    const isTestingAll = false;
+    const handleTestAllIndexersPress = () => {};
 
     return (
         <PageContent title={translate('DownloadClientSettings')}>
             <SettingsToolbar
-                isSaving={isSaving}
-                hasPendingChanges={hasPendingChanges}
-                onSavePress={onSavePress}
+                showSave={false}
+                additionalButtons={
+                    <PageToolbarButton
+                        label={translate('TestAllClients')}
+                        iconName={icons.TEST}
+                        isSpinning={isTestingAll}
+                        onPress={handleTestAllIndexersPress}
+                    />
+                }
             />
 
             <PageContentBody>
-                <Form id="downloadClientSettings">TODO:</Form>
+                <FieldSet legend={translate('BuiltInClients')}></FieldSet>
+
+                <FieldSet legend={translate('TorrentClients')}></FieldSet>
             </PageContentBody>
         </PageContent>
     );
