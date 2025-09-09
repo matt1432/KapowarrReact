@@ -1,4 +1,3 @@
-// TODO:
 // IMPORTS
 
 // React
@@ -21,11 +20,10 @@ import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import SettingsToolbar from 'Settings/SettingsToolbar';
-import DownloadClients from './DownloadClients';
 
 // Specific Components
-
-// CSS
+import BuiltInClients from './BuiltInClients';
+import DownloadClients from './DownloadClients';
 
 // Types
 import type { DownloadClient } from 'typings/DownloadClient';
@@ -75,7 +73,9 @@ export default function MediaManagement() {
             />
 
             <PageContentBody>
-                <FieldSet legend={translate('BuiltInClients')}>TODO:</FieldSet>
+                <FieldSet legend={translate('BuiltInClients')}>
+                    <BuiltInClients />
+                </FieldSet>
 
                 <FieldSet legend={translate('TorrentClients')}>
                     <DownloadClients />
