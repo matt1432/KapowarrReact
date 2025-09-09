@@ -1,6 +1,7 @@
 import type { CamelCasedProperties } from 'type-fest';
 
 import type { DownloadType } from 'Helpers/Props/downloadTypes';
+import type { Nullable } from './Misc';
 
 export interface RawDownloadClient {
     id: number;
@@ -8,9 +9,12 @@ export interface RawDownloadClient {
     client_type: string;
     title: string;
     base_url: string;
-    username: string;
-    password: string;
-    api_token: string | null;
+    username: Nullable<string>;
+    password: Nullable<string>;
+    api_token: Nullable<string>;
 }
 
 export type DownloadClient = CamelCasedProperties<RawDownloadClient>;
+
+export type ClientToken = 'title' | 'base_url' | 'username' | 'password' | 'api_token';
+export type DownloadClientOptions = Record<string, ClientToken[]>;

@@ -1,249 +1,258 @@
 // TODO:
-/*import { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+// IMPORTS
+
+// React
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+// Redux
+import {
+    useGetDownloadClientOptionsQuery,
+    useGetDownloadClientQuery,
+    useSaveDownloadClientMutation,
+    useTestDownloadClientMutation,
+} from 'Store/Api/DownloadClients';
+
+// Misc
+import { inputTypes, kinds } from 'Helpers/Props';
+import { getErrorMessage } from 'Utilities/Object/error';
+
+import translate from 'Utilities/String/translate';
+
+// General Components
 import Alert from 'Components/Alert';
-import FieldSet from 'Components/FieldSet';
+import Button from 'Components/Link/Button';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
-import ProviderFieldFormGroup from 'Components/Form/ProviderFieldFormGroup';
-import Button from 'Components/Link/Button';
-import SpinnerErrorButton from 'Components/Link/SpinnerErrorButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import usePrevious from 'Helpers/Hooks/usePrevious';
-import useShowAdvancedSettings from 'Helpers/Hooks/useShowAdvancedSettings';
-import { inputTypes, kinds, sizes } from 'Helpers/Props';
-import AdvancedSettingsButton from 'Settings/AdvancedSettingsButton';
-import {
-    saveDownloadClient,
-    setDownloadClientFieldValue,
-    setDownloadClientValue,
-    testDownloadClient,
-} from 'Store/Actions/settingsActions';
-import { createProviderSettingsSelectorHook } from 'Store/Selectors/createProviderSettingsSelector';
-import type { DownloadClient } from 'typings/DownloadClient';
-import type { InputChanged } from 'typings/Inputs';
-import translate from 'Utilities/String/translate';
+import SpinnerErrorButton from 'Components/Link/SpinnerErrorButton';
+
+// Specific Components
+
+// CSS
 import styles from './index.module.css';
-*/
+
+// Types
+import type { InputChanged } from 'typings/Inputs';
+import type { DownloadClient } from 'typings/DownloadClient';
+
+type PotentialDownloadClient = Omit<DownloadClient, 'id' | 'downloadType'>;
+
 export interface EditDownloadClientModalContentProps {
     id?: number;
+    clientType?: string;
     onModalClose: () => void;
     onDeleteDownloadClientPress?: () => void;
 }
 
+// IMPLEMENTATIONS
+
+function isPotentialClient(
+    client: DownloadClient | PotentialDownloadClient,
+): client is PotentialDownloadClient {
+    return !('id' in client);
+}
+
 export default function EditDownloadClientModalContent({
     id,
+    clientType: initialClientType,
     onModalClose,
     onDeleteDownloadClientPress,
 }: EditDownloadClientModalContentProps) {
-    void id;
-    void onModalClose;
-    void onDeleteDownloadClientPress;
-    /*
-    const dispatch = useDispatch();
-    const showAdvancedSettings = useShowAdvancedSettings();
-
     const {
-        isFetching,
-        error,
-        isSaving,
-        isTesting = false,
-        saveError,
-        item,
-        validationErrors,
-        validationWarnings,
-    } = useSelector(
-        createProviderSettingsSelectorHook<DownloadClient, DownloadClientAppState>(
-            'downloadClients',
-            id,
-        ),
+        data: client,
+        isFetching: isFetchingClient,
+        isSuccess,
+        refetch,
+    } = useGetDownloadClientQuery({ id });
+
+    const { data: allOptions, isFetching: isFetchingOptions } = useGetDownloadClientOptionsQuery();
+
+    const [testDownloadClient, { isLoading: isTesting }] = useTestDownloadClientMutation();
+    const [saveDownloadClient, { error: saveError }] = useSaveDownloadClientMutation();
+
+    const clientType = useMemo(
+        () => initialClientType ?? client?.clientType ?? '',
+        [client, initialClientType],
     );
 
-    const wasSaving = usePrevious(isSaving);
+    const clientOptions = useMemo(() => allOptions?.[clientType] ?? [], [allOptions, clientType]);
 
-    const {
-        implementationName,
-        name,
-        enable,
-        priority,
-        removeCompletedDownloads,
-        removeFailedDownloads,
-        fields,
-        tags,
-        message,
-    } = item;
+    const isFetching = useMemo(
+        () => isFetchingClient || isFetchingOptions,
+        [isFetchingClient, isFetchingOptions],
+    );
+
+    const [isSaving, setIsSaving] = useState(false);
+
+    const [changes, setChanges] = useState<DownloadClient | PotentialDownloadClient>(
+        client ?? {
+            title: '',
+            clientType: '',
+            baseUrl: '',
+            username: undefined,
+            password: undefined,
+            apiToken: undefined,
+        },
+    );
+    useEffect(() => {
+        if (isSuccess) {
+            setIsSaving(false);
+            setChanges(client!);
+        }
+    }, [isSuccess, client]);
 
     const handleInputChange = useCallback(
-        (change: InputChanged) => {
-            // @ts-expect-error - actions are not typed
-            dispatch(setDownloadClientValue(change));
+        <Key extends keyof DownloadClient>({
+            name,
+            value,
+        }: InputChanged<Key, DownloadClient[Key]>) => {
+            setChanges({
+                ...changes,
+                [name]: value,
+            });
         },
-        [dispatch],
+        [changes],
     );
 
-    const handleFieldChange = useCallback(
-        (change: InputChanged) => {
-            // @ts-expect-error - actions are not typed
-            dispatch(setDownloadClientFieldValue(change));
-        },
-        [dispatch],
-    );
+    const handleTestPress = useCallback(async () => {
+        return await testDownloadClient({
+            clientType,
+            baseUrl: changes.baseUrl,
+            username: changes.username,
+            password: changes.password,
+            apiToken: changes.apiToken,
+        });
+    }, [changes, clientType, testDownloadClient]);
 
-    const handleTestPress = useCallback(() => {
-        dispatch(testDownloadClient({ id }));
-    }, [id, dispatch]);
+    const handleSavePress = useCallback(async () => {
+        setIsSaving(true);
 
-    const handleSavePress = useCallback(() => {
-        dispatch(saveDownloadClient({ id }));
-    }, [id, dispatch]);
-
-    useEffect(() => {
-        if (wasSaving && !isSaving && !saveError) {
-            onModalClose();
+        const { error: testError } = await handleTestPress();
+        if (testError) {
+            setIsSaving(false);
+            return;
         }
-    }, [isSaving, wasSaving, saveError, onModalClose]);
+
+        const identifier = isPotentialClient(changes) ? { clientType } : { id };
+
+        const { error } = await saveDownloadClient({
+            ...identifier,
+            title: changes.title,
+            baseUrl: changes.baseUrl,
+            username: changes.username,
+            password: changes.password,
+            apiToken: changes.apiToken,
+        });
+        if (error) {
+            setIsSaving(false);
+            return;
+        }
+
+        onModalClose();
+        await refetch();
+        setIsSaving(false);
+    }, [changes, clientType, id, handleTestPress, onModalClose, refetch, saveDownloadClient]);
 
     return (
         <ModalContent onModalClose={onModalClose}>
             <ModalHeader>
-                {id
-                    ? translate('EditDownloadClientImplementation', {
-                          implementationName,
-                      })
-                    : translate('AddDownloadClientImplementation', {
-                          implementationName,
-                      })}
+                {translate('EditDownloadClientImplementation', {
+                    implementationName: client?.clientType ?? '',
+                })}
             </ModalHeader>
 
             <ModalBody>
                 {isFetching ? <LoadingIndicator /> : null}
 
-                {!isFetching && !!error ? (
-                    <Alert kind={kinds.DANGER}>{translate('AddDownloadClientError')}</Alert>
+                {!isFetching && saveError ? (
+                    <Alert kind={kinds.DANGER}>{getErrorMessage(saveError)}</Alert>
                 ) : null}
 
-                {!isFetching && !error ? (
-                    <Form
-                        validationErrors={validationErrors}
-                        validationWarnings={validationWarnings}
-                    >
-                        {!!message && (
-                            <Alert className={styles.message} kind={message.value.type}>
-                                {message.value.message}
-                            </Alert>
-                        )}
-
-                        <FormGroup>
-                            <FormLabel>{translate('Name')}</FormLabel>
-
-                            <FormInputGroup
-                                type={inputTypes.TEXT}
-                                name="name"
-                                {...name}
-                                onChange={handleInputChange}
-                            />
-                        </FormGroup>
-
-                        <FormGroup>
-                            <FormLabel>{translate('Enable')}</FormLabel>
-
-                            <FormInputGroup
-                                type={inputTypes.CHECK}
-                                name="enable"
-                                {...enable}
-                                onChange={handleInputChange}
-                            />
-                        </FormGroup>
-
-                        {fields.map((field) => {
-                            return (
-                                <ProviderFieldFormGroup
-                                    key={field.name}
-                                    advancedSettings={showAdvancedSettings}
-                                    provider="downloadClient"
-                                    providerData={item}
-                                    {...field}
-                                    onChange={handleFieldChange}
-                                />
-                            );
-                        })}
-
-                        <FormGroup advancedSettings={showAdvancedSettings} isAdvanced={true}>
-                            <FormLabel>{translate('ClientPriority')}</FormLabel>
-
-                            <FormInputGroup
-                                type={inputTypes.NUMBER}
-                                name="priority"
-                                helpText={translate('DownloadClientPriorityHelpText')}
-                                min={1}
-                                max={50}
-                                {...priority}
-                                onChange={handleInputChange}
-                            />
-                        </FormGroup>
-
-                        <FormGroup>
-                            <FormLabel>{translate('Tags')}</FormLabel>
-
-                            <FormInputGroup
-                                type={inputTypes.TAG}
-                                name="tags"
-                                helpText={translate('DownloadClientSeriesTagHelpText')}
-                                {...tags}
-                                onChange={handleInputChange}
-                            />
-                        </FormGroup>
-
-                        <FieldSet
-                            size={sizes.SMALL}
-                            legend={translate('CompletedDownloadHandling')}
-                        >
+                {!isFetching ? (
+                    <Form>
+                        {clientOptions.includes('title') ? (
                             <FormGroup>
-                                <FormLabel>{translate('RemoveCompleted')}</FormLabel>
+                                <FormLabel>{translate('Title')}</FormLabel>
 
                                 <FormInputGroup
-                                    type={inputTypes.CHECK}
-                                    name="removeCompletedDownloads"
-                                    helpText={translate('RemoveCompletedDownloadsHelpText')}
-                                    {...removeCompletedDownloads}
+                                    type={inputTypes.TEXT}
+                                    name="title"
                                     onChange={handleInputChange}
+                                    value={changes.title}
                                 />
                             </FormGroup>
+                        ) : null}
 
+                        {clientOptions.includes('base_url') ? (
                             <FormGroup>
-                                <FormLabel>{translate('RemoveFailed')}</FormLabel>
+                                <FormLabel>{translate('UrlBase')}</FormLabel>
 
                                 <FormInputGroup
-                                    type={inputTypes.CHECK}
-                                    name="removeFailedDownloads"
-                                    helpText={translate('RemoveFailedDownloadsHelpText')}
-                                    {...removeFailedDownloads}
+                                    type={inputTypes.TEXT}
+                                    name="baseUrl"
+                                    helpText="E.g. 'http://192.168.2.15:8008/torrent_client'"
                                     onChange={handleInputChange}
+                                    value={changes.baseUrl}
                                 />
                             </FormGroup>
-                        </FieldSet>
+                        ) : null}
+
+                        {clientOptions.includes('username') ? (
+                            <FormGroup>
+                                <FormLabel>{translate('Username')}</FormLabel>
+
+                                <FormInputGroup
+                                    type={inputTypes.TEXT}
+                                    name="username"
+                                    onChange={handleInputChange}
+                                    value={changes.username ?? ''}
+                                />
+                            </FormGroup>
+                        ) : null}
+
+                        {clientOptions.includes('password') ? (
+                            <FormGroup>
+                                <FormLabel>{translate('Password')}</FormLabel>
+
+                                <FormInputGroup
+                                    type={inputTypes.TEXT}
+                                    name="password"
+                                    onChange={handleInputChange}
+                                    value={changes.password ?? ''}
+                                />
+                            </FormGroup>
+                        ) : null}
+
+                        {clientOptions.includes('api_token') ? (
+                            <FormGroup>
+                                <FormLabel>{translate('ApiKey')}</FormLabel>
+
+                                <FormInputGroup
+                                    type={inputTypes.TEXT}
+                                    name="apiToken"
+                                    onChange={handleInputChange}
+                                    value={changes.apiToken ?? ''}
+                                />
+                            </FormGroup>
+                        ) : null}
                     </Form>
                 ) : null}
             </ModalBody>
 
             <ModalFooter>
-                {id ? (
-                    <Button
-                        className={styles.deleteButton}
-                        kind={kinds.DANGER}
-                        onPress={onDeleteDownloadClientPress}
-                    >
-                        {translate('Delete')}
-                    </Button>
-                ) : null}
-
-                <AdvancedSettingsButton showLabel={false} />
+                <Button
+                    className={styles.deleteButton}
+                    kind={kinds.DANGER}
+                    onPress={onDeleteDownloadClientPress}
+                >
+                    {translate('Delete')}
+                </Button>
 
                 <SpinnerErrorButton
                     isSpinning={isTesting}
@@ -265,6 +274,4 @@ export default function EditDownloadClientModalContent({
             </ModalFooter>
         </ModalContent>
     );
-        */
-    return null;
 }

@@ -1,35 +1,31 @@
-// TODO:
-import { useCallback } from 'react';
-import Modal from 'Components/Modal/Modal';
+// IMPORTS
+
+// Misc
 import { sizes } from 'Helpers/Props';
-// import { clearPendingChanges } from 'Store/Actions/baseActions';
-// import { cancelSaveDownloadClient, cancelTestDownloadClient } from 'Store/Actions/settingsActions';
-import EditDownloadClientModalContent, {
-    type EditDownloadClientModalContentProps,
-} from './EditDownloadClientModalContent';
+
+// General Components
+import Modal from 'Components/Modal/Modal';
+
+// Specific Components
+import EditDownloadClientModalContent from './EditDownloadClientModalContent';
+
+// Types
+import type { EditDownloadClientModalContentProps } from './EditDownloadClientModalContent';
 
 interface EditDownloadClientModalProps extends EditDownloadClientModalContentProps {
     isOpen: boolean;
 }
 
-function EditDownloadClientModal({
+// IMPLEMENTATIONS
+
+export default function EditDownloadClientModal({
     isOpen,
     onModalClose,
     ...otherProps
 }: EditDownloadClientModalProps) {
-    const handleModalClose = useCallback(() => {
-        // dispatch(clearPendingChanges({ section }));
-        // dispatch(cancelTestDownloadClient({ section }));
-        // dispatch(cancelSaveDownloadClient({ section }));
-
-        onModalClose();
-    }, [onModalClose]);
-
     return (
-        <Modal size={sizes.MEDIUM} isOpen={isOpen} onModalClose={handleModalClose}>
-            <EditDownloadClientModalContent {...otherProps} onModalClose={handleModalClose} />
+        <Modal size={sizes.MEDIUM} isOpen={isOpen} onModalClose={onModalClose}>
+            <EditDownloadClientModalContent {...otherProps} onModalClose={onModalClose} />
         </Modal>
     );
 }
-
-export default EditDownloadClientModal;
