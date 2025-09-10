@@ -24,7 +24,7 @@ import DownloadClientSettings from 'Settings/DownloadClientSettings';
 import UISettings from 'Settings/UISettings';
 
 import Status from 'System/Status';
-// import Tasks from 'System/Tasks';
+import Tasks from 'System/Tasks';
 
 import NotFound from 'Components/NotFound';
 
@@ -65,9 +65,7 @@ export default function AppRoutes() {
             {/*System*/}
             <Route path="/system/status" element={<Status />} />
 
-            {/*
             <Route path="/system/tasks" element={<Tasks />} />
-             */}
 
             {/*Not Found*/}
             <Route path="*" element={<NotFound />} />

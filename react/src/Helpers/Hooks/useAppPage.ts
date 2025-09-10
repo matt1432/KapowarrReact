@@ -11,6 +11,7 @@ import { useLazyGetAboutInfoQuery } from 'Store/Api/Status';
 import { useLazyGetDownloadClientsQuery } from 'Store/Api/DownloadClients';
 import { useLazyGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import { useLazyGetSettingsQuery } from 'Store/Api/Settings';
+import { useLazyGetTaskHistoryQuery, useLazyGetTaskPlanningQuery } from 'Store/Api/Status';
 import { useLazyGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
@@ -31,6 +32,8 @@ export default function useAppPage() {
     const [getDownloadClients, getDownloadClientsState] = useLazyGetDownloadClientsQuery();
     const [getRootFolders, getRootFoldersState] = useLazyGetRootFoldersQuery();
     const [getSettings, getSettingsState] = useLazyGetSettingsQuery();
+    const [getTaskHistory, getTaskHistoryState] = useLazyGetTaskHistoryQuery();
+    const [getTaskPlanning, getTaskPlanningState] = useLazyGetTaskPlanningQuery();
     const [getVolumes, getVolumesState] = useLazyGetVolumesQuery();
 
     useEffect(() => {
@@ -47,6 +50,8 @@ export default function useAppPage() {
             getDownloadClientsState,
             getRootFoldersState,
             getSettingsState,
+            getTaskHistoryState,
+            getTaskPlanningState,
             getVolumesState,
         ],
         [
@@ -54,6 +59,8 @@ export default function useAppPage() {
             getDownloadClientsState,
             getRootFoldersState,
             getSettingsState,
+            getTaskHistoryState,
+            getTaskPlanningState,
             getVolumesState,
         ],
     );
@@ -63,9 +70,19 @@ export default function useAppPage() {
             () => getDownloadClients(),
             () => getRootFolders(),
             () => getSettings(),
+            () => getTaskHistory(),
+            () => getTaskPlanning(),
             () => getVolumes(),
         ],
-        [getAboutInfo, getDownloadClients, getRootFolders, getSettings, getVolumes],
+        [
+            getAboutInfo,
+            getDownloadClients,
+            getRootFolders,
+            getSettings,
+            getTaskHistory,
+            getTaskPlanning,
+            getVolumes,
+        ],
     );
 
     const erroredQueries = useMemo(() => queries.filter(({ isError }) => isError), [queries]);

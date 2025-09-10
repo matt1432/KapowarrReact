@@ -1,0 +1,23 @@
+.displayName {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    width: 70%;
+}
+
+.interval {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 180px;
+}
+
+.lastRun {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 180px;
+}
+
+.nextRun {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 180px;
+}
