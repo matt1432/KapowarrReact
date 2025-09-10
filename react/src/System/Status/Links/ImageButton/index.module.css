@@ -1,0 +1,10 @@
+.button {
+    composes: button from 'Components/Link/Button/index.module.css';
+
+    display: inline-flex;
+    align-items: center;
+}
+
+.label {
+    margin-left: 5px;
+}

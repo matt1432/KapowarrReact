@@ -1,4 +1,3 @@
-// TODO:
 // IMPORTS
 
 // Misc
@@ -10,6 +9,7 @@ import PageContentBody from 'Components/Page/PageContentBody';
 
 // Specific Components
 import AboutInfo from './AboutInfo';
+import Links from './Links';
 
 // IMPLEMENTATIONS
 
@@ -18,6 +18,7 @@ export default function Status() {
         <PageContent title={translate('Status')}>
             <PageContentBody>
                 <AboutInfo />
+                <Links />
             </PageContentBody>
         </PageContent>
     );
