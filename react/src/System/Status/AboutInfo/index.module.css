@@ -1,0 +1,20 @@
+.copyButton {
+    composes: button from 'Components/Link/ClipboardButton/index.module.css';
+
+    border: currentcolor !important;
+    border-radius: 4px !important;
+    margin-left: 10px;
+}
+
+.descriptionList {
+    composes: descriptionList from 'Components/DescriptionList/DescriptionList/index.module.css';
+
+    margin-bottom: 10px;
+}
+
+.legend {
+    display: flex;
+    flex-direction: row;
+
+    margin-bottom: 5px;
+}

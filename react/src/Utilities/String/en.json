@@ -1967,7 +1967,13 @@
     "Socks4": "Socks4",
     "Socks5": "Socks5 (Support TOR)",
     "SomeResultsAreHiddenByTheAppliedFilter": "Some results are hidden by the applied filter",
-    "KapowarrTags": "{appName} Tags",
+
+    "KapowarrVersion": "{appName} Version",
+    "PythonVersion": "Python Version",
+    "DatabaseVersion": "Database Version",
+    "DatabaseLocation": "Database Location",
+    "DataFolder": "Data Folder",
+
     "Sort": "Sort",
     "Source": "Source",
     "SourcePath": "Source Path",
@@ -1978,7 +1984,6 @@
     "SpecialIssue": "Special Issue",
     "Specials": "Specials",
     "SpecialsFolderFormat": "Specials Folder Format",
-    "SpecialVersion": "Special Version",
     "SslCertPassword": "SSL Cert Password",
     "SslCertPasswordHelpText": "Password for pfx file",
     "SslCertPath": "SSL Cert Path",
