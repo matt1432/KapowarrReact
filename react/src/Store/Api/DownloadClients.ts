@@ -9,8 +9,10 @@ import camelize from 'Utilities/Object/camelize';
 
 // Types
 import type {
+    CredentialData,
     DownloadClient,
     DownloadClientOptions,
+    RawCredentialData,
     RawDownloadClient,
 } from 'typings/DownloadClient';
 
@@ -33,6 +35,8 @@ interface EditParams {
     password: Nullable<string>;
     apiToken: Nullable<string>;
 }
+
+export type AddCredentialParams = Omit<CredentialData, 'id'>;
 
 // IMPLEMENTATIONS
 
@@ -62,6 +66,18 @@ const extendedApi = baseApi.injectEndpoints({
             transformResponse: (response: { result: DownloadClientOptions }) => response.result,
         }),
 
+        getCredentials: build.query<CredentialData[], void>({
+            query: () => ({
+                url: 'credentials',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+
+            transformResponse: (response: { result: RawCredentialData[] }) =>
+                camelize(response.result),
+        }),
+
         // DELETE
         deleteDownloadClient: build.mutation<void, { id: number }>({
             query: ({ id }) => ({
@@ -73,11 +89,32 @@ const extendedApi = baseApi.injectEndpoints({
             }),
         }),
 
+        deleteCredential: build.mutation<void, { id: number }>({
+            query: ({ id }) => ({
+                method: 'DELETE',
+                url: `credentials/${id}`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+        }),
+
         // POST
         testDownloadClient: build.mutation<void, TestParams>({
             query: (body) => ({
                 method: 'POST',
                 url: `externalclients/test`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+                body: snakeify(body),
+            }),
+        }),
+
+        addCredential: build.mutation<void, AddCredentialParams>({
+            query: (body) => ({
+                method: 'POST',
+                url: `credentials`,
                 params: {
                     apiKey: window.Kapowarr.apiKey,
                 },
@@ -100,8 +137,11 @@ const extendedApi = baseApi.injectEndpoints({
 });
 
 export const {
+    useAddCredentialMutation,
+    useDeleteCredentialMutation,
     useDeleteDownloadClientMutation,
     useSaveDownloadClientMutation,
+    useGetCredentialsQuery,
     useGetDownloadClientsQuery,
     useLazyGetDownloadClientsQuery,
     useGetDownloadClientOptionsQuery,
