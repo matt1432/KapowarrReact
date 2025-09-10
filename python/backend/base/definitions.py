@@ -479,7 +479,7 @@ class SearchResultData(FilenameData):
 
 class SearchResultMatchData(TypedDict):
     match: bool
-    match_rejections: list[MatchRejections]
+    match_rejections: list[str]  # list[MatchRejections]
 
 
 class MatchedSearchResultData(SearchResultMatchData, SearchResultData, total=False):

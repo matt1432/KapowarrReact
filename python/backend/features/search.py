@@ -387,25 +387,27 @@ def manual_search(
                 number_to_year,
                 calculated_issue_number,
             )
-            results.append({
-                **result,
-                **match_data,
-                "rank": _rank_search_result(
-                    result,
-                    match_data,
-                    search_title,
-                    volume_data.volume_number,
-                    (
-                        volume_data.year,
-                        number_to_year.get(calculated_issue_number),  # type: ignore
+            results.append(
+                {
+                    **result,
+                    **match_data,
+                    "rank": _rank_search_result(
+                        result,
+                        match_data,
+                        search_title,
+                        volume_data.volume_number,
+                        (
+                            volume_data.year,
+                            number_to_year.get(calculated_issue_number),  # type: ignore
+                        ),
+                        calculated_issue_number,
                     ),
-                    calculated_issue_number,
-                )
-            })
+                }
+            )
 
         # Sort results; put best result at top
         results.sort(
-            key=lambda r: r["rank"] # type: ignore
+            key=lambda r: r["rank"]  # type: ignore
         )
 
         LOGGER.debug("Manual search results: %s", results)

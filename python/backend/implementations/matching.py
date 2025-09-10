@@ -357,29 +357,29 @@ def check_search_result_match(
         SearchResultMatchData: Whether the search result passes the filter.
     """
     annual = "annual" in volume_data.title.lower()
-    rejections: list[MatchRejections] = []
+    rejections: list[str] = []  # list[MatchRejections]
 
     if blocklist_contains(result["link"]):
-        rejections.append(MatchRejections.BLOCKLISTED)
+        rejections.append(MatchRejections.BLOCKLISTED.value)
 
     if result["annual"] != annual:
-        rejections.append(MatchRejections.ANNUAL)
+        rejections.append(MatchRejections.ANNUAL.value)
 
     if not (
         _match_title(volume_data.title, result["series"])
         or _match_title(volume_data.alt_title or "", result["series"])
     ):
-        rejections.append(MatchRejections.TITLE)
+        rejections.append(MatchRejections.TITLE.value)
 
     if not _match_volume_number(
         volume_data, volume_issues, result["volume_number"], conservative=True
     ):
-        rejections.append(MatchRejections.VOLUME_NUMBER)
+        rejections.append(MatchRejections.VOLUME_NUMBER.value)
 
     if not _match_special_version(
         volume_data.special_version, result["special_version"], result["issue_number"]
     ):
-        rejections.append(MatchRejections.SPECIAL_VERSION)
+        rejections.append(MatchRejections.SPECIAL_VERSION.value)
 
     if result["issue_number"] is not None:
         issue_number = result["issue_number"]
@@ -401,12 +401,12 @@ def check_search_result_match(
             # Volume search
             if not all(i in number_to_year for i in create_range(issue_number)):
                 # One of the extracted issue numbers is not found in volume
-                rejections.append(MatchRejections.ISSUE_NUMBER)
+                rejections.append(MatchRejections.ISSUE_NUMBER.value)
 
         elif issue_number != calculated_issue_number:
             # Issue search, but
             # extracted issue number(s) don't match number of searched issue
-            rejections.append(MatchRejections.ISSUE_NUMBER)
+            rejections.append(MatchRejections.ISSUE_NUMBER.value)
 
     if not _match_year(
         volume_data.year,
@@ -414,6 +414,6 @@ def check_search_result_match(
         number_to_year.get(create_range(issue_number)[-1]),
         conservative=True,
     ):
-        rejections.append(MatchRejections.YEAR)
+        rejections.append(MatchRejections.YEAR.value)
 
     return {"match": len(rejections) == 0, "match_rejections": rejections}
