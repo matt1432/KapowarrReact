@@ -29,8 +29,12 @@ import TaskScheduled from './Scheduled';
 // IMPLEMENTATIONS
 
 export default function Status() {
-    const { refetch: refetchHistory } = useGetTaskHistoryQuery();
-    const { refetch: refetchPlanning } = useGetTaskPlanningQuery();
+    const { refetch: refetchHistory } = useGetTaskHistoryQuery(undefined, {
+        selectFromResult: () => ({}),
+    });
+    const { refetch: refetchPlanning } = useGetTaskPlanningQuery(undefined, {
+        selectFromResult: () => ({}),
+    });
 
     const [isRefreshing, setIsRefreshing] = useState(false);
 

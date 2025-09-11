@@ -2,7 +2,6 @@
 // IMPORTS
 
 // React
-import { useCallback, useState } from 'react';
 
 // Redux
 import { useGetQueueQuery } from 'Store/Api/Queue';
@@ -24,17 +23,11 @@ import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 // IMPLEMENTATIONS
 
 export default function Queue() {
-    const { refetch: refetchQueue } = useGetQueueQuery();
-
-    const [isRefreshing, setIsRefreshing] = useState(false);
-
-    const refetch = useCallback(async () => {
-        setIsRefreshing(true);
-
-        await refetchQueue();
-
-        setIsRefreshing(false);
-    }, [refetchQueue]);
+    const { isRefreshing, refetch } = useGetQueueQuery(undefined, {
+        selectFromResult: ({ isFetching }) => ({
+            isRefreshing: isFetching,
+        }),
+    });
 
     return (
         <PageContent title={translate('Queue')}>
