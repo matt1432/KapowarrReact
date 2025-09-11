@@ -1,5 +1,7 @@
 .priority {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 95px;
 }
 
 .status {
@@ -12,14 +14,21 @@
 
 .sourceName {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 95px;
 }
 
 .size {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 75px;
 }
 
 .speed {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    white-space: nowrap;
+    min-width: 85px;
 }
 
 .progress {

@@ -5,6 +5,8 @@
 import { useCallback, useState } from 'react';
 
 // Redux
+import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
+import { setQueueSort, setQueueTableOption } from 'Store/Slices/QueueTable';
 import {
     useClearQueueMutation,
     useDeleteQueueItemMutation,
@@ -36,6 +38,8 @@ import QueueRow from './QueueRow';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { QueueItem } from 'typings/Queue';
+import type { SortDirection } from 'Helpers/Props/sortDirections';
+import type { TableOptionsChangePayload } from 'typings/Table';
 
 export type QueueColumn = QueueItem & {
     priority: number;
@@ -50,36 +54,43 @@ const columns: Column<QueueColumnName>[] = [
         name: 'priority',
         label: () => translate('Priority'),
         isVisible: true,
+        isSortable: true,
     },
     {
         name: 'status',
         label: () => translate('Status'),
         isVisible: true,
+        isSortable: true,
     },
     {
         name: 'title',
         label: () => translate('Title'),
         isVisible: true,
+        isSortable: true,
     },
     {
         name: 'sourceName',
         label: () => translate('Source'),
         isVisible: true,
+        isSortable: true,
     },
     {
         name: 'size',
         label: () => translate('Size'),
         isVisible: true,
+        isSortable: true,
     },
     {
         name: 'speed',
         label: () => translate('Speed'),
         isVisible: true,
+        isSortable: true,
     },
     {
         name: 'progress',
         label: () => translate('Progress'),
         isVisible: true,
+        isSortable: true,
     },
     {
         name: 'actions',
@@ -90,6 +101,9 @@ const columns: Column<QueueColumnName>[] = [
 ];
 
 export default function Queue() {
+    const dispatch = useRootDispatch();
+    const { sortKey, sortDirection } = useRootSelector((state) => state.queueTable);
+
     const { items, isRefreshing, refetch } = useGetQueueQuery(undefined, {
         selectFromResult: ({ data, isFetching }) => ({
             items: (data ?? []).map((item, i) => ({ ...item, priority: i })) as QueueColumn[],
@@ -120,6 +134,25 @@ export default function Queue() {
         setIsClearing(false);
         setClearQueueModalClosed();
     }, [clearQueuePost, refetch, setClearQueueModalClosed]);
+
+    const handleSortPress = useCallback(
+        (sortKey: QueueColumnName, sortDirection?: SortDirection) => {
+            dispatch(
+                setQueueSort({
+                    sortKey: sortKey,
+                    sortDirection,
+                }),
+            );
+        },
+        [dispatch],
+    );
+
+    const handleTableOptionChange = useCallback(
+        (payload: TableOptionsChangePayload<QueueColumnName>) => {
+            dispatch(setQueueTableOption(payload));
+        },
+        [dispatch],
+    );
 
     return (
         <PageContent title={translate('Queue')}>
@@ -153,11 +186,16 @@ export default function Queue() {
 
             <PageContentBody>
                 {!items.length ? (
-                    // TODO: add filtered message
                     <Alert kind={kinds.INFO}>{translate('QueueIsEmpty')}</Alert>
                 ) : (
                     <SortedTable
                         columns={columns}
+                        sortKey={sortKey}
+                        sortDirection={sortDirection}
+                        onSortPress={handleSortPress}
+                        tableProps={{
+                            onTableOptionChange: handleTableOptionChange,
+                        }}
                         items={items}
                         itemRenderer={(item) => (
                             <QueueRow {...item} columns={columns} onDeletePress={onDeletePress} />

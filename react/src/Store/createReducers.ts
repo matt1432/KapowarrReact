@@ -10,6 +10,7 @@ import AppSlice from './Slices/App';
 import AuthSlice from './Slices/Auth';
 import IssueTableSlice from './Slices/IssueTable';
 import MessagesSlice from './Slices/Messages';
+import QueueTableSlice from './Slices/QueueTable';
 import SearchResultsSlice from './Slices/SearchResults';
 import SettingsSlice from './Slices/Settings';
 import SocketEventsSlice from './Slices/SocketEvents';
@@ -31,6 +32,7 @@ export default function createReducers() {
             [AuthSlice.reducerPath]: AuthSlice.reducer,
             [IssueTableSlice.reducerPath]: IssueTableSlice.reducer,
             [MessagesSlice.reducerPath]: MessagesSlice.reducer,
+            [QueueTableSlice.reducerPath]: QueueTableSlice.reducer,
             [SearchResultsSlice.reducerPath]: SearchResultsSlice.reducer,
             [SettingsSlice.reducerPath]: SettingsSlice.reducer,
             [SocketEventsSlice.reducerPath]: SocketEventsSlice.reducer,

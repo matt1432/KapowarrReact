@@ -23,7 +23,15 @@ export const store = configureStore({
         getDefaultEnhancers().concat(
             rememberEnhancer(
                 window.localStorage,
-                ['addVolume', 'auth', 'settings', 'uiSettings', 'issueTable', 'volumeIndex'],
+                [
+                    'addVolume',
+                    'auth',
+                    'issueTable',
+                    'queueTable',
+                    'settings',
+                    'uiSettings',
+                    'volumeIndex',
+                ],
                 {
                     prefix: 'kapowarr_',
                     persistDebounce: 300,
