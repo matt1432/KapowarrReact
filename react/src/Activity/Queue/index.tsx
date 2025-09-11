@@ -41,10 +41,11 @@ export type QueueColumn = QueueItem & {
     priority: number;
     actions: never;
 };
+export type QueueColumnName = keyof QueueColumn;
 
 // IMPLEMENTATIONS
 
-const columns: Column<keyof QueueColumn>[] = [
+const columns: Column<QueueColumnName>[] = [
     {
         name: 'priority',
         label: () => translate('Priority'),

@@ -11,6 +11,7 @@ import formatBytes from 'Utilities/Number/formatBytes';
 
 // General Components
 import IconButton from 'Components/Link/IconButton';
+import ProgressBar from 'Components/ProgressBar';
 import TableRow from 'Components/Table/TableRow';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 
@@ -18,12 +19,12 @@ import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import styles from './index.module.css';
 
 // Types
-import type { QueueColumn } from '..';
+import type { QueueColumn, QueueColumnName } from '..';
 import type { Column } from 'Components/Table/Column';
 import type { DeleteQueueItemParams } from 'Store/Api/Queue';
 
 type QueueRowProps = QueueColumn & {
-    columns: Column<keyof QueueColumn>[];
+    columns: Column<QueueColumnName>[];
     onDeletePress: (props: DeleteQueueItemParams) => void;
 };
 
@@ -85,7 +86,11 @@ export default function QueueRow({
                 }
 
                 if (name === 'progress') {
-                    return <TableRowCell className={styles[name]}>{progress}%</TableRowCell>;
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <ProgressBar progress={progress} title={`${progress.toFixed(1)}%`} />
+                        </TableRowCell>
+                    );
                 }
 
                 if (name === 'actions') {

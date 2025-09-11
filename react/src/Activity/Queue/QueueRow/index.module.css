@@ -24,6 +24,8 @@
 
 .progress {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    width: 150px;
 }
 
 .actions {
