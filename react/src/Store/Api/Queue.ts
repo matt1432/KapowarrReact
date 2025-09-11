@@ -75,6 +75,18 @@ const extendedApi = baseApi.injectEndpoints({
                 camelize(response.result),
         }),
 
+        // PUT
+        moveQueueItem: build.mutation<void, { id: number; index: number }>({
+            query: ({ id, index }) => ({
+                method: 'PUT',
+                url: `activity/queue/${id}`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                    index,
+                },
+            }),
+        }),
+
         // DELETE
         clearBlocklist: build.mutation<void, void>({
             query: () => ({
@@ -95,15 +107,40 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
         }),
+
+        clearQueue: build.mutation<void, void>({
+            query: () => ({
+                method: 'DELETE',
+                url: 'activity/queue',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+        }),
+
+        deleteQueueItem: build.mutation<void, { id: number; blocklist?: boolean }>({
+            query: ({ id, blocklist = false }) => ({
+                method: 'DELETE',
+                url: `activity/queue/${id}`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+                body: { blocklist },
+            }),
+        }),
     }),
 });
 
 export const {
     useClearBlocklistMutation,
+    useClearQueueMutation,
     useDeleteBlocklistItemMutation,
+    useDeleteQueueItemMutation,
     useGetBlocklistMutation,
     useGetDownloadHistoryMutation,
     useGetQueueQuery,
+    useLazyGetQueueQuery,
+    useMoveQueueItemMutation,
 } = extendedApi;
 
 export const useFetchQueueDetails = (
