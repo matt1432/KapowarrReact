@@ -28,4 +28,6 @@
 
 .actions {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    width: 75px;
 }

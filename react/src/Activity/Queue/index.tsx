@@ -5,7 +5,12 @@
 import { useCallback, useState } from 'react';
 
 // Redux
-import { useClearQueueMutation, useGetQueueQuery } from 'Store/Api/Queue';
+import {
+    useClearQueueMutation,
+    useDeleteQueueItemMutation,
+    useGetQueueQuery,
+    type DeleteQueueItemParams,
+} from 'Store/Api/Queue';
 
 // Misc
 import { icons, kinds } from 'Helpers/Props';
@@ -91,6 +96,15 @@ export default function Queue() {
         }),
     });
 
+    const [deleteQueueItem] = useDeleteQueueItemMutation();
+    const onDeletePress = useCallback(
+        async (props: DeleteQueueItemParams) => {
+            await deleteQueueItem(props);
+            await refetch();
+        },
+        [deleteQueueItem, refetch],
+    );
+
     const [isClearQueueModalOpen, setClearQueueModalOpen, setClearQueueModalClosed] =
         useModalOpenState(false);
 
@@ -144,7 +158,9 @@ export default function Queue() {
                     <SortedTable
                         columns={columns}
                         items={items}
-                        itemRenderer={(item) => <QueueRow {...item} columns={columns} />}
+                        itemRenderer={(item) => (
+                            <QueueRow {...item} columns={columns} onDeletePress={onDeletePress} />
+                        )}
                     />
                 )}
             </PageContentBody>

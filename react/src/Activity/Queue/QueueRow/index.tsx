@@ -2,19 +2,17 @@
 // IMPORTS
 
 // React
-
-// Redux
+import { useCallback } from 'react';
 
 // Misc
+import { icons } from 'Helpers/Props';
+
 import formatBytes from 'Utilities/Number/formatBytes';
 
-// Hooks
-
 // General Components
+import IconButton from 'Components/Link/IconButton';
 import TableRow from 'Components/Table/TableRow';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
-
-// Specific Components
 
 // CSS
 import styles from './index.module.css';
@@ -22,15 +20,19 @@ import styles from './index.module.css';
 // Types
 import type { QueueColumn } from '..';
 import type { Column } from 'Components/Table/Column';
+import type { DeleteQueueItemParams } from 'Store/Api/Queue';
 
 type QueueRowProps = QueueColumn & {
     columns: Column<keyof QueueColumn>[];
+    onDeletePress: (props: DeleteQueueItemParams) => void;
 };
 
 // IMPLEMENTATIONS
 
 export default function QueueRow({
+    id,
     columns,
+    onDeletePress,
     priority,
     status,
     title,
@@ -39,6 +41,14 @@ export default function QueueRow({
     speed,
     progress,
 }: QueueRowProps) {
+    const handleDeletePress = useCallback(() => {
+        onDeletePress({ id });
+    }, [onDeletePress, id]);
+
+    const handleBlocklistPress = useCallback(() => {
+        onDeletePress({ id, blocklist: true });
+    }, [onDeletePress, id]);
+
     return (
         <TableRow>
             {columns.map(({ name, isVisible }) => {
@@ -79,7 +89,12 @@ export default function QueueRow({
                 }
 
                 if (name === 'actions') {
-                    return <TableRowCell className={styles[name]}></TableRowCell>;
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <IconButton name={icons.DELETE} onPress={handleDeletePress} />
+                            <IconButton name={icons.BLOCK} onPress={handleBlocklistPress} />
+                        </TableRowCell>
+                    );
                 }
             })}
         </TableRow>
