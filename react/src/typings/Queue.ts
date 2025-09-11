@@ -1,9 +1,9 @@
 import type { DownloadState } from 'Helpers/Props/downloadStates';
 import type { CamelCasedProperties } from 'type-fest';
 
-// FIXME: this type is incomplete
-export interface RawDownloadItem {
+export interface RawQueueItem {
     id: number;
+    client: number;
     volume_id: number;
     issue_id: number | null;
     web_link: string | null;
@@ -23,7 +23,7 @@ export interface RawDownloadItem {
     speed: number;
 }
 
-export type DownloadItem = CamelCasedProperties<RawDownloadItem>;
+export type QueueItem = CamelCasedProperties<RawQueueItem>;
 
 export interface RawDownloadHistoryItem {
     web_link: string;

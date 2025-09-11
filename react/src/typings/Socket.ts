@@ -1,6 +1,6 @@
 import type { CamelCasedPropertiesDeep } from 'type-fest';
 
-import type { DownloadItem } from 'typings/Queue';
+import type { QueueItem } from 'typings/Queue';
 
 import type { MassEditAction } from 'Helpers/Props/massEditActions';
 import type { SocketEvent } from 'Helpers/Props/socketEvents';
@@ -41,7 +41,7 @@ interface SpecificEventHandlers {
     task_added: (data: CamelCasedPropertiesDeep<TaskData>) => void;
     task_ended: (data: CamelCasedPropertiesDeep<TaskData>) => void;
     task_status: (data: CamelCasedPropertiesDeep<TaskStatusData>) => void;
-    queue_added: (data: CamelCasedPropertiesDeep<DownloadItem>) => void;
+    queue_added: (data: CamelCasedPropertiesDeep<QueueItem>) => void;
     queue_ended: (data: CamelCasedPropertiesDeep<QueueEndedData>) => void;
     queue_status: (data: CamelCasedPropertiesDeep<QueueStatusData>) => void;
     mass_editor_status: (data: CamelCasedPropertiesDeep<MassEditorData>) => void;

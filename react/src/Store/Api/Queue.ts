@@ -10,10 +10,10 @@ import camelize from 'Utilities/Object/camelize';
 import type {
     BlocklistItem,
     DownloadHistoryItem,
-    DownloadItem,
+    QueueItem,
     RawBlocklistItem,
     RawDownloadHistoryItem,
-    RawDownloadItem,
+    RawQueueItem,
 } from 'typings/Queue';
 
 export interface FetchQueueParams {
@@ -36,7 +36,7 @@ export interface GetBlocklistParams {
 const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         // GET
-        fetchQueueDetails: build.query<DownloadItem[], void>({
+        getQueue: build.query<QueueItem[], void>({
             query: () => ({
                 url: 'activity/queue',
                 params: {
@@ -44,8 +44,7 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: { result: RawDownloadItem[] }) =>
-                camelize(response.result),
+            transformResponse: (response: { result: RawQueueItem[] }) => camelize(response.result),
         }),
 
         getDownloadHistory: build.mutation<DownloadHistoryItem[], GetDownloadHistoryParams>({
@@ -100,17 +99,18 @@ const extendedApi = baseApi.injectEndpoints({
 });
 
 export const {
-    useGetDownloadHistoryMutation,
-    useGetBlocklistMutation,
     useClearBlocklistMutation,
     useDeleteBlocklistItemMutation,
+    useGetBlocklistMutation,
+    useGetDownloadHistoryMutation,
+    useGetQueueQuery,
 } = extendedApi;
 
 export const useFetchQueueDetails = (
     { volumeId, issueId }: FetchQueueParams = {},
-    options?: Parameters<typeof extendedApi.useFetchQueueDetailsQuery>[1],
+    options?: Parameters<typeof extendedApi.useGetQueueQuery>[1],
 ) => {
-    return extendedApi.useFetchQueueDetailsQuery(undefined, {
+    return extendedApi.useGetQueueQuery(undefined, {
         ...options,
         selectFromResult: ({ data, ...rest }) => {
             let queue = data ?? [];

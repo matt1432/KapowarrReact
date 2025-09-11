@@ -103,11 +103,9 @@ const extendedApi = baseApi.injectEndpoints({
                         : `volumes/${volumeId}/download`,
                 params: {
                     apiKey: window.Kapowarr.apiKey,
-                },
-                body: snakeify({
                     ...result,
                     forceMatch,
-                }),
+                },
             }),
         }),
 

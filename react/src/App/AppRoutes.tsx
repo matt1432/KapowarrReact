@@ -13,7 +13,7 @@ import AddNewVolume from 'AddVolume/AddNewVolume/AddNewVolume';
 // TODO: do this one from scratch to follow how it works in Kapowarr
 // import ImportVolumePage from 'AddVolume/ImportVolume/ImportVolumePage';
 
-// import Queue from 'Activity/Queue';
+import Queue from 'Activity/Queue';
 import History from 'Activity/History';
 import Blocklist from 'Activity/Blocklist';
 
@@ -44,8 +44,7 @@ export default function AppRoutes() {
             <Route path="/add/import" element={<ImportVolumePage />} />
 
             {/*Activity*/}
-            {/*
-            <Route path="/activity/queue" element={<Queue />} />*/}
+            <Route path="/activity/queue" element={<Queue />} />
 
             <Route path="/activity/history" element={<History />} />
 

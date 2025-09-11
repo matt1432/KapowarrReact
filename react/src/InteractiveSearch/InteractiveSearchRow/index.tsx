@@ -100,10 +100,11 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
     ] = useAddDownloadMutation();
 
     const onGrabPress = useCallback(
-        (forceMatch = false) => {
+        (forceMatch = false, isTorrent = false) => {
             grabRelease({
                 ...searchPayload,
-                result: Object.assign(result, {
+                result: {
+                    ...result,
                     issueNumber: Array.isArray(result.issueNumber)
                         ? result.issueNumber
                         : issueNumber,
@@ -111,9 +112,12 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
                     scanType,
                     resolution,
                     dpi,
-                }),
+                    // TODO: add torrent button
+                    comicsId: isTorrent ? result.comicsId : null,
+                },
                 forceMatch,
             });
+            // TODO: refresh queue details after grab
         },
         [grabRelease, result, searchPayload, issueNumber, releaser, scanType, resolution, dpi],
     );
@@ -121,6 +125,7 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
     const [isConfirmGrabModalOpen, setIsConfirmGrabModalOpen] = useState(false);
 
     const onGrabPressWrapper = useCallback(() => {
+        // TODO: allow when issue number is filled
         if (result.matchRejections.length === 0) {
             onGrabPress();
 
