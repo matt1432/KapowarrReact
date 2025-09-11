@@ -15,6 +15,9 @@ import ProgressBar from 'Components/ProgressBar';
 import TableRow from 'Components/Table/TableRow';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 
+import IssueTitleLink from 'Issue/IssueTitleLink';
+import VolumeTitleLink from 'Volume/VolumeTitleLink';
+
 // CSS
 import styles from './index.module.css';
 
@@ -32,6 +35,8 @@ type QueueRowProps = QueueColumn & {
 
 export default function QueueRow({
     id,
+    volumeId,
+    issueId,
     columns,
     onDeletePress,
     priority,
@@ -66,7 +71,20 @@ export default function QueueRow({
                 }
 
                 if (name === 'title') {
-                    return <TableRowCell className={styles[name]}>{title}</TableRowCell>;
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {typeof issueId === 'number' ? (
+                                <IssueTitleLink
+                                    volumeId={volumeId}
+                                    issueId={issueId}
+                                    issueTitle={title}
+                                    showOpenVolumeButton
+                                />
+                            ) : (
+                                <VolumeTitleLink title={title} titleSlug={volumeId.toString()} />
+                            )}
+                        </TableRowCell>
+                    );
                 }
 
                 if (name === 'sourceName') {
