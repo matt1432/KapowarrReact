@@ -1,0 +1,31 @@
+.priority {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.status {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.title {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.sourceName {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.size {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.speed {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.progress {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.actions {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}

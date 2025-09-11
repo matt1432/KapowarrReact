@@ -1923,6 +1923,7 @@
     "SpecialVersion": "Special Version",
     "SpecialVersions": "Special Version",
     "SpecialVersionsHelpText": "Special version is used for renaming, parsing and searching",
+    "Speed": "Speed",
     "SetIndexerFlags": "Set Indexer Flags",
     "SetIndexerFlagsModalTitle": "{modalTitle} - Set Indexer Flags",
     "SetPermissions": "Set Permissions",

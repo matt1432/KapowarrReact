@@ -9,7 +9,6 @@ import { setFormsAuth } from 'Store/Slices/Auth';
 
 import { useLazyGetAboutInfoQuery } from 'Store/Api/Status';
 import { useLazyGetDownloadClientsQuery } from 'Store/Api/DownloadClients';
-import { useLazyGetQueueQuery } from 'Store/Api/Queue';
 import { useLazyGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import { useLazyGetSettingsQuery } from 'Store/Api/Settings';
 import { useLazyGetTaskHistoryQuery, useLazyGetTaskPlanningQuery } from 'Store/Api/Status';
@@ -31,7 +30,6 @@ export default function useAppPage() {
     // all queries needed before page is loaded
     const [getAboutInfo, getAboutInfoState] = useLazyGetAboutInfoQuery();
     const [getDownloadClients, getDownloadClientsState] = useLazyGetDownloadClientsQuery();
-    const [getQueue, getQueueState] = useLazyGetQueueQuery();
     const [getRootFolders, getRootFoldersState] = useLazyGetRootFoldersQuery();
     const [getSettings, getSettingsState] = useLazyGetSettingsQuery();
     const [getTaskHistory, getTaskHistoryState] = useLazyGetTaskHistoryQuery();
@@ -50,7 +48,6 @@ export default function useAppPage() {
         () => [
             getAboutInfoState,
             getDownloadClientsState,
-            getQueueState,
             getRootFoldersState,
             getSettingsState,
             getTaskHistoryState,
@@ -60,7 +57,6 @@ export default function useAppPage() {
         [
             getAboutInfoState,
             getDownloadClientsState,
-            getQueueState,
             getRootFoldersState,
             getSettingsState,
             getTaskHistoryState,
@@ -72,7 +68,6 @@ export default function useAppPage() {
         () => [
             () => getAboutInfo(),
             () => getDownloadClients(),
-            () => getQueue(),
             () => getRootFolders(),
             () => getSettings(),
             () => getTaskHistory(),
@@ -82,7 +77,6 @@ export default function useAppPage() {
         [
             getAboutInfo,
             getDownloadClients,
-            getQueue,
             getRootFolders,
             getSettings,
             getTaskHistory,
