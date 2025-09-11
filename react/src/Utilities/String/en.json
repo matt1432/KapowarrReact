@@ -213,6 +213,8 @@
     "ClearBlocklist": "Clear blocklist",
     "ClearBlocklistMessageText": "Are you sure you want to clear all items from the blocklist?",
     "ClearHistory": "Clear History",
+    "ClearQueue": "Clear Queue",
+    "ClearQueueMessage": "Are you sure you want to clear the queue?",
     "ClickToChangeIssue": "Click to change issue",
     "ClickToChangeIndexerFlags": "Click to change indexer flags",
     "ClickToChangeLanguage": "Click to change language",

@@ -31,6 +31,11 @@ export interface GetBlocklistParams {
     offset?: number;
 }
 
+export interface DeleteQueueItemParams {
+    id: number;
+    blocklist?: boolean;
+}
+
 // IMPLEMENTATIONS
 
 const extendedApi = baseApi.injectEndpoints({
@@ -118,7 +123,7 @@ const extendedApi = baseApi.injectEndpoints({
             }),
         }),
 
-        deleteQueueItem: build.mutation<void, { id: number; blocklist?: boolean }>({
+        deleteQueueItem: build.mutation<void, DeleteQueueItemParams>({
             query: ({ id, blocklist = false }) => ({
                 method: 'DELETE',
                 url: `activity/queue/${id}`,

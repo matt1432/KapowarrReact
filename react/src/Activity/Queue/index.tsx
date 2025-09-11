@@ -2,17 +2,22 @@
 // IMPORTS
 
 // React
+import { useCallback, useState } from 'react';
 
 // Redux
-import { useGetQueueQuery } from 'Store/Api/Queue';
+import { useClearQueueMutation, useGetQueueQuery } from 'Store/Api/Queue';
 
 // Misc
 import { icons, kinds } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
+// Hooks
+import useModalOpenState from 'Helpers/Hooks/useModalOpenState';
+
 // General Components
 import Alert from 'Components/Alert';
+import ConfirmModal from 'Components/Modal/ConfirmModal';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
@@ -86,6 +91,21 @@ export default function Queue() {
         }),
     });
 
+    const [isClearQueueModalOpen, setClearQueueModalOpen, setClearQueueModalClosed] =
+        useModalOpenState(false);
+
+    const [clearQueuePost] = useClearQueueMutation();
+    const [isClearing, setIsClearing] = useState(false);
+    const clearQueue = useCallback(async () => {
+        setIsClearing(true);
+
+        await clearQueuePost();
+        await refetch();
+
+        setIsClearing(false);
+        setClearQueueModalClosed();
+    }, [clearQueuePost, refetch, setClearQueueModalClosed]);
+
     return (
         <PageContent title={translate('Queue')}>
             <PageToolbar>
@@ -95,6 +115,23 @@ export default function Queue() {
                         label={translate('Refresh')}
                         isSpinning={isRefreshing}
                         onPress={refetch}
+                    />
+
+                    <PageToolbarButton
+                        iconName={icons.DELETE}
+                        label={translate('ClearQueue')}
+                        isSpinning={isClearing}
+                        isDisabled={items.length === 0}
+                        onPress={setClearQueueModalOpen}
+                    />
+
+                    <ConfirmModal
+                        title={translate('ClearQueue')}
+                        message={translate('ClearQueueMessage')}
+                        kind={kinds.DANGER}
+                        isOpen={isClearQueueModalOpen}
+                        onCancel={setClearQueueModalClosed}
+                        onConfirm={clearQueue}
                     />
                 </PageToolbarSection>
             </PageToolbar>
