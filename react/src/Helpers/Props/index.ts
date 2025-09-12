@@ -1,5 +1,7 @@
 import align from './align';
 import commandNames from './commandNames';
+import downloadStates from './downloadStates';
+import downloadTypes from './downloadTypes';
 import icons from './icons';
 import inputTypes from './inputTypes';
 import kinds from './kinds';
@@ -18,6 +20,8 @@ import GCDownloadSources from './GCDownloadSources';
 export {
     align,
     commandNames,
+    downloadStates,
+    downloadTypes,
     icons,
     inputTypes,
     kinds,

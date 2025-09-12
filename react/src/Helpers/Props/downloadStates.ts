@@ -1,4 +1,4 @@
-export const downloadStates = {
+const downloadStates = {
     QUEUED: 'queued',
     PAUSED: 'paused',
     DOWNLOADING: 'downloading',
@@ -9,5 +9,7 @@ export const downloadStates = {
     CANCELED: 'canceled',
     SHUTDOWN: 'shutting down',
 } as const;
+
+export default downloadStates;
 
 export type DownloadState = (typeof downloadStates)[keyof typeof downloadStates];

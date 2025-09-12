@@ -1,8 +1,10 @@
-import { downloadStates, type DownloadState } from 'Helpers/Props/downloadStates';
 import getProgressBarKind from './getProgressBarKind';
+
+import { downloadStates } from 'Helpers/Props';
 
 import type { QueueItem } from 'typings/Queue';
 import type { VolumePublicInfo } from 'Volume/Volume';
+import type { DownloadState } from 'Helpers/Props/downloadStates';
 
 interface GetDownloadedIssuesProgressParams {
     queue: QueueItem[];

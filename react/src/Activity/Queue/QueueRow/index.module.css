@@ -2,10 +2,14 @@
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
     min-width: 95px;
+    padding-left: 25px;
 }
 
 .status {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    width: 95px;
+    padding-left: 20px;
 }
 
 .title {

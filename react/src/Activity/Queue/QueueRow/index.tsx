@@ -18,6 +18,9 @@ import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import IssueTitleLink from 'Issue/IssueTitleLink';
 import VolumeTitleLink from 'Volume/VolumeTitleLink';
 
+// Specific Components
+import QueueStatus from '../QueueStatus';
+
 // CSS
 import styles from './index.module.css';
 
@@ -67,7 +70,11 @@ export default function QueueRow({
                 }
 
                 if (name === 'status') {
-                    return <TableRowCell className={styles[name]}>{status}</TableRowCell>;
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <QueueStatus sourceTitle={title} status={status} position="right" />
+                        </TableRowCell>
+                    );
                 }
 
                 if (name === 'title') {
