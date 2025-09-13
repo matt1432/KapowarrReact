@@ -23,7 +23,7 @@ import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 
 // Specific Components
-import AddNewVolumeSearchResult from '../AddNewVolumeSearchResult';
+import AddNewVolumeSearchResult from './AddNewVolumeSearchResult';
 
 // CSS
 import styles from './index.module.css';

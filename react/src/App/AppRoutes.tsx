@@ -1,4 +1,3 @@
-// TODO:
 // IMPORTS
 
 // React
@@ -8,10 +7,8 @@ import { Route, Routes } from 'react-router-dom';
 import VolumeIndex from 'Volume/Index';
 import VolumeDetailsPage from 'Volume/Details/VolumeDetailsPage';
 
-import AddNewVolume from 'AddVolume/AddNewVolume/AddNewVolume';
-
-// TODO: do this one from scratch to follow how it works in Kapowarr
-// import ImportVolumePage from 'AddVolume/ImportVolume/ImportVolumePage';
+import AddNewVolume from 'AddVolume/AddNewVolume';
+import ImportVolume from 'AddVolume/ImportVolume';
 
 import Queue from 'Activity/Queue';
 import History from 'Activity/History';
@@ -40,8 +37,7 @@ export default function AppRoutes() {
 
             <Route path="/add/new" element={<AddNewVolume />} />
 
-            {/*
-            <Route path="/add/import" element={<ImportVolumePage />} />
+            <Route path="/add/import" element={<ImportVolume />} />
 
             {/*Activity*/}
             <Route path="/activity/queue" element={<Queue />} />
