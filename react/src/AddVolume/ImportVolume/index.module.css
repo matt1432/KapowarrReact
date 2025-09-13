@@ -1,0 +1,4 @@
+.content {
+    composes: content from 'Components/Page/PageContent/index.module.css';
+    overflow-y: hidden;
+}

@@ -320,6 +320,8 @@
     "CutoffUnmet": "Cutoff Unmet",
     "CutoffUnmetLoadError": "Error loading cutoff unmet items",
     "CutoffUnmetNoItems": "No cutoff unmet items",
+    "CVLink": "ComicVine Link",
+    "ChangeMatch": "Change Match",
     "Daily": "Daily",
     "DailyIssueFormat": "Daily Issue Format",
     "DailyIssueTypeDescription": "Issues released daily or less frequently that use year-month-day (2023-08-04)",

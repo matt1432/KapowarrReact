@@ -1,0 +1,11 @@
+.selectAllInputContainer {
+    margin-right: auto;
+    line-height: 30px;
+}
+
+.selectAllInput {
+    composes: input from 'Components/Form/CheckInput/index.module.css';
+
+    margin: 0;
+    max-width: 20px;
+}
