@@ -1,4 +1,3 @@
-// TODO:
 // IMPORTS
 
 // React
@@ -20,6 +19,7 @@ import VolumeTitleLink from 'Volume/VolumeTitleLink';
 
 // Specific Components
 import QueueStatus from '../QueueStatus';
+import TimeLeftCell from '../TimeLeftCell';
 
 // CSS
 import styles from './index.module.css';
@@ -47,6 +47,8 @@ export default function QueueRow({
     title,
     sourceName,
     size,
+    sizeLeft,
+    timeLeft,
     speed,
     progress,
 }: QueueRowProps) {
@@ -107,6 +109,17 @@ export default function QueueRow({
                 if (name === 'speed') {
                     return (
                         <TableRowCell className={styles[name]}>{formatBytes(speed)}/s</TableRowCell>
+                    );
+                }
+
+                if (name === 'timeLeft') {
+                    return (
+                        <TimeLeftCell
+                            size={size}
+                            sizeLeft={sizeLeft}
+                            status={status}
+                            timeLeft={timeLeft}
+                        />
                     );
                 }
 

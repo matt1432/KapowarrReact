@@ -1,4 +1,3 @@
-// TODO:
 // IMPORTS
 
 // React
@@ -42,8 +41,10 @@ import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { TableOptionsChangePayload } from 'typings/Table';
 
 export type QueueColumn = QueueItem & {
-    priority: number;
     actions: never;
+    priority: number;
+    sizeLeft: number;
+    timeLeft: number;
 };
 export type QueueColumnName = keyof QueueColumn;
 
@@ -87,6 +88,12 @@ const columns: Column<QueueColumnName>[] = [
         isSortable: true,
     },
     {
+        name: 'timeLeft',
+        label: () => translate('TimeLeft'),
+        isVisible: true,
+        isSortable: true,
+    },
+    {
         name: 'progress',
         label: () => translate('Progress'),
         isVisible: true,
@@ -106,7 +113,15 @@ export default function Queue() {
 
     const { items, isRefreshing, refetch } = useGetQueueQuery(undefined, {
         selectFromResult: ({ data, isFetching }) => ({
-            items: (data ?? []).map((item, i) => ({ ...item, priority: i })) as QueueColumn[],
+            items: (data ?? []).map((item, i) => {
+                const sizeLeft = (1 - item.progress / 100) * item.size;
+                return {
+                    ...item,
+                    priority: i,
+                    sizeLeft,
+                    timeLeft: (sizeLeft / item.speed) * 1000,
+                } as QueueColumn;
+            }),
             isRefreshing: isFetching,
         }),
     });

@@ -1,5 +1,5 @@
 function padNumber(input: number, width: number, paddingCharacter = '0') {
-    if (!input) {
+    if (typeof input !== 'number') {
         return '';
     }
 
