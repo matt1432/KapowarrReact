@@ -17,8 +17,8 @@ import type {
 } from 'Volume/Volume';
 
 import type { RawVolumeMetadata, VolumeMetadata } from 'AddVolume/AddVolume';
-
 import type { SpecialVersion } from 'Helpers/Props/specialVersions';
+import type { ProposedImport, RawProposedImport } from 'typings/Search';
 
 export interface AddVolumeParams {
     comicvineId: number;
@@ -74,7 +74,7 @@ const extendedApi = baseApi.injectEndpoints({
                 response.result.map(camelize),
         }),
 
-        getImportProposals: build.query<object, GetImportProposalsParams>({
+        getImportProposals: build.query<ProposedImport[], GetImportProposalsParams>({
             query: (params) => ({
                 url: 'libraryimport',
                 params: {
@@ -83,7 +83,8 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: { result: object }) => response.result,
+            transformResponse: (response: { result: RawProposedImport[] }) =>
+                camelize(response.result),
         }),
 
         searchVolume: build.query<Volume, { volumeId: number }>({

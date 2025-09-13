@@ -1,4 +1,4 @@
-import type { CamelCasedProperties } from 'type-fest';
+import type { CamelCasedProperties, CamelCasedPropertiesDeep } from 'type-fest';
 
 import type { MatchRejection } from 'Helpers/Props/matchRejections';
 
@@ -55,3 +55,20 @@ interface VolumeSearchPayload {
 }
 
 export type InteractiveSearchPayload = IssueSearchPayload | VolumeSearchPayload;
+
+export interface RawComicVineResult {
+    id: number;
+    title: string;
+    issue_count: number;
+    link: string;
+}
+export type ComicVineResult = CamelCasedProperties<RawComicVineResult>;
+
+export interface RawProposedImport {
+    filepath: string;
+    file_title: string;
+    cv: ComicVineResult;
+    group_number: number;
+}
+
+export type ProposedImport = CamelCasedPropertiesDeep<RawProposedImport>;
