@@ -26,6 +26,7 @@ export const store = configureStore({
                 [
                     'addVolume',
                     'auth',
+                    'importVolume',
                     'issueTable',
                     'queueTable',
                     'settings',

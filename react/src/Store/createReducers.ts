@@ -19,6 +19,7 @@ import VolumeIndexSlice from './Slices/VolumeIndex';
 
 // API
 import { baseApi } from './Api/base';
+import ImportVolumeSlice from './Slices/ImportVolume';
 
 // IMPLEMENTATIONS
 
@@ -30,6 +31,7 @@ export default function createReducers() {
             [AddVolumeSlice.reducerPath]: AddVolumeSlice.reducer,
             [AppSlice.reducerPath]: AppSlice.reducer,
             [AuthSlice.reducerPath]: AuthSlice.reducer,
+            [ImportVolumeSlice.reducerPath]: ImportVolumeSlice.reducer,
             [IssueTableSlice.reducerPath]: IssueTableSlice.reducer,
             [MessagesSlice.reducerPath]: MessagesSlice.reducer,
             [QueueTableSlice.reducerPath]: QueueTableSlice.reducer,

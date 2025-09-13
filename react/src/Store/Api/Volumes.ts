@@ -48,6 +48,13 @@ export interface DeleteVolumeParams {
     deleteFolder: boolean;
 }
 
+export interface GetImportProposalsParams {
+    folderFilter?: string;
+    limit: number;
+    limitParentFolder: boolean;
+    onlyEnglish: boolean;
+}
+
 // IMPLEMENTATIONS
 
 const extendedApi = baseApi.injectEndpoints({
@@ -65,6 +72,18 @@ const extendedApi = baseApi.injectEndpoints({
 
             transformResponse: (response: { result: RawVolumePublicInfo[] }) =>
                 response.result.map(camelize),
+        }),
+
+        getImportProposals: build.query<object, GetImportProposalsParams>({
+            query: (params) => ({
+                url: 'libraryimport',
+                params: {
+                    ...params,
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+
+            transformResponse: (response: { result: object }) => response.result,
         }),
 
         searchVolume: build.query<Volume, { volumeId: number }>({
@@ -168,6 +187,7 @@ export const {
     useAddVolumeMutation,
     useDeleteVolumeMutation,
     useGetVolumesQuery,
+    useLazyGetImportProposalsQuery,
     useLazyGetVolumesQuery,
     useLazyLookupVolumeQuery,
     usePreviewConvertVolumeQuery,
