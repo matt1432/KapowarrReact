@@ -2,7 +2,7 @@
 // IMPORTS
 
 // React
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 // Redux
 import { useImportLibraryMutation } from 'Store/Api/Volumes';
@@ -52,6 +52,7 @@ function getValue(allSelected: boolean, allUnselected: boolean) {
 }
 
 export default function ImportProposals({ proposals, returnToSearchPage }: ImportProposalsProps) {
+    // SELECTION
     const [{ allSelected, allUnselected, selectedState }, setSelectState] = useSelectState();
 
     const selectAllValue = getValue(allSelected, allUnselected);
@@ -76,25 +77,45 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
         [proposals, setSelectState],
     );
 
+    // IMPORTING
+    const [idToFilepath, setIdToFilepath] = useState<{ filepath: string; id: number }[]>(
+        proposals.map((item) => ({
+            filepath: item.filepath,
+            id: item.cv.id,
+        })),
+    );
+    useEffect(() => {
+        setIdToFilepath(
+            proposals.map((item) => ({
+                filepath: item.filepath,
+                id: item.cv.id,
+            })),
+        );
+    }, [proposals]);
+    const handleEditMatch = useCallback(
+        (id: number) => (newValues: { filepath: string; id: number }) => {
+            const tempArr = [...idToFilepath];
+            tempArr[id] = newValues;
+            setIdToFilepath(tempArr);
+        },
+        [idToFilepath],
+    );
+
     const [importLibrary] = useImportLibraryMutation();
 
     const handleImportLibrary = useCallback(
-        (renameFiles: boolean) => {
+        (renameFiles: boolean) => () => {
             importLibrary({
                 renameFiles,
-                body: getSelectedIds<number>(selectedState).map((id) => {
-                    const proposal = proposals[id];
-
-                    return {
-                        filepath: proposal.filepath,
-                        id: proposal.cv.id,
-                    };
-                }),
+                body: getSelectedIds(selectedState)
+                    .filter((id) => id !== null)
+                    .map((id) => idToFilepath[id]),
             });
         },
-        [importLibrary, proposals, selectedState],
+        [idToFilepath, importLibrary, selectedState],
     );
 
+    // COLUMNS
     const columns: Column<ProposalColumnName>[] = [
         {
             name: 'selected',
@@ -136,11 +157,9 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
             <div className={styles.buttonContainer}>
                 <Button onPress={returnToSearchPage}>{translate('Cancel')}</Button>
 
-                <Button onPress={() => handleImportLibrary(false)}>{translate('Import')}</Button>
+                <Button onPress={handleImportLibrary(false)}>{translate('Import')}</Button>
 
-                <Button onPress={() => handleImportLibrary(true)}>
-                    {translate('ImportRename')}
-                </Button>
+                <Button onPress={handleImportLibrary(true)}>{translate('ImportRename')}</Button>
             </div>
 
             <Table columns={columns}>
@@ -151,6 +170,7 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
                             id={proposal.id}
                             columns={columns}
                             proposal={proposal}
+                            onEditMatch={handleEditMatch(proposal.id)}
                             isSelected={selectedState[proposal.id]}
                             onSelectedChange={handleSelectedChange}
                         />

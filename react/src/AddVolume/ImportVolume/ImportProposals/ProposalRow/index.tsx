@@ -2,7 +2,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 // Misc
 import { icons } from 'Helpers/Props';
@@ -30,6 +30,7 @@ import type { CheckInputChanged, SelectStateInputProps } from 'typings/Inputs';
 import type { ProposedImport } from 'typings/Search';
 import type { Column } from 'Components/Table/Column';
 import type { ProposalColumnName } from '..';
+import type { VolumeMetadata } from 'AddVolume/AddVolume';
 
 interface ProposalRowProps {
     id: number;
@@ -37,6 +38,7 @@ interface ProposalRowProps {
     columns: Column<ProposalColumnName>[];
     isSelected?: boolean;
     onSelectedChange: (props: SelectStateInputProps) => void;
+    onEditMatch: (newValues: { filepath: string; id: number }) => void;
 }
 
 // IMPLEMENTATIONS
@@ -47,9 +49,34 @@ export default function ProposalRow({
     columns,
     isSelected,
     onSelectedChange,
+    onEditMatch,
 }: ProposalRowProps) {
+    const [cvLink, setCvLink] = useState(proposal.cv.link);
+    const [cvTitle, setCvTitle] = useState(proposal.cv.title);
+    const [cvIssueCount, setCvIssueCount] = useState(proposal.cv.issueCount);
+
+    useEffect(() => {
+        setCvLink(proposal.cv.link);
+        setCvTitle(proposal.cv.title);
+        setCvIssueCount(proposal.cv.issueCount);
+    }, [proposal.cv]);
+
     const [isChangeMatchModalOpen, setChangeMatchModalOpen, setChangeMatchModalClosed] =
         useModalOpenState(false);
+
+    const handleEditMatch = useCallback(
+        (match: VolumeMetadata) => {
+            setCvLink(match.siteUrl);
+            setCvTitle(match.title);
+            setCvIssueCount(match.issueCount);
+
+            onEditMatch({
+                filepath: proposal.filepath,
+                id: match.comicvineId,
+            });
+        },
+        [onEditMatch, proposal.filepath],
+    );
 
     const handleSelectedChange = useCallback(
         ({ value, shiftKey }: CheckInputChanged<string>) => {
@@ -90,12 +117,12 @@ export default function ProposalRow({
                 if (name === 'cvLink') {
                     return (
                         <TableRowCell>
-                            <Link to={proposal.cv.link}>{proposal.cv.title}</Link>
+                            <Link to={cvLink}>{cvTitle}</Link>
                         </TableRowCell>
                     );
                 }
                 if (name === 'issueCount') {
-                    return <TableRowCell>{proposal.cv.issueCount}</TableRowCell>;
+                    return <TableRowCell>{cvIssueCount}</TableRowCell>;
                 }
                 if (name === 'actions') {
                     return (
@@ -114,6 +141,7 @@ export default function ProposalRow({
                 isOpen={isChangeMatchModalOpen}
                 onModalClose={setChangeMatchModalClosed}
                 proposal={proposal}
+                onEditMatch={handleEditMatch}
             />
         </TableRow>
     );

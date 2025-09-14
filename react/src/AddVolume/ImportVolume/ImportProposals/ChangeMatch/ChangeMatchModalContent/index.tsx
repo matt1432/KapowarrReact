@@ -20,9 +20,11 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 
 // Types
 import type { ProposedImport } from 'typings/Search';
+import type { VolumeMetadata } from 'AddVolume/AddVolume';
 
 export interface ChangeMatchModalContentProps {
     proposal: ProposedImport & { id: number };
+    onEditMatch: (match: VolumeMetadata) => void;
     onModalClose: () => void;
 }
 
@@ -30,6 +32,7 @@ export interface ChangeMatchModalContentProps {
 
 export default function ChangeMatchModalContent({
     proposal,
+    // onEditMatch, TODO:
     onModalClose,
 }: ChangeMatchModalContentProps) {
     return (
