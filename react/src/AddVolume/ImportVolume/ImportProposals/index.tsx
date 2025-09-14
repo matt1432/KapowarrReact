@@ -5,13 +5,17 @@
 import { useCallback } from 'react';
 
 // Redux
+import { useImportLibraryMutation } from 'Store/Api/Volumes';
 
 // Misc
+import getSelectedIds from 'Utilities/Table/getSelectedIds';
+import translate from 'Utilities/String/translate';
 
 // Hooks
 import useSelectState from 'Helpers/Hooks/useSelectState';
 
 // General Components
+import Button from 'Components/Link/Button';
 import CheckInput from 'Components/Form/CheckInput';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
@@ -26,9 +30,8 @@ import styles from './index.module.css';
 import type { Column } from 'Components/Table/Column';
 import type { ProposedImport } from 'typings/Search';
 import type { CheckInputChanged, SelectStateInputProps } from 'typings/Inputs';
-import translate from 'Utilities/String/translate';
 
-export type ProposalColumnName = 'selected' | 'file' | 'cvLink' | 'issueCount' | 'changeMatch';
+export type ProposalColumnName = 'selected' | 'file' | 'cvLink' | 'issueCount' | 'actions';
 
 interface ImportProposalsProps {
     proposals: (ProposedImport & { id: number })[];
@@ -48,7 +51,7 @@ function getValue(allSelected: boolean, allUnselected: boolean) {
     return null;
 }
 
-export default function ImportProposals({ proposals }: ImportProposalsProps) {
+export default function ImportProposals({ proposals, returnToSearchPage }: ImportProposalsProps) {
     const [{ allSelected, allUnselected, selectedState }, setSelectState] = useSelectState();
 
     const selectAllValue = getValue(allSelected, allUnselected);
@@ -71,6 +74,25 @@ export default function ImportProposals({ proposals }: ImportProposalsProps) {
             });
         },
         [proposals, setSelectState],
+    );
+
+    const [importLibrary] = useImportLibraryMutation();
+
+    const handleImportLibrary = useCallback(
+        (renameFiles: boolean) => {
+            importLibrary({
+                renameFiles,
+                body: getSelectedIds<number>(selectedState).map((id) => {
+                    const proposal = proposals[id];
+
+                    return {
+                        filepath: proposal.filepath,
+                        id: proposal.cv.id,
+                    };
+                }),
+            });
+        },
+        [importLibrary, proposals, selectedState],
     );
 
     const columns: Column<ProposalColumnName>[] = [
@@ -103,26 +125,38 @@ export default function ImportProposals({ proposals }: ImportProposalsProps) {
             isVisible: true,
         },
         {
-            name: 'changeMatch',
-            label: () => translate('ChangeMatch'),
+            name: 'actions',
+            label: '',
             isVisible: true,
         },
     ];
 
     return (
-        <Table columns={columns}>
-            <TableBody>
-                {proposals.map((proposal) => (
-                    <ProposalRow
-                        key={proposal.id}
-                        id={proposal.id}
-                        columns={columns}
-                        proposal={proposal}
-                        isSelected={selectedState[proposal.id]}
-                        onSelectedChange={handleSelectedChange}
-                    />
-                ))}
-            </TableBody>
-        </Table>
+        <>
+            <div className={styles.buttonContainer}>
+                <Button onPress={returnToSearchPage}>{translate('Cancel')}</Button>
+
+                <Button onPress={() => handleImportLibrary(false)}>{translate('Import')}</Button>
+
+                <Button onPress={() => handleImportLibrary(true)}>
+                    {translate('ImportRename')}
+                </Button>
+            </div>
+
+            <Table columns={columns}>
+                <TableBody>
+                    {proposals.map((proposal) => (
+                        <ProposalRow
+                            key={proposal.id}
+                            id={proposal.id}
+                            columns={columns}
+                            proposal={proposal}
+                            isSelected={selectedState[proposal.id]}
+                            onSelectedChange={handleSelectedChange}
+                        />
+                    ))}
+                </TableBody>
+            </Table>
+        </>
     );
 }

@@ -1,3 +1,10 @@
 .selectedContainer {
     margin-right: 30px;
 }
+
+.selectedInput {
+    composes: input from 'Components/Form/CheckInput/index.module.css';
+
+    margin: 0;
+    max-width: 20px;
+}

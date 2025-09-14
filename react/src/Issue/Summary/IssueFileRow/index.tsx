@@ -24,6 +24,7 @@ import Popover from 'Components/Tooltip/Popover';
 
 // Specific Components
 import MediaInfo from '../MediaInfo';
+import EditFileModal from 'Issue/Edit/EditFileModal';
 
 // CSS
 import styles from './index.module.css';
@@ -31,7 +32,6 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { IssueSummaryColumnName } from 'Issue/Issue';
-import EditFileModal from 'Issue/Edit/EditFileModal';
 
 interface IssueFileRowProps {
     id: number;

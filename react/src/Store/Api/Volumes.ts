@@ -55,6 +55,11 @@ export interface GetImportProposalsParams {
     onlyEnglish: boolean;
 }
 
+export interface ImportLibraryParams {
+    renameFiles: boolean;
+    body: { filepath: string; id: number }[];
+}
+
 // IMPLEMENTATIONS
 
 const extendedApi = baseApi.injectEndpoints({
@@ -85,6 +90,18 @@ const extendedApi = baseApi.injectEndpoints({
 
             transformResponse: (response: { result: RawProposedImport[] }) =>
                 camelize(response.result),
+        }),
+
+        importLibrary: build.mutation<void, ImportLibraryParams>({
+            query: ({ renameFiles, body }) => ({
+                method: 'POST',
+                url: 'libraryimport',
+                params: {
+                    renameFiles,
+                    apiKey: window.Kapowarr.apiKey,
+                },
+                body,
+            }),
         }),
 
         searchVolume: build.query<Volume, { volumeId: number }>({
@@ -188,6 +205,7 @@ export const {
     useAddVolumeMutation,
     useDeleteVolumeMutation,
     useGetVolumesQuery,
+    useImportLibraryMutation,
     useLazyGetImportProposalsQuery,
     useLazyGetVolumesQuery,
     useLazyLookupVolumeQuery,
