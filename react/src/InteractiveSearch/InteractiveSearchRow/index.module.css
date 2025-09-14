@@ -67,13 +67,13 @@
 .download {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
-    width: 80px;
+    width: 100px;
 }
 
 .manualDownloadContent {
     position: relative;
     display: inline-block;
-    margin: 0 2px 2px 2px;
+    margin: 0 2px 2px 1px;
     width: 22px;
     height: 20.39px;
     vertical-align: middle;

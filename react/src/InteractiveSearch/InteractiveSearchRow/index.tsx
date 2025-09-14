@@ -38,7 +38,12 @@ interface InteractiveSearchRowProps {
 
 // IMPLEMENTATIONS
 
-function getDownloadIcon(isGrabbing: boolean, isGrabbed: boolean, isError: boolean) {
+function getDownloadIcon(
+    isGrabbing: boolean,
+    isGrabbed: boolean,
+    isError: boolean,
+    isTorrent = false,
+) {
     if (isGrabbing) {
         return icons.SPINNER;
     }
@@ -49,7 +54,7 @@ function getDownloadIcon(isGrabbing: boolean, isGrabbed: boolean, isError: boole
         return icons.DOWNLOADING;
     }
 
-    return icons.DOWNLOAD;
+    return isTorrent ? icons.TORRENT : icons.DOWNLOAD;
 }
 
 function getDownloadKind(isGrabbed: boolean, isError: boolean) {
@@ -69,6 +74,7 @@ function getDownloadTooltip(
     isGrabbed: boolean,
     isError: boolean,
     errorMessage?: string,
+    isTorrent = false,
 ) {
     if (isGrabbing) {
         return '';
@@ -80,7 +86,7 @@ function getDownloadTooltip(
         return errorMessage;
     }
 
-    return translate('AddToDownloadQueue');
+    return isTorrent ? translate('AddTorrentToDownloadQueue') : translate('AddToDownloadQueue');
 }
 
 export default function InteractiveSearchRow({ searchPayload, result }: InteractiveSearchRowProps) {
@@ -99,9 +105,20 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
         { isLoading: isGrabbing, isSuccess: isGrabbed, isError, error: grabError },
     ] = useAddDownloadMutation();
 
+    const [
+        grabTorrentRelease,
+        {
+            isLoading: isGrabbingTorrent,
+            isSuccess: isTorrentGrabbed,
+            isError: isTorrentError,
+            error: grabTorrentError,
+        },
+    ] = useAddDownloadMutation();
+
     const onGrabPress = useCallback(
         (forceMatch = false, isTorrent = false) => {
-            grabRelease({
+            const grab = isTorrent ? grabTorrentRelease : grabRelease;
+            grab({
                 ...searchPayload,
                 result: {
                     ...result,
@@ -112,14 +129,23 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
                     scanType,
                     resolution,
                     dpi,
-                    // TODO: add torrent button
                     comicsId: isTorrent ? result.comicsId : null,
                 },
                 forceMatch,
             });
             // TODO: refresh queue details after grab
         },
-        [grabRelease, result, searchPayload, issueNumber, releaser, scanType, resolution, dpi],
+        [
+            grabRelease,
+            grabTorrentRelease,
+            result,
+            searchPayload,
+            issueNumber,
+            releaser,
+            scanType,
+            resolution,
+            dpi,
+        ],
     );
 
     const [isConfirmGrabModalOpen, setIsConfirmGrabModalOpen] = useState(false);
@@ -134,6 +160,10 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
 
         setIsConfirmGrabModalOpen(true);
     }, [onGrabPress, result.matchRejections]);
+
+    const onGrabTorrentPressWrapper = useCallback(() => {
+        onGrabPress(true, true);
+    }, [onGrabPress]);
 
     const onOverridePress = useCallback(() => {
         onGrabPress(true);
@@ -244,6 +274,21 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
                     )}
                     isSpinning={isGrabbing}
                     onPress={onGrabPressWrapper}
+                />
+
+                <SpinnerIconButton
+                    name={getDownloadIcon(isGrabbing, isGrabbed, isError, true)}
+                    kind={getDownloadKind(isTorrentGrabbed, isTorrentError)}
+                    title={getDownloadTooltip(
+                        isGrabbingTorrent,
+                        isTorrentGrabbed,
+                        isTorrentError,
+                        getErrorMessage(grabTorrentError),
+                        true,
+                    )}
+                    isSpinning={isGrabbingTorrent}
+                    isDisabled={!result.comicsId}
+                    onPress={onGrabTorrentPressWrapper}
                 />
 
                 <Link

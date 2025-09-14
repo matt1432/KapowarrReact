@@ -90,6 +90,7 @@
     "AddRootFolderError": "Unable to add root folder",
     "AddVolumeWithTitle": "Add {title}",
     "AddToDownloadQueue": "Add to download queue",
+    "AddTorrentToDownloadQueue": "Add torrent to download queue",
     "Added": "Added",
     "AddedDate": "Added: {date}",
     "AddedToDownloadQueue": "Added to download queue",
