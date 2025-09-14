@@ -1,8 +1,7 @@
-// TODO:
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import { useLazyGetImportProposalsQuery } from 'Store/Api/Volumes';
@@ -13,8 +12,6 @@ import { kinds } from 'Helpers/Props';
 import { getErrorMessage } from 'Utilities/Object/error';
 
 import translate from 'Utilities/String/translate';
-
-// Hooks
 
 // General Components
 import Alert from 'Components/Alert';
@@ -31,30 +28,32 @@ import ImportProposals from './ImportProposals';
 import styles from './index.module.css';
 
 // Types
+import type { GetImportProposalsParams } from 'Store/Api/Volumes';
 
 // IMPLEMENTATIONS
 
 export default function ImportVolume() {
-    const [onScanPress, { data, isFetching, isSuccess, error }] = useLazyGetImportProposalsQuery({
-        selectFromResult: ({ data, isFetching, isSuccess, error }) => ({
+    const [getProposals, { data, isFetching, error }] = useLazyGetImportProposalsQuery({
+        selectFromResult: ({ data, isFetching, error }) => ({
             data:
                 data?.map((item, id) => ({
                     ...item,
                     id,
                 })) ?? [],
             isFetching,
-            isSuccess,
             error,
         }),
     });
 
     const [onResultsPage, setOnResultsPage] = useState(false);
 
-    useEffect(() => {
-        if (isSuccess) {
+    const onScanPress = useCallback(
+        (params: GetImportProposalsParams) => {
+            getProposals(params);
             setOnResultsPage(true);
-        }
-    }, [isSuccess]);
+        },
+        [getProposals],
+    );
 
     const returnToSearchPage = useCallback(() => {
         setOnResultsPage(false);

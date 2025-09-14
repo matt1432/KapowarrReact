@@ -1,4 +1,3 @@
-// TODO:
 // IMPORTS
 
 // React
@@ -78,6 +77,7 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
     );
 
     // IMPORTING
+    // TODO: edit match for groups too
     const [idToFilepath, setIdToFilepath] = useState<{ filepath: string; id: number }[]>(
         proposals.map((item) => ({
             filepath: item.filepath,

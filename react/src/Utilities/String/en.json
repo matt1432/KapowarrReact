@@ -1856,6 +1856,8 @@
     "Seeding": "Seeding",
     "SeedingHandling": "Seeding Handling",
     "SeedingHandlingHelpText": "How a torrent that goes seeding should be handled. Either wait until it has completed seeding and then move the files, or copy the files and then delete the original when seeding finishes",
+    "Select": "Select",
+    "SelectGroup": "Select for Group",
     "SelectAll": "Select All",
     "SelectDownloadClientModalTitle": "{modalTitle} - Select Download Client",
     "SelectDropdown": "Select...",
