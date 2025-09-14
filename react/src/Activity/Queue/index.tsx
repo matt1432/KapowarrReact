@@ -119,7 +119,7 @@ export default function Queue() {
                     ...item,
                     priority: i,
                     sizeLeft,
-                    timeLeft: (sizeLeft / item.speed) * 1000,
+                    timeLeft: item.speed === 0 ? 0 : (sizeLeft / item.speed) * 1000,
                 } as QueueColumn;
             }),
             isRefreshing: isFetching,
