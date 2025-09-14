@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useAddDownloadMutation } from 'Store/Api/Command';
+import { useGetQueueQuery } from 'Store/Api/Queue';
 
 // Misc
 import { icons, kinds, tooltipPositions } from 'Helpers/Props';
@@ -30,7 +31,6 @@ import styles from './index.module.css';
 // Types
 import type { InputChanged } from 'typings/Inputs';
 import type { InteractiveSearchPayload, SearchResult } from 'typings/Search';
-import { useGetQueueQuery } from 'Store/Api/Queue';
 
 interface InteractiveSearchRowProps {
     searchPayload: InteractiveSearchPayload;
@@ -158,15 +158,14 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
     const [isConfirmGrabModalOpen, setIsConfirmGrabModalOpen] = useState(false);
 
     const onGrabPressWrapper = useCallback(() => {
-        // TODO: allow when issue number is filled
-        if (result.matchRejections.length === 0) {
+        if (result.matchRejections.length === 0 || typeof issueNumber === 'number') {
             onGrabPress();
 
             return;
         }
 
         setIsConfirmGrabModalOpen(true);
-    }, [onGrabPress, result.matchRejections]);
+    }, [onGrabPress, issueNumber, result.matchRejections]);
 
     const onGrabTorrentPressWrapper = useCallback(() => {
         onGrabPress(true, true);
