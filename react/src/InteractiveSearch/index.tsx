@@ -170,7 +170,7 @@ function InternalSearch({
                 </Alert>
             ) : null}
 
-            {isPopulated && items.length ? (
+            {!isFetching && isPopulated && items.length ? (
                 <SortedTable
                     columns={columns}
                     items={items}
