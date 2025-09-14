@@ -8,11 +8,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { useLazyGetImportProposalsQuery } from 'Store/Api/Volumes';
 
 // Misc
+import { kinds } from 'Helpers/Props';
+
+import { getErrorMessage } from 'Utilities/Object/error';
+
 import translate from 'Utilities/String/translate';
 
 // Hooks
 
 // General Components
+import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
@@ -30,8 +35,8 @@ import styles from './index.module.css';
 // IMPLEMENTATIONS
 
 export default function ImportVolume() {
-    const [onScanPress, { data, isFetching, isSuccess }] = useLazyGetImportProposalsQuery({
-        selectFromResult: ({ data, isFetching, isSuccess }) => ({
+    const [onScanPress, { data, isFetching, isSuccess, error }] = useLazyGetImportProposalsQuery({
+        selectFromResult: ({ data, isFetching, isSuccess, error }) => ({
             data:
                 data?.map((item, id) => ({
                     ...item,
@@ -39,6 +44,7 @@ export default function ImportVolume() {
                 })) ?? [],
             isFetching,
             isSuccess,
+            error,
         }),
     });
 
@@ -59,9 +65,10 @@ export default function ImportVolume() {
             <PageContentBody>
                 {isFetching ? <LoadingIndicator /> : null}
 
+                {error ? <Alert kind={kinds.DANGER}>{getErrorMessage(error)}</Alert> : null}
+
                 {!onResultsPage && !isFetching ? (
                     <FieldSet legend="Import an existing organized library to add volumes to Kapowarr">
-                        <h2></h2>
                         <p>A few notes:</p>
                         <ul>
                             <li>

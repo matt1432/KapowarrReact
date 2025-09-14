@@ -137,7 +137,7 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
         },
         {
             name: 'cvLink',
-            label: () => translate('CVLink'),
+            label: () => translate('Match'),
             isVisible: true,
         },
         {
