@@ -30,6 +30,7 @@ import styles from './index.module.css';
 // Types
 import type { InputChanged } from 'typings/Inputs';
 import type { InteractiveSearchPayload, SearchResult } from 'typings/Search';
+import { useGetQueueQuery } from 'Store/Api/Queue';
 
 interface InteractiveSearchRowProps {
     searchPayload: InteractiveSearchPayload;
@@ -115,6 +116,10 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
         },
     ] = useAddDownloadMutation();
 
+    const { refetch } = useGetQueueQuery(undefined, {
+        selectFromResult: () => ({}),
+    });
+
     const onGrabPress = useCallback(
         (forceMatch = false, isTorrent = false) => {
             const grab = isTorrent ? grabTorrentRelease : grabRelease;
@@ -132,8 +137,9 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
                     comicsId: isTorrent ? result.comicsId : null,
                 },
                 forceMatch,
+            }).then(() => {
+                refetch();
             });
-            // TODO: refresh queue details after grab
         },
         [
             grabRelease,
@@ -143,6 +149,7 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
             issueNumber,
             releaser,
             scanType,
+            refetch,
             resolution,
             dpi,
         ],
