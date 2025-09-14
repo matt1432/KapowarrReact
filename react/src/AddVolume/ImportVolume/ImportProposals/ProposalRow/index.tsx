@@ -75,8 +75,9 @@ export default function ProposalRow({
                     link: match.siteUrl,
                 },
             );
+            setChangeMatchModalClosed();
         },
-        [onEditMatch, onEditGroupMatch, proposal.filepath],
+        [onEditMatch, onEditGroupMatch, proposal.filepath, setChangeMatchModalClosed],
     );
 
     const handleSelectedChange = useCallback(
