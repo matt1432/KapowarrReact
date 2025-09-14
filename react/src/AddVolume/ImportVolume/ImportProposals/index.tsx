@@ -77,28 +77,64 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
     );
 
     // IMPORTING
-    // TODO: edit match for groups too
-    const [idToFilepath, setIdToFilepath] = useState<{ filepath: string; id: number }[]>(
+    const [currentMatches, setCurrentMatches] = useState<
+        { match: ProposedImport['cv']; body: { filepath: string; id: number } }[]
+    >(
         proposals.map((item) => ({
-            filepath: item.filepath,
-            id: item.cv.id,
-        })),
-    );
-    useEffect(() => {
-        setIdToFilepath(
-            proposals.map((item) => ({
+            match: item.cv,
+            body: {
                 filepath: item.filepath,
                 id: item.cv.id,
+            },
+        })),
+    );
+
+    useEffect(() => {
+        setCurrentMatches(
+            proposals.map((item) => ({
+                match: item.cv,
+                body: {
+                    filepath: item.filepath,
+                    id: item.cv.id,
+                },
             })),
         );
     }, [proposals]);
+
     const handleEditMatch = useCallback(
-        (id: number) => (newValues: { filepath: string; id: number }) => {
-            const tempArr = [...idToFilepath];
-            tempArr[id] = newValues;
-            setIdToFilepath(tempArr);
-        },
-        [idToFilepath],
+        (id: number) =>
+            (newValues: { filepath: string; id: number }, match: ProposedImport['cv']) => {
+                const tempArr = [...currentMatches];
+                tempArr[id] = {
+                    match,
+                    body: newValues,
+                };
+                setCurrentMatches(tempArr);
+            },
+        [currentMatches],
+    );
+
+    const handleEditGroupMatch = useCallback(
+        (group: number) =>
+            (newValues: { filepath: string; id: number }, match: ProposedImport['cv']) => {
+                const groupIds = proposals
+                    .filter((proposal) => proposal.groupNumber === group)
+                    .map((p) => p.id);
+
+                const tempArr = [...currentMatches];
+
+                for (const id of groupIds) {
+                    tempArr[id] = {
+                        match,
+                        body: {
+                            filepath: proposals[id].filepath,
+                            id: newValues.id,
+                        },
+                    };
+                }
+                setCurrentMatches(tempArr);
+            },
+        [currentMatches, proposals],
     );
 
     const [importLibrary] = useImportLibraryMutation();
@@ -109,10 +145,10 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
                 renameFiles,
                 body: getSelectedIds(selectedState)
                     .filter((id) => id !== null)
-                    .map((id) => idToFilepath[id]),
+                    .map((id) => currentMatches[id].body),
             });
         },
-        [idToFilepath, importLibrary, selectedState],
+        [currentMatches, importLibrary, selectedState],
     );
 
     // COLUMNS
@@ -170,7 +206,9 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
                             id={proposal.id}
                             columns={columns}
                             proposal={proposal}
+                            currentMatch={currentMatches[proposal.id].match}
                             onEditMatch={handleEditMatch(proposal.id)}
+                            onEditGroupMatch={handleEditGroupMatch(proposal.groupNumber)}
                             isSelected={selectedState[proposal.id]}
                             onSelectedChange={handleSelectedChange}
                         />

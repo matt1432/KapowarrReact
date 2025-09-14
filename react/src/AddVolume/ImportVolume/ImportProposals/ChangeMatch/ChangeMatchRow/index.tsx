@@ -26,14 +26,24 @@ interface ChangeMatchRowProps {
     match: VolumeSearchResult;
     columns: Column<keyof VolumeSearchResult>[];
     onEditMatch: (match: VolumeMetadata) => void;
+    onEditGroupMatch: (match: VolumeMetadata) => void;
 }
 
 // IMPLEMENTATIONS
 
-export default function ChangeMatchRow({ match, columns, onEditMatch }: ChangeMatchRowProps) {
+export default function ChangeMatchRow({
+    match,
+    columns,
+    onEditMatch,
+    onEditGroupMatch,
+}: ChangeMatchRowProps) {
     const handleOnEditMatch = useCallback(() => {
         onEditMatch(match);
     }, [onEditMatch, match]);
+
+    const handleOnEditGroupMatch = useCallback(() => {
+        onEditGroupMatch(match);
+    }, [onEditGroupMatch, match]);
 
     return (
         <TableRow>
@@ -64,8 +74,7 @@ export default function ChangeMatchRow({ match, columns, onEditMatch }: ChangeMa
                             <IconButton
                                 title={translate('SelectGroup')}
                                 name={icons.CLONE}
-                                // TODO:
-                                onPress={handleOnEditMatch}
+                                onPress={handleOnEditGroupMatch}
                             />
                         </TableRowCell>
                     );

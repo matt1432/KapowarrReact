@@ -44,6 +44,7 @@ export type VolumeSearchResult = VolumeMetadata & {
 export interface ChangeMatchModalContentProps {
     proposal: ProposedImport & { id: number };
     onEditMatch: (match: VolumeMetadata) => void;
+    onEditGroupMatch: (match: VolumeMetadata) => void;
     onModalClose: () => void;
 }
 
@@ -73,6 +74,7 @@ const columns: Column<keyof VolumeSearchResult>[] = [
 export default function ChangeMatchModalContent({
     proposal,
     onEditMatch,
+    onEditGroupMatch,
     onModalClose,
 }: ChangeMatchModalContentProps) {
     const [query, setQuery] = useState('');
@@ -153,6 +155,7 @@ export default function ChangeMatchModalContent({
                                 columns={columns}
                                 match={item}
                                 onEditMatch={onEditMatch}
+                                onEditGroupMatch={onEditGroupMatch}
                             />
                         )}
                     />

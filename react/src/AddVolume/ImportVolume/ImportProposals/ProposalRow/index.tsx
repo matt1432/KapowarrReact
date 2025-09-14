@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 
 // Misc
 import { icons } from 'Helpers/Props';
@@ -34,10 +34,15 @@ import type { VolumeMetadata } from 'AddVolume/AddVolume';
 interface ProposalRowProps {
     id: number;
     proposal: ProposedImport & { id: number };
+    currentMatch: ProposedImport['cv'];
     columns: Column<ProposalColumnName>[];
     isSelected?: boolean;
     onSelectedChange: (props: SelectStateInputProps) => void;
-    onEditMatch: (newValues: { filepath: string; id: number }) => void;
+    onEditMatch: (newValues: { filepath: string; id: number }, match: ProposedImport['cv']) => void;
+    onEditGroupMatch: (
+        newValues: { filepath: string; id: number },
+        match: ProposedImport['cv'],
+    ) => void;
 }
 
 // IMPLEMENTATIONS
@@ -45,36 +50,33 @@ interface ProposalRowProps {
 export default function ProposalRow({
     id,
     proposal,
+    currentMatch,
     columns,
     isSelected,
     onSelectedChange,
     onEditMatch,
+    onEditGroupMatch,
 }: ProposalRowProps) {
-    const [cvLink, setCvLink] = useState(proposal.cv.link);
-    const [cvTitle, setCvTitle] = useState(proposal.cv.title);
-    const [cvIssueCount, setCvIssueCount] = useState(proposal.cv.issueCount);
-
-    useEffect(() => {
-        setCvLink(proposal.cv.link);
-        setCvTitle(proposal.cv.title);
-        setCvIssueCount(proposal.cv.issueCount);
-    }, [proposal.cv]);
-
     const [isChangeMatchModalOpen, setChangeMatchModalOpen, setChangeMatchModalClosed] =
         useModalOpenState(false);
 
     const handleEditMatch = useCallback(
-        (match: VolumeMetadata) => {
-            setCvLink(match.siteUrl);
-            setCvTitle(match.title);
-            setCvIssueCount(match.issueCount);
-
-            onEditMatch({
-                filepath: proposal.filepath,
-                id: match.comicvineId,
-            });
+        (isGroup: boolean) => (match: VolumeMetadata) => {
+            const edit = isGroup ? onEditGroupMatch : onEditMatch;
+            edit(
+                {
+                    filepath: proposal.filepath,
+                    id: match.comicvineId,
+                },
+                {
+                    id: match.comicvineId,
+                    title: match.title,
+                    issueCount: match.issueCount,
+                    link: match.siteUrl,
+                },
+            );
         },
-        [onEditMatch, proposal.filepath],
+        [onEditMatch, onEditGroupMatch, proposal.filepath],
     );
 
     const handleSelectedChange = useCallback(
@@ -116,12 +118,12 @@ export default function ProposalRow({
                 if (name === 'cvLink') {
                     return (
                         <TableRowCell>
-                            <Link to={cvLink}>{cvTitle}</Link>
+                            <Link to={currentMatch.link}>{currentMatch.title}</Link>
                         </TableRowCell>
                     );
                 }
                 if (name === 'issueCount') {
-                    return <TableRowCell>{cvIssueCount}</TableRowCell>;
+                    return <TableRowCell>{currentMatch.issueCount}</TableRowCell>;
                 }
                 if (name === 'actions') {
                     return (
@@ -140,7 +142,8 @@ export default function ProposalRow({
                 isOpen={isChangeMatchModalOpen}
                 onModalClose={setChangeMatchModalClosed}
                 proposal={proposal}
-                onEditMatch={handleEditMatch}
+                onEditMatch={handleEditMatch(false)}
+                onEditGroupMatch={handleEditMatch(true)}
             />
         </TableRow>
     );
