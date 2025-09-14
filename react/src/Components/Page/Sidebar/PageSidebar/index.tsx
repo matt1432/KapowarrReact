@@ -24,6 +24,7 @@ import Scroller from 'Components/Scroller/Scroller';
 // Specific Components
 import Messages from '../Messages/Messages';
 import PageSidebarItem from '../PageSidebarItem';
+import QueueStatus from 'Activity/Queue/Status';
 
 // CSS
 import dimensions from 'Styles/Variables/dimensions';
@@ -85,7 +86,7 @@ const LINKS: SidebarItem[] = [
             {
                 title: () => translate('Queue'),
                 to: '/activity/queue',
-                // statusComponent: QueueStatus,
+                statusComponent: QueueStatus,
             },
             {
                 title: () => translate('History'),
@@ -134,7 +135,6 @@ const LINKS: SidebarItem[] = [
             {
                 title: () => translate('Status'),
                 to: '/system/status',
-                // statusComponent: HealthStatus,
             },
             {
                 title: () => translate('Tasks'),
