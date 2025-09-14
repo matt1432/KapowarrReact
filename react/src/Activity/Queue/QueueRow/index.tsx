@@ -7,6 +7,7 @@ import { useCallback } from 'react';
 import { icons } from 'Helpers/Props';
 
 import formatBytes from 'Utilities/Number/formatBytes';
+import translate from 'Utilities/String/translate';
 
 // General Components
 import IconButton from 'Components/Link/IconButton';
@@ -134,8 +135,16 @@ export default function QueueRow({
                 if (name === 'actions') {
                     return (
                         <TableRowCell className={styles[name]}>
-                            <IconButton name={icons.DELETE} onPress={handleDeletePress} />
-                            <IconButton name={icons.BLOCK} onPress={handleBlocklistPress} />
+                            <IconButton
+                                title={translate('RemoveFromQueue')}
+                                name={icons.DELETE}
+                                onPress={handleDeletePress}
+                            />
+                            <IconButton
+                                title={translate('BlocklistRelease')}
+                                name={icons.BLOCK}
+                                onPress={handleBlocklistPress}
+                            />
                         </TableRowCell>
                     );
                 }
