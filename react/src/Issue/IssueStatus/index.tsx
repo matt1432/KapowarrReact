@@ -59,7 +59,7 @@ export default function IssueStatus({ issue, issueFile }: IssueStatusProps) {
 
     return (
         <div className={styles.center}>
-            <Icon name={icons.NOT_AIRED} title={translate('IssueHasNotAired')} />
+            <Icon name={icons.DANGER} title={translate('IssueMissingFromDisk')} />
         </div>
     );
 }
