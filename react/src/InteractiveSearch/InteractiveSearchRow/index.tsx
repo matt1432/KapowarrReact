@@ -283,7 +283,12 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
                 />
 
                 <SpinnerIconButton
-                    name={getDownloadIcon(isGrabbing, isGrabbed, isError, true)}
+                    name={getDownloadIcon(
+                        isGrabbingTorrent,
+                        isTorrentGrabbed,
+                        isTorrentError,
+                        true,
+                    )}
                     kind={getDownloadKind(isTorrentGrabbed, isTorrentError)}
                     title={getDownloadTooltip(
                         isGrabbingTorrent,
