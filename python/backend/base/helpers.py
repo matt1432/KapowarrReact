@@ -38,6 +38,7 @@ from requests.structures import CaseInsensitiveDict
 from yarl import URL
 
 if TYPE_CHECKING:
+    from multiprocessing import SimpleQueue
     from multiprocessing.pool import IMapIterator
 
     from flask.ctx import AppContext
@@ -782,13 +783,14 @@ class _ContextKeeper(metaclass=Singleton):
         log_folder: str | None = None,
         log_file: str | None = None,
         db_folder: str | None = None,
+        ws_queue: SimpleQueue[dict[str, Any]] | None = None,
     ) -> None:
-        if not log_level:
+        if not (log_level and ws_queue):
             return
 
         from backend.internals.server import setup_process
 
-        self.ctx = setup_process(log_level, log_folder, log_file, db_folder)
+        self.ctx = setup_process(log_level, log_folder, log_file, db_folder, ws_queue)
         return
 
 
@@ -820,6 +822,7 @@ class PortablePool(Pool):
             Give `None` for default which is CPU count. Defaults to None.
         """
         from backend.internals.db import DBConnection
+        from backend.internals.server import WebSocket
 
         log_file = get_log_filepath()
         super().__init__(
@@ -834,6 +837,7 @@ class PortablePool(Pool):
                 dirname(log_file),
                 basename(log_file),
                 dirname(DBConnection.file),
+                WebSocket().client_manager.queue,
             ),
         )
         return
