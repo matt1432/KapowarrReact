@@ -549,7 +549,7 @@ class TaskHandler(metaclass=Singleton):
             "task": task,
             "id": id,
             "status": "queued",
-            "thread": Thread(target=self.__run_task, args=(task,), name="Task Handler"),
+            "thread": Thread(target=self.__run_task, args=(task,), name=f"TaskThread-{id}"),
         }
         self.queue.append(task_data)
         LOGGER.info(f"Added task: {task.display_title} ({id})")
@@ -621,6 +621,7 @@ class TaskHandler(metaclass=Singleton):
         # Create sleep thread for that time and that will run
         # self.__check_intervals.
         self.task_interval_waiter = Timer(timedelta, self.__check_intervals)
+        self.task_interval_waiter.name = "TaskIntervalThread"
         self.task_interval_waiter.start()
         return
 

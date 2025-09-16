@@ -323,14 +323,14 @@ class DownloadHandler(metaclass=Singleton):
                 download.download_thread = SERVER.get_db_thread(
                     target=self.__run_download,
                     args=(download,),
-                    name="Download Handler",
+                    name=f"DownloadThread-{download.id}",
                 )
 
             if isinstance(download, TorrentDownload):
                 thread = SERVER.get_db_thread(
                     target=self.__run_torrent_download,
                     args=(download,),
-                    name="Torrent Download Handler",
+                    name=f"TorrentDownloadThread-{download.id}",
                 )
                 download.download_thread = thread
                 thread.start()
@@ -682,7 +682,7 @@ class DownloadHandler(metaclass=Singleton):
             Thread: The thread that is loading the downloads.
         """
         result = SERVER.get_db_thread(
-            target=self.__load_downloads, name="Download Importer"
+            target=self.__load_downloads, name="DownloadImportThread"
         )
         result.start()
         return result
