@@ -114,7 +114,7 @@ class MassEditorSearch(MassEditorAction):
         ws = WebSocket()
         total_items = len(self.volume_ids)
 
-        for item_index, volume_id in enumerate(self.volume_ids):
+        for item_index, volume_id in enumerate(iter_commit(self.volume_ids)):
             ws.update_mass_editor_status(self.identifier, item_index + 1, total_items)
 
             search_results = auto_search(volume_id)
