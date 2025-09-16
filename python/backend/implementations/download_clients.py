@@ -248,6 +248,7 @@ class BaseDirectDownload(Download):
             self._pure_link = self._convert_to_pure_link()
             with self._fetch_pure_link() as response:
                 response.raise_for_status()
+                self._ssn.close()
 
         except RequestException as e:
             if (
