@@ -87,7 +87,11 @@ class KapowarrCursor(Cursor):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.connection.in_transaction:
-            self.execute("COMMIT;")
+            if exc_type is not None:
+                self.execute("ROLLBACK;")
+            else:
+                self.execute("COMMIT;")
+
         self.connection.isolation_level = ""  # type: ignore
         return
 
