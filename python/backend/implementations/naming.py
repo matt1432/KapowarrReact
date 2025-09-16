@@ -369,12 +369,11 @@ def generate_issue_name(
         if len(save_name) > Constants.MAX_FILENAME_LENGTH:
             # Filename too long, so generate without issue title and see if that
             # fixes it.
-            titleless_name = sv.file_naming_empty.format_map(
-                {
-                    k: v if v is not None else "Unknown"
-                    for k, v in formatting_data.__dict__.items()
-                }
+            placeholders = get_placeholders(sv.file_naming_empty)
+            formatted = get_corresponding_formatted_naming_keys(
+                placeholders, formatting_data.__dict__
             )
+            titleless_name = format_filename(sv.file_naming_empty, formatted)
             titleless_save_name = clean_filepath(titleless_name)
             if len(titleless_save_name) <= Constants.MAX_FILENAME_LENGTH:
                 save_name = titleless_save_name
@@ -389,13 +388,13 @@ def generate_issue_name(
             # then EFD might think the file is for issue 1 instead of 4. Try a name
             # without the title and see if that fixes it. If so, use it. If not,
             # then give up and just use the original name.
-            titleless_name = sv.file_naming_empty.format_map(
-                {
-                    k: v if v is not None else "Unknown"
-                    for k, v in formatting_data.__dict__.items()
-                }
+            placeholders = get_placeholders(sv.file_naming_empty)
+            formatted = get_corresponding_formatted_naming_keys(
+                placeholders, formatting_data.__dict__
             )
+            titleless_name = format_filename(sv.file_naming_empty, formatted)
             titleless_save_name = clean_filepath(titleless_name)
+
             if (
                 extract_filename_data(titleless_save_name)["issue_number"]
                 == calculated_issue_number
