@@ -91,7 +91,7 @@ issue_regex_6 = compile(
     IGNORECASE,
 )
 issue_regex_7 = compile(
-    r"(?:(?<=\s|\.|_)|(?<=^))(\-?"
+    r"(?:part[\s\._]|(?<=[\s\._])|^)(\-?"
     + issue_regex_snippet
     + r")(?![\s\-\._]covers?)(?![\s\-\._]of[\s\-\._]\d+[\s\-\._]covers?)(?=\s|\.|_|\(|$)",
     IGNORECASE,
@@ -290,12 +290,16 @@ def _find_issue_numbers(
 ):
     for file_part_with_issue, pos_option, regex_list in pos_options:
         for regex in regex_list:
-            regex_result = list(regex.finditer(file_part_with_issue, **pos_option))
+            regex_result = sorted(
+                regex.finditer(file_part_with_issue, **pos_option),
+                key=lambda m: ("part" not in m.group(0).lower(), m.start(0)),
+                reverse=True,
+            )
             if not regex_result:
                 continue
 
             group_number = 1 if regex is not issue_regex_6 else 3
-            for result in reversed(regex_result):
+            for result in regex_result:
                 yield (result.group(group_number), result.start(0), result.end(0))
 
 
