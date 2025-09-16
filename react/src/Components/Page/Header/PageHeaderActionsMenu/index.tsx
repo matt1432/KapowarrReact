@@ -25,6 +25,7 @@ import MenuItemSeparator from 'Components/Menu/MenuItemSeparator';
 // CSS
 import styles from './index.module.css';
 import { setApiKey } from 'Store/Slices/Auth';
+import socket from 'Store/socket';
 
 // Types
 interface PageHeaderActionsMenuProps {
@@ -44,10 +45,12 @@ export default function PageHeaderActionsMenu({
     const [shutdown] = useShutdownMutation();
 
     const handleRestartPress = useCallback(() => {
+        socket.disconnect();
         restart();
     }, [restart]);
 
     const handleShutdownPress = useCallback(() => {
+        socket.disconnect();
         shutdown();
     }, [shutdown]);
 
