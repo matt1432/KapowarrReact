@@ -734,13 +734,20 @@ async def search_getcomics(session: AsyncSession, query: str) -> list[SearchResu
         List[SearchResultData]: The search results.
     """
     # Fetch first page and determine max pages
-    first_page = await session.get_text(Constants.GC_SITE_URL, params={"s": query})
+    first_page = await session.get_text(
+        Constants.GC_SITE_URL, params={"s": query}, quiet_fail=True
+    )
+    if not first_page:
+        return []
+
     first_soup = BeautifulSoup(first_page, "html.parser")
     max_page = min(_get_max_page(first_soup), 10)
 
     # Fetch pages beyond first concurrently
     other_tasks = [
-        session.get_text(f"{Constants.GC_SITE_URL}/page/{page}", params={"s": query})
+        session.get_text(
+            f"{Constants.GC_SITE_URL}/page/{page}", params={"s": query}, quiet_fail=True
+        )
         for page in range(2, max_page + 1)
     ]
 
@@ -751,7 +758,7 @@ async def search_getcomics(session: AsyncSession, query: str) -> list[SearchResu
         # FlareSolverr not available, run at sequencial speed
         other_htmls = [await task for task in other_tasks]
 
-    other_soups = [BeautifulSoup(html, "html.parser") for html in other_htmls]
+    other_soups = [BeautifulSoup(html, "html.parser") for html in other_htmls if html]
 
     # Process the search results on each page
     formatted_results: list[SearchResultData] = [
