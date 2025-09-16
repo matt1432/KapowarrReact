@@ -877,7 +877,7 @@ class AsyncSession(ClientSession):
                     method,
                     response.url,
                     response.status,
-                    response.headers.get("Content-Length", -1),
+                    int(response.headers.get("Content-Length", -1)),
                 )
 
                 if response.status in Constants.STATUS_FORCELIST_RETRIES:
@@ -901,7 +901,7 @@ class AsyncSession(ClientSession):
 
             if round == 1 and response.status == 403:
                 fs_result = await self.fs.handle_cf_block_async(
-                    self, url, response.headers
+                    self, str(response.url), response.headers
                 )
 
                 if not fs_result:
