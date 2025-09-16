@@ -680,66 +680,49 @@ class DictKeyedDict(dict):
 
 
 # region Requests
-class BackportRetry(Retry):
+@lru_cache(1)
+def _running_urllib3_v2_and_above() -> bool:
+    """Detect whether urllib3 version v2.0.0+ is used or not.
+
+    Returns:
+        bool: True if v2.0.0+ is used.
     """
-    In urllib3 v2.0.0+, the method_whitelist argument of the Retry class was
-    renamed to allowed_methods. But loads of users are still running v1, so
-    this class ensures that both major versions are supported.
+    major_version = int(urllib3_version.lower().lstrip("v").split(".")[0])
+    return major_version >= 2
+
+
+def retry(
+    total: int,
+    method_whitelist: Collection[str],
+    status_forcelist: Collection[int],
+    backoff_factor: int,
+) -> Retry:
+    """Create a urllib3 Retry object that is compatible with both
+    urllib3 v1 and v2.
+
+    Args:
+        total (int): Total number of retries to allow.
+        method_whitelist (Collection[str]): HTTP methods to retry on.
+        status_forcelist (Collection[int]): HTTP status codes to force a retry.
+        backoff_factor (int): The backoff factor to apply between attempts.
+
+    Returns:
+        Retry: A Retry object that can be used with requests.
     """
-
-    @staticmethod
-    @lru_cache(1)
-    def running_urllib3_v2_and_above() -> bool:
-        """Detect whether urllib3 version v2.0.0+ is used or not.
-
-        Returns:
-            bool: True if v2.0.0+ is used.
-        """
-        major_version = int(urllib3_version.lower().lstrip("v").split(".")[0])
-        return major_version >= 2
-
-    def __init__(
-        self,
-        total=10,
-        connect=None,
-        read=None,
-        redirect=None,
-        status=None,
-        method_whitelist=frozenset(
-            ["HEAD", "GET", "PUT", "DELETE", "OPTIONS", "TRACE"]
-        ),
-        status_forcelist=None,
-        backoff_factor=0,
-        raise_on_redirect=True,
-        raise_on_status=True,
-        history=None,
-        respect_retry_after_header=True,
-        remove_headers_on_redirect=frozenset(
-            ["Cookie", "Authorization", "Proxy-Authorization"]
-        ),
-    ):
-        kwargs = {
-            "total": total,
-            "connect": connect,
-            "read": read,
-            "redirect": redirect,
-            "status": status,
-            "method_whitelist": method_whitelist,
-            "status_forcelist": status_forcelist,
-            "backoff_factor": backoff_factor,
-            "raise_on_redirect": raise_on_redirect,
-            "raise_on_status": raise_on_status,
-            "history": history,
-            "respect_retry_after_header": respect_retry_after_header,
-            "remove_headers_on_redirect": remove_headers_on_redirect,
-        }
-
-        if self.running_urllib3_v2_and_above():
-            kwargs["allowed_methods"] = kwargs["method_whitelist"]
-            del kwargs["method_whitelist"]
-
-        super().__init__(**kwargs)
-        return
+    if _running_urllib3_v2_and_above():
+        return Retry(
+            total=total,
+            allowed_methods=frozenset(method_whitelist),  # type: ignore
+            status_forcelist=status_forcelist,
+            backoff_factor=backoff_factor,
+        )
+    else:
+        return Retry(
+            total=total,
+            method_whitelist=frozenset(method_whitelist),  # type: ignore
+            status_forcelist=status_forcelist,
+            backoff_factor=backoff_factor,
+        )
 
 
 class Session(RSession):
@@ -755,9 +738,9 @@ class Session(RSession):
 
         self.fs = FlareSolverr()
 
-        retries = BackportRetry(
+        retries = retry(
             total=Constants.TOTAL_RETRIES,
-            method_whitelist=frozenset(),
+            method_whitelist=[],
             status_forcelist=Constants.STATUS_FORCELIST_RETRIES,
             backoff_factor=Constants.BACKOFF_FACTOR_RETRIES,
         )
