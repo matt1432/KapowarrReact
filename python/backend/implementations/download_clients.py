@@ -501,16 +501,12 @@ class PixelDrainDownload(BaseDirectDownload):
     def login(api_key: str) -> int:
         LOGGER.debug("Logging into Pixeldrain with user api key")
         with Session() as session:
-            enc_api_key = b64encode(
-                f":{api_key}".encode()
-            ).decode()
+            enc_api_key = b64encode(f":{api_key}".encode()).decode()
 
             try:
                 r = session.get(
                     Constants.PIXELDRAIN_API_URL + "/user",
-                    headers={
-                        "Authorization": "Basic " + enc_api_key
-                    }
+                    headers={"Authorization": "Basic " + enc_api_key},
                 )
                 if r.status_code == 401:
                     return -1
@@ -524,10 +520,8 @@ class PixelDrainDownload(BaseDirectDownload):
             if (response["subscription"]["type"] or "free").lower() == "free":
                 # Free account, so fetch standard rate limits
                 limits = session.get(
-                    Constants.PIXELDRAIN_API_URL + '/misc/rate_limits',
-                    headers={
-                        "Authorization": "Basic " + enc_api_key
-                    }
+                    Constants.PIXELDRAIN_API_URL + "/misc/rate_limits",
+                    headers={"Authorization": "Basic " + enc_api_key},
                 ).json()
 
                 transfer_limit_used = limits["transfer_limit_used"]
