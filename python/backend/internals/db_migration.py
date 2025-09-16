@@ -1,27 +1,31 @@
 from asyncio import run
+from functools import lru_cache
 
 from backend.base.definitions import DBMigrator
 from backend.base.helpers import get_subclasses
 from backend.base.logging import LOGGER
+from backend.internals.db import get_db, iter_commit
 
 
-class VersionMappingContainer:
-    version_map: dict[int, type[DBMigrator]] = {}
+@lru_cache(1)
+def get_db_migration_map() -> dict[int, type[DBMigrator]]:
+    """Get a map of the database version to the migrator class for that version
+    to one database version higher. E.g. 2 -> Migrate2To3.
+
+    Returns:
+        Dict[int, Type[DBMigrator]]: The map.
+    """
+    return {m.start_version: m for m in get_subclasses(DBMigrator)}
 
 
-def _load_version_map() -> None:
-    if VersionMappingContainer.version_map:
-        return
-
-    VersionMappingContainer.version_map = {
-        m.start_version: m for m in get_subclasses(DBMigrator)
-    }
-    return
-
-
+@lru_cache(1)
 def get_latest_db_version() -> int:
-    _load_version_map()
-    return max(VersionMappingContainer.version_map) + 1
+    """Get the latest database version supported.
+
+    Returns:
+        int: The version.
+    """
+    return max(get_db_migration_map()) + 1
 
 
 def migrate_db() -> None:
@@ -29,25 +33,27 @@ def migrate_db() -> None:
     Migrate a Kapowarr database from it's current version
     to the newest version supported by the Kapowarr version installed.
     """
-    from backend.internals.db import iter_commit
     from backend.internals.settings import Settings
 
     s = Settings()
     current_db_version = s["database_version"]
     newest_version = get_latest_db_version()
     if current_db_version == newest_version:
+        get_db_migration_map.cache_clear()
         return
 
     LOGGER.info("Migrating database to newer version...")
     LOGGER.debug("Database migration: %d -> %d", current_db_version, newest_version)
 
+    db_migration_map = get_db_migration_map()
     for start_version in iter_commit(range(current_db_version, newest_version)):
-        if start_version not in VersionMappingContainer.version_map:
+        if start_version not in db_migration_map:
             continue
-        VersionMappingContainer.version_map[start_version]().run()
+        db_migration_map[start_version]().run()
         s["database_version"] = start_version + 1
 
     s._fetch_settings()
+    get_db_migration_map.cache_clear()
 
     return
 
@@ -561,7 +567,6 @@ class MigrateAddWeTransferToPreference(DBMigrator):
     def run(self) -> None:
         # V19 -> V20
 
-        from backend.internals.db import get_db
         from backend.internals.settings import Settings
 
         service_preference = Settings().sv.service_preference
@@ -595,7 +600,6 @@ class MigrateAddPixelDrainToPreference(DBMigrator):
     def run(self) -> None:
         # V21 -> V22
 
-        from backend.internals.db import get_db
         from backend.internals.settings import Settings
 
         service_preference = Settings().sv.service_preference
@@ -649,7 +653,6 @@ class MigrateServicePreferenceToEnumValues(DBMigrator):
 
         from backend.base.definitions import GCDownloadSource
         from backend.base.helpers import CommaList
-        from backend.internals.db import get_db
         from backend.internals.settings import Settings
 
         source_string_to_enum = {
@@ -925,6 +928,12 @@ class MigrateRemoveUnusedSettings(DBMigrator):
 
     def run(self) -> None:
         # V30 -> V31
+
+        # This migration would remove unused settings, but one of those was
+        # used in migration V31 -> V32, so removing the unused settings was
+        # moved to that migration. But because people already ran this migration,
+        # their database version already updated to 31, so this migration couldn't
+        # be removed.
         return
 
 
@@ -934,7 +943,6 @@ class MigrateVaiNaming(DBMigrator):
     def run(self) -> None:
         # V31 -> V32
 
-        from backend.internals.db import get_db
         from backend.internals.settings import SettingsValues
 
         cursor = get_db()
@@ -1073,7 +1081,6 @@ class MigrateTypeHostingSettings(DBMigrator):
     def run(self) -> None:
         # V34 -> V35
 
-        from backend.internals.db import get_db
         from backend.internals.settings import Settings
 
         cursor = get_db()

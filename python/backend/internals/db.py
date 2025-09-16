@@ -27,7 +27,6 @@ from backend.base.definitions import (
 )
 from backend.base.helpers import CommaList
 from backend.base.logging import LOGGER, set_log_level
-from backend.internals.db_migration import migrate_db
 from flask import g
 
 
@@ -276,6 +275,7 @@ def setup_db() -> None:
     """
     Setup the database tables and default config when they aren't setup yet
     """
+    from backend.internals.db_migration import migrate_db
     from backend.internals.settings import Settings, task_intervals
 
     cursor = get_db()
