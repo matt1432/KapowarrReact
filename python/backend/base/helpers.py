@@ -26,7 +26,7 @@ from typing import (
 )
 from urllib.parse import unquote
 
-from aiohttp import ClientError, ClientSession
+from aiohttp import ClientError, ClientSession, ClientTimeout
 from backend.base.definitions import Constants
 from backend.base.logging import LOGGER, get_log_filepath
 from bencoding import bdecode
@@ -713,7 +713,7 @@ class Session(RSession):
         cookies=None,
         files=None,
         auth=None,
-        timeout=None,
+        timeout: int | None = Constants.REQUEST_TIMEOUT,
         allow_redirects=True,
         proxies=None,
         hooks=None,
@@ -785,7 +785,13 @@ class AsyncSession(ClientSession):
     def __init__(self) -> None:
         from backend.implementations.flaresolverr import FlareSolverr
 
-        super().__init__(headers={"User-Agent": Constants.DEFAULT_USERAGENT})
+        super().__init__(
+            headers={"User-Agent": Constants.DEFAULT_USERAGENT},
+            timeout=ClientTimeout(
+                connect=Constants.REQUEST_TIMEOUT,
+                sock_read=Constants.REQUEST_TIMEOUT
+            )
+        )
 
         self.fs = FlareSolverr()
 

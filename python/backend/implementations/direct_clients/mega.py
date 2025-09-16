@@ -27,7 +27,7 @@ from backend.base.logging import LOGGER
 from backend.implementations.credentials import Credentials
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from requests.exceptions import JSONDecodeError as RequestsJSONDecodeError
-from urllib3.exceptions import ProtocolError
+from urllib3.exceptions import ProtocolError, TimeoutError
 
 mega_url_regex = compile(
     r"https?://(?:www\.)?mega(?:\.co)?\.nz/(?:file/(?P<ID1>[\w^_]+)#(?P<K1>[\w\-,=]+)|folder/(?P<ID2>[\w^_]+)#(?P<K2>[\w\-,=]+)/file/(?P<NID>[\w^_]+)|#!(?P<ID3>[\w^_]+)!(?P<K3>[\w\-,=]+))"
@@ -620,7 +620,7 @@ class Mega(MegaABC):
                             if chunk and len(chunk) != chunk_size:
                                 raise ProtocolError
 
-                        except ProtocolError:
+                        except (ProtocolError, TimeoutError):
                             # Connection error, packet loss, etc. Just try again
                             break
 
@@ -806,7 +806,7 @@ class MegaFolder(MegaABC):
                                     if chunk and len(chunk) != chunk_size:
                                         raise ProtocolError
 
-                                except ProtocolError:
+                                except (ProtocolError, TimeoutError):
                                     # Connection error, packet loss, etc. Just
                                     # try again
                                     break

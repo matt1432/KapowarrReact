@@ -77,6 +77,9 @@ class Constants:
     BROWSER_USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
     "The user agent to use when making web requests as a browser"
 
+    REQUEST_TIMEOUT = 30 # seconds
+    "The default timeout for network requests"
+
     TOTAL_RETRIES = 5
     "The amount of times to try a network connection before giving up"
 
