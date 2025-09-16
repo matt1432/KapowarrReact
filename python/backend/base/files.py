@@ -324,7 +324,8 @@ def change_basefolder(
         Dict[str, str]: Key is old filename, value is new filename.
     """
     file_changes = {
-        f: join(desired_base_folder, relpath(f, current_base_folder)) for f in files
+        f: abspath(join(desired_base_folder, relpath(f, current_base_folder)))
+        for f in files
     }
 
     return file_changes

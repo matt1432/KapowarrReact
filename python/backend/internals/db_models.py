@@ -237,6 +237,19 @@ class FilesDB:
         return
 
     @staticmethod
+    def delete_filepath(filepath: str) -> None:
+        get_db().execute("DELETE FROM files WHERE filepath = ?;", (filepath,))
+        return
+
+    @staticmethod
+    def delete_filepaths(filepaths: Iterable[str]) -> None:
+        get_db().executemany(
+            "DELETE FROM files WHERE filepath = ?;",
+            ((filepath,) for filepath in filepaths),
+        )
+        return
+
+    @staticmethod
     def delete_linked_files(volume_id: int) -> None:
         get_db().execute(
             """

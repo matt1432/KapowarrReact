@@ -29,6 +29,7 @@ from backend.implementations.download_clients import TorrentDownload
 from backend.implementations.naming import mass_rename
 from backend.implementations.volumes import Volume, scan_files
 from backend.internals.db import commit, get_db
+from backend.internals.db_models import FilesDB
 from backend.internals.settings import Settings
 
 if TYPE_CHECKING:
@@ -222,7 +223,7 @@ def rename_with_proper_extension(download: Download) -> None:
     Rename a file with the proper extension based on mimetype. Rescan files
     in case a rename is done.
     """
-    file_renamed = False
+    renamed_files: list[tuple[str, str]] = []
     for idx, file in enumerate(download.files):
         if not isfile(file):
             continue
@@ -231,10 +232,11 @@ def rename_with_proper_extension(download: Download) -> None:
         if new_file != file:
             rename_file(file, new_file)
             download.files[idx] = new_file
-            file_renamed = True
+            renamed_files.append((file, new_file))
 
-    if file_renamed:
-        scan_files(download.volume_id)
+    if renamed_files:
+        FilesDB.update_filepaths(*zip(*renamed_files))
+        commit()
 
     return
 

@@ -320,6 +320,12 @@ def mass_convert(
                     pool.map(convert_file, planned_conversions)
                 )
 
-    scan_files(volume_id, download=download, update_websocket=update_websocket_files)
+    FilesDB.delete_filepaths(f.file for f in planned_conversions)
+    scan_files(
+        volume_id,
+        filepath_filter=result,
+        download=download,
+        update_websocket=update_websocket_files,
+    )
 
     return result
