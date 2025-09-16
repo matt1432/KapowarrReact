@@ -76,6 +76,17 @@ class KapowarrCursor(Cursor):
             return r
         return r[0]
 
+    def __enter__(self):
+        self.connection.isolation_level = None
+        self.execute("BEGIN TRANSACTION;")
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.connection.in_transaction:
+            self.execute("COMMIT;")
+        self.connection.isolation_level = ""  # type: ignore
+        return
+
 
 class DBConnectionManager(type):
     instances: dict[int, DBConnection] = {}
@@ -196,6 +207,12 @@ def commit() -> None:
     return
 
 
+def rollback() -> None:
+    """Rollback uncommited changes in the database"""
+    get_db().connection.rollback()
+    return
+
+
 def iter_commit[T](iterable: Iterable[T]) -> Generator[T, Any, Any]:
     """Commit the database after each iteration. Also commits just before the
     first iteration starts.
@@ -220,7 +237,7 @@ def close_db(_e: None | BaseException = None) -> None:
     Args:
         e (Union[None, BaseException], optional): Error. Defaults to None.
     """
-    if not hasattr(g, 'cursors'):
+    if not hasattr(g, "cursors"):
         return
 
     try:

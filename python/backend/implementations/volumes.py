@@ -16,6 +16,7 @@ from backend.base.custom_exceptions import (
     TaskForVolumeRunning,
     VolumeAlreadyAdded,
     VolumeDownloadedFor,
+    VolumeFolderInvalid,
     VolumeNotFound,
 )
 from backend.base.definitions import (
@@ -55,7 +56,7 @@ from backend.base.logging import LOGGER
 from backend.implementations.comicvine import ComicVine
 from backend.implementations.matching import _match_title, file_importing_filter
 from backend.implementations.root_folders import RootFolders
-from backend.internals.db import commit, get_db
+from backend.internals.db import commit, get_db, rollback
 from backend.internals.db_models import FilesDB, GeneralFilesDB
 from backend.internals.server import WebSocket
 from backend.internals.settings import Settings
@@ -70,9 +71,9 @@ split_regex = compile(
     r"(?<!vs)(?<!r\.i\.p)(?:(?<=[\.!\?])\s|(?<=[\.!\?]</p>)(?!$))", IGNORECASE
 )
 remove_link_regex = compile(r"<a[^>]*>.*?</a>", IGNORECASE)
-os_regex = compile(r'(?<!preceding\s)\bone[\- ]?shot\b(?!\scollections?)', IGNORECASE)
-hc_regex = compile(r'(?<!preceding\s)\bhard[\- ]?cover\b(?!\scollections?)', IGNORECASE)
-vol_regex = compile(r'^v(?:ol(?:ume)?)?\.?\s\d+(?:\:\s|$)', IGNORECASE)
+os_regex = compile(r"(?<!preceding\s)\bone[\- ]?shot\b(?!\scollections?)", IGNORECASE)
+hc_regex = compile(r"(?<!preceding\s)\bhard[\- ]?cover\b(?!\scollections?)", IGNORECASE)
+vol_regex = compile(r"^v(?:ol(?:ume)?)?\.?\s\d+(?:\:\s|$)", IGNORECASE)
 # autopep8: on
 
 
@@ -1034,6 +1035,8 @@ class Library:
 
         Raises:
             RootFolderNotFound: The root folder with the given ID was not found.
+            VolumeFolderInvalid: The volume folder is the parent or child of
+            another volume folder.
             VolumeAlreadyAdded: The volume already exists in the library.
             CVRateLimitReached: The ComicVine API rate limit is reached.
 
@@ -1063,109 +1066,122 @@ class Library:
         vd = run(ComicVine().fetch_volume(comicvine_id))
 
         cursor = get_db()
-        volume_id = cursor.execute(
-            """
-            INSERT INTO volumes(
-                comicvine_id,
-                title,
-                alt_title,
-                year,
-                publisher,
-                volume_number,
-                description,
-                site_url,
-                cover,
-                monitored,
-                monitor_new_issues,
-                root_folder,
-                custom_folder,
-                last_cv_fetch,
-                special_version,
-                special_version_locked
-            ) VALUES (
-                :comicvine_id, :title, :alt_title,
-                :year, :publisher, :volume_number, :description,
-                :site_url, :cover, :monitored, :monitor_new_issues,
-                :root_folder, :custom_folder,
-                :last_cv_fetch, :special_version, :special_version_locked
-            );
-            """,
-            {
-                "comicvine_id": vd["comicvine_id"],
-                "title": vd["title"],
-                "alt_title": (vd["aliases"] or [None])[0],  # type: ignore
-                "year": vd["year"],
-                "publisher": vd["publisher"],
-                "volume_number": vd["volume_number"],
-                "description": vd["description"],
-                "site_url": vd["site_url"],
-                "cover": vd["cover"],
-                "monitored": monitored,
-                "monitor_new_issues": monitor_new_issues,
-                "root_folder": root_folder.id,
-                "custom_folder": volume_folder is not None,
-                "last_cv_fetch": round(time()),
-                "special_version": None,
-                "special_version_locked": special_version is not None,
-            },
-        ).lastrowid
-
-        cursor.executemany(
-            """
-            INSERT INTO issues(
-                volume_id,
-                comicvine_id,
-                issue_number,
-                calculated_issue_number,
-                title,
-                date,
-                description,
-                monitored
-            ) VALUES (
-                :volume_id, :comicvine_id,
-                :issue_number, :calculated_issue_number,
-                :title, :date, :description,
-                :monitored
-            );
-            """,
-            (
+        with cursor:
+            volume_id = cursor.execute(
+                """
+                INSERT INTO volumes(
+                    comicvine_id,
+                    title,
+                    alt_title,
+                    year,
+                    publisher,
+                    volume_number,
+                    description,
+                    site_url,
+                    cover,
+                    monitored,
+                    monitor_new_issues,
+                    root_folder,
+                    custom_folder,
+                    last_cv_fetch,
+                    special_version,
+                    special_version_locked
+                ) VALUES (
+                    :comicvine_id, :title, :alt_title,
+                    :year, :publisher, :volume_number, :description,
+                    :site_url, :cover, :monitored, :monitor_new_issues,
+                    :root_folder, :custom_folder,
+                    :last_cv_fetch, :special_version, :special_version_locked
+                );
+                """,
                 {
-                    "volume_id": volume_id,
-                    "comicvine_id": i["comicvine_id"],
-                    "issue_number": i["issue_number"],
-                    "calculated_issue_number": i["calculated_issue_number"],
-                    "title": i["title"],
-                    "date": i["date"],
-                    "description": i["description"],
-                    "monitored": True,
-                }
-                for i in vd["issues"] or []
-            ),
-        )
+                    "comicvine_id": vd["comicvine_id"],
+                    "title": vd["title"],
+                    "alt_title": (vd["aliases"] or [None])[0],
+                    "year": vd["year"],
+                    "publisher": vd["publisher"],
+                    "volume_number": vd["volume_number"],
+                    "description": vd["description"],
+                    "site_url": vd["site_url"],
+                    "cover": vd["cover"],
+                    "monitored": monitored,
+                    "monitor_new_issues": monitor_new_issues,
+                    "root_folder": root_folder.id,
+                    "custom_folder": volume_folder is not None,
+                    "last_cv_fetch": round(time()),
+                    "special_version": None,
+                    "special_version_locked": special_version is not None,
+                },
+            ).lastrowid
 
-        volume = Volume(volume_id)
+            cursor.executemany(
+                """
+                INSERT INTO issues(
+                    volume_id,
+                    comicvine_id,
+                    issue_number,
+                    calculated_issue_number,
+                    title,
+                    date,
+                    description,
+                    monitored
+                ) VALUES (
+                    :volume_id, :comicvine_id,
+                    :issue_number, :calculated_issue_number,
+                    :title, :date, :description,
+                    :monitored
+                );
+                """,
+                (
+                    {
+                        "volume_id": volume_id,
+                        "comicvine_id": i["comicvine_id"],
+                        "issue_number": i["issue_number"],
+                        "calculated_issue_number": i["calculated_issue_number"],
+                        "title": i["title"],
+                        "date": i["date"],
+                        "description": i["description"],
+                        "monitored": True,
+                    }
+                    for i in vd["issues"] or []
+                ),
+            )
 
-        if special_version is None:
-            special_version = determine_special_version(volume.id)
-        volume["special_version"] = special_version
+            volume = Volume(volume_id)
 
-        folder = generate_volume_folder_path(
-            root_folder.folder, volume_folder or volume_id
-        )
-        volume["folder"] = folder
+            if special_version is None:
+                special_version = determine_special_version(volume.id)
+            volume["special_version"] = special_version
 
-        if Settings().sv.create_empty_volume_folders:
-            create_folder(folder)
-            scan_files(volume_id)
+            folder = generate_volume_folder_path(
+                root_folder.folder, volume_folder or volume_id
+            )
 
-        volume.apply_monitor_scheme(monitor_scheme)
+            # Check whether volume folder is parent or child of other volume
+            # folder
+            for other_vf in cursor.execute(
+                "SELECT folder FROM volumes WHERE id != ?;", (volume_id,)
+            ):
+                if folder != other_vf[0] and (
+                    folder_is_inside_folder(folder, other_vf[0])
+                    or folder_is_inside_folder(other_vf[0], folder)
+                ):
+                    rollback()
+                    raise VolumeFolderInvalid
+
+            volume["folder"] = folder
+
+            if Settings().sv.create_empty_volume_folders:
+                create_folder(folder)
+                scan_files(volume_id)
+
+            volume.apply_monitor_scheme(monitor_scheme)
 
         if auto_search:
             from backend.features.tasks import AutoSearchVolume, TaskHandler
 
-            # Volume is accessed from different thread so changes must be saved.
-            commit()
-
+            # Volume is accessed from different thread so changes must be saved,
+            # but that's already done by the completion of the transaction above
             task = AutoSearchVolume(volume_id)
             TaskHandler().add(task)
 

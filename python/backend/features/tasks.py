@@ -549,7 +549,9 @@ class TaskHandler(metaclass=Singleton):
             "task": task,
             "id": id,
             "status": "queued",
-            "thread": Thread(target=self.__run_task, args=(task,), name=f"TaskThread-{id}"),
+            "thread": Thread(
+                target=self.__run_task, args=(task,), name=f"TaskThread-{id}"
+            ),
         }
         self.queue.append(task_data)
         LOGGER.info(f"Added task: {task.display_title} ({id})")

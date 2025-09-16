@@ -32,6 +32,7 @@ from backend.base.custom_exceptions import (
     TaskNotFound,
     VolumeAlreadyAdded,
     VolumeDownloadedFor,
+    VolumeFolderInvalid,
     VolumeNotFound,
 )
 from backend.base.definitions import (
@@ -135,6 +136,7 @@ def error_handler(method: Callable[[Any], Any]) -> Any:
             TaskNotFound,
             VolumeAlreadyAdded,
             VolumeDownloadedFor,
+            VolumeFolderInvalid,
             VolumeNotFound,
         ) as e:
             return return_api(
@@ -282,7 +284,7 @@ def auth(method: Callable) -> Any:
     """Used as decorator and, if applied to route, restricts the route to authorized users only"""
 
     def wrapper(*args: Any, **kwargs: Any) -> Any:
-        if not request.path.endswith('/cover'):
+        if not request.path.endswith("/cover"):
             LOGGER.debug(f"{request.method} {request.path}")
 
         try:
