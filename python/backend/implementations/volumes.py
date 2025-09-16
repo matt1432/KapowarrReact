@@ -651,6 +651,26 @@ class Volume:
 
         return
 
+    def __volume_folder_used_by_other_volume(self, volume_folder: str) -> bool:
+        """Check whether the given volume folder is used by another volume. I.e.
+        whether two volumes use the same volume folder.
+
+        Args:
+            volume_folder (str): The volume folder to check for.
+
+        Returns:
+            bool: Whether it's also used by another volume.
+        """
+        return (
+            get_db()
+            .execute(
+                "SELECT 1 FROM volumes WHERE folder = ? AND id != ? LIMIT 1;",
+                (volume_folder, self.id),
+            )
+            .exists()
+            is not None
+        )
+
     def change_root_folder(self, new_root_folder_id: int) -> None:
         """Change the root folder of the volume.
 
@@ -687,7 +707,10 @@ class Volume:
             (vd.folder,), current_root_folder.folder, new_root_folder.folder
         )[vd.folder]
 
-        delete_empty_parent_folders(vd.folder, current_root_folder.folder)
+        if not self.__volume_folder_used_by_other_volume(vd.folder):
+            # Current volume folder is not also used by another volume,
+            # so we can delete it if empty.
+            delete_empty_parent_folders(vd.folder, current_root_folder.folder)
 
         if Settings().sv.create_empty_volume_folders:
             create_folder(new_folder)
@@ -743,7 +766,10 @@ class Volume:
             delete_empty_parent_folders(current_volume_folder, new_volume_folder)
 
         else:
-            delete_empty_parent_folders(current_volume_folder, root_folder)
+            if not self.__volume_folder_used_by_other_volume(current_volume_folder):
+                # Current volume folder is not also used by another volume,
+                # so we can delete it if empty.
+                delete_empty_parent_folders(current_volume_folder, root_folder)
 
         return
 
