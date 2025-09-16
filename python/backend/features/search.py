@@ -482,7 +482,7 @@ def auto_search(
         # Determine what issues the result covers
         if result["issue_number"] is not None:
             # Normal issue, VAS with issue number,
-            # OS/HC using issue 1
+            # OS/HC/Omnibus using issue 1
             result["_issue_number"] = result["issue_number"]
             covered_issues = volume.get_issues_in_range(
                 *force_range(result["issue_number"])
@@ -512,8 +512,9 @@ def auto_search(
             SpecialVersion.ONE_SHOT,
             SpecialVersion.HARD_COVER,
             SpecialVersion.TPB,
+            SpecialVersion.OMNIBUS,
         ) and result["special_version"] in (special_version, SpecialVersion.TPB):
-            # OS/HC using no issue number, TPB
+            # OS/HC/Omnibus using no issue number, TPB
             result["_issue_number"] = 1.0
             covered_issues = volume.get_issues()
 

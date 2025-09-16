@@ -421,7 +421,11 @@ def _create_link_paths(
             group["info"]["special_version"] is not None
             and group["info"]["special_version"] != SpecialVersion.VOLUME_AS_ISSUE
             and volume_data.special_version
-            in (SpecialVersion.HARD_COVER, SpecialVersion.ONE_SHOT)
+            in (
+                SpecialVersion.HARD_COVER,
+                SpecialVersion.ONE_SHOT,
+                SpecialVersion.OMNIBUS,
+            )
         ):
             group["info"]["special_version"] = volume_data.special_version.value
 

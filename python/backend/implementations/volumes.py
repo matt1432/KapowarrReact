@@ -71,6 +71,7 @@ split_regex = compile(
     r"(?<!vs)(?<!r\.i\.p)(?:(?<=[\.!\?])\s|(?<=[\.!\?]</p>)(?!$))", IGNORECASE
 )
 remove_link_regex = compile(r"<a[^>]*>.*?</a>", IGNORECASE)
+omnibus_regex = compile(r"\bomnibus\b", IGNORECASE)
 os_regex = compile(r"(?<!preceding\s)\bone[\- ]?shot\b(?!\scollections?)", IGNORECASE)
 hc_regex = compile(r"(?<!preceding\s)\bhard[\- ]?cover\b(?!\scollections?)", IGNORECASE)
 vol_regex = compile(r"^v(?:ol(?:ume)?)?\.?\s\d+(?:\:\s|$)", IGNORECASE)
@@ -1210,11 +1211,17 @@ def determine_special_version(volume_id: int) -> SpecialVersion:
         return SpecialVersion.VOLUME_AS_ISSUE
 
     if one_issue:
+        if omnibus_regex.search(volume_data.title):
+            return SpecialVersion.OMNIBUS
+
         if os_regex.search(volume_data.title):
             return SpecialVersion.ONE_SHOT
 
         if hc_regex.search(volume_data.title):
             return SpecialVersion.HARD_COVER
+
+        if (issues[0].title or "").lower() == "omnibus":
+            return SpecialVersion.OMNIBUS
 
         if (issues[0].title or "").lower().replace(" ", "") in (
             "hc",
@@ -1241,6 +1248,9 @@ def determine_special_version(volume_id: int) -> SpecialVersion:
         # "Also available as one shot")
         first_sentence = split_regex.split(volume_data.description)[0]
         first_sentence = remove_link_regex.sub("", first_sentence)
+        if omnibus_regex.search(first_sentence):
+            return SpecialVersion.OMNIBUS
+
         if os_regex.search(first_sentence):
             return SpecialVersion.ONE_SHOT
 

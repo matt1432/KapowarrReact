@@ -48,7 +48,7 @@ french_issue_regex = compile(r"\bT(?:omes?)?(?=[\s\.]?\d)", IGNORECASE)
 
 # Extract data from (stripped)filename
 special_version_regex = compile(
-    r"(?:(?<!\s{3})\b|\()(?:(?P<tpb>tpb|trade paper back)|(?P<one_shot>os|one[ \-_]?shot)|(?P<hard_cover>hc|hard[ \-_]?cover))(?:\b|\))",
+    r"(?:(?<!\s{3})\b|\()(?:(?P<tpb>tpb|trade paper back)|(?P<one_shot>os|one[ \-_]?shot)|(?P<hard_cover>hc|hard[ \-_]?cover)|(?P<omnibus>omnibus))(?:\b|\))",
     IGNORECASE,
 )
 volume_regex = compile(volume_regex_snippet, IGNORECASE)

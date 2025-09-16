@@ -51,6 +51,10 @@ const specialVersionOptions: ISpecialVersionOption[] = [
         value: 'Hard Cover',
     },
     {
+        key: specialVersions.OMNIBUS,
+        value: 'Omnibus',
+    },
+    {
         key: specialVersions.VOL_AS_ISSUE,
         value: 'Volume as Issue',
     },

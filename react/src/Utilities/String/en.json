@@ -2032,6 +2032,8 @@
     "SvCoverDescription": "Image file is cover of either issue or volume.",
     "SvHardCover": "Hard Cover",
     "SvHardCoverDescription": "Volume collecting multiple issues of the same story in a hard cover.",
+    "SvOmnibus": "Omnibus",
+    "SvOmnibusDescription": "Volume collecting many issues of a story arc in a hard cover.",
     "SvMetadata": "Metadata",
     "SvMetadataDescription": "Metadata file.",
     "SvOneShot": "One Shot",

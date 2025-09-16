@@ -25,6 +25,10 @@ export default function SpecialVersionPopoverContent() {
                 data={translate('SvHardCoverDescription')}
             />
             <DescriptionListItem
+                title={translate('SvOmnibus')}
+                data={translate('SvOmnibusDescription')}
+            />
+            <DescriptionListItem
                 title={translate('SvVolAsIssue')}
                 data={translate('SvVolAsIssueDescription')}
             />

@@ -2,6 +2,7 @@ export const specialVersions = {
     TPB: 'tpb',
     ONE_SHOT: 'one-shot',
     HARD_COVER: 'hard-cover',
+    OMNIBUS: 'omnibus',
     VOL_AS_ISSUE: 'volume-as-issue',
     COVER: 'cover',
     METADATA: 'metadata',

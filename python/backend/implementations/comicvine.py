@@ -162,6 +162,7 @@ class ComicVine:
         SpecialVersion.TPB,
         SpecialVersion.ONE_SHOT,
         SpecialVersion.HARD_COVER,
+        SpecialVersion.OMNIBUS,
     )
     """
     If a volume is one of these types, it can only match to CV search results

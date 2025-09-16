@@ -303,6 +303,7 @@ def generate_issue_name(
         SpecialVersion.TPB,
         SpecialVersion.ONE_SHOT,
         SpecialVersion.HARD_COVER,
+        SpecialVersion.OMNIBUS,
     ):
         # Iron-Man Volume 2 One-Shot
         formatting_data = _get_volume_naming_keys(volume_id, file_data=file_data)
