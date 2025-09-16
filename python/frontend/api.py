@@ -282,13 +282,7 @@ def auth(method: Callable) -> Any:
     """Used as decorator and, if applied to route, restricts the route to authorized users only"""
 
     def wrapper(*args: Any, **kwargs: Any) -> Any:
-        if not (
-            request.method == "GET"
-            and (
-                request.path in ("/api/system/tasks", "/api/activity/queue")
-                or request.path.endswith("/cover")
-            )
-        ):
+        if not request.path.endswith('/cover'):
             LOGGER.debug(f"{request.method} {request.path}")
 
         try:
