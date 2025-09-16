@@ -2,6 +2,7 @@
 
 > [!NOTE]
 > This fork was made to add download support from Libgen+.
+> It now also sports a frontend built with React that is based on Sonarr's frontend with more modern technology.
 >
 > - Because I am a NixOS user, I decided to make this a hard fork to keep the
     project more in line with what is expected from a python program while putting
@@ -10,7 +11,7 @@
 > - I will still do my best to keep up to date with upstream, but if you start using
     this fork, you cannot go back to upstream since I've changed some things in the
     database.
-> - Currently at https://github.com/Casvt/Kapowarr/commit/0854d89074d788a6b6cfbf2fe83f761e3a3c6d15
+> - Currently at https://github.com/Casvt/Kapowarr/commit/6db524c58f48cb4887886e6e4161e96f9507df07
 
 <!---
 [![Docker Pulls](https://img.shields.io/docker/pulls/mrcas/kapowarr.svg)](https://hub.docker.com/r/mrcas/kapowarr)

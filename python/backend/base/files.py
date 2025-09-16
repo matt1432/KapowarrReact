@@ -523,7 +523,10 @@ def delete_empty_parent_folders(top_folder: str, root_folder: str) -> None:
     return
 
 
-def delete_empty_child_folders(base_folder: str) -> None:
+def delete_empty_child_folders(
+    base_folder: str,
+    skip_hidden_folders: bool = False,
+) -> None:
     """Delete child folders that don't (indirectly) contain any files. Take
     notice of the difference between this function and
     `delete_empty_parent_folders()`.
@@ -547,6 +550,10 @@ def delete_empty_child_folders(base_folder: str) -> None:
 
     Args:
         base_folder (str): The base folder to remove children of.
+
+        skip_hidden_folders (bool, optional): Whether to skip hidden folders
+        (folders starting with `.`).
+            Defaults to False.
     """
     LOGGER.debug(f"Deleting empty child folders from {base_folder}")
 
@@ -562,8 +569,9 @@ def delete_empty_child_folders(base_folder: str) -> None:
         contains_files: bool = False
 
         for f in scandir(folder):
-            if f.is_dir():
+            if f.is_dir() and (not skip_hidden_folders or not f.name.startswith(".")):
                 folders.append(f.path)
+
             elif f.is_file():
                 contains_files = True
 

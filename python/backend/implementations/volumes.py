@@ -1500,7 +1500,7 @@ def scan_files(
     commit()
 
     if settings.delete_empty_folders:
-        delete_empty_child_folders(volume_data.folder)
+        delete_empty_child_folders(volume_data.folder, skip_hidden_folders=True)
         if (
             not list_files(volume_data.folder)
             and not settings.create_empty_volume_folders

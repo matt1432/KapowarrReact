@@ -953,7 +953,7 @@ def mass_rename(
     FilesDB.update_filepaths(*zip(*renames.items()))
 
     if renames:
-        delete_empty_child_folders(volume_data.folder)
+        delete_empty_child_folders(volume_data.folder, skip_hidden_folders=True)
         delete_empty_parent_folders(volume_data.folder, root_folder)
 
     LOGGER.info(f"Renamed volume {volume_id} {f'issue {issue_id}' if issue_id else ''}")
