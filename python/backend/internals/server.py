@@ -451,7 +451,7 @@ class WebSocket(SocketIO, metaclass=Singleton):
         Args:
             download (Download): The download that has been added.
         """
-        self.emit(SocketEvent.QUEUE_ADDED.value, download.todict())
+        self.emit(SocketEvent.QUEUE_ADDED.value, download.as_dict())
         return
 
     def send_queue_ended(self, download: Download) -> None:

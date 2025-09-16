@@ -57,7 +57,7 @@ if TYPE_CHECKING:
 # Download handling
 # =====================
 download_type_to_class: dict[str, type[Download]] = {
-    c.type: c for c in get_subclasses(BaseDirectDownload)
+    c.identifier: c for c in get_subclasses(BaseDirectDownload)
 }
 
 
@@ -299,7 +299,7 @@ class DownloadHandler(metaclass=Singleton):
                     """,
                     {
                         "volume_id": download.volume_id,
-                        "client_type": download.type,
+                        "client_type": download.identifier,
                         "external_client_id": external_client_id,
                         "external_id": download.external_id
                         if isinstance(download, ExternalDownload)
@@ -343,9 +343,9 @@ class DownloadHandler(metaclass=Singleton):
         """Get all queue entries
 
         Returns:
-            List[dict]: All queue entries, formatted using `Download.todict()`.
+            List[dict]: All queue entries, formatted using `Download.as_dict()`.
         """
-        return [e.todict() for e in self.queue]
+        return [e.as_dict() for e in self.queue]
 
     def get_one(self, download_id: int) -> Download:
         """Get a queue entry based on it's ID.
@@ -548,7 +548,7 @@ class DownloadHandler(metaclass=Singleton):
         self.queue += dl_result
 
         self._process_queue()
-        return [r.todict() for r in dl_result], None
+        return [r.as_dict() for r in dl_result], None
 
     def add_multiple(
         self, add_args: Iterable[tuple[str, int, int | None, bool]]

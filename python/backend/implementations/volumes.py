@@ -27,7 +27,7 @@ from backend.base.definitions import (
     GeneralFileType,
     IssueData,
     IssueFileData,
-    LibraryFilters,
+    LibraryFilter,
     LibrarySorting,
     MonitorScheme,
     SpecialVersion,
@@ -804,7 +804,7 @@ class Library:
     def get_public_volumes(
         self,
         sort: LibrarySorting = LibrarySorting.TITLE,
-        filter: LibraryFilters | int | None = None,
+        filter: LibraryFilter | int | None = None,
     ) -> list[dict]:
         """Get all volumes in the library
 
@@ -812,14 +812,14 @@ class Library:
             sort (LibrarySorting, optional): How to sort the list.
                 Defaults to LibrarySorting.TITLE.
 
-            filter (LibraryFilters | None, optional): Apply a filter to
+            filter (LibraryFilter | None, optional): Apply a filter to
             the list if not `None`.
                 Defaults to None.
 
         Returns:
             List[dict]: The list of volumes in the library.
         """
-        if isinstance(filter, LibraryFilters):
+        if isinstance(filter, LibraryFilter):
             sql_filter = filter.value
         elif isinstance(filter, int):
             sql_filter = f"WHERE comicvine_id = {filter}"
@@ -881,7 +881,7 @@ class Library:
         self,
         query: str,
         sort: LibrarySorting = LibrarySorting.TITLE,
-        filter: LibraryFilters | None = None,
+        filter: LibraryFilter | None = None,
     ) -> list[dict]:
         """Search in the library with a query.
 
@@ -891,7 +891,7 @@ class Library:
             sort (LibrarySorting, optional): How to sort the list.
                 Defaults to LibrarySorting.TITLE.
 
-            filter (LibraryFilters | None, optional): Apply a filter to
+            filter (LibraryFilter | None, optional): Apply a filter to
             the list if not `None`.
                 Defaults to None.
 

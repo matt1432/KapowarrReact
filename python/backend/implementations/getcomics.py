@@ -16,6 +16,7 @@ from backend.base.custom_exceptions import (
     LinkBroken,
 )
 from backend.base.definitions import (
+    GC_DOWNLOAD_SOURCE_TERMS,
     BlocklistReason,
     Constants,
     Download,
@@ -24,7 +25,6 @@ from backend.base.definitions import (
     GCDownloadSource,
     SearchResultData,
     SpecialVersion,
-    download_source_versions,
 )
 from backend.base.file_extraction import extract_filename_data
 from backend.base.helpers import (
@@ -148,7 +148,7 @@ def __check_download_link(
         return None
 
     # Check if link is from supported source
-    for source, versions in download_source_versions.items():
+    for source, versions in GC_DOWNLOAD_SOURCE_TERMS.items():
         if any(s in link_text for s in versions):
             LOGGER.debug(f"Checking download link: {link_text} maps to {source.value}")
 

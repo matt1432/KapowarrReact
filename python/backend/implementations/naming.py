@@ -10,6 +10,8 @@ from sys import platform
 
 from backend.base.custom_exceptions import InvalidSettingValue
 from backend.base.definitions import (
+    SV_TO_FULL_TERM,
+    SV_TO_SHORT_TERM,
     BaseNamingKeys,
     Constants,
     FileConstants,
@@ -19,8 +21,6 @@ from backend.base.definitions import (
     SpecialVersion,
     SVNamingKeys,
     VolumeData,
-    full_sv_mapping,
-    short_sv_mapping,
 )
 from backend.base.file_extraction import (
     cover_regex,
@@ -139,7 +139,7 @@ def _get_volume_naming_keys(
     else:
         clean_title = series_name
 
-    sv_mapping = full_sv_mapping if long_special_version else short_sv_mapping
+    sv_mapping = SV_TO_FULL_TERM if long_special_version else SV_TO_SHORT_TERM
 
     return SVNamingKeys(
         series_name=series_name,

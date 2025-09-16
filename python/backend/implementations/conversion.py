@@ -68,6 +68,23 @@ class FileConversionHandler:
 
     @staticmethod
     @lru_cache(1)
+    def get_convertible_to_folder() -> list[str]:
+        """Get all source_formats that can be converted into a folder.
+
+        Returns:
+            List[str]: The source_formats.
+        """
+        result: list[str] = []
+        for (
+            source_format,
+            target_formats,
+        ) in FileConversionHandler.get_conversion_methods().items():
+            if "folder" in target_formats:
+                result.append(source_format)
+        return result
+
+    @staticmethod
+    @lru_cache(1)
     def get_available_formats() -> set[str]:
         """Get all available formats that can be converted to.
 
@@ -163,7 +180,8 @@ def preview_mass_convert(
 
         if (
             extract_issue_ranges
-            and splitext(f)[1].lower() in FileConstants.EXTRACTABLE_EXTENSIONS
+            and splitext(f)[1].lower()
+            in FileConversionHandler.get_convertible_to_folder()
             and archive_contains_issues(f)
         ):
             converter = FileConversionHandler(f, ["folder"]).converter
@@ -256,7 +274,8 @@ def mass_convert(
         converted = False
         if (
             extract_issue_ranges
-            and splitext(f)[1].lower() in FileConstants.EXTRACTABLE_EXTENSIONS
+            and splitext(f)[1].lower()
+            in FileConversionHandler.get_convertible_to_folder()
             and archive_contains_issues(f)
         ):
             converter = FileConversionHandler(f, ["folder"])

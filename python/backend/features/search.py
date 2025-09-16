@@ -1,12 +1,12 @@
 from asyncio import gather, run
 
 from backend.base.definitions import (
+    QUERY_FORMATS,
     MatchedSearchResultData,
     SearchResultData,
     SearchResultMatchData,
     SearchSource,
     SpecialVersion,
-    query_formats,
 )
 from backend.base.helpers import (
     AsyncSession,
@@ -336,16 +336,16 @@ def manual_search(
             continue
 
         if volume_data.special_version == SpecialVersion.TPB:
-            formats = query_formats["TPB"]
+            formats = QUERY_FORMATS["TPB"]
 
         elif volume_data.special_version == SpecialVersion.VOLUME_AS_ISSUE:
-            formats = query_formats["VAI"]
+            formats = QUERY_FORMATS["VAI"]
 
         elif issue_number is None:
-            formats = query_formats["Volume"]
+            formats = QUERY_FORMATS["Volume"]
 
         else:
-            formats = query_formats["Issue"]
+            formats = QUERY_FORMATS["Issue"]
 
         if volume_data.year is None:
             formats = tuple(f.replace("({year})", "").strip() for f in formats)
