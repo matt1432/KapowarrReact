@@ -7,7 +7,6 @@ from typing import Any
 from backend.base.custom_exceptions import (
     InvalidKeyValue,
     VolumeAlreadyAdded,
-    VolumeFolderInvalid,
 )
 from backend.base.definitions import (
     CONTENT_EXTENSIONS,
@@ -202,11 +201,6 @@ def import_library(matches: list[CVFileMapping], rename_files: bool = False) -> 
             # (it isn't because otherwise it wouldn't pop up in LI).
             # That would mean that the file is actually not
             # for that volume so skip.
-            continue
-
-        except VolumeFolderInvalid:
-            # The volume folder is inside another volume folder.
-            # TODO: We should report this back to the user.
             continue
 
         if rename_files:

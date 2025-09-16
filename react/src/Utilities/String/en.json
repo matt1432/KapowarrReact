@@ -37,7 +37,6 @@
     "TaskNotFound": "Task with given ID not found",
     "VolumeAlreadyAdded": "The volume that is desired to be added is already added",
     "VolumeDownloadedFor": "The volume is desired to be deleted but there is a download for it going",
-    "VolumeFolderInvalid": "Volume folder is parent or child of other volume folder",
     "VolumeNotFound": "The volume with the given (comicvine-) key was not found",
 
     "EditRootFolder": "Edit Root Folder",

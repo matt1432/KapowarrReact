@@ -32,7 +32,6 @@ from backend.base.custom_exceptions import (
     TaskNotFound,
     VolumeAlreadyAdded,
     VolumeDownloadedFor,
-    VolumeFolderInvalid,
     VolumeNotFound,
 )
 from backend.base.definitions import (
@@ -136,7 +135,6 @@ def error_handler(method: Callable[[Any], Any]) -> Any:
             TaskNotFound,
             VolumeAlreadyAdded,
             VolumeDownloadedFor,
-            VolumeFolderInvalid,
             VolumeNotFound,
         ) as e:
             return return_api(

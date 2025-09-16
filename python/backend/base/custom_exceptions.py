@@ -284,29 +284,6 @@ class VolumeAlreadyAdded(KapowarrException):
         }
 
 
-class VolumeFolderInvalid(KapowarrException):
-    """
-    The volume folder is a parent or child of an existing volume folder,
-    which is not allowed
-    """
-
-    def __init__(self, folder: str) -> None:
-        self.folder = folder
-        LOGGER.warning(
-            "The volume folder is a parent or child of an existing volume folder, "
-            f"which is not allowed: {folder}"
-        )
-        return
-
-    @property
-    def api_response(self) -> ApiResponse:
-        return {
-            "code": 400,
-            "error": self.__class__.__name__,
-            "result": {"folder": self.folder},
-        }
-
-
 class VolumeDownloadedFor(KapowarrException):
     "The volume is desired to be deleted but there is a download for it going"
 

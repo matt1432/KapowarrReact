@@ -16,7 +16,6 @@ from backend.base.custom_exceptions import (
     TaskForVolumeRunning,
     VolumeAlreadyAdded,
     VolumeDownloadedFor,
-    VolumeFolderInvalid,
     VolumeNotFound,
 )
 from backend.base.definitions import (
@@ -56,7 +55,7 @@ from backend.base.logging import LOGGER
 from backend.implementations.comicvine import ComicVine
 from backend.implementations.matching import _match_title, file_importing_filter
 from backend.implementations.root_folders import RootFolders
-from backend.internals.db import commit, get_db, rollback
+from backend.internals.db import commit, get_db
 from backend.internals.db_models import FilesDB, GeneralFilesDB
 from backend.internals.server import WebSocket
 from backend.internals.settings import Settings
@@ -1067,8 +1066,6 @@ class Library:
 
         Raises:
             RootFolderNotFound: The root folder with the given ID was not found.
-            VolumeFolderInvalid: The volume folder is the parent or child of
-            another volume folder.
             VolumeAlreadyAdded: The volume already exists in the library.
             CVRateLimitReached: The ComicVine API rate limit is reached.
 
@@ -1195,18 +1192,6 @@ class Library:
             folder = generate_volume_folder_path(
                 root_folder.folder, volume_folder or volume_id
             )
-
-            # Check whether volume folder is parent or child of other volume
-            # folder
-            for other_vf in cursor.execute(
-                "SELECT folder FROM volumes WHERE id != ?;", (volume_id,)
-            ):
-                if folder != other_vf[0] and (
-                    folder_is_inside_folder(folder, other_vf[0])
-                    or folder_is_inside_folder(other_vf[0], folder)
-                ):
-                    rollback()
-                    raise VolumeFolderInvalid(folder)
 
             volume["folder"] = folder
 
