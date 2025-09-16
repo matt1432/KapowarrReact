@@ -65,7 +65,7 @@ issue_regex_3 = compile(
     + issue_regex_snippet
     + r")[\s\-\._]?\(?[\s\-\._]?of[\s\-\._]?"
     + issue_regex_snippet
-    + r"\)?",
+    + r"(?![\s\-\._]covers)\)?(?=\s|\.|_|(?=\()|$)",
     IGNORECASE,
 )
 issue_regex_4 = compile(
@@ -91,7 +91,9 @@ issue_regex_6 = compile(
     IGNORECASE,
 )
 issue_regex_7 = compile(
-    r"(?:(?<=\s|\.|_)|(?<=^))(\-?" + issue_regex_snippet + r")(?=\s|\.|_|\(|$)",
+    r"(?:(?<=\s|\.|_)|(?<=^))(\-?"
+    + issue_regex_snippet
+    + r")(?![\s\-\._]covers?)(?![\s\-\._]of[\s\-\._]\d+[\s\-\._]covers?)(?=\s|\.|_|\(|$)",
     IGNORECASE,
 )
 year_regex = compile(
