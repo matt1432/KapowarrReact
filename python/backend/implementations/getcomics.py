@@ -30,10 +30,10 @@ from backend.base.file_extraction import extract_filename_data
 from backend.base.helpers import (
     AsyncSession,
     check_overlapping_issues,
-    create_range,
     fix_year,
+    force_range,
     get_torrent_info,
-    normalize_year,
+    normalise_year,
 )
 from backend.base.logging import LOGGER
 from backend.implementations.blocklist import add_to_blocklist, blocklist_contains
@@ -99,7 +99,7 @@ def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str]]:
             continue
 
         link_el = cast(Tag, title_el.find("a"))
-        link = create_range(str(link_el.get("href", "")))[0]
+        link = force_range(str(link_el.get("href", "")))[0]
         title = title_el.get_text(strip=True)
         result.append((link, title))
 
@@ -194,7 +194,7 @@ def __extract_button_links(
             continue
 
         if processed_title["year"] is None and "Year :\x00\xa0" in extracted_title:
-            year = normalize_year(
+            year = normalise_year(
                 extracted_title.split("Year :\x00\xa0")[1].split(" |")[0].split("-")[0]
             )
             if year:
@@ -220,7 +220,7 @@ def __extract_button_links(
                 link_title = group_link.text.strip().lower()
                 if group_link.get("href") is None:
                     continue
-                href = create_range(str(group_link.get("href", "")))[0]
+                href = force_range(str(group_link.get("href", "")))[0]
                 if not href:
                     continue
 
@@ -284,7 +284,7 @@ def __extract_list_links(
             if group_link.get("href") is None:
                 continue
             link_title = group_link.text.strip().lower()
-            href = create_range(str(group_link.get("href", "")))[0]
+            href = force_range(str(group_link.get("href", "")))[0]
             if not href:
                 continue
 
@@ -348,7 +348,7 @@ def __sort_link_paths(p: list[DownloadGroup]) -> tuple[float, int]:
         return (0.0, 0)
 
     issues_covered = sum(
-        reduce(lambda a, b: (b - a) or 1, create_range(entry["info"]["issue_number"]))
+        reduce(lambda a, b: (b - a) or 1, force_range(entry["info"]["issue_number"]))
         for entry in p
         if entry["info"]["issue_number"] is not None
     )

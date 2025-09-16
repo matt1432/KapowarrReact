@@ -16,8 +16,8 @@ from backend.base.helpers import (
     fix_year as fix_broken_year,
 )
 from backend.base.helpers import (
-    normalize_number,
-    normalize_string,
+    normalise_number,
+    normalise_string,
 )
 from backend.base.logging import LOGGER
 
@@ -139,7 +139,7 @@ def _calc_float_issue_number(issue_number: str) -> float | None:
         pass
 
     # Issue has special number notation
-    issue_number = normalize_number(issue_number)
+    issue_number = normalise_number(issue_number)
 
     # Negative or not
     if issue_number.startswith("-"):
@@ -296,7 +296,7 @@ def extract_filename_data(
     annual = not (annual_result and annual_folder_result)
 
     # Generalise filename
-    filepath = normalize_string(filepath).replace("+", " ")
+    filepath = normalise_string(filepath).replace("+", " ")
     filepath = french_issue_regex.sub("Issue", filepath)
     if "Том" in filepath:
         filepath = russian_volume_regex.sub(r"Volume \1", filepath)

@@ -32,10 +32,10 @@ from backend.base.helpers import (
     DictKeyedDict,
     Session,
     batched,
-    create_range,
+    force_range,
     force_suffix,
-    normalize_string,
-    normalize_year,
+    normalise_string,
+    normalise_year,
     to_full_string_cv_id,
     to_string_cv_id,
 )
@@ -273,8 +273,8 @@ class ComicVine:
         """
         result: VolumeMetadata = {
             "comicvine_id": int(volume_data["id"]),
-            "title": normalize_string(volume_data["name"]),
-            "year": normalize_year(volume_data.get("start_year", "")),
+            "title": normalise_string(volume_data["name"]),
+            "year": normalise_year(volume_data.get("start_year", "")),
             "volume_number": 1,
             "cover_link": volume_data["image"]["small_url"],
             "cover": None,
@@ -296,7 +296,7 @@ class ComicVine:
         volume_result = volume_regex.search(volume_data["deck"] or "")
         if volume_result:
             result["volume_number"] = (
-                create_range(process_volume_number(volume_result.group(1)))[0] or 1
+                force_range(process_volume_number(volume_result.group(1)))[0] or 1
             )
 
         return result
@@ -311,7 +311,7 @@ class ComicVine:
         Returns:
             VolumeMetadata: The formatted version.
         """
-        cin = create_range(process_issue_number(issue_data["issue_number"]))[0]
+        cin = force_range(process_issue_number(issue_data["issue_number"]))[0]
 
         result: IssueMetadata = {
             "comicvine_id": int(issue_data["id"]),

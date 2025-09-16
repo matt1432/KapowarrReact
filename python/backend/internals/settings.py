@@ -31,8 +31,7 @@ from backend.base.helpers import (
     force_suffix,
     get_python_version,
     hash_password,
-    normalize_base_url,
-    reversed_tuples,
+    normalise_base_url,
 )
 from backend.base.logging import LOGGER, set_log_level
 from backend.internals.db import commit, get_db
@@ -241,7 +240,7 @@ class Settings(metaclass=Singleton):
 
         get_db().executemany(
             "UPDATE config SET value = ? WHERE key = ?;",
-            reversed_tuples(formatted_data.items()),
+            ((v, k) for k, v in formatted_data.items()),
         )
 
         if "log_level" in data and formatted_data["log_level"] != getattr(
@@ -433,7 +432,7 @@ class Settings(metaclass=Singleton):
 
             converted_value = value
             if converted_value:
-                converted_value = normalize_base_url(converted_value)
+                converted_value = normalise_base_url(converted_value)
 
             if not converted_value and fs.base_url:
                 # Disable FS, it was running before.

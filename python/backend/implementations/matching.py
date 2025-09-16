@@ -10,7 +10,7 @@ from re import compile
 from typing import TYPE_CHECKING
 
 from backend.base.definitions import IssueData, MatchRejections, SpecialVersion
-from backend.base.helpers import create_range
+from backend.base.helpers import force_range
 from backend.implementations.blocklist import blocklist_contains
 
 if TYPE_CHECKING:
@@ -270,7 +270,7 @@ def file_importing_filter(
     matching_year = _match_year(
         volume_data.year,
         file_data["year"],
-        number_to_year.get(create_range(issue_number)[-1]),
+        number_to_year.get(force_range(issue_number)[-1]),
     )
 
     is_match = matching_special_version and (matching_volume_number or matching_year)
@@ -399,7 +399,7 @@ def check_search_result_match(
     ):
         if calculated_issue_number is None:
             # Volume search
-            if not all(i in number_to_year for i in create_range(issue_number)):
+            if not all(i in number_to_year for i in force_range(issue_number)):
                 # One of the extracted issue numbers is not found in volume
                 rejections.append(MatchRejections.ISSUE_NUMBER.value)
 
@@ -411,7 +411,7 @@ def check_search_result_match(
     if not _match_year(
         volume_data.year,
         result["year"],
-        number_to_year.get(create_range(issue_number)[-1]),
+        number_to_year.get(force_range(issue_number)[-1]),
         conservative=True,
     ):
         rejections.append(MatchRejections.YEAR.value)

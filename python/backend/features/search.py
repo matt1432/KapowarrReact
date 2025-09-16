@@ -11,8 +11,8 @@ from backend.base.definitions import (
 from backend.base.helpers import (
     AsyncSession,
     check_overlapping_issues,
-    create_range,
     extract_year_from_date,
+    force_range,
     get_subclasses,
 )
 from backend.base.logging import LOGGER
@@ -485,7 +485,7 @@ def auto_search(
             # OS/HC using issue 1
             result["_issue_number"] = result["issue_number"]
             covered_issues = volume.get_issues_in_range(
-                *create_range(result["issue_number"])
+                *force_range(result["issue_number"])
             )
 
         elif (
@@ -505,7 +505,7 @@ def auto_search(
                 result["_issue_number"] = float(result["volume_number"])
 
             covered_issues = volume.get_issues_in_range(
-                *create_range(result["volume_number"])
+                *force_range(result["volume_number"])
             )
 
         elif special_version in (

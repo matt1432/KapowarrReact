@@ -8,7 +8,7 @@ from typing import Any
 
 from backend.base.custom_exceptions import FileNotFound
 from backend.base.definitions import Download, FileData, GeneralFileData
-from backend.base.helpers import first_of_column
+from backend.base.helpers import first_of_subarrays
 from backend.base.logging import LOGGER
 from backend.internals.db import get_db
 
@@ -137,7 +137,7 @@ class FilesDB:
 
     @staticmethod
     def issues_covered(filepath: str) -> list[float]:
-        return first_of_column(
+        return first_of_subarrays(
             get_db().execute(
                 """
             SELECT DISTINCT

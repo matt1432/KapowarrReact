@@ -32,7 +32,7 @@ from backend.base.definitions import (
     ExternalDownloadClient,
     GeneralFileData,
 )
-from backend.base.helpers import Session, get_first_of_range, get_torrent_info
+from backend.base.helpers import Session, first_of_range, get_torrent_info
 from backend.base.logging import LOGGER
 from backend.implementations.credentials import Credentials
 from backend.implementations.direct_clients.mega import Mega, MegaABC, MegaFolder
@@ -440,7 +440,7 @@ class MediaFireDownload(BaseDirectDownload):
         soup = BeautifulSoup(r.text, "html.parser")
         button = soup.find("a", {"id": "downloadButton"})
         if isinstance(button, Tag):
-            return get_first_of_range(button["href"])
+            return first_of_range(button["href"])
 
         # Link is not broken and not a folder
         # but we still can't find the download button...

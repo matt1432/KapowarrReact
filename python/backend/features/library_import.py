@@ -26,7 +26,7 @@ from backend.base.files import (
     propose_basefolder_change,
     rename_file,
 )
-from backend.base.helpers import DictKeyedDict, batched, create_range
+from backend.base.helpers import DictKeyedDict, batched, force_range
 from backend.base.logging import LOGGER
 from backend.implementations.comicvine import ComicVine
 from backend.implementations.naming import mass_rename
@@ -133,7 +133,7 @@ def propose_library_import(
     uf.sort(
         key=lambda f: (
             f["series"],
-            create_range(f["volume_number"] or 0)[0],
+            force_range(f["volume_number"] or 0)[0],
             f["year"] or 0,
         )
     )

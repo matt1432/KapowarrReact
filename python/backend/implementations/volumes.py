@@ -46,10 +46,10 @@ from backend.base.files import (
 )
 from backend.base.helpers import (
     PortablePool,
-    create_range,
     extract_year_from_date,
     filtered_iter,
-    first_of_column,
+    first_of_subarrays,
+    force_range,
     to_number_cv_id,
 )
 from backend.base.logging import LOGGER
@@ -945,7 +945,7 @@ class Library:
         Returns:
             List[int]: The list of ID's.
         """
-        return first_of_column(get_db().execute("SELECT id FROM volumes;"))
+        return first_of_subarrays(get_db().execute("SELECT id FROM volumes;"))
 
     def get_volume(self, volume_id: int) -> Volume:
         """Get a volume from the library.
@@ -1361,7 +1361,7 @@ def scan_files(
                 issue_range = file_data["volume_number"]
 
             matching_issues = volume.get_issues_in_range(
-                *create_range(issue_range)  # type: ignore
+                *force_range(issue_range)  # type: ignore
             )
 
             if matching_issues:
@@ -1605,7 +1605,7 @@ def refresh_and_scan(
         cv.fetch_issues(tuple(vd["comicvine_id"] for vd in filtered_volume_datas))
     )
     monitor_issues_volume_ids: set[int] = set(
-        first_of_column(
+        first_of_subarrays(
             cursor.execute("SELECT id FROM volumes WHERE monitor_new_issues = 1;")
         )
     )
@@ -1754,7 +1754,7 @@ def delete_issue_file(file_id: int) -> None:
         delete_file_folder(file_data["filepath"])
 
     cursor = get_db()
-    not_downloaded_issues: list[int] = first_of_column(
+    not_downloaded_issues: list[int] = first_of_subarrays(
         cursor.execute(
             """
         WITH matched_file_counts AS (

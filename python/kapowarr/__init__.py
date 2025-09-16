@@ -9,7 +9,6 @@ from typing import NoReturn
 
 from backend.base.custom_exceptions import InvalidSettingValue
 from backend.base.definitions import Constants, StartType
-from backend.base.helpers import check_python_version
 from backend.base.logging import LOGGER, setup_logging
 from backend.features.download_queue import DownloadHandler
 from backend.features.tasks import TaskHandler
@@ -65,9 +64,6 @@ def _main(
     set_start_method("spawn")
     setup_logging(log_folder, log_file)
     LOGGER.info("Starting up Kapowarr")
-
-    if not check_python_version():
-        exit(1)
 
     set_db_location(db_folder)
 
