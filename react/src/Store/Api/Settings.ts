@@ -11,6 +11,8 @@ import snakeify from 'Utilities/Object/snakeify';
 import type { SettingsValue, RawSettingsValue } from 'typings/Settings';
 import type { TranslateKey } from 'Utilities/String/translate';
 
+type SaveSettingsParams = Partial<Omit<SettingsValue, 'apiKey'>> & { apiKey?: never };
+
 // IMPLEMENTATIONS
 
 const extendedApi = baseApi.injectEndpoints({
@@ -54,7 +56,7 @@ const extendedApi = baseApi.injectEndpoints({
         }),
 
         // PUT
-        saveSettings: build.mutation<SettingsValue, Partial<SettingsValue>>({
+        saveSettings: build.mutation<SettingsValue, SaveSettingsParams>({
             query: (body) => ({
                 method: 'PUT',
                 url: 'settings',

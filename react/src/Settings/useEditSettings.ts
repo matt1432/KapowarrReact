@@ -2,9 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useGetSettingsQuery, useSaveSettingsMutation } from 'Store/Api/Settings';
 import type { InputChanged } from 'typings/Inputs';
 import type { SettingsValue } from 'typings/Settings';
+import filterObject from 'Utilities/Object/filterObject';
 
 export default function useEditSettings() {
-    const { settings, isSuccess } = useGetSettingsQuery(undefined, {
+    const { settings, isSuccess, refetch } = useGetSettingsQuery(undefined, {
         selectFromResult: ({ data, isSuccess }) => ({
             settings: data,
             isSuccess,
@@ -25,8 +26,16 @@ export default function useEditSettings() {
 
     const onSavePress = useCallback(() => {
         setIsSaving(true);
-        saveSettings(changes);
-    }, [changes, saveSettings]);
+        saveSettings(
+            filterObject(
+                changes,
+                ([key, value]) =>
+                    key !== 'apiKey' && value !== settings?.[key as keyof typeof changes],
+            ),
+        ).finally(() => {
+            refetch();
+        });
+    }, [changes, refetch, saveSettings, settings]);
 
     const handleInputChange = useCallback(
         <Key extends keyof SettingsValue>({
