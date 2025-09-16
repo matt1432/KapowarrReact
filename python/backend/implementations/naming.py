@@ -147,7 +147,7 @@ def _get_volume_naming_keys(
         volume_number=str(volume_data.volume_number).zfill(volume_padding),
         comicvine_id=volume_data.comicvine_id,
         year=volume_data.year,
-        publisher=volume_data.publisher,
+        publisher=clean_filestring(volume_data.publisher),
         special_version=sv_mapping.get(volume_data.special_version),
         releaser=file_data["releaser"]
         if file_data is not None
