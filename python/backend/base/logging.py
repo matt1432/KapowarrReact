@@ -1,3 +1,7 @@
+"""
+Setting up, using and altering the logger
+"""
+
 import logging
 import logging.config
 from logging.handlers import RotatingFileHandler
@@ -97,19 +101,21 @@ def setup_logging(
 
     Args:
         log_folder (Union[str, None]): The folder to put the log file in.
-            If `None`, the log file will be in the same folder as the
-            application folder.
+        If `None`, the log file will be in the same folder as the
+        application folder.  It will be created if it doesn't exist yet.
 
         log_file (Union[str, None]): The filename of the log file.
-            If `None`, the default filename will be used.
+        If `None`, the default filename will be used.  It will be created
+        if it doesn't exist yet.
 
         do_rollover (bool, optional): Whether to allow the log file to rollover
-            when it reaches the maximum size.
+        when it reaches the maximum size.
 
             Defaults to True.
 
     Raises:
-        ValueError: The given log folder is not a folder.
+        ValueError: The given log folder is not a folder, or the given log file
+        is not a file.
     """
     from backend.base.files import create_folder, folder_path
 
@@ -134,9 +140,9 @@ def setup_logging(
 
     logging.config.dictConfig(LOGGING_CONFIG)
 
-    # Log uncaught exceptions using the logger instead of printing the stderr
+    # Log uncaught exceptions using the logger instead of printing to stderr.
     # Logger goes to stderr anyway, so still visible in console but also logs
-    # to file, so that downloaded log file also contains any errors.
+    # to file, so that downloaded log file also contains any exceptions.
     import sys
     import threading
     from traceback import format_exception
@@ -158,7 +164,7 @@ def setup_logging(
 
 
 def get_log_filepath() -> str:
-    """Get the filepath to the logging file.
+    """Get the filepath to the log file.
 
     Returns:
         str: The filepath.
@@ -171,7 +177,7 @@ def set_log_level(level: int | str) -> None:
 
     Args:
         level (Union[int, str]): The level to set the logging to.
-            Should be a logging level, like `logging.INFO` or `"DEBUG"`.
+        Should be a logging level, like `logging.INFO` or `"DEBUG"`.
     """
     if isinstance(level, str):
         level = logging._nameToLevel[level.upper()]
