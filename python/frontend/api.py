@@ -290,6 +290,8 @@ def auth(method: Callable) -> Any:
         try:
             extract_key(request, "api_key")
         except (KeyNotFound, InvalidKeyValue):
+            ip = request.environ.get("HTTP_X_FORWARDED_FOR", request.remote_addr)
+            LOGGER.warning(f"Unauthorised request from {ip}")
             return return_api({}, "ApiKeyInvalid", 401)
 
         diffuse_timers()
