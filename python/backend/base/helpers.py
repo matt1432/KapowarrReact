@@ -15,6 +15,7 @@ from collections.abc import (
     Mapping,
     Sequence,
 )
+from functools import lru_cache
 from hashlib import pbkdf2_hmac
 from multiprocessing.pool import Pool
 from os import cpu_count, sep
@@ -686,7 +687,9 @@ class BackportRetry(Retry):
     this class ensures that both major versions are supported.
     """
 
-    def running_v2_and_above(self) -> bool:
+    @staticmethod
+    @lru_cache(1)
+    def running_urllib3_v2_and_above() -> bool:
         """Detect whether urllib3 version v2.0.0+ is used or not.
 
         Returns:
@@ -731,7 +734,7 @@ class BackportRetry(Retry):
             'remove_headers_on_redirect': remove_headers_on_redirect
         }
 
-        if self.running_v2_and_above():
+        if self.running_urllib3_v2_and_above():
             kwargs['allowed_methods'] = kwargs['method_whitelist']
             del kwargs['method_whitelist']
 
