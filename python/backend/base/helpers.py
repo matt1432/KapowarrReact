@@ -34,6 +34,7 @@ from multidict import CIMultiDict, CIMultiDictProxy
 from requests import Session as RSession
 from requests.adapters import HTTPAdapter, Retry
 from requests.structures import CaseInsensitiveDict
+from urllib3._version import __version__ as urllib3_version
 from yarl import URL
 
 if TYPE_CHECKING:
@@ -678,6 +679,66 @@ class DictKeyedDict(dict):
 
 
 # region Requests
+class BackportRetry(Retry):
+    """
+    In urllib3 v2.0.0+, the method_whitelist argument of the Retry class was
+    renamed to allowed_methods. But loads of users are still running v1, so
+    this class ensures that both major versions are supported.
+    """
+
+    def running_v2_and_above(self) -> bool:
+        """Detect whether urllib3 version v2.0.0+ is used or not.
+
+        Returns:
+            bool: True if v2.0.0+ is used.
+        """
+        major_version = int(urllib3_version.lower().lstrip('v').split('.')[0])
+        return major_version >= 2
+
+    def __init__(
+        self,
+        total=10,
+        connect=None,
+        read=None,
+        redirect=None,
+        status=None,
+        method_whitelist=frozenset(
+            ["HEAD", "GET", "PUT", "DELETE", "OPTIONS", "TRACE"]
+        ),
+        status_forcelist=None,
+        backoff_factor=0,
+        raise_on_redirect=True,
+        raise_on_status=True,
+        history=None,
+        respect_retry_after_header=True,
+        remove_headers_on_redirect=frozenset(
+            ["Cookie", "Authorization", "Proxy-Authorization"]
+        )
+    ):
+        kwargs = {
+            'total': total,
+            'connect': connect,
+            'read': read,
+            'redirect': redirect,
+            'status': status,
+            'method_whitelist': method_whitelist,
+            'status_forcelist': status_forcelist,
+            'backoff_factor': backoff_factor,
+            'raise_on_redirect': raise_on_redirect,
+            'raise_on_status': raise_on_status,
+            'history': history,
+            'respect_retry_after_header': respect_retry_after_header,
+            'remove_headers_on_redirect': remove_headers_on_redirect
+        }
+
+        if self.running_v2_and_above():
+            kwargs['allowed_methods'] = kwargs['method_whitelist']
+            del kwargs['method_whitelist']
+
+        super().__init__(**kwargs)
+        return
+
+
 class Session(RSession):
     """
     Inherits from `requests.Session`. Adds retries, sets user agent and handles
@@ -691,9 +752,9 @@ class Session(RSession):
 
         self.fs = FlareSolverr()
 
-        retries = Retry(
+        retries = BackportRetry(
             total=Constants.TOTAL_RETRIES,
-            method_whitelist=frozenset(),  # type: ignore
+            method_whitelist=frozenset(),
             status_forcelist=Constants.STATUS_FORCELIST_RETRIES,
             backoff_factor=Constants.BACKOFF_FACTOR_RETRIES,
         )
