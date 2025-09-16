@@ -116,19 +116,27 @@ def _set_websocket_threads_names() -> None:
     """Monkey patch some websocket methods to give the resulting threads
     a better name. Helps to identify threads when debugging.
     """
-    original_handle_request = IOServer.handle_request
+    if hasattr(IOSocket, "schedule_ping"):
 
-    def schedule_ping(self):
-        t = self.server.start_background_task(self._send_ping)
-        t.name = "WebSocketPingerThread"
+        def schedule_ping(self):
+            t = self.server.start_background_task(self._send_ping)
+            t.name = "WebSocketPingerThread"
 
-    def handle_request(self, environ, start_response):
-        result = original_handle_request(self, environ, start_response)
-        self.service_task_handle.name = "WebSocketHandlerThread"
-        return result
+        IOSocket.schedule_ping = schedule_ping
 
-    IOSocket.schedule_ping = schedule_ping
-    IOServer.handle_request = handle_request
+    if hasattr(IOServer, "_handle_connect"):
+        original_handle_connect = IOServer._handle_connect
+
+        def _handle_connect(self, environ, start_response, transport, jsonp_index=None):
+            result = original_handle_connect(
+                self, environ, start_response, transport, jsonp_index
+            )
+            if self.service_task_handle is not None:
+                self.service_task_handle.name = "WebSocketConnectThread"
+            return result
+
+        IOServer._handle_connect = _handle_connect
+
     return
 
 
