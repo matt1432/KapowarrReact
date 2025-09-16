@@ -84,6 +84,11 @@ export default function History({
             isVisible: true,
         },
         {
+            name: 'success',
+            label: () => translate('Status'),
+            isVisible: true,
+        },
+        {
             name: 'actions',
             label: '',
             isVisible: true,

@@ -1316,3 +1316,19 @@ class MigrateHashPassword(DBMigrator):
             s.update({"auth_password": settings.auth_password})
 
         return
+
+
+class MigrateAddSuccessToDownloadHistory(DBMigrator):
+    start_version = 45
+
+    def run(self) -> None:
+        # V45 -> V46
+
+        from backend.internals.db import get_db
+
+        get_db().execute("""
+            ALTER TABLE download_history ADD COLUMN
+                success BOOL;
+        """)
+
+        return

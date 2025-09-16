@@ -402,6 +402,7 @@ def setup_db() -> None:
 
             source VARCHAR(25),
             downloaded_at INTEGER NOT NULL CHECK (downloaded_at > 0),
+            success BOOL,
 
             FOREIGN KEY (volume_id) REFERENCES volumes(id)
                 ON DELETE SET NULL,

@@ -6,6 +6,9 @@ import { useEffect } from 'react';
 // Redux
 import { useLazyGetIssueQuery } from 'Store/Api/Issues';
 
+// Misc
+import translate from 'Utilities/String/translate';
+
 // General Components
 import RelativeDateCell from 'Components/Table/Cells/RelativeDateCell';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
@@ -31,6 +34,7 @@ export default function HistoryRow({
     webSubTitle,
     fileTitle,
     downloadedAt,
+    success,
     showVolumes,
     showIssues,
 }: HistoryRowProps) {
@@ -68,6 +72,8 @@ export default function HistoryRow({
             <TableRowCell>{fileTitle}</TableRowCell>
 
             <RelativeDateCell date={downloadedAt * 1000} includeSeconds={true} includeTime={true} />
+
+            <TableRowCell>{success ? translate('Completed') : translate('Failed')}</TableRowCell>
         </TableRow>
     );
 }

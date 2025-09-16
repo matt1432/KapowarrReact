@@ -34,6 +34,7 @@ export interface RawDownloadHistoryItem {
     issue_id: number;
     source: string;
     downloaded_at: number;
+    success: boolean;
 }
 
 export type DownloadHistoryItem = CamelCasedProperties<RawDownloadHistoryItem>;
