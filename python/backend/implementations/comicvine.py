@@ -285,7 +285,7 @@ class ComicVine:
         """
         result: VolumeMetadata = {
             "comicvine_id": int(volume_data["id"]),
-            "title": normalise_string(volume_data["name"]),
+            "title": normalise_string(volume_data["name"] or ""),
             "year": normalise_year(volume_data.get("start_year", "")),
             "volume_number": 1,
             "cover_link": volume_data["image"]["small_url"],
@@ -330,7 +330,7 @@ class ComicVine:
             "volume_id": int(issue_data["volume"]["id"]),
             "issue_number": issue_data["issue_number"].replace("/", "-").strip(),
             "calculated_issue_number": cin if cin is not None else 0.0,
-            "title": normalise_string(issue_data["name"]) or None,
+            "title": normalise_string(issue_data["name"] or "") or None,
             "date": issue_data[self.date_type] or None,
             "description": _clean_description(issue_data["description"], short=True),
         }
