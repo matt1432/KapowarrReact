@@ -331,6 +331,8 @@ class SocketEvent(BaseEnum):
 
     MASS_EDITOR_STATUS = "mass_editor_status"
 
+    DOWNLOADED_STATUS = "downloaded_status"
+
 
 class FailReason(BaseEnum):
     BROKEN = "GetComics page unavailable"

@@ -77,7 +77,12 @@ def add_to_history(download: Download) -> None:
 
 def add_file_to_database(download: Download) -> None:
     "Register files in database and match to a volume/issue"
-    scan_files(download.volume_id, download=download, filepath_filter=download.files)
+    scan_files(
+        download.volume_id,
+        download=download,
+        filepath_filter=download.files,
+        update_websocket=True,
+    )
     return
 
 
@@ -141,7 +146,9 @@ def move_torrent_to_dest(download: Download) -> None:
     if not download.files:
         return
 
-    scan_files(download.volume_id, filepath_filter=download.files)
+    scan_files(
+        download.volume_id, filepath_filter=download.files, update_websocket=True
+    )
 
     rename_files = Settings().sv.rename_downloaded_files
     if rename_files:
@@ -184,7 +191,9 @@ def copy_file_torrent(download: TorrentDownload) -> None:
     if not download.files:
         return
 
-    scan_files(download.volume_id, filepath_filter=download.files)
+    scan_files(
+        download.volume_id, filepath_filter=download.files, update_websocket=True
+    )
 
     rename_files = Settings().sv.rename_downloaded_files
     if rename_files:
@@ -235,6 +244,8 @@ def convert_file(download: Download) -> None:
         download.issue_id,
         filepath_filter=download.files,
         download=download,
+        update_websocket_progress=True,
+        update_websocket_files=True,
     )
     return
 

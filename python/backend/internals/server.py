@@ -474,6 +474,36 @@ class WebSocket(SocketIO, metaclass=Singleton):
         )
         return
 
+    def update_downloaded_status(
+        self,
+        volume_id: int,
+        not_downloaded_issues: list[int] = [],
+        downloaded_issues: list[int] = [],
+    ) -> None:
+        """Send a message with the changes in which issues are downloaded and
+        which aren't.
+
+        Args:
+            volume_id (int): The ID of the volume.
+
+            not_downloaded_issues (List[int], optional): The issue IDs that were
+            previously downloaded, but aren't anymore.
+                Defaults to [].
+
+            downloaded_issues (List[int], optional): The issue IDs that were
+            previously not downloaded, but now are.
+                Defaults to [].
+        """
+        self.emit(
+            SocketEvent.DOWNLOADED_STATUS.value,
+            {
+                "volume_id": volume_id,
+                "not_downloaded_issues": not_downloaded_issues,
+                "downloaded_issues": downloaded_issues,
+            },
+        )
+        return
+
 
 def setup_process(
     log_level: int,

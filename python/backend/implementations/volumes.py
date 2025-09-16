@@ -1238,6 +1238,7 @@ def scan_files(
     volume_id: int,
     filepath_filter: list[str] = [],
     del_unmatched_files: bool = True,
+    update_websocket: bool = False,
     download: Download | None = None,
 ) -> None:
     """Scan inside the volume folder for files and map them to issues.
@@ -1252,6 +1253,10 @@ def scan_files(
         del_unmatched_files (bool, optional): Delete file entries in the DB
         that aren't linked to anything anymore.
             Defaults to True.
+
+        update_websocket (bool, optional): Send websocket messages on changes
+        about the download status of the issues.
+            Defaults to False.
     """
     LOGGER.debug(f"Scanning for files for {volume_id}")
 
@@ -1344,50 +1349,74 @@ def scan_files(
 
     cursor = get_db()
 
-    # Delete bindings that aren't in new bindings
+    # Find out what exactly is deleted, added, which issues are now downloaded,
+    # and which are now not downloaded
+    current_bindings: list[tuple[int, int]] = [
+        tuple(b)
+        for b in cursor.execute(
+            """
+            SELECT if.file_id, if.issue_id
+            FROM issues_files if
+            INNER JOIN issues i
+            ON if.issue_id = i.id
+            WHERE i.volume_id = ?;
+            """,
+            (volume_id,),
+        )
+    ]
+    delete_bindings = tuple(b for b in current_bindings if b not in bindings)
+    add_bindings = tuple(b for b in bindings if b not in current_bindings)
+    issue_binding_count = {}
+    for file_id, issue_id in current_bindings:
+        issue_binding_count[issue_id] = issue_binding_count.setdefault(issue_id, 0) + 1
+
+    newly_downloaded_issues: list[int] = []
+    for file_id, issue_id in add_bindings:
+        if issue_binding_count.setdefault(issue_id, 0) == 0:
+            newly_downloaded_issues.append(issue_id)
+        issue_binding_count[issue_id] += 1
+
+    # This list is only valid if there isn't a filepath_filter
+    deleted_downloaded_issues: list[int] = []
+    for file_id, issue_id in delete_bindings:
+        issue_binding_count[issue_id] -= 1
+        if issue_binding_count[issue_id] == 0:
+            deleted_downloaded_issues.append(issue_id)
+
+    del current_bindings
+    del issue_binding_count
+
     if not filepath_filter:
-        current_bindings: list[tuple[int, int]] = [
-            tuple(b)
-            for b in cursor.execute(
-                """
-                SELECT if.file_id, if.issue_id
-                FROM issues_files if
-                INNER JOIN issues i
-                ON if.issue_id = i.id
-                WHERE i.volume_id = ?;
-                """,
-                (volume_id,),
-            )
-        ]
-        delete_bindings = tuple(b for b in current_bindings if b not in bindings)
+        # Delete bindings that aren't in new bindings
         cursor.executemany(
             "DELETE FROM issues_files WHERE file_id = ? AND issue_id = ?;",
             delete_bindings,
         )
+
         if settings.unmonitor_deleted_issues:
-            # Unmonitor issues that have no files bound to them anymoreAdd commentMore actions
-            issue_binding_count = {
-                issue_id: 0 for _file_id, issue_id in current_bindings
-            }
-            for _file_id, issue_id in current_bindings:
-                issue_binding_count[issue_id] += 1
-
-            for _file_id, issue_id in delete_bindings:
-                issue_binding_count[issue_id] -= 1
-
             cursor.executemany(
                 "UPDATE issues SET monitored = 0 WHERE id = ?;",
-                (
-                    (issue_id,)
-                    for issue_id, count in issue_binding_count.items()
-                    if count == 0
-                ),
+                ((issue_id,) for issue_id in deleted_downloaded_issues),
             )
 
     # Add bindings that aren't in current bindings
     cursor.executemany(
-        "INSERT OR IGNORE INTO issues_files(file_id, issue_id) VALUES (?, ?);", bindings
+        "INSERT INTO issues_files(file_id, issue_id) VALUES (?, ?);", add_bindings
     )
+    if update_websocket:
+        if not filepath_filter and (
+            deleted_downloaded_issues or newly_downloaded_issues
+        ):
+            WebSocket().update_downloaded_status(
+                volume_id,
+                not_downloaded_issues=deleted_downloaded_issues,
+                downloaded_issues=newly_downloaded_issues,
+            )
+
+        elif filepath_filter and newly_downloaded_issues:
+            WebSocket().update_downloaded_status(
+                volume_id, downloaded_issues=newly_downloaded_issues
+            )
 
     # Delete bindings for general files that aren't in new bindings
     if not filepath_filter:
@@ -1656,10 +1685,10 @@ def refresh_and_scan(
 
     # Scan for files
     if volume_id:
-        scan_files(volume_id)
+        scan_files(volume_id, update_websocket=update_websocket)
 
     else:
-        v_ids = [(v[0], [], False) for v in cv_to_id_fetch.values()]
+        v_ids = [(v[0], [], False, update_websocket) for v in cv_to_id_fetch.values()]
         total_count = len(v_ids)
 
         if not total_count:
@@ -1700,27 +1729,39 @@ def delete_issue_file(file_id: int) -> None:
     else:
         delete_file_folder(file_data["filepath"])
 
-    if unmonitor_deleted_issues:
-        get_db().execute(
+    cursor = get_db()
+    not_downloaded_issues: list[int] = first_of_column(
+        cursor.execute(
             """
-            WITH matched_file_counts AS (
-                SELECT issue_id, COUNT(file_id) AS matched_file_count
+        WITH matched_file_counts AS (
+            SELECT
+                issue_id,
+                COUNT(file_id) AS matched_file_count
+            FROM issues_files
+            WHERE issue_id IN (
+                SELECT issue_id
                 FROM issues_files
-                WHERE issue_id IN (
-                    SELECT issue_id
-                    FROM issues_files
-                    WHERE file_id = ?
-                )
-                GROUP BY issue_id
+                WHERE file_id = ?
             )
-            UPDATE issues
-            SET monitored = 0
-            WHERE id IN (
-                SELECT issue_id FROM matched_file_counts
-                WHERE matched_file_count = 1
-            );
-            """,
+            GROUP BY issue_id
+        )
+        SELECT issue_id
+        FROM matched_file_counts
+        WHERE matched_file_count = 1
+        """,
             (file_id,),
+        )
+    )
+
+    if volume_id:
+        WebSocket().update_downloaded_status(
+            volume_id, not_downloaded_issues=not_downloaded_issues
+        )
+
+    if unmonitor_deleted_issues:
+        cursor.executemany(
+            "UPDATE issues SET monitored = 0 WHERE id = ?;",
+            ((i,) for i in not_downloaded_issues),
         )
 
     FilesDB.delete_file(file_id)

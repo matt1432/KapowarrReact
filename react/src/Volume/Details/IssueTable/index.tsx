@@ -29,6 +29,9 @@ import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { TableOptionsChangePayload } from 'typings/Table';
 import type { IssueColumnName, IssueData, IssueFileData } from 'Issue/Issue';
 import type { Column } from 'Components/Table/Column';
+import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
+import type { SocketEventHandler } from 'typings/Socket';
+import type { socketEvents } from 'Helpers/Props';
 
 export interface IssueRowData extends IssueData {
     issue: IssueData;
@@ -162,6 +165,22 @@ export default function IssueTable({ volumeId }: IssueTableProps) {
             });
         }
     }, [refetch, isSuccess]);
+
+    const onDownloadedStatusUpdate = useCallback<
+        SocketEventHandler<typeof socketEvents.DOWNLOADED_STATUS>
+    >(
+        ({ volumeId: id }) => {
+            if (volumeId !== id) {
+                return;
+            }
+            refetch();
+        },
+        [volumeId, refetch],
+    );
+
+    useSocketEvents({
+        downloadedStatus: onDownloadedStatusUpdate,
+    });
 
     const lastToggledIssue = useRef<number | null>(null);
 
