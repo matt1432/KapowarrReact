@@ -1,6 +1,13 @@
 #!/bin/sh
 
-# TODO: build if $KAPOWARR_WEB is not set
+if [ ! -d "$KAPOWARR_WEB" ]; then
+    cd ./react || exit 1
+
+    npm ci
+    npm run build
+
+    KAPOWARR_WEB="./react/dist/static"
+fi
 
 for dir in "$KAPOWARR_WEB"/*; do
     if [ "$dir" != "$KAPOWARR_WEB" ]; then
