@@ -1358,9 +1358,10 @@ class MigrateSeperateCoversTable(DBMigrator):
                 SELECT id, cover
                 FROM volumes;
 
-            CREATE TEMPORARY TABLE temp_volumes_43 AS SELECT
+            CREATE TEMPORARY TABLE temp_volumes_46 AS SELECT
                 id,
                 comicvine_id,
+                libgen_url,
                 title,
                 alt_title,
                 year,
@@ -1382,6 +1383,7 @@ class MigrateSeperateCoversTable(DBMigrator):
             CREATE TABLE volumes(
                 id INTEGER PRIMARY KEY,
                 comicvine_id INTEGER NOT NULL,
+                libgen_url VARCHAR(255),
                 title VARCHAR(255) NOT NULL,
                 alt_title VARCHAR(255),
                 year INTEGER(5),
@@ -1403,10 +1405,28 @@ class MigrateSeperateCoversTable(DBMigrator):
 
             INSERT INTO volumes
                 SELECT *
-                FROM temp_volumes_43;
+                FROM temp_volumes_46;
 
             COMMIT;
             PRAGMA foreign_keys = ON;
         """)
 
+        return
+
+
+class MigrateAddLibgenURLToVolumesAgain(DBMigrator):
+    start_version = 47
+
+    def run(self) -> None:
+        # V47 -> V48
+
+        # For myself since I lost that column after mistake from
+        # previous migration
+
+        # from backend.internals.db import get_db
+
+        # get_db().execute("""
+        #     ALTER TABLE volumes ADD COLUMN
+        #         libgen_url VARCHAR(255);
+        # """)
         return
