@@ -376,6 +376,11 @@ class BaseDirectDownload(Download):
             finally:
                 self.__r = None
 
+        if self.size != -1 and size_downloaded != self.size:
+            # Download completed, but downloaded size is not equal
+            # to reported size of file
+            self._state = DownloadState.FAILED_STATE
+
         return
 
     def stop(self, state: DownloadState = DownloadState.CANCELED_STATE) -> None:
