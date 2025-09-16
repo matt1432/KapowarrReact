@@ -872,6 +872,13 @@ class AsyncSession(ClientSession):
         for round in range(1, Constants.TOTAL_RETRIES + 1):
             try:
                 response = await super()._request(*args, **kwargs)
+                LOGGER.debug(
+                    'Made async request: %s "%s" %d %d',
+                    method,
+                    response.url,
+                    response.status,
+                    response.headers.get("Content-Length", -1),
+                )
 
                 if response.status in Constants.STATUS_FORCELIST_RETRIES:
                     raise ClientError
