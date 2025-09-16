@@ -46,7 +46,6 @@ lint.ignore = ["E501"]
 include-package-data = false
 
 [tool.setuptools.package-data]
-"backend.lib" = ["*"]
 "frontend" = ["templates/*"]
 "frontend.static" = ["css/*", "img/*", "js/*.js", "fonts/*"]
 

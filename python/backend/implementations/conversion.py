@@ -10,7 +10,7 @@ from zipfile import ZipFile
 from backend.base.definitions import Download, FileConstants, FileConverter
 from backend.base.helpers import PortablePool, filtered_iter, get_subclasses
 from backend.base.logging import LOGGER
-from backend.implementations.converters import run_rar
+from backend.implementations.converters import run_rar, try_rar
 from backend.implementations.volumes import Volume, scan_files
 from backend.internals.db import commit
 from backend.internals.db_models import FilesDB
@@ -36,6 +36,9 @@ def archive_contains_issues(archive_file: str) -> bool:
             namelist = zip.namelist()
 
     elif ext == ".rar":
+        if not try_rar():
+            return False
+
         namelist = run_rar(
             [
                 "lb",  # List archive contents bare

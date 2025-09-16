@@ -64,13 +64,6 @@ class Constants:
     ZIP_MIN_MOD_TIME = 315619200  # epoch
     "The minimum modification time that a file inside a zip should have"
 
-    RAR_EXECUTABLES = {
-        "linux": "rar_linux_64",
-        "darwin": "rar_bsd_64",
-        "win32": "rar_windows_64.exe",
-    }
-    "A mapping of the OS to the rar executable to use"
-
     DEFAULT_USERAGENT = "Kapowarr"
     "The user agent to use when making web requests"
 

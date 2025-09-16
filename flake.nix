@@ -97,7 +97,7 @@
         typescript,
         ...
       }: let
-        inherit (lib) attrValues getExe;
+        inherit (lib) attrValues makeBinPath;
         inherit (builtins) fromTOML readFile;
 
         pyproject = fromTOML (readFile ./pyproject.toml);
@@ -134,13 +134,6 @@
               ;
           };
 
-          postPatch = ''
-            substituteInPlace ./python/backend/implementations/converters.py \
-                --replace-fail \
-                    'exe = folder_path("backend", "lib", Constants.RAR_EXECUTABLES[platform])' \
-                    'exe = "${getExe rar}"'
-          '';
-
           preBuild = ''
             for dir in ${kapowarr-web}/share/kapowarr-web/*; do
                 if [[ "$dir" != "${kapowarr-web}/share/kapowarr-web" ]]; then
@@ -153,6 +146,12 @@
                     fi
                 fi
             done
+          '';
+
+          preFixup = ''
+            makeWrapperArgs+=(
+                --prefix PATH : ${makeBinPath [rar]}
+            )
           '';
 
           meta = {

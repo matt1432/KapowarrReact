@@ -7,7 +7,6 @@ from __future__ import annotations
 from os import utime
 from os.path import basename, dirname, getmtime, join, splitext
 from subprocess import run
-from sys import platform
 from typing import TYPE_CHECKING, final
 from zipfile import ZipFile
 
@@ -23,7 +22,6 @@ from backend.base.files import (
     create_zip_archive,
     delete_empty_parent_folders,
     delete_file_folder,
-    folder_path,
     generate_archive_folder,
     list_files,
     rename_file,
@@ -39,20 +37,25 @@ if TYPE_CHECKING:
     from subprocess import CompletedProcess
 
 
+def try_rar() -> bool:
+    try:
+        run(["rar", "-?"], capture_output=True, text=True)
+    except FileNotFoundError as exc:
+        LOGGER.error(f"RAR executable could not be found.\n{exc}")
+        return False
+    return True
+
+
 def run_rar(args: list[str]) -> CompletedProcess[str]:
-    """Run rar executable. Platform is taken care of inside function.
+    """Run rar executable from path.
 
     Args:
         args (List[str]): The arguments to give to the executable.
 
-    Raises:
-        KeyError: Platform not supported.
-
     Returns:
         CompletedProcess[str]: The result of the process.
     """
-    exe = folder_path("backend", "lib", Constants.RAR_EXECUTABLES[platform])
-    return run([exe, *args], capture_output=True, text=True)
+    return run(["rar", *args], capture_output=True, text=True)
 
 
 def extract_files_from_folder(source_folder: str, volume_id: int) -> list[str]:
@@ -132,6 +135,9 @@ class ZIPtoRAR(FileConverter):
 
     @staticmethod
     def convert(file: str) -> list[str]:
+        if not try_rar():
+            return []
+
         volume_id = FilesDB.volume_of_file(file)
         if not volume_id:
             # File not matched to volume
@@ -278,6 +284,9 @@ class RARtoZIP(FileConverter):
 
     @staticmethod
     def convert(file: str) -> list[str]:
+        if not try_rar():
+            return []
+
         volume_id = FilesDB.volume_of_file(file)
         if not volume_id:
             # File not matched to volume
@@ -334,6 +343,9 @@ class RARtoFOLDER(FileConverter):
 
     @staticmethod
     def convert(file: str) -> list[str]:
+        if not try_rar():
+            return []
+
         volume_id = FilesDB.volume_of_file(file)
         if not volume_id:
             # File not matched to volume
