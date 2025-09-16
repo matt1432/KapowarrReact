@@ -19,6 +19,7 @@ from os.path import (
 )
 from re import compile
 from shutil import copy2, copytree, move, rmtree
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from backend.base.definitions import CharConstants, Constants, FileConstants
 from backend.base.helpers import check_filter, force_prefix, force_suffix
@@ -367,6 +368,19 @@ def create_folder(folder: str) -> None:
         folder (str): The path to the folder to create.
     """
     makedirs(folder, exist_ok=True)
+    return
+
+
+def create_zip_archive(base_folder: str, zip_filename: str) -> None:
+    """Put all files in a folder (recursively) into a zip archive.
+
+    Args:
+        base_folder (str): The folder to zip. The folder itself is not included.
+        zip_filename (str): The path of the zip file to create.
+    """
+    with ZipFile(zip_filename, "w", ZIP_DEFLATED) as zip:
+        for file in list_files(base_folder):
+            zip.write(file, relpath(file, base_folder))
     return
 
 

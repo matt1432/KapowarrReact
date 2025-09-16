@@ -32,7 +32,7 @@ def archive_contains_issues(archive_file: str) -> bool:
     ext = splitext(archive_file)[1].lower()
 
     if ext == ".zip":
-        with ZipFile(archive_file) as zip:
+        with ZipFile(archive_file, "r") as zip:
             namelist = zip.namelist()
 
     elif ext == ".rar":
