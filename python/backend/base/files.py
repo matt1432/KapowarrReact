@@ -2,9 +2,8 @@
 Handling folders, files and filenames.
 """
 
-from collections import deque
 from collections.abc import Iterable, Sequence
-from os import PathLike, listdir, makedirs, remove, scandir
+from os import listdir, makedirs, remove, scandir
 from os.path import (
     abspath,
     basename,
@@ -22,10 +21,8 @@ from re import compile
 from shutil import copy2, copytree, move, rmtree
 
 from backend.base.definitions import CharConstants, Constants, FileConstants
-from backend.base.helpers import check_filter, force_suffix
+from backend.base.helpers import check_filter, force_prefix, force_suffix
 from backend.base.logging import LOGGER
-
-StrPath = str | PathLike[str]
 
 filepath_cleaner = compile(r"(<|>|(?<!^\w):|\"|\||\?|\*|\x00|(?:\s|\.)+(?=$|\\|/))")
 smart_filepath_cleaner_compact = compile(r"(\b[<>:]\b)")
@@ -33,69 +30,113 @@ smart_filepath_cleaner_spaced = compile(r"(\b\s[<>]\s\b|\b:\s\b)")
 smart_filestring_cleaner_compact = compile(r"((?:\b|^)/(?:\b|$))")
 
 
-# region Conversion
-def dirname_times(path: str, amount: int = 1) -> str:
-    """Apply `os.path.dirname` to `path` for `amount` times.
-
-    Args:
-        path (str): The path to apply to.
-        amount (int, optional): The amount of times to apply dirname.
-            Defaults to 1.
-
-    Returns:
-        str: The resulting path.
-    """
-    for _ in range(0, amount):
-        path = dirname(path)
-    return path
-
-
+# region Getting
 def folder_path(*folders: str) -> str:
     """Turn filepaths relative to the project folder into absolute paths.
 
     Returns:
         str: The absolute filepath.
     """
-    return join(dirname_times(abspath(__file__), 3), *folders)
+    return join(dirname(dirname(dirname(abspath(__file__)))), *folders)
 
 
+def list_files(folder: str, ext: Iterable[str] = []) -> list[str]:
+    """List all files in a folder recursively with absolute paths. Hidden files
+    (files starting with `.`) are ignored.
+
+    Args:
+        folder (str): The base folder to search through.
+
+        ext (Iterable[str], optional): File extensions to only include.
+            Dot-prefix not necessary. Let empty to allow all extensions.
+            Defaults to [].
+
+    Returns:
+        List[str]: The paths of the files in the folder.
+    """
+    files: list[str] = []
+
+    def _list_files(folder: str, ext: set[str] = set()):
+        """Internal function to add all files in a folder to the files list.
+
+        Args:
+            folder (str): The base folder to search through.
+            ext (Set[str], optional): A set of lowercase, dot-prefixed,
+            extensions to filter for or empty for no filter. Defaults to set().
+        """
+        for f in scandir(folder):
+            if f.is_dir():
+                _list_files(f.path, ext)
+
+            elif (
+                f.is_file()
+                and not f.name.startswith(".")
+                and check_filter(splitext(f.name)[1].lower(), ext)
+            ):
+                files.append(f.path)
+
+    ext = {force_prefix(e.lower(), ".") for e in ext}
+    _list_files(folder, ext)
+    return list(files)
+
+
+def get_archive_mimetype(filepath: str) -> str | None:
+    """Find the archive type of a file based on its actual mimetype (via magic
+    bytes) and return accompanying extension if found.
+
+    This function is not very fast because it has to read the first few bytes
+    of the file. So only use when really necessary.
+
+    Args:
+        filepath (str): The (archive) file to check for.
+
+    Returns:
+        Union[str, None]: The proper lowercase file extension without dot-prefix,
+            or None if it wasn't found or the file isn't an archive.
+    """
+    max_len = max(len(sig) for sig in FileConstants.ARCHIVE_MAGIC_BYTES)
+
+    with open(filepath, "rb") as f:
+        file_start = f.read(max_len)
+        for sig, ext in FileConstants.ARCHIVE_MAGIC_BYTES.items():
+            if file_start.startswith(sig):
+                return ext
+        return None
+
+
+# region Checking
 def folder_is_inside_folder(base_folder: str, folder: str) -> bool:
-    """Check if folder is inside base_folder.
+    """Check whether `folder` is inside `base_folder`. If folders are equal,
+    they are also considered inside.
+
+    ```
+    >>> folder_is_inside_folder('/foo', '/foo/bar')
+    True
+    >>> folder_is_inside_folder('/foo', '/foo2/bar')
+    False
+    >>> folder_is_inside_folder('/foo/', '/foo')
+    True
+    ```
 
     Args:
         base_folder (str): The base folder to check against.
-        folder (str): The folder that should be inside base_folder.
+        folder (str): The folder that should be inside `base_folder`.
 
     Returns:
-        bool: Whether or not folder is in base_folder.
+        bool: Whether `folder` is in `base_folder`.
     """
     return (force_suffix(abspath(folder))).startswith(
         force_suffix(abspath(base_folder))
     )
 
 
-def find_common_folder(files: Sequence[str]) -> str:
-    """Find the deepest folder that is shared between the files.
-
-    Args:
-        files (Sequence[str]): The list of files to find the deepest common folder
-        for.
-
-    Returns:
-        str: The path of the deepest common folder.
-    """
-    if len(files) == 1:
-        return dirname(files[0])
-
-    return commonpath(files)
-
-
+# region Conversion
 def uppercase_drive_letter(path: str) -> str:
     """Return the input, but if it's a Windows path that starts with a drive
     letter, then return the path with the drive letter uppercase.
 
     Args:
-        path (str): The input path, possibly a windows path with a drive letter.
+        path (str): The input path, possibly a Windows path with a drive letter.
 
     Returns:
         str: The input path, but with an upper case Windows drive letter if
@@ -126,15 +167,9 @@ def set_detected_extension(filepath: str) -> str:
     Returns:
         str: The filepath with the correct extension based on the archive type.
     """
-    max_len = max(len(sig) for sig in FileConstants.ARCHIVE_MAGIC_BYTES)
-
-    with open(filepath, "rb") as f:
-        file_start = f.read(max_len)
-        for sig, ext in FileConstants.ARCHIVE_MAGIC_BYTES.items():
-            if file_start.startswith(sig):
-                break
-        else:
-            return filepath
+    ext = get_archive_mimetype(filepath)
+    if ext is None:
+        return filepath
 
     # Found archive type
     file_parts = splitext(filepath)
@@ -157,8 +192,13 @@ def set_detected_extension(filepath: str) -> str:
 
 
 def clean_filepath_simple(filepath: str) -> str:
-    """Clean a filepath by removing illegal characters. This makes it safe for
-    a use in a filesystem.
+    """Clean a filepath by removing illegal characters. This makes it safe to
+    use in a filesystem.
+
+    ```
+    >>> clean_filepath_simple('/comics/Batman: The Start... ')
+    '/comics/Batman The Start'
+    ```
 
     Args:
         filepath (str): The filepath to be cleaned.
@@ -173,7 +213,12 @@ def clean_filepath_simple(filepath: str) -> str:
 def clean_filepath_smartly(filepath: str) -> str:
     """Clean a filepath by replacing illegal characters smartly. Either remove
     the character, replace it with a dash or dash with spaces around it. This
-    makes it safe for a use in a filesystem.
+    makes it safe to use in a filesystem.
+
+    ```
+    >>> clean_filepath_smartly('/comics/Batman: Joker>Riddler... ')
+    '/comics/Batman - Joker-Riddler'
+    ```
 
     Args:
         filepath (str): The filepath to be cleaned.
@@ -189,7 +234,12 @@ def clean_filepath_smartly(filepath: str) -> str:
 
 def clean_filestring_simple(filestring: str) -> str:
     """Clean a part of a filename (so no path seperators) by removing illegal
-    characters. This makes it safe for a use in a filesystem.
+    characters. This makes it safe to use in a filesystem.
+
+    ```
+    >>> clean_filestring_simple('Batman/Bruce: Which one is it?')
+    'BatmanBruce Which one is it'
+    ```
 
     Args:
         filestring (str): The string to clean.
@@ -203,7 +253,12 @@ def clean_filestring_simple(filestring: str) -> str:
 def clean_filestring_smartly(filestring: str) -> str:
     """Clean a part of a filename (so no path seperators) by replacing illegal
     characters smartly. Either remove the character, replace it with a dash or
-    dash with spaces around it. This makes it safe for a use in a filesystem.
+    dash with spaces around it. This makes it safe to use in a filesystem.
+
+    ```
+    >>> clean_filestring_smartly('Batman/Bruce: Which one is it?')
+    'Batman-Bruce - Which one is it'
+    ```
 
     Args:
         filestring (str): The string to clean.
@@ -217,52 +272,48 @@ def clean_filestring_smartly(filestring: str) -> str:
     return save_filepath
 
 
-def list_files(folder: str, ext: Iterable[str] = []) -> list[str]:
-    """List all files in a folder recursively with absolute paths. Hidden files
-    (files starting with `.`) are ignored.
+# region Processing
+def common_folder(files: Sequence[str]) -> str:
+    """Find the deepest folder that is shared between the folders and files.
+
+    ```
+    >>> common_folder(['/foo/bar/baz', '/foo/bar/quux/tac.cbr'])
+    '/foo/bar'
+    >>> common_folder(['/foo/bar/baz'])
+    '/foo/bar/baz'
+    ```
 
     Args:
-        folder (str): The base folder to search through.
-
-        ext (Iterable[str], optional): File extensions to only include.
-        Dot-prefix not necessary.
-            Defaults to [].
+        files (Sequence[str]): The list of files to find the deepest common
+            folder for.
 
     Returns:
-        List[str]: The paths of the files in the folder.
+        str: The path of the deepest common folder.
     """
-    files: deque[str] = deque()
+    if len(files) == 1:
+        return dirname(files[0])
 
-    def _list_files(folder: str, ext: set[str] = set()) -> None:
-        """Internal function to add all files in a folder to the files list.
-
-        Args:
-            folder (str): The base folder to search through.
-            ext (Set[str], optional): A set of lowercase, dot-prefixed,
-            extensions to filter for or empty for no filter. Defaults to set().
-        """
-        for f in scandir(folder):
-            if f.is_dir():
-                _list_files(f.path, ext)
-
-            elif (
-                f.is_file()
-                and not f.name.startswith(".")
-                and check_filter(splitext(f.name)[1].lower(), ext)
-            ):
-                files.append(f.path)
-
-    ext = {"." + e.lower().lstrip(".") for e in ext}
-    _list_files(folder, ext)
-    return list(files)
+    return commonpath(files)
 
 
-def propose_basefolder_change(
+def change_basefolder(
     files: Iterable[str], current_base_folder: str, desired_base_folder: str
 ) -> dict[str, str]:
     """
     Propose new filenames with a different base folder for a list of files.
-    E.g. /current/base/folder/file.ext -> /desired_base_folder/file.ext
+    It's only a proposition, so nothing is actually renamed.
+
+    ```
+    >>> change_basefolder(
+        ['/foo/bar/baz.cbr', '/foo/bar/quux/tac.cbr'],
+        '/foo/bar',
+        '/new'
+    )
+    {
+        '/foo/bar/baz.cbr': '/new/baz.cbr',
+        '/foo/bar/quux/tac.cbr': '/new/quux/tac.cbr'
+    }
+    ```
 
     Args:
         files (Iterable[str]): Iterable of files to change base folder for.
@@ -280,7 +331,16 @@ def propose_basefolder_change(
 
 
 def generate_archive_folder(volume_folder: str, archive_file: str) -> str:
-    """Generate a folder in which the given archive file can be extracted.
+    """Generate a folder in which the given archive file can be extracted. The
+    folder is not created.
+
+    ```
+    >>> generate_archive_folder(
+        '/comics/Batman',
+        '/comics/Batman/Batman #1-100/Batman (2010) #1-100.cbr'
+    )
+    '/comics/Batman/.archive_extract_Batman #1-100_Batman (2010) #1-100'
+    ```
 
     Args:
         volume_folder (str): The volume folder that the archive file is in.
@@ -289,17 +349,18 @@ def generate_archive_folder(volume_folder: str, archive_file: str) -> str:
     Returns:
         str: The folder in which the archive file can be extracted.
     """
-    return join(
-        volume_folder,
-        Constants.ARCHIVE_EXTRACT_FOLDER
-        + "_"
-        + splitext("_".join(relpath(archive_file, volume_folder).split(sep)))[0],
+    folder_name_parts = (
+        Constants.ARCHIVE_EXTRACT_FOLDER,
+        *relpath(splitext(archive_file)[0], volume_folder).split(sep),
     )
+
+    return join(volume_folder, "_".join(folder_name_parts))
 
 
 # region Creation
 def create_folder(folder: str) -> None:
-    """Create a folder
+    """Create a folder. Also creates any parent folders if they don't exist
+    already. Allows folder to already exist.
 
     Args:
         folder (str): The path to the folder to create.
@@ -309,9 +370,7 @@ def create_folder(folder: str) -> None:
 
 
 # region Moving
-def __copy2[T: StrPath](
-    src: StrPath, dst: T, *, follow_symlinks: bool = True
-) -> T | str:
+def __copy2(src, dst, *, follow_symlinks=True):
     try:
         return copy2(src, dst, follow_symlinks=follow_symlinks)
 
@@ -337,18 +396,20 @@ def __copy2[T: StrPath](
 
 
 def rename_file(before: str, after: str) -> None:
-    """Rename a file, taking care of new folder locations and
-    the possible complications with files on OS'es.
+    """Rename a file, taking care of new folder locations and the possible
+    complications with files on OS'es. Also logs the rename.
 
     Args:
         before (str): The current filepath of the file.
         after (str): The new desired filepath of the file.
     """
+    LOGGER.debug(f"Renaming file {before} to {after}")
+
     if folder_is_inside_folder(before, after):
         # Cannot move folder into itself
-        return
-
-    LOGGER.debug(f"Renaming file {before} to {after}")
+        old_before = before
+        before = old_before + "_temp"
+        move(old_before, before, copy_function=__copy2)
 
     create_folder(dirname(after))
 
@@ -371,7 +432,8 @@ def copy_directory(source: str, target: str) -> None:
 
 # region Deletion
 def delete_file_folder(path: str) -> None:
-    """Delete a file or folder. In the case of a folder, it is deleted recursively.
+    """Delete a file or folder. In the case of a folder, it is deleted
+    recursively. Does nothing if it doesn't exist.
 
     Args:
         path (str): The path to the file or folder.
@@ -390,12 +452,21 @@ def delete_empty_parent_folders(top_folder: str, root_folder: str) -> None:
     or the root folder. Take notice of the difference between this function and
     `delete_empty_child_folders()`.
 
-    For example, with the following file structure, and
-    `top_folder="/a/b1/c1/d1", root_folder="/a"`, the folder `/a/b1/c1` is
-    deleted.
+    For example, assume the following folder and file structure:
+
     ```
-    /a/b1/c1/d1/
-    /a/b1/c2/d2.txt
+    /ant/bear/cat/dog/
+    /ant/bear/cow/deer.txt
+    ```
+
+    Then:
+
+    ```
+    >>> delete_empty_parent_folders(
+        top_folder="/ant/bear/cat/dog",
+        root_folder="/ant"
+    )
+    # Deletes "/ant/bear/cat"
     ```
 
     Args:
@@ -442,15 +513,21 @@ def delete_empty_child_folders(base_folder: str) -> None:
     notice of the difference between this function and
     `delete_empty_parent_folders()`.
 
-    For example, with the following file structure, and `base_folder="/a"`,
-    the folders `/a/b1` and `/a/b2/c2` are deleted because they don't contain
-    any files.
+    For example, assume the following folder and file structure:
+
     ```
-    /a/b1/c1/d1/
-    /a/b1/c1/d2/
-    /a/b2/c2/
-    /a/b2/c3.txt
-    /a/b3.txt
+    /ant/bear/cat/dog/
+    /ant/bear/cat/deer/
+    /ant/bee/cow/
+    /ant/bee/camel.txt
+    /ant/bat.txt
+    ```
+
+    Then:
+
+    ```
+    >>> delete_empty_child_folders(base_folder="/ant")
+    # Deletes "/ant/bear" and "/ant/bee/cow"
     ```
 
     Args:

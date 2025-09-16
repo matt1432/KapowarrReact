@@ -35,13 +35,13 @@ from backend.base.definitions import (
 )
 from backend.base.file_extraction import extract_filename_data
 from backend.base.files import (
+    change_basefolder,
     create_folder,
     delete_empty_child_folders,
     delete_empty_parent_folders,
     delete_file_folder,
     folder_is_inside_folder,
     list_files,
-    propose_basefolder_change,
     rename_file,
 )
 from backend.base.helpers import (
@@ -669,7 +669,7 @@ class Volume:
             f"from {current_root_folder.folder} to {new_root_folder.folder}"
         )
 
-        file_changes = propose_basefolder_change(
+        file_changes = change_basefolder(
             (f["filepath"] for f in self.get_all_files()),
             current_root_folder.folder,
             new_root_folder.folder,
@@ -682,7 +682,7 @@ class Volume:
         FilesDB.update_filepaths(file_changes.keys(), file_changes.values())
 
         self["root_folder"] = new_root_folder.id
-        self["folder"] = new_folder = propose_basefolder_change(
+        self["folder"] = new_folder = change_basefolder(
             (vd.folder,), current_root_folder.folder, new_root_folder.folder
         )[vd.folder]
 
@@ -719,7 +719,7 @@ class Volume:
         self["custom_folder"] = new_volume_folder is not None
         self["folder"] = new_volume_folder
 
-        file_changes = propose_basefolder_change(
+        file_changes = change_basefolder(
             (f["filepath"] for f in self.get_all_files()),
             current_volume_folder,
             new_volume_folder,

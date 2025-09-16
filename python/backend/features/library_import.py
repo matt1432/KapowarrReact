@@ -19,11 +19,11 @@ from backend.base.definitions import (
 )
 from backend.base.file_extraction import extract_filename_data
 from backend.base.files import (
+    change_basefolder,
+    common_folder,
     delete_empty_parent_folders,
-    find_common_folder,
     folder_is_inside_folder,
     list_files,
-    propose_basefolder_change,
     rename_file,
 )
 from backend.base.helpers import DictKeyedDict, batched, force_range
@@ -184,7 +184,7 @@ def import_library(matches: list[CVFileMapping], rename_files: bool = False) -> 
         else:
             continue
 
-        lcf = find_common_folder(files)
+        lcf = common_folder(files)
 
         try:
             volume_id = library.add(
@@ -212,7 +212,7 @@ def import_library(matches: list[CVFileMapping], rename_files: bool = False) -> 
         if rename_files:
             # Put files in volume folder
             vf = Volume(volume_id).vd.folder
-            file_changes = propose_basefolder_change(files, lcf, vf)
+            file_changes = change_basefolder(files, lcf, vf)
             for old, new in file_changes.items():
                 if old != new:
                     rename_file(old, new)

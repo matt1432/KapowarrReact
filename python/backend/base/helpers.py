@@ -271,6 +271,31 @@ def force_range[T](n: T | tuple[T, ...] | list[T]) -> Sequence[T]:
 
 
 # region Strings
+def force_prefix(source: str, prefix: str = sep) -> str:
+    """Add `prefix` to the start of `source`,
+    but only if it's not already there.
+
+    ```
+    >>> force_prefix('example.com', 'http://')
+    'http://example.com'
+    >>> force_prefix('http://example.com', 'http://')
+    'http://example.com'
+    ```
+
+    Args:
+        source (str): The string to process.
+        prefix (str, optional): The prefix to apply.
+            Defaults to `os.sep`.
+
+    Returns:
+        str: The resulting string with prefix applied.
+    """
+    if source.startswith(prefix):
+        return source
+    else:
+        return prefix + source
+
+
 def force_suffix(source: str, suffix: str = sep) -> str:
     """Add `suffix` to `source`, but only if it's not already there.
 
