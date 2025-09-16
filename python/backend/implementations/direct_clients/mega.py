@@ -617,6 +617,8 @@ class Mega(MegaABC):
 
                         try:
                             chunk = r.read(chunk_size)
+                            if chunk and len(chunk) != chunk_size:
+                                raise ProtocolError
 
                         except ProtocolError:
                             # Connection error, packet loss, etc. Just try again
@@ -630,10 +632,9 @@ class Mega(MegaABC):
                         f.write(chunk)
                         cbc_mac.update(chunk)
 
-                        chunk_length = len(chunk)
-                        size_downloaded += chunk_length
+                        size_downloaded += chunk_size
                         self.speed = round(
-                            chunk_length / (perf_counter() - start_time), 2
+                            chunk_size / (perf_counter() - start_time), 2
                         )
                         self.progress = round(size_downloaded / self.size * 100, 2)
                         start_time = perf_counter()
@@ -802,6 +803,8 @@ class MegaFolder(MegaABC):
 
                                 try:
                                     chunk = r.read(chunk_size)
+                                    if chunk and len(chunk) != chunk_size:
+                                        raise ProtocolError
 
                                 except ProtocolError:
                                     # Connection error, packet loss, etc. Just
@@ -816,11 +819,10 @@ class MegaFolder(MegaABC):
                                 f.write(chunk)
                                 cbc_mac.update(chunk)
 
-                                chunk_length = len(chunk)
-                                size_downloaded += chunk_length
-                                file_size_downloaded += chunk_length
+                                size_downloaded += chunk_size
+                                file_size_downloaded += chunk_size
                                 self.speed = round(
-                                    chunk_length / (perf_counter() - start_time), 2
+                                    chunk_size / (perf_counter() - start_time), 2
                                 )
                                 self.progress = round(
                                     size_downloaded / self.size * 100, 2
