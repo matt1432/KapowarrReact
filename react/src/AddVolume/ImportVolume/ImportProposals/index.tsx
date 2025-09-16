@@ -193,9 +193,19 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
             <div className={styles.buttonContainer}>
                 <Button onPress={returnToSearchPage}>{translate('Cancel')}</Button>
 
-                <Button onPress={handleImportLibrary(false)}>{translate('Import')}</Button>
+                <Button
+                    title="Add volumes, set volume folder to the folder that the files are in, don't rename the volume folder, don't rename the files."
+                    onPress={handleImportLibrary(false)}
+                >
+                    {translate('Import')}
+                </Button>
 
-                <Button onPress={handleImportLibrary(true)}>{translate('ImportRename')}</Button>
+                <Button
+                    title="Add volumes, move files into automatically generated volume folder (named following the settings), rename files."
+                    onPress={handleImportLibrary(true)}
+                >
+                    {translate('ImportRename')}
+                </Button>
             </div>
 
             <Table columns={columns}>
