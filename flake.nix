@@ -94,7 +94,6 @@
         # deps
         kapowarr-web,
         rar,
-        typescript,
         ...
       }: let
         inherit (lib) attrValues makeBinPath;
@@ -110,8 +109,6 @@
           inherit pname version;
 
           src = ./.;
-
-          nativeBuildInputs = [typescript];
 
           build-system = attrValues {
             inherit (python3Packages) setuptools;
@@ -134,19 +131,7 @@
               ;
           };
 
-          preBuild = ''
-            for dir in ${kapowarr-web}/share/kapowarr-web/*; do
-                if [[ "$dir" != "${kapowarr-web}/share/kapowarr-web" ]]; then
-                    target="./python/frontend/static/$(basename $dir)"
-
-                    if [[ -d "$target" ]]; then
-                        cp -r $dir/* "$target"
-                    else
-                        cp -r "$dir" "$target"
-                    fi
-                fi
-            done
-          '';
+          env.KAPOWARR_WEB = "${kapowarr-web}/share/kapowarr-web";
 
           preFixup = ''
             makeWrapperArgs+=(

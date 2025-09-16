@@ -19,7 +19,7 @@ def system(command: str) -> type[Command]:
 
 
 cmds = {
-    # "transpile_ts": system("cd python/frontend/static/js; tsc")
+    "build_frontend": system("./setup.sh")
 }
 
 
