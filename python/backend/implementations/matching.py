@@ -140,6 +140,7 @@ def _match_volume_number(
 def _match_special_version(
     reference_version: SpecialVersion | str | None,
     check_version: SpecialVersion | str | None,
+    volume_title: str,
     issue_number: tuple[float, float] | float | None = None,
 ) -> bool:
     """Check if Special Version's match. Takes into consideration that files
@@ -150,6 +151,8 @@ def _match_special_version(
         against.
 
         check_version (Union[SpecialVersion, str, None]): The state to check.
+
+        volume_title (str): The title of the volume.
 
         issue_number (Union[Tuple[float, float], float, None], optional): The
         issue number to check for if applicable. E.g. so that issue_number == 1
@@ -177,6 +180,9 @@ def _match_special_version(
         reference_version == SpecialVersion.VOLUME_AS_ISSUE
         and check_version == SpecialVersion.NORMAL
     ):
+        return True
+
+    if "omnibus" in volume_title.lower() and check_version == SpecialVersion.OMNIBUS:
         return True
 
     # Volume's Special Version could be one that often isn't explicitly
@@ -262,6 +268,7 @@ def file_importing_filter(
     matching_special_version = _match_special_version(
         volume_data.special_version,
         file_data["special_version"],
+        volume_data.title,
         file_data["issue_number"],
     )
 
@@ -317,6 +324,7 @@ def gc_group_filter(
     matching_special_version = _match_special_version(
         volume_data.special_version.value,
         processed_desc["special_version"],
+        volume_data.title,
         processed_desc["issue_number"],
     )
 
@@ -379,7 +387,10 @@ def check_search_result_match(
         rejections.append(MatchRejections.VOLUME_NUMBER.value)
 
     if not _match_special_version(
-        volume_data.special_version, result["special_version"], result["issue_number"]
+        volume_data.special_version,
+        result["special_version"],
+        volume_data.title,
+        result["issue_number"],
     ):
         rejections.append(MatchRejections.SPECIAL_VERSION.value)
 
