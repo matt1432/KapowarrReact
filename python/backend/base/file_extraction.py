@@ -1,9 +1,11 @@
 """
-Extracting data from filenames or search results and generalising it.
+Extracting comic data from a string and generalising it.
+The string can be a filepath, filename or search result title, etc.
 """
 
+from collections.abc import Collection
 from os.path import basename, dirname, splitext
-from re import IGNORECASE, compile
+from re import IGNORECASE, Pattern, compile
 
 from backend.base.definitions import (
     CONTENT_EXTENSIONS,
@@ -13,12 +15,11 @@ from backend.base.definitions import (
     SpecialVersion,
 )
 from backend.base.helpers import (
-    fix_year as fix_broken_year,
-)
-from backend.base.helpers import (
+    check_overlapping_pos,
     normalise_number,
     normalise_string,
 )
+from backend.base.helpers import fix_year as fix_broken_year
 from backend.base.logging import LOGGER
 
 # autopep8: off
@@ -123,7 +124,7 @@ page_regex_2 = compile(r"(\d+)")
 # autopep8: on
 
 
-def _calc_float_issue_number(issue_number: str) -> float | None:
+def _calculated_issue_number(issue_number: str) -> float | None:
     """Convert an issue number from string to representive float.
 
     Args:
@@ -149,23 +150,23 @@ def _calc_float_issue_number(issue_number: str) -> float | None:
 
     digits = CharConstants.DIGITS
     dot = True
-    for c in issue_number:
-        if c in digits:
-            converted_issue_number += c
+    for char in issue_number:
+        if char in digits:
+            converted_issue_number += char
 
         else:
             if dot:
                 converted_issue_number += "."
                 dot = False
 
-            if c == "½":
+            if char == "½":
                 converted_issue_number += "5"
 
-            elif c == "¼":
+            elif char == "¼":
                 converted_issue_number += "3"
 
-            elif c in alphabet:
-                converted_issue_number += alphabet.get(c, alphabet["z"])
+            elif char in alphabet:
+                converted_issue_number += alphabet.get(char, alphabet["z"])
 
     if converted_issue_number:
         return float(converted_issue_number)
@@ -174,23 +175,27 @@ def _calc_float_issue_number(issue_number: str) -> float | None:
 
 
 def process_issue_number(issue_number: str) -> float | tuple[float, float] | None:
-    """Convert an issue number or issue range to a (tuple of) float.
+    """Convert an issue number or issue range to a (tuple of) float(s).
+
+    ```
+    >>> process_issue_number('2b')
+    2.02
+    >>> process_issue_number('2b-4')
+    (2.02, 4.0)
+    ```
 
     Args:
         issue_number (str): The issue number.
 
     Returns:
-        Union[float, Tuple[float, float], None]: Either a
-        float representing the issue number,
-        a tuple of floats representing the issue numbers when
-        the original issue number was a range of numbers (e.g. 1a-5b)
-        or `None` if it wasn't succesfull in converting.
+        Union[float, Tuple[float, float], None]: The converted issue number(s) or
+            `None` if unsuccessful.
     """
     issue_number = issue_number.replace("/", "-")
 
     if "-" not in issue_number[1:]:
         # Normal issue number
-        return _calc_float_issue_number(issue_number)
+        return _calculated_issue_number(issue_number)
 
     # Issue range
     start, end = issue_number[1:].replace(" ", "").split("-", 1)
@@ -200,12 +205,12 @@ def process_issue_number(issue_number: str) -> float | tuple[float, float] | Non
         start.lstrip("-")[0] in CharConstants.DIGITS
         and end.lstrip("-")[0] in CharConstants.DIGITS
     ):
-        # Not both are starting with a (negative) number, so the split
-        # must've been false, so cancel the idea that the input is a range.
-        return _calc_float_issue_number(issue_number)
+        # Not both the start and end are starting with a (negative) number, so
+        # the idea that the input is a range was false.
+        return _calculated_issue_number(issue_number)
 
-    calc_start = _calc_float_issue_number(start)
-    calc_end = _calc_float_issue_number(end)
+    calc_start = _calculated_issue_number(start)
+    calc_end = _calculated_issue_number(end)
 
     if calc_start is not None:
         if calc_end is not None:
@@ -218,18 +223,26 @@ def process_issue_number(issue_number: str) -> float | tuple[float, float] | Non
     return None
 
 
-def process_volume_number(
-    volume_number: str | None,
-) -> int | tuple[int, int] | None:
-    """Convert a volume number or volume range to a (tuple of) int.
+def process_volume_number(volume_number: str | None) -> int | tuple[int, int] | None:
+    """Convert a volume number or volume range to a (tuple of) int(s). Also
+    supports roman numerals.
+
+    ```
+    >>> process_volume_number('2')
+    2
+    >>> process_volume_number('2-4')
+    (2, 4)
+    >>> process_volume_number('IV')
+    4
+    ```
 
     Args:
         volume_number (Union[str, None]): The volume number (range) in string
-        format. Or `None`, which will return `None`.
+            format. Or `None`, which will return `None`.
 
     Returns:
         Union[int, Tuple[int, int], None]: The converted volume number(s) or
-        `None` if the input was also `None`.
+            `None` if the input was also `None`.
     """
     if volume_number is None:
         return None
@@ -247,32 +260,83 @@ def process_volume_number(
     return result
 
 
+def _translate_filepath(filepath: str) -> str:
+    filepath = french_issue_regex.sub("Issue", filepath)
+    if "Том" in filepath:
+        filepath = russian_volume_regex.sub(r"Volume \1", filepath)
+        filepath = russian_volume_regex_2.sub(r"Volume \1", filepath)
+    if "第" in filepath or "卷" in filepath or "册" in filepath:
+        filepath = chinese_volume_regex.sub(r"Volume \1", filepath)
+        filepath = chinese_volume_regex_2.sub(r"Volume \1", filepath)
+    if "권" in filepath:
+        filepath = korean_volume_regex.sub(r"Volume \1", filepath)
+    if "巻" in filepath:
+        filepath = japanese_volume_regex.sub(r"Volume \1", filepath)
+    return filepath
+
+
+def _extensionless_filename(filepath: str) -> str:
+    filename = basename(filepath)
+    if splitext(filename)[1].lower() in CONTENT_EXTENSIONS:
+        filename = splitext(filename)[0]
+    return filename
+
+
+def _find_issue_numbers(
+    pos_options: Collection[tuple[str, dict[str, int], tuple[Pattern, ...]]],
+):
+    for file_part_with_issue, pos_option, regex_list in pos_options:
+        for regex in regex_list:
+            regex_result = list(regex.finditer(file_part_with_issue, **pos_option))
+            if not regex_result:
+                continue
+
+            group_number = 1 if regex is not issue_regex_6 else 3
+            for result in reversed(regex_result):
+                yield (result.group(group_number), result.start(0), result.end(0))
+
+
 def extract_filename_data(
     filepath: str,
     assume_volume_number: bool = True,
     prefer_folder_year: bool = False,
     fix_year: bool = False,
 ) -> FilenameData:
-    """Extract comic data from string and present in a formatted way.
+    """Extract comic data from a string and generalise it. The string can be a
+    filepath, filename or search result title, etc.
+
+    ```
+    >>> extract_filename_data(
+        "/Comics/Batman/Volume 1 (1940)/Batman (1940) Volume 2 Issue 11-25.zip"
+    )
+    {
+        "series": "Batman",
+        "year": 1940,
+        "volume_number": 2,
+        "special_version": None,
+        "issue_number": (11.0, 25.0),
+        "annual": False
+    }
+    ```
 
     Args:
-        filepath (str): The source string (like a filepath, filename or GC title).
+        filepath (str): The source string.
 
         assume_volume_number (bool, optional): If no volume number was found,
-        should `1` be assumed? When a series has only one volume,
-        often the volume number isn't included in the filename.
+            should `1` be assumed? When a series has only one volume, often the
+            volume number isn't included in the filename.
             Defaults to True.
 
         prefer_folder_year (bool, optional): Use year in foldername instead of
-        year in filename, if available.
+            year in filename, if available.
             Defaults to False.
 
         fix_year (bool, optional): If the extracted year is most likely broken,
-        fix it. See `helpers.fix_year()`.
+            fix it. See `helpers.fix_year()`.
             Defaults to False.
 
     Returns:
-        FilenameData: The extracted data in a formatted way
+        FilenameData: The extracted data.
     """
     LOGGER.debug(f"Extracting filename data: {filepath}")
     series, year, volume_number, special_version, issue_number = (
@@ -290,39 +354,24 @@ def extract_filename_data(
         filepath = dirname(filepath)
         special_version = SpecialVersion.METADATA.value
 
-    # Determine annual or not
+    # Generalise filename
+    filepath = _translate_filepath(normalise_string(filepath))
+
+    # Determine whether it's an annual
     annual_result = annual_regex.search(basename(filepath))
     annual_folder_result = annual_regex.search(basename(dirname(filepath)))
     annual = not (annual_result and annual_folder_result)
+    filepath = filepath.replace("+", " ")
 
-    # Generalise filename
-    filepath = normalise_string(filepath).replace("+", " ")
-    filepath = french_issue_regex.sub("Issue", filepath)
-    if "Том" in filepath:
-        filepath = russian_volume_regex.sub(r"Volume \1", filepath)
-        filepath = russian_volume_regex_2.sub(r"Volume \1", filepath)
-    if "第" in filepath or "卷" in filepath or "册" in filepath:
-        filepath = chinese_volume_regex.sub(r"Volume \1", filepath)
-        filepath = chinese_volume_regex_2.sub(r"Volume \1", filepath)
-    if "권" in filepath:
-        filepath = korean_volume_regex.sub(r"Volume \1", filepath)
-    if "巻" in filepath:
-        filepath = japanese_volume_regex.sub(r"Volume \1", filepath)
-
+    # Prepare some variables
     is_image_file = filepath.endswith(FileConstants.IMAGE_EXTENSIONS)
-
-    # filename without .extension
-    filename = basename(filepath)
-    if splitext(filename)[1].lower() in CONTENT_EXTENSIONS:
-        filename = splitext(filename)[0]
-
-    # Keep stripped version of filename without (), {}, [] and extensions
+    foldername = basename(dirname(filepath))
+    upper_foldername = basename(dirname(dirname(filepath)))
+    filename = _extensionless_filename(filepath)
+    # Stripped version of filename without (), {}, [] and extension
     clean_filename = (
         strip_filename_regex.sub(lambda m: " " * len(m.group()), filename) + " "
     )
-
-    foldername = basename(dirname(filepath))
-    upper_foldername = basename(dirname(dirname(filepath)))
 
     # Get year
     all_year_pos, all_year_folderpos = [(10_000, 10_000)], [(10_000, 10_000)]
@@ -337,14 +386,16 @@ def extract_filename_data(
         if year_result:
             if year is None:
                 year = next(y for y in year_result[0].groups() if y)
+
             if location == filename:
                 all_year_pos = [(r.start(0), r.end(0)) for r in year_result]
+
             if location == foldername:
                 all_year_folderpos = [(r.start(0), r.end(0)) for r in year_result]
 
     # Get volume number
     volume_result = None
-    volume_end, volume_pos, volume_folderpos, volume_folderend = (0, 10_000, 10_000, 0)
+    volume_pos, volume_end, volume_folderpos, volume_folderend = (10_000, 0, 10_000, 0)
     if not is_image_file:
         volume_result = volume_regex.search(clean_filename)
         if volume_result:
@@ -365,14 +416,13 @@ def extract_filename_data(
                 volume_folder_result.group(1) or volume_folder_result.group(2)
             )
 
-    if not volume_result and not volume_folder_result and assume_volume_number:
+    if assume_volume_number and not volume_result and not volume_folder_result:
         volume_number = 1
 
-    # Check if it's a special version
+    # Get special version
     issue_pos, issue_folderpos = 10_000, 10_000
     special_pos, special_end = 10_000, 0
     if not special_version:
-        special_result = special_version_regex.search(filename)
         cover_result = cover_regex.search(filename)
         if cover_result:
             special_version = SpecialVersion.COVER.value
@@ -383,110 +433,96 @@ def extract_filename_data(
                 special_pos = cover_result.start(0)
                 special_end = cover_result.end(0)
 
-        elif special_result:
-            special_version = [
-                k for k, v in special_result.groupdict().items() if v is not None
-            ][0].replace("_", "-")
-            special_pos = special_result.start(0)
-
-    if special_version in (None, SpecialVersion.COVER, SpecialVersion.METADATA):
-        # No special version so find issue number
-        if not is_image_file:
-            pos_options = (
-                (
-                    filename,
-                    {"pos": volume_end},
-                    (
-                        issue_regex,
-                        issue_regex_2,
-                        issue_regex_3,
-                        issue_regex_4,
-                        issue_regex_5,
-                        issue_regex_6,
-                        issue_regex_7,
-                    ),
-                ),
-                (
-                    filename,
-                    {"endpos": volume_pos},
-                    (
-                        issue_regex,
-                        issue_regex_2,
-                        issue_regex_3,
-                        issue_regex_4,
-                        issue_regex_5,
-                        issue_regex_6,
-                    ),
-                ),
-            )
         else:
-            pos_options = (
-                (
-                    foldername,
-                    {"pos": volume_folderend},
-                    (
-                        issue_regex,
-                        issue_regex_2,
-                        issue_regex_3,
-                        issue_regex_4,
-                        issue_regex_5,
-                        issue_regex_6,
-                        issue_regex_7,
-                    ),
-                ),
-                (
-                    foldername,
-                    {"endpos": volume_folderpos},
-                    (
-                        issue_regex,
-                        issue_regex_2,
-                        issue_regex_3,
-                        issue_regex_4,
-                        issue_regex_5,
-                        issue_regex_6,
-                    ),
-                ),
-            )
+            special_result = special_version_regex.search(filename)
+            if special_result:
+                special_version = [
+                    k for k, v in special_result.groupdict().items() if v is not None
+                ][0].replace("_", "-")
+                special_pos = special_result.start(0)
 
-        for file_part_with_issue, pos_option, regex_list in pos_options:
-            for regex in regex_list:
-                r = list(regex.finditer(file_part_with_issue, **pos_option))
-                group_number = 1 if regex is not issue_regex_6 else 3
-                if r:
-                    for result in reversed(r):
-                        if (
-                            file_part_with_issue == filename
-                            and not any(
-                                start_pos <= result.start(0) < end_pos
-                                or start_pos < result.end(0) <= end_pos
-                                for start_pos, end_pos in all_year_pos
-                            )
-                            and (
-                                not special_version
-                                or not (
-                                    special_pos <= result.start(0) < special_end
-                                    or special_pos < result.end(0) <= special_end
-                                )
-                            )
-                            or file_part_with_issue == foldername
-                            and not any(
-                                start_pos <= result.start(0) < end_pos
-                                or start_pos < result.end(0) <= end_pos
-                                for start_pos, end_pos in all_year_folderpos
-                            )
-                        ):
-                            issue_number = result.group(group_number)
-                            if not is_image_file:
-                                issue_pos = result.start(0)
-                            else:
-                                issue_folderpos = result.start(0)
-                            break
-                    else:
-                        continue
-                    break
-            else:
-                continue
-            break
+    # Get issue number
+    if special_version not in (None, SpecialVersion.COVER, SpecialVersion.METADATA):
+        # Special version, so don't search for issue number
+        pass
+
+    elif not is_image_file:
+        pos_options = (
+            (
+                filename,
+                {"pos": volume_end},
+                (
+                    issue_regex,
+                    issue_regex_2,
+                    issue_regex_3,
+                    issue_regex_4,
+                    issue_regex_5,
+                    issue_regex_6,
+                    issue_regex_7,
+                ),
+            ),
+            (
+                filename,
+                {"endpos": volume_pos},
+                (
+                    issue_regex,
+                    issue_regex_2,
+                    issue_regex_3,
+                    issue_regex_4,
+                    issue_regex_5,
+                    issue_regex_6,
+                ),
+            ),
+        )
+
+        for extracted_number, result_start, result_end in _find_issue_numbers(
+            pos_options
+        ):
+            if not check_overlapping_pos(
+                all_year_pos + [(special_pos, special_end)], (result_start, result_end)
+            ):
+                issue_number = extracted_number
+                issue_pos = result_start
+                break
+
+    else:
+        pos_options = (
+            (
+                foldername,
+                {"pos": volume_folderend},
+                (
+                    issue_regex,
+                    issue_regex_2,
+                    issue_regex_3,
+                    issue_regex_4,
+                    issue_regex_5,
+                    issue_regex_6,
+                    issue_regex_7,
+                ),
+            ),
+            (
+                foldername,
+                {"endpos": volume_folderpos},
+                (
+                    issue_regex,
+                    issue_regex_2,
+                    issue_regex_3,
+                    issue_regex_4,
+                    issue_regex_5,
+                    issue_regex_6,
+                ),
+            ),
+        )
+
+        for extracted_number, result_start, result_end in _find_issue_numbers(
+            pos_options
+        ):
+            if not check_overlapping_pos(
+                all_year_folderpos, (result_start, result_end)
+            ):
+                issue_number = extracted_number
+                issue_folderpos = result_start
+                break
 
     if not issue_number and not special_version:
         special_version = SpecialVersion.TPB.value
@@ -528,8 +564,8 @@ def extract_filename_data(
             "special_version": special_version,
             "issue_number": calculated_issue_number,
             "annual": annual,
-            "is_metadata_file": is_metadata_file,
             "is_image_file": is_image_file,
+            "is_metadata_file": is_metadata_file,
         }
     )
 
