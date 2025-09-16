@@ -49,7 +49,6 @@ from backend.implementations.download_clients import (
     WeTransferDownload,
 )
 from backend.implementations.external_clients import ExternalClients
-from backend.implementations.flaresolverr import FlareSolverr
 from backend.implementations.matching import gc_group_filter
 from backend.implementations.volumes import Volume
 from backend.internals.db import iter_commit
@@ -745,7 +744,7 @@ async def search_getcomics(session: AsyncSession, query: str) -> list[SearchResu
         for page in range(2, max_page + 1)
     ]
 
-    if FlareSolverr().is_enabled():
+    if Settings().sv.flaresolverr_base_url:
         # FlareSolverr available, run at full speed
         other_htmls = await gather(*other_tasks)
     else:

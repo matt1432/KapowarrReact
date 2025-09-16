@@ -12,7 +12,6 @@ from backend.base.definitions import Constants, StartType
 from backend.base.logging import LOGGER, setup_logging
 from backend.features.download_queue import DownloadHandler
 from backend.features.tasks import TaskHandler
-from backend.implementations.flaresolverr import FlareSolverr
 from backend.internals.db import set_db_location, setup_db
 from backend.internals.server import SERVER, handle_start_type
 from backend.internals.settings import Settings
@@ -96,11 +95,7 @@ def _main(
 
         s.restart_on_hosting_changes = True
         settings = s.get_settings()
-        flaresolverr = FlareSolverr()
         SERVER.set_url_base(settings.url_base)
-
-        if settings.flaresolverr_base_url:
-            flaresolverr.enable_flaresolverr(settings.flaresolverr_base_url)
 
         download_handler = DownloadHandler()
         download_handler.load_downloads()
@@ -115,7 +110,6 @@ def _main(
     finally:
         download_handler.stop_handle()
         task_handler.stop_handle()
-        flaresolverr.disable_flaresolverr()
 
         if SERVER.start_type is not None:
             LOGGER.info("Restarting Kapowarr")

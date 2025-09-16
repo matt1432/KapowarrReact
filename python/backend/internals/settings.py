@@ -433,28 +433,12 @@ class Settings(metaclass=Singleton):
         elif key == "flaresolverr_base_url":
             from backend.implementations.flaresolverr import FlareSolverr
 
-            fs = FlareSolverr()
-
             converted_value = value
             if converted_value:
                 converted_value = normalise_base_url(converted_value)
 
-            if not converted_value and fs.base_url:
-                # Disable FS, it was running before.
-                fs.disable_flaresolverr()
-
-            elif converted_value and not fs.base_url:
-                # Enable FS, it wasn't running before.
-                if not fs.enable_flaresolverr(converted_value):
-                    raise InvalidSettingValue(key, value)
-
-            elif converted_value and fs.base_url and converted_value != fs.base_url:
-                # Enable FS, it was running before but on a different instance.
-                old_value = fs.base_url
-                fs.disable_flaresolverr()
-                if not fs.enable_flaresolverr(converted_value):
-                    fs.enable_flaresolverr(old_value)
-                    raise InvalidSettingValue(key, value)
+            if converted_value and not FlareSolverr.test_flaresolverr(converted_value):
+                raise InvalidSettingValue(key, value)
 
         else:
             from backend.implementations.naming import NAMING_MAPPING, check_format

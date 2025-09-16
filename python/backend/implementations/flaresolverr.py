@@ -4,71 +4,48 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any
 
 from backend.base.definitions import Constants
-from backend.base.helpers import Session, Singleton
+from backend.base.helpers import Session
 from backend.base.logging import LOGGER
+from backend.internals.settings import Settings
 from requests import RequestException
 
 if TYPE_CHECKING:
     from backend.base.helpers import AsyncSession
 
 
-class FlareSolverr(metaclass=Singleton):
+class FlareSolverr:
     cookie_mapping: dict[str, dict[str, str]] = {}
     ua_mapping: dict[str, str] = {}
 
     def __init__(self) -> None:
-        self.api_base = Constants.FS_API_BASE
-
-        self.session_id: str | None = None
-        self.base_url: str | None = None
-
+        self.base_url = Settings().sv.flaresolverr_base_url or None
         return
 
-    def enable_flaresolverr(self, base_url: str) -> bool:
-        """Connect to a FlareSolverr instance.
+    @staticmethod
+    def test_flaresolverr(base_url: str) -> bool:
+        """Test the connection to a FlareSolverr instance.
 
         Args:
             base_url (str): The base URL of the FlareSolverr instance. Supply
-            base URL without API extension.
+                base URL without API extension.
 
         Returns:
             bool: Whether the connection was successful.
         """
         with Session() as session:
             try:
-                result = session.post(
-                    base_url + self.api_base,
-                    json={"cmd": "sessions.create"},
-                    headers={"Content-Type": "application/json"},
-                )
+                result = session.get(f"{base_url}/health")
 
                 if result.status_code != 200:
                     return False
 
-                self.session_id = result.json()["session"]
-                self.base_url = base_url
+                result = result.json()
+                if result.get("status") != "ok":
+                    return False
 
             except RequestException:
                 return False
         return True
-
-    def disable_flaresolverr(self) -> None:
-        """
-        If there was a connection to a FlareSolverr instance, disconnect.
-        """
-        if not (self.session_id and self.base_url):
-            return
-
-        with Session() as session:
-            session.post(
-                self.base_url + self.api_base,
-                json={"cmd": "sessions.destroy", "session": self.session_id},
-                headers={"Content-Type": "application/json"},
-            )
-
-        self.base_url = None
-        self.session_id = None
-        return
 
     def is_enabled(self) -> bool:
         """Check if FlareSolverr is enabled.
@@ -76,7 +53,7 @@ class FlareSolverr(metaclass=Singleton):
         Returns:
             bool: Whether FlareSolverr is enabled.
         """
-        return bool(self.session_id and self.base_url)
+        return self.base_url is not None
 
     def get_ua_cookies(self, url: str) -> tuple[str, dict[str, str]]:
         """Get the user agent and cookies for a certain URL. The UA and cookies
@@ -89,7 +66,7 @@ class FlareSolverr(metaclass=Singleton):
 
         Returns:
             Tuple[str, Dict[str, str]]: First element is the UA, or default
-            UA. Second element is a mapping of any extra cookies.
+                UA. Second element is a mapping of any extra cookies.
         """
         return (
             self.ua_mapping.get(url, Constants.DEFAULT_USERAGENT),
@@ -105,30 +82,42 @@ class FlareSolverr(metaclass=Singleton):
         Args:
             url (str): The URL to clear.
             headers (Mapping[str, str]): The response headers from the
-            (possibly) blocked request.
+                (possibly) blocked request.
 
         Returns:
             Union[None, Dict[str, Any]]: None if FlareSolverr wasn't needed or
-            couldn't solve the problem, or a dictionary with the FlareSolverr
-            response.
+                couldn't solve the problem, or a dictionary with the FlareSolverr
+                response.
         """
         if (
             headers.get(Constants.CF_CHALLENGE_HEADER[0])
             != Constants.CF_CHALLENGE_HEADER[1]
         ):
             # Request not failed because of CF block
-            return None
+            return
 
-        if not (self.session_id and self.base_url):
+        if not self.base_url:
             LOGGER.warning("Request blocked by CloudFlare and FlareSolverr not setup")
-            return None
+            return
 
         with Session() as session:
+            session_id = session.post(
+                self.base_url + Constants.FS_API_BASE,
+                json={"cmd": "sessions.create"},
+                headers={"Content-Type": "application/json"},
+            ).json()["session"]
+
             result = session.post(
-                self.base_url + self.api_base,
-                json={"cmd": "request.get", "session": self.session_id, "url": url},
+                self.base_url + Constants.FS_API_BASE,
+                json={"cmd": "request.get", "session": session_id, "url": url},
                 headers={"Content-Type": "application/json"},
             ).json()["solution"]
+
+            session.post(
+                self.base_url + Constants.FS_API_BASE,
+                json={"cmd": "sessions.destroy", "session": session_id},
+                headers={"Content-Type": "application/json"},
+            )
 
             self.ua_mapping[url] = result["userAgent"]
             self.cookie_mapping[url] = {
@@ -147,33 +136,49 @@ class FlareSolverr(metaclass=Singleton):
             session (AsyncSession): The session to make the request to FS with.
             url (str): The URL to clear.
             headers (Mapping[str, str]): The response headers from the
-            (possibly) blocked request.
+                (possibly) blocked request.
 
         Returns:
             Union[None, Dict[str, Any]]: None if FlareSolverr wasn't needed or
-            couldn't solve the problem, or a dictionary with the FlareSolverr
-            response.
+                couldn't solve the problem, or a dictionary with the FlareSolverr
+                response.
         """
         if (
             headers.get(Constants.CF_CHALLENGE_HEADER[0])
             != Constants.CF_CHALLENGE_HEADER[1]
         ):
             # Request not failed because of CF block
-            return None
+            return
 
-        if not (self.session_id and self.base_url):
+        if not self.base_url:
             LOGGER.warning("Request blocked by CloudFlare and FlareSolverr not setup")
-            return None
+            return
+
+        session_id = (
+            await (
+                await session.post(
+                    self.base_url + Constants.FS_API_BASE,
+                    json={"cmd": "sessions.create"},
+                    headers={"Content-Type": "application/json"},
+                )
+            ).json()
+        )["session"]
 
         result = (
             await (
                 await session.post(
-                    self.base_url + self.api_base,
-                    json={"cmd": "request.get", "session": self.session_id, "url": url},
+                    self.base_url + Constants.FS_API_BASE,
+                    json={"cmd": "request.get", "session": session_id, "url": url},
                     headers={"Content-Type": "application/json"},
                 )
             ).json()
         )["solution"]
+
+        await session.post(
+            self.base_url + Constants.FS_API_BASE,
+            json={"cmd": "sessions.destroy", "session": session_id},
+            headers={"Content-Type": "application/json"},
+        )
 
         self.ua_mapping[url] = result["userAgent"]
         self.cookie_mapping[url] = {
