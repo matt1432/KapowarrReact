@@ -693,8 +693,9 @@ class Session(RSession):
 
         retries = Retry(
             total=Constants.TOTAL_RETRIES,
-            backoff_factor=Constants.BACKOFF_FACTOR_RETRIES,  # type: ignore
+            method_whitelist=frozenset(),  # type: ignore
             status_forcelist=Constants.STATUS_FORCELIST_RETRIES,
+            backoff_factor=Constants.BACKOFF_FACTOR_RETRIES,
         )
         self.mount("http://", HTTPAdapter(max_retries=retries))
         self.mount("https://", HTTPAdapter(max_retries=retries))
@@ -788,9 +789,8 @@ class AsyncSession(ClientSession):
         super().__init__(
             headers={"User-Agent": Constants.DEFAULT_USERAGENT},
             timeout=ClientTimeout(
-                connect=Constants.REQUEST_TIMEOUT,
-                sock_read=Constants.REQUEST_TIMEOUT
-            )
+                connect=Constants.REQUEST_TIMEOUT, sock_read=Constants.REQUEST_TIMEOUT
+            ),
         )
 
         self.fs = FlareSolverr()
@@ -825,7 +825,7 @@ class AsyncSession(ClientSession):
                 )
 
                 await sleep(sleep_time)
-                sleep_time *= 2
+                sleep_time = Constants.BACKOFF_FACTOR_RETRIES * (2 ** (round - 1))
                 continue
 
             if round == 1 and response.status == 403:

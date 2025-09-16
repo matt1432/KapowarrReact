@@ -27,6 +27,7 @@ from backend.base.logging import LOGGER
 from backend.implementations.credentials import Credentials
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from requests.exceptions import JSONDecodeError as RequestsJSONDecodeError
+from requests.exceptions import RetryError
 from urllib3.exceptions import ProtocolError, TimeoutError
 
 mega_url_regex = compile(
@@ -291,7 +292,7 @@ class MegaAccount:
                 self.client.sid = self._login_user(username, password)
             else:
                 self.client.sid = self._login_anonymous()
-        except RequestsJSONDecodeError:
+        except (RequestsJSONDecodeError, RetryError):
             raise ClientNotWorking("Failed to login into Mega")
 
         return
@@ -512,7 +513,7 @@ class Mega(MegaABC):
             ):
                 raise JSONDecodeError("", "", -1)
 
-        except JSONDecodeError:
+        except (JSONDecodeError, RetryError):
             raise ClientNotWorking(
                 "The Mega download link is not found, does not exist anymore or is broken"
             )
@@ -696,7 +697,7 @@ class MegaFolder(MegaABC):
             if isinstance(res, int) or "e" in res:
                 raise JSONDecodeError("", "", -1)
 
-        except JSONDecodeError:
+        except (JSONDecodeError, RetryError):
             raise ClientNotWorking(
                 "The Mega Folder download link is not found, does not exist anymore or is broken"
             )
@@ -770,7 +771,7 @@ class MegaFolder(MegaABC):
                     ):
                         raise JSONDecodeError("", "", -1)
 
-                except JSONDecodeError:
+                except (JSONDecodeError, RetryError):
                     raise ClientNotWorking(
                         "The Mega download link is not found, does not exist anymore or is broken"
                     )

@@ -117,10 +117,7 @@ class BaseExternalClient(ExternalDownloadClient):
             else:
                 filtered_data[key] = None
 
-        if (
-            filtered_data["username"] is not None  # type: ignore
-            and filtered_data["password"] is None
-        ):
+        if filtered_data["username"] is not None and filtered_data["password"] is None:
             # Username given but not password
             raise InvalidKeyValue("password", filtered_data["password"])
 
