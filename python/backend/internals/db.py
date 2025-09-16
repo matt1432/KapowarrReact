@@ -220,6 +220,9 @@ def close_db(_e: None | BaseException = None) -> None:
     Args:
         e (Union[None, BaseException], optional): Error. Defaults to None.
     """
+    if not hasattr(g, 'cursors'):
+        return
+
     try:
         cursors = g.cursors
         db: DBConnection = cursors[0].connection
@@ -230,7 +233,7 @@ def close_db(_e: None | BaseException = None) -> None:
         if not current_thread().name.startswith("waitress-"):
             db.close()
 
-    except (AttributeError, ProgrammingError):
+    except ProgrammingError:
         pass
 
     return
