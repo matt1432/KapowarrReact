@@ -695,7 +695,7 @@ class BackportRetry(Retry):
         Returns:
             bool: True if v2.0.0+ is used.
         """
-        major_version = int(urllib3_version.lower().lstrip('v').split('.')[0])
+        major_version = int(urllib3_version.lower().lstrip("v").split(".")[0])
         return major_version >= 2
 
     def __init__(
@@ -716,27 +716,27 @@ class BackportRetry(Retry):
         respect_retry_after_header=True,
         remove_headers_on_redirect=frozenset(
             ["Cookie", "Authorization", "Proxy-Authorization"]
-        )
+        ),
     ):
         kwargs = {
-            'total': total,
-            'connect': connect,
-            'read': read,
-            'redirect': redirect,
-            'status': status,
-            'method_whitelist': method_whitelist,
-            'status_forcelist': status_forcelist,
-            'backoff_factor': backoff_factor,
-            'raise_on_redirect': raise_on_redirect,
-            'raise_on_status': raise_on_status,
-            'history': history,
-            'respect_retry_after_header': respect_retry_after_header,
-            'remove_headers_on_redirect': remove_headers_on_redirect
+            "total": total,
+            "connect": connect,
+            "read": read,
+            "redirect": redirect,
+            "status": status,
+            "method_whitelist": method_whitelist,
+            "status_forcelist": status_forcelist,
+            "backoff_factor": backoff_factor,
+            "raise_on_redirect": raise_on_redirect,
+            "raise_on_status": raise_on_status,
+            "history": history,
+            "respect_retry_after_header": respect_retry_after_header,
+            "remove_headers_on_redirect": remove_headers_on_redirect,
         }
 
         if self.running_urllib3_v2_and_above():
-            kwargs['allowed_methods'] = kwargs['method_whitelist']
-            del kwargs['method_whitelist']
+            kwargs["allowed_methods"] = kwargs["method_whitelist"]
+            del kwargs["method_whitelist"]
 
         super().__init__(**kwargs)
         return

@@ -16,6 +16,7 @@ from backend.base.custom_exceptions import (
 from backend.base.definitions import (
     BaseEnum,
     Constants,
+    DateType,
     GCDownloadSource,
     SeedingHandling,
     StartType,
@@ -46,6 +47,7 @@ class SettingsValues:
     auth_salt: bytes = token_bytes()
     comicvine_api_key: str = ""
     api_key: str = ""
+    flaresolverr_base_url: str = ""
 
     host: str = "0.0.0.0"
     port: int = 5656
@@ -77,6 +79,10 @@ class SettingsValues:
 
     unmonitor_deleted_issues: bool = False
 
+    convert: bool = False
+    extract_issue_ranges: bool = False
+    format_preference: CommaList = field(default_factory=lambda: CommaList(""))
+
     service_preference: CommaList = field(
         default_factory=lambda: CommaList(
             s.value for s in GCDownloadSource._member_map_.values()
@@ -88,11 +94,7 @@ class SettingsValues:
     seeding_handling: SeedingHandling = SeedingHandling.COPY
     delete_completed_downloads: bool = True
 
-    convert: bool = False
-    extract_issue_ranges: bool = False
-    format_preference: CommaList = field(default_factory=lambda: CommaList(""))
-
-    flaresolverr_base_url: str = ""
+    date_type: DateType = DateType.COVER_DATE
 
     enable_getcomics: bool = True
     enable_libgen: bool = True
@@ -167,7 +169,10 @@ class Settings(metaclass=Singleton):
         for cl_key in ("format_preference", "service_preference"):
             db_values[cl_key] = CommaList(db_values[cl_key])
 
-        for en_key, en in (("seeding_handling", SeedingHandling),):
+        for en_key, en in (
+            ("seeding_handling", SeedingHandling),
+            ("date_type", DateType),
+        ):
             db_values[en_key] = en[db_values[en_key].upper()]
 
         self.__cached_values = SettingsValues(**db_values)

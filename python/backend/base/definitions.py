@@ -275,6 +275,13 @@ class SeedingHandling(BaseEnum):
     """
 
 
+class DateType(BaseEnum):
+    "The type of comic date used in the database"
+
+    COVER_DATE = "cover_date"
+    STORE_DATE = "store_date"
+
+
 class BlocklistReasonID(BaseEnum):
     "The ID assosiated with the reason for putting a link on the blocklist"
 

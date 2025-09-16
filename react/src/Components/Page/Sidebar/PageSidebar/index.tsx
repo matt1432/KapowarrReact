@@ -113,6 +113,10 @@ const LINKS: SidebarItem[] = [
                 to: '/settings/mediamanagement',
             },
             {
+                title: () => translate('Metadata'),
+                to: '/settings/metadata',
+            },
+            {
                 title: () => translate('Download'),
                 to: '/settings/download',
             },

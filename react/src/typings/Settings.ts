@@ -1,3 +1,4 @@
+import type { DateType } from 'Helpers/Props/dateTypes';
 import type { GCDownloadSource } from 'Helpers/Props/GCDownloadSources';
 import type { SeedingHandling } from 'Helpers/Props/seedingHandlingValues';
 import type { CamelCasedProperties } from 'type-fest';
@@ -10,6 +11,7 @@ export interface RawSettingsValue {
     convert: boolean;
     create_empty_volume_folders: boolean;
     database_version: number;
+    date_type: DateType;
     delete_completed_downloads: boolean;
     delete_empty_folders: boolean;
     download_folder: string;

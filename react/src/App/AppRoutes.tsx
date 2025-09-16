@@ -16,6 +16,7 @@ import Blocklist from 'Activity/Blocklist';
 
 import GeneralSettings from 'Settings/GeneralSettings';
 import MediaManagement from 'Settings/MediaManagement';
+import MetadataSettings from 'Settings/MetadataSettings';
 import DownloadSettings from 'Settings/DownloadSettings';
 import DownloadClientSettings from 'Settings/DownloadClientSettings';
 import UISettings from 'Settings/UISettings';
@@ -50,6 +51,8 @@ export default function AppRoutes() {
             <Route path="/settings" element={<GeneralSettings />} />
 
             <Route path="/settings/mediamanagement" element={<MediaManagement />} />
+
+            <Route path="/settings/metadata" element={<MetadataSettings />} />
 
             <Route path="/settings/download" element={<DownloadSettings />} />
 

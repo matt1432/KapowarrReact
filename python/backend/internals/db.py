@@ -19,7 +19,12 @@ from threading import current_thread
 from time import time
 from typing import Any
 
-from backend.base.definitions import Constants, SeedingHandling, SpecialVersion
+from backend.base.definitions import (
+    Constants,
+    DateType,
+    SeedingHandling,
+    SpecialVersion,
+)
 from backend.base.helpers import CommaList
 from backend.base.logging import LOGGER, set_log_level
 from backend.internals.db_migration import migrate_db
@@ -263,6 +268,7 @@ def setup_db_adapters_and_converters() -> None:
     register_adapter(CommaList, lambda c: str(c))
     register_adapter(SeedingHandling, lambda e: e.value)
     register_adapter(SpecialVersion, lambda e: e.value)
+    register_adapter(DateType, lambda e: e.value)
     return
 
 
