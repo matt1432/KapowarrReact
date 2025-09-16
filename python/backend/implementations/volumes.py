@@ -1216,17 +1216,17 @@ def determine_special_version(volume_id: int) -> SpecialVersion:
         if hc_regex.search(volume_data.title):
             return SpecialVersion.HARD_COVER
 
-        if (issues[0].title or "").lower() in ("hc", "hard-cover", "hard cover"):
+        if (issues[0].title or "").lower().replace(' ', '') in ("hc", "hard-cover", "hardcover"):
             return SpecialVersion.HARD_COVER
 
-        if (issues[0].title or "").lower() in ("os", "one-shot", "one shot"):
+        if (issues[0].title or "").lower().replace(' ', '') in ("os", "one-shot", "oneshot"):
             return SpecialVersion.ONE_SHOT
 
     if "annual" in volume_data.title.lower():
         # Volume is annual
         return SpecialVersion.NORMAL
 
-    if volume_data.description:
+    if one_issue and volume_data.description:
         # Look for Special Version in first sentence of description.
         # Only first sentence as to avoid false hits (e.g. referring in desc
         # to other volume that is Special Version à la
