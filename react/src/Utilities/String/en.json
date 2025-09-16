@@ -1820,6 +1820,7 @@
     "RssSyncIntervalHelpText": "Interval in minutes. Set to zero to disable (this will stop all automatic release grabbing)",
     "RssSyncIntervalHelpTextWarning": "This will apply to all indexers, please follow the rules set forth by them",
     "Runtime": "Runtime",
+    "RunTask": "Run task {taskName}",
     "Save": "Save",
     "SaveChanges": "Save Changes",
     "SaveSettings": "Save Settings",

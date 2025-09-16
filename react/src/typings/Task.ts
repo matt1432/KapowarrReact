@@ -1,3 +1,4 @@
+import type { CommandName } from 'Helpers/Props/commandNames';
 import type { CamelCasedProperties } from 'type-fest';
 
 export interface RawTask {
@@ -13,7 +14,7 @@ export interface RawTask {
 export type Task = CamelCasedProperties<RawTask>;
 
 export interface RawTaskHistory {
-    task_name: string;
+    task_name: CommandName;
     display_title: string;
     run_at: number;
 }
@@ -21,7 +22,7 @@ export interface RawTaskHistory {
 export type TaskHistory = CamelCasedProperties<RawTaskHistory>;
 
 export interface RawTaskPlanning {
-    task_name: string;
+    task_name: CommandName;
     display_name: string;
     interval: number;
     next_run: number;

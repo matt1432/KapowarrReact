@@ -194,6 +194,7 @@ export const icons = {
     PARSE: fasCalculator,
     PAUSED: fasPause,
     PENDING: farClock,
+    PLAY: fasPlay,
     PREMIERE: fasCirclePlay,
     PROFILE: fasUser,
     POSTER: fasTh,
