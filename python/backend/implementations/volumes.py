@@ -74,7 +74,10 @@ remove_link_regex = compile(r"<a[^>]*>.*?</a>", IGNORECASE)
 omnibus_regex = compile(r"\bomnibus\b", IGNORECASE)
 os_regex = compile(r"(?<!preceding\s)\bone[\- ]?shot\b(?!\scollections?)", IGNORECASE)
 hc_regex = compile(r"(?<!preceding\s)\bhard[\- ]?cover\b(?!\scollections?)", IGNORECASE)
-vol_regex = compile(r'^v(?:ol(?:ume)?)?\.?\s(?:\d+|(?:(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred)[-\s]{0,1})+)(?:\:\s|$)', IGNORECASE)
+vol_regex = compile(
+    r"^v(?:ol(?:ume)?)?\.?\s(?:\d+|(?:(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred)[-\s]{0,1})+)(?:\:\s|$)",
+    IGNORECASE,
+)
 
 
 # =====================
@@ -381,7 +384,10 @@ class Volume:
         """
         cover = (
             get_db()
-            .execute("SELECT cover FROM volumes WHERE id = ? LIMIT 1", (self.id,))
+            .execute(
+                "SELECT cover FROM volumes_covers WHERE volume_id = ? LIMIT 1",
+                (self.id,),
+            )
             .fetchone()[0]
         )
         return BytesIO(cover)
@@ -1115,7 +1121,7 @@ class Library:
                 ) VALUES (
                     :comicvine_id, :title, :alt_title,
                     :year, :publisher, :volume_number, :description,
-                    :site_url, :cover, :monitored, :monitor_new_issues,
+                    :site_url, :monitored, :monitor_new_issues,
                     :root_folder, :custom_folder,
                     :last_cv_fetch, :special_version, :special_version_locked
                 );
@@ -1129,7 +1135,6 @@ class Library:
                     "volume_number": vd["volume_number"],
                     "description": vd["description"],
                     "site_url": vd["site_url"],
-                    "cover": vd["cover"],
                     "monitored": monitored,
                     "monitor_new_issues": monitor_new_issues,
                     "root_folder": root_folder.id,
@@ -1139,6 +1144,14 @@ class Library:
                     "special_version_locked": special_version is not None,
                 },
             ).lastrowid
+
+            cursor.execute(
+                """
+                INSERT INTO volumes_covers(volume_id, cover)
+                VALUES (:volume_id, :cover);
+                """,
+                {"volume_id": volume_id, "cover": vd["cover"]},
+            )
 
             cursor.executemany(
                 """
@@ -1614,7 +1627,6 @@ def refresh_and_scan(
             volume_number = :volume_number,
             description = :description,
             site_url = :site_url,
-            cover = :cover,
             last_cv_fetch = :last_cv_fetch
         WHERE id = :id;
         """,
@@ -1627,13 +1639,26 @@ def refresh_and_scan(
                 "volume_number": vd["volume_number"],
                 "description": vd["description"],
                 "site_url": vd["site_url"],
-                "cover": vd["cover"],
                 "last_cv_fetch": current_time.timestamp(),
                 "id": cv_to_id_fetch[vd["comicvine_id"]][0],
             }
             for vd in volume_datas
         ),
     )
+
+    cursor.executemany(
+        """
+        UPDATE volumes_covers
+        SET
+            cover = :cover
+        WHERE volume_id = :volume_id;
+        """,
+        (
+            {"volume_id": cv_to_id_fetch[vd["comicvine_id"]][0], "cover": vd["cover"]}
+            for vd in volume_datas
+        ),
+    )
+
     commit()
 
     # Update issues
