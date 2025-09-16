@@ -64,9 +64,9 @@ from backend.internals.settings import Settings
 if TYPE_CHECKING:
     from backend.base.definitions import Download
 
+ONE_DAY = timedelta(days=1)
 THIRTY_DAYS = timedelta(days=30)
-SECONDS_IN_DAY = 86400
-# autopep8: off
+
 split_regex = compile(
     r"(?<!vs)(?<!r\.i\.p)(?:(?<=[\.!\?])\s|(?<=[\.!\?]</p>)(?!$))", IGNORECASE
 )
@@ -75,7 +75,6 @@ omnibus_regex = compile(r"\bomnibus\b", IGNORECASE)
 os_regex = compile(r"(?<!preceding\s)\bone[\- ]?shot\b(?!\scollections?)", IGNORECASE)
 hc_regex = compile(r"(?<!preceding\s)\bhard[\- ]?cover\b(?!\scollections?)", IGNORECASE)
 vol_regex = compile(r"^v(?:ol(?:ume)?)?\.?\s\d+(?:\:\s|$)", IGNORECASE)
-# autopep8: on
 
 
 # =====================
@@ -1427,18 +1426,18 @@ def scan_files(
     delete_bindings = tuple(b for b in current_bindings if b not in bindings)
     add_bindings = tuple(b for b in bindings if b not in current_bindings)
     issue_binding_count = {}
-    for file_id, issue_id in current_bindings:
+    for _file_id, issue_id in current_bindings:
         issue_binding_count[issue_id] = issue_binding_count.setdefault(issue_id, 0) + 1
 
     newly_downloaded_issues: list[int] = []
-    for file_id, issue_id in add_bindings:
+    for _file_id, issue_id in add_bindings:
         if issue_binding_count.setdefault(issue_id, 0) == 0:
             newly_downloaded_issues.append(issue_id)
         issue_binding_count[issue_id] += 1
 
     # This list is only valid if there isn't a filepath_filter
     deleted_downloaded_issues: list[int] = []
-    for file_id, issue_id in delete_bindings:
+    for _file_id, issue_id in delete_bindings:
         issue_binding_count[issue_id] -= 1
         if issue_binding_count[issue_id] == 0:
             deleted_downloaded_issues.append(issue_id)
@@ -1538,8 +1537,9 @@ def refresh_and_scan(
     """
     cursor = get_db()
 
-    one_day_ago = round(time()) - SECONDS_IN_DAY
-    five_days_ago = round(time()) - (5 * SECONDS_IN_DAY)
+    current_time = datetime.now()
+    one_day_ago = current_time - ONE_DAY
+    thirty_days_ago = current_time - THIRTY_DAYS
     if volume_id:
         cursor.execute(
             """
@@ -1566,7 +1566,7 @@ def refresh_and_scan(
             WHERE last_cv_fetch <= ?
             ORDER BY last_cv_fetch ASC;
             """,
-            (one_day_ago,),
+            (one_day_ago.timestamp(),),
         )
 
     cv_to_id_fetch: dict[int, tuple[int, int]] = {
@@ -1592,7 +1592,7 @@ def refresh_and_scan(
             WHERE v.last_cv_fetch <= ?
             GROUP BY i.volume_id;
             """,
-                (one_day_ago,),
+                (one_day_ago.timestamp(),),
             )
         )
 
@@ -1600,7 +1600,7 @@ def refresh_and_scan(
             v
             for v in volume_datas
             if cv_id_to_issue_count[v["comicvine_id"]] != v["issue_count"]
-            or cv_to_id_fetch[v["comicvine_id"]][1] <= five_days_ago
+            or cv_to_id_fetch[v["comicvine_id"]][1] <= thirty_days_ago.timestamp()
         ]
 
     cursor.executemany(
@@ -1628,7 +1628,7 @@ def refresh_and_scan(
                 "description": vd["description"],
                 "site_url": vd["site_url"],
                 "cover": vd["cover"],
-                "last_cv_fetch": one_day_ago + SECONDS_IN_DAY,
+                "last_cv_fetch": current_time.timestamp(),
                 "id": cv_to_id_fetch[vd["comicvine_id"]][0],
             }
             for vd in volume_datas
