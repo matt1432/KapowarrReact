@@ -74,7 +74,7 @@ remove_link_regex = compile(r"<a[^>]*>.*?</a>", IGNORECASE)
 omnibus_regex = compile(r"\bomnibus\b", IGNORECASE)
 os_regex = compile(r"(?<!preceding\s)\bone[\- ]?shot\b(?!\scollections?)", IGNORECASE)
 hc_regex = compile(r"(?<!preceding\s)\bhard[\- ]?cover\b(?!\scollections?)", IGNORECASE)
-vol_regex = compile(r"^v(?:ol(?:ume)?)?\.?\s\d+(?:\:\s|$)", IGNORECASE)
+vol_regex = compile(r'^v(?:ol(?:ume)?)?\.?\s(?:\d+|(?:(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred)[-\s]{0,1})+)(?:\:\s|$)', IGNORECASE)
 
 
 # =====================
