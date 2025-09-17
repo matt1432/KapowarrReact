@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import time
 from asyncio import gather, run
 from collections.abc import Iterable
 from os import listdir
@@ -71,7 +70,7 @@ class DownloadHandler(metaclass=Singleton):
         return
 
     # region Running Download
-    def __run_download(self, download: Download, attempts: int = 0) -> None:
+    def __run_download(self, download: Download) -> None:
         """Start a download. Intended to be run in a thread.
 
         Args:
@@ -98,13 +97,21 @@ class DownloadHandler(metaclass=Singleton):
             PostProcessor.canceled(download)
 
         elif download.state == DownloadState.FAILED_STATE:
+            PostProcessor.failed(download)
             # Libgen downloads can fail a few times before working
             # when their servers are struggling
-            if download.source_type == DownloadSource.LIBGENPLUS and attempts < 15:
-                time.sleep(1)
-                self.__run_download(download, attempts + 1)
+            if download.source_type == DownloadSource.LIBGENPLUS and download.attempts < 15:
+                self.queue.remove(download)
+                ws.send_queue_ended(download)
+
+                LOGGER.info(f"Attempt #{download.attempts + 1} for Libgen Download with id {download.id}")
+                download.state = DownloadState.QUEUED_STATE
+                self.queue += self.__prepare_downloads_for_queue(
+                    [download], forced_match=False
+                )
+
+                self._process_queue()
                 return
-            PostProcessor.failed(download)
 
         elif download.state == DownloadState.DOWNLOADING_STATE:
             download.state = DownloadState.IMPORTING_STATE
@@ -323,7 +330,7 @@ class DownloadHandler(metaclass=Singleton):
                 download.download_thread = SERVER.get_db_thread(
                     target=self.__run_download,
                     args=(download,),
-                    name=f"DownloadThread-{download.id}",
+                    name=f"DownloadThread-{download.id}-n{download.attempts or 0}",
                 )
 
             if isinstance(download, TorrentDownload):
@@ -348,7 +355,7 @@ class DownloadHandler(metaclass=Singleton):
         return [e.as_dict() for e in self.queue]
 
     def get_one(self, download_id: int) -> Download:
-        """Get a queue entry based on it's ID.
+        """Get a queue entry based on its ID.
 
         Args:
             download_id (int): The ID of the download to fetch.
@@ -700,7 +707,9 @@ class DownloadHandler(metaclass=Singleton):
         Raises:
             DownloadNotFound: The ID doesn't map to any download in the queue.
         """
-        LOGGER.info(f"Removing download with id {download_id} and {blocklist=}")
+        LOGGER.info(
+            f"Removing download with id {download_id}{' and adding to blocklist' if blocklist else ''}"
+        )
 
         download = self.get_one(download_id)
         if not download.download_thread:

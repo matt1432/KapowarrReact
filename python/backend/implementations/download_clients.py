@@ -71,6 +71,15 @@ class BaseDirectDownload(Download):
     _id: int | None
 
     @property
+    def attempts(self) -> int:
+        return self._attempts
+
+    @attempts.setter
+    def attempts(self, value: int) -> None:
+        self._attempts = value
+        return
+
+    @property
     def id(self) -> int | None:
         return self._id
 
@@ -214,6 +223,7 @@ class BaseDirectDownload(Download):
         settings = Settings().sv
         volume = Volume(volume_id)
 
+        self._attempts = 0
         self.__r = None
         self._download_link = download_link
         self._volume_id = volume_id
@@ -340,6 +350,7 @@ class BaseDirectDownload(Download):
         )
 
     def run(self) -> None:
+
         self._state = DownloadState.DOWNLOADING_STATE
         size_downloaded = 0
         ws = WebSocket()
@@ -382,12 +393,18 @@ class BaseDirectDownload(Download):
             # to reported size of file
             self._state = DownloadState.FAILED_STATE
 
+        self._attempts = self._attempts + 1
         return
 
     def stop(self, state: DownloadState = DownloadState.CANCELED_STATE) -> None:
         self._state = state
+
+        LOGGER.info(f"Bypassing retries for download {self._id}")
+        self._attempts = 50
+
         if self.__r and self.__r.raw._fp and not isinstance(self.__r.raw._fp, str):
             self.__r.raw._fp.fp.raw._sock.shutdown(2)
+
         return
 
     def as_dict(self) -> dict[str, Any]:

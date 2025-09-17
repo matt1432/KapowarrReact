@@ -18,9 +18,7 @@ def system(command: str) -> type[Command]:
     return CustomCommand
 
 
-cmds = {
-    "build_frontend": system("./setup.sh")
-}
+cmds = {"build_frontend": system("./setup.sh")}
 
 
 class BuildCommand(build):
