@@ -371,14 +371,14 @@ def api_logs() -> tuple[Response, int]:
 @api.route("/system/tasks", methods=["GET", "POST"])
 @error_handler
 @auth
-def api_tasks() -> ApiReturn:
+def api_tasks() -> ApiReturn | None:
     task_handler = TaskHandler()
 
     if request.method == "GET":
         tasks = task_handler.get_all()
         return return_api(tasks)
 
-    else:  # if request.method == "POST":
+    elif request.method == "POST":
         data = request.get_json()
         if not isinstance(data, dict):
             raise InvalidKeyValue(value=data)
@@ -437,13 +437,13 @@ def api_tasks() -> ApiReturn:
 @api.route("/system/tasks/history", methods=["GET", "DELETE"])
 @error_handler
 @auth
-def api_task_history() -> ApiReturn:
+def api_task_history() -> ApiReturn | None:
     if request.method == "GET":
         offset = extract_key(request, "offset", False)
         tasks = get_task_history(offset)
         return return_api(tasks)
 
-    else:  # if request.method == "DELETE":
+    elif request.method == "DELETE":
         delete_task_history()
         return return_api({})
 
@@ -459,14 +459,14 @@ def api_task_planning() -> ApiReturn:
 @api.route("/system/tasks/<int:task_id>", methods=["GET", "DELETE"])
 @error_handler
 @auth
-def api_task(task_id: int) -> ApiReturn:
+def api_task(task_id: int) -> ApiReturn | None:
     task_handler = TaskHandler()
 
     if request.method == "GET":
         task = task_handler.get_one(task_id)
         return return_api(task)
 
-    else:  # if request.method == "DELETE":
+    elif request.method == "DELETE":
         task_handler.remove(task_id)
         return return_api({})
 
@@ -532,14 +532,14 @@ def api_settings_available_formats() -> ApiReturn:
 @api.route("/rootfolder", methods=["GET", "POST"])
 @error_handler
 @auth
-def api_rootfolder() -> ApiReturn:
+def api_rootfolder() -> ApiReturn | None:
     root_folders = RootFolders()
 
     if request.method == "GET":
         result = [rf.as_dict() for rf in root_folders.get_all()]
         return return_api(result)
 
-    else:  # if request.method == "POST":
+    elif request.method == "POST":
         data: dict = request.get_json()
         folder = data.get("folder")
         if folder is None:
@@ -578,7 +578,7 @@ def api_rootfolder_id(id: int) -> ApiReturn:
 @api.route("/libraryimport", methods=["GET", "POST"])
 @error_handler
 @auth
-def api_library_import() -> ApiReturn:
+def api_library_import() -> ApiReturn | None:
     if request.method == "GET":
         folder_filter = extract_key(request, "folder_filter", check_existence=False)
         limit = extract_key(request, "limit", check_existence=False)
@@ -591,7 +591,7 @@ def api_library_import() -> ApiReturn:
         )
         return return_api(result)
 
-    else:  # if request.method == "POST":
+    elif request.method == "POST":
         data = request.get_json()
         rename_files = extract_key(request, "rename_files", False)
 
@@ -612,7 +612,7 @@ def api_library_import() -> ApiReturn:
 @api.route("/volumes/search", methods=["GET", "POST"])
 @error_handler
 @auth
-def api_volumes_search() -> ApiReturn:
+def api_volumes_search() -> ApiReturn | None:
     if request.method == "GET":
         query = extract_key(request, "query")
         search_results = run(ComicVine().search_volumes(query))
@@ -620,7 +620,7 @@ def api_volumes_search() -> ApiReturn:
             del r["cover"]  # type: ignore
         return return_api(search_results)
 
-    else:  # if request.method == "POST":
+    elif request.method == "POST":
         data: dict[str, Any] = request.get_json()
         for key in ("comicvine_id", "title", "year", "volume_number", "publisher"):
             if key not in data:
@@ -654,7 +654,7 @@ def api_volumes_search() -> ApiReturn:
 @api.route("/volumes", methods=["GET", "POST"])
 @error_handler
 @auth
-def api_volumes() -> ApiReturn:
+def api_volumes() -> ApiReturn | None:
     if request.method == "GET":
         query = extract_key(request, "query", False)
         sort = extract_key(request, "sort", False)
@@ -666,7 +666,7 @@ def api_volumes() -> ApiReturn:
 
         return return_api(volumes)
 
-    else:  # if request.method == "POST":
+    elif request.method == "POST":
         data: dict = request.get_json()
 
         comicvine_id = data.get("comicvine_id")
@@ -731,7 +731,7 @@ def api_volumes_stats() -> ApiReturn:
 @api.route("/volumes/<int:id>", methods=["GET", "PUT", "DELETE"])
 @error_handler
 @auth
-def api_volume(id: int) -> ApiReturn:
+def api_volume(id: int) -> ApiReturn | None:
     volume = library.get_volume(id)
 
     if request.method == "GET":
@@ -767,7 +767,7 @@ def api_volume(id: int) -> ApiReturn:
         )
         return return_api(None)
 
-    else:  # if request.method == "DELETE":
+    elif request.method == "DELETE":
         delete_folder = extract_key(request, "delete_folder")
         volume.delete(delete_folder=delete_folder)
         return return_api({})
@@ -784,14 +784,14 @@ def api_volume_cover(id: int) -> tuple[Response, int]:
 @api.route("/issues/<int:id>", methods=["GET", "PUT"])
 @error_handler
 @auth
-def api_issues(id: int) -> ApiReturn:
+def api_issues(id: int) -> ApiReturn | None:
     issue = library.get_issue(id)
 
     if request.method == "GET":
         result = issue.get_data()
         return return_api(result)
 
-    else:  # if request.method == "PUT":
+    elif request.method == "PUT":
         edit_info: dict = request.get_json()
         monitored = edit_info.get("monitored")
         if monitored is not None:
@@ -935,14 +935,14 @@ def api_issue_download(id: int) -> ApiReturn:
 @api.route("/activity/queue", methods=["GET", "DELETE"])
 @error_handler
 @auth
-def api_downloads() -> ApiReturn:
+def api_downloads() -> ApiReturn | None:
     download_handler = DownloadHandler()
 
     if request.method == "GET":
         result = download_handler.get_all()
         return return_api(result)
 
-    else:  # if request.method == "DELETE":
+    elif request.method == "DELETE":
         download_handler.remove_all()
         return return_api({})
 
@@ -950,7 +950,7 @@ def api_downloads() -> ApiReturn:
 @api.route("/activity/queue/<int:download_id>", methods=["GET", "PUT", "DELETE"])
 @error_handler
 @auth
-def api_delete_download(download_id: int) -> ApiReturn:
+def api_delete_download(download_id: int) -> ApiReturn | None:
     download_handler = DownloadHandler()
 
     if request.method == "GET":
@@ -962,7 +962,7 @@ def api_delete_download(download_id: int) -> ApiReturn:
         download_handler.set_queue_location(download_id, index)
         return return_api({})
 
-    else:  # if request.method == "DELETE":
+    elif request.method == "DELETE":
         data: dict[str, Any] = request.get_json(silent=True) or {}
         blocklist = data.get("blocklist", False)
         if not isinstance(blocklist, bool):
@@ -975,7 +975,7 @@ def api_delete_download(download_id: int) -> ApiReturn:
 @api.route("/activity/history", methods=["GET", "DELETE"])
 @error_handler
 @auth
-def api_download_history() -> ApiReturn:
+def api_download_history() -> ApiReturn | None:
     if request.method == "GET":
         volume_id: int = extract_key(request, "volume_id", False)
         issue_id: int = extract_key(request, "issue_id", False)
@@ -983,7 +983,7 @@ def api_download_history() -> ApiReturn:
         result = get_download_history(volume_id, issue_id, offset)
         return return_api(result)
 
-    else:  # if request.method == "DELETE":
+    elif request.method == "DELETE":
         delete_download_history()
         return return_api({})
 
@@ -1004,7 +1004,7 @@ def api_empty_download_folder() -> ApiReturn:
 @api.route("/blocklist", methods=["GET", "POST", "DELETE"])
 @error_handler
 @auth
-def api_blocklist() -> ApiReturn:
+def api_blocklist() -> ApiReturn | None:
     if request.method == "GET":
         offset = extract_key(request, "offset", False)
 
@@ -1074,7 +1074,7 @@ def api_blocklist() -> ApiReturn:
         ).as_dict()
         return return_api(result, code=201)
 
-    else:  # if request.method == "DELETE":
+    elif request.method == "DELETE":
         delete_blocklist()
         return return_api({})
 
@@ -1082,12 +1082,12 @@ def api_blocklist() -> ApiReturn:
 @api.route("/blocklist/<int:id>", methods=["GET", "DELETE"])
 @error_handler
 @auth
-def api_blocklist_entry(id: int) -> ApiReturn:
+def api_blocklist_entry(id: int) -> ApiReturn | None:
     if request.method == "GET":
         result = get_blocklist_entry(id).as_dict()
         return return_api(result)
 
-    else:  # if request.method == "DELETE":
+    elif request.method == "DELETE":
         delete_blocklist_entry(id)
         return return_api({})
 
@@ -1098,14 +1098,14 @@ def api_blocklist_entry(id: int) -> ApiReturn:
 @api.route("/credentials", methods=["GET", "POST"])
 @error_handler
 @auth
-def api_credentials() -> ApiReturn:
+def api_credentials() -> ApiReturn | None:
     cred = Credentials()
 
     if request.method == "GET":
         result_get = [c.as_dict() for c in cred.get_all()]
         return return_api(result_get)
 
-    else:  # if request.method == "POST":
+    elif request.method == "POST":
         data = request.get_json()
         if not isinstance(data, dict):
             raise InvalidKeyValue(value=data)
@@ -1135,13 +1135,13 @@ def api_credentials() -> ApiReturn:
 @api.route("/credentials/<int:id>", methods=["GET", "DELETE"])
 @error_handler
 @auth
-def api_credential(id: int) -> ApiReturn:
+def api_credential(id: int) -> ApiReturn | None:
     cred = Credentials()
     if request.method == "GET":
         result = cred.get_one(id).as_dict()
         return return_api(result)
 
-    else:  # if request.method == "DELETE":
+    elif request.method == "DELETE":
         cred.delete(id)
         return return_api({})
 
@@ -1152,12 +1152,12 @@ def api_credential(id: int) -> ApiReturn:
 @api.route("/externalclients", methods=["GET", "POST"])
 @error_handler
 @auth
-def api_external_clients() -> ApiReturn:
+def api_external_clients() -> ApiReturn | None:
     if request.method == "GET":
         result_list = ExternalClients.get_clients()
         return return_api(result_list)
 
-    else:  # if request.method == "POST":
+    elif request.method == "POST":
         json_data: dict = request.get_json()
         data = {
             k: json_data.get(k)
@@ -1201,7 +1201,7 @@ def api_external_clients_test() -> ApiReturn:
 @api.route("/externalclients/<int:id>", methods=["GET", "PUT", "DELETE"])
 @error_handler
 @auth
-def api_external_client(id: int) -> ApiReturn:
+def api_external_client(id: int) -> ApiReturn | None:
     client = ExternalClients.get_client(id)
 
     if request.method == "GET":
@@ -1217,7 +1217,7 @@ def api_external_client(id: int) -> ApiReturn:
         client.update_client(data)
         return return_api(client.get_client_data())
 
-    else:  # if request.method == "DELETE":
+    elif request.method == "DELETE":
         client.delete_client()
         return return_api({})
 
@@ -1259,7 +1259,7 @@ def api_mass_editor() -> ApiReturn:
 @api.route("/files/<int:f_id>", methods=["GET", "PUT", "DELETE"])
 @error_handler
 @auth
-def api_files(f_id: int) -> ApiReturn:
+def api_files(f_id: int) -> ApiReturn | None:
     if request.method == "GET":
         result = FilesDB.fetch(file_id=f_id)[0]
         return return_api(result)
@@ -1269,6 +1269,6 @@ def api_files(f_id: int) -> ApiReturn:
         FilesDB.update(file_id=f_id, data={k: v for k, v in edit_info.items()})
         return return_api({})
 
-    else:  # if request.method == "DELETE":
+    elif request.method == "DELETE":
         delete_issue_file(f_id)
         return return_api({})
