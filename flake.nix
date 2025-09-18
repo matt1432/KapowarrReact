@@ -126,6 +126,7 @@
               aiohttp
               flask-socketio
               websocket-client
+              simyan # from overrides
               libgencomics # from overrides
               qbittorrent-api
               ;

@@ -9,6 +9,7 @@ import json
 from abc import ABC, abstractmethod
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
+from datetime import date
 from enum import Enum
 from threading import Event, Thread
 from typing import (
@@ -48,6 +49,9 @@ class Constants:
     "Subfolder of application folder to put database in"
 
     DB_NAME = "Kapowarr.db"
+    "Name of database file itself"
+
+    CV_CACHE_NAME = "cv_cache.sqlite"
     "Name of database file itself"
 
     DB_TIMEOUT = 10.0  # seconds
@@ -634,7 +638,7 @@ class IssueMetadata(TypedDict):
     issue_number: str
     calculated_issue_number: float
     title: str | None
-    date: str | None
+    date: date | None
     description: str
 
 

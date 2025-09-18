@@ -483,22 +483,6 @@ def to_string_cv_id(ids: Iterable[str | int]) -> list[str]:
     return [str(i) for i in to_number_cv_id(ids)]
 
 
-def to_full_string_cv_id(ids: Iterable[str | int]) -> list[str]:
-    """Convert CV IDs into long strings.
-
-    Args:
-        ids (Iterable[str | int]): CV IDs. Can have any common format,
-            like `123`, `"123"`, `"4050-123"`, `"cv:123"` and `"cv:4050-123"`.
-
-    Raises:
-        ValueError: Invalid CV ID.
-
-    Returns:
-        list[str]: The converted CV IDs, in format `"4050-NNNN"`.
-    """
-    return ["4050-" + str(i) for i in to_number_cv_id(ids)]
-
-
 def check_overlapping_issues(
     issues_1: float | tuple[float, float],
     issues_2: float | tuple[float, float],
