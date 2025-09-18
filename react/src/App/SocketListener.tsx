@@ -66,7 +66,8 @@ export default function SocketListener() {
                 showMessage({
                     ...ACTION_MAP[identifier],
                     type: currentItem !== totalItems ? 'info' : 'success',
-                    hideAfter: 3,
+                    // Keep messages in progress opened
+                    hideAfter: currentItem !== totalItems ? 0 : 3,
                     message: `${translate(identifier)}: ${currentItem} / ${totalItems}`,
                 }),
             );

@@ -86,6 +86,7 @@ export default function OrganizePreviewModalContent({
             },
         );
 
+    // FIXME: take into account special characters setting
     const { isNamingFetching, isNamingPopulated, namingError, naming } = useGetSettingsQuery(
         undefined,
         {

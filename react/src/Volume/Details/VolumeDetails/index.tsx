@@ -415,6 +415,7 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                 <Label className={styles.detailsLabel} size={sizes.LARGE}>
                                     <div>
                                         <Icon name={icons.FOLDER} size={17} />
+                                        {/* FIXME: doesn't refresh after renaming */}
                                         <span className={styles.path}>{folder}</span>
                                     </div>
                                 </Label>

@@ -222,6 +222,7 @@ export default function EditVolumeModalContent({
                         />
                     </FormGroup>
 
+                    {/* FIXME: path when changing root folder */}
                     <FormGroup size={sizes.MEDIUM}>
                         <FormLabel>{translate('Path')}</FormLabel>
 
