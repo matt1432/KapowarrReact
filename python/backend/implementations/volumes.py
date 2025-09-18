@@ -1107,7 +1107,6 @@ class Library:
                     volume_number,
                     description,
                     site_url,
-                    cover,
                     monitored,
                     monitor_new_issues,
                     root_folder,
