@@ -9,7 +9,7 @@ from pathlib import Path
 from re import IGNORECASE, compile
 from typing import Any, cast
 
-import requests
+from aiohttp.client_exceptions import ClientError
 from backend.base.custom_exceptions import (
     CVRateLimitReached,
     InvalidComicVineApiKey,
@@ -30,6 +30,7 @@ from backend.base.file_extraction import (
 )
 from backend.base.files import folder_path
 from backend.base.helpers import (
+    AsyncSession,
     DictKeyedDict,
     batched,
     force_range,
@@ -177,6 +178,22 @@ class ComicVine:
             api_key=api_key, cache=SQLiteCache(path=Path(cache_file_location))
         )
         return
+
+    async def __call_request(self, session: AsyncSession, url: str) -> bytes | None:
+        """Fetch a URL and get it's content async (with error handling).
+
+        Args:
+            session (AsyncSession): The aiohttp session to make the request with.
+            url (str): The URL to make the request to.
+
+        Returns:
+            Union[bytes, None]: The content in bytes.
+                `None` in case of error.
+        """
+        try:
+            return await session.get_content(url)
+        except ClientError:
+            return None
 
     def __format_volume_output(
         self, volume_data: Volume | BasicVolume
@@ -331,8 +348,10 @@ class ComicVine:
             volume_info["issues"] = await self.fetch_issues((cv_id,))
 
             LOGGER.debug(f"Fetching volume data result: {volume_info}")
-
-            volume_info["cover"] = requests.get(volume_info["cover_link"]).content
+            async with AsyncSession() as session:
+                volume_info["cover"] = await self.__call_request(
+                    session, volume_info["cover_link"]
+                )
             return volume_info
         except (ServiceError, AuthenticationError):
             raise CVRateLimitReached
@@ -354,51 +373,52 @@ class ComicVine:
         LOGGER.debug(f"Fetching volume data for {formatted_cv_ids}")
 
         volume_infos = []
-        batch_brake_time = Constants.CV_BRAKE_TIME * 10
-        # 10 requests of 100 vol per round
-        for request_batch in batched(formatted_cv_ids, 1000):
-            if request_batch[0] != formatted_cv_ids[0]:
-                # From second round on
-                LOGGER.debug(
-                    f"Waiting {Constants.CV_BRAKE_TIME}s to keep the CV rate limit happy"
-                    f"Waiting {batch_brake_time}s to keep the CV rate limit happy"
-                )
-                await sleep(batch_brake_time)
-
-            # Fetch 10 batches of 100 volumes
-            try:
-                responses = [
-                    self.ssn.list_volumes(
-                        params={
-                            "filter": f"id:{'|'.join(id_batch)}",
-                        }
+        async with AsyncSession() as session:
+            batch_brake_time = Constants.CV_BRAKE_TIME * 10
+            # 10 requests of 100 vol per round
+            for request_batch in batched(formatted_cv_ids, 1000):
+                if request_batch[0] != formatted_cv_ids[0]:
+                    # From second round on
+                    LOGGER.debug(
+                        f"Waiting {Constants.CV_BRAKE_TIME}s to keep the CV rate limit happy"
+                        f"Waiting {batch_brake_time}s to keep the CV rate limit happy"
                     )
-                    for id_batch in batched(request_batch, 100)
-                ]
-            except (ServiceError, AuthenticationError):
-                raise CVRateLimitReached
+                    await sleep(batch_brake_time)
 
-            # Format volume responses and prep cover requests
-            cover_map: dict[int, Any] = {}
-            current_infos: list[VolumeMetadata] = []
-            for batch in responses:
-                for result in batch:
-                    volume_info = self.__format_volume_output(result)
-                    current_infos.append(volume_info)
+                # Fetch 10 batches of 100 volumes
+                try:
+                    responses = [
+                        self.ssn.list_volumes(
+                            params={
+                                "filter": f"id:{'|'.join(id_batch)}",
+                            }
+                        )
+                        for id_batch in batched(request_batch, 100)
+                    ]
+                except (ServiceError, AuthenticationError):
+                    raise CVRateLimitReached
 
-                    cover_map[volume_info["comicvine_id"]] = requests.get(
-                        volume_info["cover_link"]
-                    ).content
+                # Format volume responses and prep cover requests
+                cover_map: dict[int, Any] = {}
+                current_infos: list[VolumeMetadata] = []
+                for batch in responses:
+                    for result in batch:
+                        volume_info = self.__format_volume_output(result)
+                        current_infos.append(volume_info)
 
-            # Fetch covers and add them to the volume info
-            cover_responses = dict(
-                zip(cover_map.keys(), await gather(*cover_map.values()))
-            )
-            for vi in current_infos:
-                vi["cover"] = cover_responses.get(vi["comicvine_id"])
+                        cover_map[volume_info["comicvine_id"]] = self.__call_request(
+                            session, volume_info["cover_link"]
+                        )
 
-            # Add volume info of this round to total list
-            volume_infos.extend(current_infos)
+                # Fetch covers and add them to the volume info
+                cover_responses = dict(
+                    zip(cover_map.keys(), await gather(*cover_map.values()))
+                )
+                for vi in current_infos:
+                    vi["cover"] = cover_responses.get(vi["comicvine_id"])
+
+                # Add volume info of this round to total list
+                volume_infos.extend(current_infos)
 
         return volume_infos
 
