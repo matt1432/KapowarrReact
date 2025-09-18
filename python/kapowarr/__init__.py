@@ -1,6 +1,3 @@
-# Monkey Patch before everything else
-import grequests as grequests  # type: ignore # noqa
-
 from argparse import ArgumentParser
 from atexit import register
 from multiprocessing import set_start_method
