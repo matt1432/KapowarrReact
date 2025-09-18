@@ -128,6 +128,7 @@
               websocket-client
               libgencomics # from overrides
               qbittorrent-api
+              grequests
               ;
           };
 

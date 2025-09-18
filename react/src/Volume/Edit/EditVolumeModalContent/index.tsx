@@ -68,7 +68,7 @@ export default function EditVolumeModalContent({
     );
     const {
         title,
-        libgenUrl: initialLibgenUrl,
+        libgenSeriesId: initialLibgenSeriesId,
         monitored: initialMonitored,
         specialVersion: initialSpecialVersion,
         volumeFolder: initialVolumeFolder,
@@ -88,7 +88,7 @@ export default function EditVolumeModalContent({
 
     const [monitored, setMonitored] = useState(initialMonitored);
     const [specialVersion, setSpecialVersion] = useState(initialSpecialVersion);
-    const [libgenUrl, setLibgenUrl] = useState(initialLibgenUrl ?? '');
+    const [libgenSeriesId, setLibgenSeriesId] = useState(initialLibgenSeriesId ?? null);
     const [volumeFolder, setVolumeFolder] = useState(initialVolumeFolder);
 
     const isPathChanging = useMemo(
@@ -108,8 +108,8 @@ export default function EditVolumeModalContent({
                 case 'specialVersion':
                     setSpecialVersion(value as SpecialVersion);
                     break;
-                case 'libgenUrl':
-                    setLibgenUrl(value as string);
+                case 'libgenSeriesId':
+                    setLibgenSeriesId(value as number | null);
                     break;
                 case 'volumeFolder':
                     setVolumeFolder(value as string);
@@ -147,9 +147,17 @@ export default function EditVolumeModalContent({
             monitored,
             specialVersion,
             volumeFolder,
-            libgenUrl,
+            libgenSeriesId,
         });
-    }, [libgenUrl, monitored, rootFolderId, specialVersion, updateVolume, volumeFolder, volumeId]);
+    }, [
+        libgenSeriesId,
+        monitored,
+        rootFolderId,
+        specialVersion,
+        updateVolume,
+        volumeFolder,
+        volumeId,
+    ]);
 
     const handleSavePress = useCallback(() => {
         if (isPathChanging && !isConfirmMoveModalOpen) {
@@ -203,13 +211,13 @@ export default function EditVolumeModalContent({
                     </FormGroup>
 
                     <FormGroup size={sizes.MEDIUM}>
-                        <FormLabel>{translate('LibgenURL')}</FormLabel>
+                        <FormLabel>{translate('LibgenSeriesID')}</FormLabel>
 
                         <FormInputGroup
-                            type={inputTypes.TEXT}
-                            name="libgenUrl"
-                            value={libgenUrl}
-                            helpText={translate('LibgenURLHelpText')}
+                            type={inputTypes.NUMBER}
+                            name="libgenSeriesId"
+                            value={libgenSeriesId}
+                            helpText={translate('LibgenSeriesIDHelpText')}
                             onChange={handleInputChange}
                         />
                     </FormGroup>

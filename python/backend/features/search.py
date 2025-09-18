@@ -2,6 +2,7 @@ from asyncio import gather, run
 
 from backend.base.definitions import (
     QUERY_FORMATS,
+    Constants,
     MatchedSearchResultData,
     SearchResultData,
     SearchResultMatchData,
@@ -156,16 +157,18 @@ class SearchLibgenPlus:
         self.volume_number = self.volume.get_data().volume_number
         self.issue_number = issue_number
 
-    def search(self, libgen_url: str | None = None) -> list[SearchResultData]:
+    async def search(
+        self, libgen_file_url: str | None = None
+    ) -> list[SearchResultData]:
         results: list[SearchResultData] = []
 
         volume_data = self.volume.get_data()
 
-        if libgen_url is not None and libgen_url.startswith(
-            "https://libgen.la/file.php?id="
-        ):
-            file_id = libgen_url.replace("https://libgen.la/file.php?id=", "")
-            file_result = ResultFile(file_id)
+        if libgen_file_url is not None and libgen_file_url.count("file.php?id=") != 0:
+            file_id = int(libgen_file_url.split("file.php?id=")[-1])
+            file_result = ResultFile(
+                id=file_id, libgen_site_url=Constants.LIBGEN_SITE_URL
+            )
 
             results.append(
                 SearchResultData(
@@ -197,28 +200,31 @@ class SearchLibgenPlus:
             )
 
         else:
-            if volume_data.libgen_url is not None:
-                libgen_url = volume_data.libgen_url
+            libgen_series_id: int | None = None
 
-            file_results = LibgenSearch().search_comicvine_id(
-                Settings().sv.comicvine_api_key,
-                self.comicvine_id,
-                self.issue_number,
-                libgen_url,
+            if volume_data.libgen_series_id is not None:
+                libgen_series_id = volume_data.libgen_series_id
+
+            file_results = await LibgenSearch().search_comicvine_id(
+                api_key=Settings().sv.comicvine_api_key,
+                id=self.comicvine_id,
+                issue_number=self.issue_number,
+                libgen_series_id=libgen_series_id,
+                libgen_site_url=Constants.LIBGEN_SITE_URL,
             )
 
             if len(file_results) > 0:
                 issue = file_results[0].issue
 
                 if issue is not None:
-                    new_libgen_url = (
+                    new_libgen_series_id = (
                         f"https://libgen.la/series.php?id={issue.series.id}"
                     )
 
-                    if volume_data.libgen_url != new_libgen_url:
+                    if volume_data.libgen_series_id != new_libgen_series_id:
                         self.volume.update(
                             {
-                                "libgen_url": new_libgen_url,
+                                "libgen_series_id": new_libgen_series_id,
                             }
                         )
 
@@ -294,7 +300,7 @@ async def search_multiple_queries(*queries: str) -> list[SearchResultData]:
 def manual_search(
     volume_id: int,
     issue_id: int | None = None,
-    libgen_url: str | None = None,
+    libgen_series_id: str | None = None,
 ) -> list[MatchedSearchResultData]:
     """Do a manual search for a volume or issue.
 
@@ -369,10 +375,12 @@ def manual_search(
 
         libgen_results = []
         if Settings().sv.enable_libgen:
-            libgen_results = SearchLibgenPlus(
-                volume,
-                calculated_issue_number,
-            ).search(libgen_url)
+            libgen_results = run(
+                SearchLibgenPlus(
+                    volume,
+                    calculated_issue_number,
+                ).search(libgen_series_id)
+            )
 
         if not search_results and not libgen_results:
             continue

@@ -350,7 +350,6 @@ class BaseDirectDownload(Download):
         )
 
     def run(self) -> None:
-
         self._state = DownloadState.DOWNLOADING_STATE
         size_downloaded = 0
         ws = WebSocket()

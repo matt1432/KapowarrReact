@@ -5,6 +5,7 @@ and abstract classes.
 
 from __future__ import annotations
 
+import json
 from abc import ABC, abstractmethod
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
@@ -16,11 +17,20 @@ from typing import (
     TypedDict,
 )
 
+import requests
+
 if TYPE_CHECKING:
     from backend.base.helpers import AsyncSession
 
 
 # region Constants
+FETCHED_CONSTANTS = json.loads(
+    requests.get(
+        "https://raw.githubusercontent.com/matt1432/Kapowarr/refs/heads/main/constants.json"
+    ).text
+)
+
+
 class Constants:
     SUB_PROCESS_TIMEOUT = 20.0  # seconds
     "Seconds to wait after interrupt until subprocess is killed"
@@ -83,7 +93,7 @@ class Constants:
     "The HTTP status codes for which a retry should be done"
 
     CV_SITE_URL = "https://comicvine.gamespot.com"
-    "The base URL of ComicVine"
+    "The site URL of ComicVine"
 
     CV_API_URL = "https://comicvine.gamespot.com/api"
     "The base URL of the ComicVine API"
@@ -91,8 +101,14 @@ class Constants:
     CV_BRAKE_TIME = 10.0  # seconds
     "Average amount of seconds between requests to the CV API"
 
+    LIBGEN_SITE_URL = FETCHED_CONSTANTS["libgen_site_url"]
+    """
+    The site URL of Libgen+. It is fetched from the latest commit of this
+    project's github repository to ensure users always have a working URL
+    """
+
     GC_SITE_URL = "https://getcomics.org"
-    "The base URL of GetComics"
+    "The site URL of GetComics"
 
     GC_SOURCE_TERM = "GetComics"
     "The name used for GetComics as a download source"
@@ -744,7 +760,7 @@ class IssueData:
 class VolumeData:
     id: int
     comicvine_id: int
-    libgen_url: str | None
+    libgen_series_id: int | None
     title: str
     alt_title: str | None
     year: int

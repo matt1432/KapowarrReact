@@ -21,7 +21,7 @@ export type MonitoringScheme = 'all' | 'missing' | 'none' | 'noChange';
 export type RawVolume = {
     id: number;
     comicvine_id: number;
-    libgen_url: string | null;
+    libgen_series_id: number | null;
     title: string;
     alt_title: string | null;
     year: number;

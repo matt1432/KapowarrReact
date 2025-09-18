@@ -100,11 +100,16 @@ class DownloadHandler(metaclass=Singleton):
             PostProcessor.failed(download)
             # Libgen downloads can fail a few times before working
             # when their servers are struggling
-            if download.source_type == DownloadSource.LIBGENPLUS and download.attempts < 15:
+            if (
+                download.source_type == DownloadSource.LIBGENPLUS
+                and download.attempts < 15
+            ):
                 self.queue.remove(download)
                 ws.send_queue_ended(download)
 
-                LOGGER.info(f"Attempt #{download.attempts + 1} for Libgen Download with id {download.id}")
+                LOGGER.info(
+                    f"Attempt #{download.attempts + 1} for Libgen Download with id {download.id}"
+                )
                 download.state = DownloadState.QUEUED_STATE
                 self.queue += self.__prepare_downloads_for_queue(
                     [download], forced_match=False
