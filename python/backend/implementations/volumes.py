@@ -683,6 +683,8 @@ class Volume:
         """
         vd = self.get_data()
         if vd.root_folder == new_root_folder_id:
+            # Reset volume name if root folder is the same
+            self.change_volume_folder(None)
             return
 
         root_folders = RootFolders()
