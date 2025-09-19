@@ -9,7 +9,7 @@ import { useRootDispatch } from 'Store/createAppStore';
 import { setIsConnected, setMassEditorState } from 'Store/Slices/SocketEvents';
 import { showMessage } from 'Store/Slices/Messages';
 
-import { useGetQueueQuery } from 'Store/Api/Queue';
+import { useLazyGetQueueQuery } from 'Store/Api/Queue';
 
 // Misc
 import { icons, massEditActions, socketEvents } from 'Helpers/Props';
@@ -75,13 +75,13 @@ export default function SocketListener() {
         [dispatch],
     );
 
-    const { refetch: refetchQueue } = useGetQueueQuery(undefined, {
+    const [fetchQueue] = useLazyGetQueueQuery({
         selectFromResult: () => ({}),
     });
 
     const handleQueueUpdate = useCallback(() => {
-        refetchQueue();
-    }, [refetchQueue]);
+        fetchQueue();
+    }, [fetchQueue]);
 
     useSocketEvents({
         connect: handleConnect,
