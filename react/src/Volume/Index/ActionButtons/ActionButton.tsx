@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -15,6 +15,8 @@ import translate, { type TranslateKey } from 'Utilities/String/translate';
 
 // Hooks
 import { useSelect } from 'App/SelectContext';
+
+import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
@@ -44,16 +46,26 @@ export default function ActionButton<T extends 'update' | 'search'>({
     isSelectMode,
     labels,
 }: ActionButtonProps<T>) {
-    const { isRunning } = useRootSelector(
-        (state) => state.socketEvents.massEditorStatus[actionKey],
-    );
-
-    const { items, totalItems } = useGetVolumesQuery(undefined, {
+    const { items, totalItems, refetch } = useGetVolumesQuery(undefined, {
         selectFromResult: ({ data }) => ({
             items: data ?? [],
             totalItems: data?.length ?? 0,
         }),
     });
+
+    const { isRunning } = useRootSelector(
+        (state) => state.socketEvents.massEditorStatus[actionKey],
+    );
+
+    const wasRunning = usePrevious(isRunning);
+
+    useEffect(() => {
+        if (wasRunning && !isRunning) {
+            setTimeout(() => {
+                refetch();
+            }, 1000);
+        }
+    }, [isRunning, wasRunning, refetch]);
 
     const [{ selectedState }] = useSelect();
 
