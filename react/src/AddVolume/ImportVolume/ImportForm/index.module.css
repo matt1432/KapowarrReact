@@ -1,0 +1,4 @@
+.buttonGroup {
+    composes: group from 'Components/Form/FormGroup/index.module.css';
+    justify-content: center;
+}

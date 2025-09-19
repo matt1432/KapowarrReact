@@ -19,12 +19,17 @@ import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
 
+// Specific Components
+import FolderTable from './FolderTable';
+
+// CSS
+import styles from './index.module.css';
+
 // Types
 import type { ImportVolumeState } from 'Store/Slices/ImportVolume';
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 import type { InputChanged } from 'typings/Inputs';
 import type { GetImportProposalsParams } from 'Store/Api/Volumes';
-import FolderTable from './FolderTable';
 
 interface ImportFormProps {
     onScanPress: (params: GetImportProposalsParams) => void;
@@ -107,6 +112,7 @@ export default function ImportForm({ onScanPress }: ImportFormProps) {
                 <FormInputGroup
                     type={inputTypes.CHECK}
                     name="applyLimitToParentFolder"
+                    helpText={translate('LimitToParentHelpText')}
                     onChange={handleInputChange}
                     value={applyLimitToParentFolder}
                 />
@@ -127,6 +133,7 @@ export default function ImportForm({ onScanPress }: ImportFormProps) {
                 <FormInputGroup
                     type={inputTypes.CHECK}
                     name="scanSpecificFolders"
+                    helpText={translate('ScanSpecificFoldersHelpText')}
                     onChange={handleInputChange}
                     value={scanSpecificFolders}
                 />
@@ -154,7 +161,7 @@ export default function ImportForm({ onScanPress }: ImportFormProps) {
                 </>
             ) : null}
 
-            <FormGroup>
+            <FormGroup className={styles.buttonGroup}>
                 <Button onPress={handleScanPress}>{translate('Search')}</Button>
             </FormGroup>
         </Form>

@@ -84,10 +84,6 @@ export default function ImportVolume() {
                                 Files are not allowed to be directly in the root folder. They have
                                 to be in a sub-folder.
                             </li>
-                            <li>
-                                If each issue has a separate sub-folder, enable 'Apply limit to
-                                parent folder' so that the limit is correctly applied.
-                            </li>
                         </ul>
 
                         <br />
