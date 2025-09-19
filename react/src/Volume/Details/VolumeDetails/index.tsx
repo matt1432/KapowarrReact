@@ -70,7 +70,16 @@ interface VolumeDetailsProps {
 // IMPLEMENTATIONS
 
 export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
-    const { data: allVolumes = [] } = useGetVolumesQuery();
+    const {
+        allVolumes,
+        volumePublicInfo,
+        refetch: refetchAllVolumes,
+    } = useGetVolumesQuery(undefined, {
+        selectFromResult: ({ data }) => ({
+            allVolumes: data ?? [],
+            volumePublicInfo: data?.find((item) => item.id === volumeId),
+        }),
+    });
 
     const {
         volume,
@@ -117,8 +126,14 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         if (isCmdSuccess) {
             refetch();
             refetchQueueDetails();
+
+            // Not sure why but the timeout is necessary
+            // for updating the progress label
+            setTimeout(() => {
+                refetchAllVolumes();
+            }, 1000);
         }
-    }, [refetch, refetchQueueDetails, isCmdSuccess]);
+    }, [refetch, refetchAllVolumes, refetchQueueDetails, isCmdSuccess]);
 
     const { isRefreshing, isSearching } = useMemo(() => {
         const isRunning = (cmd: string) => originalArgs?.cmd === cmd && isCmdLoading;
@@ -480,10 +495,12 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                     position={tooltipPositions.BOTTOM}
                                 />
 
-                                <VolumeProgressLabel
-                                    className={styles.volumeProgressLabel}
-                                    volume={volume}
-                                />
+                                {volumePublicInfo ? (
+                                    <VolumeProgressLabel
+                                        className={styles.volumeProgressLabel}
+                                        volume={volumePublicInfo}
+                                    />
+                                ) : null}
                             </div>
 
                             <Scroller

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 // Redux
 import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import {
+    useGetVolumesQuery,
     useSearchVolumeQuery,
     useUpdateVolumeMutation,
     type UpdateVolumeParams,
@@ -59,6 +60,11 @@ export default function EditVolumeModalContent({
     onDeleteVolumePress,
 }: EditVolumeModalContentProps) {
     const [updateVolume, { isLoading: isSaving, error: saveError }] = useUpdateVolumeMutation();
+
+    // Update volumes cache after changes
+    const { refetch } = useGetVolumesQuery(undefined, {
+        selectFromResult: () => ({}),
+    });
 
     const { data: rootFolders = [] } = useGetRootFoldersQuery();
 
@@ -148,6 +154,8 @@ export default function EditVolumeModalContent({
             specialVersion,
             volumeFolder,
             libgenSeriesId,
+        }).then(() => {
+            refetch();
         });
     }, [
         libgenSeriesId,
@@ -157,6 +165,7 @@ export default function EditVolumeModalContent({
         updateVolume,
         volumeFolder,
         volumeId,
+        refetch,
     ]);
 
     const handleSavePress = useCallback(() => {

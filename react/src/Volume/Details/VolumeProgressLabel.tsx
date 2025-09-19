@@ -1,5 +1,8 @@
 // IMPORTS
 
+// React
+import { useMemo } from 'react';
+
 // Redux
 import { useFetchQueueDetails } from 'Store/Api/Queue';
 
@@ -12,24 +15,22 @@ import getDownloadedIssuesProgress from 'Utilities/Volume/getDownloadedIssuesPro
 import Label from 'Components/Label';
 
 // Types
-import type { Volume } from 'Volume/Volume';
-import { useGetVolumesQuery } from 'Store/Api/Volumes';
+import type { VolumePublicInfo } from 'Volume/Volume';
 
 interface VolumeProgressLabelProps {
     className: string;
-    volume: Volume;
+    volume: VolumePublicInfo;
 }
 
 // IMPLEMENTATIONS
 
 export default function VolumeProgressLabel({ className, volume }: VolumeProgressLabelProps) {
-    const { volumePublicInfo } = useGetVolumesQuery(undefined, {
-        selectFromResult: ({ data }) => ({
-            volumePublicInfo: data!.find((item) => item.id === volume.id)!,
-        }),
-    });
     const { queue } = useFetchQueueDetails({ volumeId: volume.id });
-    const { kind, text } = getDownloadedIssuesProgress({ queue, volume: volumePublicInfo });
+
+    const { kind, text } = useMemo(
+        () => getDownloadedIssuesProgress({ queue, volume }),
+        [queue, volume],
+    );
 
     return (
         <Label className={className} kind={kind} size={sizes.LARGE}>
