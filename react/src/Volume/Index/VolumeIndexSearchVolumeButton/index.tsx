@@ -11,18 +11,22 @@ import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
 import { icons, massEditActions } from 'Helpers/Props';
-import { useSelect } from 'App/SelectContext';
 
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
+
+// Hooks
+import { useSelect } from 'App/SelectContext';
 
 // General Components
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 
 // Types
+import type { IndexFilter } from '..';
+
 interface VolumeIndexSearchVolumeButtonProps {
     isSelectMode: boolean;
-    filterKey: string;
+    filterKey: IndexFilter;
 }
 
 // IMPLEMENTATIONS
@@ -49,10 +53,25 @@ export default function VolumeIndexSearchVolumeButton({
     }, [selectedState]);
 
     const volumesToSearch = useMemo(() => {
-        return isSelectMode && selectedVolumeIds.length > 0
-            ? selectedVolumeIds
-            : items.map((m) => m.id);
-    }, [isSelectMode, items, selectedVolumeIds]);
+        if (isSelectMode && selectedVolumeIds.length > 0) {
+            return selectedVolumeIds;
+        }
+
+        if (filterKey !== '') {
+            switch (filterKey) {
+                case 'wanted': {
+                    return items
+                        .filter((item) => item.issuesDownloadedMonitored < item.issueCountMonitored)
+                        .map((item) => item.id);
+                }
+                case 'monitored': {
+                    return items.filter((item) => item.monitored).map((item) => item.id);
+                }
+            }
+        }
+
+        return items.map((m) => m.id);
+    }, [isSelectMode, items, selectedVolumeIds, filterKey]);
 
     const searchLabel = useMemo(() => {
         if (selectedVolumeIds.length > 0) {
