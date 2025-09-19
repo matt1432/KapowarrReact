@@ -34,7 +34,9 @@ type MassEditSpecificParams = {
     };
 };
 
-type RawMassEditParams<T extends MassEditAction> = T extends keyof MassEditSpecificParams
+export type MassEditActionWithArgs = keyof MassEditSpecificParams;
+
+type RawMassEditParams<T extends MassEditAction> = T extends MassEditActionWithArgs
     ? {
           action: T;
           volume_ids: number[];

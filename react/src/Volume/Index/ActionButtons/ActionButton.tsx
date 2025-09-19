@@ -10,10 +10,8 @@ import { useMassEditMutation } from 'Store/Api/Command';
 import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
-import { icons, massEditActions } from 'Helpers/Props';
-
-import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
+import translate, { type TranslateKey } from 'Utilities/String/translate';
 
 // Hooks
 import { useSelect } from 'App/SelectContext';
@@ -23,20 +21,31 @@ import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 
 // Types
 import type { IndexFilter } from '..';
+import type { IconName } from 'Components/Icon';
 
-interface VolumeIndexSearchVolumeButtonProps {
+interface ActionButtonProps<T extends 'update' | 'search'> {
     isSelectMode: boolean;
     filterKey: IndexFilter;
+    actionKey: T;
+    icon: IconName;
+    labels: {
+        all: TranslateKey;
+        filtered: TranslateKey;
+        selected: TranslateKey;
+    };
 }
 
 // IMPLEMENTATIONS
 
-export default function VolumeIndexSearchVolumeButton({
-    isSelectMode,
+export default function ActionButton<T extends 'update' | 'search'>({
+    actionKey,
     filterKey,
-}: VolumeIndexSearchVolumeButtonProps) {
-    const { isRunning: isSearching } = useRootSelector(
-        (state) => state.socketEvents.massEditorStatus.search,
+    icon,
+    isSelectMode,
+    labels,
+}: ActionButtonProps<T>) {
+    const { isRunning } = useRootSelector(
+        (state) => state.socketEvents.massEditorStatus[actionKey],
     );
 
     const { items, totalItems } = useGetVolumesQuery(undefined, {
@@ -48,11 +57,9 @@ export default function VolumeIndexSearchVolumeButton({
 
     const [{ selectedState }] = useSelect();
 
-    const selectedVolumeIds = useMemo(() => {
-        return getSelectedIds(selectedState);
-    }, [selectedState]);
+    const selectedVolumeIds = useMemo(() => getSelectedIds(selectedState), [selectedState]);
 
-    const volumesToSearch = useMemo(() => {
+    const volumesToEdit = useMemo(() => {
         if (isSelectMode && selectedVolumeIds.length > 0) {
             return selectedVolumeIds;
         }
@@ -71,34 +78,34 @@ export default function VolumeIndexSearchVolumeButton({
         }
 
         return items.map((m) => m.id);
-    }, [isSelectMode, items, selectedVolumeIds, filterKey]);
+    }, [filterKey, isSelectMode, items, selectedVolumeIds]);
 
-    const searchLabel = useMemo(() => {
+    const actionLabel = useMemo(() => {
         if (selectedVolumeIds.length > 0) {
-            return translate('SearchSelected');
+            return translate(labels.selected);
         }
         else if (filterKey !== '') {
-            return translate('SearchFiltered');
+            return translate(labels.filtered);
         }
 
-        return translate('SearchAll');
-    }, [filterKey, selectedVolumeIds.length]);
+        return translate(labels.all);
+    }, [filterKey, labels, selectedVolumeIds.length]);
 
     const [runMassEditAction] = useMassEditMutation();
 
     const onPress = useCallback(() => {
         runMassEditAction({
-            action: massEditActions.SEARCH,
-            volumeIds: volumesToSearch,
+            action: actionKey,
+            volumeIds: volumesToEdit,
         });
-    }, [runMassEditAction, volumesToSearch]);
+    }, [actionKey, runMassEditAction, volumesToEdit]);
 
     return (
         <PageToolbarButton
-            label={searchLabel}
-            isSpinning={isSearching}
+            label={actionLabel}
+            isSpinning={isRunning}
             isDisabled={!totalItems}
-            iconName={icons.SEARCH}
+            iconName={icon}
             onPress={onPress}
         />
     );

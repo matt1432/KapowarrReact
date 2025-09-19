@@ -42,19 +42,19 @@ import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
 import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
 
 // Specific Components
+import RefreshVolumesButton from './ActionButtons/RefreshVolumesButton';
+import SearchVolumesButton from './ActionButtons/SearchVolumesButton';
 import VolumeIndexFilterMenu from './Menus/VolumeIndexFilterMenu';
 import VolumeIndexSortMenu from './Menus/VolumeIndexSortMenu';
 import VolumeIndexViewMenu from './Menus/VolumeIndexViewMenu';
 import VolumeIndexPosterOptionsModal from './Posters/Options/VolumeIndexPosterOptionsModal';
 import VolumeIndexPosters from './Posters/VolumeIndexPosters';
-import VolumeIndexSearchVolumeButton from './VolumeIndexSearchVolumeButton';
 import VolumeIndexSelectAllButton from './Select/VolumeIndexSelectAllButton';
 import VolumeIndexSelectAllMenuItem from './Select/VolumeIndexSelectAllMenuItem';
 import VolumeIndexSelectFooter from './Select/VolumeIndexSelectFooter';
 import VolumeIndexSelectModeButton from './Select/VolumeIndexSelectModeButton';
 import VolumeIndexSelectModeMenuItem from './Select/VolumeIndexSelectModeMenuItem';
 import VolumeIndexFooter from './VolumeIndexFooter';
-import VolumeIndexRefreshVolumeButton from './VolumeIndexRefreshVolumeButton';
 import VolumeIndexTableOptions from './Table/VolumeIndexTableOptions';
 import VolumeIndexTable from './Table/VolumeIndexTable';
 
@@ -316,15 +316,9 @@ const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) 
             <PageContent>
                 <PageToolbar>
                     <PageToolbarSection>
-                        <VolumeIndexRefreshVolumeButton
-                            isSelectMode={isSelectMode}
-                            filterKey={filterKey}
-                        />
+                        <RefreshVolumesButton isSelectMode={isSelectMode} filterKey={filterKey} />
 
-                        <VolumeIndexSearchVolumeButton
-                            isSelectMode={isSelectMode}
-                            filterKey={filterKey}
-                        />
+                        <SearchVolumesButton isSelectMode={isSelectMode} filterKey={filterKey} />
 
                         <PageToolbarSeparator />
 
