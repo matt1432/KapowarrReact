@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -52,12 +52,12 @@ export default function VolumeIndexPoster({
     posterHeight,
     sortKey,
 }: VolumeIndexPosterProps) {
-    const { volumePublicInfo } = useGetVolumesQuery(undefined, {
+    const { volumePublicInfo, refetch: refetchAllVolumes } = useGetVolumesQuery(undefined, {
         selectFromResult: ({ data }) => ({
             volumePublicInfo: data!.find((item) => item.id === volumeId)!,
         }),
     });
-    const { data: volume } = useSearchVolumeQuery({ volumeId });
+    const { data: volume, refetch } = useSearchVolumeQuery({ volumeId });
 
     const {
         detailedProgressBar,
@@ -72,17 +72,17 @@ export default function VolumeIndexPoster({
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
     const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);
 
-    const [executeCommand, executeCommandState] = useExecuteCommandMutation();
+    const [executeCommand, { isSuccess: isCmdSuccess, originalArgs, isLoading }] =
+        useExecuteCommandMutation();
 
     const { isRefreshingVolume, isSearchingVolume } = useMemo(() => {
-        const isRunning = (cmd: string) =>
-            executeCommandState.originalArgs?.cmd === cmd && executeCommandState.isLoading;
+        const isRunning = (cmd: string) => originalArgs?.cmd === cmd && isLoading;
 
         return {
             isRefreshingVolume: isRunning(commandNames.REFRESH_VOLUME),
             isSearchingVolume: isRunning(commandNames.VOLUME_SEARCH),
         };
-    }, [executeCommandState]);
+    }, [originalArgs, isLoading]);
 
     const onRefreshPress = useCallback(() => {
         executeCommand({
@@ -90,6 +90,18 @@ export default function VolumeIndexPoster({
             volumeId,
         });
     }, [executeCommand, volumeId]);
+
+    useEffect(() => {
+        if (isCmdSuccess) {
+            refetch();
+
+            // Not sure why but the timeout is necessary
+            // for updating the progress label
+            setTimeout(() => {
+                refetchAllVolumes();
+            }, 1000);
+        }
+    }, [refetch, refetchAllVolumes, isCmdSuccess]);
 
     const onSearchPress = useCallback(() => {
         executeCommand({
