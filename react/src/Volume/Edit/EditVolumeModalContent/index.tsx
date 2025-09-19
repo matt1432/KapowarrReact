@@ -152,6 +152,7 @@ export default function EditVolumeModalContent({
             rootFolder: rootFolderId,
             monitored,
             specialVersion,
+            specialVersionLocked: true,
             volumeFolder,
             libgenSeriesId,
         }).then(() => {
