@@ -1,0 +1,9 @@
+.cell {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+    border: none;
+}
+
+.container {
+    composes: tableContainer from 'Components/Table/Table/index.module.css';
+    margin-top: -8px;
+}

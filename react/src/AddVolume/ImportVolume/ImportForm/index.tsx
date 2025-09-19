@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -24,6 +24,7 @@ import type { ImportVolumeState } from 'Store/Slices/ImportVolume';
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 import type { InputChanged } from 'typings/Inputs';
 import type { GetImportProposalsParams } from 'Store/Api/Volumes';
+import FolderTable from './FolderTable';
 
 interface ImportFormProps {
     onScanPress: (params: GetImportProposalsParams) => void;
@@ -47,13 +48,9 @@ export default function ImportForm({ onScanPress }: ImportFormProps) {
         maxFoldersScanned,
         onlyMatchEnglishVolumes,
         scanSpecificFolders,
+        includedFolders = [],
+        excludedFolders = [],
     } = useRootSelector((state) => state.importVolume);
-
-    const [folderSelected, setFolderSelected] = useState('');
-
-    const handleFolderChange = useCallback(({ value }: InputChanged<string, string>) => {
-        setFolderSelected(value);
-    }, []);
 
     const handleInputChange = useCallback(
         <Key extends keyof ImportVolumeState>({
@@ -72,18 +69,24 @@ export default function ImportForm({ onScanPress }: ImportFormProps) {
             onlyEnglish: onlyMatchEnglishVolumes,
         };
 
-        if (scanSpecificFolders && folderSelected !== '') {
-            params.folderFilter = folderSelected;
+        if (scanSpecificFolders) {
+            if (includedFolders.length !== 0) {
+                params.includedFolders = includedFolders;
+            }
+            if (excludedFolders.length !== 0) {
+                params.excludedFolders = excludedFolders;
+            }
         }
 
         onScanPress(params);
     }, [
         applyLimitToParentFolder,
-        folderSelected,
         maxFoldersScanned,
         onlyMatchEnglishVolumes,
         onScanPress,
         scanSpecificFolders,
+        includedFolders,
+        excludedFolders,
     ]);
 
     return (
@@ -130,14 +133,25 @@ export default function ImportForm({ onScanPress }: ImportFormProps) {
             </FormGroup>
 
             {scanSpecificFolders ? (
-                <FormGroup>
-                    <FormInputGroup
-                        type="text"
-                        name="folderSelected"
-                        onChange={handleFolderChange}
-                        value={folderSelected}
-                    />
-                </FormGroup>
+                <>
+                    <FormGroup>
+                        <FormLabel>{translate('IncludedFolders')}</FormLabel>
+                        <FolderTable
+                            name="includedFolders"
+                            values={includedFolders}
+                            onChange={handleInputChange}
+                        />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <FormLabel>{translate('ExcludedFolders')}</FormLabel>
+                        <FolderTable
+                            name="excludedFolders"
+                            values={excludedFolders}
+                            onChange={handleInputChange}
+                        />
+                    </FormGroup>
+                </>
             ) : null}
 
             <FormGroup>

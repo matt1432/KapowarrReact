@@ -49,7 +49,8 @@ export interface DeleteVolumeParams {
 }
 
 export interface GetImportProposalsParams {
-    folderFilter?: string;
+    includedFolders?: string[];
+    excludedFolders?: string[];
     limit: number;
     limitParentFolder: boolean;
     onlyEnglish: boolean;

@@ -29,6 +29,7 @@ import type { Column } from '../Column';
 
 export interface TableProps<T extends string> {
     className?: string;
+    containerClassName?: string;
     horizontalScroll?: boolean;
     selectAll?: boolean;
     allSelected?: boolean;
@@ -49,6 +50,7 @@ export interface TableProps<T extends string> {
 
 export default function Table<T extends string>({
     className = styles.table,
+    containerClassName = styles.tableContainer,
     horizontalScroll = true,
     selectAll = false,
     allSelected = false,
@@ -66,10 +68,7 @@ export default function Table<T extends string>({
 }: TableProps<T>) {
     return (
         <Scroller
-            className={classNames(
-                styles.tableContainer,
-                horizontalScroll && styles.horizontalScroll,
-            )}
+            className={classNames(containerClassName, horizontalScroll && styles.horizontalScroll)}
             scrollDirection={horizontalScroll ? scrollDirections.HORIZONTAL : scrollDirections.NONE}
             autoFocus={false}
         >

@@ -12,11 +12,11 @@ import translate from 'Utilities/String/translate';
 import IconButton from 'Components/Link/IconButton';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
+import TextInput from 'Components/Form/TextInput';
 
 // Types
 import type { AddCredentialParams } from 'Store/Api/DownloadClients';
 import type { CredentialSource } from 'typings/DownloadClient';
-import TextInput from 'Components/Form/TextInput';
 import type { InputChanged } from 'typings/Inputs';
 
 interface InputRowProps {

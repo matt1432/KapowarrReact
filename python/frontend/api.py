@@ -580,14 +580,23 @@ def api_rootfolder_id(id: int) -> ApiReturn:
 @auth
 def api_library_import() -> ApiReturn | None:
     if request.method == "GET":
-        folder_filter = extract_key(request, "folder_filter", check_existence=False)
+        included_folders = extract_key(
+            request, "included_folders", check_existence=False
+        )
+        excluded_folders = extract_key(
+            request, "excluded_folders", check_existence=False
+        )
         limit = extract_key(request, "limit", check_existence=False)
         only_english = extract_key(request, "only_english", check_existence=False)
         limit_parent_folder = extract_key(
             request, "limit_parent_folder", check_existence=False
         )
         result = propose_library_import(
-            folder_filter, limit, limit_parent_folder, only_english
+            included_folders_str=included_folders,
+            excluded_folders_str=excluded_folders,
+            limit=limit,
+            limit_parent_folder=limit_parent_folder,
+            only_english=only_english,
         )
         return return_api(result)
 

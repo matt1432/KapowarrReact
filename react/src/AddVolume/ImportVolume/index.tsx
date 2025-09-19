@@ -90,6 +90,8 @@ export default function ImportVolume() {
                             </li>
                         </ul>
 
+                        <br />
+
                         <ImportForm onScanPress={onScanPress} />
                     </FieldSet>
                 ) : null}

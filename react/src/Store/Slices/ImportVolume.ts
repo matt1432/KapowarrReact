@@ -9,6 +9,8 @@ export interface ImportVolumeState {
     applyLimitToParentFolder: boolean;
     onlyMatchEnglishVolumes: boolean;
     scanSpecificFolders: boolean;
+    includedFolders: string[];
+    excludedFolders: string[];
 }
 
 // IMPLEMENTATIONS
@@ -18,6 +20,8 @@ const initialState = {
     applyLimitToParentFolder: false,
     onlyMatchEnglishVolumes: true,
     scanSpecificFolders: false,
+    includedFolders: [],
+    excludedFolders: [],
 } satisfies ImportVolumeState as ImportVolumeState;
 
 const ImportVolumeSlice = createSlice({

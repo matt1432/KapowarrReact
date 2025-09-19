@@ -36,7 +36,9 @@ from backend.internals.db_models import FilesDB
 
 
 def propose_library_import(
-    folder_filter: str | None = None,
+    *,
+    included_folders_str: str | None = None,
+    excluded_folders_str: str | None = None,
     limit: int = 20,
     limit_parent_folder: bool = False,
     only_english: bool = True,
@@ -45,9 +47,13 @@ def propose_library_import(
     and their suggestion for a matching volume on CV.
 
     Args:
-        folder_filter (Union[str, None], optional): Only scan the folders that
-        match the given value. Can either be a folder or a glob pattern.
-            Defaults to None.
+        included_folders (list[str], optional): Only scan the folders that
+        match the given values. Can either be a list of folders or glob patterns.
+            Defaults to an empty list.
+
+        excluded_folders (list[str], optional): Only scan the folders that don't
+        match the given values. Can either be a list of folders or glob patterns.
+            Defaults to an empty list.
 
         limit (int, optional): The max amount of folders to scan.
             Defaults to 20.
@@ -71,21 +77,43 @@ def propose_library_import(
     # Get all files in all root folders (with filter applied if given)
     root_folders = {abspath(r.folder) for r in RootFolders().get_all()}
 
-    if folder_filter:
-        scan_folders = set(glob(folder_filter, recursive=True))
+    if included_folders_str and len(included_folders_str) != 0:
+        included_folders = included_folders_str.split(",")
+
+        scan_folders: set[str] = set().union(
+            *(set(glob(folder, recursive=True)) for folder in included_folders)
+        )
+
         for f in scan_folders:
             if not any(folder_is_inside_folder(r, f) for r in root_folders):
-                raise InvalidKeyValue("folder_filter", folder_filter)
+                raise InvalidKeyValue("included_folders_str", included_folders_str)
     else:
         scan_folders = root_folders.copy()
 
+    scan_excluded_folders: set[str] = set()
+    all_excluded_files: set[str] = set()
+
+    if excluded_folders_str and len(excluded_folders_str) != 0:
+        excluded_folders = excluded_folders_str.split(",")
+
+        scan_excluded_folders = set().union(
+            *(set(glob(folder, recursive=True)) for folder in excluded_folders)
+        )
+
+        try:
+            all_excluded_files = set(chain.from_iterable(
+                list_files(f, CONTENT_EXTENSIONS) for f in scan_excluded_folders
+            ))
+
+        except NotADirectoryError:
+            raise InvalidKeyValue("excluded_folders_str", excluded_folders_str)
     try:
-        all_files = chain.from_iterable(
-            list_files(f, CONTENT_EXTENSIONS) for f in scan_folders
+        all_files = set(
+            chain.from_iterable(list_files(f, CONTENT_EXTENSIONS) for f in scan_folders)
         )
 
     except NotADirectoryError:
-        raise InvalidKeyValue("folder_filter", folder_filter)
+        raise InvalidKeyValue("included_folders_str", included_folders_str)
 
     # Get imported files
     imported_files = {f["filepath"] for f in FilesDB.fetch()}
@@ -96,7 +124,7 @@ def propose_library_import(
     # efd to files with that efd
     unimported_files = DictKeyedDict()
     for f in all_files:
-        if f in imported_files:
+        if f in imported_files or f in all_excluded_files:
             continue
 
         d = abspath(dirname(f))
