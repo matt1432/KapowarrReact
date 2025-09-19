@@ -73,7 +73,7 @@ export default function ImportForm({ onScanPress }: ImportFormProps) {
         };
 
         if (scanSpecificFolders && folderSelected !== '') {
-            params.folderFilter = encodeURIComponent(folderSelected);
+            params.folderFilter = folderSelected;
         }
 
         onScanPress(params);
