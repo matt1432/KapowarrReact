@@ -86,7 +86,6 @@ export default function OrganizePreviewModalContent({
             },
         );
 
-    // FIXME: take into account special characters setting
     const { isNamingFetching, isNamingPopulated, namingError, naming } = useGetSettingsQuery(
         undefined,
         {
@@ -106,11 +105,33 @@ export default function OrganizePreviewModalContent({
         },
     );
 
+    const newFolder = useMemo(() => {
+        if (items.length === 0) {
+            return undefined;
+        }
+        return items[0].newPath.replace('/' + items[0].newPath.split('/').at(-1)!, '');
+    }, [items]);
+
+    const isRenamingFolder = useMemo(() => {
+        if (items.length === 0) {
+            return false;
+        }
+        return folder !== newFolder;
+    }, [folder, items.length, newFolder]);
+
     const [{ allSelected, allUnselected, selectedState }, setSelectState] = useSelectState();
 
-    const isFetching = isPreviewFetching || isNamingFetching;
-    const isPopulated = isPreviewPopulated && isNamingPopulated;
-    const error = previewError || namingError;
+    const isFetching = useMemo(
+        () => isPreviewFetching || isNamingFetching,
+        [isPreviewFetching, isNamingFetching],
+    );
+
+    const isPopulated = useMemo(
+        () => isPreviewPopulated && isNamingPopulated,
+        [isNamingPopulated, isPreviewPopulated],
+    );
+
+    const error = useMemo(() => previewError || namingError, [namingError, previewError]);
 
     const issueFormat = useMemo(
         () =>
@@ -181,13 +202,30 @@ export default function OrganizePreviewModalContent({
                     <div>
                         <Alert>
                             <div>
-                                <InlineMarkdown
-                                    data={translate('OrganizeRelativePaths', {
-                                        path: folder,
-                                    })}
-                                    blockClassName={styles.path}
-                                />
+                                {isRenamingFolder ? (
+                                    <>
+                                        <InlineMarkdown
+                                            data={translate('OrganizeRenamingFolder')}
+                                            blockClassName={styles.path}
+                                        />
+                                        <div className={styles.folderRename}>
+                                            <OrganizePreviewRow
+                                                existingPath={folder}
+                                                newPath={newFolder ?? ''}
+                                            />
+                                        </div>
+                                    </>
+                                ) : (
+                                    <InlineMarkdown
+                                        data={translate('OrganizeRelativePaths', {
+                                            path: folder,
+                                        })}
+                                        blockClassName={styles.path}
+                                    />
+                                )}
                             </div>
+
+                            <br />
 
                             <div>
                                 <InlineMarkdown
@@ -203,8 +241,8 @@ export default function OrganizePreviewModalContent({
                                     <OrganizePreviewRow
                                         key={item.id}
                                         id={item.id}
-                                        existingPath={item.existingPath.replace(folder + '/', '')}
-                                        newPath={item.newPath.replace(folder + '/', '')}
+                                        existingPath={item.existingPath.split('/').at(-1)!}
+                                        newPath={item.newPath.split('/').at(-1)!}
                                         isSelected={selectedState[item.id]}
                                         onSelectedChange={handleSelectedChange}
                                     />

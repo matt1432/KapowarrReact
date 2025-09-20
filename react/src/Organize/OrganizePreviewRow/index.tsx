@@ -17,11 +17,11 @@ import styles from './index.module.css';
 import type { CheckInputChanged, SelectStateInputProps } from 'typings/Inputs';
 
 interface OrganizePreviewRowProps {
-    id: number;
+    id?: number;
     existingPath: string;
     newPath: string;
     isSelected?: boolean;
-    onSelectedChange: (props: SelectStateInputProps) => void;
+    onSelectedChange?: (props: SelectStateInputProps) => void;
 }
 
 // IMPLEMENTATIONS
@@ -35,23 +35,25 @@ export default function OrganizePreviewRow({
 }: OrganizePreviewRowProps) {
     const handleSelectedChange = useCallback(
         ({ value, shiftKey }: CheckInputChanged<string>) => {
-            onSelectedChange({ id, value, shiftKey });
+            onSelectedChange?.({ id: id!, value, shiftKey });
         },
         [id, onSelectedChange],
     );
 
     useEffect(() => {
-        onSelectedChange({ id, value: true, shiftKey: false });
+        onSelectedChange?.({ id: id!, value: true, shiftKey: false });
     }, [id, onSelectedChange]);
 
     return (
         <div className={styles.row}>
-            <CheckInput
-                containerClassName={styles.selectedContainer}
-                name={id.toString()}
-                value={isSelected}
-                onChange={handleSelectedChange}
-            />
+            {typeof id === 'number' && (
+                <CheckInput
+                    containerClassName={styles.selectedContainer}
+                    name={id.toString()}
+                    value={isSelected}
+                    onChange={handleSelectedChange}
+                />
+            )}
 
             <div>
                 <div>

@@ -1569,6 +1569,7 @@
     "OrganizeNothingToRename": "Success! My work is done, no files to rename.",
     "OrganizeRelativePaths": "All paths are relative to: `{path}`",
     "OrganizeRenamingDisabled": "Renaming is disabled, nothing to rename",
+    "OrganizeRenamingFolder": "Folder is about to be renamed:",
     "OrganizeSelectedVolumeModalAlert": "Tip: To preview a rename, select \"Cancel\", then select any volume title and use this icon:",
     "OrganizeSelectedVolumeModalConfirmation": "Are you sure you want to organize all files in the {count} selected volume?",
     "OrganizeSelectedVolumeModalHeader": "Organize Selected Volume",
