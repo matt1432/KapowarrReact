@@ -192,7 +192,12 @@ class MassEditorRemoveAds(MassEditorAction):
     def run(self, **kwargs: Any) -> None:
         LOGGER.info(f"Using mass editor, removing ads: {self.volume_ids}")
 
-        for volume_id in self.volume_ids:
+        ws = WebSocket()
+        total_items = len(self.volume_ids)
+
+        for item_index, volume_id in enumerate(iter_commit(self.volume_ids)):
+            ws.update_mass_editor_status(self.identifier, item_index + 1, total_items)
+
             for file in Volume(volume_id).get_all_files():
                 remove_ads(file["filepath"])
 
