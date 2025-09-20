@@ -217,9 +217,7 @@ class SearchLibgenPlus:
                 issue = file_results[0].issue
 
                 if issue is not None:
-                    new_libgen_series_id = (
-                        f"https://libgen.la/series.php?id={issue.series.id}"
-                    )
+                    new_libgen_series_id = int(issue.series.id)
 
                     if volume_data.libgen_series_id != new_libgen_series_id:
                         self.volume.update(

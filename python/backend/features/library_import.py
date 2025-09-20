@@ -101,9 +101,11 @@ def propose_library_import(
         )
 
         try:
-            all_excluded_files = set(chain.from_iterable(
-                list_files(f, CONTENT_EXTENSIONS) for f in scan_excluded_folders
-            ))
+            all_excluded_files = set(
+                chain.from_iterable(
+                    list_files(f, CONTENT_EXTENSIONS) for f in scan_excluded_folders
+                )
+            )
 
         except NotADirectoryError:
             raise InvalidKeyValue("excluded_folders_str", excluded_folders_str)

@@ -19,6 +19,7 @@ import translate from 'Utilities/String/translate';
 
 // Hooks
 import usePrevious from 'Helpers/Hooks/usePrevious';
+import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
 
 // General Components
 import Form from 'Components/Form/Form';
@@ -62,13 +63,13 @@ export default function EditVolumeModalContent({
     const [updateVolume, { isLoading: isSaving, error: saveError }] = useUpdateVolumeMutation();
 
     // Update volumes cache after changes
-    const { refetch } = useGetVolumesQuery(undefined, {
+    const { refetch: refetchAllVolumes } = useGetVolumesQuery(undefined, {
         selectFromResult: () => ({}),
     });
 
     const { data: rootFolders = [] } = useGetRootFoldersQuery();
 
-    const { data: volume } = useSearchVolumeQuery(
+    const { data: volume, refetch } = useSearchVolumeQuery(
         { volumeId },
         { refetchOnMountOrArgChange: true },
     );
@@ -101,6 +102,28 @@ export default function EditVolumeModalContent({
         () => initialVolumeFolder !== volumeFolder,
         [initialVolumeFolder, volumeFolder],
     );
+
+    useEffect(() => {
+        setLibgenSeriesId(initialLibgenSeriesId ?? null);
+        setMonitored(initialMonitored);
+        setSpecialVersion(initialSpecialVersion);
+        setVolumeFolder(initialVolumeFolder);
+        setRootFolderId(initialRootFolderPath);
+    }, [
+        initialLibgenSeriesId,
+        initialMonitored,
+        initialSpecialVersion,
+        initialVolumeFolder,
+        initialRootFolderPath,
+    ]);
+
+    useSocketEvents({
+        volumeUpdated: (vol) => {
+            if (vol.id === volumeId) {
+                refetch();
+            }
+        },
+    });
 
     const handleInputChange = useCallback(
         <K extends keyof UpdateVolumeParams>({
@@ -156,7 +179,7 @@ export default function EditVolumeModalContent({
             volumeFolder,
             libgenSeriesId,
         }).then(() => {
-            refetch();
+            refetchAllVolumes();
         });
     }, [
         libgenSeriesId,
@@ -166,7 +189,7 @@ export default function EditVolumeModalContent({
         updateVolume,
         volumeFolder,
         volumeId,
-        refetch,
+        refetchAllVolumes,
     ]);
 
     const handleSavePress = useCallback(() => {

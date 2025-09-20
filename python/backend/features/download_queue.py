@@ -388,7 +388,7 @@ class DownloadHandler(metaclass=Singleton):
         """
         if link.startswith(Constants.GC_SITE_URL):
             return "gc"
-        if link.startswith("https://libgen.la/get.php?md5="):
+        if link.startswith(Constants.LIBGEN_SITE_URL):
             return "lg"
         return None
 
@@ -449,9 +449,7 @@ class DownloadHandler(metaclass=Singleton):
         if link_type == "lg" and not isinstance(result, str):
             if "comics_id" in result and result["comics_id"]:
                 torrent_name = str(int(int(result["comics_id"]) / 1000) * 1000)
-                torrent_link = (
-                    f"https://libgen.la/torrents/comics/c_{torrent_name}.torrent"
-                )
+                torrent_link = f"{Constants.LIBGEN_SITE_URL}/torrents/comics/c_{torrent_name}.torrent"
 
                 downloads.append(
                     TorrentDownload(

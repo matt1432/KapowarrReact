@@ -30,11 +30,10 @@ from waitress.server import create_server
 from waitress.task import ThreadedTaskDispatcher as TTD
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
-from backend.implementations.volumes import Volume
-
 if TYPE_CHECKING:
     from backend.base.definitions import Download
     from backend.features.tasks import Task
+    from backend.implementations.volumes import Volume
     from flask.ctx import AppContext
     from waitress.server import BaseWSGIServer, MultiSocketServer
 
