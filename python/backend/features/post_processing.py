@@ -259,6 +259,9 @@ def convert_file(download: Download) -> None:
 
 def remove_ads_from_files(download: Download) -> None:
     "Remove most last page ads from all CBZ files downloaded"
+    if not Settings().sv.remove_ads:
+        return
+
     for f in download.files:
         remove_ads(f)
     return

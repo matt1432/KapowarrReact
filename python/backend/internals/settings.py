@@ -79,6 +79,7 @@ class SettingsValues:
 
     unmonitor_deleted_issues: bool = False
 
+    remove_ads: bool = False
     convert: bool = False
     extract_issue_ranges: bool = False
     format_preference: CommaList = field(default_factory=lambda: CommaList(""))

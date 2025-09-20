@@ -203,6 +203,19 @@ export default function MediaManagement() {
                         </FormGroup>
                     </FieldSet>
 
+                    <FieldSet legend={translate('AdRemoval')}>
+                        <FormGroup>
+                            <FormLabel>{translate('AdRemovalToggle')}</FormLabel>
+                            <FormInputGroup
+                                type={inputTypes.CHECK}
+                                name="removeAds"
+                                helpText={translate('AdRemovalToggleHelpText')}
+                                onChange={handleInputChange}
+                                value={changes.removeAds}
+                            />
+                        </FormGroup>
+                    </FieldSet>
+
                     <FieldSet
                         legend={translate('Converting')}
                         subLegend={translate('ConvertingInfo')}

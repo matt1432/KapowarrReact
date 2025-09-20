@@ -30,6 +30,7 @@ export interface RawSettingsValue {
     log_level: number;
     long_special_version: boolean;
     port: number;
+    remove_ads: boolean;
     rename_downloaded_files: boolean;
     replace_illegal_characters: boolean;
     seeding_handling: SeedingHandling;
