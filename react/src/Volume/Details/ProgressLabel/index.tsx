@@ -17,14 +17,14 @@ import Label from 'Components/Label';
 // Types
 import type { VolumePublicInfo } from 'Volume/Volume';
 
-interface VolumeProgressLabelProps {
+interface ProgressLabelProps {
     className: string;
     volume: VolumePublicInfo;
 }
 
 // IMPLEMENTATIONS
 
-export default function VolumeProgressLabel({ className, volume }: VolumeProgressLabelProps) {
+export default function ProgressLabel({ className, volume }: ProgressLabelProps) {
     const { queue } = useFetchQueueDetails({ volumeId: volume.id });
 
     const { kind, text } = useMemo(

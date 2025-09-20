@@ -13,11 +13,11 @@ import styles from './index.module.css';
 // Types
 import type { Volume } from 'Volume/Volume';
 
-type VolumeDetailsLinksProps = Pick<Volume, 'siteUrl'>;
+type LinksProps = Pick<Volume, 'siteUrl'>;
 
 // IMPLEMENTATIONS
 
-export default function VolumeDetailsLinks({ siteUrl }: VolumeDetailsLinksProps) {
+export default function Links({ siteUrl }: LinksProps) {
     return (
         <div className={styles.links}>
             <Link className={styles.link} to={siteUrl}>

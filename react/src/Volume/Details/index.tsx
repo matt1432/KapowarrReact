@@ -54,9 +54,9 @@ import MonitoringOptionsModal from 'Volume/MonitoringOptions/MonitoringOptionsMo
 import SearchVolumeModal from 'Volume/Search/SearchVolumeModal';
 import VolumeHistoryModal from 'Volume/History/VolumeHistoryModal';
 
-import IssueTable from '../IssueTable';
-import VolumeDetailsLinks from '../VolumeDetailsLinks';
-import VolumeProgressLabel from '../VolumeProgressLabel';
+import IssueTable from './IssueTable';
+import Links from './Links';
+import ProgressLabel from './ProgressLabel';
 import VolumePoster from 'Volume/VolumePoster';
 
 // CSS
@@ -490,13 +490,13 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                             </div>
                                         </Label>
                                     }
-                                    tooltip={<VolumeDetailsLinks siteUrl={siteUrl} />}
+                                    tooltip={<Links siteUrl={siteUrl} />}
                                     kind={kinds.INVERSE}
                                     position={tooltipPositions.BOTTOM}
                                 />
 
                                 {volumePublicInfo ? (
-                                    <VolumeProgressLabel
+                                    <ProgressLabel
                                         className={styles.volumeProgressLabel}
                                         volume={volumePublicInfo}
                                     />

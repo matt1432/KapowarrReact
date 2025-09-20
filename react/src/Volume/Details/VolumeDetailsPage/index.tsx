@@ -17,7 +17,7 @@ import usePrevious from 'Helpers/Hooks/usePrevious';
 import NotFound from 'Components/NotFound';
 
 // Specific Components
-import VolumeDetails from './VolumeDetails';
+import VolumeDetails from '..';
 
 // IMPLEMENTATIONS
 

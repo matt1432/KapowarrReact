@@ -64,7 +64,7 @@ const Scroller = forwardRef(
 
         useEffect(
             () => {
-                // FIXME: why is a timeout necessary?
+                // wait until div is rendered
                 setTimeout(() => {
                     if (initialScrollTop) {
                         internalRef.current!.scrollTop = initialScrollTop;
