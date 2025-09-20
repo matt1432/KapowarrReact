@@ -216,28 +216,40 @@ export const {
     useUpdateVolumeMutation,
 } = extendedApi;
 
-export const useGetVolumeQuery = (
-    volumeId: number,
-    options?: Parameters<typeof extendedApi.useGetVolumesQuery>[1],
-) => {
-    return extendedApi.useGetVolumesQuery(undefined, {
-        ...options,
-        selectFromResult: ({ data, ...rest }) => ({
-            volume: data?.find((v) => v.id === volumeId),
-            ...rest,
-        }),
-    });
-};
+/* TODO: refetch volume data on socket updates
 
-export const useExistingVolumeQuery = (
-    comicvineId: number,
-    options?: Parameters<typeof extendedApi.useGetVolumesQuery>[1],
+import { useCallback } from 'react';
+import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
+import type { SubscriptionOptions } from '@reduxjs/toolkit/query';
+import type { ExtendableRecord } from 'typings/Misc';
+import type { TypedUseQueryStateOptions } from '@reduxjs/toolkit/query/react';
+
+type SearchVolume = typeof extendedApi.endpoints.searchVolume.Types;
+
+type SearchVolumeOptions<R extends ExtendableRecord> = SubscriptionOptions & {
+    skip?: boolean | undefined;
+    refetchOnMountOrArgChange?: number | boolean | undefined;
+} & TypedUseQueryStateOptions<Volume, SearchVolume['QueryArg'], SearchVolume['BaseQuery'], R>;
+
+export const useSearchVolumeUpdate = <R extends ExtendableRecord>(
+    { volumeId, onUpdate }: { volumeId: number; onUpdate?: (volume: VolumePublicInfo) => void },
+    options?: SearchVolumeOptions<R>,
 ) => {
-    return extendedApi.useGetVolumesQuery(undefined, {
-        ...options,
-        selectFromResult: ({ data, ...rest }) => ({
-            isExistingVolume: Boolean(data?.some((v) => v.comicvineId === comicvineId)),
-            ...rest,
-        }),
+    const { refetch: refetch, ...rest } = extendedApi.useSearchVolumeQuery({ volumeId }, options);
+
+    const handleVolumeUpdated = useCallback(
+        (volume: VolumePublicInfo) => {
+            refetch().finally(() => {
+                onUpdate?.(volume);
+            });
+        },
+        [refetch, onUpdate],
+    );
+
+    useSocketEvents({
+        volumeUpdated: handleVolumeUpdated,
     });
+
+    return { refetch, ...rest };
 };
+*/

@@ -58,6 +58,7 @@ const COLUMNS: Column<IssueSummaryColumnName>[] = [
 ];
 
 export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
+    // TODO: refactor to use useSearchIssue or equivalent and pass volume stuff in props
     const {
         description,
         files = [],

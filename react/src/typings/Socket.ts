@@ -6,6 +6,7 @@ import type { MassEditAction } from 'Helpers/Props/massEditActions';
 import type { SocketEvent } from 'Helpers/Props/socketEvents';
 import type { DownloadState } from 'Helpers/Props/downloadStates';
 import type { RawTask } from './Task';
+import type { VolumePublicInfo } from 'Volume/Volume';
 
 type TaskData = Pick<RawTask, 'action' | 'volume_id' | 'issue_id'>;
 
@@ -41,9 +42,10 @@ interface SpecificEventHandlers {
     task_added: (data: CamelCasedPropertiesDeep<TaskData>) => void;
     task_ended: (data: CamelCasedPropertiesDeep<TaskData>) => void;
     task_status: (data: CamelCasedPropertiesDeep<TaskStatusData>) => void;
-    queue_added: (data: CamelCasedPropertiesDeep<QueueItem>) => void;
+    queue_added: (data: QueueItem) => void;
     queue_ended: (data: CamelCasedPropertiesDeep<QueueEndedData>) => void;
     queue_status: (data: CamelCasedPropertiesDeep<QueueStatusData>) => void;
+    volume_updated: (data: VolumePublicInfo) => void;
     mass_editor_status: (data: CamelCasedPropertiesDeep<MassEditorData>) => void;
     downloaded_status: (data: CamelCasedPropertiesDeep<DownloadedStatusData>) => void;
 }

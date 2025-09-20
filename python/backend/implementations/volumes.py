@@ -586,6 +586,8 @@ class Volume:
                 f"UPDATE volumes SET {key} = ? WHERE id = ?;", (value, self.id)
             )
 
+        WebSocket().send_volume_updated(self)
+
         return
 
     def __setitem__(self, __name: str, __value: Any) -> None:

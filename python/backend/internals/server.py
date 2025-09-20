@@ -30,6 +30,8 @@ from waitress.server import create_server
 from waitress.task import ThreadedTaskDispatcher as TTD
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
+from backend.implementations.volumes import Volume
+
 if TYPE_CHECKING:
     from backend.base.definitions import Download
     from backend.features.tasks import Task
@@ -394,6 +396,13 @@ class WebSocket(SocketIO, metaclass=Singleton):
             cm._handle_emit(message)
             cm._publish(message)
 
+        return
+
+    def send_volume_updated(self, volume: Volume) -> None:
+        self.emit(
+            SocketEvent.VOLUME_UPDATED.value,
+            volume.get_public_keys(),
+        )
         return
 
     def send_task_added(self, task: Task) -> None:
