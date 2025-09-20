@@ -120,7 +120,7 @@ export default function AddNewVolumeModalContent({
             rootFolderId: rootFolder?.id ?? 1,
             monitoringScheme,
             monitor: monitoringScheme !== 'none',
-            specialVersion,
+            specialVersion: specialVersion === '' ? null : specialVersion,
             autoSearch,
         }).then(() => handleAddVolumeSuccess());
     }, [

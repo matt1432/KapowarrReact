@@ -12,8 +12,6 @@ from backend.base.helpers import first_of_subarrays
 from backend.base.logging import LOGGER
 from backend.internals.db import get_db
 
-# TODO: allow setting extra info of files manually in UI
-
 
 class FilesDB:
     @staticmethod

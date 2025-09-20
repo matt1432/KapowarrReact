@@ -94,7 +94,7 @@ export default function EditVolumeModalContent({
     );
 
     const [monitored, setMonitored] = useState(initialMonitored);
-    const [specialVersion, setSpecialVersion] = useState(initialSpecialVersion);
+    const [specialVersion, setSpecialVersion] = useState(initialSpecialVersion ?? '');
     const [libgenSeriesId, setLibgenSeriesId] = useState(initialLibgenSeriesId ?? null);
     const [volumeFolder, setVolumeFolder] = useState(initialVolumeFolder);
 
@@ -106,7 +106,7 @@ export default function EditVolumeModalContent({
     useEffect(() => {
         setLibgenSeriesId(initialLibgenSeriesId ?? null);
         setMonitored(initialMonitored);
-        setSpecialVersion(initialSpecialVersion);
+        setSpecialVersion(initialSpecialVersion ?? '');
         setVolumeFolder(initialVolumeFolder);
         setRootFolderId(initialRootFolderPath);
     }, [
@@ -174,7 +174,7 @@ export default function EditVolumeModalContent({
             volumeId,
             rootFolder: rootFolderId,
             monitored,
-            specialVersion,
+            specialVersion: specialVersion === '' ? null : specialVersion,
             specialVersionLocked: true,
             volumeFolder,
             libgenSeriesId,

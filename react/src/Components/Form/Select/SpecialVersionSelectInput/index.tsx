@@ -39,6 +39,10 @@ export interface ISpecialVersionOption {
 
 const specialVersionOptions: ISpecialVersionOption[] = [
     {
+        key: specialVersions.NORMAL,
+        value: 'Normal',
+    },
+    {
         key: specialVersions.TPB,
         value: 'Trade Paperback',
     },

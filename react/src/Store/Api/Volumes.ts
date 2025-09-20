@@ -27,7 +27,7 @@ export interface AddVolumeParams {
     monitoringScheme?: MonitoringScheme;
     monitorNewIssues?: boolean;
     volumeFolder?: string;
-    specialVersion?: '' | SpecialVersion;
+    specialVersion?: null | SpecialVersion;
     autoSearch?: boolean;
 }
 
@@ -36,7 +36,7 @@ export interface UpdateVolumeParams {
     monitorNewIssues?: boolean;
     monitoringScheme?: '' | MonitoringScheme;
     specialVersionLocked?: boolean;
-    specialVersion?: '' | SpecialVersion;
+    specialVersion?: null | SpecialVersion;
     rootFolder?: number;
     volumeFolder?: string;
     libgenSeriesId?: number | null;
