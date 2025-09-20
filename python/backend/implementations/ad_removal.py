@@ -1,49 +1,72 @@
 import re
 from collections import Counter
-from os.path import dirname
+from os.path import basename, dirname, join
 from zipfile import ZipFile, ZipInfo
 
 from backend.base.files import delete_file_folder, generate_archive_folder
 from backend.base.logging import LOGGER
 
 
-# FIXME: improve prefix logic
-def find_outliers(files: list[ZipInfo]):
-    strings = [file.filename for file in files if not file.is_dir()]
+def find_outliers(files: list[ZipInfo]) -> list[str]:
+    """
+    From a list of files inside a zip file, get a list of files
+    that do not follow the structure of the rest of the files.
+    """
+    filenames: list[str] = []
 
-    # Extract prefix: everything up to the last occurrence of three digits
+    for file in files:
+        if not file.is_dir():
+            filenames.append(file.filename)
+
+    # Extract prefix: everything up to the last occurrence of 1 or more digits
     prefixes = []
 
-    for s in strings:
-        match = list(re.finditer(r"\d{3}", s.split("/")[-1]))
+    for filename in filenames:
+        match = list(re.finditer(r"\d+", basename(filename)))
+
         if match:
             last = match[-1]
-            prefixes.append(s[: last.end() - 3])
+            prefixes.append(filename[:last.start()])
         else:
-            prefixes.append(s)  # If no 3-digit sequence, use the whole string as prefix
+            prefixes.append(filename)  # If no digit sequence, use the whole string as prefix
 
-    most_common_prefix, _ = Counter(prefixes).most_common(1)[0]
-    outliers = [s for s, p in zip(strings, prefixes) if p != most_common_prefix]
+    most_common_prefix = Counter(prefixes).most_common(1)[0][0]
 
-    # If there are as many outliers as original files, there are no outliers
-    return outliers if len(outliers) != len(files) else []
+    outliers: list[str] = []
+
+    for filename in filenames:
+        # We use startswith here because multi-pages images might not have the same prefix
+        if not basename(filename).startswith(most_common_prefix):
+            outliers.append(filename)
+
+    # If there are as many outliers as filenames - 1, there are no outliers
+    # NB: filenames - 1 because there will always be one file that is not an outlier
+    if len(outliers) == len(filenames) - 1:
+        return []
+
+    return outliers
 
 
 def get_ad_filenames(file: str) -> list[str]:
     """
-    Gets all outliers that start with the letter 'z'. Most ads
-    will have one or more z's at the start of the filename to
+    Gets all outliers that start with the letter 'x' or 'z'. Most ads
+    will have one or more 'x' or 'z' at the start of the filename to
     show at the end of the book.
     """
     with ZipFile(file, "r") as zip:
-        return [
-            outlier
-            for outlier in find_outliers(zip.infolist())
-            if outlier.split("/")[-1].lower().startswith("z")
-        ]
+        results: list[str] = []
+
+        for outlier in find_outliers(zip.infolist()):
+            if basename(outlier).lower()[0] in ["x", "z"]:
+                results.append(outlier)
+
+        return results
 
 
 def remove_ads(file: str) -> None:
+    """
+    Removes scene ads that can sometimes show up at the end of comics.
+    """
     archive_folder = generate_archive_folder(dirname(file), file)
 
     # TODO: support removing ads from CBR
@@ -62,7 +85,7 @@ def remove_ads(file: str) -> None:
     with ZipFile(file, "w") as zip:
         for f in files:
             if f not in ads:
-                zip.write(filename=f"{archive_folder}/{f}", arcname=f)
+                zip.write(filename=join(archive_folder, f), arcname=f)
 
     delete_file_folder(archive_folder)
 

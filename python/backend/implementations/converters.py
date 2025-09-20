@@ -175,7 +175,7 @@ class ZIPtoCBR(FileConverter):
     def convert(file: str) -> list[str]:
         rar_file = ZIPtoRAR.convert(file)[0]
         if rar_file == file:
-            # File not matched to volumeAdd commentMore actions
+            # File not matched to volume
             return [file]
         cbr_file = RARtoCBR.convert(rar_file)
         return cbr_file
