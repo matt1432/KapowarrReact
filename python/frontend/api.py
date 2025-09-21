@@ -1195,7 +1195,6 @@ def api_external_clients_keys() -> ApiReturn:
     return return_api(result)
 
 
-# FIXME: always successful?
 @api.route("/externalclients/test", methods=["POST"])
 @error_handler
 @auth

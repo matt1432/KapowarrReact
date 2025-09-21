@@ -117,7 +117,7 @@ class qBittorrent(BaseExternalClient):
                 self.ssn.torrents_resume(torrent_hashes=t_hash)
 
         if t_hash is None:
-            raise Exception()  # TODO: make better exception
+            raise ExternalClientNotWorking()
 
         self.torrent_hashes[t_hash] = None
         return t_hash
@@ -174,6 +174,7 @@ class qBittorrent(BaseExternalClient):
         del self.torrent_hashes[download_id]
         return
 
+    # FIXME: always successful?
     @staticmethod
     def test(
         base_url: str,
