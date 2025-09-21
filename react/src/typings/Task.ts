@@ -4,7 +4,7 @@ import type { CamelCasedProperties } from 'type-fest';
 export interface RawTask {
     stop: boolean;
     message: string;
-    action: string;
+    action: CommandName;
     display_title: string;
     category: string;
     volume_id: number | null;

@@ -26,6 +26,9 @@ import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
 import formatBytes from 'Utilities/Number/formatBytes';
 
+// Hooks
+import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
+
 // General Components
 import Alert from 'Components/Alert';
 import Icon from 'Components/Icon';
@@ -63,6 +66,8 @@ import VolumePoster from 'Volume/VolumePoster';
 import styles from './index.module.css';
 
 // Types
+import type { Task } from 'typings/Task';
+
 interface VolumeDetailsProps {
     volumeId: number;
 }
@@ -108,8 +113,7 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const { refetch: refetchQueueDetails } = useFetchQueueDetails({ volumeId });
 
-    const [executeCommand, { originalArgs, isLoading: isCmdLoading, isSuccess: isCmdSuccess }] =
-        useExecuteCommandMutation();
+    const [executeCommand, { originalArgs, isLoading: isCmdLoading }] = useExecuteCommandMutation();
 
     const [isToggling, setIsToggling] = useState(false);
     const [toggleVolumeMonitored, { isSuccess: isToggleSuccess }] = useUpdateVolumeMutation();
@@ -122,18 +126,20 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         }
     }, [refetch, isToggleSuccess]);
 
-    useEffect(() => {
-        if (isCmdSuccess) {
-            refetch();
-            refetchQueueDetails();
-
-            // Not sure why but the timeout is necessary
-            // for updating the progress label
-            setTimeout(() => {
+    const handleTaskEnded = useCallback(
+        (task: Pick<Task, 'action' | 'volumeId' | 'issueId'>) => {
+            if (task.volumeId === volumeId) {
+                refetch();
+                refetchQueueDetails();
                 refetchAllVolumes();
-            }, 1000);
-        }
-    }, [refetch, refetchAllVolumes, refetchQueueDetails, isCmdSuccess]);
+            }
+        },
+        [refetch, refetchAllVolumes, refetchQueueDetails, volumeId],
+    );
+
+    useSocketEvents({
+        taskEnded: handleTaskEnded,
+    });
 
     const { isRefreshing, isSearching } = useMemo(() => {
         const isRunning = (cmd: string) => originalArgs?.cmd === cmd && isCmdLoading;
@@ -430,7 +436,6 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                 <Label className={styles.detailsLabel} size={sizes.LARGE}>
                                     <div>
                                         <Icon name={icons.FOLDER} size={17} />
-                                        {/* FIXME: doesn't refresh after renaming */}
                                         <span className={styles.path}>{folder}</span>
                                     </div>
                                 </Label>
