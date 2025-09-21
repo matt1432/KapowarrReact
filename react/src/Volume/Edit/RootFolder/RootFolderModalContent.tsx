@@ -3,9 +3,6 @@
 // React
 import { useCallback, useState } from 'react';
 
-// Redux
-import { useSearchVolumeQuery } from 'Store/Api/Volumes';
-
 // Misc
 import { inputTypes } from 'Helpers/Props';
 
@@ -25,12 +22,10 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import type { InputChanged } from 'typings/Inputs';
 
 export interface RootFolderUpdated {
-    path: string;
-    rootFolderPath: string;
+    newRootFolderPath: string;
 }
 
 export interface RootFolderModalContentProps {
-    volumeId: number;
     rootFolderPath: string;
     onSavePress(change: RootFolderUpdated): void;
     onModalClose(): void;
@@ -39,33 +34,19 @@ export interface RootFolderModalContentProps {
 // IMPLEMENTATIONS
 
 export default function RootFolderModalContent({
-    volumeId,
     onSavePress,
     onModalClose,
     rootFolderPath: initRootFolderPath,
 }: RootFolderModalContentProps) {
     const [rootFolderPath, setRootFolderPath] = useState(initRootFolderPath);
 
-    const { isLoading, folder } = useSearchVolumeQuery(
-        { volumeId },
-        {
-            selectFromResult: ({ isLoading, data }) => ({
-                isLoading,
-                folder: data?.folder,
-            }),
-        },
-    );
-
     const onInputChange = useCallback(({ value }: InputChanged<string, string>) => {
         setRootFolderPath(value);
     }, []);
 
     const handleSavePress = useCallback(() => {
-        onSavePress({
-            path: `${rootFolderPath}/${folder}`,
-            rootFolderPath,
-        });
-    }, [rootFolderPath, folder, onSavePress]);
+        onSavePress({ newRootFolderPath: rootFolderPath });
+    }, [rootFolderPath, onSavePress]);
 
     return (
         <ModalContent onModalClose={onModalClose}>
@@ -89,9 +70,7 @@ export default function RootFolderModalContent({
             <ModalFooter>
                 <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
-                <Button disabled={isLoading || !folder} onPress={handleSavePress}>
-                    {translate('UpdatePath')}
-                </Button>
+                <Button onPress={handleSavePress}>{translate('UpdatePath')}</Button>
             </ModalFooter>
         </ModalContent>
     );

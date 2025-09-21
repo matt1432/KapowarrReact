@@ -141,11 +141,15 @@ export default function EditVolumeModalContent({
                     setLibgenSeriesId(value as number | null);
                     break;
                 case 'volumeFolder':
-                    setVolumeFolder(value as string);
+                    setVolumeFolder(
+                        (value as string)
+                            .replaceAll(rootFolderPath, '')
+                            .replaceAll(rootFolderPath.slice(0, -1), ''),
+                    );
                     break;
             }
         },
-        [],
+        [rootFolderPath],
     );
 
     const handleRootFolderPress = useCallback(() => {
@@ -157,12 +161,12 @@ export default function EditVolumeModalContent({
     }, []);
 
     const handleRootFolderChange = useCallback(
-        ({ path: newPath, rootFolderPath: newRootFolderPath }: RootFolderUpdated) => {
+        ({ newRootFolderPath }: RootFolderUpdated) => {
             setIsRootFolderModalOpen(false);
             setRootFolderId(rootFolders.find((f) => f.folder === newRootFolderPath)!.id);
-            handleInputChange({ name: 'volumeFolder', value: newPath });
+            handleInputChange({ name: 'volumeFolder', value: volumeFolder });
         },
-        [handleInputChange, rootFolders],
+        [handleInputChange, rootFolders, volumeFolder],
     );
 
     const handleCancelPress = useCallback(() => {
@@ -255,14 +259,13 @@ export default function EditVolumeModalContent({
                         />
                     </FormGroup>
 
-                    {/* FIXME: path when changing root folder */}
                     <FormGroup size={sizes.MEDIUM}>
                         <FormLabel>{translate('Path')}</FormLabel>
 
                         <FormInputGroup
                             type={inputTypes.TEXT}
                             name="volumeFolder"
-                            value={volumeFolder}
+                            value={rootFolderPath + volumeFolder}
                             buttons={[
                                 <FormInputButton
                                     key="fileBrowser"
@@ -301,7 +304,6 @@ export default function EditVolumeModalContent({
 
             <RootFolderModal
                 isOpen={isRootFolderModalOpen}
-                volumeId={volumeId}
                 rootFolderPath={rootFolderPath}
                 onSavePress={handleRootFolderChange}
                 onModalClose={handleRootFolderModalClose}
