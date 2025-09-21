@@ -27,8 +27,6 @@ interface VolumeIndexProgressBarProps {
 
 // IMPLEMENTATIONS
 
-// FIXME: after changing sorting, empty bars show red background
-
 export default function VolumeIndexProgressBar({
     volume,
     width,

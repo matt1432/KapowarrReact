@@ -35,8 +35,9 @@ export function getDownloadedIssuesProgress({
         queue.length - queue.filter((item) => FAILED_STATE.includes(item.status)).length;
 
     const progress = issueCountMonitored
-        ? (issuesDownloadedMonitored / issuesDownloadedMonitored) * 100
+        ? (issuesDownloadedMonitored / issueCountMonitored) * 100
         : 100;
+
     const text = newDownloads
         ? `${issuesDownloadedMonitored} + ${newDownloads} / ${issueCountMonitored}`
         : `${issuesDownloadedMonitored} / ${issueCountMonitored}`;
