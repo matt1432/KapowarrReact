@@ -564,16 +564,14 @@ def extract_filename_data(
         year = fix_broken_year(year)
 
     file_data = FilenameData(
-        {
-            "series": series,
-            "year": year,
-            "volume_number": volume_number,
-            "special_version": special_version,
-            "issue_number": calculated_issue_number,
-            "annual": annual,
-            "is_image_file": is_image_file,
-            "is_metadata_file": is_metadata_file,
-        }
+        series=series,
+        year=year,
+        volume_number=volume_number,
+        special_version=special_version,
+        issue_number=calculated_issue_number,
+        annual=annual,
+        is_image_file=is_image_file,
+        is_metadata_file=is_metadata_file,
     )
 
     LOGGER.debug(f"Extracting filename data: {file_data}")

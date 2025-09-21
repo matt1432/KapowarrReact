@@ -9,6 +9,7 @@ from backend.base.definitions import (
     SearchSource,
     SpecialVersion,
 )
+from backend.base.file_extraction import extract_filename_data
 from backend.base.helpers import (
     AsyncSession,
     check_overlapping_issues,
@@ -170,32 +171,37 @@ class SearchLibgenPlus:
                 id=file_id, libgen_site_url=Constants.LIBGEN_SITE_URL
             )
 
-            results.append(
-                SearchResultData(
-                    series=volume_data.title,
-                    year=volume_data.year,
-                    volume_number=self.volume_number,
-                    special_version=None,  # TODO: figure this out
-                    issue_number=1,  # file_result.issue is None, let the user handle this
-                    annual=False,  # TODO: figure this out
-                    link=file_result.download_link or "",
-                    display_title=file_result.filename or "",
-                    source="Libgen+",
-                    filesize=file_result.filesize or 0,
-                    pages=file_result.pages or 0,
-                    releaser=file_result.releaser or "",
-                    scan_type=file_result.scan_type or "",
-                    resolution=file_result.resolution or "",
-                    dpi=file_result.dpi or "",
-                    extension=file_result.extension or "",
-                    comics_id=int(file_result.get("comics_id"))
+            filename = file_result.filename
+
+            if filename:
+                efd = extract_filename_data(filename)
+
+                results.append(
+                    SearchResultData(
+                        series=volume_data.title,
+                        year=volume_data.year,
+                        volume_number=self.volume_number,
+                        special_version=efd["special_version"],
+                        issue_number=efd["issue_number"],
+                        annual=efd["annual"],
+                        is_image_file=efd["is_image_file"],
+                        is_metadata_file=efd["is_metadata_file"],
+                        link=file_result.download_link or "",
+                        display_title=filename,
+                        source="Libgen+",
+                        filesize=file_result.filesize or 0,
+                        pages=file_result.pages or 0,
+                        releaser=file_result.releaser or "",
+                        scan_type=file_result.scan_type or "",
+                        resolution=file_result.resolution or "",
+                        dpi=file_result.dpi or "",
+                        extension=file_result.extension or "",
+                        comics_id=int(file_result.get("comics_id"))
                         if file_result.get("comics_id") is not None
                         else None,
-                    md5=file_result.get("md5"),
-                    is_metadata_file=False,
-                    is_image_file=False,
+                        md5=file_result.get("md5"),
+                    )
                 )
-            )
 
         else:
             libgen_series_id: int | None = None
@@ -227,22 +233,29 @@ class SearchLibgenPlus:
             for file_result in file_results:
                 issue = file_result.issue
 
+                filename = file_result.filename
+
                 # TODO: add filter configuration
                 if (
-                    (file_result.get("scan_content") or "") != "cover only"
+                    filename
+                    and (file_result.get("scan_content") or "") != "cover only"
                     and (file_result.scan_type or "") == "digital"
                     and issue is not None
                 ):
+                    efd = extract_filename_data(filename)
+
                     results.append(
                         SearchResultData(
                             series=issue.series.title or "",
                             year=issue.year,
                             volume_number=self.volume_number,
-                            special_version=None,  # TODO: figure this out
-                            issue_number=issue.number,
-                            annual=False,  # TODO: figure this out
+                            special_version=efd["special_version"],
+                            issue_number=efd["issue_number"],
+                            annual=efd["annual"],
+                            is_image_file=efd["is_image_file"],
+                            is_metadata_file=efd["is_metadata_file"],
                             link=file_result.download_link or "",
-                            display_title=file_result.filename or "",
+                            display_title=filename,
                             source="Libgen+",
                             filesize=file_result.filesize or 0,
                             pages=file_result.pages or 0,
@@ -252,11 +265,9 @@ class SearchLibgenPlus:
                             dpi=file_result.dpi or "",
                             extension=file_result.extension or "",
                             comics_id=int(file_result.get("comics_id"))
-                                if file_result.get("comics_id") is not None
-                                else None,
+                            if file_result.get("comics_id") is not None
+                            else None,
                             md5=file_result.get("md5"),
-                            is_metadata_file=False,
-                            is_image_file=False,
                         )
                     )
 

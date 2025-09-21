@@ -232,26 +232,28 @@ class ComicVine:
             "translated": False,
             "already_added": None,  # Only used when searching
             "issues": None,  # Only used for certain fetches
-            "folder_name": generate_volume_folder_name(VolumeData(
-                id=-1,
-                comicvine_id=volume_data.id,
-                libgen_series_id=None,
-                title=title,
-                alt_title=None,
-                year=volume_data.start_year or 0,
-                publisher=publisher or "",
-                volume_number=1,
-                description=description,
-                site_url=site_url,
-                monitored=False,
-                monitor_new_issues=False,
-                root_folder=1,
-                folder="",
-                custom_folder=False,
-                special_version=SpecialVersion.NORMAL,
-                special_version_locked=False,
-                last_cv_fetch=0,
-            )),
+            "folder_name": generate_volume_folder_name(
+                VolumeData(
+                    id=-1,
+                    comicvine_id=volume_data.id,
+                    libgen_series_id=None,
+                    title=title,
+                    alt_title=None,
+                    year=volume_data.start_year or 0,
+                    publisher=publisher or "",
+                    volume_number=1,
+                    description=description,
+                    site_url=site_url,
+                    monitored=False,
+                    monitor_new_issues=False,
+                    root_folder=1,
+                    folder="",
+                    custom_folder=False,
+                    special_version=SpecialVersion.NORMAL,
+                    special_version_locked=False,
+                    last_cv_fetch=0,
+                )
+            ),
         }
 
         if translation_regex.match(result["description"] or "") is not None:
