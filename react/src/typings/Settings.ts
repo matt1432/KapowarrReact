@@ -26,6 +26,8 @@ export interface RawSettingsValue {
     flaresolverr_base_url: string;
     format_preference: string[]; // improve type?
     host: string;
+    include_cover_only_files: boolean;
+    include_scanned_books: boolean;
     issue_padding: number;
     log_level: number;
     long_special_version: boolean;

@@ -29,22 +29,55 @@ import type { CheckInputChanged } from 'typings/Inputs';
 export default function LibgenPlus() {
     const [saveSettings] = useSaveSettingsMutation();
 
-    const { enableLibgen } = useGetSettingsQuery(undefined, {
-        selectFromResult: ({ data }) => ({
-            enableLibgen: Boolean(data?.enableLibgen),
-        }),
-    });
+    const { enableLibgen, includeCoverOnlyFiles, includeScannedBooks } = useGetSettingsQuery(
+        undefined,
+        {
+            selectFromResult: ({ data }) => ({
+                enableLibgen: Boolean(data?.enableLibgen),
+                includeCoverOnlyFiles: Boolean(data?.includeCoverOnlyFiles),
+                includeScannedBooks: Boolean(data?.includeScannedBooks),
+            }),
+        },
+    );
 
-    const [enable, setEnable] = useState(Boolean(enableLibgen));
+    const [enable, setEnable] = useState(enableLibgen);
 
     useEffect(() => {
-        setEnable(Boolean(enableLibgen));
+        setEnable(enableLibgen);
     }, [enableLibgen]);
 
     const handleEnableChange = useCallback(
         ({ value }: CheckInputChanged<'enable'>) => {
             setEnable(value);
             saveSettings({ enableLibgen: value });
+        },
+        [saveSettings],
+    );
+
+    const [coverOnly, setCoverOnly] = useState(includeCoverOnlyFiles);
+
+    useEffect(() => {
+        setCoverOnly(includeCoverOnlyFiles);
+    }, [includeCoverOnlyFiles]);
+
+    const handleCoverOnlyChange = useCallback(
+        ({ value }: CheckInputChanged<'coverOnly'>) => {
+            setCoverOnly(value);
+            saveSettings({ includeCoverOnlyFiles: value });
+        },
+        [saveSettings],
+    );
+
+    const [scanned, setScanned] = useState(includeScannedBooks);
+
+    useEffect(() => {
+        setScanned(includeScannedBooks);
+    }, [includeScannedBooks]);
+
+    const handleScannedChange = useCallback(
+        ({ value }: CheckInputChanged<'scanned'>) => {
+            setScanned(value);
+            saveSettings({ includeScannedBooks: value });
         },
         [saveSettings],
     );
@@ -71,6 +104,28 @@ export default function LibgenPlus() {
                                     name="enable"
                                     onChange={handleEnableChange}
                                     value={enable}
+                                />
+                            </FormGroup>
+
+                            <FormGroup>
+                                <FormLabel>{translate('IncludeCoverOnlyFiles')}</FormLabel>
+                                <FormInputGroup
+                                    type="check"
+                                    name="coverOnly"
+                                    helpText={translate('IncludeCoverOnlyFilesHelpText')}
+                                    onChange={handleCoverOnlyChange}
+                                    value={coverOnly}
+                                />
+                            </FormGroup>
+
+                            <FormGroup>
+                                <FormLabel>{translate('IncludeScannedBooks')}</FormLabel>
+                                <FormInputGroup
+                                    type="check"
+                                    name="scanned"
+                                    helpText={translate('IncludeScannedBooksHelpText')}
+                                    onChange={handleScannedChange}
+                                    value={scanned}
                                 />
                             </FormGroup>
                         </FieldSet>

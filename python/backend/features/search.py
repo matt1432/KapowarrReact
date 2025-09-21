@@ -163,6 +163,8 @@ class SearchLibgenPlus:
     ) -> list[SearchResultData]:
         results: list[SearchResultData] = []
 
+        settings = Settings().sv
+
         volume_data = self.volume.get_data()
 
         if libgen_file_url is not None and libgen_file_url.count("file.php?id=") != 0:
@@ -210,7 +212,7 @@ class SearchLibgenPlus:
                 libgen_series_id = volume_data.libgen_series_id
 
             file_results = await LibgenSearch().search_comicvine_id(
-                api_key=Settings().sv.comicvine_api_key,
+                api_key=settings.comicvine_api_key,
                 id=self.comicvine_id,
                 issue_number=self.issue_number,
                 libgen_series_id=libgen_series_id,
@@ -235,41 +237,47 @@ class SearchLibgenPlus:
 
                 filename = file_result.filename
 
-                # TODO: add filter configuration
-                if (
-                    filename
-                    and (file_result.get("scan_content") or "") != "cover only"
-                    and (file_result.scan_type or "") == "digital"
-                    and issue is not None
-                ):
-                    efd = extract_filename_data(filename)
+                if not filename or not issue:
+                    continue
 
-                    results.append(
-                        SearchResultData(
-                            series=issue.series.title or "",
-                            year=issue.year,
-                            volume_number=self.volume_number,
-                            special_version=efd["special_version"],
-                            issue_number=efd["issue_number"],
-                            annual=efd["annual"],
-                            is_image_file=efd["is_image_file"],
-                            is_metadata_file=efd["is_metadata_file"],
-                            link=file_result.download_link or "",
-                            display_title=filename,
-                            source="Libgen+",
-                            filesize=file_result.filesize or 0,
-                            pages=file_result.pages or 0,
-                            releaser=file_result.releaser or "",
-                            scan_type=file_result.scan_type or "",
-                            resolution=file_result.resolution or "",
-                            dpi=file_result.dpi or "",
-                            extension=file_result.extension or "",
-                            comics_id=int(file_result.get("comics_id"))
-                            if file_result.get("comics_id") is not None
-                            else None,
-                            md5=file_result.get("md5"),
-                        )
+                if not settings.include_cover_only_files:
+                    # we want to filter out cover only files
+                    if (file_result.get("scan_content") or "") == "cover only":
+                        continue
+
+                if not settings.include_scanned_books:
+                    # we want to filter out scanned books
+                    if (file_result.scan_type or "") != "digital":
+                        continue
+
+                efd = extract_filename_data(filename)
+
+                results.append(
+                    SearchResultData(
+                        series=issue.series.title or "",
+                        year=issue.year,
+                        volume_number=self.volume_number,
+                        special_version=efd["special_version"],
+                        issue_number=efd["issue_number"],
+                        annual=efd["annual"],
+                        is_image_file=efd["is_image_file"],
+                        is_metadata_file=efd["is_metadata_file"],
+                        link=file_result.download_link or "",
+                        display_title=filename,
+                        source="Libgen+",
+                        filesize=file_result.filesize or 0,
+                        pages=file_result.pages or 0,
+                        releaser=file_result.releaser or "",
+                        scan_type=file_result.scan_type or "",
+                        resolution=file_result.resolution or "",
+                        dpi=file_result.dpi or "",
+                        extension=file_result.extension or "",
+                        comics_id=int(file_result.get("comics_id"))
+                        if file_result.get("comics_id") is not None
+                        else None,
+                        md5=file_result.get("md5"),
                     )
+                )
 
         return results
 

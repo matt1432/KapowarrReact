@@ -98,7 +98,10 @@ class SettingsValues:
     date_type: DateType = DateType.COVER_DATE
 
     enable_getcomics: bool = True
+
     enable_libgen: bool = True
+    include_cover_only_files: bool = False
+    include_scanned_books: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         result = {}
