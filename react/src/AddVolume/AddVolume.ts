@@ -26,6 +26,7 @@ export interface RawVolumeMetadata {
     translated: boolean;
     already_added: number | null;
     issues: RawIssueMetadata[] | null;
+    folder_name: string;
 }
 
 export type VolumeMetadata = CamelCasedProperties<Omit<RawVolumeMetadata, 'issues'>> & {

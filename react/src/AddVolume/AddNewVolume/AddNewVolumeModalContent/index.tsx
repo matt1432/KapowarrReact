@@ -166,15 +166,14 @@ export default function AddNewVolumeModalContent({
                                     type={inputTypes.ROOT_FOLDER_SELECT}
                                     name="rootFolder"
                                     value={rootFolderPath}
-                                    // TODO: get preview of folder name
                                     valueOptions={{
-                                        volumeFolder: volume.title + '...',
+                                        volumeFolder: volume.folderName,
                                     }}
                                     selectedValueOptions={{
-                                        volumeFolder: volume.title + '...',
+                                        volumeFolder: volume.folderName,
                                     }}
                                     helpText={translate('AddNewVolumeRootFolderHelpText', {
-                                        folder: volume.title + '...',
+                                        folder: volume.folderName,
                                     })}
                                     onChange={handleRootFolderChange}
                                 />

@@ -21,6 +21,7 @@ from backend.base.definitions import (
     FilenameData,
     IssueMetadata,
     SpecialVersion,
+    VolumeData,
     VolumeMetadata,
 )
 from backend.base.file_extraction import (
@@ -207,23 +208,50 @@ class ComicVine:
         Returns:
             VolumeMetadata: The formatted version.
         """
+        from backend.implementations.naming import generate_volume_folder_name
+
+        title = normalise_string(volume_data.name or "")
+        publisher = volume_data.publisher.name if volume_data.publisher else None
+        description = _clean_description(volume_data.description or "")
+        site_url = str(volume_data.site_url)
+
         result: VolumeMetadata = {
             "comicvine_id": volume_data.id,
-            "title": normalise_string(volume_data.name or ""),
+            "title": title,
             "year": volume_data.start_year,
             "volume_number": 1,
             "cover_link": str(volume_data.image.small_url),
             "cover": None,
-            "description": _clean_description(volume_data.description or ""),
-            "site_url": str(volume_data.site_url),
+            "description": description,
+            "site_url": site_url,
             "aliases": [
                 a.strip() for a in (volume_data.aliases or "").split("\r\n") if a
             ],
-            "publisher": volume_data.publisher.name if volume_data.publisher else None,
+            "publisher": publisher,
             "issue_count": volume_data.issue_count,
             "translated": False,
             "already_added": None,  # Only used when searching
             "issues": None,  # Only used for certain fetches
+            "folder_name": generate_volume_folder_name(VolumeData(
+                id=-1,
+                comicvine_id=volume_data.id,
+                libgen_series_id=None,
+                title=title,
+                alt_title=None,
+                year=volume_data.start_year or 0,
+                publisher=publisher or "",
+                volume_number=1,
+                description=description,
+                site_url=site_url,
+                monitored=False,
+                monitor_new_issues=False,
+                root_folder=1,
+                folder="",
+                custom_folder=False,
+                special_version=SpecialVersion.NORMAL,
+                special_version_locked=False,
+                last_cv_fetch=0,
+            )),
         }
 
         if translation_regex.match(result["description"] or "") is not None:

@@ -639,6 +639,7 @@ class VolumeMetadata(TypedDict):
     translated: bool
     already_added: int | None
     issues: list[IssueMetadata] | None
+    folder_name: str
 
 
 class IssueMetadata(TypedDict):
