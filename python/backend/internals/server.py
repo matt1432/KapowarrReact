@@ -183,17 +183,21 @@ class Server(metaclass=Singleton):
         )
 
         # Add error handlers
-        @app.errorhandler(400)
-        def bad_request(e: Any) -> tuple[dict[str, Collection[str]], int]:
+        def bad_request(_e: Any) -> tuple[dict[str, Collection[str]], int]:
             return {"error": "BadRequest", "result": {}}, 400
 
-        @app.errorhandler(405)
-        def method_not_allowed(e: Any) -> tuple[dict[str, Collection[str]], int]:
+        app.register_error_handler(400, bad_request)
+
+        def method_not_allowed(_e: Any) -> tuple[dict[str, Collection[str]], int]:
             return {"error": "MethodNotAllowed", "result": {}}, 405
 
+        app.register_error_handler(405, method_not_allowed)
+
         @app.errorhandler(500)
-        def internal_error(e: Any) -> tuple[dict[str, Collection[str]], int]:
+        def internal_error(_e: Any) -> tuple[dict[str, Collection[str]], int]:
             return {"error": "InternalError", "result": {}}, 500
+
+        app.register_error_handler(500, internal_error)
 
         # Add endpoints
         app.register_blueprint(ui)
