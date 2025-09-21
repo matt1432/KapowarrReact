@@ -7,7 +7,7 @@ from itertools import chain
 from os.path import splitext
 from zipfile import ZipFile
 
-from backend.base.definitions import Download, FileConstants, FileConverter
+from backend.base.definitions import FileConstants, FileConverter, FileExtraInfo
 from backend.base.helpers import PortablePool, filtered_iter, get_subclasses
 from backend.base.logging import LOGGER
 from backend.implementations.converters import run_rar, try_rar
@@ -233,7 +233,7 @@ def mass_convert(
     filepath_filter: list[str] = [],
     update_websocket_progress: bool = False,
     update_websocket_files: bool = False,
-    download: Download | None = None,
+    file_extra_info: FileExtraInfo | None = None,
 ) -> list[str]:
     """Convert files for a volume or issue.
 
@@ -327,7 +327,7 @@ def mass_convert(
     scan_files(
         volume_id,
         filepath_filter=result,
-        download=download,
+        file_extra_info=file_extra_info,
         update_websocket=update_websocket_files,
     )
 

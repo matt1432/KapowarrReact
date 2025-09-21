@@ -7,7 +7,7 @@ from os import stat
 from typing import Any
 
 from backend.base.custom_exceptions import FileNotFound
-from backend.base.definitions import Download, FileData, GeneralFileData
+from backend.base.definitions import FileData, FileExtraInfo, GeneralFileData
 from backend.base.helpers import first_of_subarrays
 from backend.base.logging import LOGGER
 from backend.internals.db import get_db
@@ -156,11 +156,11 @@ class FilesDB:
     @staticmethod
     def add_file(
         filepath: str,
-        download: Download | None = None,
+        file_info: FileExtraInfo | None = None,
     ) -> int:
         cursor = get_db()
 
-        if download is None:
+        if file_info is None:
             cursor.execute(
                 "INSERT OR IGNORE INTO files(filepath, size) VALUES (?,?)",
                 (filepath, stat(filepath).st_size),
@@ -175,10 +175,10 @@ class FilesDB:
                 (
                     filepath,
                     stat(filepath).st_size,
-                    download.releaser,
-                    download.scan_type,
-                    download.resolution,
-                    download.dpi,
+                    file_info["releaser"],
+                    file_info["scan_type"],
+                    file_info["resolution"],
+                    file_info["dpi"],
                 ),
             )
 

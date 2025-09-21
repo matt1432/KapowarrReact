@@ -189,6 +189,8 @@ class ZIPtoFOLDER(FileConverter):
     @staticmethod
     def convert(file: str) -> list[str]:
         volume_id = FilesDB.volume_of_file(file)
+        file_data = FilesDB.fetch(filepath=file)[0]
+
         if not volume_id:
             # File not matched to volume
             return [file]
@@ -202,8 +204,9 @@ class ZIPtoFOLDER(FileConverter):
         resulting_files = extract_files_from_folder(archive_folder, volume_id)
 
         if resulting_files:
-            # FIXME: this deletes all the extra info
-            scan_files(volume_id, filepath_filter=resulting_files)
+            scan_files(
+                volume_id, filepath_filter=resulting_files, file_extra_info=file_data
+            )
             resulting_files = mass_rename(volume_id, filepath_filter=resulting_files)
 
         delete_file_folder(file)
@@ -347,6 +350,8 @@ class RARtoFOLDER(FileConverter):
             return []
 
         volume_id = FilesDB.volume_of_file(file)
+        file_data = FilesDB.fetch(filepath=file)[0]
+
         if not volume_id:
             # File not matched to volume
             return [file]
@@ -367,8 +372,9 @@ class RARtoFOLDER(FileConverter):
         resulting_files = extract_files_from_folder(archive_folder, volume_id)
 
         if resulting_files:
-            # FIXME: this deletes all the extra info
-            scan_files(volume_id, filepath_filter=resulting_files)
+            scan_files(
+                volume_id, filepath_filter=resulting_files, file_extra_info=file_data
+            )
             resulting_files = mass_rename(volume_id, filepath_filter=resulting_files)
 
         delete_file_folder(file)

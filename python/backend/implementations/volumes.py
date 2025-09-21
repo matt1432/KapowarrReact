@@ -8,7 +8,7 @@ from io import BytesIO
 from os.path import dirname, exists, isdir, relpath
 from re import IGNORECASE, compile
 from time import time
-from typing import TYPE_CHECKING, Any, assert_never
+from typing import Any, assert_never
 
 from backend.base.custom_exceptions import (
     InvalidKeyValue,
@@ -22,6 +22,7 @@ from backend.base.definitions import (
     SCANNABLE_EXTENSIONS,
     Constants,
     FileData,
+    FileExtraInfo,
     GeneralFileData,
     GeneralFileType,
     IssueData,
@@ -59,9 +60,6 @@ from backend.internals.db import commit, get_db
 from backend.internals.db_models import FilesDB, GeneralFilesDB
 from backend.internals.server import WebSocket
 from backend.internals.settings import Settings
-
-if TYPE_CHECKING:
-    from backend.base.definitions import Download
 
 ONE_DAY = timedelta(days=1)
 THIRTY_DAYS = timedelta(days=30)
@@ -1299,7 +1297,7 @@ def scan_files(
     filepath_filter: list[str] = [],
     del_unmatched_files: bool = True,
     update_websocket: bool = False,
-    download: Download | None = None,
+    file_extra_info: FileExtraInfo | FileData | None = None,
 ) -> None:
     """Scan inside the volume folder for files and map them to issues.
 
@@ -1357,7 +1355,7 @@ def scan_files(
         ):
             # Volume cover file
             if file not in volume_files:
-                volume_files[file] = FilesDB.add_file(file, download)
+                volume_files[file] = FilesDB.add_file(file, file_extra_info)
 
             general_bindings.append((volume_files[file], GeneralFileType.COVER.value))
 
@@ -1367,7 +1365,7 @@ def scan_files(
         ):
             # Volume metadata file
             if file not in volume_files:
-                volume_files[file] = FilesDB.add_file(file, download)
+                volume_files[file] = FilesDB.add_file(file, file_extra_info)
 
             general_bindings.append(
                 (volume_files[file], GeneralFileType.METADATA.value)
@@ -1380,7 +1378,7 @@ def scan_files(
         ):
             # Special Version
             if file not in volume_files:
-                volume_files[file] = FilesDB.add_file(file, download)
+                volume_files[file] = FilesDB.add_file(file, file_extra_info)
 
             bindings.append((volume_files[file], volume_issues[0].id))
 
@@ -1402,7 +1400,7 @@ def scan_files(
 
             if matching_issues:
                 if file not in volume_files:
-                    volume_files[file] = FilesDB.add_file(file, download)
+                    volume_files[file] = FilesDB.add_file(file, file_extra_info)
 
                 for issue in matching_issues:
                     bindings.append((volume_files[file], issue.id))

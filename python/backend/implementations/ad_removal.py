@@ -26,9 +26,11 @@ def find_outliers(files: list[ZipInfo]) -> list[str]:
 
         if match:
             last = match[-1]
-            prefixes.append(filename[:last.start()])
+            prefixes.append(filename[: last.start()])
         else:
-            prefixes.append(filename)  # If no digit sequence, use the whole string as prefix
+            prefixes.append(
+                filename
+            )  # If no digit sequence, use the whole string as prefix
 
     most_common_prefix = Counter(prefixes).most_common(1)[0][0]
 

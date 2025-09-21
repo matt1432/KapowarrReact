@@ -581,6 +581,13 @@ class ApiResponse(TypedDict):
     code: int
 
 
+class FileExtraInfo(TypedDict):
+    releaser: str
+    scan_type: str
+    resolution: str
+    dpi: str
+
+
 class FilenameData(TypedDict):
     series: str
     year: int | None
@@ -666,14 +673,10 @@ class SizeData(TypedDict):
     free: int
 
 
-class FileData(TypedDict):
+class FileData(FileExtraInfo):
     id: int
     filepath: str
     size: int
-    releaser: str
-    scan_type: str
-    resolution: str
-    dpi: str
 
 
 class GeneralFileData(FileData):
@@ -1300,6 +1303,14 @@ class Download(ABC):
             Dict[str, Any]: The dict with all information.
         """
         ...
+
+    def get_file_extra_info(self) -> FileExtraInfo:
+        return FileExtraInfo(
+            releaser=self.releaser or "",
+            scan_type=self.scan_type or "",
+            resolution=self.resolution or "",
+            dpi=self.dpi or "",
+        )
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}(download_link={self.download_link}; file={self.files[0]}; state={self.state.value}); {id(self)}>"

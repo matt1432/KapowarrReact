@@ -85,7 +85,7 @@ def add_file_to_database(download: Download) -> None:
     "Register files in database and match to a volume/issue"
     scan_files(
         download.volume_id,
-        download=download,
+        file_extra_info=download.get_file_extra_info(),
         filepath_filter=download.files,
         update_websocket=True,
     )
@@ -250,7 +250,7 @@ def convert_file(download: Download) -> None:
         download.volume_id,
         download.issue_id,
         filepath_filter=download.files,
-        download=download,
+        file_extra_info=download.get_file_extra_info(),
         update_websocket_progress=True,
         update_websocket_files=True,
     )
