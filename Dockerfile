@@ -10,7 +10,6 @@ WORKDIR /app
 
 COPY . .
 RUN pip install .
-RUN pip install kapowarr-react
 
 
 EXPOSE 5656
