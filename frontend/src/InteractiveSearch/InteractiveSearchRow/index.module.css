@@ -20,6 +20,7 @@
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
     word-break: break-all;
+    min-width: 100px;
 }
 
 .filesize {
@@ -68,6 +69,7 @@
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
     width: 100px;
+    min-width: 100px;
 }
 
 .manualDownloadContent {

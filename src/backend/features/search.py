@@ -1,4 +1,6 @@
 from asyncio import gather, run
+from collections.abc import Generator
+from typing import cast
 
 from libgencomics import LibgenSearch, ResultFile
 
@@ -301,12 +303,25 @@ async def search_multiple_queries(*queries: str) -> list[SearchResultData]:
     search_results: list[SearchResultData] = []
     processed_links = set()
     for response in responses:
-        for result in response:
+        for results in response:
             # Don't add if the link is already in the results
             # Avoids duplicates, as multiple formats can return the same result
-            if result["link"] not in processed_links:
-                search_results.append(result)
-                processed_links.add(result["link"])
+
+            if not results:
+                continue
+
+            if isinstance(results, dict):
+                search_results.append(cast(SearchResultData, results))
+                processed_links.add(results["link"])
+
+            elif isinstance(results, Generator):
+                for result in results:
+                    if result:
+                        search_results.append(result)
+                        processed_links.add(result["link"])
+
+            else:
+                LOGGER.warning(f"Search result was of unknown type: {results}")
 
     return search_results
 

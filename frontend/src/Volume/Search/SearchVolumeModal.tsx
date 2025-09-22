@@ -1,7 +1,7 @@
 // IMPORTS
 
 // Misc
-import { scrollDirections } from 'Helpers/Props';
+import { scrollDirections, sizes } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
@@ -31,7 +31,7 @@ export default function SearchVolumeModal({
     onModalClose,
 }: SearchVolumeModalProps) {
     return (
-        <Modal isOpen={isOpen} onModalClose={onModalClose}>
+        <Modal isOpen={isOpen} onModalClose={onModalClose} size={sizes.EXTRA_EXTRA_LARGE}>
             <ModalContent onModalClose={onModalClose}>
                 <ModalHeader>{translate('InteractiveSearchModalHeader')}</ModalHeader>
 

@@ -30,6 +30,7 @@ export default function GetComics() {
     const [saveSettings] = useSaveSettingsMutation();
 
     const { enableGetcomics } = useGetSettingsQuery(undefined, {
+        refetchOnMountOrArgChange: true,
         selectFromResult: ({ data }) => ({
             enableGetcomics: Boolean(data?.enableGetcomics),
         }),
