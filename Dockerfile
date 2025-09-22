@@ -6,10 +6,16 @@ RUN apt-get update && apt-get install -y curl gnupg git \
     && apt-get install -y nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+WORKDIR /tmp
 
 COPY . .
 RUN pip install .
+
+RUN useradd -d /app --create-home kapowarr
+
+WORKDIR /app
+
+USER kapowarr
 
 
 EXPOSE 5656
