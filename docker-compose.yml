@@ -1,7 +1,7 @@
 services:
     kapowarr-react:
         container_name: kapowarr-react
-        image: mrcas/kapowarr:latest # TODO: build packages on github
+        image: ghcr.io/matt1432/kapowarr-react:main
         volumes:
             - 'kapowarr-db:/app/db'
             - '/path/to/download_folder:/app/temp_downloads'
