@@ -66,7 +66,10 @@ class DownloadHandler(metaclass=Singleton):
     def __init__(self) -> None:
         """Setup the download handler"""
         self.settings = Settings()
-        create_folder(self.settings.sv.download_folder)
+        try:
+            create_folder(self.settings.sv.download_folder)
+        except Exception as e:
+            LOGGER.error(f"Could not initialise download folder: {e}")
         return
 
     # region Running Download
