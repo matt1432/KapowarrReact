@@ -53,15 +53,18 @@
         }));
 
     pyEnv = pkgs:
-      pkgs.python3.withPackages (_: pkgs.kapowarr.dependencies);
+      pkgs.python3.withPackages (_: pkgs.kapowarr-react.dependencies);
   in {
-    nixosModules = import ./nix/module.nix;
+    nixosModules = {
+      kapowarr-react = import ./nix/module.nix self;
+      default = self.nixosModules.kapowarr-react;
+    };
 
     overlays.default = import ./nix/overlays.nix self;
 
     packages = perSystem (pkgs: {
-      inherit (pkgs) kapowarr-web kapowarr;
-      default = pkgs.kapowarr;
+      inherit (pkgs) kapowarr-web kapowarr-react;
+      default = pkgs.kapowarr-react;
     });
 
     formatter = perSystem (pkgs: let

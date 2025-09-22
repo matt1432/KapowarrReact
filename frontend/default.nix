@@ -1,11 +1,11 @@
 {
   buildNpmPackage,
-  kapowarr,
+  kapowarr-react,
   ...
 }:
 buildNpmPackage {
   pname = "kapowarr-web";
-  version = kapowarr.version;
+  version = kapowarr-react.version;
 
   src = ./.;
 

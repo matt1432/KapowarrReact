@@ -1,71 +1,79 @@
-{
+self: {
   config,
   lib,
-  kapowarr,
   pkgs,
   ...
 }: let
   inherit
     (lib)
     getExe
+    literalExpression
     mkEnableOption
     mkIf
     mkOption
-    mkPackageOption
     optionalString
     types
     ;
 
-  cfg = config.services.kapowarr;
+  cfg = config.services.kapowarr-react;
 in {
-  options.services.kapowarr = {
-    enable = mkEnableOption "kapowarr";
+  options.services.kapowarr-react = {
+    enable = mkEnableOption "kapowarr-react";
 
-    package = mkPackageOption kapowarr.packages.${pkgs.system} "kapowarr" {};
+    package = mkOption {
+      type = types.package;
+      default = pkgs.kapowarr-react or self.packages.${pkgs.system}.kapowarr-react;
+      defaultText = literalExpression "pkgs.kapowarr-react or kapowarr-react.packages.\${pkgs.system}.kapowarr-react";
+      description = ''
+        The Kapowarr React package to use.\
+        By default, this option will use `kapowarr-react` from your `pkgs` if it finds it,
+        or the `packages.kapowarr-react` as exposed by this flake.
+      '';
+    };
 
     user = mkOption {
       type = types.str;
-      default = "kapowarr";
-      description = "The user account under which Kapowarr runs.";
+      default = "kapowarr-react";
+      description = "The user account under which Kapowarr React runs.";
     };
 
     group = mkOption {
       type = types.str;
-      default = "kapowarr";
-      description = "The group under which Kapowarr runs.";
+      default = "kapowarr-react";
+      description = "The group under which Kapowarr React runs.";
     };
 
     port = mkOption {
       type = types.port;
       default = 5656;
-      description = "Port where kapowarr should listen for incoming requests.";
+      description = "Port where Kapowarr React should listen for incoming requests.";
     };
 
     urlBase = mkOption {
       type = with types; nullOr str;
       default = null;
-      description = "URL base where kapowarr should listen for incoming requests.";
+      description = "URL base where Kapowarr React should listen for incoming requests.";
     };
 
     dataDir = mkOption {
       type = types.path;
-      default = "/var/lib/kapowarr/";
-      description = "The directory where Kapowarr stores its data files.";
+      default = "/var/lib/kapowarr-react";
+      description = "The directory where Kapowarr React stores its data files.";
     };
 
     logDir = mkOption {
       type = types.path;
       default = cfg.dataDir;
-      defaultText = "/var/lib/kapowarr";
-      description = "The directory where Kapowarr stores its log file.";
+      defaultText = "/var/lib/kapowarr-react";
+      description = "The directory where Kapowarr React stores its log file.";
     };
 
-    openFirewall = mkEnableOption "Open ports in the firewall for Kapowarr.";
+    openFirewall = mkEnableOption "Open ports in the firewall for Kapowarr React.";
   };
 
   config = mkIf cfg.enable {
-    systemd.services.kapowarr = {
-      description = "Kapowarr";
+    systemd.services.kapowarr-react = {
+      description = "Kapowarr React";
       wantedBy = ["multi-user.target"];
       wants = ["network-online.target"];
       after = ["network-online.target"];
@@ -74,7 +82,7 @@ in {
         Type = "simple";
         User = cfg.user;
         Group = cfg.group;
-        StateDirectory = mkIf (cfg.dataDir == "/var/lib/kapowar") "kapowarr";
+        StateDirectory = mkIf (cfg.dataDir == "/var/lib/kapowar-react") "kapowarr-react";
         ExecStart = toString [
           (getExe cfg.package)
           "-d ${cfg.dataDir}"
@@ -116,4 +124,6 @@ in {
 
     networking.firewall = mkIf cfg.openFirewall {allowedTCPPorts = [cfg.port];};
   };
+
+  _file = ./module.nix;
 }

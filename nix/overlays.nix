@@ -30,7 +30,7 @@ self: final: _prev: let
 in {
   kapowarr-web = final.callPackage "${self}/frontend" {};
 
-  kapowarr = final.callPackage ({
+  kapowarr-react = final.callPackage ({
     # nix build inputs
     lib,
     python3Packages,
@@ -44,7 +44,7 @@ in {
 
     pyproject = fromTOML (readFile "${self}/pyproject.toml");
 
-    pname = "kapowarr";
+    pname = "kapowarr-react";
     version = "${pyproject.project.version}+${self.shortRev or "dirty"}";
   in
     python3Packages.buildPythonApplication {
@@ -87,9 +87,9 @@ in {
         inherit (rar.meta) platforms;
         mainProgram = pname;
         license = lib.licenses.gpl3Only;
-        homepage = "https://casvt.github.io/Kapowarr";
+        homepage = "https://github.com/matt1432/KapowarrReact";
         description = ''
-          Kapowarr is a software to build and manage a comic book library,
+          Kapowarr React is a software to build and manage a comic book library,
           fitting in the *arr suite of software.
         '';
       };

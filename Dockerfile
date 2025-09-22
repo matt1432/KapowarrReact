@@ -5,9 +5,9 @@ WORKDIR /app
 
 COPY . .
 RUN pip install .
-RUN pip install kapowarr
+RUN pip install kapowarr-react
 
 
 EXPOSE 5656
 
-CMD [ "/usr/local/bin/kapowarr" ]
+CMD [ "/usr/local/bin/kapowarr-react" ]
