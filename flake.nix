@@ -85,7 +85,7 @@
           };
       });
     in {
-      kapowarr-web = final.callPackage ./react {};
+      kapowarr-web = final.callPackage ./frontend {};
 
       kapowarr = final.callPackage ({
         # nix build inputs

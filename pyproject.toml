@@ -51,4 +51,4 @@ include-package-data = false
 "frontend.static" = ["css/*", "img/*", "js/*.js", "fonts/*"]
 
 [tool.setuptools.packages.find]
-where = ["python"]
+where = ["src"]
