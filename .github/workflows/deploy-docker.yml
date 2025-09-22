@@ -13,7 +13,7 @@ on:
 
 env:
     REGISTRY: ghcr.io
-    IMAGE_NAME: kapowarr-react
+    IMAGE_NAME: matt1432/kapowarr-react
 
 jobs:
     build-and-push-image:
