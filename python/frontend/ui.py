@@ -48,7 +48,7 @@ def ui_manifest():
     ), 200
 
 
-@ui.route("/", defaults={"path": ""})
+@ui.route("/", defaults={"_path": ""})
 @ui.route("/<path:_path>")
 def ui_react(_path: str) -> str:
     return render("react.html")
