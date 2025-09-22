@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ ! -d "$KAPOWARR_WEB" ]; then
-    cd ./react || exit 1
+    cd ./frontend || exit 1
 
     npm ci
     npm run build
