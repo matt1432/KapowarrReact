@@ -5,6 +5,7 @@ from zipfile import ZipFile, ZipInfo
 
 from backend.base.files import delete_file_folder, generate_archive_folder
 from backend.base.logging import LOGGER
+from backend.implementations.converters import CBRtoCBZ, CBZtoCBR
 
 
 def find_outliers(files: list[ZipInfo]) -> list[str]:
@@ -71,9 +72,14 @@ def remove_ads(file: str) -> None:
     """
     archive_folder = generate_archive_folder(dirname(file), file)
 
-    # TODO: support removing ads from CBR
-    if not file.endswith(".cbz"):
+    is_rar = file.endswith(".cbz")
+
+    if not file.endswith(".cbz") and not is_rar:
         return
+
+    if is_rar:
+        CBRtoCBZ.convert(file)
+        file = file.replace(".cbr", ".cbz")
 
     ads = get_ad_filenames(file)
 
@@ -90,5 +96,8 @@ def remove_ads(file: str) -> None:
                 zip.write(filename=join(archive_folder, f), arcname=f)
 
     delete_file_folder(archive_folder)
+
+    if is_rar:
+        CBZtoCBR.convert(file)
 
     LOGGER.info(f"Removed ads: {ads}")
