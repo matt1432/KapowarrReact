@@ -3,12 +3,13 @@ from re import IGNORECASE, compile
 from time import time
 
 import requests
+from qbittorrentapi import Client
+
 from backend.base.custom_exceptions import ExternalClientNotWorking
 from backend.base.definitions import Constants, DownloadState, DownloadType
 from backend.base.logging import LOGGER
 from backend.implementations.external_clients import BaseExternalClient
 from backend.internals.settings import Settings
-from qbittorrentapi import Client
 
 filename_magnet_link = compile(r"(?<=&dn=).*?(?=&)", IGNORECASE)
 

@@ -10,6 +10,19 @@ from re import IGNORECASE, compile
 from typing import Any, cast
 
 from aiohttp.client_exceptions import ClientError
+from bs4 import BeautifulSoup, Tag
+from simyan.comicvine import (
+    AuthenticationError,
+    BasicIssue,
+    BasicVolume,
+    Comicvine,
+    ComicvineResource,
+    Issue,
+    ServiceError,
+    SQLiteCache,
+    Volume,
+)
+
 from backend.base.custom_exceptions import (
     CVRateLimitReached,
     InvalidComicVineApiKey,
@@ -43,18 +56,6 @@ from backend.base.logging import LOGGER
 from backend.implementations.matching import _match_title, _match_year
 from backend.internals.db import get_db
 from backend.internals.settings import Settings
-from bs4 import BeautifulSoup, Tag
-from simyan.comicvine import (
-    AuthenticationError,
-    BasicIssue,
-    BasicVolume,
-    Comicvine,
-    ComicvineResource,
-    Issue,
-    ServiceError,
-    SQLiteCache,
-    Volume,
-)
 
 translation_regex = compile(
     r"^<p>\s*\w+ publication(\.?</p>$|,\s| \(in the \w+ language\)|, translates )|"

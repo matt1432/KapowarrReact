@@ -9,6 +9,9 @@ from re import IGNORECASE, compile
 from typing import cast
 
 from aiohttp import ClientError
+from bencoding import bencode
+from bs4 import BeautifulSoup, Tag
+
 from backend.base.custom_exceptions import (
     DownloadLimitReached,
     FailedGCPage,
@@ -53,8 +56,6 @@ from backend.implementations.matching import gc_group_filter
 from backend.implementations.volumes import Volume
 from backend.internals.db import iter_commit
 from backend.internals.settings import Settings
-from bencoding import bencode
-from bs4 import BeautifulSoup, Tag
 
 mediafire_dd_regex = compile(r"https?://download\d+\.mediafire\.com/", IGNORECASE)
 

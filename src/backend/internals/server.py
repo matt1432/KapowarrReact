@@ -10,6 +10,15 @@ from os import urandom
 from threading import Thread, Timer, current_thread
 from typing import TYPE_CHECKING, Any
 
+from engineio.server import Server as IOServer
+from engineio.socket import Socket as IOSocket
+from flask import Flask
+from flask_socketio import SocketIO
+from socketio import PubSubManager
+from waitress.server import create_server
+from waitress.task import ThreadedTaskDispatcher as TTD
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+
 from backend.base.definitions import Constants, SocketEvent, StartType
 from backend.base.files import folder_path
 from backend.base.helpers import Singleton
@@ -21,21 +30,14 @@ from backend.internals.db import (
     setup_db_adapters_and_converters,
 )
 from backend.internals.settings import Settings
-from engineio.server import Server as IOServer
-from engineio.socket import Socket as IOSocket
-from flask import Flask
-from flask_socketio import SocketIO
-from socketio import PubSubManager
-from waitress.server import create_server
-from waitress.task import ThreadedTaskDispatcher as TTD
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 if TYPE_CHECKING:
+    from flask.ctx import AppContext
+    from waitress.server import BaseWSGIServer, MultiSocketServer
+
     from backend.base.definitions import Download
     from backend.features.tasks import Task
     from backend.implementations.volumes import Volume
-    from flask.ctx import AppContext
-    from waitress.server import BaseWSGIServer, MultiSocketServer
 
 
 class ThreadedTaskDispatcher(TTD):

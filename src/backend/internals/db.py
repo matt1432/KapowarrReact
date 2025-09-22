@@ -19,6 +19,8 @@ from threading import current_thread
 from time import time
 from typing import Any
 
+from flask import g
+
 from backend.base.definitions import (
     Constants,
     DateType,
@@ -27,7 +29,6 @@ from backend.base.definitions import (
 )
 from backend.base.helpers import CommaList
 from backend.base.logging import LOGGER, set_log_level
-from flask import g
 
 
 class KapowarrCursor(Cursor):

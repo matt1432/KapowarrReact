@@ -9,6 +9,11 @@ from time import perf_counter, time
 from typing import Any
 from zipfile import ZIP_DEFLATED, ZipFile
 
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from requests.exceptions import JSONDecodeError as RequestsJSONDecodeError
+from requests.exceptions import RetryError
+from urllib3.exceptions import ProtocolError, TimeoutError
+
 from backend.base.custom_exceptions import (
     ClientNotWorking,
     DownloadLimitReached,
@@ -25,10 +30,6 @@ from backend.base.definitions import (
 from backend.base.helpers import Session
 from backend.base.logging import LOGGER
 from backend.implementations.credentials import Credentials
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from requests.exceptions import JSONDecodeError as RequestsJSONDecodeError
-from requests.exceptions import RetryError
-from urllib3.exceptions import ProtocolError, TimeoutError
 
 mega_url_regex = compile(
     r"https?://(?:www\.)?mega(?:\.co)?\.nz/(?:file/(?P<ID1>[\w^_]+)#(?P<K1>[\w\-,=]+)|folder/(?P<ID2>[\w^_]+)#(?P<K2>[\w\-,=]+)/file/(?P<NID>[\w^_]+)|#!(?P<ID3>[\w^_]+)!(?P<K3>[\w\-,=]+))"

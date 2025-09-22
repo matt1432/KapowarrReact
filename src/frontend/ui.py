@@ -2,9 +2,10 @@ from io import BytesIO
 from json import dumps
 from typing import Any
 
+from flask import Blueprint, render_template, send_file
+
 from backend.internals.server import SERVER
 from backend.internals.settings import about_data
-from flask import Blueprint, render_template, send_file
 
 ui = Blueprint("ui", __name__)
 methods = ["GET"]

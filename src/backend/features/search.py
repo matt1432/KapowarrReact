@@ -1,5 +1,7 @@
 from asyncio import gather, run
 
+from libgencomics import LibgenSearch, ResultFile
+
 from backend.base.definitions import (
     QUERY_FORMATS,
     Constants,
@@ -22,7 +24,6 @@ from backend.implementations.getcomics import search_getcomics
 from backend.implementations.matching import check_search_result_match
 from backend.implementations.volumes import Volume
 from backend.internals.settings import Settings
-from libgencomics import LibgenSearch, ResultFile
 
 
 def _rank_search_result(

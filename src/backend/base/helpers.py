@@ -28,8 +28,6 @@ from typing import (
 from urllib.parse import unquote
 
 from aiohttp import ClientError, ClientSession, ClientTimeout
-from backend.base.definitions import Constants
-from backend.base.logging import LOGGER, get_log_filepath
 from bencoding import bdecode
 from multidict import CIMultiDict, CIMultiDictProxy
 from requests import Session as RSession
@@ -37,6 +35,9 @@ from requests.adapters import HTTPAdapter, Retry
 from requests.structures import CaseInsensitiveDict
 from urllib3._version import __version__ as urllib3_version
 from yarl import URL
+
+from backend.base.definitions import Constants
+from backend.base.logging import LOGGER, get_log_filepath
 
 if TYPE_CHECKING:
     from multiprocessing import SimpleQueue

@@ -5,6 +5,9 @@ from io import BytesIO, StringIO
 from os.path import exists
 from typing import Any, cast
 
+from flask import Blueprint, Request, Response, request, send_file
+from libgencomics import LibgenSeriesNotFoundException
+
 from backend.base.custom_exceptions import (
     BlocklistEntryNotFound,
     ClientDownloading,
@@ -88,8 +91,6 @@ from backend.implementations.volumes import Library, delete_issue_file
 from backend.internals.db_models import FilesDB
 from backend.internals.server import SERVER, diffuse_timers
 from backend.internals.settings import Settings, about_data
-from flask import Blueprint, Request, Response, request, send_file
-from libgencomics import LibgenSeriesNotFoundException
 
 api = Blueprint("api", __name__)
 library = Library()
