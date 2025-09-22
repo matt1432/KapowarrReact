@@ -1,10 +1,7 @@
 // IMPORTS
 
-// React
-import { useMemo } from 'react';
-
 // Redux
-import { useGetVolumesQuery } from 'Store/Api/Volumes';
+import { useGetStatsQuery } from 'Store/Api/Volumes';
 
 // Misc
 import classNames from 'classnames';
@@ -23,34 +20,11 @@ import styles from './index.module.css';
 // IMPLEMENTATIONS
 
 export default function VolumeIndexFooter() {
-    const { data: volumes = [] } = useGetVolumesQuery();
-
-    const count = useMemo(() => volumes.length, [volumes.length]);
-
-    const { issues, issueFiles, monitored, totalFileSize } = useMemo(() => {
-        let issues = 0;
-        let issueFiles = 0;
-        let monitored = 0;
-        let totalFileSize = 0;
-
-        volumes.forEach((v) => {
-            issues += v.issueCount;
-            issueFiles += v.issueFileCount;
-
-            if (v.monitored) {
-                monitored++;
-            }
-
-            totalFileSize += v.totalSize;
-        });
-
-        return {
-            issues,
-            issueFiles,
-            monitored,
-            totalFileSize,
-        };
-    }, [volumes]);
+    const { data: stats } = useGetStatsQuery(undefined, {
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
+        refetchOnMountOrArgChange: true,
+    });
 
     return (
         <ColorImpairedConsumer>
@@ -111,26 +85,35 @@ export default function VolumeIndexFooter() {
 
                         <div className={styles.statistics}>
                             <DescriptionList>
-                                <DescriptionListItem title={translate('Volumes')} data={count} />
+                                <DescriptionListItem
+                                    title={translate('Volumes')}
+                                    data={stats?.volumes ?? 0}
+                                />
                             </DescriptionList>
 
                             <DescriptionList>
                                 <DescriptionListItem
                                     title={translate('Monitored')}
-                                    data={monitored}
+                                    data={stats?.monitored ?? 0}
                                 />
                             </DescriptionList>
 
                             <DescriptionList>
-                                <DescriptionListItem title={translate('Issues')} data={issues} />
+                                <DescriptionListItem
+                                    title={translate('Issues')}
+                                    data={stats?.issues ?? 0}
+                                />
 
-                                <DescriptionListItem title={translate('Files')} data={issueFiles} />
+                                <DescriptionListItem
+                                    title={translate('Files')}
+                                    data={stats?.files ?? 0}
+                                />
                             </DescriptionList>
 
                             <DescriptionList>
                                 <DescriptionListItem
                                     title={translate('TotalFileSize')}
-                                    data={formatBytes(totalFileSize)}
+                                    data={formatBytes(stats?.totalFileSize ?? 0)}
                                 />
                             </DescriptionList>
                         </div>

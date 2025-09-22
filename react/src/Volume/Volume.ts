@@ -73,3 +73,15 @@ export type RawVolumePublicInfo = Pick<
 };
 
 export type VolumePublicInfo = CamelCasedProperties<RawVolumePublicInfo>;
+
+export interface RawVolumeStatistics {
+    downloaded_issues: number;
+    files: number;
+    issues: number;
+    monitored: number;
+    total_file_size: number;
+    unmonitored: number;
+    volumes: number;
+}
+
+export type VolumeStatistics = CamelCasedProperties<RawVolumeStatistics>;

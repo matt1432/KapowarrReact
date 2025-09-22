@@ -12,8 +12,10 @@ import type {
     MonitoringScheme,
     RawVolume,
     RawVolumePublicInfo,
+    RawVolumeStatistics,
     Volume,
     VolumePublicInfo,
+    VolumeStatistics,
 } from 'Volume/Volume';
 
 import type { RawVolumeMetadata, VolumeMetadata } from 'AddVolume/AddVolume';
@@ -78,6 +80,18 @@ const extendedApi = baseApi.injectEndpoints({
 
             transformResponse: (response: { result: RawVolumePublicInfo[] }) =>
                 response.result.map(camelize),
+        }),
+
+        getStats: build.query<VolumeStatistics, void>({
+            query: () => ({
+                url: 'volumes/stats',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+
+            transformResponse: (response: { result: RawVolumeStatistics }) =>
+                camelize(response.result),
         }),
 
         getImportProposals: build.query<ProposedImport[], GetImportProposalsParams>({
@@ -205,6 +219,7 @@ const extendedApi = baseApi.injectEndpoints({
 export const {
     useAddVolumeMutation,
     useDeleteVolumeMutation,
+    useGetStatsQuery,
     useGetVolumesQuery,
     useImportLibraryMutation,
     useLazyGetImportProposalsQuery,
