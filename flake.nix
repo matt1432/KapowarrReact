@@ -55,6 +55,8 @@
     pyEnv = pkgs:
       pkgs.python3.withPackages (_: pkgs.kapowarr.dependencies);
   in {
+    nixosModules = import ./nix/module.nix;
+
     overlays.default = import ./nix/overlays.nix self;
 
     packages = perSystem (pkgs: {
