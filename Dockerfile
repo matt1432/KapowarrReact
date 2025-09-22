@@ -14,4 +14,4 @@ RUN pip install .
 
 EXPOSE 5656
 
-CMD [ "/usr/local/bin/kapowarr-react" ]
+CMD [ "/usr/local/bin/kapowarr-react", "-d", "/app", "-l", "/app" ]
