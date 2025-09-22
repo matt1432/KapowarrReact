@@ -463,7 +463,7 @@ class DownloadHandler(metaclass=Singleton):
                         else None,
                         source_type=DownloadSource.LIBGENPLUS,
                         source_name="Libgen+",
-                        web_link=None,
+                        web_link=link,
                         web_title=None,
                         web_sub_title=None,
                         forced_match=force_match,
@@ -487,14 +487,14 @@ class DownloadHandler(metaclass=Singleton):
             else:
                 downloads.append(
                     DirectDownload(
-                        download_link=link,
+                        download_link=f"{Constants.LIBGEN_SITE_URL}/get.php?md5={result["md5"]}",
                         volume_id=volume_id,
                         covered_issues=result["issue_number"]
                         if "issue_number" in result
                         else None,
                         source_type=DownloadSource.LIBGENPLUS,
                         source_name="Libgen+",
-                        web_link=None,
+                        web_link=link,
                         web_title=None,
                         web_sub_title=None,
                         releaser=result["releaser"] if "releaser" in result else None,

@@ -212,7 +212,7 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
         <TableRow>
             <TableRowCell className={styles.match}>
                 <Icon
-                    name={result.match ? icons.CHECK : icons.CHECK_SQUARE}
+                    name={result.match ? icons.CHECK : icons.CLOSE}
                     className={styles.matchIcon}
                 />
             </TableRowCell>
@@ -227,7 +227,9 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
                 )}
             </TableRowCell>
 
-            <TableRowCell className={styles.displayTitle}>{result.displayTitle}</TableRowCell>
+            <TableRowCell className={styles.displayTitle}>
+                <Link to={result.link}>{result.displayTitle}</Link>
+            </TableRowCell>
 
             <TableRowCell className={styles.filesize}>{formatBytes(result.filesize)}</TableRowCell>
 
