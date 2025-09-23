@@ -70,9 +70,7 @@ def remove_ads(file: str) -> None:
     """
     Removes scene ads that can sometimes show up at the end of comics.
     """
-    archive_folder = generate_archive_folder(dirname(file), file)
-
-    is_rar = file.endswith(".cbz")
+    is_rar = file.endswith(".cbr")
 
     if not file.endswith(".cbz") and not is_rar:
         return
@@ -84,7 +82,11 @@ def remove_ads(file: str) -> None:
     ads = get_ad_filenames(file)
 
     if len(ads) == 0:
+        if is_rar:
+            CBZtoCBR.convert(file)
         return
+
+    archive_folder = generate_archive_folder(dirname(file), file)
 
     with ZipFile(file, "r") as zip:
         files = zip.namelist()
