@@ -663,12 +663,19 @@ class MegaDownload(BaseDirectDownload):
         web_link: str | None,
         web_title: str | None,
         web_sub_title: str | None,
+        releaser: str | None = None,
+        scan_type: str | None = None,
+        resolution: str | None = None,
+        dpi: str | None = None,
+        extension: str | None = None,
         forced_match: bool = False,
     ) -> None:
         LOGGER.debug("Creating mega download: %s", download_link)
 
         settings = Settings().sv
         volume = Volume(volume_id)
+
+        self._attempts = 0
 
         self._download_link = download_link
         self._volume_id = volume_id
@@ -684,6 +691,12 @@ class MegaDownload(BaseDirectDownload):
         self._state = DownloadState.QUEUED_STATE
         self._download_thread = None
         self._download_folder = settings.download_folder
+
+        self._releaser = releaser
+        self._scan_type = scan_type
+        self._resolution = resolution
+        self._dpi = dpi
+        self._extension = extension
 
         try:
             self._mega = self._mega_class(download_link)
