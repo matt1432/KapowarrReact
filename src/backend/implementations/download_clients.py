@@ -548,7 +548,7 @@ class PixelDrainDownload(BaseDirectDownload):
             else:
                 # Paid account, so grab transfer limits from user data
                 transfer_limit_used = response["monthly_transfer_used"]
-                transfer_limit = response["monthly_transfer_cap"]
+                transfer_limit = response["subscription"]["monthly_transfer_cap"] or response["monthly_transfer_cap"]
                 if transfer_limit == -1:
                     transfer_limit = float("inf")
 
