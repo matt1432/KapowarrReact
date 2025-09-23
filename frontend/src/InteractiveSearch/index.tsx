@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -50,11 +50,26 @@ interface SearchProps extends InteractiveSearchProps {
     isPopulated: boolean;
     error: AnyError | undefined;
     errorMessage: string;
-    items: SearchResult[];
+    items: (SearchResult & { id: number })[];
     totalItems: number;
 }
 
 // IMPLEMENTATIONS
+
+function weighIssueNumber(
+    issueNumber: number | [number, number] | null,
+    lastIssueNumber: number,
+): number {
+    if (Array.isArray(issueNumber)) {
+        return lastIssueNumber + issueNumber[0];
+    }
+
+    if (typeof issueNumber !== 'number') {
+        return lastIssueNumber * 2;
+    }
+
+    return issueNumber;
+}
 
 const columns: Column<InteractiveSearchSort>[] = [
     {
@@ -135,9 +150,19 @@ function InternalSearch({
     totalItems,
     searchPayload,
 }: SearchProps) {
+    const dispatch = useRootDispatch();
+
     const { sortKey, sortDirection } = useRootSelector((state) => state.searchResults);
 
-    const dispatch = useRootDispatch();
+    const lastIssueNumber = useMemo(() => {
+        return Math.max(
+            ...items
+                .map((item) =>
+                    Array.isArray(item.issueNumber) ? item.issueNumber[1] : item.issueNumber,
+                )
+                .filter((issueNumber) => issueNumber !== null),
+        );
+    }, [items]);
 
     const handleSortPress = useCallback(
         (sortKey: InteractiveSearchSort, sortDirection?: SortDirection) => {
@@ -176,20 +201,19 @@ function InternalSearch({
                     items={items}
                     itemRenderer={(item) => (
                         <InteractiveSearchRow
-                            key={item.link}
+                            key={item.id}
+                            columns={columns}
                             result={item}
                             searchPayload={searchPayload}
                         />
                     )}
                     predicates={{
                         match: (a, b) => parseInt(a.rank.join('')) - parseInt(b.rank.join('')),
+
                         issueNumber: (a, b) =>
-                            (Array.isArray(a.issueNumber)
-                                ? a.issueNumber[0]
-                                : (a.issueNumber ?? 0)) -
-                            (Array.isArray(b.issueNumber)
-                                ? b.issueNumber[0]
-                                : (b.issueNumber ?? 0)),
+                            weighIssueNumber(a.issueNumber, lastIssueNumber) -
+                            weighIssueNumber(b.issueNumber, lastIssueNumber),
+
                         matchRejections: (a, b) =>
                             a.matchRejections.length - b.matchRejections.length,
                     }}
@@ -216,7 +240,7 @@ export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
             isPopulated: !isUninitialized,
             error,
             errorMessage: getErrorMessage(error),
-            items: data ?? [],
+            items: (data ?? []).map((item, id) => ({ ...item, id })),
             totalItems: data?.length ?? 0,
         }),
     });
@@ -269,7 +293,7 @@ export default function InteractiveSearch({ searchPayload }: InteractiveSearchPr
             isPopulated: !isUninitialized,
             error,
             errorMessage: getErrorMessage(error),
-            items: data ?? [],
+            items: (data ?? []).map((item, id) => ({ ...item, id })),
             totalItems: data?.length ?? 0,
         }),
     });

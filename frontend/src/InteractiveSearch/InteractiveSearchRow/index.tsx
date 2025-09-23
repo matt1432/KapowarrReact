@@ -29,12 +29,14 @@ import TextInput from 'Components/Form/TextInput';
 import styles from './index.module.css';
 
 // Types
+import type { Column } from 'Components/Table/Column';
 import type { InputChanged } from 'typings/Inputs';
-import type { InteractiveSearchPayload, SearchResult } from 'typings/Search';
+import type { InteractiveSearchPayload, InteractiveSearchSort, SearchResult } from 'typings/Search';
 
 interface InteractiveSearchRowProps {
-    searchPayload: InteractiveSearchPayload;
+    columns: Column<InteractiveSearchSort>[];
     result: SearchResult;
+    searchPayload: InteractiveSearchPayload;
 }
 
 // IMPLEMENTATIONS
@@ -90,7 +92,11 @@ function getDownloadTooltip(
     return isTorrent ? translate('AddTorrentToDownloadQueue') : translate('AddToDownloadQueue');
 }
 
-export default function InteractiveSearchRow({ searchPayload, result }: InteractiveSearchRowProps) {
+export default function InteractiveSearchRow({
+    columns,
+    result,
+    searchPayload,
+}: InteractiveSearchRowProps) {
     const initialIssueNumber = useMemo(
         () => (Array.isArray(result.issueNumber) ? result.issueNumber[0] : result.issueNumber),
         [result.issueNumber],
@@ -210,116 +216,186 @@ export default function InteractiveSearchRow({ searchPayload, result }: Interact
 
     return (
         <TableRow>
-            <TableRowCell className={styles.match}>
-                <Icon
-                    name={result.match ? icons.CHECK : icons.CLOSE}
-                    className={styles.matchIcon}
-                />
-            </TableRowCell>
+            {columns.map(({ isVisible, name }) => {
+                if (!isVisible) {
+                    return null;
+                }
 
-            <TableRowCell className={styles.issueNumber}>
-                {Array.isArray(result.issueNumber) ? null : (
-                    <NumberInput
-                        name="issueNumber"
-                        value={issueNumber}
-                        onChange={handleIssueNumberChange}
-                    />
-                )}
-            </TableRowCell>
+                if (name === 'match') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <Icon
+                                name={result.match ? icons.CHECK : icons.CLOSE}
+                                className={styles.matchIcon}
+                            />
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell className={styles.displayTitle}>
-                <Link to={result.link}>{result.displayTitle}</Link>
-            </TableRowCell>
+                if (name === 'issueNumber') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {Array.isArray(result.issueNumber) ? (
+                                `${result.issueNumber[0]} - ${result.issueNumber[1]}`
+                            ) : (
+                                <NumberInput
+                                    name="issueNumber"
+                                    value={issueNumber}
+                                    onChange={handleIssueNumberChange}
+                                />
+                            )}
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell className={styles.filesize}>{formatBytes(result.filesize)}</TableRowCell>
+                if (name === 'displayTitle') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <Link to={result.link}>{result.displayTitle}</Link>
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell className={styles.pages}>{result.pages}</TableRowCell>
+                if (name === 'filesize') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {formatBytes(result.filesize)}
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell className={styles.releaser}>
-                <TextInput name="releaser" value={releaser} onChange={handleReleaserChange} />
-            </TableRowCell>
+                if (name === 'pages') {
+                    return <TableRowCell className={styles[name]}>{result.pages}</TableRowCell>;
+                }
 
-            <TableRowCell className={styles.scanType}>
-                <TextInput name="scanType" value={scanType} onChange={handleScanTypeChange} />
-            </TableRowCell>
+                if (name === 'releaser') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <TextInput
+                                name="releaser"
+                                value={releaser}
+                                onChange={handleReleaserChange}
+                            />
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell className={styles.resolution}>
-                <TextInput name="resolution" value={resolution} onChange={handleResolutionChange} />
-            </TableRowCell>
+                if (name === 'scanType') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <TextInput
+                                name="scanType"
+                                value={scanType}
+                                onChange={handleScanTypeChange}
+                            />
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell className={styles.dpi}>
-                <TextInput name="dpi" value={dpi} onChange={handleDpiChange} />
-            </TableRowCell>
+                if (name === 'resolution') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <TextInput
+                                name="resolution"
+                                value={resolution}
+                                onChange={handleResolutionChange}
+                            />
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell className={styles.source}>{result.source}</TableRowCell>
+                if (name === 'dpi') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <TextInput name="dpi" value={dpi} onChange={handleDpiChange} />
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell className={styles.rejected}>
-                {result.matchRejections.length ? (
-                    <Popover
-                        anchor={<Icon name={icons.DANGER} kind={kinds.DANGER} />}
-                        title={translate('ReleaseRejected')}
-                        body={
-                            <ul>
-                                {result.matchRejections.map((rejection, index) => {
-                                    return <li key={index}>{rejection}</li>;
-                                })}
-                            </ul>
-                        }
-                        position={tooltipPositions.LEFT}
-                    />
-                ) : null}
-            </TableRowCell>
+                if (name === 'source') {
+                    return <TableRowCell className={styles[name]}>{result.source}</TableRowCell>;
+                }
 
-            <TableRowCell className={styles.download}>
-                <SpinnerIconButton
-                    name={getDownloadIcon(isGrabbing, isGrabbed, isError)}
-                    kind={getDownloadKind(isGrabbed, isError)}
-                    title={getDownloadTooltip(
-                        isGrabbing,
-                        isGrabbed,
-                        isError,
-                        getErrorMessage(grabError),
-                    )}
-                    isSpinning={isGrabbing}
-                    onPress={onGrabPressWrapper}
-                />
+                if (name === 'matchRejections') {
+                    return (
+                        <TableRowCell className={styles.rejected}>
+                            {result.matchRejections.length ? (
+                                <Popover
+                                    anchor={<Icon name={icons.DANGER} kind={kinds.DANGER} />}
+                                    title={translate('ReleaseRejected')}
+                                    body={
+                                        <ul>
+                                            {result.matchRejections.map((rejection, index) => {
+                                                return <li key={index}>{rejection}</li>;
+                                            })}
+                                        </ul>
+                                    }
+                                    position={tooltipPositions.LEFT}
+                                />
+                            ) : null}
+                        </TableRowCell>
+                    );
+                }
 
-                <SpinnerIconButton
-                    name={getDownloadIcon(
-                        isGrabbingTorrent,
-                        isTorrentGrabbed,
-                        isTorrentError,
-                        true,
-                    )}
-                    kind={getDownloadKind(isTorrentGrabbed, isTorrentError)}
-                    title={getDownloadTooltip(
-                        isGrabbingTorrent,
-                        isTorrentGrabbed,
-                        isTorrentError,
-                        getErrorMessage(grabTorrentError),
-                        true,
-                    )}
-                    isSpinning={isGrabbingTorrent}
-                    isDisabled={!result.comicsId}
-                    onPress={onGrabTorrentPressWrapper}
-                />
+                if (name === 'download') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <SpinnerIconButton
+                                name={getDownloadIcon(isGrabbing, isGrabbed, isError)}
+                                kind={getDownloadKind(isGrabbed, isError)}
+                                title={getDownloadTooltip(
+                                    isGrabbing,
+                                    isGrabbed,
+                                    isError,
+                                    getErrorMessage(grabError),
+                                )}
+                                isSpinning={isGrabbing}
+                                onPress={onGrabPressWrapper}
+                            />
 
-                <Link
-                    className={styles.manualDownloadContent}
-                    title={translate('OverrideAndAddToDownloadQueue')}
-                    onPress={onOverridePress}
-                >
-                    <div className={styles.manualDownloadContent}>
-                        <Icon
-                            className={styles.interactiveIcon}
-                            name={icons.INTERACTIVE}
-                            size={12}
-                        />
+                            <SpinnerIconButton
+                                name={getDownloadIcon(
+                                    isGrabbingTorrent,
+                                    isTorrentGrabbed,
+                                    isTorrentError,
+                                    true,
+                                )}
+                                kind={getDownloadKind(isTorrentGrabbed, isTorrentError)}
+                                title={getDownloadTooltip(
+                                    isGrabbingTorrent,
+                                    isTorrentGrabbed,
+                                    isTorrentError,
+                                    getErrorMessage(grabTorrentError),
+                                    true,
+                                )}
+                                isSpinning={isGrabbingTorrent}
+                                isDisabled={!result.comicsId}
+                                onPress={onGrabTorrentPressWrapper}
+                            />
 
-                        <Icon className={styles.downloadIcon} name={icons.CIRCLE_DOWN} size={10} />
-                    </div>
-                </Link>
-            </TableRowCell>
+                            <Link
+                                className={styles.manualDownloadContent}
+                                title={translate('OverrideAndAddToDownloadQueue')}
+                                onPress={onOverridePress}
+                            >
+                                <div className={styles.manualDownloadContent}>
+                                    <Icon
+                                        className={styles.interactiveIcon}
+                                        name={icons.INTERACTIVE}
+                                        size={12}
+                                    />
+
+                                    <Icon
+                                        className={styles.downloadIcon}
+                                        name={icons.CIRCLE_DOWN}
+                                        size={10}
+                                    />
+                                </div>
+                            </Link>
+                        </TableRowCell>
+                    );
+                }
+            })}
 
             <ConfirmModal
                 isOpen={isConfirmGrabModalOpen}
