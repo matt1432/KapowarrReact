@@ -50,7 +50,7 @@ interface SearchProps extends InteractiveSearchProps {
     isPopulated: boolean;
     error: AnyError | undefined;
     errorMessage: string;
-    items: (SearchResult & { id: number })[];
+    items: (SearchResult & { id: number; download: never })[];
     totalItems: number;
 }
 
@@ -137,6 +137,12 @@ const columns: Column<InteractiveSearchSort>[] = [
         label: <Icon name={icons.DANGER} title={() => translate('Rejections')} />,
         isSortable: true,
         fixedSortDirection: sortDirections.ASCENDING,
+        isVisible: true,
+    },
+    {
+        name: 'download',
+        label: '',
+        isSortable: false,
         isVisible: true,
     },
 ];
@@ -240,7 +246,10 @@ export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
             isPopulated: !isUninitialized,
             error,
             errorMessage: getErrorMessage(error),
-            items: data?.map((item, id) => ({ ...item, id })) ?? [],
+            items: (data?.map((item, id) => ({ ...item, id })) ?? []) as (SearchResult & {
+                id: number;
+                download: never;
+            })[],
             totalItems: data?.length ?? 0,
         }),
     });
@@ -293,7 +302,10 @@ export default function InteractiveSearch({ searchPayload }: InteractiveSearchPr
             isPopulated: !isUninitialized,
             error,
             errorMessage: getErrorMessage(error),
-            items: data?.map((item, id) => ({ ...item, id })) ?? [],
+            items: (data?.map((item, id) => ({ ...item, id })) ?? []) as (SearchResult & {
+                id: number;
+                download: never;
+            })[],
             totalItems: data?.length ?? 0,
         }),
     });

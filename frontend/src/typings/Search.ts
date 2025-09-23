@@ -44,7 +44,8 @@ export type InteractiveSearchSort =
     | 'resolution'
     | 'dpi'
     | 'source'
-    | 'matchRejections';
+    | 'matchRejections'
+    | 'download';
 
 interface IssueSearchPayload {
     issueId: number;
