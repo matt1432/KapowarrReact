@@ -32,11 +32,7 @@ export default function IssueStatus({ issue, issueFile }: IssueStatusProps) {
     const isQueued = queue.length !== 0;
 
     if (isQueued) {
-        const { progress: downloaded, size } = queue[0];
-
-        const sizeleft = size - downloaded;
-
-        const progress = size ? 100 - (sizeleft / size) * 100 : 0;
+        const { progress } = queue[0];
 
         return (
             <div className={styles.center}>
