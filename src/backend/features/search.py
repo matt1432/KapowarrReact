@@ -2,7 +2,7 @@ from asyncio import gather, run
 from collections.abc import Generator
 from typing import cast
 
-from libgencomics import LibgenSearch, ResultFile
+from libgencomics import LibgenSearch, LibgenSeriesNotFoundException, ResultFile
 
 from backend.base.definitions import (
     QUERY_FORMATS,
@@ -162,6 +162,14 @@ class SearchLibgenPlus:
         self.issue_number = issue_number
 
     async def search(
+        self, libgen_file_url: str | None = None
+    ) -> list[SearchResultData]:
+        try:
+            return await self.__search(libgen_file_url)
+        except LibgenSeriesNotFoundException:
+            return []
+
+    async def __search(
         self, libgen_file_url: str | None = None
     ) -> list[SearchResultData]:
         results: list[SearchResultData] = []

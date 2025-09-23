@@ -240,7 +240,7 @@ export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
             isPopulated: !isUninitialized,
             error,
             errorMessage: getErrorMessage(error),
-            items: (data ?? []).map((item, id) => ({ ...item, id })),
+            items: data?.map((item, id) => ({ ...item, id })) ?? [],
             totalItems: data?.length ?? 0,
         }),
     });
@@ -293,7 +293,7 @@ export default function InteractiveSearch({ searchPayload }: InteractiveSearchPr
             isPopulated: !isUninitialized,
             error,
             errorMessage: getErrorMessage(error),
-            items: (data ?? []).map((item, id) => ({ ...item, id })),
+            items: data?.map((item, id) => ({ ...item, id })) ?? [],
             totalItems: data?.length ?? 0,
         }),
     });

@@ -6,7 +6,6 @@ from os.path import exists
 from typing import Any, cast
 
 from flask import Blueprint, Request, Response, request, send_file
-from libgencomics import LibgenSeriesNotFoundException
 
 from backend.base.custom_exceptions import (
     BlocklistEntryNotFound,
@@ -867,23 +866,16 @@ def api_convert_issue(id: int) -> ApiReturn:
 @api.route("/volumes/<int:id>/manualsearch", methods=["GET", "POST"])
 @error_handler
 @auth
-def api_volume_manual_search(id: int) -> ApiReturn:
+def api_volume_manual_search(id: int) -> ApiReturn | None:
     library.get_volume(id)
+
+    if request.method == "GET":
+        result = manual_search(id)
+        return return_api(result)
 
     if request.method == "POST":
         result = manual_search(id, None, extract_key(request, "url"))
         return return_api(result)
-
-    try:
-        result = manual_search(id)
-    except LibgenSeriesNotFoundException:
-        return return_api(
-            {
-                "result": None,
-                "fail_reason": "Libgen series could not be found. Try again with a link to it if it exists.",
-            },
-        )
-    return return_api(result)
 
 
 @api.route("/volumes/<int:id>/download", methods=["POST"])
@@ -906,23 +898,16 @@ def api_volume_download(id: int) -> ApiReturn:
 @api.route("/issues/<int:id>/manualsearch", methods=["GET", "POST"])
 @error_handler
 @auth
-def api_issue_manual_search(id: int) -> ApiReturn:
+def api_issue_manual_search(id: int) -> ApiReturn | None:
     volume_id = library.get_issue(id).get_data().volume_id
+
+    if request.method == "GET":
+        result = manual_search(volume_id, id)
+        return return_api(result)
 
     if request.method == "POST":
         result = manual_search(volume_id, id, extract_key(request, "url"))
         return return_api(result)
-
-    try:
-        result = manual_search(volume_id, id)
-    except LibgenSeriesNotFoundException:
-        return return_api(
-            {
-                "result": None,
-                "fail_reason": "Libgen series could not be found. Try again with a link to it if it exists.",
-            },
-        )
-    return return_api(result)
 
 
 @api.route("/issues/<int:id>/download", methods=["POST"])
