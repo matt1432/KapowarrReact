@@ -151,6 +151,7 @@ export const {
 export const useFetchQueueDetails = (
     { volumeId, issueId }: FetchQueueParams = {},
     options?: Parameters<typeof extendedApi.useGetQueueQuery>[1],
+    includeRest = false,
 ) => {
     return extendedApi.useGetQueueQuery(undefined, {
         ...options,
@@ -164,10 +165,15 @@ export const useFetchQueueDetails = (
                 queue = queue.filter((item) => item.issueId === issueId);
             }
 
-            return {
-                queue,
-                ...rest,
-            };
+            if (includeRest) {
+                return {
+                    queue,
+                    ...rest,
+                };
+            }
+            else {
+                return { queue };
+            }
         },
     });
 };

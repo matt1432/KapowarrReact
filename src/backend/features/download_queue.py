@@ -298,14 +298,14 @@ class DownloadHandler(metaclass=Singleton):
                 download.id = cursor.execute(
                     """
                     INSERT INTO download_queue(
-                        volume_id, client_type, external_client_id, external_id,
+                        volume_id, issue_id, client_type, external_client_id, external_id,
                         download_link, covered_issues, force_original_name,
                         source_type, source_name,
                         web_link, web_title, web_sub_title,
                         releaser, scan_type, resolution, dpi
                     )
                     VALUES (
-                        :volume_id, :client_type, :external_client_id, :external_id,
+                        :volume_id, :issue_id, :client_type, :external_client_id, :external_id,
                         :download_link, :covered_issues, :force_original_name,
                         :source_type, :source_name,
                         :web_link, :web_title, :web_sub_title,
@@ -314,6 +314,7 @@ class DownloadHandler(metaclass=Singleton):
                     """,
                     {
                         "volume_id": download.volume_id,
+                        "issue_id": download.issue_id,
                         "client_type": download.identifier,
                         "external_client_id": external_client_id,
                         "external_id": download.external_id
@@ -458,6 +459,7 @@ class DownloadHandler(metaclass=Singleton):
                     TorrentDownload(
                         download_link=torrent_link,
                         volume_id=volume_id,
+                        issue_id=issue_id,
                         covered_issues=result["issue_number"]
                         if "issue_number" in result
                         else None,
@@ -491,6 +493,7 @@ class DownloadHandler(metaclass=Singleton):
                     DirectDownload(
                         download_link=download_link,
                         volume_id=volume_id,
+                        issue_id=issue_id,
                         covered_issues=result["issue_number"]
                         if "issue_number" in result
                         else None,
@@ -582,7 +585,7 @@ class DownloadHandler(metaclass=Singleton):
         cursor = get_db()
         downloads = cursor.execute("""
             SELECT
-                id, volume_id, client_type, external_client_id, external_id,
+                id, volume_id, issue_id, client_type, external_client_id, external_id,
                 download_link, covered_issues,
                 force_original_name,
                 source_type, source_name,
@@ -618,6 +621,7 @@ class DownloadHandler(metaclass=Singleton):
                     dl_instance = dl_subclass(
                         download_link=download["download_link"],
                         volume_id=download["volume_id"],
+                        issue_id=download["issue_id"],
                         covered_issues=covered_issues,
                         source_type=DownloadSource(download["source_type"]),
                         source_name=download["source_name"],
@@ -638,6 +642,7 @@ class DownloadHandler(metaclass=Singleton):
                     dl_instance = dl_subclass(
                         download_link=download["download_link"],
                         volume_id=download["volume_id"],
+                        issue_id=download["issue_id"],
                         covered_issues=covered_issues,
                         source_type=DownloadSource(download["source_type"]),
                         source_name=download["source_name"],

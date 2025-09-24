@@ -1225,6 +1225,7 @@ class Download(ABC):
     @abstractmethod
     def __init__(
         self,
+        *,
         download_link: str,
         volume_id: int,
         covered_issues: float | tuple[float, float] | None,
@@ -1233,6 +1234,7 @@ class Download(ABC):
         web_link: str | None,
         web_title: str | None,
         web_sub_title: str | None,
+        issue_id: int | None = None,
         releaser: str | None = None,
         scan_type: str | None = None,
         resolution: str | None = None,
@@ -1345,6 +1347,7 @@ class ExternalDownload(Download):
     @abstractmethod
     def __init__(
         self,
+        *,
         download_link: str,
         volume_id: int,
         covered_issues: float | tuple[float, float] | None,
@@ -1353,6 +1356,7 @@ class ExternalDownload(Download):
         web_link: str | None,
         web_title: str | None,
         web_sub_title: str | None,
+        issue_id: int | None = None,
         releaser: str | None = None,
         scan_type: str | None = None,
         resolution: str | None = None,

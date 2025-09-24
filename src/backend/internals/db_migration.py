@@ -65,8 +65,6 @@ class MigrateClearDownloadQueue(DBMigrator):
     def run(self) -> None:
         # V1 -> V2
 
-        from backend.internals.db import get_db
-
         get_db().executescript("DELETE FROM download_queue;")
         return
 
@@ -76,8 +74,6 @@ class MigrateUpdateIssuesAndFiles(DBMigrator):
 
     def run(self) -> None:
         # V2 -> V3
-
-        from backend.internals.db import get_db
 
         get_db().executescript("""
             BEGIN TRANSACTION;
@@ -150,7 +146,6 @@ class MigrateRecalculateIssueNumber(DBMigrator):
         # V4 -> V5
 
         from backend.base.file_extraction import process_issue_number
-        from backend.internals.db import get_db
 
         cursor = get_db()
         iter_cursor = get_db(force_new=True)
@@ -171,7 +166,6 @@ class MigrateAddCVFetchTime(DBMigrator):
         # V5 -> V6
 
         from backend.implementations.comicvine import ComicVine
-        from backend.internals.db import get_db
 
         cursor = get_db()
         cursor.executescript("""
@@ -228,8 +222,6 @@ class MigrateAddCustomFolder(DBMigrator):
     def run(self) -> None:
         # V6 -> V7
 
-        from backend.internals.db import get_db
-
         get_db().execute("""
             ALTER TABLE volumes
                 ADD custom_folder BOOL NOT NULL DEFAULT 0;
@@ -244,7 +236,6 @@ class MigrateAddSpecialVersion(DBMigrator):
         # V7 -> V8
 
         from backend.implementations.volumes import Library, determine_special_version
-        from backend.internals.db import get_db
 
         cursor = get_db()
         cursor.execute("""
@@ -267,8 +258,6 @@ class MigrateUpdateVolumeTable(DBMigrator):
 
     def run(self) -> None:
         # V8 -> V9
-
-        from backend.internals.db import get_db
 
         get_db().executescript("""
             PRAGMA foreign_keys = OFF;
@@ -329,7 +318,6 @@ class MigrateUpdateSpecialVersion(DBMigrator):
         # V10 -> V11
 
         from backend.implementations.volumes import Library, determine_special_version
-        from backend.internals.db import get_db
 
         updates = (
             (determine_special_version(v_id), v_id) for v_id in Library().get_volumes()
@@ -347,8 +335,6 @@ class MigrateAddTorrentClientToDownloadQueue(DBMigrator):
 
     def run(self) -> None:
         # V11 -> V12
-
-        from backend.internals.db import get_db
 
         get_db().executescript("""
             DROP TABLE download_queue;
@@ -380,8 +366,6 @@ class MigrateUnzipToFormatPreference(DBMigrator):
     def run(self) -> None:
         # V12 -> V13
 
-        from backend.internals.db import get_db
-
         cursor = get_db()
         unzip = cursor.execute(
             "SELECT value FROM config WHERE key = 'unzip' LIMIT 1;"
@@ -407,8 +391,6 @@ class MigrateFolderConversionToOwnSetting(DBMigrator):
 
     def run(self) -> None:
         # V13 -> V14
-
-        from backend.internals.db import get_db
 
         cursor = get_db()
         format_preference: list[str] = (
@@ -446,8 +428,6 @@ class MigrateServicePreferenceToSetting(DBMigrator):
     def run(self) -> None:
         # V14 -> V15
 
-        from backend.internals.db import get_db
-
         cursor = get_db()
         service_preference = ",".join(
             [
@@ -474,8 +454,6 @@ class MigrateUpdateBlocklistTable(DBMigrator):
 
     def run(self) -> None:
         # V15 -> V16
-
-        from backend.internals.db import get_db
 
         get_db().executescript("""
             BEGIN TRANSACTION;
@@ -522,8 +500,6 @@ class MigrateAddSpecialVersionLock(DBMigrator):
     def run(self) -> None:
         # V17 -> V18
 
-        from backend.internals.db import get_db
-
         get_db().execute("""
             ALTER TABLE volumes ADD
                 special_version_locked BOOL NOT NULL DEFAULT 0
@@ -538,8 +514,6 @@ class MigrateTPBNamingToSpecialVersionNaming(DBMigrator):
         # V18 -> V19
 
         from re import IGNORECASE, compile
-
-        from backend.internals.db import get_db
 
         cursor = get_db()
 
@@ -586,7 +560,6 @@ class MigrateClearUnsupportedSourceBlocklistEntries(DBMigrator):
         # V20 -> V21
 
         from backend.base.definitions import BlocklistReasonID
-        from backend.internals.db import get_db
 
         get_db().execute(
             "DELETE FROM blocklist WHERE reason = ?;",
@@ -618,8 +591,6 @@ class MigrateAddLinksInDownloadQueue(DBMigrator):
 
     def run(self) -> None:
         # V22 -> V23
-
-        from backend.internals.db import get_db
 
         get_db().executescript("""
             DROP TABLE download_queue;
@@ -683,8 +654,6 @@ class MigrateAddLinksInBlocklist(DBMigrator):
 
     def run(self) -> None:
         # V24 -> V25
-
-        from backend.internals.db import get_db
 
         get_db().executescript("""
             BEGIN TRANSACTION;
@@ -754,8 +723,6 @@ class MigrateAddLinksInHistory(DBMigrator):
     def run(self) -> None:
         # V25 -> V26
 
-        from backend.internals.db import get_db
-
         get_db().executescript("""
             BEGIN TRANSACTION;
             PRAGMA defer_foreign_keys = ON;
@@ -802,8 +769,6 @@ class MigrateAddForeignKeysToHistoryAndBlocklist(DBMigrator):
 
     def run(self) -> None:
         # V26 -> V27
-
-        from backend.internals.db import get_db
 
         get_db().executescript("""
             BEGIN TRANSACTION;
@@ -875,8 +840,6 @@ class MigrateAddSiteURLToVolumes(DBMigrator):
     def run(self) -> None:
         # V27 -> V28
 
-        from backend.internals.db import get_db
-
         get_db().execute("""
             ALTER TABLE volumes ADD
                 site_url TEXT NOT NULL DEFAULT "";
@@ -890,8 +853,6 @@ class MigrateAddAltTitleToVolumes(DBMigrator):
     def run(self) -> None:
         # V28 -> V29
 
-        from backend.internals.db import get_db
-
         get_db().execute("""
             ALTER TABLE volumes ADD
                 alt_title VARCHAR(255);
@@ -904,8 +865,6 @@ class MigrateNoneToStringFlareSolverr(DBMigrator):
 
     def run(self) -> None:
         # V29 -> V30
-
-        from backend.internals.db import get_db
 
         cursor = get_db()
         value = cursor.execute("""
@@ -975,8 +934,6 @@ class MigrateCredentials(DBMigrator):
     def run(self) -> None:
         # V32 -> V33
 
-        from backend.internals.db import get_db
-
         get_db().executescript("""
             BEGIN TRANSACTION;
             PRAGMA defer_foreign_keys = ON;
@@ -1011,8 +968,6 @@ class MigrateExternalDownloadClients(DBMigrator):
 
     def run(self) -> None:
         # V33 -> V34
-
-        from backend.internals.db import get_db
 
         get_db().executescript(
             """
@@ -1103,8 +1058,6 @@ class MigrateDownloadQueueToRefactor(DBMigrator):
     def run(self) -> None:
         # V35 -> V36
 
-        from backend.internals.db import get_db
-
         get_db().executescript("""
             DROP TABLE download_queue;
             CREATE TABLE IF NOT EXISTS download_queue(
@@ -1137,8 +1090,6 @@ class MigrateMultipleCredentials(DBMigrator):
     def run(self) -> None:
         # V36 -> V37
 
-        from backend.internals.db import get_db
-
         get_db().executescript("""
             BEGIN TRANSACTION;
             PRAGMA defer_foreign_keys = ON;
@@ -1170,8 +1121,6 @@ class MigrateAddMonitorNewIssuesToVolumes(DBMigrator):
     def run(self) -> None:
         # V37 -> V38
 
-        from backend.internals.db import get_db
-
         get_db().execute("""
             ALTER TABLE volumes ADD COLUMN
                 monitor_new_issues BOOL NOT NULL DEFAULT 1;
@@ -1184,8 +1133,6 @@ class MigrateAddFileInfo(DBMigrator):
 
     def run(self) -> None:
         # V38 -> V39
-
-        from backend.internals.db import get_db
 
         get_db().executescript("""
             BEGIN TRANSACTION;
@@ -1211,8 +1158,6 @@ class MigrateAddLibgenURLToVolumes(DBMigrator):
     def run(self) -> None:
         # V39 -> V40
 
-        from backend.internals.db import get_db
-
         get_db().execute("""
             ALTER TABLE volumes ADD COLUMN
                 libgen_url VARCHAR(255);
@@ -1226,8 +1171,6 @@ class MigrateAddExternalIDToDownloadQueue(DBMigrator):
     def run(self) -> None:
         # V40 -> V41
 
-        from backend.internals.db import get_db
-
         get_db().execute("""
             ALTER TABLE download_queue ADD COLUMN
                 external_id VARCHAR(255);
@@ -1240,8 +1183,6 @@ class MigrateAddFileInfoToDownloadQueue(DBMigrator):
 
     def run(self) -> None:
         # V41 -> V42
-
-        from backend.internals.db import get_db
 
         get_db().executescript("""
             BEGIN TRANSACTION;
@@ -1267,8 +1208,6 @@ class MigrateTorrentTimeoutToDownloadTimeout(DBMigrator):
     def run(self) -> None:
         # V42 -> V43
 
-        from backend.internals.db import get_db
-
         cursor = get_db()
 
         old_value = cursor.execute(
@@ -1290,8 +1229,6 @@ class MigrateDeleteCompletedTorrentsToDownloads(DBMigrator):
 
     def run(self) -> None:
         # V43 -> V44
-
-        from backend.internals.db import get_db
 
         cursor = get_db()
 
@@ -1331,8 +1268,6 @@ class MigrateAddSuccessToDownloadHistory(DBMigrator):
 
     def run(self) -> None:
         # V45 -> V46
-
-        from backend.internals.db import get_db
 
         get_db().execute("""
             ALTER TABLE download_history ADD COLUMN
@@ -1500,4 +1435,60 @@ class MigrateRenameLibgenID(DBMigrator):
             PRAGMA foreign_keys = ON;
         """)
 
+        return
+
+
+class MigrateAddIssueIDToQueue(DBMigrator):
+    start_version = 49
+
+    def run(self) -> None:
+        # V49 -> V50
+
+        get_db().executescript("""
+            BEGIN TRANSACTION;
+            PRAGMA defer_foreign_keys = ON;
+
+            CREATE TEMPORARY TABLE temp_download_queue_50 AS
+                SELECT * FROM download_queue;
+            DROP TABLE download_queue;
+
+            ALTER TABLE temp_download_queue_50 ADD COLUMN
+                issue_id INTEGER;
+
+            CREATE TABLE download_queue(
+                id INTEGER PRIMARY KEY,
+                volume_id INTEGER NOT NULL,
+                issue_id INTEGER,
+                client_type VARCHAR(255) NOT NULL,
+                external_client_id INTEGER,
+                external_id VARCHAR(255),
+
+                download_link TEXT NOT NULL,
+                covered_issues VARCHAR(255),
+                force_original_name BOOL,
+
+                source_type VARCHAR(25) NOT NULL,
+                source_name VARCHAR(255) NOT NULL,
+
+                web_link TEXT,
+                web_title TEXT,
+                web_sub_title TEXT,
+
+                releaser VARCHAR(255),
+                scan_type VARCHAR(255),
+                resolution VARCHAR(255),
+                dpi VARCHAR(255),
+
+                FOREIGN KEY (external_client_id) REFERENCES external_download_clients(id),
+                FOREIGN KEY (volume_id) REFERENCES volumes(id),
+                FOREIGN KEY (issue_id) REFERENCES issues(id)
+                    ON DELETE SET NULL
+            );
+
+            INSERT INTO download_queue
+                SELECT *
+                FROM temp_download_queue_50;
+
+            COMMIT;
+        """)
         return

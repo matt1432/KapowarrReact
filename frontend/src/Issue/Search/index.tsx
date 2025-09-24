@@ -4,6 +4,8 @@
 import { useCallback, useEffect, useState } from 'react';
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
+import { getIssueStatus } from 'Store/Slices/SocketEvents';
 import { useExecuteCommandMutation } from 'Store/Api/Command';
 
 // Misc
@@ -20,8 +22,6 @@ import InteractiveSearch, { LibgenFileSearch } from 'InteractiveSearch';
 
 // CSS
 import styles from './index.module.css';
-import { getIssueStatus } from 'Store/Slices/SocketEvents';
-import { useRootSelector } from 'Store/createAppStore';
 
 // Types
 interface IssueSearchProps {
