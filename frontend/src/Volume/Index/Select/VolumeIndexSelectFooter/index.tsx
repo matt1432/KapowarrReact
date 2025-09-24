@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
 
-import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import { useMassEditMutation } from 'Store/Api/Command';
 
 // Misc
@@ -129,12 +128,6 @@ export default function VolumeIndexSelectFooter() {
             selectDispatch({ type: 'unselectAll' });
         }
     }, [wasDeleting, isDeleting, selectDispatch]);
-
-    const { refetch: fetchRootFolders } = useGetRootFoldersQuery();
-
-    useEffect(() => {
-        fetchRootFolders();
-    }, [fetchRootFolders]);
 
     const anySelected = selectedCount > 0;
 

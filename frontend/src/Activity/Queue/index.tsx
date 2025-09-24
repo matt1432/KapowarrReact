@@ -41,10 +41,12 @@ import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { TableOptionsChangePayload } from 'typings/Table';
 
 export type QueueColumn = QueueItem & {
-    actions: never;
     priority: number;
     sizeLeft: number;
     timeLeft: number;
+
+    // Columns
+    actions: never;
 };
 export type QueueColumnName = keyof QueueColumn;
 
@@ -144,11 +146,10 @@ export default function Queue() {
 
     const [deleteQueueItem] = useDeleteQueueItemMutation();
     const onDeletePress = useCallback(
-        async (props: DeleteQueueItemParams) => {
-            await deleteQueueItem(props);
-            await refetch();
+        (props: DeleteQueueItemParams) => {
+            deleteQueueItem(props);
         },
-        [deleteQueueItem, refetch],
+        [deleteQueueItem],
     );
 
     const [
@@ -157,17 +158,11 @@ export default function Queue() {
         setClearQueueModalClosed,
     ] = useModalOpenState(false);
 
-    const [clearQueuePost] = useClearQueueMutation();
-    const [isClearing, setIsClearing] = useState(false);
-    const clearQueue = useCallback(async () => {
-        setIsClearing(true);
-
-        await clearQueuePost();
-        await refetch();
-
-        setIsClearing(false);
+    const [clearQueuePost, { isLoading: isClearing }] = useClearQueueMutation();
+    const clearQueue = useCallback(() => {
+        clearQueuePost();
         setClearQueueModalClosed();
-    }, [clearQueuePost, refetch, setClearQueueModalClosed]);
+    }, [clearQueuePost, setClearQueueModalClosed]);
 
     const handleSortPress = useCallback(
         (sortKey: QueueColumnName, sortDirection?: SortDirection) => {

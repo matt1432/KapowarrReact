@@ -75,7 +75,6 @@ export default function GeneralFilesModalContent({
     const { generalFiles = [], refetch } = useSearchVolumeQuery(
         { volumeId },
         {
-            refetchOnMountOrArgChange: true,
             selectFromResult: ({ data }) => ({
                 generalFiles: data?.generalFiles ?? [],
             }),
@@ -92,7 +91,7 @@ export default function GeneralFilesModalContent({
     }, [isLoading, isSuccess, wasLoading, refetch]);
 
     const handleDeleteGeneralFile = useCallback(
-        (fileId: number) => {
+        (fileId: number) => () => {
             deleteFile({ fileId });
         },
         [deleteFile],
@@ -115,9 +114,9 @@ export default function GeneralFilesModalContent({
                                         path={filepath}
                                         size={size}
                                         columns={COLUMNS}
-                                        onDeleteGeneralFile={() =>
-                                            handleDeleteGeneralFile(id)
-                                        }
+                                        onDeleteGeneralFile={handleDeleteGeneralFile(
+                                            id,
+                                        )}
                                     />
                                 ),
                             )}

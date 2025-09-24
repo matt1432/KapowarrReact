@@ -1,17 +1,19 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 
 // Redux
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 import { useDeleteFileMutation } from 'Store/Api/Files';
 
 // Misc
+import { socketEvents } from 'Helpers/Props';
+
 import translate from 'Utilities/String/translate';
 
 // Hooks
-import usePrevious from 'Helpers/Hooks/usePrevious';
+import useSocketCallback from 'Helpers/Hooks/useSocketCallback';
 
 // General Components
 import InnerHTML from 'Components/InnerHTML';
@@ -27,6 +29,7 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { IssueData, IssueSummaryColumnName } from 'Issue/Issue';
+import type { SocketEventHandler } from 'typings/Socket';
 
 interface IssueSummaryProps {
     volumeId: number;
@@ -58,7 +61,6 @@ const COLUMNS: Column<IssueSummaryColumnName>[] = [
 ];
 
 export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
-    // TODO: refactor to use useSearchIssue or equivalent and pass volume stuff in props
     const {
         description,
         files = [],
@@ -66,21 +68,13 @@ export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
     } = useSearchVolumeQuery(
         { volumeId },
         {
-            refetchOnMountOrArgChange: true,
             selectFromResult: ({ data }) =>
                 data?.issues.find((i) => i.id === issueId) ??
                 ({} as Partial<IssueData>),
         },
     );
 
-    const [deleteFile, { isLoading, isSuccess }] = useDeleteFileMutation();
-    const wasLoading = usePrevious(isLoading);
-
-    useEffect(() => {
-        if (!isLoading && wasLoading && isSuccess) {
-            refetch();
-        }
-    }, [isLoading, isSuccess, wasLoading, refetch]);
+    const [deleteFile] = useDeleteFileMutation();
 
     const handleDeleteIssueFile = useCallback(
         (issueFileId: number) => {
@@ -91,6 +85,18 @@ export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
         },
         [deleteFile],
     );
+
+    const socketCallback = useCallback<
+        SocketEventHandler<typeof socketEvents.ISSUE_DELETED>
+    >(
+        (data) => {
+            if (data.issueId === issueId) {
+                refetch();
+            }
+        },
+        [issueId, refetch],
+    );
+    useSocketCallback(socketEvents.ISSUE_DELETED, socketCallback);
 
     return (
         <div>
@@ -127,7 +133,7 @@ export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
                                     onDeleteIssueFile={() =>
                                         handleDeleteIssueFile(id)
                                     }
-                                    refetchFiles={() => refetch()}
+                                    refetchFiles={refetch}
                                 />
                             ),
                         )}

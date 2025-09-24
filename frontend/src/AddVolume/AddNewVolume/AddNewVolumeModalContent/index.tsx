@@ -16,6 +16,7 @@ import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 
 // General Components
+import CheckInput from 'Components/Form/CheckInput';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -39,7 +40,6 @@ import type { AddVolume } from 'AddVolume/AddVolume';
 import type { CheckInputChanged, InputChanged } from 'typings/Inputs';
 import type { MonitoringScheme } from 'Volume/Volume';
 import type { SpecialVersion } from 'Helpers/Props/specialVersions';
-import CheckInput from 'Components/Form/CheckInput';
 
 export interface AddNewVolumeModalContentProps {
     volume: AddVolume;

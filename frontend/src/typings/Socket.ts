@@ -35,14 +35,23 @@ type MassEditorData = CamelCasedPropertiesDeep<{
     total_items: number;
 }>;
 
-type IssuePayload = CamelCasedPropertiesDeep<{
+type IssueUpdatedData = CamelCasedPropertiesDeep<{
     called_from: string;
     issue: Issue;
 }>;
 
-type VolumePayload = CamelCasedPropertiesDeep<{
+type IssueDeletedData = CamelCasedPropertiesDeep<{
+    volume_id: number;
+    issue_id: number;
+}>;
+
+type VolumeUpdatedData = CamelCasedPropertiesDeep<{
     called_from: string;
     volume: VolumePublicInfo;
+}>;
+
+type VolumeDeletedData = CamelCasedPropertiesDeep<{
+    volume_id: number;
 }>;
 
 type DownloadedStatusData = CamelCasedPropertiesDeep<{
@@ -58,8 +67,10 @@ interface SpecificEventHandlers {
     queue_added: (data: QueueItem) => void;
     queue_ended: (data: QueueEndedData) => void;
     queue_status: (data: QueueStatusData) => void;
-    issue_updated: (data: IssuePayload) => void;
-    volume_updated: (data: VolumePayload) => void;
+    issue_updated: (data: IssueUpdatedData) => void;
+    volume_updated: (data: VolumeUpdatedData) => void;
+    issue_deleted: (data: IssueDeletedData) => void;
+    volume_deleted: (data: VolumeDeletedData) => void;
     mass_editor_status: (data: MassEditorData) => void;
     downloaded_status: (data: DownloadedStatusData) => void;
 }

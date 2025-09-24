@@ -571,7 +571,7 @@ def api_rootfolder() -> ApiReturn | None:
 @api.route("/rootfolder/<int:id>", methods=["GET", "PUT", "DELETE"])
 @error_handler
 @auth
-def api_rootfolder_id(id: int) -> ApiReturn:
+def api_rootfolder_id(id: int) -> ApiReturn | None:
     root_folders = RootFolders()
 
     if request.method == "GET":
@@ -585,7 +585,7 @@ def api_rootfolder_id(id: int) -> ApiReturn:
         root_folders[id] = folder
         return return_api({})
 
-    else:  # request.method == "DELETE":
+    elif request.method == "DELETE":
         root_folders.delete(id)
         return return_api({})
 

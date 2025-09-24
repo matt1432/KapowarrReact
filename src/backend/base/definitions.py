@@ -443,6 +443,9 @@ class SocketEvent(BaseEnum):
     VOLUME_UPDATED = "volume_updated"
     ISSUE_UPDATED = "issue_updated"
 
+    VOLUME_DELETED = "volume_deleted"
+    ISSUE_DELETED = "issue_deleted"
+
     MASS_EDITOR_STATUS = "mass_editor_status"
     "The progress of a mass editor action"
 

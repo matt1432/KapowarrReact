@@ -20,11 +20,7 @@ import styles from './index.module.css';
 // IMPLEMENTATIONS
 
 export default function VolumeIndexFooter() {
-    const { data: stats } = useGetStatsQuery(undefined, {
-        refetchOnFocus: true,
-        refetchOnReconnect: true,
-        refetchOnMountOrArgChange: true,
-    });
+    const { data: stats } = useGetStatsQuery();
 
     return (
         <ColorImpairedConsumer>

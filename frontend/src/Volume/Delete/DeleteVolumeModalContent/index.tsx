@@ -6,14 +6,13 @@ import { useCallback, useState } from 'react';
 // Redux
 import {
     useDeleteVolumeMutation,
-    useGetVolumesQuery,
     useSearchVolumeQuery,
 } from 'Store/Api/Volumes';
 
 // Misc
 import { useNavigate } from 'react-router';
 
-import { icons, inputTypes, kinds } from 'Helpers/Props';
+import { icons, inputTypes, kinds, socketEvents } from 'Helpers/Props';
 
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
@@ -35,6 +34,8 @@ import styles from './index.module.css';
 
 // Types
 import type { CheckInputChanged } from 'typings/Inputs';
+import type { SocketEventHandler } from 'typings/Socket';
+import useSocketCallback from 'Helpers/Hooks/useSocketCallback';
 
 // IMPLEMENTATIONS
 
@@ -52,7 +53,6 @@ export default function DeleteVolumeModalContent({
     const { title, issueFileCount, sizeOnDisk, path } = useSearchVolumeQuery(
         { volumeId },
         {
-            refetchOnMountOrArgChange: true,
             selectFromResult: ({ data }) => ({
                 title: data?.title ?? '',
                 issueFileCount:
@@ -66,8 +66,6 @@ export default function DeleteVolumeModalContent({
         },
     );
 
-    const { refetch } = useGetVolumesQuery();
-
     const [deleteVolume] = useDeleteVolumeMutation();
 
     const [deleteFiles, setDeleteFiles] = useState(false);
@@ -80,13 +78,21 @@ export default function DeleteVolumeModalContent({
     );
 
     const handleDeleteVolumeConfirmed = useCallback(() => {
-        deleteVolume({ volumeId, deleteFolder: deleteFiles }).then(() => {
-            refetch();
+        deleteVolume({ volumeId, deleteFolder: deleteFiles });
+    }, [volumeId, deleteFiles, deleteVolume]);
 
-            onModalClose();
-            navigate('/');
-        });
-    }, [volumeId, deleteFiles, deleteVolume, navigate, onModalClose, refetch]);
+    const socketCallback = useCallback<
+        SocketEventHandler<typeof socketEvents.VOLUME_DELETED>
+    >(
+        (data) => {
+            if (data.volumeId === volumeId) {
+                onModalClose();
+                navigate('/');
+            }
+        },
+        [navigate, onModalClose, volumeId],
+    );
+    useSocketCallback(socketEvents.VOLUME_DELETED, socketCallback);
 
     return (
         <ModalContent onModalClose={onModalClose}>

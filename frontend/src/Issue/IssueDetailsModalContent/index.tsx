@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 
 // Redux
@@ -9,7 +9,12 @@ import { useUpdateIssueMutation } from 'Store/Api/Issues';
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc
+import { socketEvents } from 'Helpers/Props';
+
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import useSocketCallback from 'Helpers/Hooks/useSocketCallback';
 
 // General Components
 import Button from 'Components/Link/Button';
@@ -29,6 +34,7 @@ import styles from './index.module.css';
 
 // Types
 import type { IssueDetailsTab } from 'Issue/IssueDetailsTab';
+import type { SocketEventHandler } from 'typings/Socket';
 
 export interface IssueDetailsModalContentProps {
     issueId: number;
@@ -57,7 +63,12 @@ export default function IssueDetailsModalContent({
     onTabChange,
     onModalClose,
 }: IssueDetailsModalContentProps) {
-    const { volume, issue, refetch } = useSearchVolumeQuery(
+    const calledFrom = useMemo(
+        () => `IssueDetailsModalContent${issueId}`,
+        [issueId],
+    );
+
+    const { volume, issue } = useSearchVolumeQuery(
         { volumeId },
         {
             selectFromResult: ({ data }) => ({
@@ -69,15 +80,32 @@ export default function IssueDetailsModalContent({
 
     const [isToggling, setIsToggling] = useState(false);
 
-    const [updateIssue, { isSuccess }] = useUpdateIssueMutation();
+    const [updateIssue] = useUpdateIssueMutation();
 
-    useEffect(() => {
-        if (isSuccess) {
-            refetch().finally(() => {
-                setIsToggling(false);
+    const handleMonitorIssuePress = useCallback(
+        (monitored: boolean) => {
+            setIsToggling(true);
+            updateIssue({
+                issueId,
+                monitored,
+                calledFrom,
             });
-        }
-    }, [refetch, isSuccess]);
+        },
+        [calledFrom, issueId, updateIssue],
+    );
+
+    const socketCallback = useCallback<
+        SocketEventHandler<typeof socketEvents.ISSUE_UPDATED>
+    >(
+        (data) => {
+            if (data.calledFrom === calledFrom) {
+                setIsToggling(false);
+            }
+        },
+        [calledFrom],
+    );
+
+    useSocketCallback(socketEvents.ISSUE_UPDATED, socketCallback);
 
     const [currentlySelectedTab, setCurrentlySelectedTab] =
         useState(selectedTab);
@@ -105,17 +133,6 @@ export default function IssueDetailsModalContent({
             setStartLibgenFileSearch(false);
         },
         [onTabChange],
-    );
-
-    const handleMonitorIssuePress = useCallback(
-        (monitored: boolean) => {
-            setIsToggling(true);
-            updateIssue({
-                issueId,
-                monitored,
-            });
-        },
-        [issueId, updateIssue],
     );
 
     const volumeLink = `/volumes/${titleSlug}`;

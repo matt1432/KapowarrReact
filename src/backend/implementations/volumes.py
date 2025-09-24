@@ -249,8 +249,12 @@ class Issue:
 
     def delete(self) -> None:
         """Delete the issue from the database."""
+        data = self.get_data()
+
         FilesDB.delete_issue_linked_files(self.id)
         get_db().execute("DELETE FROM issues WHERE id = ?;", (self.id,))
+
+        WebSocket().send_issue_deleted(data.volume_id, self.id)
         return
 
 
@@ -843,6 +847,8 @@ class Volume:
         # Delete metadata entries
         # ON DELETE CASCADE will take care of issues
         get_db().execute("DELETE FROM volumes WHERE id = ?", (self.id,))
+
+        WebSocket().send_volume_deleted(self.id)
 
         return
 

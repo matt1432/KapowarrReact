@@ -97,13 +97,14 @@ export default function BlocklistTable() {
                 error,
             }),
         });
+
     const [fetchNextPage, { nextPageHasItems }] = useGetBlocklistMutation({
         selectFromResult: ({ data }) => ({
             nextPageHasItems: Boolean(data?.length),
         }),
     });
 
-    const hasItems = !!items.length;
+    const hasItems = Boolean(items.length);
 
     const [page, setPage] = useState(1);
     const lastPage = useMemo(

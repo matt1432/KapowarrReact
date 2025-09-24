@@ -9,6 +9,8 @@ const socketEvents = {
     QUEUE_STATUS: 'queue_status',
     ISSUE_UPDATED: 'issue_updated',
     VOLUME_UPDATED: 'volume_updated',
+    ISSUE_DELETED: 'issue_deleted',
+    VOLUME_DELETED: 'volume_deleted',
     MASS_EDITOR_STATUS: 'mass_editor_status',
     DOWNLOADED_STATUS: 'downloaded_status',
 } as const;

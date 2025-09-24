@@ -63,10 +63,7 @@ export default function EditVolumeModalContent({
 
     const { data: rootFolders = [] } = useGetRootFoldersQuery();
 
-    const { data: volume } = useSearchVolumeQuery(
-        { volumeId },
-        { refetchOnMountOrArgChange: true },
-    );
+    const { data: volume } = useSearchVolumeQuery({ volumeId });
     const {
         title,
         libgenSeriesId: initialLibgenSeriesId,

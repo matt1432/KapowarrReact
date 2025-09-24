@@ -83,7 +83,8 @@ export default function EditFileModalContent({
 
     const wasSaving = usePrevious(isSaving);
 
-    // For some reason the values are only available after isPopulated is true, not at the same time
+    // For some reason the values are only available after isPopulated is true,
+    // not at the same time
     const isPopulated = usePrevious(_isPopulated);
     const wasPopulated = usePrevious(isPopulated);
 

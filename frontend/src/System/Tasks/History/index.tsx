@@ -4,7 +4,12 @@
 import { useGetTaskHistoryQuery } from 'Store/Api/Status';
 
 // Misc
+import { socketEvents } from 'Helpers/Props';
+
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import useSocketCallback from 'Helpers/Hooks/useSocketCallback';
 
 // General Components
 import FieldSet from 'Components/FieldSet';
@@ -37,7 +42,9 @@ const columns: Column<keyof TaskHistory>[] = [
 ];
 
 export default function TaskHistory() {
-    const { data: items = [] } = useGetTaskHistoryQuery();
+    const { data: items = [], refetch } = useGetTaskHistoryQuery();
+
+    useSocketCallback(socketEvents.TASK_ENDED, refetch);
 
     return (
         <FieldSet legend={translate('History')}>

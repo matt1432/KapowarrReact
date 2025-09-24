@@ -488,6 +488,32 @@ export default function SocketListener() {
         [callbacks.volume_updated, refreshVolumeEndpoints],
     );
 
+    const handleIssueDeleted = useCallback<
+        SocketEventHandler<typeof socketEvents.ISSUE_DELETED>
+    >(
+        async (data) => {
+            await fetchVolume({ volumeId: data.volumeId });
+
+            callbacks.issue_deleted.forEach((callback) => {
+                callback(data);
+            });
+        },
+        [callbacks.issue_deleted, fetchVolume],
+    );
+
+    const handleVolumeDeleted = useCallback<
+        SocketEventHandler<typeof socketEvents.VOLUME_DELETED>
+    >(
+        async (data) => {
+            await refreshVolumeEndpoints(data.volumeId);
+
+            callbacks.volume_deleted.forEach((callback) => {
+                callback(data);
+            });
+        },
+        [callbacks.volume_deleted, refreshVolumeEndpoints],
+    );
+
     // Hook
     useSocketEvents({
         connect: handleConnect,
@@ -506,6 +532,9 @@ export default function SocketListener() {
 
         issueUpdated: handleIssueUpdated,
         volumeUpdated: handleVolumeUpdated,
+
+        issueDeleted: handleIssueDeleted,
+        volumeDeleted: handleVolumeDeleted,
     });
 
     return null;

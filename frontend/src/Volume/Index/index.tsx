@@ -147,8 +147,9 @@ const useIndexVolumes = () => {
         (state) => state.volumeIndex,
     );
 
-    const { isFetching, isPopulated, error, data, refetch } =
-        useGetVolumesQuery(undefined, {
+    const { isFetching, isPopulated, error, data } = useGetVolumesQuery(
+        undefined,
+        {
             selectFromResult: ({
                 isFetching,
                 isUninitialized,
@@ -160,7 +161,8 @@ const useIndexVolumes = () => {
                 error,
                 data: data ?? [],
             }),
-        });
+        },
+    );
 
     const sortedItems = useSort({
         columns,
@@ -194,7 +196,6 @@ const useIndexVolumes = () => {
         isPopulated,
         error,
         items,
-        refetch,
     };
 };
 
