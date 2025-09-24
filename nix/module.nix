@@ -90,7 +90,8 @@ in {
           "-p ${toString cfg.port}"
           (optionalString (cfg.urlBase != null) "-u ${cfg.urlBase}")
         ];
-        KillSignal = "SIGINT";
+        # FIXME: not sure why this is needed
+        SuccessExitStatus = [0 241];
 
         # Hardening from komga service
         RemoveIPC = true;
