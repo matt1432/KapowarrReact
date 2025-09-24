@@ -436,6 +436,7 @@ class SocketEvent(BaseEnum):
     "A download has finished in the queue"
 
     VOLUME_UPDATED = "volume_updated"
+    ISSUE_UPDATED = "issue_updated"
 
     MASS_EDITOR_STATUS = "mass_editor_status"
     "The progress of a mass editor action"

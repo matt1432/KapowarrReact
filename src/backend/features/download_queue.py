@@ -485,9 +485,11 @@ class DownloadHandler(metaclass=Singleton):
                 )
 
             else:
+                download_link = link.replace("ads.php", "get.php")
+
                 downloads.append(
                     DirectDownload(
-                        download_link=f"{Constants.LIBGEN_SITE_URL}/get.php?md5={result["md5"]}",
+                        download_link=download_link,
                         volume_id=volume_id,
                         covered_issues=result["issue_number"]
                         if "issue_number" in result

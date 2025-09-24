@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 // Redux
 import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import {
-    useGetVolumesQuery,
     useSearchVolumeQuery,
     useUpdateVolumeMutation,
     type UpdateVolumeParams,
@@ -19,7 +18,6 @@ import translate from 'Utilities/String/translate';
 
 // Hooks
 import usePrevious from 'Helpers/Hooks/usePrevious';
-import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
 
 // General Components
 import Form from 'Components/Form/Form';
@@ -62,14 +60,9 @@ export default function EditVolumeModalContent({
 }: EditVolumeModalContentProps) {
     const [updateVolume, { isLoading: isSaving, error: saveError }] = useUpdateVolumeMutation();
 
-    // Update volumes cache after changes
-    const { refetch: refetchAllVolumes } = useGetVolumesQuery(undefined, {
-        selectFromResult: () => ({}),
-    });
-
     const { data: rootFolders = [] } = useGetRootFoldersQuery();
 
-    const { data: volume, refetch } = useSearchVolumeQuery(
+    const { data: volume } = useSearchVolumeQuery(
         { volumeId },
         { refetchOnMountOrArgChange: true },
     );
@@ -116,14 +109,6 @@ export default function EditVolumeModalContent({
         initialVolumeFolder,
         initialRootFolderPath,
     ]);
-
-    useSocketEvents({
-        volumeUpdated: (vol) => {
-            if (vol.id === volumeId) {
-                refetch();
-            }
-        },
-    });
 
     const handleInputChange = useCallback(
         <K extends keyof UpdateVolumeParams>({
@@ -182,8 +167,6 @@ export default function EditVolumeModalContent({
             specialVersionLocked: true,
             volumeFolder,
             libgenSeriesId,
-        }).then(() => {
-            refetchAllVolumes();
         });
     }, [
         libgenSeriesId,
@@ -193,7 +176,6 @@ export default function EditVolumeModalContent({
         updateVolume,
         volumeFolder,
         volumeId,
-        refetchAllVolumes,
     ]);
 
     const handleSavePress = useCallback(() => {

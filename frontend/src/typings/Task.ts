@@ -9,6 +9,7 @@ export interface RawTask {
     category: string;
     volume_id: number | null;
     issue_id: number | null;
+    called_from: string;
 }
 
 export type Task = CamelCasedProperties<RawTask>;

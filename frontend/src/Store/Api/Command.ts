@@ -17,6 +17,7 @@ import type { RawSearchResult, SearchResult } from 'typings/Search';
 
 export type ExecuteCommandParams = {
     cmd: CommandName;
+    calledFrom?: string;
     volumeId?: number;
     issueId?: number;
     [key: string]: string | string[] | number | undefined;

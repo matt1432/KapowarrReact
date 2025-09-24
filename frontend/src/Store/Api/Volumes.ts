@@ -43,6 +43,7 @@ export interface UpdateVolumeParams {
     volumeFolder?: string;
     libgenSeriesId?: number | null;
     volumeId: number;
+    calledFrom?: string;
 }
 
 export interface DeleteVolumeParams {
@@ -223,48 +224,12 @@ export const {
     useGetVolumesQuery,
     useImportLibraryMutation,
     useLazyGetImportProposalsQuery,
+    useLazyGetStatsQuery,
     useLazyGetVolumesQuery,
     useLazyLookupVolumeQuery,
+    useLazySearchVolumeQuery,
     usePreviewConvertVolumeQuery,
     usePreviewRenameVolumeQuery,
     useSearchVolumeQuery,
     useUpdateVolumeMutation,
 } = extendedApi;
-
-/* TODO: refetch volume data on socket updates
-
-import { useCallback } from 'react';
-import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
-import type { SubscriptionOptions } from '@reduxjs/toolkit/query';
-import type { ExtendableRecord } from 'typings/Misc';
-import type { TypedUseQueryStateOptions } from '@reduxjs/toolkit/query/react';
-
-type SearchVolume = typeof extendedApi.endpoints.searchVolume.Types;
-
-type SearchVolumeOptions<R extends ExtendableRecord> = SubscriptionOptions & {
-    skip?: boolean | undefined;
-    refetchOnMountOrArgChange?: number | boolean | undefined;
-} & TypedUseQueryStateOptions<Volume, SearchVolume['QueryArg'], SearchVolume['BaseQuery'], R>;
-
-export const useSearchVolumeUpdate = <R extends ExtendableRecord>(
-    { volumeId, onUpdate }: { volumeId: number; onUpdate?: (volume: VolumePublicInfo) => void },
-    options?: SearchVolumeOptions<R>,
-) => {
-    const { refetch: refetch, ...rest } = extendedApi.useSearchVolumeQuery({ volumeId }, options);
-
-    const handleVolumeUpdated = useCallback(
-        (volume: VolumePublicInfo) => {
-            refetch().finally(() => {
-                onUpdate?.(volume);
-            });
-        },
-        [refetch, onUpdate],
-    );
-
-    useSocketEvents({
-        volumeUpdated: handleVolumeUpdated,
-    });
-
-    return { refetch, ...rest };
-};
-*/

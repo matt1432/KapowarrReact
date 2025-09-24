@@ -20,6 +20,7 @@ export interface UpdateIssueParams {
     monitored?: boolean;
     title?: string;
     description?: string;
+    calledFrom?: string;
 }
 
 // IMPLEMENTATIONS

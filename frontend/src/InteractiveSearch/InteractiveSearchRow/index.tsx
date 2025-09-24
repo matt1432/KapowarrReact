@@ -5,7 +5,6 @@ import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useAddDownloadMutation } from 'Store/Api/Command';
-import { useGetQueueQuery } from 'Store/Api/Queue';
 
 // Misc
 import { icons, kinds, tooltipPositions } from 'Helpers/Props';
@@ -122,10 +121,6 @@ export default function InteractiveSearchRow({
         },
     ] = useAddDownloadMutation();
 
-    const { refetch } = useGetQueueQuery(undefined, {
-        selectFromResult: () => ({}),
-    });
-
     const onGrabPress = useCallback(
         (forceMatch = false, isTorrent = false) => {
             const grab = isTorrent ? grabTorrentRelease : grabRelease;
@@ -143,8 +138,6 @@ export default function InteractiveSearchRow({
                     comicsId: isTorrent ? result.comicsId : null,
                 },
                 forceMatch,
-            }).then(() => {
-                refetch();
             });
         },
         [
@@ -155,7 +148,6 @@ export default function InteractiveSearchRow({
             issueNumber,
             releaser,
             scanType,
-            refetch,
             resolution,
             dpi,
         ],

@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 
     from backend.base.definitions import Download
     from backend.features.tasks import Task
-    from backend.implementations.volumes import Volume
+    from backend.implementations.volumes import Issue, Volume
 
 
 class ThreadedTaskDispatcher(TTD):
@@ -403,10 +403,23 @@ class WebSocket(SocketIO, metaclass=Singleton):
 
         return
 
-    def send_volume_updated(self, volume: Volume) -> None:
+    def send_volume_updated(self, volume: Volume, called_from: str = "") -> None:
         self.emit(
             SocketEvent.VOLUME_UPDATED.value,
-            volume.get_public_keys(),
+            {
+                "called_from": called_from,
+                "volume": volume.get_public_keys(),
+            },
+        )
+        return
+
+    def send_issue_updated(self, issue: Issue, called_from: str = "") -> None:
+        self.emit(
+            SocketEvent.ISSUE_UPDATED.value,
+            {
+                "called_from": called_from,
+                "issue": issue.get_data().as_dict(),
+            },
         )
         return
 
@@ -423,6 +436,7 @@ class WebSocket(SocketIO, metaclass=Singleton):
                 "action": task.action,
                 "volume_id": task.volume_id,
                 "issue_id": task.issue_id,
+                "called_from": task.called_from,
             },
         )
         return
@@ -440,6 +454,7 @@ class WebSocket(SocketIO, metaclass=Singleton):
                 "action": task.action,
                 "volume_id": task.volume_id,
                 "issue_id": task.issue_id,
+                "called_from": task.called_from,
             },
         )
         return

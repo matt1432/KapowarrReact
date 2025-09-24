@@ -1,23 +1,26 @@
 // IMPORTS
 
-// React
-import { useCallback } from 'react';
-
 // Redux
 import { useGetTaskPlanningQuery } from 'Store/Api/Status';
-import { useExecuteCommandMutation } from 'Store/Api/Command';
 
 // Misc
+import { socketEvents } from 'Helpers/Props';
+
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import useSocketCallback from 'Helpers/Hooks/useSocketCallback';
 
 // General Components
 import FieldSet from 'Components/FieldSet';
 import RelativeDateCell from 'Components/Table/Cells/RelativeDateCell';
-import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TableRow from 'Components/Table/TableRow';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
+
+// Specific Components
+import TaskButton from './TaskButton';
 
 // CSS
 import styles from './index.module.css';
@@ -25,8 +28,6 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { TaskPlanning } from 'typings/Task';
-import type { CommandName } from 'Helpers/Props/commandNames';
-import { icons } from 'Helpers/Props';
 
 // IMPLEMENTATIONS
 
@@ -61,21 +62,7 @@ const columns: Column<keyof TaskPlanning | 'actions'>[] = [
 export default function TaskScheduled() {
     const { data: items = [], refetch } = useGetTaskPlanningQuery();
 
-    const [executeCommand, { isLoading, originalArgs }] = useExecuteCommandMutation();
-
-    const isRunning = useCallback(
-        (cmd: string) => originalArgs?.cmd === cmd && isLoading,
-        [isLoading, originalArgs],
-    );
-
-    const runTask = useCallback(
-        (cmd: CommandName) => () => {
-            executeCommand({ cmd }).then(() => {
-                refetch();
-            });
-        },
-        [executeCommand, refetch],
-    );
+    useSocketCallback(socketEvents.TASK_ENDED, refetch);
 
     return (
         <FieldSet legend={translate('Scheduled')}>
@@ -83,34 +70,51 @@ export default function TaskScheduled() {
                 <TableBody>
                     {items.map((item) => (
                         <TableRow>
-                            <TableRowCell className={styles.displayName}>
-                                {item.displayName}
-                            </TableRowCell>
+                            {columns.map(({ isVisible, name }) => {
+                                if (!isVisible) {
+                                    return null;
+                                }
 
-                            <TableRowCell
-                                className={styles.interval}
-                            >{`${Math.round(item.interval / 3600)} hours`}</TableRowCell>
+                                if (name === 'displayName') {
+                                    return (
+                                        <TableRowCell className={styles[name]}>
+                                            {item.displayName}
+                                        </TableRowCell>
+                                    );
+                                }
 
-                            <RelativeDateCell
-                                className={styles.lastRun}
-                                date={item.lastRun * 1000}
-                                includeTime
-                            />
+                                if (name === 'interval') {
+                                    return (
+                                        <TableRowCell
+                                            className={styles[name]}
+                                        >{`${Math.round(item.interval / 3600)} hours`}</TableRowCell>
+                                    );
+                                }
 
-                            <RelativeDateCell
-                                className={styles.nextRun}
-                                date={item.nextRun * 1000}
-                                includeTime
-                            />
+                                if (name === 'lastRun') {
+                                    return (
+                                        <RelativeDateCell
+                                            className={styles[name]}
+                                            date={item.lastRun * 1000}
+                                            includeTime
+                                        />
+                                    );
+                                }
 
-                            <TableRowCell>
-                                <SpinnerIconButton
-                                    name={icons.PLAY}
-                                    title={translate('RunTask', { taskName: item.taskName })}
-                                    isSpinning={isRunning(item.taskName)}
-                                    onPress={runTask(item.taskName)}
-                                />
-                            </TableRowCell>
+                                if (name === 'nextRun') {
+                                    return (
+                                        <RelativeDateCell
+                                            className={styles[name]}
+                                            date={item.nextRun * 1000}
+                                            includeTime
+                                        />
+                                    );
+                                }
+
+                                if (name === 'actions') {
+                                    return <TaskButton taskName={item.taskName} />;
+                                }
+                            })}
                         </TableRow>
                     ))}
                 </TableBody>

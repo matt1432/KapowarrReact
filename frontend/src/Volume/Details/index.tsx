@@ -1,11 +1,13 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
+import { getVolumeStatus } from 'Store/Slices/SocketEvents';
+
 import { useExecuteCommandMutation } from 'Store/Api/Command';
-import { useFetchQueueDetails } from 'Store/Api/Queue';
 import {
     useGetVolumesQuery,
     useSearchVolumeQuery,
@@ -19,6 +21,7 @@ import {
     kinds,
     scrollDirections,
     sizes,
+    socketEvents,
     tooltipPositions,
 } from 'Helpers/Props';
 
@@ -27,7 +30,7 @@ import translate from 'Utilities/String/translate';
 import formatBytes from 'Utilities/Number/formatBytes';
 
 // Hooks
-import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
+import useSocketCallback from 'Helpers/Hooks/useSocketCallback';
 
 // General Components
 import Alert from 'Components/Alert';
@@ -66,7 +69,7 @@ import VolumePoster from 'Volume/VolumePoster';
 import styles from './index.module.css';
 
 // Types
-import type { Task } from 'typings/Task';
+import type { SocketEventHandler } from 'typings/Socket';
 
 interface VolumeDetailsProps {
     volumeId: number;
@@ -75,11 +78,13 @@ interface VolumeDetailsProps {
 // IMPLEMENTATIONS
 
 export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
-    const {
-        allVolumes,
-        volumePublicInfo,
-        refetch: refetchAllVolumes,
-    } = useGetVolumesQuery(undefined, {
+    const calledFrom = useMemo(() => `VolumeDetails${volumeId}`, [volumeId]);
+
+    const { isRefreshing, isSearching } = useRootSelector((state) =>
+        getVolumeStatus(state, volumeId),
+    );
+
+    const { allVolumes, volumePublicInfo } = useGetVolumesQuery(undefined, {
         selectFromResult: ({ data }) => ({
             allVolumes: data ?? [],
             volumePublicInfo: data?.find((item) => item.id === volumeId),
@@ -88,7 +93,6 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const {
         volume,
-        refetch,
         isFetching,
         isPopulated,
         error,
@@ -98,7 +102,6 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     } = useSearchVolumeQuery(
         { volumeId },
         {
-            refetchOnMountOrArgChange: true,
             selectFromResult: ({ data, error, isFetching, isUninitialized }) => ({
                 volume: data,
                 hasIssues: Boolean(data?.issues.length),
@@ -111,44 +114,20 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         },
     );
 
-    const { refetch: refetchQueueDetails } = useFetchQueueDetails({ volumeId });
-
-    const [executeCommand, { originalArgs, isLoading: isCmdLoading }] = useExecuteCommandMutation();
+    const [executeCommand] = useExecuteCommandMutation();
+    const [toggleVolumeMonitored] = useUpdateVolumeMutation();
 
     const [isToggling, setIsToggling] = useState(false);
-    const [toggleVolumeMonitored, { isSuccess: isToggleSuccess }] = useUpdateVolumeMutation();
 
-    useEffect(() => {
-        if (isToggleSuccess) {
-            refetch().finally(() => {
+    const socketCallback = useCallback<SocketEventHandler<typeof socketEvents.VOLUME_UPDATED>>(
+        (data) => {
+            if (data.calledFrom === calledFrom) {
                 setIsToggling(false);
-            });
-        }
-    }, [refetch, isToggleSuccess]);
-
-    const handleTaskEnded = useCallback(
-        (task: Pick<Task, 'action' | 'volumeId' | 'issueId'>) => {
-            if (task.volumeId === volumeId) {
-                refetch();
-                refetchQueueDetails();
-                refetchAllVolumes();
             }
         },
-        [refetch, refetchAllVolumes, refetchQueueDetails, volumeId],
+        [calledFrom],
     );
-
-    useSocketEvents({
-        taskEnded: handleTaskEnded,
-    });
-
-    const { isRefreshing, isSearching } = useMemo(() => {
-        const isRunning = (cmd: string) => originalArgs?.cmd === cmd && isCmdLoading;
-
-        return {
-            isRefreshing: isRunning(commandNames.REFRESH_VOLUME),
-            isSearching: isRunning(commandNames.VOLUME_SEARCH),
-        };
-    }, [isCmdLoading, originalArgs]);
+    useSocketCallback(socketEvents.VOLUME_UPDATED, socketCallback);
 
     const { nextVolume, previousVolume } = useMemo(() => {
         const sortedVolume = allVolumes.toSorted(sortByProp('title'));
@@ -256,9 +235,10 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
             toggleVolumeMonitored({
                 volumeId,
                 monitored: value,
+                calledFrom,
             });
         },
-        [volumeId, toggleVolumeMonitored],
+        [calledFrom, volumeId, toggleVolumeMonitored],
     );
 
     const handleRefreshPress = useCallback(() => {
@@ -572,7 +552,6 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                     isOpen={isMonitorOptionsModalOpen}
                     volumeId={volumeId}
                     onModalClose={handleMonitorOptionsClose}
-                    refetch={refetch}
                 />
 
                 <SearchVolumeModal

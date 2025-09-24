@@ -1,10 +1,11 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
+import { getVolumeStatus } from 'Store/Slices/SocketEvents';
 
 import { useExecuteCommandMutation } from 'Store/Api/Command';
 
@@ -36,7 +37,6 @@ import styles from './index.module.css';
 import type { Column } from 'Components/Table/Column';
 import type { SelectStateInputProps } from 'typings/Inputs';
 import type { VolumeColumnName, VolumePublicInfo } from 'Volume/Volume';
-import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 interface VolumeIndexRowProps {
     volume: VolumePublicInfo;
@@ -48,32 +48,13 @@ interface VolumeIndexRowProps {
 // IMPLEMENTATIONS
 
 export default function VolumeIndexRow({ volume, columns, isSelectMode }: VolumeIndexRowProps) {
-    const { refetch: refetchAllVolumes } = useGetVolumesQuery(undefined, {
-        selectFromResult: () => ({}),
-    });
+    const { isRefreshing: isRefreshingVolume, isSearching: isSearchingVolume } = useRootSelector(
+        (state) => getVolumeStatus(state, volume.id),
+    );
+
     const { showSearchAction } = useRootSelector((state) => state.volumeIndex.tableOptions);
 
-    const [executeCommand, { originalArgs, isSuccess: isCmdSuccess, isLoading }] =
-        useExecuteCommandMutation();
-
-    const { isRefreshingVolume, isSearchingVolume } = useMemo(() => {
-        const isRunning = (cmd: string) => originalArgs?.cmd === cmd && isLoading;
-
-        return {
-            isRefreshingVolume: isRunning(commandNames.REFRESH_VOLUME),
-            isSearchingVolume: isRunning(commandNames.VOLUME_SEARCH),
-        };
-    }, [originalArgs, isLoading]);
-
-    useEffect(() => {
-        if (isCmdSuccess) {
-            // Not sure why but the timeout is necessary
-            // for updating the progress label
-            setTimeout(() => {
-                refetchAllVolumes();
-            }, 1000);
-        }
-    }, [refetchAllVolumes, isCmdSuccess]);
+    const [executeCommand] = useExecuteCommandMutation();
 
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
     const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);

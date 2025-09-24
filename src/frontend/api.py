@@ -388,6 +388,7 @@ def api_tasks() -> ApiReturn | None:
             raise TaskNotFound(data.get("cmd", ""))
 
         kwargs = {}
+        kwargs["called_from"] = data.get("called_from", "")
         if task.action in (
             "refresh_and_scan",
             "auto_search",
@@ -773,8 +774,15 @@ def api_volume(id: int) -> ApiReturn | None:
             {
                 k: v
                 for k, v in edit_info.items()
-                if k not in ("root_folder", "volume_folder", "monitoring_scheme")
-            }
+                if k
+                not in (
+                    "root_folder",
+                    "volume_folder",
+                    "monitoring_scheme",
+                    "called_from",
+                )
+            },
+            edit_info["called_from"],
         )
         return return_api(None)
 
@@ -806,7 +814,7 @@ def api_issues(id: int) -> ApiReturn | None:
         edit_info: dict = request.get_json()
         monitored = edit_info.get("monitored")
         if monitored is not None:
-            issue["monitored"] = bool(monitored)
+            issue.update({"monitored": bool(monitored)}, edit_info["called_from"])
 
         result = issue.get_data()
         return return_api(result)

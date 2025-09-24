@@ -64,7 +64,6 @@ export default function ConvertPreviewModalContent({
     const { folder } = useSearchVolumeQuery(
         { volumeId },
         {
-            refetchOnMountOrArgChange: true,
             selectFromResult: ({ data }) => ({
                 folder: data?.folder,
             }),

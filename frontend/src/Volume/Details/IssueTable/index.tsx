@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -11,9 +11,14 @@ import { useUpdateIssueMutation } from 'Store/Api/Issues';
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc
+import { socketEvents } from 'Helpers/Props';
+
 import formatBytes from 'Utilities/Number/formatBytes';
 import getToggledRange from 'Utilities/Table/getToggledRange';
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import useSocketCallback from 'Helpers/Hooks/useSocketCallback';
 
 // General Components
 import SortedTable from 'Components/Table/SortedTable';
@@ -29,9 +34,7 @@ import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { TableOptionsChangePayload } from 'typings/Table';
 import type { IssueColumnName, IssueData, IssueFileData } from 'Issue/Issue';
 import type { Column } from 'Components/Table/Column';
-import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
 import type { SocketEventHandler } from 'typings/Socket';
-import type { socketEvents } from 'Helpers/Props';
 
 export interface IssueRowData extends IssueData {
     issue: IssueData;
@@ -40,8 +43,10 @@ export interface IssueRowData extends IssueData {
     relativePath: string | undefined;
     size: string;
     releaseGroup: string | undefined;
-    status: undefined;
-    actions: undefined;
+
+    // Columns
+    status: never;
+    actions: never;
 }
 
 interface IssueTableProps {
@@ -131,9 +136,7 @@ function useIssuesSelector(volumeId: number) {
                                 issue.files.reduce((acc, issue) => (acc += issue.size), 0),
                             ),
                             releaseGroup: issue?.files.find((f) => f.releaser)?.releaser ?? '',
-                            status: undefined,
-                            actions: undefined,
-                        } satisfies IssueRowData as IssueRowData;
+                        } as IssueRowData;
                     }),
                 };
             },
@@ -144,43 +147,30 @@ function useIssuesSelector(volumeId: number) {
 export default function IssueTable({ volumeId }: IssueTableProps) {
     const dispatch = useRootDispatch();
 
-    const { issues, volumeMonitored, refetch } = useIssuesSelector(volumeId);
     const { sortKey, sortDirection } = useRootSelector((state) => state.issueTable);
 
-    const [updateIssue, { isSuccess, originalArgs }] = useUpdateIssueMutation();
+    const { issues, volumeMonitored } = useIssuesSelector(volumeId);
 
-    const [isToggling, setIsToggling] = useState(false);
+    const [updateIssue] = useUpdateIssueMutation();
+
+    const [isToggling, setIsToggling] = useState<number[]>([]);
 
     const getIsSaving = useCallback(
         (issueId: number) => {
-            return originalArgs?.issueId === issueId ? isToggling : false;
+            return isToggling.includes(issueId);
         },
-        [isToggling, originalArgs],
+        [isToggling],
     );
 
-    useEffect(() => {
-        if (isSuccess) {
-            refetch().finally(() => {
-                setIsToggling(false);
-            });
-        }
-    }, [refetch, isSuccess]);
-
-    const onDownloadedStatusUpdate = useCallback<
-        SocketEventHandler<typeof socketEvents.DOWNLOADED_STATUS>
-    >(
-        ({ volumeId: id }) => {
-            if (volumeId !== id) {
-                return;
+    const socketCallback = useCallback<SocketEventHandler<typeof socketEvents.ISSUE_UPDATED>>(
+        (data) => {
+            if (data.calledFrom === 'IssueTable') {
+                setIsToggling([...isToggling].splice(isToggling.indexOf(data.issue.id), 1));
             }
-            refetch();
         },
-        [volumeId, refetch],
+        [isToggling],
     );
-
-    useSocketEvents({
-        downloadedStatus: onDownloadedStatusUpdate,
-    });
+    useSocketCallback(socketEvents.ISSUE_UPDATED, socketCallback);
 
     const lastToggledIssue = useRef<number | null>(null);
 
@@ -200,14 +190,15 @@ export default function IssueTable({ volumeId }: IssueTableProps) {
             lastToggledIssue.current = issueId;
 
             issueIds.forEach((issueId) => {
-                setIsToggling(true);
+                setIsToggling([...isToggling, issueId]);
                 updateIssue({
                     issueId,
                     monitored,
+                    calledFrom: 'IssueTable',
                 });
             });
         },
-        [issues, updateIssue],
+        [issues, isToggling, updateIssue],
     );
 
     const handleSortPress = useCallback(

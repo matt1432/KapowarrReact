@@ -34,6 +34,16 @@ class Task(ABC):
     display_title: str
     category: str
 
+    _called_from: str
+
+    @property
+    def called_from(self) -> str:
+        """
+        Only used in the frontend. It allows the client to know what
+        originally called this task.
+        """
+        return self._called_from or ""
+
     @property
     @abstractmethod
     def volume_id(self) -> int | None: ...
@@ -80,7 +90,7 @@ class AutoSearchIssue(Task):
     def issue_id(self) -> int:
         return self._issue_id
 
-    def __init__(self, volume_id: int, issue_id: int) -> None:
+    def __init__(self, volume_id: int, issue_id: int, called_from: str = "") -> None:
         """Create the task
 
         Args:
@@ -89,6 +99,7 @@ class AutoSearchIssue(Task):
         """
         self._volume_id = volume_id
         self._issue_id = issue_id
+        self._called_from = called_from
         return
 
     def run(self) -> list[tuple[str, int, int | None]]:
@@ -124,7 +135,11 @@ class MassRenameIssue(Task):
         return self._issue_id
 
     def __init__(
-        self, volume_id: int, issue_id: int, filepath_filter: list[str] = []
+        self,
+        volume_id: int,
+        issue_id: int,
+        filepath_filter: list[str] = [],
+        called_from: str = "",
     ) -> None:
         """Create the task
 
@@ -138,6 +153,7 @@ class MassRenameIssue(Task):
         self._volume_id = volume_id
         self._issue_id = issue_id
         self.filepath_filter = filepath_filter
+        self._called_from = called_from
         return
 
     def run(self) -> None:
@@ -174,7 +190,11 @@ class MassConvertIssue(Task):
         return self._issue_id
 
     def __init__(
-        self, volume_id: int, issue_id: int, filepath_filter: list[str] = []
+        self,
+        volume_id: int,
+        issue_id: int,
+        filepath_filter: list[str] = [],
+        called_from: str = "",
     ) -> None:
         """Create the task
 
@@ -188,6 +208,7 @@ class MassConvertIssue(Task):
         self._volume_id = volume_id
         self._issue_id = issue_id
         self.filepath_filter = filepath_filter
+        self._called_from = called_from
         return
 
     def run(self) -> None:
@@ -229,13 +250,14 @@ class AutoSearchVolume(Task):
     def issue_id(self) -> None:
         return None
 
-    def __init__(self, volume_id: int) -> None:
+    def __init__(self, volume_id: int, called_from: str = "") -> None:
         """Create the task
 
         Args:
             volume_id (int): The id of the volume to search for
         """
         self._volume_id = volume_id
+        self._called_from = called_from
         return
 
     def run(self) -> list[tuple[str, int, int | None]]:
@@ -267,13 +289,14 @@ class RefreshAndScanVolume(Task):
     def issue_id(self) -> None:
         return None
 
-    def __init__(self, volume_id: int) -> None:
+    def __init__(self, volume_id: int, called_from: str = "") -> None:
         """Create the task
 
         Args:
             volume_id (int): The id of the volume for which to perform the task
         """
         self._volume_id = volume_id
+        self._called_from = called_from
         return
 
     def run(self) -> None:
@@ -306,7 +329,9 @@ class MassRenameVolume(Task):
     def issue_id(self) -> None:
         return None
 
-    def __init__(self, volume_id: int, filepath_filter: list[str] = []) -> None:
+    def __init__(
+        self, volume_id: int, filepath_filter: list[str] = [], called_from: str = ""
+    ) -> None:
         """Create the task
 
         Args:
@@ -317,6 +342,7 @@ class MassRenameVolume(Task):
         """
         self._volume_id = volume_id
         self.filepath_filter = filepath_filter
+        self._called_from = called_from
         return
 
     def run(self) -> None:
@@ -348,7 +374,9 @@ class MassConvertVolume(Task):
     def issue_id(self) -> None:
         return None
 
-    def __init__(self, volume_id: int, filepath_filter: list[str] = []) -> None:
+    def __init__(
+        self, volume_id: int, filepath_filter: list[str] = [], called_from: str = ""
+    ) -> None:
         """Create the task
 
         Args:
@@ -359,6 +387,7 @@ class MassConvertVolume(Task):
         """
         self._volume_id = volume_id
         self.filepath_filter = filepath_filter
+        self._called_from = called_from
         return
 
     def run(self) -> None:
@@ -398,7 +427,7 @@ class UpdateAll(Task):
     def issue_id(self) -> None:
         return None
 
-    def __init__(self, allow_skipping: bool = False) -> None:
+    def __init__(self, allow_skipping: bool = False, called_from: str = "") -> None:
         """Create the task
 
         Args:
@@ -406,6 +435,7 @@ class UpdateAll(Task):
                 Defaults to False.
         """
         self.allow_skipping = allow_skipping
+        self._called_from = called_from
         return
 
     def run(self) -> None:
@@ -437,7 +467,8 @@ class SearchAll(Task):
     def issue_id(self) -> None:
         return None
 
-    def __init__(self) -> None:
+    def __init__(self, called_from: str = "") -> None:
+        self._called_from = called_from
         return
 
     def run(self) -> list[tuple[str, int, int | None]]:

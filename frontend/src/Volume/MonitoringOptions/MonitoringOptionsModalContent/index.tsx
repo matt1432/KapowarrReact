@@ -1,18 +1,18 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useUpdateVolumeMutation } from 'Store/Api/Volumes';
 
 // Misc
-import { kinds } from 'Helpers/Props';
+import { kinds, socketEvents } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
 // Hooks
-import usePrevious from 'Helpers/Hooks/usePrevious';
+import useSocketCallback from 'Helpers/Hooks/useSocketCallback';
 
 // General Components
 import Alert from 'Components/Alert';
@@ -30,11 +30,11 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 // Types
 import type { InputChanged } from 'typings/Inputs';
 import type { MonitoringScheme } from 'Volume/Volume';
+import type { SocketEventHandler } from 'typings/Socket';
 
 export interface MonitoringOptionsModalContentProps {
     volumeId: number;
     onModalClose: () => void;
-    refetch: () => void;
 }
 
 // IMPLEMENTATIONS
@@ -44,21 +44,15 @@ const NO_CHANGE = 'noChange';
 export default function MonitoringOptionsModalContent({
     volumeId,
     onModalClose,
-    refetch,
 }: MonitoringOptionsModalContentProps) {
-    const [updateVolumeMonitoringScheme, { isLoading: isSaving, error: saveError, isSuccess }] =
-        useUpdateVolumeMutation();
+    const calledFrom = useMemo(() => `MonitoringOptionsModalContent${volumeId}`, [volumeId]);
 
-    useEffect(() => {
-        if (isSuccess) {
-            refetch();
-        }
-    }, [refetch, isSuccess]);
+    const [updateVolumeMonitoringScheme] = useUpdateVolumeMutation();
 
+    const [isSaving, setIsSaving] = useState(false);
     const [monitoringScheme, setMonitoringScheme] = useState<MonitoringScheme | typeof NO_CHANGE>(
         NO_CHANGE,
     );
-    const wasSaving = usePrevious(isSaving);
 
     const handleMonitorChange = useCallback(
         ({ value }: InputChanged<'monitor', MonitoringScheme | typeof NO_CHANGE>) => {
@@ -73,17 +67,23 @@ export default function MonitoringOptionsModalContent({
             return;
         }
 
+        setIsSaving(true);
         updateVolumeMonitoringScheme({
             volumeId,
             monitoringScheme,
+            calledFrom,
         });
-    }, [monitoringScheme, onModalClose, volumeId, updateVolumeMonitoringScheme]);
+    }, [calledFrom, monitoringScheme, onModalClose, volumeId, updateVolumeMonitoringScheme]);
 
-    useEffect(() => {
-        if (!isSaving && wasSaving && !saveError) {
-            onModalClose();
-        }
-    }, [isSaving, wasSaving, saveError, onModalClose]);
+    const socketCallback = useCallback<SocketEventHandler<typeof socketEvents.VOLUME_UPDATED>>(
+        (data) => {
+            if (data.calledFrom === calledFrom) {
+                setIsSaving(false);
+            }
+        },
+        [calledFrom],
+    );
+    useSocketCallback(socketEvents.VOLUME_UPDATED, socketCallback);
 
     return (
         <ModalContent onModalClose={onModalClose}>

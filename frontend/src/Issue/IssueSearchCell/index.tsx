@@ -4,6 +4,9 @@
 import { useCallback, useState } from 'react';
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
+import { getIssueStatus } from 'Store/Slices/SocketEvents';
+
 import { useExecuteCommandMutation } from 'Store/Api/Command';
 
 // Misc
@@ -41,7 +44,9 @@ export default function IssueSearchCell({
     issueTitle,
     showOpenVolumeButton,
 }: IssueSearchCellProps) {
-    const [executeCommand, { isLoading: isSearching }] = useExecuteCommandMutation();
+    const { isSearching } = useRootSelector((state) => getIssueStatus(state, volumeId, issueId));
+
+    const [executeCommand] = useExecuteCommandMutation();
 
     const [isDetailsModalOpen, setDetailsModalOpen, setDetailsModalClosed] =
         useModalOpenState(false);

@@ -7,6 +7,7 @@ const socketEvents = {
     QUEUE_ADDED: 'queue_added',
     QUEUE_ENDED: 'queue_ended',
     QUEUE_STATUS: 'queue_status',
+    ISSUE_UPDATED: 'issue_updated',
     VOLUME_UPDATED: 'volume_updated',
     MASS_EDITOR_STATUS: 'mass_editor_status',
     DOWNLOADED_STATUS: 'downloaded_status',

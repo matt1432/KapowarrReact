@@ -7,7 +7,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRootSelector } from 'Store/createAppStore';
 
 import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
-import { useGetVolumesQuery } from 'Store/Api/Volumes';
 import { useMassEditMutation } from 'Store/Api/Command';
 
 // Misc
@@ -20,7 +19,6 @@ import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import { useSelect } from 'App/SelectContext';
 
 import usePrevious from 'Helpers/Hooks/usePrevious';
-import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
 
 // General Components
 import SpinnerButton from 'Components/Link/SpinnerButton';
@@ -38,8 +36,6 @@ import styles from './index.module.css';
 
 export default function VolumeIndexSelectFooter() {
     const { massEditorStatus } = useRootSelector((state) => state.socketEvents);
-
-    const { refetch } = useGetVolumesQuery();
 
     const isSaving = useMemo(
         () =>
@@ -68,15 +64,6 @@ export default function VolumeIndexSelectFooter() {
         () => massEditorStatus.remove_ads.isRunning,
         [massEditorStatus.remove_ads.isRunning],
     );
-
-    // Refresh volumes once an action is finished
-    useSocketEvents({
-        massEditorStatus: ({ currentItem, totalItems }) => {
-            if (currentItem === totalItems) {
-                refetch();
-            }
-        },
-    });
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);

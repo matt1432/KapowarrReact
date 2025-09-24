@@ -190,7 +190,7 @@ class Issue:
 
         return converted_value
 
-    def update(self, data: Mapping[str, Any]) -> None:
+    def update(self, data: Mapping[str, Any], called_from: str = "") -> None:
         """Change aspects of the issue, in a `dict.update()` type of way.
 
         Args:
@@ -223,6 +223,8 @@ class Issue:
             cursor.execute(
                 f"UPDATE issues SET {key} = ? WHERE id = ?;", (value, self.id)
             )
+
+        WebSocket().send_issue_updated(self, called_from)
 
         LOGGER.info(f"For issue {self.id}, changed: {formatted_data}")
         return
@@ -560,7 +562,9 @@ class Volume:
         """
         return GeneralFilesDB.fetch(self.id)
 
-    def update(self, data: Mapping[str, Any], from_public: bool = False) -> None:
+    def update(
+        self, data: Mapping[str, Any], from_public: bool = False, called_from: str = ""
+    ) -> None:
         allowed_keys: Sequence[str]
 
         if from_public:
@@ -584,7 +588,7 @@ class Volume:
                 f"UPDATE volumes SET {key} = ? WHERE id = ?;", (value, self.id)
             )
 
-        WebSocket().send_volume_updated(self)
+        WebSocket().send_volume_updated(self, called_from)
 
         return
 

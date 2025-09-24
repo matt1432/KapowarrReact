@@ -4,6 +4,9 @@
 import { useCallback, useMemo } from 'react';
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
+import { getVolumeStatus } from 'Store/Slices/SocketEvents';
+
 import { useGetSettingsQuery } from 'Store/Api/Settings';
 import { usePreviewRenameVolumeQuery, useSearchVolumeQuery } from 'Store/Api/Volumes';
 import { useExecuteCommandMutation } from 'Store/Api/Command';
@@ -59,12 +62,13 @@ export default function OrganizePreviewModalContent({
     volumeId,
     onModalClose,
 }: OrganizePreviewModalContentProps) {
+    const { isRenaming } = useRootSelector((state) => getVolumeStatus(state, volumeId));
+
     const [executeCommand] = useExecuteCommandMutation();
 
     const { folder, specialVersion } = useSearchVolumeQuery(
         { volumeId },
         {
-            refetchOnMountOrArgChange: true,
             selectFromResult: ({ data }) => ({
                 folder: data?.folder,
                 specialVersion: data?.specialVersion,
@@ -266,7 +270,7 @@ export default function OrganizePreviewModalContent({
 
                 <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
-                <Button kind={kinds.PRIMARY} onPress={handleOrganizePress} disabled={!items.length}>
+                <Button kind={kinds.PRIMARY} onPress={handleOrganizePress} disabled={isRenaming}>
                     {translate('Organize')}
                 </Button>
             </ModalFooter>

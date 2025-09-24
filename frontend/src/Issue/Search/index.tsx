@@ -20,6 +20,8 @@ import InteractiveSearch, { LibgenFileSearch } from 'InteractiveSearch';
 
 // CSS
 import styles from './index.module.css';
+import { getIssueStatus } from 'Store/Slices/SocketEvents';
+import { useRootSelector } from 'Store/createAppStore';
 
 // Types
 interface IssueSearchProps {
@@ -39,6 +41,8 @@ export default function IssueSearch({
     startLibgenFileSearch,
     onModalClose,
 }: IssueSearchProps) {
+    const { isSearching } = useRootSelector((state) => getIssueStatus(state, volumeId, issueId));
+
     const [executeCommand] = useExecuteCommandMutation();
 
     const [isInteractiveSearchOpen, setIsInteractiveSearchOpen] = useState(startInteractiveSearch);
@@ -84,6 +88,7 @@ export default function IssueSearch({
                     className={styles.button}
                     size={sizes.LARGE}
                     onPress={handleQuickSearchPress}
+                    isDisabled={isSearching}
                 >
                     <Icon className={styles.buttonIcon} name={icons.QUICK} />
 
