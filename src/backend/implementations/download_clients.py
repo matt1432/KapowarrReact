@@ -738,7 +738,18 @@ class MegaDownload(BaseDirectDownload):
 
             if settings.rename_downloaded_files:
                 self._filename_body = generate_issue_name(
-                    volume_id, volume.get_data().special_version, covered_issues
+                    volume_id,
+                    volume.get_data().special_version,
+                    covered_issues,
+                    cast(
+                        GeneralFileData,
+                        {
+                            "releaser": releaser,
+                            "scan_type": scan_type,
+                            "resolution": resolution,
+                            "dpi": dpi,
+                        },
+                    ),
                 )
 
         except IssueNotFound as e:
@@ -914,6 +925,15 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
                     volume_id,
                     Volume(volume_id).get_data().special_version,
                     covered_issues,
+                    cast(
+                        GeneralFileData,
+                        {
+                            "releaser": releaser,
+                            "scan_type": scan_type,
+                            "resolution": resolution,
+                            "dpi": dpi,
+                        },
+                    ),
                 )
 
             except IssueNotFound as e:

@@ -419,9 +419,7 @@ class WebSocket(SocketIO, metaclass=Singleton):
         )
         return
 
-    def send_volume_deleted(
-        self, volume_id: int
-    ) -> None:
+    def send_volume_deleted(self, volume_id: int) -> None:
         self.emit(
             SocketEvent.VOLUME_DELETED.value,
             {
@@ -440,9 +438,7 @@ class WebSocket(SocketIO, metaclass=Singleton):
         )
         return
 
-    def send_issue_deleted(
-        self, volume_id: int, issue_id: int
-    ) -> None:
+    def send_issue_deleted(self, volume_id: int, issue_id: int) -> None:
         self.emit(
             SocketEvent.ISSUE_DELETED.value,
             {
