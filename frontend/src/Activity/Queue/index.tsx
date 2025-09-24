@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -111,14 +111,15 @@ const columns: Column<QueueColumnName>[] = [
 
 export default function Queue() {
     const dispatch = useRootDispatch();
+
     const { sortKey, sortDirection } = useRootSelector(
         (state) => state.queueTable,
     );
 
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-    const { items, isSuccess, refetch } = useGetQueueQuery(undefined, {
-        selectFromResult: ({ data, isSuccess }) => ({
+    const { items, refetch } = useGetQueueQuery(undefined, {
+        selectFromResult: ({ data }) => ({
             items: (data ?? []).map((item, i) => {
                 const sizeLeft = (1 - item.progress / 100) * item.size;
                 return {
@@ -129,19 +130,14 @@ export default function Queue() {
                         item.speed === 0 ? 0 : (sizeLeft / item.speed) * 1000,
                 } as QueueColumn;
             }),
-            isSuccess,
         }),
     });
 
-    useEffect(() => {
-        if (isSuccess && !isRefreshing) {
-            setIsRefreshing(false);
-        }
-    }, [isRefreshing, isSuccess]);
-
     const handleRefreshPress = useCallback(() => {
         setIsRefreshing(true);
-        refetch();
+        refetch().finally(() => {
+            setIsRefreshing(false);
+        });
     }, [refetch]);
 
     const [deleteQueueItem] = useDeleteQueueItemMutation();
