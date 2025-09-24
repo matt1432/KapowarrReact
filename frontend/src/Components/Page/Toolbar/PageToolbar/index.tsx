@@ -14,6 +14,9 @@ interface PageToolbarProps {
 
 // IMPLEMENTATIONS
 
-export default function PageToolbar({ className = styles.toolbar, children }: PageToolbarProps) {
+export default function PageToolbar({
+    className = styles.toolbar,
+    children,
+}: PageToolbarProps) {
     return <div className={className}>{children}</div>;
 }

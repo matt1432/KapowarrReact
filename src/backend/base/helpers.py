@@ -84,7 +84,9 @@ def get_subclasses(
 
     if not recursive:
         result.extend(
-            subclass for current in classes for subclass in current.__subclasses__()
+            subclass
+            for current in classes
+            for subclass in current.__subclasses__()
         )
         return result
 
@@ -522,7 +524,8 @@ def check_overlapping_issues(
 
 
 def check_overlapping_pos(
-    established_positions: Sequence[tuple[int, int]], check_positions: tuple[int, int]
+    established_positions: Sequence[tuple[int, int]],
+    check_positions: tuple[int, int],
 ) -> bool:
     """Check whether a position range overlaps with existing position ranges.
 
@@ -627,7 +630,9 @@ class DictKeyedDict(dict):
     """
 
     def __convert_dict(self, key: Mapping) -> str:
-        converted_key = ",".join(sorted(key.keys()) + sorted(map(str, key.values())))
+        converted_key = ",".join(
+            sorted(key.keys()) + sorted(map(str, key.values()))
+        )
         return converted_key
 
     def __getitem__(self, key: Mapping) -> Any:
@@ -821,7 +826,8 @@ class AsyncSession(ClientSession):
         super().__init__(
             headers={"User-Agent": Constants.DEFAULT_USERAGENT},
             timeout=ClientTimeout(
-                connect=Constants.REQUEST_TIMEOUT, sock_read=Constants.REQUEST_TIMEOUT
+                connect=Constants.REQUEST_TIMEOUT,
+                sock_read=Constants.REQUEST_TIMEOUT,
             ),
         )
 
@@ -864,7 +870,9 @@ class AsyncSession(ClientSession):
                 )
 
                 await sleep(sleep_time)
-                sleep_time = Constants.BACKOFF_FACTOR_RETRIES * (2 ** (round - 1))
+                sleep_time = Constants.BACKOFF_FACTOR_RETRIES * (
+                    2 ** (round - 1)
+                )
                 continue
 
             if round == 1 and response.status == 403:
@@ -880,7 +888,9 @@ class AsyncSession(ClientSession):
                 response._url = URL(fs_result["url"])
                 response.status = fs_result["status"]
                 response._body = fs_result["response"].encode("utf-8")
-                response._headers = CIMultiDictProxy(CIMultiDict(fs_result["headers"]))
+                response._headers = CIMultiDictProxy(
+                    CIMultiDict(fs_result["headers"])
+                )
 
             if 400 <= response.status < 500:
                 LOGGER.warning(
@@ -890,7 +900,10 @@ class AsyncSession(ClientSession):
                     response.status,
                 )
                 LOGGER.debug(
-                    "Request response for %s %s: %s", method, url, await response.text()
+                    "Request response for %s %s: %s",
+                    method,
+                    url,
+                    await response.text(),
                 )
 
             return response
@@ -923,7 +936,9 @@ class AsyncSession(ClientSession):
             str: The body of the response.
         """
         try:
-            async with self.get(url, params=params, headers=headers) as response:
+            async with self.get(
+                url, params=params, headers=headers
+            ) as response:
                 return await response.text()
 
         except ClientError as e:
@@ -954,7 +969,9 @@ class AsyncSession(ClientSession):
             bytes: The content of the response.
         """
         try:
-            async with self.get(url, params=params, headers=headers) as response:
+            async with self.get(
+                url, params=params, headers=headers
+            ) as response:
                 return await response.content.read()
 
         except ClientError as e:
@@ -983,7 +1000,9 @@ class _ContextKeeper(metaclass=Singleton):
 
         from backend.internals.server import setup_process
 
-        self.ctx = setup_process(log_level, log_folder, log_file, db_folder, ws_queue)
+        self.ctx = setup_process(
+            log_level, log_folder, log_file, db_folder, ws_queue
+        )
         return
 
 
@@ -1051,10 +1070,14 @@ class PortablePool(Pool):
         new_func = pool_apply_func
         return super().apply(new_func, new_args, kwds)
 
-    def apply_async(self, func, args=(), kwds={}, callback=None, error_callback=None):
+    def apply_async(
+        self, func, args=(), kwds={}, callback=None, error_callback=None
+    ):
         new_args = (func, args)
         new_func = pool_apply_func
-        return super().apply_async(new_func, new_args, kwds, callback, error_callback)
+        return super().apply_async(
+            new_func, new_args, kwds, callback, error_callback
+        )
 
     def map[T, U](
         self,
@@ -1067,14 +1090,20 @@ class PortablePool(Pool):
         return super().map(new_func, new_iterable, chunksize)
 
     def imap[T, U](
-        self, func: Callable[[T], U], iterable: Iterable[T], chunksize: int | None = 1
+        self,
+        func: Callable[[T], U],
+        iterable: Iterable[T],
+        chunksize: int | None = 1,
     ) -> IMapIterator[U]:
         new_iterable = ((func, i) for i in iterable)
         new_func = pool_map_func
         return super().imap(new_func, new_iterable, chunksize)
 
     def imap_unordered[T, U](
-        self, func: Callable[[T], U], iterable: Iterable[T], chunksize: int | None = 1
+        self,
+        func: Callable[[T], U],
+        iterable: Iterable[T],
+        chunksize: int | None = 1,
     ) -> IMapIterator[U]:
         new_iterable = ((func, i) for i in iterable)
         new_func = pool_map_func

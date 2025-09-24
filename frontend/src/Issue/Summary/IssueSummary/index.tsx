@@ -68,7 +68,8 @@ export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
         {
             refetchOnMountOrArgChange: true,
             selectFromResult: ({ data }) =>
-                data?.issues.find((i) => i.id === issueId) ?? ({} as Partial<IssueData>),
+                data?.issues.find((i) => i.id === issueId) ??
+                ({} as Partial<IssueData>),
         },
     );
 
@@ -94,14 +95,26 @@ export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
     return (
         <div>
             <div className={styles.overview}>
-                {description ? <InnerHTML innerHTML={description} /> : translate('NoIssueOverview')}
+                {description ? (
+                    <InnerHTML innerHTML={description} />
+                ) : (
+                    translate('NoIssueOverview')
+                )}
             </div>
 
             {files.length !== 0 ? (
                 <Table columns={COLUMNS}>
                     <TableBody>
                         {files.map(
-                            ({ id, filepath, size, releaser, scanType, resolution, dpi }) => (
+                            ({
+                                id,
+                                filepath,
+                                size,
+                                releaser,
+                                scanType,
+                                resolution,
+                                dpi,
+                            }) => (
                                 <IssueFileRow
                                     id={id}
                                     path={filepath}
@@ -111,7 +124,9 @@ export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
                                     resolution={resolution}
                                     dpi={dpi}
                                     columns={COLUMNS}
-                                    onDeleteIssueFile={() => handleDeleteIssueFile(id)}
+                                    onDeleteIssueFile={() =>
+                                        handleDeleteIssueFile(id)
+                                    }
                                     refetchFiles={() => refetch()}
                                 />
                             ),

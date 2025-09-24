@@ -55,7 +55,9 @@ export default function NumberInput<K extends string>({
     onChange,
     ...otherProps
 }: NumberInputProps<K>) {
-    const [value, setValue] = useState(inputValue === null ? '' : inputValue.toString());
+    const [value, setValue] = useState(
+        inputValue === null ? '' : inputValue.toString(),
+    );
     const isFocused = useRef(false);
     const previousValue = usePrevious(inputValue);
 
@@ -95,7 +97,11 @@ export default function NumberInput<K extends string>({
         if (inputValue === null) {
             setValue('');
         }
-        else if (!isNaN(inputValue) && inputValue !== previousValue && !isFocused.current) {
+        else if (
+            !isNaN(inputValue) &&
+            inputValue !== previousValue &&
+            !isFocused.current
+        ) {
             setValue(inputValue === null ? '' : inputValue.toString());
         }
     }, [inputValue, previousValue, setValue]);

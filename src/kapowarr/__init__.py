@@ -138,7 +138,9 @@ def _stop_sub_process(proc: Popen) -> None:
             import win32con  # type: ignore
 
             try:
-                win32api.GenerateConsoleCtrlEvent(win32con.CTRL_C_EVENT, proc.pid)
+                win32api.GenerateConsoleCtrlEvent(
+                    win32con.CTRL_C_EVENT, proc.pid
+                )
             except KeyboardInterrupt:
                 pass
     except BaseException:
@@ -212,15 +214,24 @@ def main() -> None:
         )
 
         hs = parser.add_argument_group(title="Hosting settings")
-        hs.add_argument("-o", "--Host", type=str, help="The host to bind the server to")
-        hs.add_argument("-p", "--Port", type=int, help="The port to bind the server to")
         hs.add_argument(
-            "-u", "--UrlBase", type=str, help="The URL base to use for the server"
+            "-o", "--Host", type=str, help="The host to bind the server to"
+        )
+        hs.add_argument(
+            "-p", "--Port", type=int, help="The port to bind the server to"
+        )
+        hs.add_argument(
+            "-u",
+            "--UrlBase",
+            type=str,
+            help="The URL base to use for the server",
         )
 
         args = parser.parse_args()
 
-        st = StartType(int(environ.get("KAPOWARR_START_TYPE", StartType.STARTUP.value)))
+        st = StartType(
+            int(environ.get("KAPOWARR_START_TYPE", StartType.STARTUP.value))
+        )
 
         db_folder: str | None = args.DatabaseFolder
         log_folder: str | None = args.LogFolder
@@ -250,7 +261,9 @@ def main() -> None:
                 raise e
 
             elif e.args[0] == "Database location is not a folder":
-                parser.error("The value for -d/--DatabaseFolder is not a folder")
+                parser.error(
+                    "The value for -d/--DatabaseFolder is not a folder"
+                )
 
             elif e.args[0] == "Logging folder is not a folder":
                 parser.error("The value for -l/--LogFolder is not a folder")

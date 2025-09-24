@@ -31,7 +31,13 @@ type MessageProps = Message;
 
 // IMPLEMENTATIONS
 
-export default function Message({ id, hideAfter, name, message, type }: MessageProps) {
+export default function Message({
+    id,
+    hideAfter,
+    name,
+    message,
+    type,
+}: MessageProps) {
     const dispatch = useRootDispatch();
 
     const dismissTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);

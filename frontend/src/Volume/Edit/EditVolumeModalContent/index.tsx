@@ -58,7 +58,8 @@ export default function EditVolumeModalContent({
     onModalClose,
     onDeleteVolumePress,
 }: EditVolumeModalContentProps) {
-    const [updateVolume, { isLoading: isSaving, error: saveError }] = useUpdateVolumeMutation();
+    const [updateVolume, { isLoading: isSaving, error: saveError }] =
+        useUpdateVolumeMutation();
 
     const { data: rootFolders = [] } = useGetRootFoldersQuery();
 
@@ -87,8 +88,12 @@ export default function EditVolumeModalContent({
     );
 
     const [monitored, setMonitored] = useState(initialMonitored);
-    const [specialVersion, setSpecialVersion] = useState(initialSpecialVersion ?? '');
-    const [libgenSeriesId, setLibgenSeriesId] = useState(initialLibgenSeriesId ?? null);
+    const [specialVersion, setSpecialVersion] = useState(
+        initialSpecialVersion ?? '',
+    );
+    const [libgenSeriesId, setLibgenSeriesId] = useState(
+        initialLibgenSeriesId ?? null,
+    );
     const [volumeFolder, setVolumeFolder] = useState(initialVolumeFolder);
 
     const isPathChanging = useMemo(
@@ -148,7 +153,9 @@ export default function EditVolumeModalContent({
     const handleRootFolderChange = useCallback(
         ({ newRootFolderPath }: RootFolderUpdated) => {
             setIsRootFolderModalOpen(false);
-            setRootFolderId(rootFolders.find((f) => f.folder === newRootFolderPath)!.id);
+            setRootFolderId(
+                rootFolders.find((f) => f.folder === newRootFolderPath)!.id,
+            );
             handleInputChange({ name: 'volumeFolder', value: volumeFolder });
         },
         [handleInputChange, rootFolders, volumeFolder],
@@ -201,7 +208,9 @@ export default function EditVolumeModalContent({
 
     return (
         <ModalContent onModalClose={onModalClose}>
-            <ModalHeader>{translate('EditVolumeModalHeader', { title })}</ModalHeader>
+            <ModalHeader>
+                {translate('EditVolumeModalHeader', { title })}
+            </ModalHeader>
 
             <ModalBody>
                 <Form>

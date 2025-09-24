@@ -14,7 +14,10 @@ interface ModalFooterProps extends React.HTMLAttributes<HTMLDivElement> {
 // IMPLEMENTATIONS
 
 const ModalFooter = forwardRef(
-    ({ children, ...otherProps }: ModalFooterProps, ref: ForwardedRef<HTMLDivElement>) => {
+    (
+        { children, ...otherProps }: ModalFooterProps,
+        ref: ForwardedRef<HTMLDivElement>,
+    ) => {
         return (
             <div ref={ref} className={styles.modalFooter} {...otherProps}>
                 {children}

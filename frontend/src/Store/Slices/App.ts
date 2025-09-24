@@ -46,7 +46,8 @@ function getDimensions(width: number, height: number): Dimensions {
 
 const initialState = {
     dimensions: getDimensions(window.innerWidth, window.innerHeight),
-    isSidebarVisible: !getDimensions(window.innerWidth, window.innerHeight).isSmallScreen,
+    isSidebarVisible: !getDimensions(window.innerWidth, window.innerHeight)
+        .isSmallScreen,
 
     scrollPositions: {
         volumeIndex: 0,
@@ -59,7 +60,9 @@ const AppSlice = createSlice({
     reducers: {
         saveDimensions(
             state,
-            { payload: value }: PayloadAction<Pick<Dimensions, 'width' | 'height'>>,
+            {
+                payload: value,
+            }: PayloadAction<Pick<Dimensions, 'width' | 'height'>>,
         ) {
             const { width, height } = value;
 
@@ -76,5 +79,6 @@ const AppSlice = createSlice({
     },
 });
 
-export const { saveDimensions, setIsSidebarVisible, setScrollPosition } = AppSlice.actions;
+export const { saveDimensions, setIsSidebarVisible, setScrollPosition } =
+    AppSlice.actions;
 export default AppSlice;

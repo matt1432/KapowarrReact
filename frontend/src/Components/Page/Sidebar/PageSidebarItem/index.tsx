@@ -48,7 +48,12 @@ export default function PageSidebarItem({
     }, [isChildItem, isParentItem, onPress]);
 
     return (
-        <div className={classNames(styles.item, isActiveParent && styles.isActiveItem)}>
+        <div
+            className={classNames(
+                styles.item,
+                isActiveParent && styles.isActiveItem,
+            )}
+        >
             <Link
                 className={classNames(
                     isChildItem ? styles.childLink : styles.link,

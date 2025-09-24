@@ -46,7 +46,10 @@ const initialState = {
     items: [],
 };
 
-function getSelectedState(items: SelectStateModel[], existingState: SelectedState) {
+function getSelectedState(
+    items: SelectStateModel[],
+    existingState: SelectedState,
+) {
     return items.reduce((acc: SelectedState, item) => {
         const id = item.id;
 
@@ -87,7 +90,10 @@ function selectReducer(state: SelectState, action: SelectAction): SelectState {
             return result;
         }
         case 'updateItems': {
-            const nextSelectedState = getSelectedState(action.items, selectedState);
+            const nextSelectedState = getSelectedState(
+                action.items,
+                selectedState,
+            );
 
             return {
                 ...state,

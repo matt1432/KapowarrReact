@@ -24,7 +24,10 @@ interface ProgressLabelProps {
 
 // IMPLEMENTATIONS
 
-export default function ProgressLabel({ className, volume }: ProgressLabelProps) {
+export default function ProgressLabel({
+    className,
+    volume,
+}: ProgressLabelProps) {
     const { queue } = useFetchQueueDetails({ volumeId: volume.id });
 
     const { kind, text } = useMemo(

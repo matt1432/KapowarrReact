@@ -1,7 +1,13 @@
 // IMPORTS
 
 // React
-import React, { type MouseEvent, useCallback, useEffect, useId, useRef } from 'react';
+import React, {
+    type MouseEvent,
+    useCallback,
+    useEffect,
+    useId,
+    useRef,
+} from 'react';
 import ReactDOM from 'react-dom';
 import FocusLock from 'react-focus-lock';
 
@@ -92,7 +98,10 @@ export default function Modal({
         const targetElement = findEventTarget(event);
 
         if (targetElement) {
-            return backgroundRef.current?.isEqualNode(targetElement as Node) ?? false;
+            return (
+                backgroundRef.current?.isEqualNode(targetElement as Node) ??
+                false
+            );
         }
 
         return false;
@@ -107,7 +116,11 @@ export default function Modal({
 
     const handleBackdropEndPress = useCallback(
         (event: MouseEvent<HTMLDivElement>) => {
-            if (isBackdropPressed.current && isTargetBackdrop(event) && closeOnBackgroundClick) {
+            if (
+                isBackdropPressed.current &&
+                isTargetBackdrop(event) &&
+                closeOnBackgroundClick
+            ) {
                 onModalClose();
             }
 
@@ -185,8 +198,14 @@ export default function Modal({
                     onMouseDown={handleBackdropBeginPress}
                     onMouseUp={handleBackdropEndPress}
                 >
-                    <div className={classNames(className, styles[size])} style={style}>
-                        <ErrorBoundary errorComponent={ModalError} onModalClose={onModalClose}>
+                    <div
+                        className={classNames(className, styles[size])}
+                        style={style}
+                    >
+                        <ErrorBoundary
+                            errorComponent={ModalError}
+                            onModalClose={onModalClose}
+                        >
                             {children}
                         </ErrorBoundary>
                     </div>

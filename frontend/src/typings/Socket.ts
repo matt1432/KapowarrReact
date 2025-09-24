@@ -64,6 +64,7 @@ interface SpecificEventHandlers {
     downloaded_status: (data: DownloadedStatusData) => void;
 }
 
-export type SocketEventHandler<T extends SocketEvent> = T extends keyof SpecificEventHandlers
-    ? SpecificEventHandlers[T]
-    : () => void;
+export type SocketEventHandler<T extends SocketEvent> =
+    T extends keyof SpecificEventHandlers
+        ? SpecificEventHandlers[T]
+        : () => void;

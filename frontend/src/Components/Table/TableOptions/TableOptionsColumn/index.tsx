@@ -2,7 +2,12 @@
 
 // React
 import { useRef } from 'react';
-import { type DragSourceMonitor, useDrag, useDrop, type XYCoord } from 'react-dnd';
+import {
+    type DragSourceMonitor,
+    useDrag,
+    useDrop,
+    type XYCoord,
+} from 'react-dnd';
 
 // Misc
 import { icons } from 'Helpers/Props';
@@ -85,13 +90,15 @@ export default function TableOptionsColumn<T extends string>({
             const hoverBoundingRect = ref.current?.getBoundingClientRect();
 
             // Get vertical middle
-            const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+            const hoverMiddleY =
+                (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
 
             // Determine mouse position
             const clientOffset = monitor.getClientOffset();
 
             // Get pixels to the top
-            const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+            const hoverClientY =
+                (clientOffset as XYCoord).y - hoverBoundingRect.top;
 
             // When moving up, only trigger if drag position is above 50% and
             // when moving down, only trigger if drag position is below 50%.
@@ -142,10 +149,20 @@ export default function TableOptionsColumn<T extends string>({
     return (
         <div ref={ref} className={styles.columnContainer}>
             {isBefore ? (
-                <div className={classNames(styles.placeholder, styles.placeholderBefore)} />
+                <div
+                    className={classNames(
+                        styles.placeholder,
+                        styles.placeholderBefore,
+                    )}
+                />
             ) : null}
 
-            <div className={classNames(styles.column, isDragging && styles.isDragging)}>
+            <div
+                className={classNames(
+                    styles.column,
+                    isDragging && styles.isDragging,
+                )}
+            >
                 <label className={styles.label}>
                     <CheckInput
                         containerClassName={styles.checkContainer}
@@ -159,13 +176,21 @@ export default function TableOptionsColumn<T extends string>({
 
                 {isModifiable ? (
                     <div ref={dragRef} className={styles.dragHandle}>
-                        <Icon className={styles.dragIcon} name={icons.REORDER} />
+                        <Icon
+                            className={styles.dragIcon}
+                            name={icons.REORDER}
+                        />
                     </div>
                 ) : null}
             </div>
 
             {isAfter ? (
-                <div className={classNames(styles.placeholder, styles.placeholderAfter)} />
+                <div
+                    className={classNames(
+                        styles.placeholder,
+                        styles.placeholderAfter,
+                    )}
+                />
             ) : null}
         </div>
     );

@@ -42,7 +42,11 @@ export default function AboutInfo() {
             legend={
                 <div className={styles.legend}>
                     <label>{translate('About')}</label>
-                    <ClipboardButton className={styles.copyButton} key="copy" value={aboutTable} />
+                    <ClipboardButton
+                        className={styles.copyButton}
+                        key="copy"
+                        value={aboutTable}
+                    />
                 </div>
             }
         >
@@ -67,7 +71,10 @@ export default function AboutInfo() {
                     data={aboutInfo?.databaseLocation}
                 />
 
-                <DescriptionListItem title={translate('DataFolder')} data={aboutInfo?.dataFolder} />
+                <DescriptionListItem
+                    title={translate('DataFolder')}
+                    data={aboutInfo?.dataFolder}
+                />
             </DescriptionList>
         </FieldSet>
     );

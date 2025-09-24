@@ -43,7 +43,9 @@ def migrate_db() -> None:
         return
 
     LOGGER.info("Migrating database to newer version...")
-    LOGGER.debug("Database migration: %d -> %d", current_db_version, newest_version)
+    LOGGER.debug(
+        "Database migration: %d -> %d", current_db_version, newest_version
+    )
 
     db_migration_map = get_db_migration_map()
     for start_version in iter_commit(range(current_db_version, newest_version)):
@@ -204,13 +206,16 @@ class MigrateAddCVFetchTime(DBMigrator):
         """)
 
         volume_ids = [
-            str(v[0]) for v in cursor.execute("SELECT comicvine_id FROM volumes;")
+            str(v[0])
+            for v in cursor.execute("SELECT comicvine_id FROM volumes;")
         ]
         updates = (
-            ("", r["comicvine_id"]) for r in run(ComicVine().fetch_volumes(volume_ids))
+            ("", r["comicvine_id"])
+            for r in run(ComicVine().fetch_volumes(volume_ids))
         )
         cursor.executemany(
-            "UPDATE volumes SET last_cv_update = ? WHERE comicvine_id = ?;", updates
+            "UPDATE volumes SET last_cv_update = ? WHERE comicvine_id = ?;",
+            updates,
         )
 
         return
@@ -235,7 +240,10 @@ class MigrateAddSpecialVersion(DBMigrator):
     def run(self) -> None:
         # V7 -> V8
 
-        from backend.implementations.volumes import Library, determine_special_version
+        from backend.implementations.volumes import (
+            Library,
+            determine_special_version,
+        )
 
         cursor = get_db()
         cursor.execute("""
@@ -244,7 +252,8 @@ class MigrateAddSpecialVersion(DBMigrator):
         """)
 
         updates = (
-            (determine_special_version(v_id), v_id) for v_id in Library().get_volumes()
+            (determine_special_version(v_id), v_id)
+            for v_id in Library().get_volumes()
         )
 
         cursor.executemany(
@@ -317,10 +326,14 @@ class MigrateUpdateSpecialVersion(DBMigrator):
     def run(self) -> None:
         # V10 -> V11
 
-        from backend.implementations.volumes import Library, determine_special_version
+        from backend.implementations.volumes import (
+            Library,
+            determine_special_version,
+        )
 
         updates = (
-            (determine_special_version(v_id), v_id) for v_id in Library().get_volumes()
+            (determine_special_version(v_id), v_id)
+            for v_id in Library().get_volumes()
         )
 
         get_db().executemany(
@@ -916,12 +929,16 @@ class MigrateVaiNaming(DBMigrator):
         if volume_as_empty:
             cursor.execute(
                 "UPDATE config SET value = ? WHERE key = 'file_naming_vai';",
-                ("{series_name} ({year}) Volume {volume_number} Issue {issue_number}",),
+                (
+                    "{series_name} ({year}) Volume {volume_number} Issue {issue_number}",
+                ),
             )
 
         cursor.execute("SELECT key FROM config")
         delete_keys = [
-            key for key in cursor if key[0] not in SettingsValues.__dataclass_fields__
+            key
+            for key in cursor
+            if key[0] not in SettingsValues.__dataclass_fields__
         ]
         cursor.executemany("DELETE FROM config WHERE key = ?;", delete_keys)
 
@@ -1044,7 +1061,9 @@ class MigrateTypeHostingSettings(DBMigrator):
             "SELECT value FROM config WHERE key = 'port' LIMIT 1;"
         ).fetchone()[0]
 
-        cursor.execute("UPDATE config SET value=? WHERE key = 'port';", (int(port),))
+        cursor.execute(
+            "UPDATE config SET value=? WHERE key = 'port';", (int(port),)
+        )
 
         settings = Settings()
         settings._fetch_settings()
@@ -1219,7 +1238,9 @@ class MigrateTorrentTimeoutToDownloadTimeout(DBMigrator):
             (old_value,),
         )
 
-        cursor.execute("DELETE FROM config WHERE key = 'failing_torrent_timeout';")
+        cursor.execute(
+            "DELETE FROM config WHERE key = 'failing_torrent_timeout';"
+        )
 
         return
 
@@ -1241,7 +1262,9 @@ class MigrateDeleteCompletedTorrentsToDownloads(DBMigrator):
             (old_value,),
         )
 
-        cursor.execute("DELETE FROM config WHERE key = 'delete_completed_torrents';")
+        cursor.execute(
+            "DELETE FROM config WHERE key = 'delete_completed_torrents';"
+        )
 
         return
 

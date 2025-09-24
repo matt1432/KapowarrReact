@@ -33,7 +33,9 @@ class MassEditorDelete(MassEditorAction):
         total_items = len(self.volume_ids)
 
         for item_index, volume_id in enumerate(iter_commit(self.volume_ids)):
-            ws.update_mass_editor_status(self.identifier, item_index + 1, total_items)
+            ws.update_mass_editor_status(
+                self.identifier, item_index + 1, total_items
+            )
 
             try:
                 Volume(volume_id).delete(delete_volume_folder)
@@ -63,7 +65,9 @@ class MassEditorRootFolder(MassEditorAction):
         total_items = len(self.volume_ids)
 
         for item_index, volume_id in enumerate(iter_commit(self.volume_ids)):
-            ws.update_mass_editor_status(self.identifier, item_index + 1, total_items)
+            ws.update_mass_editor_status(
+                self.identifier, item_index + 1, total_items
+            )
 
             Volume(volume_id).change_root_folder(root_folder_id)
 
@@ -80,7 +84,9 @@ class MassEditorRename(MassEditorAction):
         total_items = len(self.volume_ids)
 
         for item_index, volume_id in enumerate(iter_commit(self.volume_ids)):
-            ws.update_mass_editor_status(self.identifier, item_index + 1, total_items)
+            ws.update_mass_editor_status(
+                self.identifier, item_index + 1, total_items
+            )
 
             mass_rename(volume_id)
 
@@ -97,7 +103,9 @@ class MassEditorUpdate(MassEditorAction):
         total_items = len(self.volume_ids)
 
         for item_index, volume_id in enumerate(iter_commit(self.volume_ids)):
-            ws.update_mass_editor_status(self.identifier, item_index + 1, total_items)
+            ws.update_mass_editor_status(
+                self.identifier, item_index + 1, total_items
+            )
 
             refresh_and_scan(volume_id)
 
@@ -108,18 +116,23 @@ class MassEditorSearch(MassEditorAction):
     identifier = "search"
 
     def run(self, **kwargs: Any) -> None:
-        LOGGER.info(f"Using mass editor, auto searching for volumes: {self.volume_ids}")
+        LOGGER.info(
+            f"Using mass editor, auto searching for volumes: {self.volume_ids}"
+        )
 
         download_handler = DownloadHandler()
         ws = WebSocket()
         total_items = len(self.volume_ids)
 
         for item_index, volume_id in enumerate(iter_commit(self.volume_ids)):
-            ws.update_mass_editor_status(self.identifier, item_index + 1, total_items)
+            ws.update_mass_editor_status(
+                self.identifier, item_index + 1, total_items
+            )
 
             search_results = auto_search(volume_id)
             download_handler.add_multiple(
-                (result["link"], volume_id, None, False) for result in search_results
+                (result["link"], volume_id, None, False)
+                for result in search_results
             )
 
         return
@@ -129,13 +142,17 @@ class MassEditorConvert(MassEditorAction):
     identifier = "convert"
 
     def run(self, **kwargs: Any) -> None:
-        LOGGER.info(f"Using mass editor, converting for volumes: {self.volume_ids}")
+        LOGGER.info(
+            f"Using mass editor, converting for volumes: {self.volume_ids}"
+        )
 
         ws = WebSocket()
         total_items = len(self.volume_ids)
 
         for item_index, volume_id in enumerate(iter_commit(self.volume_ids)):
-            ws.update_mass_editor_status(self.identifier, item_index + 1, total_items)
+            ws.update_mass_editor_status(
+                self.identifier, item_index + 1, total_items
+            )
 
             mass_convert(volume_id)
 
@@ -146,7 +163,9 @@ class MassEditorUnmonitor(MassEditorAction):
     identifier = "unmonitor"
 
     def run(self, **kwargs: Any) -> None:
-        LOGGER.info(f"Using mass editor, unmonitoring volumes: {self.volume_ids}")
+        LOGGER.info(
+            f"Using mass editor, unmonitoring volumes: {self.volume_ids}"
+        )
         for volume_id in self.volume_ids:
             Volume(volume_id)["monitored"] = False
         return
@@ -196,7 +215,9 @@ class MassEditorRemoveAds(MassEditorAction):
         total_items = len(self.volume_ids)
 
         for item_index, volume_id in enumerate(iter_commit(self.volume_ids)):
-            ws.update_mass_editor_status(self.identifier, item_index + 1, total_items)
+            ws.update_mass_editor_status(
+                self.identifier, item_index + 1, total_items
+            )
 
             for file in Volume(volume_id).get_all_files():
                 remove_ads(file["filepath"])
@@ -204,7 +225,9 @@ class MassEditorRemoveAds(MassEditorAction):
         return
 
 
-def run_mass_editor_action(action: str, volume_ids: list[int], **kwargs: Any) -> None:
+def run_mass_editor_action(
+    action: str, volume_ids: list[int], **kwargs: Any
+) -> None:
     """Run a mass editor action.
 
     Args:

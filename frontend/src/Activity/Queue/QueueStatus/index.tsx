@@ -25,7 +25,12 @@ interface QueueStatusProps {
 
 // IMPLEMENTATIONS
 
-function QueueStatus({ sourceTitle, status, position, canFlip = false }: QueueStatusProps) {
+function QueueStatus({
+    sourceTitle,
+    status,
+    position,
+    canFlip = false,
+}: QueueStatusProps) {
     const {
         iconName,
         iconKind = kinds.DEFAULT_KIND,

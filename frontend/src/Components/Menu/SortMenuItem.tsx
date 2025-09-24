@@ -7,7 +7,9 @@ import React from 'react';
 import { icons } from 'Helpers/Props';
 
 // Specific Components
-import SelectedMenuItem, { type SelectedMenuItemProps } from './SelectedMenuItem';
+import SelectedMenuItem, {
+    type SelectedMenuItemProps,
+} from './SelectedMenuItem';
 
 // Types
 import type { SortDirection } from 'Helpers/Props/sortDirections';
@@ -36,7 +38,9 @@ export default function SortMenuItem({
         <SelectedMenuItem
             name={name}
             selectedIconName={
-                sortDirection === 'ascending' ? icons.SORT_ASCENDING : icons.SORT_DESCENDING
+                sortDirection === 'ascending'
+                    ? icons.SORT_ASCENDING
+                    : icons.SORT_DESCENDING
             }
             isSelected={isSelected}
             {...otherProps}

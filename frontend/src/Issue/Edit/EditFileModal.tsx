@@ -4,7 +4,9 @@
 import Modal from 'Components/Modal/Modal';
 
 // Specific Components
-import EditFileModalContent, { type EditFileModalContentProps } from './EditFileModalContent';
+import EditFileModalContent, {
+    type EditFileModalContentProps,
+} from './EditFileModalContent';
 
 // Types
 interface EditFileModalProps extends EditFileModalContentProps {
@@ -13,7 +15,11 @@ interface EditFileModalProps extends EditFileModalContentProps {
 
 // IMPLEMENTATIONS
 
-export default function EditFileModal({ isOpen, onModalClose, ...otherProps }: EditFileModalProps) {
+export default function EditFileModal({
+    isOpen,
+    onModalClose,
+    ...otherProps
+}: EditFileModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
             <EditFileModalContent {...otherProps} onModalClose={onModalClose} />

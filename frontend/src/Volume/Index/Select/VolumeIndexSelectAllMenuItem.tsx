@@ -43,7 +43,9 @@ export default function VolumeIndexSelectAllMenuItem({
 
     return isSelectMode ? (
         <PageToolbarOverflowMenuItem
-            label={allSelected ? translate('UnselectAll') : translate('SelectAll')}
+            label={
+                allSelected ? translate('UnselectAll') : translate('SelectAll')
+            }
             iconName={iconName}
             onPress={onPressWrapper}
         />

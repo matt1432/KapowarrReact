@@ -5,4 +5,5 @@ export const sortDirections = {
 
 export default sortDirections;
 
-export type SortDirection = (typeof sortDirections)[keyof typeof sortDirections];
+export type SortDirection =
+    (typeof sortDirections)[keyof typeof sortDirections];

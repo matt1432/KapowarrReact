@@ -22,7 +22,10 @@ export default function GeneralFilesModal({
 }: GeneralFilesModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
-            <GeneralFilesModalContent {...otherProps} onModalClose={onModalClose} />
+            <GeneralFilesModalContent
+                {...otherProps}
+                onModalClose={onModalClose}
+            />
         </Modal>
     );
 }

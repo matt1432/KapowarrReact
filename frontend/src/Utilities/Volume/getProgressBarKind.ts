@@ -1,6 +1,10 @@
 import { kinds } from 'Helpers/Props';
 
-function getProgressBarKind(monitored: boolean, progress: number, isDownloading: boolean) {
+function getProgressBarKind(
+    monitored: boolean,
+    progress: number,
+    isDownloading: boolean,
+) {
     if (isDownloading) {
         return kinds.PURPLE;
     }

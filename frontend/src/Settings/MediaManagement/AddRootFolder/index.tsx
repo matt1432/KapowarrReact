@@ -35,18 +35,23 @@ import type { InputChanged } from 'typings/Inputs';
 // IMPLEMENTATIONS
 
 export default function AddRootFolder() {
-    const [addRootFolder, { isLoading: isSaving, error: saveError }] = useAddRootFolderMutation();
+    const [addRootFolder, { isLoading: isSaving, error: saveError }] =
+        useAddRootFolderMutation();
 
-    const [isAddNewRootFolderModalOpen, setIsAddNewRootFolderModalOpen] = useState(false);
+    const [isAddNewRootFolderModalOpen, setIsAddNewRootFolderModalOpen] =
+        useState(false);
 
     const onAddNewRootFolderPress = useCallback(() => {
         setIsAddNewRootFolderModalOpen(true);
     }, [setIsAddNewRootFolderModalOpen]);
 
     const [folder, setFolder] = useState('');
-    const handleFolderChange = useCallback(({ value }: InputChanged<'folder', string>) => {
-        setFolder(value);
-    }, []);
+    const handleFolderChange = useCallback(
+        ({ value }: InputChanged<'folder', string>) => {
+            setFolder(value);
+        },
+        [],
+    );
 
     const onNewRootFolderSelect = useCallback(() => {
         addRootFolder({ folder });
@@ -73,8 +78,15 @@ export default function AddRootFolder() {
             ) : null}
 
             <div className={styles.addRootFolderButtonContainer}>
-                <Button kind={kinds.PRIMARY} size={sizes.LARGE} onPress={onAddNewRootFolderPress}>
-                    <Icon className={styles.importButtonIcon} name={icons.DRIVE} />
+                <Button
+                    kind={kinds.PRIMARY}
+                    size={sizes.LARGE}
+                    onPress={onAddNewRootFolderPress}
+                >
+                    <Icon
+                        className={styles.importButtonIcon}
+                        name={icons.DRIVE}
+                    />
                     {translate('AddRootFolder')}
                 </Button>
 
@@ -88,7 +100,9 @@ export default function AddRootFolder() {
                         <ModalBody>
                             <Form>
                                 <FormGroup>
-                                    <FormLabel>{translate('RootFolderPath')}</FormLabel>
+                                    <FormLabel>
+                                        {translate('RootFolderPath')}
+                                    </FormLabel>
 
                                     <FormInputGroup
                                         type={inputTypes.TEXT}
@@ -106,7 +120,10 @@ export default function AddRootFolder() {
                                 {translate('Cancel')}
                             </Button>
 
-                            <Button kind={kinds.PRIMARY} onPress={onNewRootFolderSelect}>
+                            <Button
+                                kind={kinds.PRIMARY}
+                                onPress={onNewRootFolderSelect}
+                            >
                                 {translate('Add')}
                             </Button>
                         </ModalFooter>

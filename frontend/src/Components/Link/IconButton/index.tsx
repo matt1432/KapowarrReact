@@ -33,7 +33,10 @@ export default function IconButton({
 }: IconButtonProps) {
     return (
         <Link
-            className={classNames(className, otherProps.isDisabled && styles.isDisabled)}
+            className={classNames(
+                className,
+                otherProps.isDisabled && styles.isDisabled,
+            )}
             aria-label={translate('TableOptionsButton')}
             {...otherProps}
         >

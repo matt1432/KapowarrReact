@@ -50,13 +50,19 @@ export default function AppRoutes() {
             {/*Settings*/}
             <Route path="/settings" element={<GeneralSettings />} />
 
-            <Route path="/settings/mediamanagement" element={<MediaManagement />} />
+            <Route
+                path="/settings/mediamanagement"
+                element={<MediaManagement />}
+            />
 
             <Route path="/settings/metadata" element={<MetadataSettings />} />
 
             <Route path="/settings/download" element={<DownloadSettings />} />
 
-            <Route path="/settings/downloadclients" element={<DownloadClientSettings />} />
+            <Route
+                path="/settings/downloadclients"
+                element={<DownloadClientSettings />}
+            />
 
             <Route path="/settings/ui" element={<UISettings />} />
 

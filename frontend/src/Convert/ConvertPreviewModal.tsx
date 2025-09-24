@@ -24,7 +24,10 @@ export default function ConvertPreviewModal({
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
             {isOpen ? (
-                <ConvertPreviewModalContent {...otherProps} onModalClose={onModalClose} />
+                <ConvertPreviewModalContent
+                    {...otherProps}
+                    onModalClose={onModalClose}
+                />
             ) : null}
         </Modal>
     );

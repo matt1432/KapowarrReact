@@ -25,7 +25,9 @@ from backend.base.definitions import CharConstants, Constants, FileConstants
 from backend.base.helpers import check_filter, force_prefix, force_suffix
 from backend.base.logging import LOGGER
 
-filepath_cleaner = compile(r"(<|>|(?<!^\w):|\"|\||\?|\*|\x00|(?:\s|\.)+(?=$|\\|/))")
+filepath_cleaner = compile(
+    r"(<|>|(?<!^\w):|\"|\||\?|\*|\x00|(?:\s|\.)+(?=$|\\|/))"
+)
 smart_filepath_cleaner_compact = compile(r"(\b[<>:]\b)")
 smart_filepath_cleaner_spaced = compile(r"(\b\s[<>]\s\b|\b:\s\b)")
 smart_filestring_cleaner_compact = compile(r"((?:\b|^)/(?:\b|$))")
@@ -182,7 +184,10 @@ def set_detected_extension(filepath: str) -> str:
     if current_extension in FileConstants.CB_TO_ARCHIVE_EXTENSIONS:
         # Current file uses cb* extension, so find cb* version of proper
         # extension
-        for cb_ext, normal_ext in FileConstants.CB_TO_ARCHIVE_EXTENSIONS.items():
+        for (
+            cb_ext,
+            normal_ext,
+        ) in FileConstants.CB_TO_ARCHIVE_EXTENSIONS.items():
             if ext == normal_ext:
                 ext = cb_ext
                 break
@@ -491,7 +496,9 @@ def delete_empty_parent_folders(top_folder: str, root_folder: str) -> None:
     if top_folder == root_folder:
         return
 
-    LOGGER.debug(f"Deleting empty parent folders from {top_folder} until {root_folder}")
+    LOGGER.debug(
+        f"Deleting empty parent folders from {top_folder} until {root_folder}"
+    )
 
     if not folder_is_inside_folder(root_folder, top_folder):
         LOGGER.error(f"The folder {top_folder} is not in {root_folder}")
@@ -569,7 +576,9 @@ def delete_empty_child_folders(
         contains_files: bool = False
 
         for f in scandir(folder):
-            if f.is_dir() and (not skip_hidden_folders or not f.name.startswith(".")):
+            if f.is_dir() and (
+                not skip_hidden_folders or not f.name.startswith(".")
+            ):
                 folders.append(f.path)
 
             elif f.is_file():
@@ -579,7 +588,9 @@ def delete_empty_child_folders(
             # Folder is empty
             return True
 
-        sub_folder_results = {f: _decf(f, resulting_folders, False) for f in folders}
+        sub_folder_results = {
+            f: _decf(f, resulting_folders, False) for f in folders
+        }
 
         if not contains_files and all(sub_folder_results.values()):
             # Folder only contains (indirectly) empty folders
@@ -587,7 +598,9 @@ def delete_empty_child_folders(
                 resulting_folders.extend(sub_folder_results.keys())
             return True
 
-        resulting_folders.extend((k for k, v in sub_folder_results.items() if v))
+        resulting_folders.extend(
+            (k for k, v in sub_folder_results.items() if v)
+        )
 
         return False
 

@@ -12,7 +12,8 @@ import EditBuiltInClientModalContent from './EditBuiltInClientModalContent';
 // Types
 import type { EditBuiltInClientModalContentProps } from './EditBuiltInClientModalContent';
 
-interface EditBuiltInClientModalProps extends EditBuiltInClientModalContentProps {
+interface EditBuiltInClientModalProps
+    extends EditBuiltInClientModalContentProps {
     isOpen: boolean;
 }
 
@@ -25,7 +26,10 @@ export default function EditBuiltInClientModal({
 }: EditBuiltInClientModalProps) {
     return (
         <Modal size={sizes.MEDIUM} isOpen={isOpen} onModalClose={onModalClose}>
-            <EditBuiltInClientModalContent {...otherProps} onModalClose={onModalClose} />
+            <EditBuiltInClientModalContent
+                {...otherProps}
+                onModalClose={onModalClose}
+            />
         </Modal>
     );
 }

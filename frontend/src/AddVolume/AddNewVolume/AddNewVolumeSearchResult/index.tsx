@@ -36,12 +36,17 @@ interface AddNewVolumeSearchResultProps {
 
 // IMPLEMENTATIONS
 
-export default function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchResultProps) {
-    const { comicvineId, title, description, publisher, year, siteUrl } = volume;
+export default function AddNewVolumeSearchResult({
+    volume,
+}: AddNewVolumeSearchResultProps) {
+    const { comicvineId, title, description, publisher, year, siteUrl } =
+        volume;
 
     const { isExistingVolume, titleSlug } = useGetVolumesQuery(undefined, {
         selectFromResult: ({ data }) => {
-            const existingVolume = data?.find((v) => v.comicvineId === comicvineId);
+            const existingVolume = data?.find(
+                (v) => v.comicvineId === comicvineId,
+            );
 
             if (!existingVolume) {
                 return {
@@ -58,7 +63,8 @@ export default function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchR
     });
 
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
-    const [isNewAddVolumeModalOpen, setIsNewAddVolumeModalOpen] = useState(false);
+    const [isNewAddVolumeModalOpen, setIsNewAddVolumeModalOpen] =
+        useState(false);
 
     const handlePress = useCallback(() => {
         setIsNewAddVolumeModalOpen(true);
@@ -72,7 +78,9 @@ export default function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchR
         event.stopPropagation();
     }, []);
 
-    const linkProps = isExistingVolume ? { to: `/volumes/${titleSlug}` } : { onPress: handlePress };
+    const linkProps = isExistingVolume
+        ? { to: `/volumes/${titleSlug}` }
+        : { onPress: handlePress };
 
     return (
         <div className={styles.searchResult}>
@@ -95,7 +103,9 @@ export default function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchR
                                 {title}
 
                                 {!title.includes(String(year)) && year ? (
-                                    <span className={styles.year}>({year})</span>
+                                    <span className={styles.year}>
+                                        ({year})
+                                    </span>
                                 ) : null}
                             </div>
                         </div>
@@ -129,7 +139,9 @@ export default function AddNewVolumeSearchResult({ volume }: AddNewVolumeSearchR
                             <Label size={sizes.LARGE}>
                                 <Icon name={icons.PUBLISHER} size={13} />
 
-                                <span className={styles.network}>{publisher}</span>
+                                <span className={styles.network}>
+                                    {publisher}
+                                </span>
                             </Label>
                         ) : null}
                     </div>

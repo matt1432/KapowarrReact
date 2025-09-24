@@ -7,4 +7,5 @@ export const tooltipPositions = {
 
 export default tooltipPositions;
 
-export type TooltipPosition = (typeof tooltipPositions)[keyof typeof tooltipPositions];
+export type TooltipPosition =
+    (typeof tooltipPositions)[keyof typeof tooltipPositions];

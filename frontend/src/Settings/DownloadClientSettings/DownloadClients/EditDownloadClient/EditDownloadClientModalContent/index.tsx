@@ -65,17 +65,23 @@ export default function EditDownloadClientModalContent({
         refetch,
     } = useGetDownloadClientQuery({ id });
 
-    const { data: allOptions, isFetching: isFetchingOptions } = useGetDownloadClientOptionsQuery();
+    const { data: allOptions, isFetching: isFetchingOptions } =
+        useGetDownloadClientOptionsQuery();
 
-    const [testDownloadClient, { isLoading: isTesting }] = useTestDownloadClientMutation();
-    const [saveDownloadClient, { error: saveError }] = useSaveDownloadClientMutation();
+    const [testDownloadClient, { isLoading: isTesting }] =
+        useTestDownloadClientMutation();
+    const [saveDownloadClient, { error: saveError }] =
+        useSaveDownloadClientMutation();
 
     const clientType = useMemo(
         () => initialClientType ?? client?.clientType ?? ('' as ClientType),
         [client, initialClientType],
     );
 
-    const clientOptions = useMemo(() => allOptions?.[clientType] ?? [], [allOptions, clientType]);
+    const clientOptions = useMemo(
+        () => allOptions?.[clientType] ?? [],
+        [allOptions, clientType],
+    );
 
     const isFetching = useMemo(
         () => isFetchingClient || isFetchingOptions,
@@ -84,7 +90,9 @@ export default function EditDownloadClientModalContent({
 
     const [isSaving, setIsSaving] = useState(false);
 
-    const [changes, setChanges] = useState<DownloadClient | PotentialDownloadClient>(
+    const [changes, setChanges] = useState<
+        DownloadClient | PotentialDownloadClient
+    >(
         client ?? {
             title: '',
             clientType: '' as ClientType,
@@ -126,7 +134,13 @@ export default function EditDownloadClientModalContent({
     const handleTestPress = useCallback(async () => {
         return await testDownloadClient({
             clientType,
-            ...pickProps(changes, 'baseUrl', 'username', 'password', 'apiToken'),
+            ...pickProps(
+                changes,
+                'baseUrl',
+                'username',
+                'password',
+                'apiToken',
+            ),
         });
     }, [changes, clientType, testDownloadClient]);
 
@@ -143,7 +157,14 @@ export default function EditDownloadClientModalContent({
 
         const { error } = await saveDownloadClient({
             ...identifier,
-            ...pickProps(changes, 'title', 'baseUrl', 'username', 'password', 'apiToken'),
+            ...pickProps(
+                changes,
+                'title',
+                'baseUrl',
+                'username',
+                'password',
+                'apiToken',
+            ),
         });
         if (error) {
             setIsSaving(false);
@@ -153,7 +174,15 @@ export default function EditDownloadClientModalContent({
         onModalClose();
         await refetch();
         setIsSaving(false);
-    }, [changes, clientType, id, handleTestPress, onModalClose, refetch, saveDownloadClient]);
+    }, [
+        changes,
+        clientType,
+        id,
+        handleTestPress,
+        onModalClose,
+        refetch,
+        saveDownloadClient,
+    ]);
 
     return (
         <ModalContent onModalClose={onModalClose}>
@@ -167,7 +196,9 @@ export default function EditDownloadClientModalContent({
                 {isFetching ? <LoadingIndicator /> : null}
 
                 {!isFetching && saveError ? (
-                    <Alert kind={kinds.DANGER}>{getErrorMessage(saveError)}</Alert>
+                    <Alert kind={kinds.DANGER}>
+                        {getErrorMessage(saveError)}
+                    </Alert>
                 ) : null}
 
                 {!isFetching ? (

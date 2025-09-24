@@ -12,4 +12,5 @@ const downloadStates = {
 
 export default downloadStates;
 
-export type DownloadState = (typeof downloadStates)[keyof typeof downloadStates];
+export type DownloadState =
+    (typeof downloadStates)[keyof typeof downloadStates];

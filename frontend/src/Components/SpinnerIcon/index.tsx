@@ -21,6 +21,10 @@ export default function SpinnerIcon({
     ...otherProps
 }: SpinnerIconProps) {
     return (
-        <Icon name={(isSpinning && spinningName) || name} isSpinning={isSpinning} {...otherProps} />
+        <Icon
+            name={(isSpinning && spinningName) || name}
+            isSpinning={isSpinning}
+            {...otherProps}
+        />
     );
 }

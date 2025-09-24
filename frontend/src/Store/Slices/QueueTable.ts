@@ -32,7 +32,10 @@ const QueueTableSlice = createSlice({
     name: 'queueTable',
     initialState,
     reducers: {
-        setQueueSort: (state, { payload }: PayloadAction<SetQueueSortParams>) => {
+        setQueueSort: (
+            state,
+            { payload }: PayloadAction<SetQueueSortParams>,
+        ) => {
             const newState = structuredClone(payload);
 
             if (!newState.sortDirection) {
@@ -52,9 +55,12 @@ const QueueTableSlice = createSlice({
 
         setQueueTableOption: (
             state,
-            { payload }: PayloadAction<TableOptionsChangePayload<QueueColumnName>>,
+            {
+                payload,
+            }: PayloadAction<TableOptionsChangePayload<QueueColumnName>>,
         ) => {
-            state = Object.assign(state, payload);
+            const newState = { ...state };
+            state = Object.assign(newState, payload);
         },
     },
 });

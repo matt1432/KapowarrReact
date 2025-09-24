@@ -35,7 +35,9 @@ export default function IssueDetailsModal({
     onModalClose,
     ...otherProps
 }: IssueDetailsModalProps) {
-    const [closeOnBackgroundClick, setCloseOnBackgroundClick] = useState(selectedTab !== 'search');
+    const [closeOnBackgroundClick, setCloseOnBackgroundClick] = useState(
+        selectedTab !== 'search',
+    );
 
     const handleTabChange = useCallback(
         (isSearch: boolean) => {

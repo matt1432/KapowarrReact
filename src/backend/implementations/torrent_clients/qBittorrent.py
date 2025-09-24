@@ -18,7 +18,12 @@ class qBittorrent(BaseExternalClient):
     client_type = "qBittorrent"
     download_type = DownloadType.TORRENT
 
-    required_tokens: Sequence[str] = ("title", "base_url", "username", "password")
+    required_tokens: Sequence[str] = (
+        "title",
+        "base_url",
+        "username",
+        "password",
+    )
 
     state_mapping = {
         "queuedDL": DownloadState.QUEUED_STATE,
@@ -68,7 +73,9 @@ class qBittorrent(BaseExternalClient):
         filename: str | None = None,
     ) -> str:
         if download_name is not None:
-            download_link = filename_magnet_link.sub(download_name, download_link)
+            download_link = filename_magnet_link.sub(
+                download_name, download_link
+            )
 
         if not self.ssn:
             result = self._login(self.base_url, self.username, self.password)
@@ -125,7 +132,9 @@ class qBittorrent(BaseExternalClient):
 
     def get_download(self, download_id: str) -> dict | None:
         if not self.ssn:
-            ssn_result = self._login(self.base_url, self.username, self.password)
+            ssn_result = self._login(
+                self.base_url, self.username, self.password
+            )
             if isinstance(ssn_result, str):
                 raise ExternalClientNotWorking(ssn_result)
             self.ssn = ssn_result
@@ -139,7 +148,9 @@ class qBittorrent(BaseExternalClient):
 
         result = r[0]
 
-        state = self.state_mapping.get(result.state, DownloadState.IMPORTING_STATE)
+        state = self.state_mapping.get(
+            result.state, DownloadState.IMPORTING_STATE
+        )
 
         if result.state in ("metaDL", "stalledDL", "checkingDL"):
             # Torrent is failing
@@ -170,7 +181,9 @@ class qBittorrent(BaseExternalClient):
                 raise ExternalClientNotWorking(result)
             self.ssn = result
 
-        self.ssn.torrents_delete(torrent_hashes=download_id, delete_files=delete_files)
+        self.ssn.torrents_delete(
+            torrent_hashes=download_id, delete_files=delete_files
+        )
 
         del self.torrent_hashes[download_id]
         return

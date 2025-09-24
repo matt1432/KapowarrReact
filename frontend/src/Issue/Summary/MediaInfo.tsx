@@ -17,10 +17,21 @@ interface MediaInfoProps {
 
 // IMPLEMENTATIONS
 
-export default function MediaInfo({ dpi, releaser, resolution, scanType }: MediaInfoProps) {
+export default function MediaInfo({
+    dpi,
+    releaser,
+    resolution,
+    scanType,
+}: MediaInfoProps) {
     return (
         <DescriptionList>
-            {dpi ? <DescriptionListItem key="dpi" title={translate('DPI')} data={dpi} /> : null}
+            {dpi ? (
+                <DescriptionListItem
+                    key="dpi"
+                    title={translate('DPI')}
+                    data={dpi}
+                />
+            ) : null}
 
             {releaser ? (
                 <DescriptionListItem
@@ -39,7 +50,11 @@ export default function MediaInfo({ dpi, releaser, resolution, scanType }: Media
             ) : null}
 
             {scanType ? (
-                <DescriptionListItem key="scanType" title={translate('ScanType')} data={scanType} />
+                <DescriptionListItem
+                    key="scanType"
+                    title={translate('ScanType')}
+                    data={scanType}
+                />
             ) : null}
         </DescriptionList>
     );

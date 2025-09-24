@@ -86,7 +86,9 @@ def propose_library_import(
 
         for f in scan_folders:
             if not any(folder_is_inside_folder(r, f) for r in root_folders):
-                raise InvalidKeyValue("included_folders_str", included_folders_str)
+                raise InvalidKeyValue(
+                    "included_folders_str", included_folders_str
+                )
     else:
         scan_folders = root_folders.copy()
 
@@ -103,7 +105,8 @@ def propose_library_import(
         try:
             all_excluded_files = set(
                 chain.from_iterable(
-                    list_files(f, CONTENT_EXTENSIONS) for f in scan_excluded_folders
+                    list_files(f, CONTENT_EXTENSIONS)
+                    for f in scan_excluded_folders
                 )
             )
 
@@ -111,7 +114,9 @@ def propose_library_import(
             raise InvalidKeyValue("excluded_folders_str", excluded_folders_str)
     try:
         all_files = set(
-            chain.from_iterable(list_files(f, CONTENT_EXTENSIONS) for f in scan_folders)
+            chain.from_iterable(
+                list_files(f, CONTENT_EXTENSIONS) for f in scan_folders
+            )
         )
 
     except NotADirectoryError:
@@ -171,7 +176,9 @@ def propose_library_import(
         result += [
             {
                 "filepath": f,
-                "file_title": (splitext(basename(f))[0] if isfile(f) else basename(f)),
+                "file_title": (
+                    splitext(basename(f))[0] if isfile(f) else basename(f)
+                ),
                 "cv": search_result,
                 "group_number": batch_index * 10 + group_index,
             }
@@ -186,7 +193,9 @@ def propose_library_import(
     return result
 
 
-def import_library(matches: list[CVFileMapping], rename_files: bool = False) -> None:
+def import_library(
+    matches: list[CVFileMapping], rename_files: bool = False
+) -> None:
     """Add volume to library and import linked files.
 
     Args:
@@ -240,7 +249,9 @@ def import_library(matches: list[CVFileMapping], rename_files: bool = False) -> 
             for old, new in file_changes.items():
                 if old != new:
                     rename_file(old, new)
-                    delete_empty_parent_folders(dirname(old), root_folder.folder)
+                    delete_empty_parent_folders(
+                        dirname(old), root_folder.folder
+                    )
 
             new_files = list(file_changes.values())
             scan_files(volume_id)

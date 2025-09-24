@@ -20,7 +20,9 @@ import type { InputChanged } from 'typings/Inputs';
 
 export interface ServicePreferenceInputProps {
     value: GCDownloadSource[];
-    onChange: (change: InputChanged<'servicePreference', GCDownloadSource[]>) => void;
+    onChange: (
+        change: InputChanged<'servicePreference', GCDownloadSource[]>,
+    ) => void;
     helpText?: string;
 }
 
@@ -37,11 +39,19 @@ export default function ServicePreferenceInput({
 
     const isDragging = useMemo(() => dropIndex !== null, [dropIndex]);
     const isDraggingUp = useMemo(
-        () => isDragging && dropIndex !== null && dragIndex !== null && dropIndex < dragIndex,
+        () =>
+            isDragging &&
+            dropIndex !== null &&
+            dragIndex !== null &&
+            dropIndex < dragIndex,
         [dragIndex, dropIndex, isDragging],
     );
     const isDraggingDown = useMemo(
-        () => isDragging && dropIndex !== null && dragIndex !== null && dropIndex > dragIndex,
+        () =>
+            isDragging &&
+            dropIndex !== null &&
+            dragIndex !== null &&
+            dropIndex > dragIndex,
         [dragIndex, dropIndex, isDragging],
     );
 
@@ -82,7 +92,9 @@ export default function ServicePreferenceInput({
                             index={index}
                             isDraggingUp={isDraggingUp}
                             isDraggingDown={isDraggingDown}
-                            onServiceRowDragMove={handleServicePreferenceDragMove}
+                            onServiceRowDragMove={
+                                handleServicePreferenceDragMove
+                            }
                             onServiceRowDragEnd={handleServicePreferenceDragEnd}
                         />
                     ))}

@@ -17,13 +17,14 @@ import classNames from 'classnames';
 import styles from './index.module.css';
 
 // Types
-export type LinkProps<C extends ElementType = 'button'> = ComponentPropsWithoutRef<C> & {
-    component?: C;
-    to?: string;
-    target?: string;
-    isDisabled?: LinkProps<C>['disabled'];
-    onPress?(event: SyntheticEvent): void;
-};
+export type LinkProps<C extends ElementType = 'button'> =
+    ComponentPropsWithoutRef<C> & {
+        component?: C;
+        to?: string;
+        target?: string;
+        isDisabled?: LinkProps<C>['disabled'];
+        onPress?(event: SyntheticEvent): void;
+    };
 
 // IMPLEMENTATIONS
 
@@ -74,7 +75,11 @@ export default function Link<C extends ElementType = 'button'>({
 
     return (
         <Component
-            type={component === 'button' || component === 'input' ? type || 'button' : type}
+            type={
+                component === 'button' || component === 'input'
+                    ? type || 'button'
+                    : type
+            }
             target={target}
             className={linkClass}
             disabled={isDisabled}

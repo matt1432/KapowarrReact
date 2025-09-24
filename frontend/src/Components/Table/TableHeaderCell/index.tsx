@@ -47,7 +47,9 @@ export default function TableHeaderCell<T extends string>({
 }: TableHeaderCellProps<T>) {
     const isSorting = isSortable && sortKey === name;
     const sortIcon =
-        sortDirection === sortDirections.ASCENDING ? icons.SORT_ASCENDING : icons.SORT_DESCENDING;
+        sortDirection === sortDirections.ASCENDING
+            ? icons.SORT_ASCENDING
+            : icons.SORT_DESCENDING;
 
     const handlePress = useCallback(() => {
         if (fixedSortDirection) {
@@ -63,7 +65,9 @@ export default function TableHeaderCell<T extends string>({
             {...otherProps}
             component="th"
             className={className}
-            title={typeof columnLabel === 'function' ? columnLabel() : columnLabel}
+            title={
+                typeof columnLabel === 'function' ? columnLabel() : columnLabel
+            }
             onPress={handlePress}
         >
             {children}

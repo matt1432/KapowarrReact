@@ -19,7 +19,8 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: { result: RootFolder[] }) => response.result,
+            transformResponse: (response: { result: RootFolder[] }) =>
+                response.result,
         }),
 
         // DELETE

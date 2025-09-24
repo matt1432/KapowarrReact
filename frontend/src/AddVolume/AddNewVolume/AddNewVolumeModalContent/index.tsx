@@ -58,9 +58,8 @@ export default function AddNewVolumeModalContent({
 
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
 
-    const { monitoringScheme, rootFolder, specialVersion, autoSearch } = useRootSelector(
-        (state) => state.addVolume,
-    );
+    const { monitoringScheme, rootFolder, specialVersion, autoSearch } =
+        useRootSelector((state) => state.addVolume);
 
     const { data: rootFolders = [] } = useGetRootFoldersQuery();
     const { refetch } = useGetVolumesQuery();
@@ -147,7 +146,11 @@ export default function AddNewVolumeModalContent({
                 <div className={styles.container}>
                     {isSmallScreen ? null : (
                         <div className={styles.poster}>
-                            <VolumePoster volume={volume} className={styles.poster} size={250} />
+                            <VolumePoster
+                                volume={volume}
+                                className={styles.poster}
+                                size={250}
+                            />
                         </div>
                     )}
 
@@ -172,9 +175,12 @@ export default function AddNewVolumeModalContent({
                                     selectedValueOptions={{
                                         volumeFolder: volume.folderName,
                                     }}
-                                    helpText={translate('AddNewVolumeRootFolderHelpText', {
-                                        folder: volume.folderName,
-                                    })}
+                                    helpText={translate(
+                                        'AddNewVolumeRootFolderHelpText',
+                                        {
+                                            folder: volume.folderName,
+                                        },
+                                    )}
                                     onChange={handleRootFolderChange}
                                 />
                             </FormGroup>
@@ -196,7 +202,10 @@ export default function AddNewVolumeModalContent({
 
                                     <Popover
                                         anchor={
-                                            <Icon className={styles.labelIcon} name={icons.INFO} />
+                                            <Icon
+                                                className={styles.labelIcon}
+                                                name={icons.INFO}
+                                            />
                                         }
                                         title={translate('SpecialVersions')}
                                         body={<SpecialVersionPopoverContent />}
@@ -209,7 +218,9 @@ export default function AddNewVolumeModalContent({
                                     name="specialVersion"
                                     onChange={handleSpecialVersionChange}
                                     value={specialVersion ?? ''}
-                                    helpText={translate('SpecialVersionsHelpText')}
+                                    helpText={translate(
+                                        'SpecialVersionsHelpText',
+                                    )}
                                 />
                             </FormGroup>
                         </Form>

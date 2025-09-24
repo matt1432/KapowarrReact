@@ -14,7 +14,11 @@ interface InlineMarkdownProps {
 
 // IMPLEMENTATIONS
 
-export default function InlineMarkdown({ className, data, blockClassName }: InlineMarkdownProps) {
+export default function InlineMarkdown({
+    className,
+    data,
+    blockClassName,
+}: InlineMarkdownProps) {
     // For now only replace links or code blocks (not both)
     const markdownBlocks: (ReactElement | string)[] = [];
 
@@ -55,14 +59,21 @@ export default function InlineMarkdown({ className, data, blockClassName }: Inli
             }
 
             markdownBlocks.push(
-                <code key={`code-${match.index}`} className={blockClassName ?? undefined}>
+                <code
+                    key={`code-${match.index}`}
+                    className={blockClassName ?? undefined}
+                >
                     {match[0].substring(1, match[0].length - 1)}
                 </code>,
             );
             endIndex = match.index + match[0].length;
         }
 
-        if (endIndex !== data.length && markdownBlocks.length > 0 && matchedCode) {
+        if (
+            endIndex !== data.length &&
+            markdownBlocks.length > 0 &&
+            matchedCode
+        ) {
             markdownBlocks.push(data.substring(endIndex, data.length));
         }
 

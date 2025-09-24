@@ -420,7 +420,10 @@ class LinkBroken(KapowarrException):
         return {
             "code": 400,
             "error": self.__class__.__name__,
-            "result": {"reason_text": self.reason_text, "reason_id": self.reason_id},
+            "result": {
+                "reason_text": self.reason_text,
+                "reason_id": self.reason_id,
+            },
         }
 
 
@@ -430,7 +433,9 @@ class FailedGCPage(KapowarrException):
     def __init__(self, reason: FailReason) -> None:
         self.reason = reason
         self.reason_text = reason.value
-        LOGGER.warning(f"Failed processing the GetComics page: {self.reason_text}")
+        LOGGER.warning(
+            f"Failed processing the GetComics page: {self.reason_text}"
+        )
         return
 
     @property
@@ -504,7 +509,9 @@ class CredentialInvalid(KapowarrException):
 
     def __init__(self, description: str) -> None:
         self.desc = description
-        LOGGER.warning(f"Failed to login with credentials with reason: {self.desc}")
+        LOGGER.warning(
+            f"Failed to login with credentials with reason: {self.desc}"
+        )
         return
 
     @property
@@ -522,7 +529,9 @@ class ExternalClientNotFound(KapowarrException):
 
     def __init__(self, external_client_id: int) -> None:
         self.external_client_id = external_client_id
-        LOGGER.warning(f"External client with given ID not found: {external_client_id}")
+        LOGGER.warning(
+            f"External client with given ID not found: {external_client_id}"
+        )
         return
 
     @property
@@ -624,7 +633,9 @@ class BlocklistEntryNotFound(KapowarrException):
 
     def __init__(self, blocklist_entry_id: int) -> None:
         self.blocklist_entry_id = blocklist_entry_id
-        LOGGER.warning(f"Blocklist entry with given ID not found: {blocklist_entry_id}")
+        LOGGER.warning(
+            f"Blocklist entry with given ID not found: {blocklist_entry_id}"
+        )
         return
 
     @property

@@ -29,8 +29,13 @@ const dateTypeOptions: EnhancedSelectInputValue<string>[] = [
 ];
 
 export default function MetadataSettings() {
-    const { isSaving, hasPendingChanges, onSavePress, handleInputChange, changes } =
-        useEditSettings();
+    const {
+        isSaving,
+        hasPendingChanges,
+        onSavePress,
+        handleInputChange,
+        changes,
+    } = useEditSettings();
 
     return (
         <PageContent title={translate('MetadataSettings')}>

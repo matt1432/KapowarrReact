@@ -87,7 +87,10 @@ export default function PageToolbarSection({
             };
         }
 
-        const maxButtons = Math.max(Math.floor((width - separatorsWidth) / BUTTON_WIDTH), 1);
+        const maxButtons = Math.max(
+            Math.floor((width - separatorsWidth) / BUTTON_WIDTH),
+            1,
+        );
 
         const buttons: ReactElement<PageToolbarButtonProps>[] = [];
         const overflowItems: PageToolbarButtonProps[] = [];
@@ -139,7 +142,9 @@ export default function PageToolbarSection({
             }}
         >
             {isMeasured ? (
-                <div className={classNames(styles.section, styles[alignContent])}>
+                <div
+                    className={classNames(styles.section, styles[alignContent])}
+                >
                     {buttons.map((button) => {
                         return button;
                     })}
@@ -160,7 +165,12 @@ export default function PageToolbarSection({
                                             OverflowComponent = PageToolbarOverflowMenuItem,
                                     } = item;
 
-                                    return <OverflowComponent key={label} {...item} />;
+                                    return (
+                                        <OverflowComponent
+                                            key={label}
+                                            {...item}
+                                        />
+                                    );
                                 })}
                             </MenuContent>
                         </Menu>

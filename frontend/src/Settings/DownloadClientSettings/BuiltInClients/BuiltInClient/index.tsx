@@ -27,7 +27,8 @@ interface BuiltInClientProps {
 // IMPLEMENTATIONS
 
 export default function BuiltInClient({ title, children }: BuiltInClientProps) {
-    const [isEditBuiltInClientModalOpen, setIsEditBuiltInClientModalOpen] = useState(false);
+    const [isEditBuiltInClientModalOpen, setIsEditBuiltInClientModalOpen] =
+        useState(false);
 
     const handleEditBuiltInClientPress = useCallback(() => {
         setIsEditBuiltInClientModalOpen(true);

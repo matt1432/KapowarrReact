@@ -25,7 +25,8 @@ export default function withScrollPosition(
 
         const historyAction = useNavigationType();
 
-        const initialScrollTop = historyAction === 'POP' ? scrollPositions[scrollPositionKey] : 0;
+        const initialScrollTop =
+            historyAction === 'POP' ? scrollPositions[scrollPositionKey] : 0;
 
         return <WrappedComponent initialScrollTop={initialScrollTop} />;
     }

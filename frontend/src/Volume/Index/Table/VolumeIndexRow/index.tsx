@@ -47,17 +47,23 @@ interface VolumeIndexRowProps {
 
 // IMPLEMENTATIONS
 
-export default function VolumeIndexRow({ volume, columns, isSelectMode }: VolumeIndexRowProps) {
-    const { isRefreshing: isRefreshingVolume, isSearching: isSearchingVolume } = useRootSelector(
-        (state) => getVolumeStatus(state, volume.id),
-    );
+export default function VolumeIndexRow({
+    volume,
+    columns,
+    isSelectMode,
+}: VolumeIndexRowProps) {
+    const { isRefreshing: isRefreshingVolume, isSearching: isSearchingVolume } =
+        useRootSelector((state) => getVolumeStatus(state, volume.id));
 
-    const { showSearchAction } = useRootSelector((state) => state.volumeIndex.tableOptions);
+    const { showSearchAction } = useRootSelector(
+        (state) => state.volumeIndex.tableOptions,
+    );
 
     const [executeCommand] = useExecuteCommandMutation();
 
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
-    const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);
+    const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] =
+        useState(false);
     const [selectState, selectDispatch] = useSelect();
 
     const onRefreshPress = useCallback(() => {
@@ -127,7 +133,10 @@ export default function VolumeIndexRow({ volume, columns, isSelectMode }: Volume
 
                 if (name === 'title') {
                     return (
-                        <VirtualTableRowCell key={name} className={classNames(styles[name])}>
+                        <VirtualTableRowCell
+                            key={name}
+                            className={classNames(styles[name])}
+                        >
                             <VolumeTitleLink
                                 titleSlug={volume.id.toString()}
                                 title={volume.title}
@@ -138,7 +147,10 @@ export default function VolumeIndexRow({ volume, columns, isSelectMode }: Volume
 
                 if (name === 'publisher') {
                     return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
+                        <VirtualTableRowCell
+                            key={name}
+                            className={styles[name]}
+                        >
                             {volume.publisher}
                         </VirtualTableRowCell>
                     );
@@ -146,7 +158,10 @@ export default function VolumeIndexRow({ volume, columns, isSelectMode }: Volume
 
                 if (name === 'issuesDownloadedMonitored') {
                     return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
+                        <VirtualTableRowCell
+                            key={name}
+                            className={styles[name]}
+                        >
                             <VolumeIndexProgressBar
                                 volume={volume}
                                 width={125}
@@ -159,7 +174,10 @@ export default function VolumeIndexRow({ volume, columns, isSelectMode }: Volume
 
                 if (name === 'issueCountMonitored') {
                     return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
+                        <VirtualTableRowCell
+                            key={name}
+                            className={styles[name]}
+                        >
                             {volume.issueCountMonitored}
                         </VirtualTableRowCell>
                     );
@@ -167,7 +185,10 @@ export default function VolumeIndexRow({ volume, columns, isSelectMode }: Volume
 
                 if (name === 'year') {
                     return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
+                        <VirtualTableRowCell
+                            key={name}
+                            className={styles[name]}
+                        >
                             {volume.year}
                         </VirtualTableRowCell>
                     );
@@ -175,7 +196,10 @@ export default function VolumeIndexRow({ volume, columns, isSelectMode }: Volume
 
                 if (name === 'folder') {
                     return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
+                        <VirtualTableRowCell
+                            key={name}
+                            className={styles[name]}
+                        >
                             {volume.folder}
                         </VirtualTableRowCell>
                     );
@@ -183,7 +207,10 @@ export default function VolumeIndexRow({ volume, columns, isSelectMode }: Volume
 
                 if (name === 'totalSize') {
                     return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
+                        <VirtualTableRowCell
+                            key={name}
+                            className={styles[name]}
+                        >
                             {formatBytes(volume.totalSize)}
                         </VirtualTableRowCell>
                     );
@@ -191,7 +218,10 @@ export default function VolumeIndexRow({ volume, columns, isSelectMode }: Volume
 
                 if (name === 'monitorNewIssues') {
                     return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
+                        <VirtualTableRowCell
+                            key={name}
+                            className={styles[name]}
+                        >
                             {volume.monitorNewIssues
                                 ? translate('MonitorFutureIssues')
                                 : translate('MonitorNoFutureIssues')}
@@ -201,7 +231,10 @@ export default function VolumeIndexRow({ volume, columns, isSelectMode }: Volume
 
                 if (name === 'actions') {
                     return (
-                        <VirtualTableRowCell key={name} className={styles[name]}>
+                        <VirtualTableRowCell
+                            key={name}
+                            className={styles[name]}
+                        >
                             <SpinnerIconButton
                                 name={icons.REFRESH}
                                 title={translate('RefreshVolume')}
@@ -212,7 +245,9 @@ export default function VolumeIndexRow({ volume, columns, isSelectMode }: Volume
                             {showSearchAction ? (
                                 <SpinnerIconButton
                                     name={icons.SEARCH}
-                                    title={translate('SearchForMonitoredIssues')}
+                                    title={translate(
+                                        'SearchForMonitoredIssues',
+                                    )}
                                     isSpinning={isSearchingVolume}
                                     onPress={onSearchPress}
                                 />

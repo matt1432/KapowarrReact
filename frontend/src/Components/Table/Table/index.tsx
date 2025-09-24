@@ -68,8 +68,15 @@ export default function Table<T extends string>({
 }: TableProps<T>) {
     return (
         <Scroller
-            className={classNames(containerClassName, horizontalScroll && styles.horizontalScroll)}
-            scrollDirection={horizontalScroll ? scrollDirections.HORIZONTAL : scrollDirections.NONE}
+            className={classNames(
+                containerClassName,
+                horizontalScroll && styles.horizontalScroll,
+            )}
+            scrollDirection={
+                horizontalScroll
+                    ? scrollDirections.HORIZONTAL
+                    : scrollDirections.NONE
+            }
             autoFocus={false}
         >
             <table className={className}>
@@ -89,7 +96,10 @@ export default function Table<T extends string>({
                             return null;
                         }
 
-                        if ((name === 'actions' || name === 'details') && onTableOptionChange) {
+                        if (
+                            (name === 'actions' || name === 'details') &&
+                            onTableOptionChange
+                        ) {
                             return (
                                 <TableHeaderCell
                                     key={name}
@@ -102,9 +112,13 @@ export default function Table<T extends string>({
                                         optionsComponent={optionsComponent}
                                         pageSize={pageSize}
                                         canModifyColumns={canModifyColumns}
-                                        onTableOptionChange={onTableOptionChange}
+                                        onTableOptionChange={
+                                            onTableOptionChange
+                                        }
                                     >
-                                        <IconButton name={icons.ADVANCED_SETTINGS} />
+                                        <IconButton
+                                            name={icons.ADVANCED_SETTINGS}
+                                        />
                                     </TableOptionsModalWrapper>
                                 </TableHeaderCell>
                             );
@@ -118,7 +132,9 @@ export default function Table<T extends string>({
                                 sortDirection={sortDirection}
                                 onSortPress={onSortPress}
                             >
-                                {typeof column.label === 'function' ? column.label() : column.label}
+                                {typeof column.label === 'function'
+                                    ? column.label()
+                                    : column.label}
                             </TableHeaderCell>
                         );
                     })}

@@ -117,7 +117,10 @@ class BaseExternalClient(ExternalDownloadClient):
             else:
                 filtered_data[key] = None
 
-        if filtered_data["username"] is not None and filtered_data["password"] is None:
+        if (
+            filtered_data["username"] is not None
+            and filtered_data["password"] is None
+        ):
             # Username given but not password
             raise InvalidKeyValue("password", filtered_data["password"])
 
@@ -154,7 +157,8 @@ class BaseExternalClient(ExternalDownloadClient):
     def delete_client(self) -> None:
         try:
             get_db().execute(
-                "DELETE FROM external_download_clients WHERE id = ?;", (self.id,)
+                "DELETE FROM external_download_clients WHERE id = ?;",
+                (self.id,),
             )
 
         except IntegrityError:
@@ -294,7 +298,12 @@ class ExternalClients:
         data = {
             k: (
                 v
-                if k in (*ClientClass.required_tokens, "download_type", "client_type")
+                if k
+                in (
+                    *ClientClass.required_tokens,
+                    "download_type",
+                    "client_type",
+                )
                 else None
             )
             for k, v in data.items()
@@ -375,7 +384,9 @@ class ExternalClients:
         return ExternalClients.get_client_types()[client_type](client_id)
 
     @staticmethod
-    def get_least_used_client(download_type: DownloadType) -> ExternalDownloadClient:
+    def get_least_used_client(
+        download_type: DownloadType,
+    ) -> ExternalDownloadClient:
         """Get the least used client of a specific download type.
 
         Args:

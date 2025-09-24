@@ -43,18 +43,30 @@ export default function InputRow({
     const [password, setPassword] = useState<string>('');
     const [apiKey, setApiKey] = useState<string>('');
 
-    const handleUsernameChange = useCallback(({ value }: InputChanged<string, string>) => {
-        setUsername(value);
-    }, []);
-    const handleEmailChange = useCallback(({ value }: InputChanged<string, string>) => {
-        setEmail(value);
-    }, []);
-    const handlePasswordChange = useCallback(({ value }: InputChanged<string, string>) => {
-        setPassword(value);
-    }, []);
-    const handleApiKeyChange = useCallback(({ value }: InputChanged<string, string>) => {
-        setApiKey(value);
-    }, []);
+    const handleUsernameChange = useCallback(
+        ({ value }: InputChanged<string, string>) => {
+            setUsername(value);
+        },
+        [],
+    );
+    const handleEmailChange = useCallback(
+        ({ value }: InputChanged<string, string>) => {
+            setEmail(value);
+        },
+        [],
+    );
+    const handlePasswordChange = useCallback(
+        ({ value }: InputChanged<string, string>) => {
+            setPassword(value);
+        },
+        [],
+    );
+    const handleApiKeyChange = useCallback(
+        ({ value }: InputChanged<string, string>) => {
+            setApiKey(value);
+        },
+        [],
+    );
 
     const handleAddPress = useCallback(() => {
         onAddPress({
@@ -81,30 +93,50 @@ export default function InputRow({
         <TableRow>
             {showUsername ? (
                 <TableRowCell>
-                    <TextInput name="username" value={username} onChange={handleUsernameChange} />
+                    <TextInput
+                        name="username"
+                        value={username}
+                        onChange={handleUsernameChange}
+                    />
                 </TableRowCell>
             ) : null}
 
             {showEmail ? (
                 <TableRowCell>
-                    <TextInput name="email" value={email} onChange={handleEmailChange} />
+                    <TextInput
+                        name="email"
+                        value={email}
+                        onChange={handleEmailChange}
+                    />
                 </TableRowCell>
             ) : null}
 
             {showPassword ? (
                 <TableRowCell>
-                    <TextInput name="password" value={password} onChange={handlePasswordChange} />
+                    <TextInput
+                        name="password"
+                        value={password}
+                        onChange={handlePasswordChange}
+                    />
                 </TableRowCell>
             ) : null}
 
             {showApiKey ? (
                 <TableRowCell>
-                    <TextInput name="apiKey" value={apiKey} onChange={handleApiKeyChange} />
+                    <TextInput
+                        name="apiKey"
+                        value={apiKey}
+                        onChange={handleApiKeyChange}
+                    />
                 </TableRowCell>
             ) : null}
 
             <TableRowCell>
-                <IconButton title={translate('Add')} name={icons.ADD} onPress={handleAddPress} />
+                <IconButton
+                    title={translate('Add')}
+                    name={icons.ADD}
+                    onPress={handleAddPress}
+                />
             </TableRowCell>
         </TableRow>
     );

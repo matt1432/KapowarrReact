@@ -72,11 +72,17 @@ const VolumeIndexSlice = createSlice({
     name: 'volumeIndex',
     initialState,
     reducers: {
-        setVolumeFilter: (state, { payload: value }: PayloadAction<IndexFilter>) => {
+        setVolumeFilter: (
+            state,
+            { payload: value }: PayloadAction<IndexFilter>,
+        ) => {
             state.filterKey = value;
         },
 
-        setVolumeSort: (state, { payload }: PayloadAction<SetVolumeSortParams>) => {
+        setVolumeSort: (
+            state,
+            { payload }: PayloadAction<SetVolumeSortParams>,
+        ) => {
             const newState = structuredClone(payload);
 
             if (!newState.sortDirection) {
@@ -94,20 +100,27 @@ const VolumeIndexSlice = createSlice({
             state = Object.assign(state, newState);
         },
 
-        setVolumeView: (state, { payload: value }: PayloadAction<IndexView>) => {
+        setVolumeView: (
+            state,
+            { payload: value }: PayloadAction<IndexView>,
+        ) => {
             state.view = value;
         },
 
         setVolumeTableOption: (
             state,
-            { payload }: PayloadAction<TableOptionsChangePayload<VolumeColumnName>>,
+            {
+                payload,
+            }: PayloadAction<TableOptionsChangePayload<VolumeColumnName>>,
         ) => {
             state.tableOptions = Object.assign(state.tableOptions, payload);
         },
 
         setVolumePosterOption: (
             state,
-            { payload }: PayloadAction<TableOptionsChangePayload<VolumeColumnName>>,
+            {
+                payload,
+            }: PayloadAction<TableOptionsChangePayload<VolumeColumnName>>,
         ) => {
             state.posterOptions = Object.assign(state.posterOptions, payload);
         },

@@ -57,8 +57,11 @@ export default function IssueFileRow({
     refetchFiles,
     ...mediaInfo
 }: IssueFileRowProps) {
-    const [isRemoveIssueFileModalOpen, setRemoveIssueFileModalOpen, setRemoveIssueFileModalClosed] =
-        useModalOpenState(false);
+    const [
+        isRemoveIssueFileModalOpen,
+        setRemoveIssueFileModalOpen,
+        setRemoveIssueFileModalClosed,
+    ] = useModalOpenState(false);
     const [isEditFileModalOpen, setEditFileModalOpen, setEditFileModalClosed] =
         useModalOpenState(false);
 
@@ -80,7 +83,11 @@ export default function IssueFileRow({
                 }
 
                 if (name === 'filesize') {
-                    return <TableRowCell key={name}>{formatBytes(size)}</TableRowCell>;
+                    return (
+                        <TableRowCell key={name}>
+                            {formatBytes(size)}
+                        </TableRowCell>
+                    );
                 }
 
                 if (name === 'actions') {
@@ -122,7 +129,9 @@ export default function IssueFileRow({
                 isOpen={isRemoveIssueFileModalOpen}
                 kind={kinds.DANGER}
                 title={translate('DeleteIssueFile')}
-                message={translate('DeleteIssueFileMessage', { path: path ?? '' })}
+                message={translate('DeleteIssueFileMessage', {
+                    path: path ?? '',
+                })}
                 confirmLabel={translate('Delete')}
                 onConfirm={handleRemoveIssueFilePress}
                 onCancel={setRemoveIssueFileModalClosed}

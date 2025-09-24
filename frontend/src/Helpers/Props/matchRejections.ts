@@ -10,4 +10,5 @@ const matchRejections = {
 
 export default matchRejections;
 
-export type MatchRejection = (typeof matchRejections)[keyof typeof matchRejections];
+export type MatchRejection =
+    (typeof matchRejections)[keyof typeof matchRejections];

@@ -56,7 +56,10 @@ export default function ProgressBar({
                     >
                         {showText && width ? (
                             <div
-                                className={classNames(styles.backTextContainer, styles[kind])}
+                                className={classNames(
+                                    styles.backTextContainer,
+                                    styles[kind],
+                                )}
                                 style={{ width: actualWidth }}
                             >
                                 <div className={styles.backText}>
@@ -83,10 +86,16 @@ export default function ProgressBar({
 
                         {showText ? (
                             <div
-                                className={classNames(styles.frontTextContainer, styles[kind])}
+                                className={classNames(
+                                    styles.frontTextContainer,
+                                    styles[kind],
+                                )}
                                 style={{ width: progressPercent }}
                             >
-                                <div className={styles.frontText} style={{ width: actualWidth }}>
+                                <div
+                                    className={styles.frontText}
+                                    style={{ width: actualWidth }}
+                                >
                                     <div>{progressText}</div>
                                 </div>
                             </div>

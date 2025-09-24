@@ -30,13 +30,22 @@ import type { ClientType } from 'typings/DownloadClient';
 // IMPLEMENTATIONS
 
 export default function DownloadClients() {
-    const { error, isFetching, isUninitialized, data: items = [] } = useGetDownloadClientsQuery();
+    const {
+        error,
+        isFetching,
+        isUninitialized,
+        data: items = [],
+    } = useGetDownloadClientsQuery();
 
-    const [newClientType, setNewClientType] = useState<ClientType | undefined>(undefined);
+    const [newClientType, setNewClientType] = useState<ClientType | undefined>(
+        undefined,
+    );
 
-    const [isAddDownloadClientModalOpen, setIsAddDownloadClientModalOpen] = useState(false);
+    const [isAddDownloadClientModalOpen, setIsAddDownloadClientModalOpen] =
+        useState(false);
 
-    const [isEditDownloadClientModalOpen, setIsEditDownloadClientModalOpen] = useState(false);
+    const [isEditDownloadClientModalOpen, setIsEditDownloadClientModalOpen] =
+        useState(false);
 
     const handleAddDownloadClientPress = useCallback(() => {
         setIsAddDownloadClientModalOpen(true);
@@ -68,7 +77,10 @@ export default function DownloadClients() {
                     return <DownloadClient key={item.id} {...item} />;
                 })}
 
-                <Card className={styles.addDownloadClient} onPress={handleAddDownloadClientPress}>
+                <Card
+                    className={styles.addDownloadClient}
+                    onPress={handleAddDownloadClientPress}
+                >
                     <div className={styles.center}>
                         <Icon name={icons.ADD} size={45} />
                     </div>

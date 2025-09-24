@@ -37,7 +37,10 @@ export default function FormInputButton({
     if (canSpin) {
         return (
             <SpinnerButton
-                className={classNames(className, !isLastButton && styles.middleButton)}
+                className={classNames(
+                    className,
+                    !isLastButton && styles.middleButton,
+                )}
                 kind={kind}
                 isSpinning={isSpinning}
                 {...otherProps}
@@ -47,7 +50,10 @@ export default function FormInputButton({
 
     return (
         <Button
-            className={classNames(className, !isLastButton && styles.middleButton)}
+            className={classNames(
+                className,
+                !isLastButton && styles.middleButton,
+            )}
             kind={kind}
             {...otherProps}
         />

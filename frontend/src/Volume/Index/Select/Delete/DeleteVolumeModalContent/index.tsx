@@ -50,9 +50,12 @@ export default function DeleteVolumeModalContent({
         return allVolumes.filter((v) => volumeIds.includes(v.id));
     }, [volumeIds, allVolumes]);
 
-    const onDeleteFilesChange = useCallback(({ value }: CheckInputChanged<'deleteFiles'>) => {
-        setDeleteFiles(value);
-    }, []);
+    const onDeleteFilesChange = useCallback(
+        ({ value }: CheckInputChanged<'deleteFiles'>) => {
+            setDeleteFiles(value);
+        },
+        [],
+    );
 
     const onDeleteVolumeConfirmed = useCallback(() => {
         setDeleteFiles(false);
@@ -113,39 +116,52 @@ export default function DeleteVolumeModalContent({
 
                 <div className={styles.message}>
                     {deleteFiles
-                        ? translate('DeleteVolumeFolderCountWithFilesConfirmation', {
-                              count: volumes.length,
-                          })
+                        ? translate(
+                              'DeleteVolumeFolderCountWithFilesConfirmation',
+                              {
+                                  count: volumes.length,
+                              },
+                          )
                         : translate('DeleteVolumeFolderCountConfirmation', {
                               count: volumes.length,
                           })}
                 </div>
 
                 <ul>
-                    {volumes.map(({ title, folder, issueFileCount, totalSize }) => (
-                        <li key={title}>
-                            <span>{title}</span>
+                    {volumes.map(
+                        ({ title, folder, issueFileCount, totalSize }) => (
+                            <li key={title}>
+                                <span>{title}</span>
 
-                            {deleteFiles && (
-                                <span>
-                                    <span className={styles.pathContainer}>
-                                        -<span className={styles.path}>{folder}</span>
-                                    </span>
-
-                                    {Boolean(issueFileCount) && (
-                                        <span className={styles.statistics}>
-                                            (
-                                            {translate('DeleteVolumeFolderIssueCount', {
-                                                issueFileCount,
-                                                size: formatBytes(totalSize),
-                                            })}
-                                            )
+                                {deleteFiles && (
+                                    <span>
+                                        <span className={styles.pathContainer}>
+                                            -
+                                            <span className={styles.path}>
+                                                {folder}
+                                            </span>
                                         </span>
-                                    )}
-                                </span>
-                            )}
-                        </li>
-                    ))}
+
+                                        {Boolean(issueFileCount) && (
+                                            <span className={styles.statistics}>
+                                                (
+                                                {translate(
+                                                    'DeleteVolumeFolderIssueCount',
+                                                    {
+                                                        issueFileCount,
+                                                        size: formatBytes(
+                                                            totalSize,
+                                                        ),
+                                                    },
+                                                )}
+                                                )
+                                            </span>
+                                        )}
+                                    </span>
+                                )}
+                            </li>
+                        ),
+                    )}
                 </ul>
 
                 {deleteFiles && Boolean(totalIssueFileCount) ? (

@@ -14,7 +14,10 @@ export function isNonApiError(error: unknown): error is NonApiError {
     return isFetchError(error) && typeof error.status === 'number';
 }
 
-export function getErrorMessage(error: unknown, fallbackErrorMessage = 'Unknown error') {
+export function getErrorMessage(
+    error: unknown,
+    fallbackErrorMessage = 'Unknown error',
+) {
     if (isApiError(error)) {
         return translate(error.data.error);
     }

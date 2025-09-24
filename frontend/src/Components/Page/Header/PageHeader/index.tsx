@@ -31,9 +31,12 @@ import styles from './index.module.css';
 export default function PageHeader() {
     const dispatch = useRootDispatch();
 
-    const isSidebarVisible = useRootSelector((state) => state.app.isSidebarVisible);
+    const isSidebarVisible = useRootSelector(
+        (state) => state.app.isSidebarVisible,
+    );
 
-    const [isKeyboardShortcutsModalOpen, setIsKeyboardShortcutsModalOpen] = useState(false);
+    const [isKeyboardShortcutsModalOpen, setIsKeyboardShortcutsModalOpen] =
+        useState(false);
 
     const { bindShortcut, unbindShortcut } = useKeyboardShortcuts();
 
@@ -50,7 +53,10 @@ export default function PageHeader() {
     }, []);
 
     useEffect(() => {
-        bindShortcut('openKeyboardShortcutsModal', handleOpenKeyboardShortcutsModal);
+        bindShortcut(
+            'openKeyboardShortcutsModal',
+            handleOpenKeyboardShortcutsModal,
+        );
 
         return () => {
             unbindShortcut('openKeyboardShortcutsModal');

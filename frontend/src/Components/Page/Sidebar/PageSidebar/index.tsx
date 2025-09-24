@@ -1,7 +1,13 @@
 // IMPORTS
 
 // React
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useLocation } from 'react-router';
 
 // Redux
@@ -160,7 +166,10 @@ function hasActiveChildLink(link: SidebarItem, pathname: string) {
     });
 }
 
-export default function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSidebarProps) {
+export default function PageSidebar({
+    isSidebarVisible,
+    isSmallScreen,
+}: PageSidebarProps) {
     const { pathname } = useLocation();
 
     const dispatch = useRootDispatch();
@@ -215,7 +224,9 @@ export default function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSid
     const handleWindowClick = useCallback(
         (event: MouseEvent) => {
             const sidebar = sidebarRef.current;
-            const toggleButton = document.getElementById('sidebar-toggle-button');
+            const toggleButton = document.getElementById(
+                'sidebar-toggle-button',
+            );
             const target = event.target;
 
             if (!sidebar) {
@@ -242,7 +253,9 @@ export default function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSid
 
     const handleWindowScroll = useCallback(() => {
         const windowScroll =
-            window.scrollY === null ? document.documentElement.scrollTop : window.scrollY;
+            window.scrollY === null
+                ? document.documentElement.scrollTop
+                : window.scrollY;
         const sidebarTop = Math.max(HEADER_HEIGHT - windowScroll, 0);
         const sidebarHeight = window.innerHeight - sidebarTop;
 
@@ -312,7 +325,10 @@ export default function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSid
                     transform: 0,
                 });
             }
-            else if (currentTouch < touchStartX.current && currentTouch < 80) {
+            else if (
+                currentTouch < touchStartX.current &&
+                currentTouch < 80
+            ) {
                 setSidebarTransform({
                     transition: 'transform 50ms ease-in-out',
                     transform: SIDEBAR_WIDTH * -1,
@@ -338,7 +354,9 @@ export default function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSid
 
     useEffect(() => {
         if (isSmallScreen) {
-            window.addEventListener('click', handleWindowClick, { capture: true });
+            window.addEventListener('click', handleWindowClick, {
+                capture: true,
+            });
             window.addEventListener('scroll', handleWindowScroll);
             window.addEventListener('touchstart', handleTouchStart);
             window.addEventListener('touchmove', handleTouchMove);
@@ -347,7 +365,9 @@ export default function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSid
         }
 
         return () => {
-            window.removeEventListener('click', handleWindowClick, { capture: true });
+            window.removeEventListener('click', handleWindowClick, {
+                capture: true,
+            });
             window.removeEventListener('scroll', handleWindowScroll);
             window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('touchmove', handleTouchMove);
@@ -374,7 +394,10 @@ export default function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSid
         else if (sidebarTransform.transform === 0 && !isSidebarVisible) {
             dispatch(setIsSidebarVisible(true));
         }
-        else if (sidebarTransform.transform === -SIDEBAR_WIDTH && isSidebarVisible) {
+        else if (
+            sidebarTransform.transform === -SIDEBAR_WIDTH &&
+            isSidebarVisible
+        ) {
             dispatch(setIsSidebarVisible(false));
         }
     }, [sidebarTransform, isSidebarVisible, wasSidebarVisible, dispatch]);
@@ -405,16 +428,21 @@ export default function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSid
             >
                 <div>
                     {LINKS.map((link) => {
-                        const childWithStatusComponent = link.children?.find((child) => {
-                            return !!child.statusComponent;
-                        });
+                        const childWithStatusComponent = link.children?.find(
+                            (child) => {
+                                return !!child.statusComponent;
+                            },
+                        );
 
                         const childStatusComponent = childWithStatusComponent
                             ? childWithStatusComponent.statusComponent
                             : null;
 
                         const isActiveParent = activeParent === link.to;
-                        const hasActiveChild = hasActiveChildLink(link, pathname);
+                        const hasActiveChild = hasActiveChildLink(
+                            link,
+                            pathname,
+                        );
 
                         return (
                             <PageSidebarItem
@@ -427,7 +455,9 @@ export default function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSid
                                         ? link.statusComponent
                                         : childStatusComponent
                                 }
-                                isActive={pathname === link.to && !hasActiveChild}
+                                isActive={
+                                    pathname === link.to && !hasActiveChild
+                                }
                                 isActiveParent={isActiveParent}
                                 isParentItem={!!link.children}
                                 onPress={handleItemPress}
@@ -443,7 +473,9 @@ export default function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSid
                                                 isActive={pathname === child.to}
                                                 isParentItem={false}
                                                 isChildItem={true}
-                                                statusComponent={child.statusComponent}
+                                                statusComponent={
+                                                    child.statusComponent
+                                                }
                                                 onPress={handleItemPress}
                                             />
                                         );

@@ -28,13 +28,20 @@ export default function VolumeSearchResult({
 }: VolumeSearchResultProps) {
     return (
         <div className={styles.result}>
-            <VolumePoster volume={{ id }} className={styles.poster} size={250} lazy={false} />
+            <VolumePoster
+                volume={{ id }}
+                className={styles.poster}
+                size={250}
+                lazy={false}
+            />
 
             <div className={styles.titles}>
                 <div className={styles.title}>{title}</div>
 
                 {match.key === 'comicvineId' && comicvineId ? (
-                    <div className={styles.alternateTitle}>ComicVine ID: {comicvineId}</div>
+                    <div className={styles.alternateTitle}>
+                        ComicVine ID: {comicvineId}
+                    </div>
                 ) : null}
             </div>
         </div>

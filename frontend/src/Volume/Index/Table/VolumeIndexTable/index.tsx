@@ -2,7 +2,11 @@
 
 // React
 import { useEffect, type RefObject } from 'react';
-import { useListRef, type ListImperativeAPI, type RowComponentProps } from 'react-window';
+import {
+    useListRef,
+    type ListImperativeAPI,
+    type RowComponentProps,
+} from 'react-window';
 
 // Misc
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';

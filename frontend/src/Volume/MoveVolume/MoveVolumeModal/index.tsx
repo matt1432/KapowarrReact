@@ -39,7 +39,9 @@ export default function MoveVolumeModal({
     onMoveVolumePress,
 }: MoveVolumeModalProps) {
     if (isOpen && !originalPath && !destinationPath && !destinationRootFolder) {
-        console.error('originalPath and destinationPath OR destinationRootFolder must be provided');
+        console.error(
+            'originalPath and destinationPath OR destinationRootFolder must be provided',
+        );
     }
 
     return (
@@ -68,7 +70,10 @@ export default function MoveVolumeModal({
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button className={styles.doNotMoveButton} onPress={onSavePress}>
+                    <Button
+                        className={styles.doNotMoveButton}
+                        onPress={onSavePress}
+                    >
                         {translate('MoveVolumeFoldersDontMoveFiles')}
                     </Button>
 

@@ -1,7 +1,11 @@
 // IMPORTS
 
 // React
-import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router';
+import {
+    createBrowserRouter,
+    createRoutesFromElements,
+    Route,
+} from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 
 // Types

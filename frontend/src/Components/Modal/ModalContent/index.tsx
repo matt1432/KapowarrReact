@@ -36,7 +36,11 @@ export default function ModalContent({
         <div className={className} {...otherProps}>
             {showCloseButton && (
                 <Link className={styles.closeButton} onPress={onModalClose}>
-                    <Icon name={icons.CLOSE} size={18} title={translate('Close')} />
+                    <Icon
+                        name={icons.CLOSE}
+                        size={18}
+                        title={translate('Close')}
+                    />
                 </Link>
             )}
 

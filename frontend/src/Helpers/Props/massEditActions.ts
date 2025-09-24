@@ -13,4 +13,5 @@ const massEditActions = {
 
 export default massEditActions;
 
-export type MassEditAction = (typeof massEditActions)[keyof typeof massEditActions];
+export type MassEditAction =
+    (typeof massEditActions)[keyof typeof massEditActions];

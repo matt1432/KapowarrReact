@@ -106,7 +106,9 @@ export default function IssueRow({
                 }
 
                 if (name === 'relativePath') {
-                    return <TableRowCell key={name}>{relativePath}</TableRowCell>;
+                    return (
+                        <TableRowCell key={name}>{relativePath}</TableRowCell>
+                    );
                 }
 
                 if (name === 'size') {
@@ -119,7 +121,10 @@ export default function IssueRow({
 
                 if (name === 'releaseGroup') {
                     return (
-                        <TableRowCell key={name} className={styles.releaseGroup}>
+                        <TableRowCell
+                            key={name}
+                            className={styles.releaseGroup}
+                        >
                             {releaseGroup}
                         </TableRowCell>
                     );

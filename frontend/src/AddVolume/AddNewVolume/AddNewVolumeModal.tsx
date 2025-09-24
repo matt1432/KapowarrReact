@@ -21,7 +21,10 @@ export default function AddNewVolumeModal({
 }: AddNewVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
-            <AddNewVolumeModalContent {...otherProps} onModalClose={onModalClose} />
+            <AddNewVolumeModalContent
+                {...otherProps}
+                onModalClose={onModalClose}
+            />
         </Modal>
     );
 }

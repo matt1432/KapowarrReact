@@ -1,7 +1,11 @@
 // IMPORTS
 
 // React
-import React, { type ComponentPropsWithoutRef, useCallback, useRef } from 'react';
+import React, {
+    type ComponentPropsWithoutRef,
+    useCallback,
+    useRef,
+} from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-4';
 
 // CSS
@@ -81,23 +85,38 @@ export default function OverlayScroller({
                 height: SCROLLBAR_SIZE,
             };
 
-            return <div className={styles.track} style={finalStyle} {...trackProps} />;
+            return (
+                <div
+                    className={styles.track}
+                    style={finalStyle}
+                    {...trackProps}
+                />
+            );
         },
         [],
     );
 
-    const renderTrackVertical = useCallback(({ style, props: trackProps }: ScrollbarTrackProps) => {
-        const finalStyle = {
-            ...style,
-            right: 2,
-            bottom: 2,
-            top: 2,
-            borderRadius: 3,
-            width: SCROLLBAR_SIZE,
-        };
+    const renderTrackVertical = useCallback(
+        ({ style, props: trackProps }: ScrollbarTrackProps) => {
+            const finalStyle = {
+                ...style,
+                right: 2,
+                bottom: 2,
+                top: 2,
+                borderRadius: 3,
+                width: SCROLLBAR_SIZE,
+            };
 
-        return <div className={styles.track} style={finalStyle} {...trackProps} />;
-    }, []);
+            return (
+                <div
+                    className={styles.track}
+                    style={finalStyle}
+                    {...trackProps}
+                />
+            );
+        },
+        [],
+    );
 
     const renderView = useCallback(
         (props: ExtendableRecord) => {

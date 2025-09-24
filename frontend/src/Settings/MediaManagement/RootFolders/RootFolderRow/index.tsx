@@ -4,7 +4,10 @@
 import { useCallback, useState } from 'react';
 
 // Redux
-import { useDeleteRootFolderMutation, useEditRootFolderMutation } from 'Store/Api/RootFolders';
+import {
+    useDeleteRootFolderMutation,
+    useEditRootFolderMutation,
+} from 'Store/Api/RootFolders';
 
 // Misc
 import { icons, kinds } from 'Helpers/Props';
@@ -34,7 +37,12 @@ interface RootFolderRowProps {
 
 // IMPLEMENTATIONS
 
-function RootFolderRow({ id, path, freeSpace = 0, totalSpace = 0 }: RootFolderRowProps) {
+function RootFolderRow({
+    id,
+    path,
+    freeSpace = 0,
+    totalSpace = 0,
+}: RootFolderRowProps) {
     const [editRootFolder] = useEditRootFolderMutation();
     const [deleteRootFolder] = useDeleteRootFolderMutation();
 
@@ -54,9 +62,12 @@ function RootFolderRow({ id, path, freeSpace = 0, totalSpace = 0 }: RootFolderRo
         }
     }, [editRootFolder, id, isEditing, path, pathChange]);
 
-    const handlePathChange = useCallback(({ value }: InputChanged<'path', string>) => {
-        setPathChange(value);
-    }, []);
+    const handlePathChange = useCallback(
+        ({ value }: InputChanged<'path', string>) => {
+            setPathChange(value);
+        },
+        [],
+    );
 
     const onDeletePress = useCallback(() => {
         setIsDeleteModalOpen(true);
@@ -76,7 +87,11 @@ function RootFolderRow({ id, path, freeSpace = 0, totalSpace = 0 }: RootFolderRo
         <TableRow>
             <TableRowCell>
                 {isEditing ? (
-                    <TextInput name="path" value={pathChange} onChange={handlePathChange} />
+                    <TextInput
+                        name="path"
+                        value={pathChange}
+                        onChange={handlePathChange}
+                    />
                 ) : (
                     path
                 )}

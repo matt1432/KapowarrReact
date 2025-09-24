@@ -21,7 +21,11 @@ export default function Links({ siteUrl }: LinksProps) {
     return (
         <div className={styles.links}>
             <Link className={styles.link} to={siteUrl}>
-                <Label className={styles.linkLabel} kind={kinds.INFO} size={sizes.LARGE}>
+                <Label
+                    className={styles.linkLabel}
+                    kind={kinds.INFO}
+                    size={sizes.LARGE}
+                >
                     ComicVine
                 </Label>
             </Link>

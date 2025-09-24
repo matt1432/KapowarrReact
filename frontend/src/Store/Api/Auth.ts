@@ -39,7 +39,8 @@ export const useApiKey = () => {
 
     const { apiKey, lastLogin } = useRootSelector((state) => state.auth);
 
-    const [getApiKey, { data, error, ...getApiKeyState }] = extendedApi.useGetApiKeyMutation();
+    const [getApiKey, { data, error, ...getApiKeyState }] =
+        extendedApi.useGetApiKeyMutation();
 
     useEffect(() => {
         if (!apiKey || lastLogin < Date.now() / 1000 - 86400) {

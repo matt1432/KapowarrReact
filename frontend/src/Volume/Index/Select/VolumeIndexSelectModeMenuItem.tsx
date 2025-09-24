@@ -40,6 +40,10 @@ export default function VolumeIndexSelectModeMenuItem({
     }, [isSelectMode, onPress, selectDispatch]);
 
     return (
-        <PageToolbarOverflowMenuItem label={label} iconName={iconName} onPress={onPressWrapper} />
+        <PageToolbarOverflowMenuItem
+            label={label}
+            iconName={iconName}
+            onPress={onPressWrapper}
+        />
     );
 }

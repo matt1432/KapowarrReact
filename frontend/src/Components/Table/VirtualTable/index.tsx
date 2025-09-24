@@ -2,7 +2,11 @@
 
 // React
 import React, { type RefObject, useEffect, useState } from 'react';
-import { List, type ListImperativeAPI, type RowComponentProps } from 'react-window';
+import {
+    List,
+    type ListImperativeAPI,
+    type RowComponentProps,
+} from 'react-window';
 
 // Misc
 import { throttle } from 'lodash';
@@ -34,7 +38,9 @@ interface VirtualTableProps<T extends ExtendableRecord> {
 // IMPLEMENTATIONS
 
 const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
-const bodyPaddingSmallScreen = parseInt(dimensions.pageContentBodyPaddingSmallScreen);
+const bodyPaddingSmallScreen = parseInt(
+    dimensions.pageContentBodyPaddingSmallScreen,
+);
 
 function getWindowScrollTopPosition() {
     return document.documentElement.scrollTop || document.body.scrollTop || 0;
@@ -69,7 +75,8 @@ export default function VirtualTable<T extends ExtendableRecord>({
 
         if (current) {
             const width = current.clientWidth;
-            const padding = (isSmallScreen ? bodyPaddingSmallScreen : bodyPadding) - 5;
+            const padding =
+                (isSmallScreen ? bodyPaddingSmallScreen : bodyPadding) - 5;
 
             setSize({
                 width: width - padding * 2,
@@ -80,13 +87,16 @@ export default function VirtualTable<T extends ExtendableRecord>({
 
     useEffect(() => {
         const currentScrollerRef = scrollerRef.current as HTMLElement;
-        const currentScrollListener = isSmallScreen ? window : currentScrollerRef;
+        const currentScrollListener = isSmallScreen
+            ? window
+            : currentScrollerRef;
 
         const handleScroll = throttle(() => {
             const { offsetTop = 0 } = currentScrollerRef;
             const scrollTop =
-                (isSmallScreen ? getWindowScrollTopPosition() : currentScrollerRef.scrollTop) -
-                offsetTop;
+                (isSmallScreen
+                    ? getWindowScrollTopPosition()
+                    : currentScrollerRef.scrollTop) - offsetTop;
 
             listRef.current?.element?.scrollTo(0, scrollTop);
         }, 10);
@@ -97,14 +107,20 @@ export default function VirtualTable<T extends ExtendableRecord>({
             handleScroll.cancel();
 
             if (currentScrollListener) {
-                currentScrollListener.removeEventListener('scroll', handleScroll);
+                currentScrollListener.removeEventListener(
+                    'scroll',
+                    handleScroll,
+                );
             }
         };
     }, [isSmallScreen, listRef, scrollerRef]);
 
     return (
         <div ref={measureRef}>
-            <Scroller className={styles.tableScroller} scrollDirection="horizontal">
+            <Scroller
+                className={styles.tableScroller}
+                scrollDirection="horizontal"
+            >
                 {Header}
                 <List<T>
                     listRef={listRef}

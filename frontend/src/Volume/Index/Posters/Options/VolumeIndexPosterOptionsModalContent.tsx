@@ -98,7 +98,9 @@ export default function VolumeIndexPosterOptionsModalContent({
                     </FormGroup>
 
                     <FormGroup>
-                        <FormLabel>{translate('DetailedProgressBar')}</FormLabel>
+                        <FormLabel>
+                            {translate('DetailedProgressBar')}
+                        </FormLabel>
 
                         <FormInputGroup
                             type={inputTypes.CHECK}

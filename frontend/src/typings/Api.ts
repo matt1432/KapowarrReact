@@ -2,7 +2,9 @@ import type { SerializedError } from '@reduxjs/toolkit';
 import type { ExtendableRecord } from 'typings/Misc';
 import type { TranslateKey } from 'Utilities/String/translate';
 
-export interface ApiErrorResponse<Result extends ExtendableRecord = ExtendableRecord> {
+export interface ApiErrorResponse<
+    Result extends ExtendableRecord = ExtendableRecord,
+> {
     error: TranslateKey;
     result: Result;
 }

@@ -4,7 +4,9 @@
 import Modal from 'Components/Modal/Modal';
 
 // Specific Components
-import EditVolumeModalContent, { type EditVolumeModalContentProps } from './EditVolumeModalContent';
+import EditVolumeModalContent, {
+    type EditVolumeModalContentProps,
+} from './EditVolumeModalContent';
 
 // Types
 interface EditVolumeModalProps extends EditVolumeModalContentProps {
@@ -20,7 +22,10 @@ export default function EditVolumeModal({
 }: EditVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
-            <EditVolumeModalContent {...otherProps} onModalClose={onModalClose} />
+            <EditVolumeModalContent
+                {...otherProps}
+                onModalClose={onModalClose}
+            />
         </Modal>
     );
 }

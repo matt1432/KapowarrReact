@@ -4,7 +4,10 @@
 import { useCallback, useEffect, useState } from 'react';
 
 // Redux
-import { useGetVolumesQuery, useLazyLookupVolumeQuery } from 'Store/Api/Volumes';
+import {
+    useGetVolumesQuery,
+    useLazyLookupVolumeQuery,
+} from 'Store/Api/Volumes';
 
 // Misc
 import { icons, kinds } from 'Helpers/Props';
@@ -46,9 +49,12 @@ export default function AddNewVolume() {
     const [term, setTerm] = useState(initialTerm);
     const [showResults, setShowResults] = useState(false);
 
-    const handleSearchInputChange = useCallback(({ value }: InputChanged<string, string>) => {
-        _setTerm(value);
-    }, []);
+    const handleSearchInputChange = useCallback(
+        ({ value }: InputChanged<string, string>) => {
+            _setTerm(value);
+        },
+        [],
+    );
 
     const handleClearVolumeLookupPress = useCallback(() => {
         _setTerm('');
@@ -56,7 +62,8 @@ export default function AddNewVolume() {
         setShowResults(false);
     }, []);
 
-    const [lookupVolume, { isFetching, error, data = [] }] = useLazyLookupVolumeQuery();
+    const [lookupVolume, { isFetching, error, data = [] }] =
+        useLazyLookupVolumeQuery();
 
     useEffect(() => {
         setShowResults(true);
@@ -85,7 +92,10 @@ export default function AddNewVolume() {
         <PageContent title={translate('AddNewVolume')}>
             <PageContentBody>
                 <div className={styles.searchContainer}>
-                    <Button className={styles.searchIconContainer} onPress={handleSubmit}>
+                    <Button
+                        className={styles.searchIconContainer}
+                        onPress={handleSubmit}
+                    >
                         <Icon name={icons.SEARCH} size={20} />
                     </Button>
 
@@ -111,9 +121,13 @@ export default function AddNewVolume() {
 
                 {!isFetching && error ? (
                     <div className={styles.message}>
-                        <div className={styles.helpText}>{translate('AddNewVolumeError')}</div>
+                        <div className={styles.helpText}>
+                            {translate('AddNewVolumeError')}
+                        </div>
 
-                        <Alert kind={kinds.DANGER}>{getErrorMessage(error)}</Alert>
+                        <Alert kind={kinds.DANGER}>
+                            {getErrorMessage(error)}
+                        </Alert>
                     </div>
                 ) : null}
 
@@ -121,7 +135,10 @@ export default function AddNewVolume() {
                     <div className={styles.searchResults}>
                         {data.map((item) => {
                             return (
-                                <AddNewVolumeSearchResult key={item.comicvineId} volume={item} />
+                                <AddNewVolumeSearchResult
+                                    key={item.comicvineId}
+                                    volume={item}
+                                />
                             );
                         })}
                     </div>
@@ -139,7 +156,9 @@ export default function AddNewVolume() {
 
                 {term ? null : (
                     <div className={styles.message}>
-                        <div className={styles.helpText}>{translate('AddNewVolumeHelpText')}</div>
+                        <div className={styles.helpText}>
+                            {translate('AddNewVolumeHelpText')}
+                        </div>
                         <div>{translate('SearchByComicVineId')}</div>
                     </div>
                 )}

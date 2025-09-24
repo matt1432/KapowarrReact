@@ -73,7 +73,10 @@ export default function VolumeIndexSelectFooter() {
 
     const [{ selectedState }, selectDispatch] = useSelect();
 
-    const volumeIds = useMemo(() => getSelectedIds(selectedState), [selectedState]);
+    const volumeIds = useMemo(
+        () => getSelectedIds(selectedState),
+        [selectedState],
+    );
 
     const selectedCount = volumeIds.length;
 

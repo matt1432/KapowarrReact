@@ -31,7 +31,12 @@ export default function FieldSet({
 }: FieldSetProps) {
     return (
         <fieldset className={styles.fieldSet}>
-            <legend className={classNames(styles.legend, size === sizes.SMALL && styles.small)}>
+            <legend
+                className={classNames(
+                    styles.legend,
+                    size === sizes.SMALL && styles.small,
+                )}
+            >
                 {subLegend ? (
                     <div className={styles.legendTitle}>
                         <span className={styles.title}>{legend}</span>

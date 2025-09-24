@@ -69,13 +69,21 @@ export default function ClipboardButton({
     }, [value]);
 
     return (
-        <FormInputButton className={className} onClick={handleClick} {...otherProps}>
+        <FormInputButton
+            className={className}
+            onClick={handleClick}
+            {...otherProps}
+        >
             <span className={state ? styles.showStateIcon : undefined}>
                 {state ? (
                     <span className={styles.stateIconContainer}>
                         <Icon
-                            name={state === 'error' ? icons.DANGER : icons.CHECK}
-                            kind={state === 'error' ? kinds.DANGER : kinds.SUCCESS}
+                            name={
+                                state === 'error' ? icons.DANGER : icons.CHECK
+                            }
+                            kind={
+                                state === 'error' ? kinds.DANGER : kinds.SUCCESS
+                            }
                         />
                     </span>
                 ) : null}

@@ -4,7 +4,9 @@
 import Modal from 'Components/Modal/Modal';
 
 // Specific Components
-import RootFolderModalContent, { type RootFolderModalContentProps } from './RootFolderModalContent';
+import RootFolderModalContent, {
+    type RootFolderModalContentProps,
+} from './RootFolderModalContent';
 
 // Types
 interface RootFolderModalProps extends RootFolderModalContentProps {

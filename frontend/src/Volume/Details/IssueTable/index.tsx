@@ -131,11 +131,18 @@ function useIssuesSelector(volumeId: number) {
                             path: issueFile?.filepath,
                             relativePath:
                                 volumeFolder &&
-                                issueFile?.filepath?.replace(volumeFolder, '')?.slice(1),
+                                issueFile?.filepath
+                                    ?.replace(volumeFolder, '')
+                                    ?.slice(1),
                             size: formatBytes(
-                                issue.files.reduce((acc, issue) => (acc += issue.size), 0),
+                                issue.files.reduce(
+                                    (acc, issue) => (acc += issue.size),
+                                    0,
+                                ),
                             ),
-                            releaseGroup: issue?.files.find((f) => f.releaser)?.releaser ?? '',
+                            releaseGroup:
+                                issue?.files.find((f) => f.releaser)
+                                    ?.releaser ?? '',
                         } as IssueRowData;
                     }),
                 };
@@ -147,7 +154,9 @@ function useIssuesSelector(volumeId: number) {
 export default function IssueTable({ volumeId }: IssueTableProps) {
     const dispatch = useRootDispatch();
 
-    const { sortKey, sortDirection } = useRootSelector((state) => state.issueTable);
+    const { sortKey, sortDirection } = useRootSelector(
+        (state) => state.issueTable,
+    );
 
     const { issues, volumeMonitored } = useIssuesSelector(volumeId);
 
@@ -162,10 +171,17 @@ export default function IssueTable({ volumeId }: IssueTableProps) {
         [isToggling],
     );
 
-    const socketCallback = useCallback<SocketEventHandler<typeof socketEvents.ISSUE_UPDATED>>(
+    const socketCallback = useCallback<
+        SocketEventHandler<typeof socketEvents.ISSUE_UPDATED>
+    >(
         (data) => {
             if (data.calledFrom === 'IssueTable') {
-                setIsToggling([...isToggling].splice(isToggling.indexOf(data.issue.id), 1));
+                setIsToggling(
+                    [...isToggling].splice(
+                        isToggling.indexOf(data.issue.id),
+                        1,
+                    ),
+                );
             }
         },
         [isToggling],
@@ -175,12 +191,20 @@ export default function IssueTable({ volumeId }: IssueTableProps) {
     const lastToggledIssue = useRef<number | null>(null);
 
     const handleMonitorIssuePress = useCallback(
-        (issueId: number, monitored: boolean, { shiftKey }: { shiftKey: boolean }) => {
+        (
+            issueId: number,
+            monitored: boolean,
+            { shiftKey }: { shiftKey: boolean },
+        ) => {
             const lastToggled = lastToggledIssue.current;
             const issueIds = [issueId];
 
             if (shiftKey && lastToggled) {
-                const { lower, upper } = getToggledRange(issues, issueId, lastToggled);
+                const { lower, upper } = getToggledRange(
+                    issues,
+                    issueId,
+                    lastToggled,
+                );
 
                 for (let i = lower; i < upper; i++) {
                     issueIds.push(issues[i].id);
@@ -242,7 +266,8 @@ export default function IssueTable({ volumeId }: IssueTableProps) {
                     />
                 )}
                 predicates={{
-                    issueNumber: (a, b) => a.calculatedIssueNumber - b.calculatedIssueNumber,
+                    issueNumber: (a, b) =>
+                        a.calculatedIssueNumber - b.calculatedIssueNumber,
                 }}
             />
         </div>

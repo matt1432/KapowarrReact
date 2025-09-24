@@ -29,7 +29,10 @@ export default function AddDownloadClientItem({
 
     return (
         <div className={styles.downloadClient}>
-            <Link className={styles.underlay} onPress={handleDownloadClientSelect} />
+            <Link
+                className={styles.underlay}
+                onPress={handleDownloadClientSelect}
+            />
 
             <div className={styles.overlay}>
                 <div className={styles.name}>{clientType}</div>

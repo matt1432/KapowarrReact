@@ -10,7 +10,10 @@ import jdu from 'jdu';
 import AutoSuggestInput from '../AutoSuggestInput';
 
 // Types
-import type { ChangeEvent, SuggestionsFetchRequestedParams } from 'react-autosuggest';
+import type {
+    ChangeEvent,
+    SuggestionsFetchRequestedParams,
+} from 'react-autosuggest';
 import type { InputChanged } from 'typings/Inputs';
 
 export interface AutoCompleteInputProps<K extends string> {

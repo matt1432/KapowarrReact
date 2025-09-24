@@ -28,14 +28,20 @@ export default function RootFolderSelectInputSelectedValue({
     ...otherProps
 }: RootFolderSelectInputSelectedValueProps) {
     const { value, freeSpace } =
-        values.find((v) => v.key === selectedValue) || ({} as RootFolderSelectInputValue);
+        values.find((v) => v.key === selectedValue) ||
+        ({} as RootFolderSelectInputValue);
 
     return (
-        <EnhancedSelectInputSelectedValue className={styles.selectedValue} {...otherProps}>
+        <EnhancedSelectInputSelectedValue
+            className={styles.selectedValue}
+            {...otherProps}
+        >
             <div className={styles.pathContainer}>
                 <div className={styles.path}>{value}</div>
 
-                {volumeFolder ? <div className={styles.volumeFolder}>{volumeFolder}</div> : null}
+                {volumeFolder ? (
+                    <div className={styles.volumeFolder}>{volumeFolder}</div>
+                ) : null}
             </div>
 
             {freeSpace ? (

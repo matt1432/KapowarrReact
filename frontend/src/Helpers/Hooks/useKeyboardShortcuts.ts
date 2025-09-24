@@ -53,7 +53,11 @@ function useKeyboardShortcuts() {
     const mouseTrap = useRef<MousetrapInstance | null>(null);
 
     const handleStop = useCallback(
-        (_e: Mousetrap.ExtendedKeyboardEvent, element: Element, combo: string) => {
+        (
+            _e: Mousetrap.ExtendedKeyboardEvent,
+            element: Element,
+            combo: string,
+        ) => {
             const binding = bindings.current[combo];
 
             if (!binding || binding.isGlobal) {
@@ -64,7 +68,8 @@ function useKeyboardShortcuts() {
                 element.tagName === 'INPUT' ||
                 element.tagName === 'SELECT' ||
                 element.tagName === 'TEXTAREA' ||
-                ('contentEditable' in element && element.contentEditable === 'true')
+                ('contentEditable' in element &&
+                    element.contentEditable === 'true')
             );
         },
         [],
@@ -73,7 +78,10 @@ function useKeyboardShortcuts() {
     const bindShortcut = useCallback(
         (
             shortcutKey: keyof typeof shortcuts,
-            callback: (e: Mousetrap.ExtendedKeyboardEvent, combo: string) => void,
+            callback: (
+                e: Mousetrap.ExtendedKeyboardEvent,
+                combo: string,
+            ) => void,
             options: BindingOptions = {},
         ) => {
             const shortcut = shortcuts[shortcutKey];
@@ -84,12 +92,15 @@ function useKeyboardShortcuts() {
         [],
     );
 
-    const unbindShortcut = useCallback((shortcutKey: keyof typeof shortcuts) => {
-        const shortcut = shortcuts[shortcutKey];
+    const unbindShortcut = useCallback(
+        (shortcutKey: keyof typeof shortcuts) => {
+            const shortcut = shortcuts[shortcutKey];
 
-        delete bindings.current[shortcut.key];
-        mouseTrap.current?.unbind(shortcut.key);
-    }, []);
+            delete bindings.current[shortcut.key];
+            mouseTrap.current?.unbind(shortcut.key);
+        },
+        [],
+    );
 
     useEffect(() => {
         mouseTrap.current = new Mousetrap();
@@ -113,7 +124,10 @@ function useKeyboardShortcuts() {
         };
     }, [handleStop]);
 
-    return useMemo(() => ({ bindShortcut, unbindShortcut }), [bindShortcut, unbindShortcut]);
+    return useMemo(
+        () => ({ bindShortcut, unbindShortcut }),
+        [bindShortcut, unbindShortcut],
+    );
 }
 
 export default useKeyboardShortcuts;

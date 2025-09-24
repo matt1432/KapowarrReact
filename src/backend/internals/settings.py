@@ -58,7 +58,9 @@ class SettingsValues:
 
     rename_downloaded_files: bool = True
     replace_illegal_characters: bool = True
-    volume_folder_naming: str = join("{series_name}", "Volume {volume_number} ({year})")
+    volume_folder_naming: str = join(
+        "{series_name}", "Volume {volume_number} ({year})"
+    )
     file_naming: str = (
         "{series_name} ({year}) Volume {volume_number} Issue {issue_number}"
     )
@@ -227,7 +229,10 @@ class Settings(metaclass=Singleton):
             InvalidSettingModification: Key can not be modified this way.
             FolderNotFound: Folder not found.
         """
-        from backend.implementations.naming import NAMING_MAPPING, check_mock_filename
+        from backend.implementations.naming import (
+            NAMING_MAPPING,
+            check_mock_filename,
+        )
 
         formatted_data = {}
         for key, value in data.items():
@@ -296,9 +301,12 @@ class Settings(metaclass=Singleton):
         LOGGER.debug(f"Setting reset: {key}")
 
         if not isinstance(
-            SettingsValues.__dataclass_fields__[key].default_factory, _MISSING_TYPE
+            SettingsValues.__dataclass_fields__[key].default_factory,
+            _MISSING_TYPE,
         ):
-            self[key] = SettingsValues.__dataclass_fields__[key].default_factory()  # type: ignore
+            self[key] = SettingsValues.__dataclass_fields__[
+                key
+            ].default_factory()  # type: ignore
         else:
             self[key] = SettingsValues.__dataclass_fields__[key].default
 
@@ -352,9 +360,9 @@ class Settings(metaclass=Singleton):
         if key == "api_key":
             raise InvalidSettingModification(key, "POST /settings/api_key")
 
-        if SettingsValues.__dataclass_fields__[key].type is CommaList and isinstance(
-            value, list
-        ):
+        if SettingsValues.__dataclass_fields__[
+            key
+        ].type is CommaList and isinstance(value, list):
             value = CommaList(value)
 
         if issubclass(SettingsValues.__dataclass_fields__[key].type, BaseEnum):  # type: ignore
@@ -393,7 +401,9 @@ class Settings(metaclass=Singleton):
             if not isdir(value):
                 raise FolderNotFound(value)
 
-            converted_value = uppercase_drive_letter(force_suffix(abspath(value)))
+            converted_value = uppercase_drive_letter(
+                force_suffix(abspath(value))
+            )
 
             for rf in RootFolders().get_all():
                 if folder_is_inside_folder(
@@ -424,7 +434,9 @@ class Settings(metaclass=Singleton):
             converted_value = value
 
         elif key == "service_preference":
-            available = [s.value for s in GCDownloadSource._member_map_.values()]
+            available = [
+                s.value for s in GCDownloadSource._member_map_.values()
+            ]
             for entry in value:
                 if entry not in available:
                     raise InvalidSettingValue(key, value)
@@ -441,11 +453,16 @@ class Settings(metaclass=Singleton):
             if converted_value:
                 converted_value = normalise_base_url(converted_value)
 
-            if converted_value and not FlareSolverr.test_flaresolverr(converted_value):
+            if converted_value and not FlareSolverr.test_flaresolverr(
+                converted_value
+            ):
                 raise InvalidSettingValue(key, value)
 
         else:
-            from backend.implementations.naming import NAMING_MAPPING, check_format
+            from backend.implementations.naming import (
+                NAMING_MAPPING,
+                check_format,
+            )
 
             if key in NAMING_MAPPING:
                 converted_value = value.strip().strip(sep)

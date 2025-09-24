@@ -29,15 +29,27 @@ export default function VolumeIndexFilterMenu({
     return (
         <FilterMenu isDisabled={isDisabled} alignMenu={align.RIGHT}>
             <MenuContent>
-                <FilterMenuItem name="" filterKey={filterKey} onPress={onFilterSelect}>
+                <FilterMenuItem
+                    name=""
+                    filterKey={filterKey}
+                    onPress={onFilterSelect}
+                >
                     {translate('All')}
                 </FilterMenuItem>
 
-                <FilterMenuItem name="wanted" filterKey={filterKey} onPress={onFilterSelect}>
+                <FilterMenuItem
+                    name="wanted"
+                    filterKey={filterKey}
+                    onPress={onFilterSelect}
+                >
                     {translate('Wanted')}
                 </FilterMenuItem>
 
-                <FilterMenuItem name="monitored" filterKey={filterKey} onPress={onFilterSelect}>
+                <FilterMenuItem
+                    name="monitored"
+                    filterKey={filterKey}
+                    onPress={onFilterSelect}
+                >
                     {translate('Monitored')}
                 </FilterMenuItem>
             </MenuContent>

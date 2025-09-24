@@ -52,10 +52,19 @@ export default function HistoryRow({
 
             {showVolumes ? (
                 <TableRowCell>
-                    {typeof volumeId === 'number' || typeof issue?.volumeId === 'number' ? (
+                    {typeof volumeId === 'number' ||
+                    typeof issue?.volumeId === 'number' ? (
                         <VolumeTitleLink
-                            title={(volumeId ?? issue?.volumeId ?? '').toString()}
-                            titleSlug={(volumeId ?? issue?.volumeId ?? '').toString()}
+                            title={(
+                                volumeId ??
+                                issue?.volumeId ??
+                                ''
+                            ).toString()}
+                            titleSlug={(
+                                volumeId ??
+                                issue?.volumeId ??
+                                ''
+                            ).toString()}
                         />
                     ) : null}
                 </TableRowCell>
@@ -71,9 +80,15 @@ export default function HistoryRow({
 
             <TableRowCell>{fileTitle}</TableRowCell>
 
-            <RelativeDateCell date={downloadedAt * 1000} includeSeconds={true} includeTime={true} />
+            <RelativeDateCell
+                date={downloadedAt * 1000}
+                includeSeconds={true}
+                includeTime={true}
+            />
 
-            <TableRowCell>{success ? translate('Completed') : translate('Failed')}</TableRowCell>
+            <TableRowCell>
+                {success ? translate('Completed') : translate('Failed')}
+            </TableRowCell>
         </TableRow>
     );
 }

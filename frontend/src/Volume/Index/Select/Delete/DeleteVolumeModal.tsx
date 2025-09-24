@@ -22,7 +22,10 @@ export default function DeleteVolumeModal({
 }: DeleteVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
-            <DeleteVolumeModalContent volumeIds={volumeIds} onModalClose={onModalClose} />
+            <DeleteVolumeModalContent
+                volumeIds={volumeIds}
+                onModalClose={onModalClose}
+            />
         </Modal>
     );
 }

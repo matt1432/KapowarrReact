@@ -119,7 +119,9 @@ class DBConnection(Connection, metaclass=DBConnectionManager):
             timeout (float): How long to wait before giving up on a command
         """
         LOGGER.debug(f"Creating connection {self}")
-        super().__init__(self.file, timeout=timeout, detect_types=PARSE_DECLTYPES)
+        super().__init__(
+            self.file, timeout=timeout, detect_types=PARSE_DECLTYPES
+        )
         super().cursor().execute("PRAGMA foreign_keys = ON;")
         self.closed = False
         return
@@ -159,7 +161,9 @@ class DBConnection(Connection, metaclass=DBConnectionManager):
         return
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}; {current_thread().name}; {id(self)}>"
+        return (
+            f"<{self.__class__.__name__}; {current_thread().name}; {id(self)}>"
+        )
 
 
 def set_db_location(db_folder: str | None) -> None:
@@ -206,7 +210,9 @@ def get_db(force_new: bool = False) -> KapowarrCursor:
     Returns:
         KapowarrCursor: Database cursor instance that outputs Row objects.
     """
-    cursor = DBConnection(timeout=Constants.DB_TIMEOUT).cursor(force_new=force_new)
+    cursor = DBConnection(timeout=Constants.DB_TIMEOUT).cursor(
+        force_new=force_new
+    )
     return cursor
 
 

@@ -79,7 +79,9 @@ export default function EditVolumeModalContent({
             hasChanges = true;
             runMassEditAction({
                 action:
-                    monitored === 'monitored' ? massEditActions.MONITOR : massEditActions.UNMONITOR,
+                    monitored === 'monitored'
+                        ? massEditActions.MONITOR
+                        : massEditActions.UNMONITOR,
                 volumeIds,
             });
         }
@@ -90,7 +92,9 @@ export default function EditVolumeModalContent({
                 action: massEditActions.ROOT_FOLDER,
                 volumeIds,
                 args: {
-                    rootFolderId: rootFolders.find((f) => f.folder === rootFolderPath)!.id,
+                    rootFolderId: rootFolders.find(
+                        (f) => f.folder === rootFolderPath,
+                    )!.id,
                 },
             });
         }
@@ -165,7 +169,9 @@ export default function EditVolumeModalContent({
                 </div>
 
                 <div>
-                    <Button onPress={onModalClose}>{translate('Cancel')}</Button>
+                    <Button onPress={onModalClose}>
+                        {translate('Cancel')}
+                    </Button>
 
                     <Button onPress={save}>{translate('ApplyChanges')}</Button>
                 </div>

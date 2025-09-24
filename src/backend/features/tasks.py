@@ -90,7 +90,9 @@ class AutoSearchIssue(Task):
     def issue_id(self) -> int:
         return self._issue_id
 
-    def __init__(self, volume_id: int, issue_id: int, called_from: str = "") -> None:
+    def __init__(
+        self, volume_id: int, issue_id: int, called_from: str = ""
+    ) -> None:
         """Create the task
 
         Args:
@@ -112,7 +114,8 @@ class AutoSearchIssue(Task):
         results = auto_search(self._volume_id, self._issue_id)
         if results:
             return [
-                (result["link"], self._volume_id, self._issue_id) for result in results
+                (result["link"], self._volume_id, self._issue_id)
+                for result in results
             ]
         return []
 
@@ -268,7 +271,9 @@ class AutoSearchVolume(Task):
         # Get search results and download them
         results = auto_search(self._volume_id)
         if results:
-            return [(result["link"], self._volume_id, None) for result in results]
+            return [
+                (result["link"], self._volume_id, None) for result in results
+            ]
         return []
 
 
@@ -330,7 +335,10 @@ class MassRenameVolume(Task):
         return None
 
     def __init__(
-        self, volume_id: int, filepath_filter: list[str] = [], called_from: str = ""
+        self,
+        volume_id: int,
+        filepath_filter: list[str] = [],
+        called_from: str = "",
     ) -> None:
         """Create the task
 
@@ -351,7 +359,9 @@ class MassRenameVolume(Task):
         WebSocket().update_task_status(self)
 
         mass_rename(
-            self._volume_id, filepath_filter=self.filepath_filter, update_websocket=True
+            self._volume_id,
+            filepath_filter=self.filepath_filter,
+            update_websocket=True,
         )
 
         return
@@ -375,7 +385,10 @@ class MassConvertVolume(Task):
         return None
 
     def __init__(
-        self, volume_id: int, filepath_filter: list[str] = [], called_from: str = ""
+        self,
+        volume_id: int,
+        filepath_filter: list[str] = [],
+        called_from: str = "",
     ) -> None:
         """Create the task
 
@@ -427,7 +440,9 @@ class UpdateAll(Task):
     def issue_id(self) -> None:
         return None
 
-    def __init__(self, allow_skipping: bool = False, called_from: str = "") -> None:
+    def __init__(
+        self, allow_skipping: bool = False, called_from: str = ""
+    ) -> None:
         """Create the task
 
         Args:
@@ -443,7 +458,9 @@ class UpdateAll(Task):
         WebSocket().update_task_status(self)
 
         try:
-            refresh_and_scan(update_websocket=True, allow_skipping=self.allow_skipping)
+            refresh_and_scan(
+                update_websocket=True, allow_skipping=self.allow_skipping
+            )
         except InvalidComicVineApiKey:
             pass
 
@@ -484,7 +501,9 @@ class SearchAll(Task):
             # Get search results and download them
             results = auto_search(volume_id)
             if results:
-                downloads += [(result["link"], volume_id, None) for result in results]
+                downloads += [
+                    (result["link"], volume_id, None) for result in results
+                ]
         return downloads
 
 
@@ -493,7 +512,9 @@ class SearchAll(Task):
 # =====================
 # Maps action attr to class for all tasks
 # Only works for classes that directly inherit from Task
-task_library: dict[str, type[Task]] = {c.action: c for c in get_subclasses(Task)}
+task_library: dict[str, type[Task]] = {
+    c.action: c for c in get_subclasses(Task)
+}
 
 
 class TaskHandler(metaclass=Singleton):
@@ -538,7 +559,9 @@ class TaskHandler(metaclass=Singleton):
                     LOGGER.info(f"Finished task {task.display_title}")
 
             except Exception:
-                LOGGER.exception("An error occured while trying to run a task: ")
+                LOGGER.exception(
+                    "An error occured while trying to run a task: "
+                )
                 task.message = "AN ERROR OCCURED"
                 socket.update_task_status(task)
                 sleep(1.5)

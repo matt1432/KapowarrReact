@@ -42,8 +42,13 @@ const volumePaddingOptions: EnhancedSelectInputValue<number>[] = [
 ];
 
 export default function MediaManagement() {
-    const { isSaving, hasPendingChanges, onSavePress, handleInputChange, changes } =
-        useEditSettings();
+    const {
+        isSaving,
+        hasPendingChanges,
+        onSavePress,
+        handleInputChange,
+        changes,
+    } = useEditSettings();
 
     return (
         <PageContent title={translate('MediaManagementSettings')}>
@@ -67,22 +72,30 @@ export default function MediaManagement() {
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel>{translate('ReplaceIllegalCharacters')}</FormLabel>
+                            <FormLabel>
+                                {translate('ReplaceIllegalCharacters')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.CHECK}
                                 name="replaceIllegalCharacters"
-                                helpText={translate('ReplaceIllegalCharactersHelpText')}
+                                helpText={translate(
+                                    'ReplaceIllegalCharactersHelpText',
+                                )}
                                 onChange={handleInputChange}
                                 value={changes.replaceIllegalCharacters}
                             />
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel>{translate('VolumeFolderNaming')}</FormLabel>
+                            <FormLabel>
+                                {translate('VolumeFolderNaming')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.TEXT}
                                 name="volumeFolderNaming"
-                                helpText={translate('VolumeFolderNamingHelpText')}
+                                helpText={translate(
+                                    'VolumeFolderNamingHelpText',
+                                )}
                                 onChange={handleInputChange}
                                 value={changes.volumeFolderNaming}
                             />
@@ -100,7 +113,9 @@ export default function MediaManagement() {
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel>{translate('FileNamingEmpty')}</FormLabel>
+                            <FormLabel>
+                                {translate('FileNamingEmpty')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.TEXT}
                                 name="fileNamingEmpty"
@@ -168,22 +183,30 @@ export default function MediaManagement() {
 
                     <FieldSet legend={translate('Folders')}>
                         <FormGroup>
-                            <FormLabel>{translate('CreateEmptyVolumeFolders')}</FormLabel>
+                            <FormLabel>
+                                {translate('CreateEmptyVolumeFolders')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.CHECK}
                                 name="createEmptyVolumeFolders"
-                                helpText={translate('CreateEmptyVolumeFoldersHelpText')}
+                                helpText={translate(
+                                    'CreateEmptyVolumeFoldersHelpText',
+                                )}
                                 onChange={handleInputChange}
                                 value={changes.createEmptyVolumeFolders}
                             />
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel>{translate('DeleteEmptyFolders')}</FormLabel>
+                            <FormLabel>
+                                {translate('DeleteEmptyFolders')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.CHECK}
                                 name="deleteEmptyFolders"
-                                helpText={translate('DeleteEmptyVolumeFoldersHelpText')}
+                                helpText={translate(
+                                    'DeleteEmptyVolumeFoldersHelpText',
+                                )}
                                 onChange={handleInputChange}
                                 value={changes.deleteEmptyFolders}
                             />
@@ -192,11 +215,15 @@ export default function MediaManagement() {
 
                     <FieldSet legend={translate('FileManagement')}>
                         <FormGroup>
-                            <FormLabel>{translate('UnmonitorDeletedIssues')}</FormLabel>
+                            <FormLabel>
+                                {translate('UnmonitorDeletedIssues')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.CHECK}
                                 name="unmonitorDeletedIssues"
-                                helpText={translate('UnmonitorDeletedIssuesHelpText')}
+                                helpText={translate(
+                                    'UnmonitorDeletedIssuesHelpText',
+                                )}
                                 onChange={handleInputChange}
                                 value={changes.unmonitorDeletedIssues}
                             />
@@ -205,7 +232,9 @@ export default function MediaManagement() {
 
                     <FieldSet legend={translate('AdRemoval')}>
                         <FormGroup>
-                            <FormLabel>{translate('AdRemovalToggle')}</FormLabel>
+                            <FormLabel>
+                                {translate('AdRemovalToggle')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.CHECK}
                                 name="removeAds"
@@ -243,13 +272,20 @@ export default function MediaManagement() {
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel>{translate('FormatPreference')}</FormLabel>
+                            <FormLabel>
+                                {translate('FormatPreference')}
+                            </FormLabel>
                             <FormatPreferenceInput
                                 helpText={translate('FormatPreferenceHelpText')}
                                 onChange={(v) =>
-                                    handleInputChange({ name: 'formatPreference', value: v })
+                                    handleInputChange({
+                                        name: 'formatPreference',
+                                        value: v,
+                                    })
                                 }
-                                value={changes.formatPreference as TranslateKey[]}
+                                value={
+                                    changes.formatPreference as TranslateKey[]
+                                }
                             />
                         </FormGroup>
                     </FieldSet>

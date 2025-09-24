@@ -23,5 +23,7 @@ export default function TableRowCellButton({
     className = styles.cell,
     ...otherProps
 }: TableRowCellButtonProps) {
-    return <Link className={className} component={TableRowCell} {...otherProps} />;
+    return (
+        <Link className={className} component={TableRowCell} {...otherProps} />
+    );
 }

@@ -37,27 +37,30 @@ type MassEditSpecificParams = {
 
 export type MassEditActionWithArgs = keyof MassEditSpecificParams;
 
-type RawMassEditParams<T extends MassEditAction> = T extends MassEditActionWithArgs
-    ? {
-          action: T;
-          volume_ids: number[];
-          args: MassEditSpecificParams[T];
-      }
-    : {
-          action: T;
-          volume_ids: number[];
-      };
+type RawMassEditParams<T extends MassEditAction> =
+    T extends MassEditActionWithArgs
+        ? {
+              action: T;
+              volume_ids: number[];
+              args: MassEditSpecificParams[T];
+          }
+        : {
+              action: T;
+              volume_ids: number[];
+          };
 
-export type MassEditParams<T extends MassEditAction = MassEditAction> = CamelCasedPropertiesDeep<
-    RawMassEditParams<T>
->;
+export type MassEditParams<T extends MassEditAction = MassEditAction> =
+    CamelCasedPropertiesDeep<RawMassEditParams<T>>;
 
 export type ManualSearchParams = RequireExactlyOne<{
     volumeId: number;
     issueId?: number;
 }>;
 
-export type AddDownloadParams = ManualSearchParams & { result: SearchResult; forceMatch?: boolean };
+export type AddDownloadParams = ManualSearchParams & {
+    result: SearchResult;
+    forceMatch?: boolean;
+};
 
 // IMPLEMENTATIONS
 
@@ -80,7 +83,10 @@ const extendedApi = baseApi.injectEndpoints({
         }),
 
         // POST
-        libgenFileSearch: build.mutation<SearchResult[], ManualSearchParams & { url: string }>({
+        libgenFileSearch: build.mutation<
+            SearchResult[],
+            ManualSearchParams & { url: string }
+        >({
             query: ({ issueId, volumeId, url }) => ({
                 method: 'POST',
                 url:
@@ -169,7 +175,9 @@ export const useMassEditMutation = () => {
     const [trigger, state] = extendedApi.useMassEditMutation();
 
     return [
-        trigger as <T extends MassEditAction>(arg: MassEditParams<T>) => ReturnType<typeof trigger>,
+        trigger as <T extends MassEditAction>(
+            arg: MassEditParams<T>,
+        ) => ReturnType<typeof trigger>,
         state,
     ] as const;
 };

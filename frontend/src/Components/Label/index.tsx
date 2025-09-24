@@ -31,7 +31,12 @@ export default function Label({
 }: LabelProps) {
     return (
         <span
-            className={classNames(className, styles[kind], styles[size], outline && styles.outline)}
+            className={classNames(
+                className,
+                styles[kind],
+                styles[size],
+                outline && styles.outline,
+            )}
             {...otherProps}
         />
     );

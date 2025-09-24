@@ -9,7 +9,9 @@ import translate from 'Utilities/String/translate';
 
 // Specific Components
 import Menu from 'Components/Menu/Menu';
-import ToolbarMenuButton, { type ToolbarMenuButtonProps } from 'Components/Menu/ToolbarMenuButton';
+import ToolbarMenuButton, {
+    type ToolbarMenuButtonProps,
+} from 'Components/Menu/ToolbarMenuButton';
 
 // CSS
 

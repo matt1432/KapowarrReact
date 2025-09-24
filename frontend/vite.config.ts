@@ -27,7 +27,9 @@ export default defineConfig({
                 manualChunks: {
                     bootstrap: ['src/bootstrap/index.tsx'],
                     react: ['src/index.ts'],
-                    'fuse.worker': ['src/Components/Page/Header/fuse.worker.ts'],
+                    'fuse.worker': [
+                        'src/Components/Page/Header/fuse.worker.ts',
+                    ],
                 },
             },
         },

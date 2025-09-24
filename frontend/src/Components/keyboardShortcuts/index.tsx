@@ -65,7 +65,9 @@ export const shortcuts: Record<string, Shortcut> = {
     },
 };
 
-export default function keyboardShortcuts(WrappedComponent: ComponentType<KeyboardShortcutsProps>) {
+export default function keyboardShortcuts(
+    WrappedComponent: ComponentType<KeyboardShortcutsProps>,
+) {
     class KeyboardShortcuts extends Component {
         //
         // Lifecycle
@@ -90,7 +92,10 @@ export default function keyboardShortcuts(WrappedComponent: ComponentType<Keyboa
 
         bindShortcut = (
             key: string,
-            callback: (e: Mousetrap.ExtendedKeyboardEvent, combo: string) => void,
+            callback: (
+                e: Mousetrap.ExtendedKeyboardEvent,
+                combo: string,
+            ) => void,
             options: BindingOptions = {},
         ) => {
             this._mousetrap?.bind(key, callback);
@@ -118,7 +123,11 @@ export default function keyboardShortcuts(WrappedComponent: ComponentType<Keyboa
             this._mousetrapBindings = {};
         };
 
-        stopCallback = (_e: Mousetrap.ExtendedKeyboardEvent, element: Element, combo: string) => {
+        stopCallback = (
+            _e: Mousetrap.ExtendedKeyboardEvent,
+            element: Element,
+            combo: string,
+        ) => {
             const binding = this._mousetrapBindings[combo];
 
             if (!binding || binding.isGlobal) {
@@ -129,7 +138,8 @@ export default function keyboardShortcuts(WrappedComponent: ComponentType<Keyboa
                 element.tagName === 'INPUT' ||
                 element.tagName === 'SELECT' ||
                 element.tagName === 'TEXTAREA' ||
-                ('contentEditable' in element && element.contentEditable === 'true')
+                ('contentEditable' in element &&
+                    element.contentEditable === 'true')
             );
         };
 

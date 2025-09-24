@@ -1,7 +1,12 @@
 // IMPORTS
 
 // React
-import { type ForwardedRef, forwardRef, type ReactNode, useCallback } from 'react';
+import {
+    type ForwardedRef,
+    forwardRef,
+    type ReactNode,
+    useCallback,
+} from 'react';
 
 // Misc
 import { isLocked } from 'Utilities/scrollLock';

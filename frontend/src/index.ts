@@ -4,8 +4,10 @@ import './index.css';
 window.Kapowarr = {
     apiKey: '',
     apiRoot: '/api',
-    urlBase: (document.querySelector('#url_base') as HTMLMetaElement).dataset.value!,
-    version: (document.querySelector('#version') as HTMLMetaElement).dataset.value!,
+    urlBase: (document.querySelector('#url_base') as HTMLMetaElement).dataset
+        .value!,
+    version: (document.querySelector('#version') as HTMLMetaElement).dataset
+        .value!,
 };
 
 (async () => {

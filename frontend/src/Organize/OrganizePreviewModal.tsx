@@ -24,7 +24,10 @@ export default function OrganizePreviewModal({
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
             {isOpen ? (
-                <OrganizePreviewModalContent {...otherProps} onModalClose={onModalClose} />
+                <OrganizePreviewModalContent
+                    {...otherProps}
+                    onModalClose={onModalClose}
+                />
             ) : null}
         </Modal>
     );

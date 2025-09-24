@@ -39,7 +39,11 @@ from backend.base.files import (
     list_files,
     rename_file,
 )
-from backend.base.helpers import extract_year_from_date, filtered_iter, force_range
+from backend.base.helpers import (
+    extract_year_from_date,
+    filtered_iter,
+    force_range,
+)
 from backend.base.logging import LOGGER
 from backend.implementations.matching import _match_title, file_importing_filter
 from backend.implementations.root_folders import RootFolders
@@ -165,7 +169,9 @@ def _get_volume_naming_keys(
         and file_data["resolution"] != ""
         else None,
         dpi=file_data["dpi"]
-        if file_data is not None and "dpi" in file_data and file_data["dpi"] != ""
+        if file_data is not None
+        and "dpi" in file_data
+        and file_data["dpi"] != ""
         else None,
     )
 
@@ -196,7 +202,9 @@ def _get_issue_naming_keys(
     return IssueNamingKeys(
         **_get_volume_naming_keys(volume, file_data=file_data).__dict__,
         issue_comicvine_id=issue_data.comicvine_id,
-        issue_number=(str(issue_data.issue_number or "").zfill(issue_padding) or None),
+        issue_number=(
+            str(issue_data.issue_number or "").zfill(issue_padding) or None
+        ),
         issue_title=clean_filestring(issue_data.title or "") or None,
         issue_release_date=issue_data.date,
         issue_release_year=extract_year_from_date(issue_data.date),
@@ -306,7 +314,9 @@ def generate_issue_name(
         SpecialVersion.OMNIBUS,
     ):
         # Iron-Man Volume 2 One-Shot
-        formatting_data = _get_volume_naming_keys(volume_id, file_data=file_data)
+        formatting_data = _get_volume_naming_keys(
+            volume_id, file_data=file_data
+        )
         format = sv.file_naming_special_version
 
     elif special_version == SpecialVersion.VOLUME_AS_ISSUE:
@@ -347,7 +357,9 @@ def generate_issue_name(
         formatting_data, IssueNamingKeys
     ):
         issue_number_end = (
-            Issue.from_volume_and_calc_number(volume_id, calculated_issue_number[1])
+            Issue.from_volume_and_calc_number(
+                volume_id, calculated_issue_number[1]
+            )
             .get_data()
             .issue_number
         )
@@ -379,7 +391,8 @@ def generate_issue_name(
                 save_name = titleless_save_name
 
         elif (
-            extract_filename_data(save_name)["issue_number"] != calculated_issue_number
+            extract_filename_data(save_name)["issue_number"]
+            != calculated_issue_number
         ):
             # When applying the EFD algorithm to the generated filename, we don't
             # get back the same issue number(s) as that we originally made the
@@ -414,7 +427,9 @@ def generate_image_name(filename: str) -> str:
     Returns:
         str: The image file name.
     """
-    file_body = remove_year_in_image_regex.sub("", splitext(basename(filename))[0])
+    file_body = remove_year_in_image_regex.sub(
+        "", splitext(basename(filename))[0]
+    )
 
     cover_result = cover_regex.search(file_body)
     if cover_result:
@@ -686,7 +701,9 @@ def check_mock_filename(
             if key == "file_naming_special_version":
                 formatting_data = _get_volume_naming_keys(volume_mock)
             else:
-                formatting_data = _get_issue_naming_keys(volume_mock, issue_mock[0])
+                formatting_data = _get_issue_naming_keys(
+                    volume_mock, issue_mock[0]
+                )
 
             placeholders = get_placeholders(filepath)
             formatted = get_corresponding_formatted_naming_keys(
@@ -701,15 +718,23 @@ def check_mock_filename(
             }
             efd = extract_filename_data(save_name)
             if not (
-                file_importing_filter(efd, volume_mock, issue_mock, number_to_year)
+                file_importing_filter(
+                    efd, volume_mock, issue_mock, number_to_year
+                )
                 and _match_title(efd["series"], volume_mock.title)
                 and (
                     # Special version doesn't need issue matching
                     key == "file_naming_special_version"
                     or (
                         # Issue number must match
-                        key in ("file_naming", "file_naming_empty", "file_naming_vai")
-                        and efd["issue_number"] == issue_mock[0].calculated_issue_number
+                        key
+                        in (
+                            "file_naming",
+                            "file_naming_empty",
+                            "file_naming_vai",
+                        )
+                        and efd["issue_number"]
+                        == issue_mock[0].calculated_issue_number
                     )
                     or (
                         # VAI name has issue number labeled as volume number
@@ -855,7 +880,9 @@ def preview_mass_rename(
         if issues and file.endswith(FileConstants.IMAGE_EXTENSIONS):
             # Image file is page of issue, so put it in it's own
             # folder together with the other images.
-            gen_filename_body = join(gen_filename_body, generate_image_name(file))
+            gen_filename_body = join(
+                gen_filename_body, generate_image_name(file)
+            )
 
         suggested_name = join(
             volume_folder, gen_filename_body + splitext(file)[1].lower()
@@ -942,7 +969,9 @@ def mass_rename(
         ws = WebSocket()
         total_renames = len(renames)
         for idx, (before, after) in enumerate(renames.items()):
-            ws.update_task_status(message=f"Renaming file {idx + 1}/{total_renames}")
+            ws.update_task_status(
+                message=f"Renaming file {idx + 1}/{total_renames}"
+            )
             rename_file(before, after)
 
     else:
@@ -955,5 +984,7 @@ def mass_rename(
         delete_empty_child_folders(volume_data.folder, skip_hidden_folders=True)
         delete_empty_parent_folders(volume_data.folder, root_folder)
 
-    LOGGER.info(f"Renamed volume {volume_id} {f'issue {issue_id}' if issue_id else ''}")
+    LOGGER.info(
+        f"Renamed volume {volume_id} {f'issue {issue_id}' if issue_id else ''}"
+    )
     return list(renames.values())

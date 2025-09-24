@@ -30,7 +30,11 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { InputChanged } from 'typings/Inputs';
-import type { InteractiveSearchPayload, InteractiveSearchSort, SearchResult } from 'typings/Search';
+import type {
+    InteractiveSearchPayload,
+    InteractiveSearchSort,
+    SearchResult,
+} from 'typings/Search';
 
 interface InteractiveSearchRowProps {
     columns: Column<InteractiveSearchSort>[];
@@ -88,7 +92,9 @@ function getDownloadTooltip(
         return errorMessage;
     }
 
-    return isTorrent ? translate('AddTorrentToDownloadQueue') : translate('AddToDownloadQueue');
+    return isTorrent
+        ? translate('AddTorrentToDownloadQueue')
+        : translate('AddToDownloadQueue');
 }
 
 export default function InteractiveSearchRow({
@@ -97,7 +103,10 @@ export default function InteractiveSearchRow({
     searchPayload,
 }: InteractiveSearchRowProps) {
     const initialIssueNumber = useMemo(
-        () => (Array.isArray(result.issueNumber) ? result.issueNumber[0] : result.issueNumber),
+        () =>
+            Array.isArray(result.issueNumber)
+                ? result.issueNumber[0]
+                : result.issueNumber,
         [result.issueNumber],
     );
     const [issueNumber, setIssueNumber] = useState(initialIssueNumber);
@@ -108,7 +117,12 @@ export default function InteractiveSearchRow({
 
     const [
         grabRelease,
-        { isLoading: isGrabbing, isSuccess: isGrabbed, isError, error: grabError },
+        {
+            isLoading: isGrabbing,
+            isSuccess: isGrabbed,
+            isError,
+            error: grabError,
+        },
     ] = useAddDownloadMutation();
 
     const [
@@ -156,7 +170,10 @@ export default function InteractiveSearchRow({
     const [isConfirmGrabModalOpen, setIsConfirmGrabModalOpen] = useState(false);
 
     const onGrabPressWrapper = useCallback(() => {
-        if (result.matchRejections.length === 0 || typeof issueNumber === 'number') {
+        if (
+            result.matchRejections.length === 0 ||
+            typeof issueNumber === 'number'
+        ) {
             onGrabPress();
 
             return;
@@ -190,21 +207,33 @@ export default function InteractiveSearchRow({
         [],
     );
 
-    const handleReleaserChange = useCallback(({ value }: InputChanged<'releaser', string>) => {
-        setReleaser(value);
-    }, []);
+    const handleReleaserChange = useCallback(
+        ({ value }: InputChanged<'releaser', string>) => {
+            setReleaser(value);
+        },
+        [],
+    );
 
-    const handleScanTypeChange = useCallback(({ value }: InputChanged<'scanType', string>) => {
-        setScanType(value);
-    }, []);
+    const handleScanTypeChange = useCallback(
+        ({ value }: InputChanged<'scanType', string>) => {
+            setScanType(value);
+        },
+        [],
+    );
 
-    const handleResolutionChange = useCallback(({ value }: InputChanged<'resolution', string>) => {
-        setResolution(value);
-    }, []);
+    const handleResolutionChange = useCallback(
+        ({ value }: InputChanged<'resolution', string>) => {
+            setResolution(value);
+        },
+        [],
+    );
 
-    const handleDpiChange = useCallback(({ value }: InputChanged<'dpi', string>) => {
-        setDpi(value);
-    }, []);
+    const handleDpiChange = useCallback(
+        ({ value }: InputChanged<'dpi', string>) => {
+            setDpi(value);
+        },
+        [],
+    );
 
     return (
         <TableRow>
@@ -257,7 +286,11 @@ export default function InteractiveSearchRow({
                 }
 
                 if (name === 'pages') {
-                    return <TableRowCell className={styles[name]}>{result.pages}</TableRowCell>;
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {result.pages}
+                        </TableRowCell>
+                    );
                 }
 
                 if (name === 'releaser') {
@@ -299,13 +332,21 @@ export default function InteractiveSearchRow({
                 if (name === 'dpi') {
                     return (
                         <TableRowCell className={styles[name]}>
-                            <TextInput name="dpi" value={dpi} onChange={handleDpiChange} />
+                            <TextInput
+                                name="dpi"
+                                value={dpi}
+                                onChange={handleDpiChange}
+                            />
                         </TableRowCell>
                     );
                 }
 
                 if (name === 'source') {
-                    return <TableRowCell className={styles[name]}>{result.source}</TableRowCell>;
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {result.source}
+                        </TableRowCell>
+                    );
                 }
 
                 if (name === 'matchRejections') {
@@ -313,13 +354,24 @@ export default function InteractiveSearchRow({
                         <TableRowCell className={styles.rejected}>
                             {result.matchRejections.length ? (
                                 <Popover
-                                    anchor={<Icon name={icons.DANGER} kind={kinds.DANGER} />}
+                                    anchor={
+                                        <Icon
+                                            name={icons.DANGER}
+                                            kind={kinds.DANGER}
+                                        />
+                                    }
                                     title={translate('ReleaseRejected')}
                                     body={
                                         <ul>
-                                            {result.matchRejections.map((rejection, index) => {
-                                                return <li key={index}>{rejection}</li>;
-                                            })}
+                                            {result.matchRejections.map(
+                                                (rejection, index) => {
+                                                    return (
+                                                        <li key={index}>
+                                                            {rejection}
+                                                        </li>
+                                                    );
+                                                },
+                                            )}
                                         </ul>
                                     }
                                     position={tooltipPositions.LEFT}
@@ -333,7 +385,11 @@ export default function InteractiveSearchRow({
                     return (
                         <TableRowCell className={styles[name]}>
                             <SpinnerIconButton
-                                name={getDownloadIcon(isGrabbing, isGrabbed, isError)}
+                                name={getDownloadIcon(
+                                    isGrabbing,
+                                    isGrabbed,
+                                    isError,
+                                )}
                                 kind={getDownloadKind(isGrabbed, isError)}
                                 title={getDownloadTooltip(
                                     isGrabbing,
@@ -352,7 +408,10 @@ export default function InteractiveSearchRow({
                                     isTorrentError,
                                     true,
                                 )}
-                                kind={getDownloadKind(isTorrentGrabbed, isTorrentError)}
+                                kind={getDownloadKind(
+                                    isTorrentGrabbed,
+                                    isTorrentError,
+                                )}
                                 title={getDownloadTooltip(
                                     isGrabbingTorrent,
                                     isTorrentGrabbed,
@@ -367,7 +426,9 @@ export default function InteractiveSearchRow({
 
                             <Link
                                 className={styles.manualDownloadContent}
-                                title={translate('OverrideAndAddToDownloadQueue')}
+                                title={translate(
+                                    'OverrideAndAddToDownloadQueue',
+                                )}
                                 onPress={onOverridePress}
                             >
                                 <div className={styles.manualDownloadContent}>
@@ -393,9 +454,12 @@ export default function InteractiveSearchRow({
                 isOpen={isConfirmGrabModalOpen}
                 kind={kinds.WARNING}
                 title={translate('GrabRelease')}
-                message={translate('GrabReleaseUnknownVolumeOrIssueMessageText', {
-                    title: result.displayTitle,
-                })}
+                message={translate(
+                    'GrabReleaseUnknownVolumeOrIssueMessageText',
+                    {
+                        title: result.displayTitle,
+                    },
+                )}
                 confirmLabel={translate('Grab')}
                 onConfirm={onGrabConfirm}
                 onCancel={onGrabCancel}

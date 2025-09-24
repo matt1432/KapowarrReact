@@ -105,7 +105,8 @@ export default function CheckInput<K extends string>({
             return;
         }
 
-        inputRef.current.indeterminate = value !== uncheckedValue && value !== checkedValue;
+        inputRef.current.indeterminate =
+            value !== uncheckedValue && value !== checkedValue;
     }, [value, uncheckedValue, checkedValue]);
 
     return (
@@ -131,11 +132,16 @@ export default function CheckInput<K extends string>({
                 >
                     {isChecked ? <Icon name={icons.CHECK} /> : null}
 
-                    {isIndeterminate ? <Icon name={icons.CHECK_INDETERMINATE} /> : null}
+                    {isIndeterminate ? (
+                        <Icon name={icons.CHECK_INDETERMINATE} />
+                    ) : null}
                 </div>
 
                 {helpText ? (
-                    <FormInputHelpText className={styles.helpText} text={helpText} />
+                    <FormInputHelpText
+                        className={styles.helpText}
+                        text={helpText}
+                    />
                 ) : null}
 
                 {!helpText && helpTextWarning ? (

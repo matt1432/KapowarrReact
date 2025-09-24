@@ -122,7 +122,9 @@ class Credentials:
             credential_data.username = None
 
         elif credential_data.source == CredentialSource.PIXELDRAIN:
-            from backend.implementations.download_clients import PixelDrainDownload
+            from backend.implementations.download_clients import (
+                PixelDrainDownload,
+            )
 
             try:
                 result = PixelDrainDownload.login(credential_data.api_key or "")

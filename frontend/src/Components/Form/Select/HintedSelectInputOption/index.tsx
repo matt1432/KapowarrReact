@@ -15,7 +15,8 @@ import EnhancedSelectInputOption, {
 import styles from './index.module.css';
 
 // Types
-interface HintedSelectInputOptionProps extends Omit<EnhancedSelectInputOptionProps, 'isSelected'> {
+interface HintedSelectInputOptionProps
+    extends Omit<EnhancedSelectInputOptionProps, 'isSelected'> {
     value: string;
     hint?: React.ReactNode;
     isSelected?: boolean;
@@ -40,7 +41,12 @@ export default function HintedSelectInputOption({
             isMobile={isMobile}
             {...otherProps}
         >
-            <div className={classNames(styles.optionText, isMobile && styles.isMobile)}>
+            <div
+                className={classNames(
+                    styles.optionText,
+                    isMobile && styles.isMobile,
+                )}
+            >
                 <div>{value}</div>
 
                 {hint && <div className={styles.hintText}>{hint}</div>}

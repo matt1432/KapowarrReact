@@ -34,7 +34,9 @@ import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import NoVolume from 'Volume/NoVolume';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
-import PageJumpBar, { type PageJumpBarItems } from 'Components/Page/PageJumpBar';
+import PageJumpBar, {
+    type PageJumpBarItems,
+} from 'Components/Page/PageJumpBar';
 import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
@@ -141,16 +143,24 @@ const columns: Column<VolumeColumnName>[] = [
 ];
 
 const useIndexVolumes = () => {
-    const { filterKey, sortKey, sortDirection } = useRootSelector((state) => state.volumeIndex);
+    const { filterKey, sortKey, sortDirection } = useRootSelector(
+        (state) => state.volumeIndex,
+    );
 
-    const { isFetching, isPopulated, error, data, refetch } = useGetVolumesQuery(undefined, {
-        selectFromResult: ({ isFetching, isUninitialized, error, data }) => ({
-            isFetching,
-            isPopulated: !isUninitialized,
-            error,
-            data: data ?? [],
-        }),
-    });
+    const { isFetching, isPopulated, error, data, refetch } =
+        useGetVolumesQuery(undefined, {
+            selectFromResult: ({
+                isFetching,
+                isUninitialized,
+                error,
+                data,
+            }) => ({
+                isFetching,
+                isPopulated: !isUninitialized,
+                error,
+                data: data ?? [],
+            }),
+        });
 
     const sortedItems = useSort({
         columns,
@@ -172,7 +182,8 @@ const useIndexVolumes = () => {
         }
         if (filterKey === 'wanted') {
             return sortedItems.filter(
-                (item) => item.issuesDownloadedMonitored < item.issueCountMonitored,
+                (item) =>
+                    item.issuesDownloadedMonitored < item.issueCountMonitored,
             );
         }
         return sortedItems;
@@ -187,258 +198,298 @@ const useIndexVolumes = () => {
     };
 };
 
-const VolumeIndex = withScrollPosition(({ initialScrollTop }: VolumeIndexProps) => {
-    const dispatch = useRootDispatch();
+const VolumeIndex = withScrollPosition(
+    ({ initialScrollTop }: VolumeIndexProps) => {
+        const dispatch = useRootDispatch();
 
-    const { filterKey, sortDirection, sortKey, view } = useRootSelector(
-        (state) => state.volumeIndex,
-    );
+        const { filterKey, sortDirection, sortKey, view } = useRootSelector(
+            (state) => state.volumeIndex,
+        );
 
-    const { isFetching, isPopulated, error, items } = useIndexVolumes();
+        const { isFetching, isPopulated, error, items } = useIndexVolumes();
 
-    const totalItems = items.length;
+        const totalItems = items.length;
 
-    const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
-    const scrollerRef = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>;
-    const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
-    const [jumpToCharacter, setJumpToCharacter] = useState<string | undefined>(undefined);
-    const [isSelectMode, setIsSelectMode] = useState(false);
+        const { isSmallScreen } = useRootSelector(
+            (state) => state.app.dimensions,
+        );
+        const scrollerRef = useRef<HTMLDivElement>(
+            null,
+        ) as RefObject<HTMLDivElement>;
+        const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
+        const [jumpToCharacter, setJumpToCharacter] = useState<
+            string | undefined
+        >(undefined);
+        const [isSelectMode, setIsSelectMode] = useState(false);
 
-    const onSelectModePress = useCallback(() => {
-        setIsSelectMode(!isSelectMode);
-    }, [isSelectMode, setIsSelectMode]);
+        const onSelectModePress = useCallback(() => {
+            setIsSelectMode(!isSelectMode);
+        }, [isSelectMode, setIsSelectMode]);
 
-    const onTableOptionChange = useCallback(
-        (payload: Partial<VolumeIndexState['tableOptions']>) => {
-            dispatch(setVolumeTableOption(payload));
-        },
-        [dispatch],
-    );
+        const onTableOptionChange = useCallback(
+            (payload: Partial<VolumeIndexState['tableOptions']>) => {
+                dispatch(setVolumeTableOption(payload));
+            },
+            [dispatch],
+        );
 
-    const onViewSelect = useCallback(
-        (value: IndexView) => {
-            dispatch(setVolumeView(value));
+        const onViewSelect = useCallback(
+            (value: IndexView) => {
+                dispatch(setVolumeView(value));
 
-            if (scrollerRef.current) {
-                scrollerRef.current.scrollTo(0, 0);
+                if (scrollerRef.current) {
+                    scrollerRef.current.scrollTo(0, 0);
+                }
+            },
+            [scrollerRef, dispatch],
+        );
+
+        const onSortSelect = useCallback(
+            (sortKey: IndexSort) => {
+                dispatch(setVolumeSort({ sortKey }));
+            },
+            [dispatch],
+        );
+
+        const onFilterSelect = useCallback(
+            (value: IndexFilter) => {
+                dispatch(setVolumeFilter(value));
+            },
+            [dispatch],
+        );
+
+        const onOptionsPress = useCallback(() => {
+            setIsOptionsModalOpen(true);
+        }, [setIsOptionsModalOpen]);
+
+        const onOptionsModalClose = useCallback(() => {
+            setIsOptionsModalOpen(false);
+        }, [setIsOptionsModalOpen]);
+
+        const onJumpBarItemPress = useCallback(
+            (character: string) => {
+                setJumpToCharacter(character);
+            },
+            [setJumpToCharacter],
+        );
+
+        const onScroll = useCallback(
+            ({ scrollTop }: { scrollTop: number }) => {
+                setJumpToCharacter(undefined);
+                dispatch(
+                    setScrollPosition({
+                        name: 'volumeIndex',
+                        value: scrollTop,
+                    }),
+                );
+            },
+            [dispatch, setJumpToCharacter],
+        );
+
+        const jumpBarItems: PageJumpBarItems = useMemo(() => {
+            // Reset if not sorting by title
+            if (sortKey !== 'title') {
+                return {
+                    characters: {},
+                    order: [],
+                };
             }
-        },
-        [scrollerRef, dispatch],
-    );
 
-    const onSortSelect = useCallback(
-        (sortKey: IndexSort) => {
-            dispatch(setVolumeSort({ sortKey }));
-        },
-        [dispatch],
-    );
+            const characters =
+                items.reduce((acc: Record<string, number>, item) => {
+                    let char = item.title.charAt(0);
 
-    const onFilterSelect = useCallback(
-        (value: IndexFilter) => {
-            dispatch(setVolumeFilter(value));
-        },
-        [dispatch],
-    );
+                    if (!isNaN(Number(char))) {
+                        char = '#';
+                    }
 
-    const onOptionsPress = useCallback(() => {
-        setIsOptionsModalOpen(true);
-    }, [setIsOptionsModalOpen]);
+                    if (char in acc) {
+                        acc[char] = acc[char] + 1;
+                    }
+                    else {
+                        acc[char] = 1;
+                    }
 
-    const onOptionsModalClose = useCallback(() => {
-        setIsOptionsModalOpen(false);
-    }, [setIsOptionsModalOpen]);
+                    return acc;
+                }, {}) ?? {};
 
-    const onJumpBarItemPress = useCallback(
-        (character: string) => {
-            setJumpToCharacter(character);
-        },
-        [setJumpToCharacter],
-    );
+            const order = Object.keys(characters).sort();
 
-    const onScroll = useCallback(
-        ({ scrollTop }: { scrollTop: number }) => {
-            setJumpToCharacter(undefined);
-            dispatch(setScrollPosition({ name: 'volumeIndex', value: scrollTop }));
-        },
-        [dispatch, setJumpToCharacter],
-    );
+            // Reverse if sorting descending
+            if (sortDirection === sortDirections.DESCENDING) {
+                order.reverse();
+            }
 
-    const jumpBarItems: PageJumpBarItems = useMemo(() => {
-        // Reset if not sorting by title
-        if (sortKey !== 'title') {
             return {
-                characters: {},
-                order: [],
+                characters,
+                order,
             };
-        }
+        }, [items, sortKey, sortDirection]);
 
-        const characters =
-            items.reduce((acc: Record<string, number>, item) => {
-                let char = item.title.charAt(0);
+        const ViewComponent = useMemo(
+            () => (view === 'posters' ? VolumeIndexPosters : VolumeIndexTable),
+            [view],
+        );
 
-                if (!isNaN(Number(char))) {
-                    char = '#';
-                }
+        const isLoaded = !error && isPopulated && items.length;
+        const hasNoVolume = !totalItems;
 
-                if (char in acc) {
-                    acc[char] = acc[char] + 1;
-                }
-                else {
-                    acc[char] = 1;
-                }
+        return (
+            <SelectProvider items={items}>
+                <PageContent>
+                    <PageToolbar>
+                        <PageToolbarSection>
+                            <RefreshVolumesButton
+                                isSelectMode={isSelectMode}
+                                filterKey={filterKey}
+                            />
 
-                return acc;
-            }, {}) ?? {};
+                            <SearchVolumesButton
+                                isSelectMode={isSelectMode}
+                                filterKey={filterKey}
+                            />
 
-        const order = Object.keys(characters).sort();
+                            <PageToolbarSeparator />
 
-        // Reverse if sorting descending
-        if (sortDirection === sortDirections.DESCENDING) {
-            order.reverse();
-        }
+                            <VolumeIndexSelectModeButton
+                                label={
+                                    isSelectMode
+                                        ? translate('StopSelecting')
+                                        : translate('SelectVolume')
+                                }
+                                iconName={
+                                    isSelectMode
+                                        ? icons.VOLUME_ENDED
+                                        : icons.CHECK
+                                }
+                                isSelectMode={isSelectMode}
+                                overflowComponent={
+                                    VolumeIndexSelectModeMenuItem
+                                }
+                                onPress={onSelectModePress}
+                            />
 
-        return {
-            characters,
-            order,
-        };
-    }, [items, sortKey, sortDirection]);
+                            <VolumeIndexSelectAllButton
+                                label="SelectAll"
+                                isSelectMode={isSelectMode}
+                                overflowComponent={VolumeIndexSelectAllMenuItem}
+                            />
 
-    const ViewComponent = useMemo(
-        () => (view === 'posters' ? VolumeIndexPosters : VolumeIndexTable),
-        [view],
-    );
+                            <PageToolbarSeparator />
+                        </PageToolbarSection>
 
-    const isLoaded = !error && isPopulated && items.length;
-    const hasNoVolume = !totalItems;
-
-    return (
-        <SelectProvider items={items}>
-            <PageContent>
-                <PageToolbar>
-                    <PageToolbarSection>
-                        <RefreshVolumesButton isSelectMode={isSelectMode} filterKey={filterKey} />
-
-                        <SearchVolumesButton isSelectMode={isSelectMode} filterKey={filterKey} />
-
-                        <PageToolbarSeparator />
-
-                        <VolumeIndexSelectModeButton
-                            label={
-                                isSelectMode
-                                    ? translate('StopSelecting')
-                                    : translate('SelectVolume')
-                            }
-                            iconName={isSelectMode ? icons.VOLUME_ENDED : icons.CHECK}
-                            isSelectMode={isSelectMode}
-                            overflowComponent={VolumeIndexSelectModeMenuItem}
-                            onPress={onSelectModePress}
-                        />
-
-                        <VolumeIndexSelectAllButton
-                            label="SelectAll"
-                            isSelectMode={isSelectMode}
-                            overflowComponent={VolumeIndexSelectAllMenuItem}
-                        />
-
-                        <PageToolbarSeparator />
-                    </PageToolbarSection>
-
-                    <PageToolbarSection alignContent={align.RIGHT} collapseButtons={false}>
-                        {view === 'table' ? (
-                            <TableOptionsModalWrapper
-                                columns={columns}
-                                optionsComponent={VolumeIndexTableOptions}
-                                onTableOptionChange={onTableOptionChange}
-                            >
+                        <PageToolbarSection
+                            alignContent={align.RIGHT}
+                            collapseButtons={false}
+                        >
+                            {view === 'table' ? (
+                                <TableOptionsModalWrapper
+                                    columns={columns}
+                                    optionsComponent={VolumeIndexTableOptions}
+                                    onTableOptionChange={onTableOptionChange}
+                                >
+                                    <PageToolbarButton
+                                        label={translate('Options')}
+                                        iconName={icons.TABLE}
+                                    />
+                                </TableOptionsModalWrapper>
+                            ) : (
                                 <PageToolbarButton
                                     label={translate('Options')}
-                                    iconName={icons.TABLE}
+                                    iconName={
+                                        view === 'posters'
+                                            ? icons.POSTER
+                                            : icons.OVERVIEW
+                                    }
+                                    isDisabled={hasNoVolume}
+                                    onPress={onOptionsPress}
                                 />
-                            </TableOptionsModalWrapper>
-                        ) : (
-                            <PageToolbarButton
-                                label={translate('Options')}
-                                iconName={view === 'posters' ? icons.POSTER : icons.OVERVIEW}
+                            )}
+
+                            <PageToolbarSeparator />
+
+                            <VolumeIndexViewMenu
+                                view={view}
                                 isDisabled={hasNoVolume}
-                                onPress={onOptionsPress}
+                                onViewSelect={onViewSelect}
                             />
-                        )}
 
-                        <PageToolbarSeparator />
+                            <VolumeIndexSortMenu
+                                sortKey={sortKey}
+                                sortDirection={sortDirection}
+                                isDisabled={hasNoVolume}
+                                onSortSelect={onSortSelect}
+                            />
 
-                        <VolumeIndexViewMenu
-                            view={view}
-                            isDisabled={hasNoVolume}
-                            onViewSelect={onViewSelect}
-                        />
+                            <VolumeIndexFilterMenu
+                                filterKey={filterKey}
+                                isDisabled={hasNoVolume}
+                                onFilterSelect={onFilterSelect}
+                            />
+                        </PageToolbarSection>
+                    </PageToolbar>
 
-                        <VolumeIndexSortMenu
-                            sortKey={sortKey}
-                            sortDirection={sortDirection}
-                            isDisabled={hasNoVolume}
-                            onSortSelect={onSortSelect}
-                        />
+                    <div className={styles.pageContentBodyWrapper}>
+                        <PageContentBody
+                            ref={scrollerRef}
+                            className={styles.contentBody}
+                            innerClassName={styles[`${view}InnerContentBody`]}
+                            initialScrollTop={initialScrollTop}
+                            onScroll={onScroll}
+                        >
+                            {isFetching && !isPopulated ? (
+                                <LoadingIndicator />
+                            ) : null}
 
-                        <VolumeIndexFilterMenu
-                            filterKey={filterKey}
-                            isDisabled={hasNoVolume}
-                            onFilterSelect={onFilterSelect}
-                        />
-                    </PageToolbarSection>
-                </PageToolbar>
+                            {!isFetching && !!error ? (
+                                <Alert kind={kinds.DANGER}>
+                                    {translate('VolumeLoadError')}
+                                </Alert>
+                            ) : null}
 
-                <div className={styles.pageContentBodyWrapper}>
-                    <PageContentBody
-                        ref={scrollerRef}
-                        className={styles.contentBody}
-                        innerClassName={styles[`${view}InnerContentBody`]}
-                        initialScrollTop={initialScrollTop}
-                        onScroll={onScroll}
-                    >
-                        {isFetching && !isPopulated ? <LoadingIndicator /> : null}
+                            {isLoaded ? (
+                                <div className={styles.contentBodyContainer}>
+                                    <ViewComponent
+                                        scrollerRef={scrollerRef}
+                                        items={items}
+                                        sortKey={sortKey}
+                                        sortDirection={sortDirection}
+                                        jumpToCharacter={jumpToCharacter}
+                                        isSelectMode={isSelectMode}
+                                        isSmallScreen={isSmallScreen}
+                                        columns={columns}
+                                    />
 
-                        {!isFetching && !!error ? (
-                            <Alert kind={kinds.DANGER}>{translate('VolumeLoadError')}</Alert>
+                                    <VolumeIndexFooter />
+                                </div>
+                            ) : null}
+
+                            {!error && isPopulated && !items.length ? (
+                                <NoVolume totalItems={totalItems} />
+                            ) : null}
+                        </PageContentBody>
+
+                        {isLoaded && !!jumpBarItems.order.length ? (
+                            <PageJumpBar
+                                items={jumpBarItems}
+                                onItemPress={onJumpBarItemPress}
+                            />
                         ) : null}
+                    </div>
 
-                        {isLoaded ? (
-                            <div className={styles.contentBodyContainer}>
-                                <ViewComponent
-                                    scrollerRef={scrollerRef}
-                                    items={items}
-                                    sortKey={sortKey}
-                                    sortDirection={sortDirection}
-                                    jumpToCharacter={jumpToCharacter}
-                                    isSelectMode={isSelectMode}
-                                    isSmallScreen={isSmallScreen}
-                                    columns={columns}
-                                />
+                    {isSelectMode ? <VolumeIndexSelectFooter /> : null}
 
-                                <VolumeIndexFooter />
-                            </div>
-                        ) : null}
-
-                        {!error && isPopulated && !items.length ? (
-                            <NoVolume totalItems={totalItems} />
-                        ) : null}
-                    </PageContentBody>
-
-                    {isLoaded && !!jumpBarItems.order.length ? (
-                        <PageJumpBar items={jumpBarItems} onItemPress={onJumpBarItemPress} />
+                    {view === 'posters' ? (
+                        <VolumeIndexPosterOptionsModal
+                            isOpen={isOptionsModalOpen}
+                            onModalClose={onOptionsModalClose}
+                        />
                     ) : null}
-                </div>
-
-                {isSelectMode ? <VolumeIndexSelectFooter /> : null}
-
-                {view === 'posters' ? (
-                    <VolumeIndexPosterOptionsModal
-                        isOpen={isOptionsModalOpen}
-                        onModalClose={onOptionsModalClose}
-                    />
-                ) : null}
-            </PageContent>
-        </SelectProvider>
-    );
-}, 'volumeIndex');
+                </PageContent>
+            </SelectProvider>
+        );
+    },
+    'volumeIndex',
+);
 
 export default VolumeIndex;

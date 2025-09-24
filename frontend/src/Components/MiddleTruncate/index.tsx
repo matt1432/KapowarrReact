@@ -37,14 +37,18 @@ export default function MiddleTruncate({ text }: MiddleTruncateProps) {
         }
 
         const characterLength = textWidth / text.length;
-        const charactersToRemove = Math.ceil(text.length - containerWidth / characterLength) + 3;
+        const charactersToRemove =
+            Math.ceil(text.length - containerWidth / characterLength) + 3;
         let length = Math.ceil(text.length / 2 - charactersToRemove / 2);
 
         let updatedText = getTruncatedText(text, length);
 
         // Make sure if the text is still too long, we keep reducing the length
         // each time we re-run this.
-        while (updatedText.length >= truncatedTextRef.current.length && length > 10) {
+        while (
+            updatedText.length >= truncatedTextRef.current.length &&
+            length > 10
+        ) {
             length--;
             updatedText = getTruncatedText(text, length);
         }

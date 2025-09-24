@@ -44,7 +44,9 @@ export default function IssueSearchCell({
     issueTitle,
     showOpenVolumeButton,
 }: IssueSearchCellProps) {
-    const { isSearching } = useRootSelector((state) => getIssueStatus(state, volumeId, issueId));
+    const { isSearching } = useRootSelector((state) =>
+        getIssueStatus(state, volumeId, issueId),
+    );
 
     const [executeCommand] = useExecuteCommandMutation();
 

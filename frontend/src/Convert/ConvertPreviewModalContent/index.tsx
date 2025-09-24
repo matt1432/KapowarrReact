@@ -5,7 +5,10 @@ import { useCallback } from 'react';
 
 // Redux
 import { useGetSettingsQuery } from 'Store/Api/Settings';
-import { usePreviewConvertVolumeQuery, useSearchVolumeQuery } from 'Store/Api/Volumes';
+import {
+    usePreviewConvertVolumeQuery,
+    useSearchVolumeQuery,
+} from 'Store/Api/Volumes';
 import { useExecuteCommandMutation } from 'Store/Api/Command';
 
 // Misc
@@ -75,7 +78,12 @@ export default function ConvertPreviewModalContent({
             { volumeId },
             {
                 refetchOnMountOrArgChange: true,
-                selectFromResult: ({ data, isFetching, isUninitialized, error }) => ({
+                selectFromResult: ({
+                    data,
+                    isFetching,
+                    isUninitialized,
+                    error,
+                }) => ({
                     items: data ?? [],
                     isPreviewFetching: isFetching,
                     isPreviewPopulated: !isUninitialized,
@@ -84,19 +92,25 @@ export default function ConvertPreviewModalContent({
             },
         );
 
-    const { isFormatFetching, isFormatPopulated, formatError, format, convertFiles } =
-        useGetSettingsQuery(undefined, {
-            refetchOnMountOrArgChange: true,
-            selectFromResult: ({ data, error, isFetching, isUninitialized }) => ({
-                isFormatFetching: isFetching,
-                isFormatPopulated: !isUninitialized,
-                formatError: error,
-                format: String(data?.formatPreference),
-                convertFiles: data?.convert,
-            }),
-        });
+    const {
+        isFormatFetching,
+        isFormatPopulated,
+        formatError,
+        format,
+        convertFiles,
+    } = useGetSettingsQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+        selectFromResult: ({ data, error, isFetching, isUninitialized }) => ({
+            isFormatFetching: isFetching,
+            isFormatPopulated: !isUninitialized,
+            formatError: error,
+            format: String(data?.formatPreference),
+            convertFiles: data?.convert,
+        }),
+    });
 
-    const [{ allSelected, allUnselected, selectedState }, setSelectState] = useSelectState();
+    const [{ allSelected, allUnselected, selectedState }, setSelectState] =
+        useSelectState();
 
     const isFetching = isPreviewFetching || isFormatFetching;
     const isPopulated = isPreviewPopulated && isFormatPopulated;
@@ -106,7 +120,10 @@ export default function ConvertPreviewModalContent({
 
     const handleSelectAllChange = useCallback(
         ({ value }: CheckInputChanged<string>) => {
-            setSelectState({ type: value ? 'selectAll' : 'unselectAll', items });
+            setSelectState({
+                type: value ? 'selectAll' : 'unselectAll',
+                items,
+            });
         },
         [items, setSelectState],
     );
@@ -150,7 +167,9 @@ export default function ConvertPreviewModalContent({
                 {isFetching ? <LoadingIndicator /> : null}
 
                 {!isFetching && error ? (
-                    <Alert kind={kinds.DANGER}>{translate('ConvertLoadError')}</Alert>
+                    <Alert kind={kinds.DANGER}>
+                        {translate('ConvertLoadError')}
+                    </Alert>
                 ) : null}
 
                 {!isFetching && isPopulated && !items.length ? (
@@ -176,7 +195,10 @@ export default function ConvertPreviewModalContent({
                             {format && (
                                 <div>
                                     <InlineMarkdown
-                                        data={translate('ConvertFormatPattern', { format })}
+                                        data={translate(
+                                            'ConvertFormatPattern',
+                                            { format },
+                                        )}
                                         blockClassName={styles.issueFormat}
                                     />
                                 </div>
@@ -189,8 +211,14 @@ export default function ConvertPreviewModalContent({
                                     <ConvertPreviewRow
                                         key={item.id}
                                         id={item.id}
-                                        existingPath={item.existingPath.replace(folder + '/', '')}
-                                        newPath={item.newPath.replace(folder + '/', '')}
+                                        existingPath={item.existingPath.replace(
+                                            folder + '/',
+                                            '',
+                                        )}
+                                        newPath={item.newPath.replace(
+                                            folder + '/',
+                                            '',
+                                        )}
                                         isSelected={selectedState[item.id]}
                                         onSelectedChange={handleSelectedChange}
                                     />
@@ -214,7 +242,11 @@ export default function ConvertPreviewModalContent({
 
                 <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
-                <Button kind={kinds.PRIMARY} onPress={handleConvertPress} disabled={!items.length}>
+                <Button
+                    kind={kinds.PRIMARY}
+                    onPress={handleConvertPress}
+                    disabled={!items.length}
+                >
                     {translate('Convert')}
                 </Button>
             </ModalFooter>

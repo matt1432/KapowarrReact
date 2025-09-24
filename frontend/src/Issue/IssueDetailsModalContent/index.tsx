@@ -79,9 +79,14 @@ export default function IssueDetailsModalContent({
         }
     }, [refetch, isSuccess]);
 
-    const [currentlySelectedTab, setCurrentlySelectedTab] = useState(selectedTab);
+    const [currentlySelectedTab, setCurrentlySelectedTab] =
+        useState(selectedTab);
 
-    const { title: volumeTitle, id: titleSlug, monitored: volumeMonitored } = volume!;
+    const {
+        title: volumeTitle,
+        id: titleSlug,
+        monitored: volumeMonitored,
+    } = volume!;
     const { monitored } = issue!;
 
     const [startInteractiveSearch, setStartInteractiveSearch] = useState(
@@ -140,22 +145,34 @@ export default function IssueDetailsModalContent({
                     onSelect={handleTabSelect}
                 >
                     <TabList className={styles.tabList}>
-                        <Tab className={styles.tab} selectedClassName={styles.selectedTab}>
+                        <Tab
+                            className={styles.tab}
+                            selectedClassName={styles.selectedTab}
+                        >
                             {translate('Details')}
                         </Tab>
 
-                        <Tab className={styles.tab} selectedClassName={styles.selectedTab}>
+                        <Tab
+                            className={styles.tab}
+                            selectedClassName={styles.selectedTab}
+                        >
                             {translate('History')}
                         </Tab>
 
-                        <Tab className={styles.tab} selectedClassName={styles.selectedTab}>
+                        <Tab
+                            className={styles.tab}
+                            selectedClassName={styles.selectedTab}
+                        >
                             {translate('Search')}
                         </Tab>
                     </TabList>
 
                     <TabPanel>
                         <div className={styles.tabContent}>
-                            <IssueSummary issueId={issueId} volumeId={volumeId} />
+                            <IssueSummary
+                                issueId={issueId}
+                                volumeId={volumeId}
+                            />
                         </div>
                     </TabPanel>
 

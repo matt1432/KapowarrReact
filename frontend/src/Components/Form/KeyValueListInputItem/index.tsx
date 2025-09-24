@@ -23,7 +23,10 @@ interface KeyValueListInputItemProps {
     keyPlaceholder?: string;
     valuePlaceholder?: string;
     isNew: boolean;
-    onChange: (index: number, itemValue: { key: string; value: string }) => void;
+    onChange: (
+        index: number,
+        itemValue: { key: string; value: string },
+    ) => void;
     onRemove: (index: number) => void;
     onFocus: () => void;
     onBlur: () => void;
@@ -89,7 +92,11 @@ export default function KeyValueListInputItem({
 
             <div className={styles.buttonWrapper}>
                 {isNew ? null : (
-                    <IconButton name={icons.REMOVE} tabIndex={-1} onPress={handleRemovePress} />
+                    <IconButton
+                        name={icons.REMOVE}
+                        tabIndex={-1}
+                        onPress={handleRemovePress}
+                    />
                 )}
             </div>
         </div>

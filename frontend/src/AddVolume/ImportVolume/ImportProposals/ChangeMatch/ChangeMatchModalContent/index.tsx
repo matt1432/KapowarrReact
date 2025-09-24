@@ -80,22 +80,26 @@ export default function ChangeMatchModalContent({
     const [query, setQuery] = useState('');
     const [showResults, setShowResults] = useState(false);
 
-    const handleSearchInputChange = useCallback(({ value }: InputChanged<string, string>) => {
-        setQuery(value);
-    }, []);
+    const handleSearchInputChange = useCallback(
+        ({ value }: InputChanged<string, string>) => {
+            setQuery(value);
+        },
+        [],
+    );
 
     const handleClearVolumeLookupPress = useCallback(() => {
         setQuery('');
         setShowResults(false);
     }, []);
 
-    const [lookupVolume, { isFetching, error, data }] = useLazyLookupVolumeQuery({
-        selectFromResult: ({ data, isFetching, error }) => ({
-            data: (data ?? []) as VolumeSearchResult[],
-            isFetching,
-            error,
-        }),
-    });
+    const [lookupVolume, { isFetching, error, data }] =
+        useLazyLookupVolumeQuery({
+            selectFromResult: ({ data, isFetching, error }) => ({
+                data: (data ?? []) as VolumeSearchResult[],
+                isFetching,
+                error,
+            }),
+        });
 
     useEffect(() => {
         setShowResults(data.length !== 0);
@@ -113,12 +117,17 @@ export default function ChangeMatchModalContent({
     return (
         <ModalContent onModalClose={onModalClose}>
             <ModalHeader>
-                {translate('ChangeMatchModalHeader', { title: proposal.fileTitle })}
+                {translate('ChangeMatchModalHeader', {
+                    title: proposal.fileTitle,
+                })}
             </ModalHeader>
 
             <ModalBody>
                 <div className={styles.searchContainer}>
-                    <Button className={styles.searchIconContainer} onPress={handleSubmit}>
+                    <Button
+                        className={styles.searchIconContainer}
+                        onPress={handleSubmit}
+                    >
                         <Icon name={icons.SEARCH} size={20} />
                     </Button>
 

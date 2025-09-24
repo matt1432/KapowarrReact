@@ -26,7 +26,12 @@ export const baseApi = createApi({
 
         paramsSerializer: (params) =>
             new URLSearchParams(
-                snakeify(filterObject(params, ([, v]) => typeof v !== 'undefined' && v !== null)),
+                snakeify(
+                    filterObject(
+                        params,
+                        ([, v]) => typeof v !== 'undefined' && v !== null,
+                    ),
+                ),
             ).toString(),
     }) as CustomBaseQuery,
     endpoints: () => ({}),

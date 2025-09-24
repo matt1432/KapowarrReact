@@ -69,8 +69,12 @@ split_regex = compile(
 )
 remove_link_regex = compile(r"<a[^>]*>.*?</a>", IGNORECASE)
 omnibus_regex = compile(r"\bomnibus\b", IGNORECASE)
-os_regex = compile(r"(?<!preceding\s)\bone[\- ]?shot\b(?!\scollections?)", IGNORECASE)
-hc_regex = compile(r"(?<!preceding\s)\bhard[\- ]?cover\b(?!\scollections?)", IGNORECASE)
+os_regex = compile(
+    r"(?<!preceding\s)\bone[\- ]?shot\b(?!\scollections?)", IGNORECASE
+)
+hc_regex = compile(
+    r"(?<!preceding\s)\bhard[\- ]?cover\b(?!\scollections?)", IGNORECASE
+)
 vol_regex = compile(
     r"^v(?:ol(?:ume)?)?\.?\s(?:\d+|(?:(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred)[-\s]{0,1})+)(?:\:\s|$)",
     IGNORECASE,
@@ -306,7 +310,10 @@ class Volume:
         )
 
         return VolumeData(
-            **{**data, "special_version": SpecialVersion(data["special_version"])}
+            **{
+                **data,
+                "special_version": SpecialVersion(data["special_version"]),
+            }
         )
 
     def get_public_keys(self) -> dict:
@@ -563,7 +570,10 @@ class Volume:
         return GeneralFilesDB.fetch(self.id)
 
     def update(
-        self, data: Mapping[str, Any], from_public: bool = False, called_from: str = ""
+        self,
+        data: Mapping[str, Any],
+        from_public: bool = False,
+        called_from: str = "",
     ) -> None:
         allowed_keys: Sequence[str]
 
@@ -768,15 +778,19 @@ class Volume:
         if create_empty_volume_folders:
             create_folder(new_volume_folder)
 
-        if (create_empty_volume_folders or file_changes) and folder_is_inside_folder(
-            new_volume_folder, current_volume_folder
-        ):
+        if (
+            create_empty_volume_folders or file_changes
+        ) and folder_is_inside_folder(new_volume_folder, current_volume_folder):
             # New folder is parent of current folder, so delete up to new
             # folder.
-            delete_empty_parent_folders(current_volume_folder, new_volume_folder)
+            delete_empty_parent_folders(
+                current_volume_folder, new_volume_folder
+            )
 
         else:
-            if not self.__volume_folder_used_by_other_volume(current_volume_folder):
+            if not self.__volume_folder_used_by_other_volume(
+                current_volume_folder
+            ):
                 # Current volume folder is not also used by another volume,
                 # so we can delete it if empty.
                 delete_empty_parent_folders(current_volume_folder, root_folder)
@@ -818,7 +832,9 @@ class Volume:
                     delete_file_folder(f["filepath"])
 
                 delete_empty_child_folders(vd.folder)
-                delete_empty_parent_folders(vd.folder, RootFolders()[vd.root_folder])
+                delete_empty_parent_folders(
+                    vd.folder, RootFolders()[vd.root_folder]
+                )
 
         # Delete file entries
         # ON DELETE CASCADE will take care of issues_files
@@ -1024,7 +1040,8 @@ class Library:
         return (
             get_db()
             .execute(
-                "SELECT 1 FROM volumes WHERE comicvine_id = ? LIMIT 1;", (comicvine_id,)
+                "SELECT 1 FROM volumes WHERE comicvine_id = ? LIMIT 1;",
+                (comicvine_id,),
             )
             .exists()
             is not None
@@ -1214,7 +1231,9 @@ class Library:
             task = AutoSearchVolume(volume_id)
             TaskHandler().add(task)
 
-        LOGGER.info(f"Added volume with CV ID {comicvine_id} and ID {volume_id}")
+        LOGGER.info(
+            f"Added volume with CV ID {comicvine_id} and ID {volume_id}"
+        )
         return volume_id
 
 
@@ -1287,7 +1306,8 @@ def determine_special_version(volume_id: int) -> SpecialVersion:
 
     if one_issue and issues[0].date:
         thirty_plus_days_ago = (
-            datetime.now() - datetime.strptime(issues[0].date, "%Y-%m-%d") > THIRTY_DAYS
+            datetime.now() - datetime.strptime(issues[0].date, "%Y-%m-%d")
+            > THIRTY_DAYS
         )
 
         if thirty_plus_days_ago:
@@ -1338,12 +1358,15 @@ def scan_files(
     )
     volume_files = {f["filepath"]: f["id"] for f in volume.get_all_files()}
     number_to_year: dict[float, int | None] = {
-        i.calculated_issue_number: extract_year_from_date(i.date) for i in volume_issues
+        i.calculated_issue_number: extract_year_from_date(i.date)
+        for i in volume_issues
     }
 
     bindings: list[tuple[int, int]] = []
     general_bindings: list[tuple[int, str]] = []
-    folder_contents = list_files(folder=volume_data.folder, ext=SCANNABLE_EXTENSIONS)
+    folder_contents = list_files(
+        folder=volume_data.folder, ext=SCANNABLE_EXTENSIONS
+    )
     for file in filtered_iter(folder_contents, set(filepath_filter)):
         file_data = extract_filename_data(file)
 
@@ -1361,7 +1384,9 @@ def scan_files(
             if file not in volume_files:
                 volume_files[file] = FilesDB.add_file(file, file_extra_info)
 
-            general_bindings.append((volume_files[file], GeneralFileType.COVER.value))
+            general_bindings.append(
+                (volume_files[file], GeneralFileType.COVER.value)
+            )
 
         elif (
             file_data["special_version"] == SpecialVersion.METADATA
@@ -1430,7 +1455,9 @@ def scan_files(
     add_bindings = tuple(b for b in bindings if b not in current_bindings)
     issue_binding_count = {}
     for _file_id, issue_id in current_bindings:
-        issue_binding_count[issue_id] = issue_binding_count.setdefault(issue_id, 0) + 1
+        issue_binding_count[issue_id] = (
+            issue_binding_count.setdefault(issue_id, 0) + 1
+        )
 
     newly_downloaded_issues: list[int] = []
     for _file_id, issue_id in add_bindings:
@@ -1463,7 +1490,8 @@ def scan_files(
 
     # Add bindings that aren't in current bindings
     cursor.executemany(
-        "INSERT INTO issues_files(file_id, issue_id) VALUES (?, ?);", add_bindings
+        "INSERT INTO issues_files(file_id, issue_id) VALUES (?, ?);",
+        add_bindings,
     )
     if update_websocket:
         if not filepath_filter and (
@@ -1486,7 +1514,8 @@ def scan_files(
             (b[0],) for b in general_files if b not in general_bindings
         )
         cursor.executemany(
-            "DELETE FROM volume_files WHERE file_id = ?;", delete_general_bindings
+            "DELETE FROM volume_files WHERE file_id = ?;",
+            delete_general_bindings,
         )
 
     # Add bindings for general files that aren't in current bindings
@@ -1603,7 +1632,8 @@ def refresh_and_scan(
             v
             for v in volume_datas
             if cv_id_to_issue_count[v["comicvine_id"]] != v["issue_count"]
-            or cv_to_id_fetch[v["comicvine_id"]][1] <= thirty_days_ago.timestamp()
+            or cv_to_id_fetch[v["comicvine_id"]][1]
+            <= thirty_days_ago.timestamp()
         ]
 
     cursor.executemany(
@@ -1644,7 +1674,10 @@ def refresh_and_scan(
         WHERE volume_id = :volume_id;
         """,
         (
-            {"volume_id": cv_to_id_fetch[vd["comicvine_id"]][0], "cover": vd["cover"]}
+            {
+                "volume_id": cv_to_id_fetch[vd["comicvine_id"]][0],
+                "cover": vd["cover"],
+            }
             for vd in volume_datas
         ),
     )
@@ -1653,11 +1686,15 @@ def refresh_and_scan(
 
     # Update issues
     issue_datas = run(
-        cv.fetch_issues(tuple(vd["comicvine_id"] for vd in filtered_volume_datas))
+        cv.fetch_issues(
+            tuple(vd["comicvine_id"] for vd in filtered_volume_datas)
+        )
     )
     monitor_issues_volume_ids: set[int] = set(
         first_of_subarrays(
-            cursor.execute("SELECT id FROM volumes WHERE monitor_new_issues = 1;")
+            cursor.execute(
+                "SELECT id FROM volumes WHERE monitor_new_issues = 1;"
+            )
         )
     )
     cursor.executemany(
@@ -1689,7 +1726,8 @@ def refresh_and_scan(
                 "volume_id": cv_to_id_fetch[isd["volume_id"]][0],
                 "comicvine_id": isd["comicvine_id"],
                 "issue_number": isd["issue_number"],
-                "calculated_issue_number": isd["calculated_issue_number"] or 0.0,
+                "calculated_issue_number": isd["calculated_issue_number"]
+                or 0.0,
                 "title": isd["title"],
                 "date": isd["date"],
                 "description": isd["description"],
@@ -1735,7 +1773,9 @@ def refresh_and_scan(
         for issue_cv, issue_id in issue_cv_to_id.items():
             if issue_cv not in volume_issues_fetched[vd["comicvine_id"]]:
                 # Issue is in database but not in CV, so remove
-                LOGGER.debug(f"Deleting issue with ID {issue_id} and CV ID {issue_cv}")
+                LOGGER.debug(
+                    f"Deleting issue with ID {issue_id} and CV ID {issue_cv}"
+                )
                 Issue(issue_id).delete()
                 commit()
 
@@ -1763,18 +1803,24 @@ def refresh_and_scan(
         scan_files(volume_id, update_websocket=update_websocket)
 
     else:
-        v_ids = [(v[0], [], False, update_websocket) for v in cv_to_id_fetch.values()]
+        v_ids = [
+            (v[0], [], False, update_websocket) for v in cv_to_id_fetch.values()
+        ]
         total_count = len(v_ids)
 
         if not total_count:
             return
 
         with PortablePool(
-            max_processes=min(Constants.DB_MAX_CONCURRENT_CONNECTIONS, total_count)
+            max_processes=min(
+                Constants.DB_MAX_CONCURRENT_CONNECTIONS, total_count
+            )
         ) as pool:
             if update_websocket:
                 ws = WebSocket()
-                for idx, _ in enumerate(pool.istarmap_unordered(scan_files, v_ids)):
+                for idx, _ in enumerate(
+                    pool.istarmap_unordered(scan_files, v_ids)
+                ):
                     ws.update_task_status(
                         message=f"Scanned files for volume {idx + 1}/{total_count}"
                     )
@@ -1795,7 +1841,9 @@ def delete_issue_file(file_id: int) -> None:
     """
     file_data = FilesDB.fetch(file_id=file_id)[0]
     volume_id = FilesDB.volume_of_file(file_data["filepath"])
-    unmonitor_deleted_issues = Settings().sv.unmonitor_deleted_issues and volume_id
+    unmonitor_deleted_issues = (
+        Settings().sv.unmonitor_deleted_issues and volume_id
+    )
 
     if volume_id:
         vf = Library().get_volume(volume_id).vd.folder

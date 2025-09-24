@@ -69,7 +69,10 @@ export default function ActionButton<T extends 'update' | 'search'>({
 
     const [{ selectedState }] = useSelect();
 
-    const selectedVolumeIds = useMemo(() => getSelectedIds(selectedState), [selectedState]);
+    const selectedVolumeIds = useMemo(
+        () => getSelectedIds(selectedState),
+        [selectedState],
+    );
 
     const volumesToEdit = useMemo(() => {
         if (isSelectMode && selectedVolumeIds.length > 0) {
@@ -80,11 +83,17 @@ export default function ActionButton<T extends 'update' | 'search'>({
             switch (filterKey) {
                 case 'wanted': {
                     return items
-                        .filter((item) => item.issuesDownloadedMonitored < item.issueCountMonitored)
+                        .filter(
+                            (item) =>
+                                item.issuesDownloadedMonitored <
+                                item.issueCountMonitored,
+                        )
                         .map((item) => item.id);
                 }
                 case 'monitored': {
-                    return items.filter((item) => item.monitored).map((item) => item.id);
+                    return items
+                        .filter((item) => item.monitored)
+                        .map((item) => item.id);
                 }
             }
         }

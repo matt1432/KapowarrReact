@@ -10,7 +10,9 @@ import translate from 'Utilities/String/translate';
 
 // General Components
 import Menu from 'Components/Menu/Menu';
-import ToolbarMenuButton, { type ToolbarMenuButtonProps } from 'Components/Menu/ToolbarMenuButton';
+import ToolbarMenuButton, {
+    type ToolbarMenuButtonProps,
+} from 'Components/Menu/ToolbarMenuButton';
 
 // Types
 interface ViewMenuProps extends Omit<ToolbarMenuButtonProps, 'iconName'> {
@@ -21,7 +23,11 @@ interface ViewMenuProps extends Omit<ToolbarMenuButtonProps, 'iconName'> {
 
 // IMPLEMENTATIONS
 
-export default function ViewMenu({ children, isDisabled = false, ...otherProps }: ViewMenuProps) {
+export default function ViewMenu({
+    children,
+    isDisabled = false,
+    ...otherProps
+}: ViewMenuProps) {
     return (
         <Menu {...otherProps}>
             <ToolbarMenuButton

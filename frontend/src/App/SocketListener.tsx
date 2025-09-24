@@ -25,7 +25,12 @@ import {
 } from 'Store/Api/Volumes';
 
 // Misc
-import { commandNames, icons, massEditActions, socketEvents } from 'Helpers/Props';
+import {
+    commandNames,
+    icons,
+    massEditActions,
+    socketEvents,
+} from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
@@ -80,7 +85,9 @@ export default function SocketListener() {
     );
 
     // Callbacks
-    const handleConnect = useCallback<SocketEventHandler<typeof socketEvents.CONNECT>>(() => {
+    const handleConnect = useCallback<
+        SocketEventHandler<typeof socketEvents.CONNECT>
+    >(() => {
         dispatch(setIsConnected(true));
 
         callbacks.connect.forEach((callback) => {
@@ -88,7 +95,9 @@ export default function SocketListener() {
         });
     }, [callbacks.connect, dispatch]);
 
-    const handleDisconnect = useCallback<SocketEventHandler<typeof socketEvents.DISCONNECT>>(() => {
+    const handleDisconnect = useCallback<
+        SocketEventHandler<typeof socketEvents.DISCONNECT>
+    >(() => {
         dispatch(setIsConnected(false));
 
         callbacks.disconnect.forEach((callback) => {
@@ -111,7 +120,10 @@ export default function SocketListener() {
             dispatch(
                 showMessage({
                     ...ACTION_MAP[data.identifier],
-                    type: data.currentItem !== data.totalItems ? 'info' : 'success',
+                    type:
+                        data.currentItem !== data.totalItems
+                            ? 'info'
+                            : 'success',
                     // Keep messages in progress opened
                     hideAfter: data.currentItem !== data.totalItems ? 0 : 3,
                     message: `${translate(data.identifier)}: ${data.currentItem} / ${data.totalItems}`,
@@ -135,7 +147,9 @@ export default function SocketListener() {
         [callbacks.mass_editor_status, dispatch, getAllVolumes, getStats],
     );
 
-    const handleQueueAdded = useCallback<SocketEventHandler<typeof socketEvents.QUEUE_ADDED>>(
+    const handleQueueAdded = useCallback<
+        SocketEventHandler<typeof socketEvents.QUEUE_ADDED>
+    >(
         async (data) => {
             await fetchQueue();
             await refreshVolumeEndpoints(data.volumeId);
@@ -147,7 +161,9 @@ export default function SocketListener() {
         [callbacks.queue_added, fetchQueue, refreshVolumeEndpoints],
     );
 
-    const handleQueueEnded = useCallback<SocketEventHandler<typeof socketEvents.QUEUE_ENDED>>(
+    const handleQueueEnded = useCallback<
+        SocketEventHandler<typeof socketEvents.QUEUE_ENDED>
+    >(
         async (data) => {
             await fetchQueue();
 
@@ -158,7 +174,9 @@ export default function SocketListener() {
         [callbacks.queue_ended, fetchQueue],
     );
 
-    const handleQueueStatus = useCallback<SocketEventHandler<typeof socketEvents.QUEUE_STATUS>>(
+    const handleQueueStatus = useCallback<
+        SocketEventHandler<typeof socketEvents.QUEUE_STATUS>
+    >(
         async (data) => {
             await fetchQueue();
 
@@ -182,7 +200,9 @@ export default function SocketListener() {
         [callbacks.downloaded_status, refreshVolumeEndpoints],
     );
 
-    const handleTaskAdded = useCallback<SocketEventHandler<typeof socketEvents.TASK_ADDED>>(
+    const handleTaskAdded = useCallback<
+        SocketEventHandler<typeof socketEvents.TASK_ADDED>
+    >(
         async (data) => {
             switch (data.action) {
                 case commandNames.CONVERT_VOLUME: {
@@ -290,7 +310,9 @@ export default function SocketListener() {
         [callbacks.task_added, dispatch],
     );
 
-    const handleTaskEnded = useCallback<SocketEventHandler<typeof socketEvents.TASK_ENDED>>(
+    const handleTaskEnded = useCallback<
+        SocketEventHandler<typeof socketEvents.TASK_ENDED>
+    >(
         async (data) => {
             switch (data.action) {
                 case commandNames.CONVERT_VOLUME: {
@@ -420,10 +442,18 @@ export default function SocketListener() {
                 callback(data);
             });
         },
-        [callbacks.task_ended, getAllVolumes, getStats, refreshVolumeEndpoints, dispatch],
+        [
+            callbacks.task_ended,
+            getAllVolumes,
+            getStats,
+            refreshVolumeEndpoints,
+            dispatch,
+        ],
     );
 
-    const handleTaskStatus = useCallback<SocketEventHandler<typeof socketEvents.TASK_STATUS>>(
+    const handleTaskStatus = useCallback<
+        SocketEventHandler<typeof socketEvents.TASK_STATUS>
+    >(
         (data) => {
             callbacks.task_status.forEach((callback) => {
                 callback(data);
@@ -432,7 +462,9 @@ export default function SocketListener() {
         [callbacks.task_status],
     );
 
-    const handleIssueUpdated = useCallback<SocketEventHandler<typeof socketEvents.ISSUE_UPDATED>>(
+    const handleIssueUpdated = useCallback<
+        SocketEventHandler<typeof socketEvents.ISSUE_UPDATED>
+    >(
         async (data) => {
             await fetchVolume({ volumeId: data.issue.volumeId });
 
@@ -443,7 +475,9 @@ export default function SocketListener() {
         [callbacks.issue_updated, fetchVolume],
     );
 
-    const handleVolumeUpdated = useCallback<SocketEventHandler<typeof socketEvents.VOLUME_UPDATED>>(
+    const handleVolumeUpdated = useCallback<
+        SocketEventHandler<typeof socketEvents.VOLUME_UPDATED>
+    >(
         async (data) => {
             await refreshVolumeEndpoints(data.volume.id);
 

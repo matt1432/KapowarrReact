@@ -130,7 +130,9 @@ def _set_websocket_threads_names() -> None:
     if hasattr(IOServer, "_handle_connect"):
         original_handle_connect = IOServer._handle_connect
 
-        def _handle_connect(self, environ, start_response, transport, jsonp_index=None):
+        def _handle_connect(
+            self, environ, start_response, transport, jsonp_index=None
+        ):
             result = original_handle_connect(
                 self, environ, start_response, transport, jsonp_index
             )
@@ -190,7 +192,9 @@ class Server(metaclass=Singleton):
 
         app.register_error_handler(400, bad_request)
 
-        def method_not_allowed(_e: Any) -> tuple[dict[str, Collection[str]], int]:
+        def method_not_allowed(
+            _e: Any,
+        ) -> tuple[dict[str, Collection[str]], int]:
             return {"error": "MethodNotAllowed", "result": {}}, 405
 
         app.register_error_handler(405, method_not_allowed)
@@ -403,7 +407,9 @@ class WebSocket(SocketIO, metaclass=Singleton):
 
         return
 
-    def send_volume_updated(self, volume: Volume, called_from: str = "") -> None:
+    def send_volume_updated(
+        self, volume: Volume, called_from: str = ""
+    ) -> None:
         self.emit(
             SocketEvent.VOLUME_UPDATED.value,
             {

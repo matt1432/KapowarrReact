@@ -177,7 +177,9 @@ def _calculated_issue_number(issue_number: str) -> float | None:
     return None
 
 
-def process_issue_number(issue_number: str) -> float | tuple[float, float] | None:
+def process_issue_number(
+    issue_number: str,
+) -> float | tuple[float, float] | None:
     """Convert an issue number or issue range to a (tuple of) float(s).
 
     ```
@@ -226,7 +228,9 @@ def process_issue_number(issue_number: str) -> float | tuple[float, float] | Non
     return None
 
 
-def process_volume_number(volume_number: str | None) -> int | tuple[int, int] | None:
+def process_volume_number(
+    volume_number: str | None,
+) -> int | tuple[int, int] | None:
     """Convert a volume number or volume range to a (tuple of) int(s). Also
     supports roman numerals.
 
@@ -300,7 +304,11 @@ def _find_issue_numbers(
 
             group_number = 1 if regex is not issue_regex_6 else 3
             for result in regex_result:
-                yield (result.group(group_number), result.start(0), result.end(0))
+                yield (
+                    result.group(group_number),
+                    result.start(0),
+                    result.end(0),
+                )
 
 
 def extract_filename_data(
@@ -356,7 +364,9 @@ def extract_filename_data(
 
     # Process folder if file is metadata file, as metadata filename contains
     # no useful information.
-    is_metadata_file = basename(filepath.lower()) in FileConstants.METADATA_FILES
+    is_metadata_file = (
+        basename(filepath.lower()) in FileConstants.METADATA_FILES
+    )
     if is_metadata_file:
         filepath = dirname(filepath)
         special_version = SpecialVersion.METADATA.value
@@ -398,11 +408,18 @@ def extract_filename_data(
                 all_year_pos = [(r.start(0), r.end(0)) for r in year_result]
 
             if location == foldername:
-                all_year_folderpos = [(r.start(0), r.end(0)) for r in year_result]
+                all_year_folderpos = [
+                    (r.start(0), r.end(0)) for r in year_result
+                ]
 
     # Get volume number
     volume_result = None
-    volume_pos, volume_end, volume_folderpos, volume_folderend = (10_000, 0, 10_000, 0)
+    volume_pos, volume_end, volume_folderpos, volume_folderend = (
+        10_000,
+        0,
+        10_000,
+        0,
+    )
     if not is_image_file:
         volume_result = volume_regex.search(clean_filename)
         if volume_result:
@@ -444,12 +461,18 @@ def extract_filename_data(
             special_result = special_version_regex.search(filename)
             if special_result:
                 special_version = [
-                    k for k, v in special_result.groupdict().items() if v is not None
+                    k
+                    for k, v in special_result.groupdict().items()
+                    if v is not None
                 ][0].replace("_", "-")
                 special_pos = special_result.start(0)
 
     # Get issue number
-    if special_version not in (None, SpecialVersion.COVER, SpecialVersion.METADATA):
+    if special_version not in (
+        None,
+        SpecialVersion.COVER,
+        SpecialVersion.METADATA,
+    ):
         # Special version, so don't search for issue number
         pass
 
@@ -486,7 +509,8 @@ def extract_filename_data(
             pos_options
         ):
             if not check_overlapping_pos(
-                all_year_pos + [(special_pos, special_end)], (result_start, result_end)
+                all_year_pos + [(special_pos, special_end)],
+                (result_start, result_end),
             ):
                 issue_number = extracted_number
                 issue_pos = result_start

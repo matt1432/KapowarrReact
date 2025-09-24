@@ -45,17 +45,22 @@ export default function MonitoringOptionsModalContent({
     volumeId,
     onModalClose,
 }: MonitoringOptionsModalContentProps) {
-    const calledFrom = useMemo(() => `MonitoringOptionsModalContent${volumeId}`, [volumeId]);
+    const calledFrom = useMemo(
+        () => `MonitoringOptionsModalContent${volumeId}`,
+        [volumeId],
+    );
 
     const [updateVolumeMonitoringScheme] = useUpdateVolumeMutation();
 
     const [isSaving, setIsSaving] = useState(false);
-    const [monitoringScheme, setMonitoringScheme] = useState<MonitoringScheme | typeof NO_CHANGE>(
-        NO_CHANGE,
-    );
+    const [monitoringScheme, setMonitoringScheme] = useState<
+        MonitoringScheme | typeof NO_CHANGE
+    >(NO_CHANGE);
 
     const handleMonitorChange = useCallback(
-        ({ value }: InputChanged<'monitor', MonitoringScheme | typeof NO_CHANGE>) => {
+        ({
+            value,
+        }: InputChanged<'monitor', MonitoringScheme | typeof NO_CHANGE>) => {
             setMonitoringScheme(value);
         },
         [],
@@ -73,9 +78,17 @@ export default function MonitoringOptionsModalContent({
             monitoringScheme,
             calledFrom,
         });
-    }, [calledFrom, monitoringScheme, onModalClose, volumeId, updateVolumeMonitoringScheme]);
+    }, [
+        calledFrom,
+        monitoringScheme,
+        onModalClose,
+        volumeId,
+        updateVolumeMonitoringScheme,
+    ]);
 
-    const socketCallback = useCallback<SocketEventHandler<typeof socketEvents.VOLUME_UPDATED>>(
+    const socketCallback = useCallback<
+        SocketEventHandler<typeof socketEvents.VOLUME_UPDATED>
+    >(
         (data) => {
             if (data.calledFrom === calledFrom) {
                 setIsSaving(false);

@@ -48,7 +48,9 @@ def get_blocklist(offset: int = 0) -> list[BlocklistEntry]:
         BlocklistEntry(
             **{
                 **entry,
-                "reason": BlocklistReason[BlocklistReasonID(entry["reason"]).name],
+                "reason": BlocklistReason[
+                    BlocklistReasonID(entry["reason"]).name
+                ],
             }
         )
         for entry in entries
@@ -91,7 +93,10 @@ def get_blocklist_entry(id: int) -> BlocklistEntry:
         raise BlocklistEntryNotFound(id)
 
     return BlocklistEntry(
-        **{**entry, "reason": BlocklistReason[BlocklistReasonID(entry["reason"]).name]}
+        **{
+            **entry,
+            "reason": BlocklistReason[BlocklistReasonID(entry["reason"]).name],
+        }
     )
 
 
@@ -172,7 +177,9 @@ def add_to_blocklist(
         return get_blocklist_entry(id)
 
     # Add to database
-    LOGGER.info(f'Adding {blocked_link} to blocklist with reason "{reason.value}"')
+    LOGGER.info(
+        f'Adding {blocked_link} to blocklist with reason "{reason.value}"'
+    )
 
     reason_id = BlocklistReasonID[reason.name].value
     source_value = source.value if source is not None else None
@@ -230,7 +237,9 @@ def delete_blocklist_entry(id: int) -> None:
     """
     LOGGER.debug(f"Deleting blocklist entry {id}")
 
-    entry_found = get_db().execute("DELETE FROM blocklist WHERE id = ?", (id,)).rowcount
+    entry_found = (
+        get_db().execute("DELETE FROM blocklist WHERE id = ?", (id,)).rowcount
+    )
 
     if not entry_found:
         raise BlocklistEntryNotFound(id)

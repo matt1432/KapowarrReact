@@ -8,7 +8,10 @@ import { useRootSelector } from 'Store/createAppStore';
 import { getVolumeStatus } from 'Store/Slices/SocketEvents';
 
 import { useGetSettingsQuery } from 'Store/Api/Settings';
-import { usePreviewRenameVolumeQuery, useSearchVolumeQuery } from 'Store/Api/Volumes';
+import {
+    usePreviewRenameVolumeQuery,
+    useSearchVolumeQuery,
+} from 'Store/Api/Volumes';
 import { useExecuteCommandMutation } from 'Store/Api/Command';
 
 // Misc
@@ -62,7 +65,9 @@ export default function OrganizePreviewModalContent({
     volumeId,
     onModalClose,
 }: OrganizePreviewModalContentProps) {
-    const { isRenaming } = useRootSelector((state) => getVolumeStatus(state, volumeId));
+    const { isRenaming } = useRootSelector((state) =>
+        getVolumeStatus(state, volumeId),
+    );
 
     const [executeCommand] = useExecuteCommandMutation();
 
@@ -81,7 +86,12 @@ export default function OrganizePreviewModalContent({
             { volumeId },
             {
                 refetchOnMountOrArgChange: true,
-                selectFromResult: ({ data, isFetching, isUninitialized, error }) => ({
+                selectFromResult: ({
+                    data,
+                    isFetching,
+                    isUninitialized,
+                    error,
+                }) => ({
                     items: data ?? [],
                     isPreviewFetching: isFetching,
                     isPreviewPopulated: !isUninitialized,
@@ -90,30 +100,40 @@ export default function OrganizePreviewModalContent({
             },
         );
 
-    const { isNamingFetching, isNamingPopulated, namingError, naming } = useGetSettingsQuery(
-        undefined,
-        {
+    const { isNamingFetching, isNamingPopulated, namingError, naming } =
+        useGetSettingsQuery(undefined, {
             refetchOnMountOrArgChange: true,
-            selectFromResult: ({ data, error, isFetching, isUninitialized }) => ({
+            selectFromResult: ({
+                data,
+                error,
+                isFetching,
+                isUninitialized,
+            }) => ({
                 isNamingFetching: isFetching,
                 isNamingPopulated: !isUninitialized,
                 namingError: error,
                 naming: {
                     [`naming${specialVersions.NORMAL}`]: data?.fileNaming,
-                    [`naming${specialVersions.VOL_AS_ISSUE}`]: data?.fileNamingVai,
-                    [`naming${specialVersions.TPB}`]: data?.fileNamingSpecialVersion,
-                    [`naming${specialVersions.ONE_SHOT}`]: data?.fileNamingSpecialVersion,
-                    [`naming${specialVersions.HARD_COVER}`]: data?.fileNamingSpecialVersion,
+                    [`naming${specialVersions.VOL_AS_ISSUE}`]:
+                        data?.fileNamingVai,
+                    [`naming${specialVersions.TPB}`]:
+                        data?.fileNamingSpecialVersion,
+                    [`naming${specialVersions.ONE_SHOT}`]:
+                        data?.fileNamingSpecialVersion,
+                    [`naming${specialVersions.HARD_COVER}`]:
+                        data?.fileNamingSpecialVersion,
                 },
             }),
-        },
-    );
+        });
 
     const newFolder = useMemo(() => {
         if (items.length === 0) {
             return undefined;
         }
-        return items[0].newPath.replace('/' + items[0].newPath.split('/').at(-1)!, '');
+        return items[0].newPath.replace(
+            '/' + items[0].newPath.split('/').at(-1)!,
+            '',
+        );
     }, [items]);
 
     const isRenamingFolder = useMemo(() => {
@@ -123,7 +143,8 @@ export default function OrganizePreviewModalContent({
         return folder !== newFolder;
     }, [folder, items.length, newFolder]);
 
-    const [{ allSelected, allUnselected, selectedState }, setSelectState] = useSelectState();
+    const [{ allSelected, allUnselected, selectedState }, setSelectState] =
+        useSelectState();
 
     const isFetching = useMemo(
         () => isPreviewFetching || isNamingFetching,
@@ -135,7 +156,10 @@ export default function OrganizePreviewModalContent({
         [isNamingPopulated, isPreviewPopulated],
     );
 
-    const error = useMemo(() => previewError || namingError, [namingError, previewError]);
+    const error = useMemo(
+        () => previewError || namingError,
+        [namingError, previewError],
+    );
 
     const issueFormat = useMemo(
         () =>
@@ -149,7 +173,10 @@ export default function OrganizePreviewModalContent({
 
     const handleSelectAllChange = useCallback(
         ({ value }: CheckInputChanged<string>) => {
-            setSelectState({ type: value ? 'selectAll' : 'unselectAll', items });
+            setSelectState({
+                type: value ? 'selectAll' : 'unselectAll',
+                items,
+            });
         },
         [items, setSelectState],
     );
@@ -193,7 +220,9 @@ export default function OrganizePreviewModalContent({
                 {isFetching ? <LoadingIndicator /> : null}
 
                 {!isFetching && error ? (
-                    <Alert kind={kinds.DANGER}>{translate('OrganizeLoadError')}</Alert>
+                    <Alert kind={kinds.DANGER}>
+                        {translate('OrganizeLoadError')}
+                    </Alert>
                 ) : null}
 
                 {!isFetching && isPopulated && !items.length ? (
@@ -209,7 +238,9 @@ export default function OrganizePreviewModalContent({
                                 {isRenamingFolder ? (
                                     <>
                                         <InlineMarkdown
-                                            data={translate('OrganizeRenamingFolder')}
+                                            data={translate(
+                                                'OrganizeRenamingFolder',
+                                            )}
                                             blockClassName={styles.path}
                                         />
                                         <div className={styles.folderRename}>
@@ -221,9 +252,12 @@ export default function OrganizePreviewModalContent({
                                     </>
                                 ) : (
                                     <InlineMarkdown
-                                        data={translate('OrganizeRelativePaths', {
-                                            path: folder,
-                                        })}
+                                        data={translate(
+                                            'OrganizeRelativePaths',
+                                            {
+                                                path: folder,
+                                            },
+                                        )}
                                         blockClassName={styles.path}
                                     />
                                 )}
@@ -233,7 +267,9 @@ export default function OrganizePreviewModalContent({
 
                             <div>
                                 <InlineMarkdown
-                                    data={translate('OrganizeNamingPattern', { issueFormat })}
+                                    data={translate('OrganizeNamingPattern', {
+                                        issueFormat,
+                                    })}
                                     blockClassName={styles.issueFormat}
                                 />
                             </div>
@@ -245,8 +281,12 @@ export default function OrganizePreviewModalContent({
                                     <OrganizePreviewRow
                                         key={item.id}
                                         id={item.id}
-                                        existingPath={item.existingPath.split('/').at(-1)!}
-                                        newPath={item.newPath.split('/').at(-1)!}
+                                        existingPath={
+                                            item.existingPath.split('/').at(-1)!
+                                        }
+                                        newPath={
+                                            item.newPath.split('/').at(-1)!
+                                        }
                                         isSelected={selectedState[item.id]}
                                         onSelectedChange={handleSelectedChange}
                                     />
@@ -270,7 +310,11 @@ export default function OrganizePreviewModalContent({
 
                 <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
-                <Button kind={kinds.PRIMARY} onPress={handleOrganizePress} disabled={isRenaming}>
+                <Button
+                    kind={kinds.PRIMARY}
+                    onPress={handleOrganizePress}
+                    disabled={isRenaming}
+                >
                     {translate('Organize')}
                 </Button>
             </ModalFooter>

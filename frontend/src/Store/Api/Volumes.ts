@@ -95,7 +95,10 @@ const extendedApi = baseApi.injectEndpoints({
                 camelize(response.result),
         }),
 
-        getImportProposals: build.query<ProposedImport[], GetImportProposalsParams>({
+        getImportProposals: build.query<
+            ProposedImport[],
+            GetImportProposalsParams
+        >({
             query: (params) => ({
                 url: 'libraryimport',
                 params: {
@@ -128,7 +131,8 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: { result: RawVolume }) => camelize(response.result),
+            transformResponse: (response: { result: RawVolume }) =>
+                camelize(response.result),
         }),
 
         lookupVolume: build.query<VolumeMetadata[], { query: string }>({

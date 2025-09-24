@@ -25,7 +25,12 @@ interface TimeLeftCellProps {
 
 // IMPLEMENTATIONS
 
-export default function TimeLeftCell({ size, sizeLeft, status, timeLeft }: TimeLeftCellProps) {
+export default function TimeLeftCell({
+    size,
+    sizeLeft,
+    status,
+    timeLeft,
+}: TimeLeftCellProps) {
     const totalSize = useMemo(() => formatBytes(size), [size]);
     const remainingSize = useMemo(() => formatBytes(sizeLeft), [sizeLeft]);
 
@@ -34,7 +39,10 @@ export default function TimeLeftCell({ size, sizeLeft, status, timeLeft }: TimeL
     }
 
     return (
-        <TableRowCell className={styles.timeLeft} title={`${remainingSize} / ${totalSize}`}>
+        <TableRowCell
+            className={styles.timeLeft}
+            title={`${remainingSize} / ${totalSize}`}
+        >
             {formatTimeSpan(timeLeft)}
         </TableRowCell>
     );

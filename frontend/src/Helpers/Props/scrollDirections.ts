@@ -7,4 +7,5 @@ export const scrollDirections = {
 
 export default scrollDirections;
 
-export type ScrollDirection = (typeof scrollDirections)[keyof typeof scrollDirections];
+export type ScrollDirection =
+    (typeof scrollDirections)[keyof typeof scrollDirections];

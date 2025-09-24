@@ -26,7 +26,12 @@ export interface RawDownloadClient {
 
 export type DownloadClient = CamelCasedProperties<RawDownloadClient>;
 
-export type ClientToken = 'title' | 'base_url' | 'username' | 'password' | 'api_token';
+export type ClientToken =
+    | 'title'
+    | 'base_url'
+    | 'username'
+    | 'password'
+    | 'api_token';
 export type DownloadClientOptions = Record<ClientType, ClientToken[]>;
 
 export type CredentialSource = 'mega' | 'pixeldrain';

@@ -172,7 +172,12 @@ class FileConstants:
     METADATA_EXTENSIONS = (".xml", ".json", ".XML", ".JSON")
     "Metadata file extensions, both lowercase and uppercase, with dot-prefix"
 
-    METADATA_FILES = {"cvinfo.xml", "comicinfo.xml", "series.json", "metadata.json"}
+    METADATA_FILES = {
+        "cvinfo.xml",
+        "comicinfo.xml",
+        "series.json",
+        "metadata.json",
+    }
     "Filenames of metadata files, only lowercase"
 
     ARCHIVE_MAGIC_BYTES = {
@@ -478,11 +483,21 @@ GC_DOWNLOAD_SOURCE_TERMS: dict[GCDownloadSource, tuple[str, ...]] = dict(
         (GCDownloadSource.MEDIAFIRE, ("mediafire", "mediafire link")),
         (
             GCDownloadSource.WETRANSFER,
-            ("wetransfer", "we transfer", "wetransfer link", "we transfer link"),
+            (
+                "wetransfer",
+                "we transfer",
+                "wetransfer link",
+                "we transfer link",
+            ),
         ),
         (
             GCDownloadSource.PIXELDRAIN,
-            ("pixeldrain", "pixel drain", "pixeldrain link", "pixel drain link"),
+            (
+                "pixeldrain",
+                "pixel drain",
+                "pixeldrain link",
+                "pixel drain link",
+            ),
         ),
         (
             GCDownloadSource.GETCOMICS,
@@ -501,7 +516,13 @@ GC_DOWNLOAD_SOURCE_TERMS: dict[GCDownloadSource, tuple[str, ...]] = dict(
         ),
         (
             GCDownloadSource.GETCOMICS_TORRENT,
-            ("getcomics (torrent)", "torrent", "torrent link", "magnet", "magnet link"),
+            (
+                "getcomics (torrent)",
+                "torrent",
+                "torrent link",
+                "magnet",
+                "magnet link",
+            ),
         ),
     )
 )
@@ -620,7 +641,9 @@ class SearchResultMatchData(TypedDict):
     match_rejections: list[str]  # list[MatchRejections]
 
 
-class MatchedSearchResultData(SearchResultMatchData, SearchResultData, total=False):
+class MatchedSearchResultData(
+    SearchResultMatchData, SearchResultData, total=False
+):
     _issue_number: float | tuple[float, float]
     rank: list[int]
 
@@ -1060,9 +1083,7 @@ class ExternalDownloadClient(ABC):
         ...
 
     def __repr__(self) -> str:
-        return (
-            f"<{self.__class__.__name__}(id={self.id}; title={self.title}); {id(self)}>"
-        )
+        return f"<{self.__class__.__name__}(id={self.id}; title={self.title}); {id(self)}>"
 
 
 class Download(ABC):

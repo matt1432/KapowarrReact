@@ -31,9 +31,15 @@ export default function SearchVolumeModal({
     onModalClose,
 }: SearchVolumeModalProps) {
     return (
-        <Modal isOpen={isOpen} onModalClose={onModalClose} size={sizes.EXTRA_EXTRA_LARGE}>
+        <Modal
+            isOpen={isOpen}
+            onModalClose={onModalClose}
+            size={sizes.EXTRA_EXTRA_LARGE}
+        >
             <ModalContent onModalClose={onModalClose}>
-                <ModalHeader>{translate('InteractiveSearchModalHeader')}</ModalHeader>
+                <ModalHeader>
+                    {translate('InteractiveSearchModalHeader')}
+                </ModalHeader>
 
                 <ModalBody scrollDirection={scrollDirections.BOTH}>
                     <InteractiveSearch searchPayload={{ volumeId }} />

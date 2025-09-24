@@ -31,7 +31,8 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: { result: RawFileData }) => camelize(response.result),
+            transformResponse: (response: { result: RawFileData }) =>
+                camelize(response.result),
         }),
 
         // PUT
@@ -59,4 +60,5 @@ const extendedApi = baseApi.injectEndpoints({
     }),
 });
 
-export const { useDeleteFileMutation, useGetFileQuery, useUpdateFileMutation } = extendedApi;
+export const { useDeleteFileMutation, useGetFileQuery, useUpdateFileMutation } =
+    extendedApi;

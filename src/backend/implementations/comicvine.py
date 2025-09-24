@@ -116,7 +116,11 @@ def _clean_description(description: str, short: bool = False) -> str:
 
             if el.name == "p":
                 children = list(getattr(el, "children", []))
-                if 1 <= len(children) <= 2 and children[0].name in ("b", "i", "strong"):
+                if 1 <= len(children) <= 2 and children[0].name in (
+                    "b",
+                    "i",
+                    "strong",
+                ):
                     removed_elements.append(el)
 
         for el in removed_elements:
@@ -126,11 +130,15 @@ def _clean_description(description: str, short: bool = False) -> str:
     # Fix links
     for _link in soup.find_all("a"):
         link = cast(Tag, _link)
-        link.attrs = {k: v for k, v in link.attrs.items() if not k.startswith("data-")}
+        link.attrs = {
+            k: v for k, v in link.attrs.items() if not k.startswith("data-")
+        }
         link["target"] = "_blank"
         link["href"] = str(link.attrs.get("href", "")).lstrip(".").lstrip("/")
         if not str(link.attrs.get("href", "http")).startswith("http"):
-            link["href"] = Constants.CV_SITE_URL + "/" + str(link.attrs.get("href", ""))
+            link["href"] = (
+                Constants.CV_SITE_URL + "/" + str(link.attrs.get("href", ""))
+            )
 
     result = str(soup)
     return result
@@ -181,7 +189,9 @@ class ComicVine:
         )
         return
 
-    async def __call_request(self, session: AsyncSession, url: str) -> bytes | None:
+    async def __call_request(
+        self, session: AsyncSession, url: str
+    ) -> bytes | None:
         """Fetch a URL and get it's content async (with error handling).
 
         Args:
@@ -212,7 +222,9 @@ class ComicVine:
         from backend.implementations.naming import generate_volume_folder_name
 
         title = normalise_string(volume_data.name or "")
-        publisher = volume_data.publisher.name if volume_data.publisher else None
+        publisher = (
+            volume_data.publisher.name if volume_data.publisher else None
+        )
         description = _clean_description(volume_data.description or "")
         site_url = str(volume_data.site_url)
 
@@ -226,7 +238,9 @@ class ComicVine:
             "description": description,
             "site_url": site_url,
             "aliases": [
-                a.strip() for a in (volume_data.aliases or "").split("\r\n") if a
+                a.strip()
+                for a in (volume_data.aliases or "").split("\r\n")
+                if a
             ],
             "publisher": publisher,
             "issue_count": volume_data.issue_count,
@@ -263,12 +277,15 @@ class ComicVine:
         volume_result = volume_regex.search(volume_data.summary or "")
         if volume_result:
             result["volume_number"] = (
-                force_range(process_volume_number(volume_result.group(1)))[0] or 1
+                force_range(process_volume_number(volume_result.group(1)))[0]
+                or 1
             )
 
         return result
 
-    def __format_issue_output(self, issue_data: Issue | BasicIssue) -> IssueMetadata:
+    def __format_issue_output(
+        self, issue_data: Issue | BasicIssue
+    ) -> IssueMetadata:
         """Format the ComicVine API output containing the info
         about the issue.
 
@@ -283,7 +300,9 @@ class ComicVine:
         result: IssueMetadata = {
             "comicvine_id": issue_data.id,
             "volume_id": issue_data.volume.id,
-            "issue_number": (issue_data.number or "0").replace("/", "-").strip(),
+            "issue_number": (issue_data.number or "0")
+            .replace("/", "-")
+            .strip(),
             "calculated_issue_number": cin if cin is not None else 0.0,
             "title": normalise_string(issue_data.name or "") or None,
             "date": (
@@ -291,7 +310,9 @@ class ComicVine:
                 if self.date_type == DateType.COVER_DATE
                 else issue_data.store_date
             ),
-            "description": _clean_description(issue_data.description or "", short=True),
+            "description": _clean_description(
+                issue_data.description or "", short=True
+            ),
         }
         return result
 
@@ -309,7 +330,9 @@ class ComicVine:
         """
         cursor = get_db()
 
-        formatted_results = [self.__format_volume_output(r) for r in search_results]
+        formatted_results = [
+            self.__format_volume_output(r) for r in search_results
+        ]
 
         # Mark entries that are already added
         volume_ids: dict[int, int] = dict(
@@ -329,7 +352,9 @@ class ComicVine:
         for r in formatted_results:
             r["already_added"] = volume_ids.get(r["comicvine_id"])
 
-        LOGGER.debug(f"Searching for volumes with query result: {formatted_results}")
+        LOGGER.debug(
+            f"Searching for volumes with query result: {formatted_results}"
+        )
         return formatted_results
 
     def test_token(self) -> bool:
@@ -387,7 +412,9 @@ class ComicVine:
         except (ServiceError, AuthenticationError):
             raise CVRateLimitReached
 
-    async def fetch_volumes(self, cv_ids: Sequence[str | int]) -> list[VolumeMetadata]:
+    async def fetch_volumes(
+        self, cv_ids: Sequence[str | int]
+    ) -> list[VolumeMetadata]:
         """Get the metadata of the volumes from ComicVine, without their issues.
 
         Args:
@@ -437,8 +464,10 @@ class ComicVine:
                         volume_info = self.__format_volume_output(result)
                         current_infos.append(volume_info)
 
-                        cover_map[volume_info["comicvine_id"]] = self.__call_request(
-                            session, volume_info["cover_link"]
+                        cover_map[volume_info["comicvine_id"]] = (
+                            self.__call_request(
+                                session, volume_info["cover_link"]
+                            )
                         )
 
                 # Fetch covers and add them to the volume info
@@ -453,7 +482,9 @@ class ComicVine:
 
         return volume_infos
 
-    async def fetch_issues(self, cv_ids: Sequence[str | int]) -> list[IssueMetadata]:
+    async def fetch_issues(
+        self, cv_ids: Sequence[str | int]
+    ) -> list[IssueMetadata]:
         """Get the metadata of the issues of volumes from ComicVine.
 
         Args:
@@ -528,7 +559,9 @@ class ComicVine:
         try:
             if query.startswith(("4050-", "cv:")):
                 try:
-                    return [await self.fetch_volume(to_number_cv_id((query,))[0])]
+                    return [
+                        await self.fetch_volume(to_number_cv_id((query,))[0])
+                    ]
 
                 except ValueError:
                     return []
@@ -536,7 +569,9 @@ class ComicVine:
             else:
                 results: list[BasicVolume] = (  # type: ignore
                     self.ssn.search(
-                        query=query, resource=ComicvineResource.VOLUME, max_results=50
+                        query=query,
+                        resource=ComicvineResource.VOLUME,
+                        max_results=50,
                     )
                 )
 
@@ -570,9 +605,9 @@ class ComicVine:
         titles_to_files: dict[str, list[FilenameData]] = {}
         for file_data in file_datas:
             (
-                titles_to_files.setdefault(file_data["series"].lower(), []).append(
-                    file_data
-                )
+                titles_to_files.setdefault(
+                    file_data["series"].lower(), []
+                ).append(file_data)
             )
 
         # Titles to search results

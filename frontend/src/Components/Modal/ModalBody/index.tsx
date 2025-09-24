@@ -41,7 +41,11 @@ export default function ModalBody({
             scrollDirection={scrollDirection}
             scrollTop={0}
         >
-            {hasScroller ? <div className={innerClassName}>{children}</div> : children}
+            {hasScroller ? (
+                <div className={innerClassName}>{children}</div>
+            ) : (
+                children
+            )}
         </Scroller>
     );
 }

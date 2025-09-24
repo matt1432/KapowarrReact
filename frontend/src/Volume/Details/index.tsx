@@ -102,10 +102,19 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
     } = useSearchVolumeQuery(
         { volumeId },
         {
-            selectFromResult: ({ data, error, isFetching, isUninitialized }) => ({
+            selectFromResult: ({
+                data,
+                error,
+                isFetching,
+                isUninitialized,
+            }) => ({
                 volume: data,
                 hasIssues: Boolean(data?.issues.length),
-                issueFileCount: data?.issues.reduce((acc, v) => (acc += v.files.length), 0) ?? 0,
+                issueFileCount:
+                    data?.issues.reduce(
+                        (acc, v) => (acc += v.files.length),
+                        0,
+                    ) ?? 0,
                 hasMonitoredIssues: data?.issues.some((e) => e.monitored),
                 error,
                 isFetching,
@@ -119,7 +128,9 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const [isToggling, setIsToggling] = useState(false);
 
-    const socketCallback = useCallback<SocketEventHandler<typeof socketEvents.VOLUME_UPDATED>>(
+    const socketCallback = useCallback<
+        SocketEventHandler<typeof socketEvents.VOLUME_UPDATED>
+    >(
         (data) => {
             if (data.calledFrom === calledFrom) {
                 setIsToggling(false);
@@ -131,7 +142,9 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const { nextVolume, previousVolume } = useMemo(() => {
         const sortedVolume = allVolumes.toSorted(sortByProp('title'));
-        const volumeIndex = sortedVolume.findIndex((volume) => volume.id === volumeId);
+        const volumeIndex = sortedVolume.findIndex(
+            (volume) => volume.id === volumeId,
+        );
 
         if (volumeIndex === -1) {
             return {
@@ -141,7 +154,8 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         }
 
         const nextVolume = sortedVolume[volumeIndex + 1] ?? sortedVolume[0];
-        const previousVolume = sortedVolume[volumeIndex - 1] ?? sortedVolume.at(-1)!;
+        const previousVolume =
+            sortedVolume[volumeIndex - 1] ?? sortedVolume.at(-1)!;
 
         return {
             nextVolume: {
@@ -157,12 +171,17 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
     const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
-    const [isVolumeHistoryModalOpen, setIsVolumeHistoryModalOpen] = useState(false);
-    const [isGeneralFilesModalOpen, setIsGeneralFilesModalOpen] = useState(false);
+    const [isVolumeHistoryModalOpen, setIsVolumeHistoryModalOpen] =
+        useState(false);
+    const [isGeneralFilesModalOpen, setIsGeneralFilesModalOpen] =
+        useState(false);
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
-    const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);
-    const [isMonitorOptionsModalOpen, setIsMonitorOptionsModalOpen] = useState(false);
-    const [isSearchVolumeModalOpen, setIsSearchVolumeModalOpen] = useState(false);
+    const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] =
+        useState(false);
+    const [isMonitorOptionsModalOpen, setIsMonitorOptionsModalOpen] =
+        useState(false);
+    const [isSearchVolumeModalOpen, setIsSearchVolumeModalOpen] =
+        useState(false);
 
     const handleOrganizePress = useCallback(() => {
         setIsOrganizeModalOpen(true);
@@ -259,7 +278,15 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         return null;
     }
 
-    const { title, folder, monitored, publisher, siteUrl, description, totalSize } = volume;
+    const {
+        title,
+        folder,
+        monitored,
+        publisher,
+        siteUrl,
+        description,
+        totalSize,
+    } = volume;
 
     let issueFilesCountMessage = translate('VolumeDetailsNoIssueFiles');
 
@@ -288,18 +315,30 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                     <PageToolbarButton
                         label={translate('SearchMonitored')}
                         iconName={icons.SEARCH}
-                        isDisabled={!monitored || !hasMonitoredIssues || !hasIssues}
+                        isDisabled={
+                            !monitored || !hasMonitoredIssues || !hasIssues
+                        }
                         isSpinning={isSearching}
-                        title={hasMonitoredIssues ? undefined : translate('NoMonitoredIssues')}
+                        title={
+                            hasMonitoredIssues
+                                ? undefined
+                                : translate('NoMonitoredIssues')
+                        }
                         onPress={handleSearchPress}
                     />
 
                     <PageToolbarButton
                         label={translate('InteractiveSearch')}
                         iconName={icons.INTERACTIVE}
-                        isDisabled={!monitored || !hasMonitoredIssues || !hasIssues}
+                        isDisabled={
+                            !monitored || !hasMonitoredIssues || !hasIssues
+                        }
                         isSpinning={false}
-                        title={hasMonitoredIssues ? undefined : translate('NoMonitoredIssues')}
+                        title={
+                            hasMonitoredIssues
+                                ? undefined
+                                : translate('NoMonitoredIssues')
+                        }
                         onPress={handleSearchVolumePress}
                     />
 
@@ -372,9 +411,15 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                         <div className={styles.info}>
                             <div className={styles.titleRow}>
                                 <div className={styles.titleContainer}>
-                                    <div className={styles.toggleMonitoredContainer}>
+                                    <div
+                                        className={
+                                            styles.toggleMonitoredContainer
+                                        }
+                                    >
                                         <MonitorToggleButton
-                                            className={styles.monitorToggleButton}
+                                            className={
+                                                styles.monitorToggleButton
+                                            }
                                             monitored={monitored}
                                             isSaving={isToggling}
                                             size={40}
@@ -388,24 +433,34 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                 <div className={styles.volumeNavigationButtons}>
                                     {previousVolume ? (
                                         <IconButton
-                                            className={styles.volumeNavigationButton}
+                                            className={
+                                                styles.volumeNavigationButton
+                                            }
                                             name={icons.ARROW_LEFT}
                                             size={30}
-                                            title={translate('VolumeDetailsGoTo', {
-                                                title: previousVolume.title,
-                                            })}
+                                            title={translate(
+                                                'VolumeDetailsGoTo',
+                                                {
+                                                    title: previousVolume.title,
+                                                },
+                                            )}
                                             to={`/volumes/${previousVolume.titleSlug}`}
                                         />
                                     ) : null}
 
                                     {nextVolume ? (
                                         <IconButton
-                                            className={styles.volumeNavigationButton}
+                                            className={
+                                                styles.volumeNavigationButton
+                                            }
                                             name={icons.ARROW_RIGHT}
                                             size={30}
-                                            title={translate('VolumeDetailsGoTo', {
-                                                title: nextVolume.title,
-                                            })}
+                                            title={translate(
+                                                'VolumeDetailsGoTo',
+                                                {
+                                                    title: nextVolume.title,
+                                                },
+                                            )}
                                             to={`/volumes/${nextVolume.titleSlug}`}
                                         />
                                     ) : null}
@@ -413,37 +468,65 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                             </div>
 
                             <div>
-                                <Label className={styles.detailsLabel} size={sizes.LARGE}>
+                                <Label
+                                    className={styles.detailsLabel}
+                                    size={sizes.LARGE}
+                                >
                                     <div>
                                         <Icon name={icons.FOLDER} size={17} />
-                                        <span className={styles.path}>{folder}</span>
+                                        <span className={styles.path}>
+                                            {folder}
+                                        </span>
                                     </div>
                                 </Label>
 
                                 <Tooltip
                                     anchor={
-                                        <Label className={styles.detailsLabel} size={sizes.LARGE}>
+                                        <Label
+                                            className={styles.detailsLabel}
+                                            size={sizes.LARGE}
+                                        >
                                             <div>
-                                                <Icon name={icons.DRIVE} size={17} />
+                                                <Icon
+                                                    name={icons.DRIVE}
+                                                    size={17}
+                                                />
 
-                                                <span className={styles.sizeOnDisk}>
+                                                <span
+                                                    className={
+                                                        styles.sizeOnDisk
+                                                    }
+                                                >
                                                     {formatBytes(totalSize)}
                                                 </span>
                                             </div>
                                         </Label>
                                     }
-                                    tooltip={<span>{issueFilesCountMessage}</span>}
+                                    tooltip={
+                                        <span>{issueFilesCountMessage}</span>
+                                    }
                                     kind={kinds.INVERSE}
                                     position={tooltipPositions.BOTTOM}
                                 />
 
-                                <Label className={styles.detailsLabel} size={sizes.LARGE}>
+                                <Label
+                                    className={styles.detailsLabel}
+                                    size={sizes.LARGE}
+                                >
                                     <div>
                                         <Icon
-                                            name={monitored ? icons.MONITORED : icons.UNMONITORED}
+                                            name={
+                                                monitored
+                                                    ? icons.MONITORED
+                                                    : icons.UNMONITORED
+                                            }
                                             size={17}
                                         />
-                                        <span className={styles.qualityProfileName}>
+                                        <span
+                                            className={
+                                                styles.qualityProfileName
+                                            }
+                                        >
                                             {monitored
                                                 ? translate('Monitored')
                                                 : translate('Unmonitored')}
@@ -458,17 +541,28 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                         size={sizes.LARGE}
                                     >
                                         <div>
-                                            <Icon name={icons.PUBLISHER} size={17} />
-                                            <span className={styles.network}>{publisher}</span>
+                                            <Icon
+                                                name={icons.PUBLISHER}
+                                                size={17}
+                                            />
+                                            <span className={styles.network}>
+                                                {publisher}
+                                            </span>
                                         </div>
                                     </Label>
                                 ) : null}
 
                                 <Tooltip
                                     anchor={
-                                        <Label className={styles.detailsLabel} size={sizes.LARGE}>
+                                        <Label
+                                            className={styles.detailsLabel}
+                                            size={sizes.LARGE}
+                                        >
                                             <div>
-                                                <Icon name={icons.EXTERNAL_LINK} size={17} />
+                                                <Icon
+                                                    name={icons.EXTERNAL_LINK}
+                                                    size={17}
+                                                />
                                                 <span className={styles.links}>
                                                     {translate('Links')}
                                                 </span>
@@ -505,7 +599,9 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                     {!isPopulated && !error ? <LoadingIndicator /> : null}
 
                     {!isFetching && error ? (
-                        <Alert kind={kinds.DANGER}>{translate('IssuesLoadError')}</Alert>
+                        <Alert kind={kinds.DANGER}>
+                            {translate('IssuesLoadError')}
+                        </Alert>
                     ) : null}
 
                     <IssueTable volumeId={volumeId} />

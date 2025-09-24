@@ -27,7 +27,10 @@ const MessagesSlice = createSlice({
             state.items.push(message);
         },
 
-        hideMessage: (state, { payload: { id } }: PayloadAction<{ id: number }>) => {
+        hideMessage: (
+            state,
+            { payload: { id } }: PayloadAction<{ id: number }>,
+        ) => {
             state.items = state.items.filter((item) => item.id !== id);
         },
     },

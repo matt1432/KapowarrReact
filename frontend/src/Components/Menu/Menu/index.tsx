@@ -1,7 +1,13 @@
 // IMPORTS
 
 // React
-import React, { type ReactElement, useCallback, useEffect, useId, useState } from 'react';
+import React, {
+    type ReactElement,
+    useCallback,
+    useEffect,
+    useId,
+    useState,
+} from 'react';
 import {
     autoUpdate,
     flip,
@@ -86,7 +92,9 @@ export default function Menu({
         }
 
         window.addEventListener('resize', handleWindowResize);
-        window.addEventListener('scroll', handleWindowScroll, { capture: true });
+        window.addEventListener('scroll', handleWindowScroll, {
+            capture: true,
+        });
 
         return () => {
             window.removeEventListener('resize', handleWindowResize);
@@ -114,7 +122,9 @@ export default function Menu({
         (event: MouseEvent) => {
             if (
                 refs.reference &&
-                (refs.reference.current as HTMLElement).contains(event.target as HTMLElement)
+                (refs.reference.current as HTMLElement).contains(
+                    event.target as HTMLElement,
+                )
             ) {
                 return false;
             }
@@ -135,7 +145,10 @@ export default function Menu({
         outsidePress: handleFloaterPress,
     });
 
-    const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
+    const { getReferenceProps, getFloatingProps } = useInteractions([
+        click,
+        dismiss,
+    ]);
 
     return (
         <>

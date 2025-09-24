@@ -21,7 +21,9 @@ interface VolumeIndexPosterSelectProps {
 
 // IMPLEMENTATIONS
 
-export default function VolumeIndexPosterSelect({ volumeId }: VolumeIndexPosterSelectProps) {
+export default function VolumeIndexPosterSelect({
+    volumeId,
+}: VolumeIndexPosterSelectProps) {
     const [selectState, selectDispatch] = useSelect();
     const isSelected = selectState.selectedState[volumeId];
 
@@ -44,7 +46,9 @@ export default function VolumeIndexPosterSelect({ volumeId }: VolumeIndexPosterS
             <span className={styles.checkContainer}>
                 <Icon
                     className={isSelected ? styles.selected : styles.unselected}
-                    name={isSelected ? icons.CHECK_CIRCLE : icons.CIRCLE_OUTLINE}
+                    name={
+                        isSelected ? icons.CHECK_CIRCLE : icons.CIRCLE_OUTLINE
+                    }
                     size={20}
                 />
             </span>

@@ -7,7 +7,9 @@ import { useCallback } from 'react';
 import CheckInput from 'Components/Form/CheckInput';
 
 // Specific Components
-import VirtualTableRowCell, { type VirtualTableRowCellProps } from '../VirtualTableRowCell';
+import VirtualTableRowCell, {
+    type VirtualTableRowCellProps,
+} from '../VirtualTableRowCell';
 
 // CSS
 import styles from './index.module.css';

@@ -17,7 +17,8 @@ import createReducers from './createReducers';
 export const store = configureStore({
     reducer: createReducers(),
 
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(baseApi.middleware),
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(baseApi.middleware),
 
     enhancers: (getDefaultEnhancers) =>
         getDefaultEnhancers().concat(

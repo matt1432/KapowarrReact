@@ -146,11 +146,14 @@ class DownloadHandler(metaclass=Singleton):
         download.run()
 
         post_processer: (
-            type[PostProcessorTorrentsComplete] | type[PostProcessorTorrentsCopy]
+            type[PostProcessorTorrentsComplete]
+            | type[PostProcessorTorrentsCopy]
         )
 
         ws = WebSocket()
-        seeding_handling: SeedingHandling | Never = self.settings.sv.seeding_handling
+        seeding_handling: SeedingHandling | Never = (
+            self.settings.sv.seeding_handling
+        )
 
         if seeding_handling == SeedingHandling.COMPLETE:
             post_processer = PostProcessorTorrentsComplete
@@ -204,7 +207,9 @@ class DownloadHandler(metaclass=Singleton):
                 # Or downloading
                 # Or seeding with files copied
                 # Or seeding with seeding_handling = 'complete'
-                download.sleep_event.wait(timeout=Constants.TORRENT_UPDATE_INTERVAL)
+                download.sleep_event.wait(
+                    timeout=Constants.TORRENT_UPDATE_INTERVAL
+                )
 
         ws.send_queue_ended(download)
         return
@@ -405,7 +410,9 @@ class DownloadHandler(metaclass=Singleton):
         Returns:
             bool: Whether the link is in the queue.
         """
-        return any(d for d in self.queue if link in (d.web_link, d.download_link))
+        return any(
+            d for d in self.queue if link in (d.web_link, d.download_link)
+        )
 
     async def add(
         self,
@@ -472,7 +479,9 @@ class DownloadHandler(metaclass=Singleton):
                         external_client=None,
                         external_id=None,
                         filename=f"{torrent_name}/{result['md5']}.{result['extension']}",
-                        releaser=result["releaser"] if "releaser" in result else None,
+                        releaser=result["releaser"]
+                        if "releaser" in result
+                        else None,
                         scan_type=result["scan_type"]
                         if "scan_type" in result
                         else None,
@@ -502,7 +511,9 @@ class DownloadHandler(metaclass=Singleton):
                         web_link=link,
                         web_title=None,
                         web_sub_title=None,
-                        releaser=result["releaser"] if "releaser" in result else None,
+                        releaser=result["releaser"]
+                        if "releaser" in result
+                        else None,
                         scan_type=result["scan_type"]
                         if "scan_type" in result
                         else None,
@@ -540,7 +551,9 @@ class DownloadHandler(metaclass=Singleton):
                 return [], e.reason
 
             try:
-                downloads = await gcp.create_downloads(volume_id, issue_id, force_match)
+                downloads = await gcp.create_downloads(
+                    volume_id, issue_id, force_match
+                )
 
             except FailedGCPage as e:
                 if e.reason == FailReason.NO_WORKING_LINKS:
@@ -677,13 +690,15 @@ class DownloadHandler(metaclass=Singleton):
                     reason=lb.reason,
                 )
                 cursor.execute(
-                    "DELETE FROM download_queue WHERE id = ?;", (download["id"],)
+                    "DELETE FROM download_queue WHERE id = ?;",
+                    (download["id"],),
                 )
                 continue
 
             except (DownloadLimitReached, IssueNotFound):
                 cursor.execute(
-                    "DELETE FROM download_queue WHERE id = ?;", (download["id"],)
+                    "DELETE FROM download_queue WHERE id = ?;",
+                    (download["id"],),
                 )
                 continue
 
@@ -899,7 +914,12 @@ def get_download_history(
     return (
         get_db()
         .execute(
-            comm, {"issue_id": issue_id, "volume_id": volume_id, "offset": offset * 50}
+            comm,
+            {
+                "issue_id": issue_id,
+                "volume_id": volume_id,
+                "offset": offset * 50,
+            },
         )
         .fetchalldict()
     )

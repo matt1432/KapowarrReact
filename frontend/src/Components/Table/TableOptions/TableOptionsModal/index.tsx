@@ -64,9 +64,15 @@ export default function TableOptionsModal<T extends string>({
     const hasPageSize = !!propsPageSize;
     const isDragging = dropIndex !== null;
     const isDraggingUp =
-        isDragging && dropIndex !== null && dragIndex !== null && dropIndex < dragIndex;
+        isDragging &&
+        dropIndex !== null &&
+        dragIndex !== null &&
+        dropIndex < dragIndex;
     const isDraggingDown =
-        isDragging && dropIndex !== null && dragIndex !== null && dropIndex > dragIndex;
+        isDragging &&
+        dropIndex !== null &&
+        dragIndex !== null &&
+        dropIndex > dragIndex;
 
     const handlePageSizeChange = useCallback(
         ({ value }: InputChanged<string, number | null>) => {
@@ -110,10 +116,13 @@ export default function TableOptionsModal<T extends string>({
         [columns, onTableOptionChange],
     );
 
-    const handleColumnDragMove = useCallback((newDragIndex: number, newDropIndex: number) => {
-        setDropIndex(newDropIndex);
-        setDragIndex(newDragIndex);
-    }, []);
+    const handleColumnDragMove = useCallback(
+        (newDragIndex: number, newDropIndex: number) => {
+            setDropIndex(newDropIndex);
+            setDragIndex(newDragIndex);
+        },
+        [],
+    );
 
     const handleColumnDragEnd = useCallback(
         (didDrop: boolean) => {
@@ -146,16 +155,25 @@ export default function TableOptionsModal<T extends string>({
                             <Form>
                                 {hasPageSize ? (
                                     <FormGroup>
-                                        <FormLabel>{translate('TablePageSize')}</FormLabel>
+                                        <FormLabel>
+                                            {translate('TablePageSize')}
+                                        </FormLabel>
 
                                         <FormInputGroup
                                             type={inputTypes.NUMBER}
                                             name="pageSize"
                                             value={pageSize || 0}
-                                            helpText={translate('TablePageSizeHelpText')}
+                                            helpText={translate(
+                                                'TablePageSizeHelpText',
+                                            )}
                                             errors={
                                                 pageSizeError
-                                                    ? [{ message: pageSizeError }]
+                                                    ? [
+                                                          {
+                                                              message:
+                                                                  pageSizeError,
+                                                          },
+                                                      ]
                                                     : undefined
                                             }
                                             onChange={handlePageSizeChange}
@@ -164,44 +182,71 @@ export default function TableOptionsModal<T extends string>({
                                 ) : null}
 
                                 {OptionsComponent ? (
-                                    <OptionsComponent onTableOptionChange={onTableOptionChange} />
+                                    <OptionsComponent
+                                        onTableOptionChange={
+                                            onTableOptionChange
+                                        }
+                                    />
                                 ) : null}
 
                                 {canModifyColumns ? (
                                     <FormGroup>
-                                        <FormLabel>{translate('TableColumns')}</FormLabel>
+                                        <FormLabel>
+                                            {translate('TableColumns')}
+                                        </FormLabel>
 
                                         <div>
                                             <FormInputHelpText
-                                                text={translate('TableColumnsHelpText')}
+                                                text={translate(
+                                                    'TableColumnsHelpText',
+                                                )}
                                             />
 
                                             <div className={styles.columns}>
-                                                {columns.map((column, index) => {
-                                                    const {
-                                                        name,
-                                                        label,
-                                                        columnLabel,
-                                                        isVisible,
-                                                        isModifiable = true,
-                                                    } = column;
+                                                {columns.map(
+                                                    (column, index) => {
+                                                        const {
+                                                            name,
+                                                            label,
+                                                            columnLabel,
+                                                            isVisible,
+                                                            isModifiable = true,
+                                                        } = column;
 
-                                                    return (
-                                                        <TableOptionsColumn
-                                                            key={name}
-                                                            name={name}
-                                                            label={columnLabel ?? label}
-                                                            isVisible={isVisible}
-                                                            isModifiable={isModifiable}
-                                                            index={index}
-                                                            isDraggingUp={isDraggingUp}
-                                                            isDraggingDown={isDraggingDown}
-                                                            onVisibleChange={handleVisibleChange}
-                                                            onColumnDragMove={handleColumnDragMove}
-                                                            onColumnDragEnd={handleColumnDragEnd}
-                                                        />
-                                                    );
-                                                })}
+                                                        return (
+                                                            <TableOptionsColumn
+                                                                key={name}
+                                                                name={name}
+                                                                label={
+                                                                    columnLabel ??
+                                                                    label
+                                                                }
+                                                                isVisible={
+                                                                    isVisible
+                                                                }
+                                                                isModifiable={
+                                                                    isModifiable
+                                                                }
+                                                                index={index}
+                                                                isDraggingUp={
+                                                                    isDraggingUp
+                                                                }
+                                                                isDraggingDown={
+                                                                    isDraggingDown
+                                                                }
+                                                                onVisibleChange={
+                                                                    handleVisibleChange
+                                                                }
+                                                                onColumnDragMove={
+                                                                    handleColumnDragMove
+                                                                }
+                                                                onColumnDragEnd={
+                                                                    handleColumnDragEnd
+                                                                }
+                                                            />
+                                                        );
+                                                    },
+                                                )}
                                             </div>
                                         </div>
                                     </FormGroup>
@@ -209,7 +254,9 @@ export default function TableOptionsModal<T extends string>({
                             </Form>
                         </ModalBody>
                         <ModalFooter>
-                            <Button onPress={onModalClose}>{translate('Close')}</Button>
+                            <Button onPress={onModalClose}>
+                                {translate('Close')}
+                            </Button>
                         </ModalFooter>
                     </ModalContent>
                 ) : null}

@@ -29,10 +29,16 @@ export default function ErrorPage({
     let errorMessage = translate('FailedToLoadKapowarr');
 
     if (volumesError) {
-        errorMessage = getErrorMessage(volumesError, translate('FailedToLoadVolumeFromApi'));
+        errorMessage = getErrorMessage(
+            volumesError,
+            translate('FailedToLoadVolumeFromApi'),
+        );
     }
     else if (settingsError) {
-        errorMessage = getErrorMessage(settingsError, translate('FailedToLoadSettingsFromApi'));
+        errorMessage = getErrorMessage(
+            settingsError,
+            translate('FailedToLoadSettingsFromApi'),
+        );
     }
     else if (rootFoldersError) {
         errorMessage = getErrorMessage(
@@ -45,7 +51,9 @@ export default function ErrorPage({
         <div className={styles.page}>
             <div>{errorMessage}</div>
 
-            <div className={styles.version}>{translate('VersionNumber', { version })}</div>
+            <div className={styles.version}>
+                {translate('VersionNumber', { version })}
+            </div>
         </div>
     );
 }

@@ -10,7 +10,9 @@ import translate from 'Utilities/String/translate';
 
 // General Components
 import Menu from 'Components/Menu/Menu';
-import ToolbarMenuButton, { type ToolbarMenuButtonProps } from 'Components/Menu/ToolbarMenuButton';
+import ToolbarMenuButton, {
+    type ToolbarMenuButtonProps,
+} from 'Components/Menu/ToolbarMenuButton';
 
 // Types
 interface SortMenuProps extends Omit<ToolbarMenuButtonProps, 'iconName'> {

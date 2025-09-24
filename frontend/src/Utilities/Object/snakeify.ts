@@ -7,8 +7,11 @@ export default function snakeify<
     T extends ExtendableRecord = ExtendableRecord,
     K extends SnakeCasedPropertiesDeep<T> = SnakeCasedPropertiesDeep<T>,
 >(obj: T) {
-    return transform(obj, (result: ExtendableRecord, value: unknown, key: string, target) => {
-        const snakeKey = isArray(target) ? key : snakeCase(key);
-        result[snakeKey] = isObject(value) ? snakeify(value) : value;
-    }) as K;
+    return transform(
+        obj,
+        (result: ExtendableRecord, value: unknown, key: string, target) => {
+            const snakeKey = isArray(target) ? key : snakeCase(key);
+            result[snakeKey] = isObject(value) ? snakeify(value) : value;
+        },
+    ) as K;
 }

@@ -29,11 +29,19 @@ export default function VolumeIndexViewMenu({
     return (
         <ViewMenu isDisabled={isDisabled} alignMenu={align.RIGHT}>
             <MenuContent>
-                <ViewMenuItem name="posters" selectedView={view} onPress={onViewSelect}>
+                <ViewMenuItem
+                    name="posters"
+                    selectedView={view}
+                    onPress={onViewSelect}
+                >
                     {translate('Posters')}
                 </ViewMenuItem>
 
-                <ViewMenuItem name="table" selectedView={view} onPress={onViewSelect}>
+                <ViewMenuItem
+                    name="table"
+                    selectedView={view}
+                    onPress={onViewSelect}
+                >
                     {translate('Table')}
                 </ViewMenuItem>
             </MenuContent>

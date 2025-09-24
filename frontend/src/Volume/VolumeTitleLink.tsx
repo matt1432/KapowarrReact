@@ -11,7 +11,11 @@ export interface VolumeTitleLinkProps extends LinkProps {
 
 // IMPLEMENTATIONS
 
-export default function VolumeTitleLink({ titleSlug, title, ...linkProps }: VolumeTitleLinkProps) {
+export default function VolumeTitleLink({
+    titleSlug,
+    title,
+    ...linkProps
+}: VolumeTitleLinkProps) {
     const link = `/volumes/${titleSlug}`;
 
     return (

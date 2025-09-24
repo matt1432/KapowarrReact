@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useGetSettingsQuery, useSaveSettingsMutation } from 'Store/Api/Settings';
+import {
+    useGetSettingsQuery,
+    useSaveSettingsMutation,
+} from 'Store/Api/Settings';
 import type { InputChanged } from 'typings/Inputs';
 import type { SettingsValue } from 'typings/Settings';
 import filterObject from 'Utilities/Object/filterObject';
@@ -30,7 +33,8 @@ export default function useEditSettings() {
             filterObject(
                 changes,
                 ([key, value]) =>
-                    key !== 'apiKey' && value !== settings?.[key as keyof typeof changes],
+                    key !== 'apiKey' &&
+                    value !== settings?.[key as keyof typeof changes],
             ),
         ).finally(() => {
             refetch();

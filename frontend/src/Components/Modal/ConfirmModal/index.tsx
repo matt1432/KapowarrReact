@@ -8,7 +8,9 @@ import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 
 // General Components
 import Button from 'Components/Link/Button';
-import SpinnerButton, { type SpinnerButtonProps } from 'Components/Link/SpinnerButton';
+import SpinnerButton, {
+    type SpinnerButtonProps,
+} from 'Components/Link/SpinnerButton';
 import Modal, { type ModalProps } from 'Components/Modal/Modal';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';

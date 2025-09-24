@@ -24,8 +24,15 @@ export default function VolumeHistoryModal({
     ...otherProps
 }: VolumeHistoryModalProps) {
     return (
-        <Modal isOpen={isOpen} size={sizes.EXTRA_EXTRA_LARGE} onModalClose={onModalClose}>
-            <VolumeHistoryModalContent {...otherProps} onModalClose={onModalClose} />
+        <Modal
+            isOpen={isOpen}
+            size={sizes.EXTRA_EXTRA_LARGE}
+            onModalClose={onModalClose}
+        >
+            <VolumeHistoryModalContent
+                {...otherProps}
+                onModalClose={onModalClose}
+            />
         </Modal>
     );
 }

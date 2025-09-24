@@ -5,7 +5,10 @@ import { useCallback } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import { setUISettingsOption, type UISettingsState } from 'Store/Slices/UISettings';
+import {
+    setUISettingsOption,
+    type UISettingsState,
+} from 'Store/Slices/UISettings';
 
 // Misc
 import { inputTypes } from 'Helpers/Props';
@@ -44,8 +47,16 @@ const shortDateFormatOptions: EnhancedSelectInputValue<string>[] = [
 ];
 
 const longDateFormatOptions: EnhancedSelectInputValue<string>[] = [
-    { key: 'dddd, MMMM D YYYY', value: 'Tuesday, March 25, 2014', hint: 'dddd, MMMM D YYYY' },
-    { key: 'dddd, D MMMM YYYY', value: 'Tuesday, 25 March, 2014', hint: 'dddd, D MMMM YYYY' },
+    {
+        key: 'dddd, MMMM D YYYY',
+        value: 'Tuesday, March 25, 2014',
+        hint: 'dddd, MMMM D YYYY',
+    },
+    {
+        key: 'dddd, D MMMM YYYY',
+        value: 'Tuesday, 25 March, 2014',
+        hint: 'dddd, D MMMM YYYY',
+    },
 ];
 
 const timeFormatOptions: EnhancedSelectInputValue<string>[] = [
@@ -100,12 +111,18 @@ export default function UISettings() {
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel>{translate('EnableColorImpairedMode')}</FormLabel>
+                            <FormLabel>
+                                {translate('EnableColorImpairedMode')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.CHECK}
                                 name="enableColorImpairedMode"
-                                helpText={translate('EnableColorImpairedModeHelpText')}
-                                onChange={handleInputChange<'enableColorImpairedMode'>}
+                                helpText={translate(
+                                    'EnableColorImpairedModeHelpText',
+                                )}
+                                onChange={
+                                    handleInputChange<'enableColorImpairedMode'>
+                                }
                                 value={enableColorImpairedMode}
                             />
                         </FormGroup>
@@ -113,7 +130,9 @@ export default function UISettings() {
 
                     <FieldSet legend={translate('Dates')}>
                         <FormGroup>
-                            <FormLabel>{translate('ShortDateFormat')}</FormLabel>
+                            <FormLabel>
+                                {translate('ShortDateFormat')}
+                            </FormLabel>
 
                             <FormInputGroup
                                 type={inputTypes.SELECT}
@@ -149,13 +168,19 @@ export default function UISettings() {
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel>{translate('ShowRelativeDates')}</FormLabel>
+                            <FormLabel>
+                                {translate('ShowRelativeDates')}
+                            </FormLabel>
 
                             <FormInputGroup
                                 type={inputTypes.CHECK}
                                 name="showRelativeDates"
-                                helpText={translate('ShowRelativeDatesHelpText')}
-                                onChange={handleInputChange<'showRelativeDates'>}
+                                helpText={translate(
+                                    'ShowRelativeDatesHelpText',
+                                )}
+                                onChange={
+                                    handleInputChange<'showRelativeDates'>
+                                }
                                 value={showRelativeDates}
                             />
                         </FormGroup>

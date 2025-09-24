@@ -8,7 +8,12 @@ import camelize from 'Utilities/Object/camelize';
 
 // Types
 import type { AboutInfo, RawAboutInfo } from 'typings/Status';
-import type { RawTaskHistory, RawTaskPlanning, TaskHistory, TaskPlanning } from 'typings/Task';
+import type {
+    RawTaskHistory,
+    RawTaskPlanning,
+    TaskHistory,
+    TaskPlanning,
+} from 'typings/Task';
 
 // IMPLEMENTATIONS
 
@@ -23,7 +28,8 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: { result: RawAboutInfo }) => camelize(response.result),
+            transformResponse: (response: { result: RawAboutInfo }) =>
+                camelize(response.result),
         }),
 
         getTaskPlanning: build.query<TaskPlanning[], void>({

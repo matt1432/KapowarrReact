@@ -31,7 +31,10 @@ const SearchResultsSlice = createSlice({
     name: 'searchResults',
     initialState,
     reducers: {
-        setInteractiveSearchSort: (state, { payload }: PayloadAction<SetVolumeSortParams>) => {
+        setInteractiveSearchSort: (
+            state,
+            { payload }: PayloadAction<SetVolumeSortParams>,
+        ) => {
             const newState = structuredClone(payload);
 
             if (!newState.sortDirection) {

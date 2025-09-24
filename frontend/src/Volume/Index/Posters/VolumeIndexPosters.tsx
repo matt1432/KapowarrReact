@@ -55,9 +55,13 @@ interface VolumeIndexPostersProps {
 // IMPLEMENTATIONS
 
 const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
-const bodyPaddingSmallScreen = parseInt(dimensions.pageContentBodyPaddingSmallScreen);
+const bodyPaddingSmallScreen = parseInt(
+    dimensions.pageContentBodyPaddingSmallScreen,
+);
 const columnPadding = parseInt(dimensions.volumeIndexColumnPadding);
-const columnPaddingSmallScreen = parseInt(dimensions.volumeIndexColumnPaddingSmallScreen);
+const columnPaddingSmallScreen = parseInt(
+    dimensions.volumeIndexColumnPaddingSmallScreen,
+);
 const progressBarHeight = parseInt(dimensions.progressBarSmallHeight);
 const detailedProgressBarHeight = parseInt(dimensions.progressBarMediumHeight);
 
@@ -129,7 +133,10 @@ export default function VolumeIndexPosters({
         const remainder = width % maximumColumnWidth;
         return remainder === 0
             ? maximumColumnWidth
-            : Math.floor(width / (columns + ADDITIONAL_COLUMN_COUNT[posterOptions.size]));
+            : Math.floor(
+                  width /
+                      (columns + ADDITIONAL_COLUMN_COUNT[posterOptions.size]),
+              );
     }, [isSmallScreen, posterOptions, size]);
 
     const columnCount = useMemo(
@@ -140,12 +147,23 @@ export default function VolumeIndexPosters({
         () => (isSmallScreen ? columnPaddingSmallScreen : columnPadding),
         [isSmallScreen],
     );
-    const posterWidth = useMemo(() => columnWidth - padding * 2, [columnWidth, padding]);
-    const posterHeight = useMemo(() => Math.ceil((250 / 170) * posterWidth), [posterWidth]);
+    const posterWidth = useMemo(
+        () => columnWidth - padding * 2,
+        [columnWidth, padding],
+    );
+    const posterHeight = useMemo(
+        () => Math.ceil((250 / 170) * posterWidth),
+        [posterWidth],
+    );
 
     const rowHeight = useMemo(() => {
-        const { detailedProgressBar, showFolder, showMonitored, showSizeOnDisk, showTitle } =
-            posterOptions;
+        const {
+            detailedProgressBar,
+            showFolder,
+            showMonitored,
+            showSizeOnDisk,
+            showTitle,
+        } = posterOptions;
 
         const heights = [
             posterHeight,
@@ -206,7 +224,10 @@ export default function VolumeIndexPosters({
             const padding = bodyPadding - 5;
             const finalWidth = width - padding * 2;
 
-            if (Math.abs(size.width - finalWidth) < 20 || size.width === finalWidth) {
+            if (
+                Math.abs(size.width - finalWidth) < 20 ||
+                size.width === finalWidth
+            ) {
                 return;
             }
 
@@ -219,13 +240,16 @@ export default function VolumeIndexPosters({
 
     useEffect(() => {
         const currentScrollerRef = scrollerRef.current as HTMLElement;
-        const currentScrollListener = isSmallScreen ? window : currentScrollerRef;
+        const currentScrollListener = isSmallScreen
+            ? window
+            : currentScrollerRef;
 
         const handleScroll = throttle(() => {
             const { offsetTop = 0 } = currentScrollerRef;
             const scrollTop =
-                (isSmallScreen ? getWindowScrollTopPosition() : currentScrollerRef.scrollTop) -
-                offsetTop;
+                (isSmallScreen
+                    ? getWindowScrollTopPosition()
+                    : currentScrollerRef.scrollTop) - offsetTop;
 
             ref.current?.element?.scrollTo(0, scrollTop);
         }, 10);
@@ -236,7 +260,10 @@ export default function VolumeIndexPosters({
             handleScroll.cancel();
 
             if (currentScrollListener) {
-                currentScrollListener.removeEventListener('scroll', handleScroll);
+                currentScrollListener.removeEventListener(
+                    'scroll',
+                    handleScroll,
+                );
             }
         };
     }, [isSmallScreen, ref, scrollerRef]);
@@ -254,7 +281,15 @@ export default function VolumeIndexPosters({
                 scrollerRef.current?.scrollTo(0, scrollTop);
             }
         }
-    }, [jumpToCharacter, rowHeight, columnCount, padding, items, scrollerRef, ref]);
+    }, [
+        jumpToCharacter,
+        rowHeight,
+        columnCount,
+        padding,
+        items,
+        scrollerRef,
+        ref,
+    ]);
 
     return (
         <div ref={measureRef}>

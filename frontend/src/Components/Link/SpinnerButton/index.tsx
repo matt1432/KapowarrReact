@@ -33,12 +33,20 @@ export default function SpinnerButton({
 }: SpinnerButtonProps) {
     return (
         <Button
-            className={classNames(className, styles.button, isSpinning && styles.isSpinning)}
+            className={classNames(
+                className,
+                styles.button,
+                isSpinning && styles.isSpinning,
+            )}
             isDisabled={isDisabled || isSpinning}
             {...otherProps}
         >
             <span className={styles.spinnerContainer}>
-                <Icon className={styles.spinner} name={spinnerIcon} isSpinning={true} />
+                <Icon
+                    className={styles.spinner}
+                    name={spinnerIcon}
+                    isSpinning={true}
+                />
             </span>
 
             <span className={styles.label}>{children}</span>

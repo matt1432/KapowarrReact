@@ -49,7 +49,10 @@ export interface TextInputProps<K extends string, Type extends TextInputType> {
 
 // IMPLEMENTATIONS
 
-export default function TextInput<K extends string, Type extends TextInputType = 'text'>({
+export default function TextInput<
+    K extends string,
+    Type extends TextInputType = 'text',
+>({
     className = styles.input,
     type,
     readOnly = false,
@@ -90,7 +93,8 @@ export default function TextInput<K extends string, Type extends TextInputType =
             const end = inputRef.current.selectionEnd;
 
             const selectionChanged =
-                selectionStart.current !== start || selectionEnd.current !== end;
+                selectionStart.current !== start ||
+                selectionEnd.current !== end;
 
             selectionStart.current = start;
             selectionEnd.current = end;

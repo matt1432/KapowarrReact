@@ -34,7 +34,12 @@ export default function PageMenuButton({
             <Icon name={iconName} size={18} />
 
             {showIndicator ? (
-                <span className={classNames(styles.indicatorContainer, 'fa-layers fa-fw')}>
+                <span
+                    className={classNames(
+                        styles.indicatorContainer,
+                        'fa-layers fa-fw',
+                    )}
+                >
                     <Icon name={icons.CIRCLE} size={9} />
                 </span>
             ) : null}

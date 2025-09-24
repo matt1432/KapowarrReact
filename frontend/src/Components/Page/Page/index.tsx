@@ -39,7 +39,9 @@ export default function Page({ children = [] }: PageProps) {
     const { hasError, errors, isPopulated, needsAuth } = useAppPage();
 
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
-    const { enableColorImpairedMode } = useRootSelector((state) => state.uiSettings);
+    const { enableColorImpairedMode } = useRootSelector(
+        (state) => state.uiSettings,
+    );
 
     const { isSidebarVisible } = useRootSelector((state) => state.app);
 

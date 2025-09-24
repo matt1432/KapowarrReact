@@ -50,7 +50,8 @@ def archive_contains_issues(archive_file: str) -> bool:
         return False
 
     return any(
-        splitext(f)[1].lower() in FileConstants.CONTAINER_EXTENSIONS for f in namelist
+        splitext(f)[1].lower() in FileConstants.CONTAINER_EXTENSIONS
+        for f in namelist
     )
 
 
@@ -66,7 +67,9 @@ class FileConversionHandler:
         """
         conversion_methods: dict[str, dict[str, type[FileConverter]]] = {}
         for fc in get_subclasses(FileConverter):
-            conversion_methods.setdefault(fc.source_format, {})[fc.target_format] = fc
+            conversion_methods.setdefault(fc.source_format, {})[
+                fc.target_format
+            ] = fc
         return conversion_methods
 
     @staticmethod
@@ -96,10 +99,14 @@ class FileConversionHandler:
             Set[str]: The list with all formats.
         """
         return set(
-            chain.from_iterable(FileConversionHandler.get_conversion_methods().values())
+            chain.from_iterable(
+                FileConversionHandler.get_conversion_methods().values()
+            )
         )
 
-    def __init__(self, file: str, format_preference: list[str] | None = None) -> None:
+    def __init__(
+        self, file: str, format_preference: list[str] | None = None
+    ) -> None:
         """Prepare file for conversion.
 
         Args:
@@ -316,7 +323,9 @@ def mass_convert(
                     pool.imap_unordered(convert_file, planned_conversions)
                 ):
                     result += iter_result
-                    ws.update_task_status(message=f"Converted {idx + 1}/{total_count}")
+                    ws.update_task_status(
+                        message=f"Converted {idx + 1}/{total_count}"
+                    )
 
             else:
                 result += chain.from_iterable(

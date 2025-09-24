@@ -41,7 +41,10 @@ export default function HintedSelectInputSelectedValue<
     }, [values]);
 
     return (
-        <EnhancedSelectInputSelectedValue className={styles.selectedValue} {...otherProps}>
+        <EnhancedSelectInputSelectedValue
+            className={styles.selectedValue}
+            {...otherProps}
+        >
             <div className={styles.valueText}>
                 {isMultiSelect && Array.isArray(selectedValue)
                     ? selectedValue.map((key) => {
@@ -52,7 +55,9 @@ export default function HintedSelectInputSelectedValue<
                     : valuesMap.get(selectedValue as V)}
             </div>
 
-            {hint && includeHint ? <div className={styles.hintText}>{hint}</div> : null}
+            {hint && includeHint ? (
+                <div className={styles.hintText}>{hint}</div>
+            ) : null}
         </EnhancedSelectInputSelectedValue>
     );
 }

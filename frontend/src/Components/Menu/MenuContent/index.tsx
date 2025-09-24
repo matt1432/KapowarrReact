@@ -32,8 +32,15 @@ export default function MenuContent({
     const generatedId = useId();
 
     return (
-        <div ref={forwardedRef} id={id ?? generatedId} className={className} style={style}>
-            {isOpen ? <Scroller className={styles.scroller}>{children}</Scroller> : null}
+        <div
+            ref={forwardedRef}
+            id={id ?? generatedId}
+            className={className}
+            style={style}
+        >
+            {isOpen ? (
+                <Scroller className={styles.scroller}>{children}</Scroller>
+            ) : null}
         </div>
     );
 }

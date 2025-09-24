@@ -12,7 +12,8 @@ import EnhancedSelectInputOption, {
 import styles from './index.module.css';
 
 // Types
-interface SpecialVersionSelectInputOptionProps extends EnhancedSelectInputOptionProps {
+interface SpecialVersionSelectInputOptionProps
+    extends EnhancedSelectInputOptionProps {
     id: string;
     value: string;
     isMobile: boolean;
@@ -28,7 +29,12 @@ export default function SpecialVersionSelectInputOption({
 }: SpecialVersionSelectInputOptionProps) {
     return (
         <EnhancedSelectInputOption {...otherProps} id={id} isMobile={isMobile}>
-            <div className={classNames(styles.optionText, isMobile && styles.isMobile)}>
+            <div
+                className={classNames(
+                    styles.optionText,
+                    isMobile && styles.isMobile,
+                )}
+            >
                 <div className={styles.value}>{value}</div>
             </div>
         </EnhancedSelectInputOption>

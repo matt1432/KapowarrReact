@@ -25,7 +25,10 @@ export default function DeleteVolumeModal({
 }: DeleteVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} size={sizes.MEDIUM} onModalClose={onModalClose}>
-            <DeleteVolumeModalContent {...otherProps} onModalClose={onModalClose} />
+            <DeleteVolumeModalContent
+                {...otherProps}
+                onModalClose={onModalClose}
+            />
         </Modal>
     );
 }

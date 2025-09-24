@@ -30,10 +30,10 @@ interface UseSortProps<ColumnName extends string, T extends Item<ColumnName>> {
 
 // IMPLEMENTATIONS
 
-function predicatesToSorters<ColumnName extends string, T extends Item<ColumnName>>(
-    columns: Column<ColumnName>[],
-    predicates: Predicates<T, ColumnName>,
-) {
+function predicatesToSorters<
+    ColumnName extends string,
+    T extends Item<ColumnName>,
+>(columns: Column<ColumnName>[], predicates: Predicates<T, ColumnName>) {
     const predicateKeys = Object.keys(predicates);
     const missingSortableColumns: ColumnName[] = columns
         .filter((c) => c.isSortable && !predicateKeys.includes(c.name))
@@ -81,10 +81,15 @@ function predicatesToSorters<ColumnName extends string, T extends Item<ColumnNam
             ][]
         ).map(([key, func]) => [
             key,
-            (sortDirection: SortDirection, secondarySorter?: (a: T, b: T) => number) => {
+            (
+                sortDirection: SortDirection,
+                secondarySorter?: (a: T, b: T) => number,
+            ) => {
                 return (a: T, b: T) => {
                     const firstSort =
-                        sortDirection === sortDirections.ASCENDING ? func(a, b) : func(b, a);
+                        sortDirection === sortDirections.ASCENDING
+                            ? func(a, b)
+                            : func(b, a);
 
                     if (firstSort === 0 && secondarySorter) {
                         return sortDirection === sortDirections.ASCENDING
@@ -107,7 +112,10 @@ function predicatesToSorters<ColumnName extends string, T extends Item<ColumnNam
     >;
 }
 
-export default function useSort<ColumnName extends string, T extends Item<ColumnName>>({
+export default function useSort<
+    ColumnName extends string,
+    T extends Item<ColumnName>,
+>({
     columns,
     items,
     predicates = {},
@@ -115,7 +123,10 @@ export default function useSort<ColumnName extends string, T extends Item<Column
     secondarySortKey = sortKey,
     sortDirection = sortDirections.ASCENDING,
 }: UseSortProps<ColumnName, T>) {
-    const sorters = useMemo(() => predicatesToSorters(columns, predicates), [columns, predicates]);
+    const sorters = useMemo(
+        () => predicatesToSorters(columns, predicates),
+        [columns, predicates],
+    );
     const secondarySorter = useMemo(() => {
         return sortKey === secondarySortKey
             ? undefined
@@ -123,7 +134,8 @@ export default function useSort<ColumnName extends string, T extends Item<Column
     }, [sortKey, secondarySortKey, sortDirection, sorters]);
 
     return useMemo(
-        () => items.toSorted(sorters[sortKey]?.(sortDirection, secondarySorter)),
+        () =>
+            items.toSorted(sorters[sortKey]?.(sortDirection, secondarySorter)),
         [items, secondarySorter, sortDirection, sorters, sortKey],
     );
 }

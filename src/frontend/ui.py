@@ -13,7 +13,10 @@ methods = ["GET"]
 
 def render(filename: str, **kwargs: Any) -> str:
     return render_template(
-        filename, url_base=SERVER.url_base, version=about_data["version"], **kwargs
+        filename,
+        url_base=SERVER.url_base,
+        version=about_data["version"],
+        **kwargs,
     )
 
 

@@ -4,7 +4,9 @@
 import translate from 'Utilities/String/translate';
 
 // Specific Components
-import EnhancedSelectInput, { type EnhancedSelectInputValue } from '../EnhancedSelectInput';
+import EnhancedSelectInput, {
+    type EnhancedSelectInputValue,
+} from '../EnhancedSelectInput';
 
 // CSS
 import styles from './index.module.css';
@@ -131,13 +133,17 @@ export default function UMaskInput<K extends string>({
                 <div>
                     <label>{translate('Folder')}</label>
                     <div className={styles.value}>{folder}</div>
-                    <div className={styles.unit}>d{formatPermissions(folderNum)}</div>
+                    <div className={styles.unit}>
+                        d{formatPermissions(folderNum)}
+                    </div>
                 </div>
 
                 <div>
                     <label>{translate('File')}</label>
                     <div className={styles.value}>{file}</div>
-                    <div className={styles.unit}>{formatPermissions(fileNum)}</div>
+                    <div className={styles.unit}>
+                        {formatPermissions(fileNum)}
+                    </div>
                 </div>
             </div>
         </div>

@@ -39,7 +39,7 @@ pythonVersion = "3.13"
 
 [tool.ruff]
 target-version = "py313"
-line-length = 88
+line-length = 80
 lint.select = ["E", "F", "I", "U"]
 lint.ignore = ["E501"]
 

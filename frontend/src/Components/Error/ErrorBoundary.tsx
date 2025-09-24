@@ -17,7 +17,10 @@ interface ErrorBoundaryState {
 
 // IMPLEMENTATIONS
 
-export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export default class ErrorBoundary extends Component<
+    ErrorBoundaryProps,
+    ErrorBoundaryState
+> {
     constructor(props: ErrorBoundaryProps) {
         super(props);
 
@@ -35,11 +38,21 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
     }
 
     render() {
-        const { children, errorComponent: ErrorComponent, onModalClose } = this.props;
+        const {
+            children,
+            errorComponent: ErrorComponent,
+            onModalClose,
+        } = this.props;
         const { error, info } = this.state;
 
         if (error) {
-            return <ErrorComponent error={error} info={info} onModalClose={onModalClose} />;
+            return (
+                <ErrorComponent
+                    error={error}
+                    info={info}
+                    onModalClose={onModalClose}
+                />
+            );
         }
 
         return children;

@@ -26,7 +26,9 @@ interface ConnectionLostModalProps {
 
 // IMPLEMENTATIONS
 
-export default function ConnectionLostModal({ isOpen }: ConnectionLostModalProps) {
+export default function ConnectionLostModal({
+    isOpen,
+}: ConnectionLostModalProps) {
     const handleModalClose = useCallback(() => {
         location.reload();
     }, []);
@@ -39,7 +41,9 @@ export default function ConnectionLostModal({ isOpen }: ConnectionLostModalProps
                 <ModalBody>
                     <div>{translate('ConnectionLostToBackend')}</div>
 
-                    <div className={styles.automatic}>{translate('ConnectionLostReconnect')}</div>
+                    <div className={styles.automatic}>
+                        {translate('ConnectionLostReconnect')}
+                    </div>
                 </ModalBody>
                 <ModalFooter>
                     <Button kind={kinds.PRIMARY} onPress={handleModalClose}>

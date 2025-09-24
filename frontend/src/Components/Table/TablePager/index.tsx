@@ -1,6 +1,8 @@
 import classNames from 'classnames';
 import { useCallback, useMemo, useState } from 'react';
-import SelectInput, { type SelectInputOption } from 'Components/Form/SelectInput';
+import SelectInput, {
+    type SelectInputOption,
+} from 'Components/Form/SelectInput';
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
@@ -71,7 +73,9 @@ function TablePager({
     return (
         <div className={styles.pager}>
             <div className={styles.loadingContainer}>
-                {isFetching ? <LoadingIndicator className={styles.loading} size={20} /> : null}
+                {isFetching ? (
+                    <LoadingIndicator className={styles.loading} size={20} />
+                ) : null}
             </div>
 
             <div className={styles.controlsContainer}>
@@ -79,10 +83,14 @@ function TablePager({
                     <Link
                         className={classNames(
                             styles.pageLink,
-                            (isFirstPage || typeof onFirstPagePress !== 'function') &&
+                            (isFirstPage ||
+                                typeof onFirstPagePress !== 'function') &&
                                 styles.disabledPageButton,
                         )}
-                        isDisabled={isFirstPage || typeof onFirstPagePress !== 'function'}
+                        isDisabled={
+                            isFirstPage ||
+                            typeof onFirstPagePress !== 'function'
+                        }
                         onPress={onFirstPagePress}
                     >
                         <Icon name={icons.PAGE_FIRST} />
@@ -91,10 +99,14 @@ function TablePager({
                     <Link
                         className={classNames(
                             styles.pageLink,
-                            (isFirstPage || typeof onPreviousPagePress !== 'function') &&
+                            (isFirstPage ||
+                                typeof onPreviousPagePress !== 'function') &&
                                 styles.disabledPageButton,
                         )}
-                        isDisabled={isFirstPage || typeof onPreviousPagePress !== 'function'}
+                        isDisabled={
+                            isFirstPage ||
+                            typeof onPreviousPagePress !== 'function'
+                        }
                         onPress={onPreviousPagePress}
                     >
                         <Icon name={icons.PAGE_PREVIOUS} />
@@ -102,7 +114,10 @@ function TablePager({
 
                     <div className={styles.pageNumber}>
                         {isShowingPageSelect ? null : (
-                            <Link isDisabled={totalPages === 1} onPress={handleOpenPageSelectClick}>
+                            <Link
+                                isDisabled={totalPages === 1}
+                                onPress={handleOpenPageSelectClick}
+                            >
                                 {page} / {totalPages}
                             </Link>
                         )}
@@ -123,10 +138,13 @@ function TablePager({
                     <Link
                         className={classNames(
                             styles.pageLink,
-                            (isLastPage || typeof onNextPagePress !== 'function') &&
+                            (isLastPage ||
+                                typeof onNextPagePress !== 'function') &&
                                 styles.disabledPageButton,
                         )}
-                        isDisabled={isLastPage || typeof onNextPagePress !== 'function'}
+                        isDisabled={
+                            isLastPage || typeof onNextPagePress !== 'function'
+                        }
                         onPress={onNextPagePress}
                     >
                         <Icon name={icons.PAGE_NEXT} />
@@ -135,10 +153,13 @@ function TablePager({
                     <Link
                         className={classNames(
                             styles.pageLink,
-                            (isLastPage || typeof onLastPagePress !== 'function') &&
+                            (isLastPage ||
+                                typeof onLastPagePress !== 'function') &&
                                 styles.disabledPageButton,
                         )}
-                        isDisabled={isLastPage || typeof onLastPagePress !== 'function'}
+                        isDisabled={
+                            isLastPage || typeof onLastPagePress !== 'function'
+                        }
                         onPress={onLastPagePress}
                     >
                         <Icon name={icons.PAGE_LAST} />
@@ -153,7 +174,9 @@ function TablePager({
                 )}
             >
                 <div className={styles.records}>
-                    {translate('TotalRecords', { totalRecords: totalRecords ?? 0 })}
+                    {translate('TotalRecords', {
+                        totalRecords: totalRecords ?? 0,
+                    })}
                 </div>
             </div>
         </div>

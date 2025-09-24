@@ -12,7 +12,8 @@ import EditDownloadClientModalContent from './EditDownloadClientModalContent';
 // Types
 import type { EditDownloadClientModalContentProps } from './EditDownloadClientModalContent';
 
-interface EditDownloadClientModalProps extends EditDownloadClientModalContentProps {
+interface EditDownloadClientModalProps
+    extends EditDownloadClientModalContentProps {
     isOpen: boolean;
 }
 
@@ -25,7 +26,10 @@ export default function EditDownloadClientModal({
 }: EditDownloadClientModalProps) {
     return (
         <Modal size={sizes.MEDIUM} isOpen={isOpen} onModalClose={onModalClose}>
-            <EditDownloadClientModalContent {...otherProps} onModalClose={onModalClose} />
+            <EditDownloadClientModalContent
+                {...otherProps}
+                onModalClose={onModalClose}
+            />
         </Modal>
     );
 }

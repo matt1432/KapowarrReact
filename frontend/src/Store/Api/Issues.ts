@@ -36,7 +36,8 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: { result: RawIssueData }) => camelize(response.result),
+            transformResponse: (response: { result: RawIssueData }) =>
+                camelize(response.result),
         }),
 
         // PUT
@@ -53,4 +54,8 @@ const extendedApi = baseApi.injectEndpoints({
     }),
 });
 
-export const { useGetIssueQuery, useLazyGetIssueQuery, useUpdateIssueMutation } = extendedApi;
+export const {
+    useGetIssueQuery,
+    useLazyGetIssueQuery,
+    useUpdateIssueMutation,
+} = extendedApi;

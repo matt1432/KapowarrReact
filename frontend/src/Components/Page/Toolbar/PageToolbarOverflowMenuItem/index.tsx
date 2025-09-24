@@ -33,7 +33,11 @@ export default function PageToolbarOverflowMenuItem({
     ...otherProps
 }: PageToolbarOverflowMenuItemProps) {
     return (
-        <MenuItem key={label} isDisabled={isDisabled || isSpinning} {...otherProps}>
+        <MenuItem
+            key={label}
+            isDisabled={isDisabled || isSpinning}
+            {...otherProps}
+        >
             <SpinnerIcon
                 className={styles.icon}
                 name={iconName}

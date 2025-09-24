@@ -40,7 +40,10 @@ export default function VirtualTableSelectAllHeaderCell({
     }, [allSelected, allUnselected]);
 
     return (
-        <VirtualTableHeaderCell className={styles.selectAllHeaderCell} name="selectAll">
+        <VirtualTableHeaderCell
+            className={styles.selectAllHeaderCell}
+            name="selectAll"
+        >
             <CheckInput
                 className={styles.input}
                 name="selectAll"

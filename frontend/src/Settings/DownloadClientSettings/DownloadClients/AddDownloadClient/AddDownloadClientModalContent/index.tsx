@@ -38,17 +38,20 @@ export default function AddDownloadClientModalContent({
     onDownloadClientSelect,
     onModalClose,
 }: AddDownloadClientModalContentProps) {
-    const { clientTypes, isFetching, isPopulated, error } = useGetDownloadClientOptionsQuery(
-        undefined,
-        {
-            selectFromResult: ({ data, isFetching, isUninitialized, error }) => ({
+    const { clientTypes, isFetching, isPopulated, error } =
+        useGetDownloadClientOptionsQuery(undefined, {
+            selectFromResult: ({
+                data,
+                isFetching,
+                isUninitialized,
+                error,
+            }) => ({
                 clientTypes: (data ? Object.keys(data) : []) as ClientType[],
                 isFetching,
                 isPopulated: !isUninitialized,
                 error,
             }),
-        },
-    );
+        });
 
     return (
         <ModalContent onModalClose={onModalClose}>
@@ -58,7 +61,9 @@ export default function AddDownloadClientModalContent({
                 {isFetching ? <LoadingIndicator /> : null}
 
                 {!isFetching && !!error ? (
-                    <Alert kind={kinds.DANGER}>{translate('AddDownloadClientError')}</Alert>
+                    <Alert kind={kinds.DANGER}>
+                        {translate('AddDownloadClientError')}
+                    </Alert>
                 ) : null}
 
                 {isPopulated && !error ? (
@@ -70,7 +75,9 @@ export default function AddDownloadClientModalContent({
                                         <AddDownloadClientItem
                                             key={downloadClient}
                                             clientType={downloadClient}
-                                            onDownloadClientSelect={onDownloadClientSelect}
+                                            onDownloadClientSelect={
+                                                onDownloadClientSelect
+                                            }
                                         />
                                     );
                                 })}

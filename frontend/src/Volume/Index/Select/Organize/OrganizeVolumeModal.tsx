@@ -22,7 +22,10 @@ export default function OrganizeVolumeModal({
 }: OrganizeVolumeModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
-            <OrganizeVolumeModalContent {...otherProps} onModalClose={onModalClose} />
+            <OrganizeVolumeModalContent
+                {...otherProps}
+                onModalClose={onModalClose}
+            />
         </Modal>
     );
 }

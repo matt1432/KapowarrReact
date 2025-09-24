@@ -120,7 +120,9 @@ def move_to_dest(download: Download) -> None:
         extension = ""
 
     file_dest = join(folder, download.filename_body + extension)
-    LOGGER.debug(f"Moving download to final destination: {download}, Dest: {file_dest}")
+    LOGGER.debug(
+        f"Moving download to final destination: {download}, Dest: {file_dest}"
+    )
 
     # If it takes very long to delete/move the file/folder (because of it's size),
     # the DB is left locked for a long period leading to timeouts.
@@ -147,13 +149,17 @@ def move_torrent_to_dest(download: Download) -> None:
 
     move_to_dest(download)
 
-    download.files = extract_files_from_folder(download.files[0], download.volume_id)
+    download.files = extract_files_from_folder(
+        download.files[0], download.volume_id
+    )
 
     if not download.files:
         return
 
     scan_files(
-        download.volume_id, filepath_filter=download.files, update_websocket=True
+        download.volume_id,
+        filepath_filter=download.files,
+        update_websocket=True,
     )
 
     rename_files = Settings().sv.rename_downloaded_files
@@ -198,7 +204,9 @@ def copy_file_torrent(download: TorrentDownload) -> None:
         return
 
     scan_files(
-        download.volume_id, filepath_filter=download.files, update_websocket=True
+        download.volume_id,
+        filepath_filter=download.files,
+        update_websocket=True,
     )
 
     rename_files = Settings().sv.rename_downloaded_files
@@ -332,7 +340,9 @@ class PostProcessor:
 
     @classmethod
     def perm_failed(cls, download: Download) -> None:
-        LOGGER.info(f"Postprocessing of permanently failed download: {download.id}")
+        LOGGER.info(
+            f"Postprocessing of permanently failed download: {download.id}"
+        )
         cls._run_actions(cls.actions_perm_failed, download)
         return
 

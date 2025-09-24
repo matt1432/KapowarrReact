@@ -29,7 +29,9 @@ export interface RawVolumeMetadata {
     folder_name: string;
 }
 
-export type VolumeMetadata = CamelCasedProperties<Omit<RawVolumeMetadata, 'issues'>> & {
+export type VolumeMetadata = CamelCasedProperties<
+    Omit<RawVolumeMetadata, 'issues'>
+> & {
     issues: IssueMetadata[] | null;
 };
 

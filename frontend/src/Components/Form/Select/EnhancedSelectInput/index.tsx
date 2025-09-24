@@ -128,11 +128,17 @@ function previousIndex<T extends EnhancedSelectInputValue<V>, V>(
     return findIndex(selectedIndex, -1, values);
 }
 
-function nextIndex<T extends EnhancedSelectInputValue<V>, V>(selectedIndex: number, values: T[]) {
+function nextIndex<T extends EnhancedSelectInputValue<V>, V>(
+    selectedIndex: number,
+    values: T[],
+) {
     return findIndex(selectedIndex, 1, values);
 }
 
-function getSelectedIndex<T extends EnhancedSelectInputValue<V>, V>(value: V, values: T[]) {
+function getSelectedIndex<T extends EnhancedSelectInputValue<V>, V>(
+    value: V,
+    values: T[],
+) {
     if (Array.isArray(value)) {
         return values.findIndex((v) => {
             return v.key === value[0];
@@ -173,12 +179,15 @@ export default function EnhancedSelectInput<
     hasWarning,
     valueOptions,
     selectedValueOptions,
-    selectedValueComponent: SelectedValueComponent = HintedSelectInputSelectedValue,
+    selectedValueComponent:
+        SelectedValueComponent = HintedSelectInputSelectedValue,
     optionComponent: OptionComponent = HintedSelectInputOption,
     onChange,
     onOpen,
 }: EnhancedSelectInputProps<K, T, V>) {
-    const [selectedIndex, setSelectedIndex] = useState(getSelectedIndex(value, values));
+    const [selectedIndex, setSelectedIndex] = useState(
+        getSelectedIndex(value, values),
+    );
     const [isOpen, setIsOpen] = useState(false);
     const isMobile = useMemo(() => isMobileUtil(), []);
 
@@ -212,7 +221,10 @@ export default function EnhancedSelectInput<
     const click = useClick(context);
     const dismiss = useDismiss(context);
 
-    const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
+    const { getReferenceProps, getFloatingProps } = useInteractions([
+        click,
+        dismiss,
+    ]);
 
     const selectedValue = useMemo(() => {
         if (values.length) {
@@ -315,7 +327,10 @@ export default function EnhancedSelectInput<
                         nextSelectedIndex = previousIndex(0, values);
                     }
                     else if (keyCode === keyCodes.DOWN_ARROW) {
-                        nextSelectedIndex = nextIndex(values.length - 1, values);
+                        nextSelectedIndex = nextIndex(
+                            values.length - 1,
+                            values,
+                        );
                     }
                 }
 
@@ -365,7 +380,15 @@ export default function EnhancedSelectInput<
                 setSelectedIndex(nextSelectedIndex);
             }
         },
-        [value, isOpen, selectedIndex, values, setIsOpen, setSelectedIndex, handleSelect],
+        [
+            value,
+            isOpen,
+            selectedIndex,
+            values,
+            setIsOpen,
+            setSelectedIndex,
+            handleSelect,
+        ],
     );
 
     const handleOptionsModalClose = useCallback(() => {
@@ -411,10 +434,15 @@ export default function EnhancedSelectInput<
                             onPress={handlePress}
                         >
                             {isFetching ? (
-                                <LoadingIndicator className={styles.loading} size={20} />
+                                <LoadingIndicator
+                                    className={styles.loading}
+                                    size={20}
+                                />
                             ) : null}
 
-                            {isFetching ? null : <Icon name={icons.CARET_DOWN} />}
+                            {isFetching ? null : (
+                                <Icon name={icons.CARET_DOWN} />
+                            )}
                         </Link>
                     </div>
                 ) : (
@@ -437,7 +465,9 @@ export default function EnhancedSelectInput<
                             isDisabled={isDisabled}
                             isMultiSelect={isMultiSelect}
                         >
-                            {selectedOption ? selectedOption.value : selectedValue}
+                            {selectedOption
+                                ? selectedOption.value
+                                : selectedValue}
                         </SelectedValueComponent>
 
                         <div
@@ -448,10 +478,15 @@ export default function EnhancedSelectInput<
                             }
                         >
                             {isFetching ? (
-                                <LoadingIndicator className={styles.loading} size={20} />
+                                <LoadingIndicator
+                                    className={styles.loading}
+                                    size={20}
+                                />
                             ) : null}
 
-                            {isFetching ? null : <Icon name={icons.CARET_DOWN} />}
+                            {isFetching ? null : (
+                                <Icon name={icons.CARET_DOWN} />
+                            )}
                         </div>
                     </Link>
                 )}
@@ -480,7 +515,11 @@ export default function EnhancedSelectInput<
                                     key={key}
                                     id={key}
                                     depth={depth}
-                                    isSelected={isSelectedItem(index, value, values)}
+                                    isSelected={isSelectedItem(
+                                        index,
+                                        value,
+                                        values,
+                                    )}
                                     isDisabled={parentSelected}
                                     isMultiSelect={isMultiSelect}
                                     {...valueOptions}
@@ -533,7 +572,11 @@ export default function EnhancedSelectInput<
                                         key={key}
                                         id={key}
                                         depth={depth}
-                                        isSelected={isSelectedItem(index, value, values)}
+                                        isSelected={isSelectedItem(
+                                            index,
+                                            value,
+                                            values,
+                                        )}
                                         isMultiSelect={isMultiSelect}
                                         isDisabled={parentSelected}
                                         {...valueOptions}

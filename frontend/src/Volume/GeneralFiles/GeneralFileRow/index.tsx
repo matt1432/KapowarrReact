@@ -71,7 +71,11 @@ export default function GeneralFileRow({
                 }
 
                 if (name === 'filesize') {
-                    return <TableRowCell key={name}>{formatBytes(size)}</TableRowCell>;
+                    return (
+                        <TableRowCell key={name}>
+                            {formatBytes(size)}
+                        </TableRowCell>
+                    );
                 }
 
                 if (name === 'actions') {
@@ -93,7 +97,9 @@ export default function GeneralFileRow({
                 isOpen={isRemoveGeneralFileModalOpen}
                 kind={kinds.DANGER}
                 title={translate('DeleteGeneralFile')}
-                message={translate('DeleteGeneralFileMessage', { path: path ?? '' })}
+                message={translate('DeleteGeneralFileMessage', {
+                    path: path ?? '',
+                })}
                 confirmLabel={translate('Delete')}
                 onConfirm={handleRemoveGeneralFilePress}
                 onCancel={setRemoveGeneralFileModalClosed}

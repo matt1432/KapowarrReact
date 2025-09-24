@@ -46,14 +46,23 @@ const rootFolderColumns: Column<string>[] = [
 ];
 
 export default function RootFolders() {
-    const { isFetching, isUninitialized, error, data: items = [] } = useGetRootFoldersQuery();
+    const {
+        isFetching,
+        isUninitialized,
+        error,
+        data: items = [],
+    } = useGetRootFoldersQuery();
 
     if (isFetching && isUninitialized) {
         return <LoadingIndicator />;
     }
 
     if (!isFetching && !!error) {
-        return <Alert kind={kinds.DANGER}>{translate('RootFoldersLoadError')}</Alert>;
+        return (
+            <Alert kind={kinds.DANGER}>
+                {translate('RootFoldersLoadError')}
+            </Alert>
+        );
     }
 
     return (

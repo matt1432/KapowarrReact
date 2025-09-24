@@ -42,7 +42,9 @@ export default function VirtualTableHeaderCell({
 }: VirtualTableHeaderCellProps) {
     const isSorting = isSortable && sortKey === name;
     const sortIcon =
-        sortDirection === sortDirections.ASCENDING ? icons.SORT_ASCENDING : icons.SORT_DESCENDING;
+        sortDirection === sortDirections.ASCENDING
+            ? icons.SORT_ASCENDING
+            : icons.SORT_DESCENDING;
 
     const handlePress = useCallback(() => {
         if (fixedSortDirection) {
@@ -54,10 +56,17 @@ export default function VirtualTableHeaderCell({
     }, [name, fixedSortDirection, onSortPress]);
 
     return isSortable ? (
-        <Link component="div" className={className} onPress={handlePress} {...otherProps}>
+        <Link
+            component="div"
+            className={className}
+            onPress={handlePress}
+            {...otherProps}
+        >
             {children}
 
-            {isSorting ? <Icon name={sortIcon} className={styles.sortIcon} /> : null}
+            {isSorting ? (
+                <Icon name={sortIcon} className={styles.sortIcon} />
+            ) : null}
         </Link>
     ) : (
         <div className={className}>{children}</div>

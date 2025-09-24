@@ -69,7 +69,9 @@ export default function OrganizeVolumeModalContent({
 
     return (
         <ModalContent onModalClose={onModalClose}>
-            <ModalHeader>{translate('OrganizeSelectedVolumeModalHeader')}</ModalHeader>
+            <ModalHeader>
+                {translate('OrganizeSelectedVolumeModalHeader')}
+            </ModalHeader>
 
             <ModalBody>
                 <Alert>

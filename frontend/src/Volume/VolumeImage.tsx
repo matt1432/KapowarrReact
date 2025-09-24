@@ -70,7 +70,13 @@ export default function VolumeImage({
                 onLoad={handleLoad}
                 height={size}
                 threshold={100}
-                placeholder={<img className={className} style={style} src={placeholder} />}
+                placeholder={
+                    <img
+                        className={className}
+                        style={style}
+                        src={placeholder}
+                    />
+                }
             ></LazyLoadImage>
         );
     }

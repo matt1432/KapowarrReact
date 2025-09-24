@@ -53,15 +53,21 @@ function getRelativeDate({
     }
 
     if (isYesterday(date)) {
-        return includeTime ? translate('YesterdayAt', { time }) : translate('Yesterday');
+        return includeTime
+            ? translate('YesterdayAt', { time })
+            : translate('Yesterday');
     }
 
     if (isTodayDate) {
-        return includeTime ? translate('TodayAt', { time }) : translate('Today');
+        return includeTime
+            ? translate('TodayAt', { time })
+            : translate('Today');
     }
 
     if (isTomorrow(date)) {
-        return includeTime ? translate('TomorrowAt', { time }) : translate('Tomorrow');
+        return includeTime
+            ? translate('TomorrowAt', { time })
+            : translate('Tomorrow');
     }
 
     if (isInNextWeek(date)) {

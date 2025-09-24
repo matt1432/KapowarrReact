@@ -38,7 +38,11 @@ from backend.base.definitions import (
 from backend.base.helpers import Session, first_of_range, get_torrent_info
 from backend.base.logging import LOGGER
 from backend.implementations.credentials import Credentials
-from backend.implementations.direct_clients.mega import Mega, MegaABC, MegaFolder
+from backend.implementations.direct_clients.mega import (
+    Mega,
+    MegaABC,
+    MegaFolder,
+)
 from backend.implementations.external_clients import ExternalClients
 from backend.implementations.naming import generate_issue_name
 from backend.implementations.torrent_clients.qBittorrent import qBittorrent
@@ -52,7 +56,9 @@ if TYPE_CHECKING:
 
 
 # autopep8: off
-file_extension_regex = compile(r"(?<=\.|\/)[\w\d]{2,4}(?=$|;|\s|\")", IGNORECASE)
+file_extension_regex = compile(
+    r"(?<=\.|\/)[\w\d]{2,4}(?=$|;|\s|\")", IGNORECASE
+)
 file_name_regex = compile(
     r"filename(?:=\"|\*=UTF-8\'\')(.*?)\.[a-z]{2,4}\"?$", IGNORECASE
 )
@@ -62,7 +68,9 @@ extract_mediafire_regex = compile(
 )
 DOWNLOAD_CHUNK_SIZE = 4194304  # 4MB Chunks
 MEDIAFIRE_FOLDER_LINK = "https://www.mediafire.com/api/1.5/file/zip.php"
-WETRANSFER_API_LINK = "https://wetransfer.com/api/v4/transfers/{transfer_id}/download"
+WETRANSFER_API_LINK = (
+    "https://wetransfer.com/api/v4/transfers/{transfer_id}/download"
+)
 # autopep8: on
 
 
@@ -324,7 +332,9 @@ class BaseDirectDownload(Download):
             if file_result:
                 return unquote_plus(file_result.group(1))
 
-        return splitext(unquote_plus(self.pure_link.split("/")[-1].split("?")[0]))[0]
+        return splitext(
+            unquote_plus(self.pure_link.split("/")[-1].split("?")[0])
+        )[0]
 
     def _extract_extension(self, response: Response | None) -> str:
         if self.extension is not None:
@@ -349,7 +359,8 @@ class BaseDirectDownload(Download):
     def _build_filename(self, response: Response | None) -> str:
         extension = self._extract_extension(response)
         return join(
-            self._download_folder, "_".join(self._filename_body.split(sep)) + extension
+            self._download_folder,
+            "_".join(self._filename_body.split(sep)) + extension,
         )
 
     def run(self) -> None:
@@ -374,12 +385,16 @@ class BaseDirectDownload(Download):
                     # Update progress
                     chunk_size = len(chunk)
                     size_downloaded += chunk_size
-                    self._speed = round(chunk_size / (perf_counter() - start_time), 2)
+                    self._speed = round(
+                        chunk_size / (perf_counter() - start_time), 2
+                    )
                     if self.size == -1:
                         # No file size so progress is amount downloaded
                         self._progress = size_downloaded
                     else:
-                        self._progress = round(size_downloaded / self.size * 100, 2)
+                        self._progress = round(
+                            size_downloaded / self.size * 100, 2
+                        )
 
                     start_time = perf_counter()
                     ws.update_queue_status(self)
@@ -404,7 +419,11 @@ class BaseDirectDownload(Download):
         LOGGER.info(f"Bypassing retries for download {self._id}")
         self._attempts = 50
 
-        if self.__r and self.__r.raw._fp and not isinstance(self.__r.raw._fp, str):
+        if (
+            self.__r
+            and self.__r.raw._fp
+            and not isinstance(self.__r.raw._fp, str)
+        ):
             self.__r.raw._fp.fp.raw._sock.shutdown(2)
 
         return
@@ -727,7 +746,9 @@ class MegaDownload(BaseDirectDownload):
                 raise e
 
         if not self._filename_body:
-            self._filename_body = self._extract_default_filename_body(response=None)
+            self._filename_body = self._extract_default_filename_body(
+                response=None
+            )
 
         self._title = basename(self._filename_body)
         self._files = [self._build_filename(response=None)]
@@ -743,7 +764,9 @@ class MegaDownload(BaseDirectDownload):
         self._state = DownloadState.DOWNLOADING_STATE
         ws = WebSocket()
         try:
-            self._mega.download(self.files[0], lambda: ws.update_queue_status(self))
+            self._mega.download(
+                self.files[0], lambda: ws.update_queue_status(self)
+            )
 
         except ClientNotWorking:
             self._state = DownloadState.FAILED_STATE
@@ -865,10 +888,14 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         if download_link.startswith("magnet"):
             try:
                 response = Session().post(
-                    "https://magnet2torrent.com/upload/", data={"magnet": download_link}
+                    "https://magnet2torrent.com/upload/",
+                    data={"magnet": download_link},
                 )
                 response.raise_for_status()
-                if response.headers.get("Content-Type") != "application/x-bittorrent":
+                if (
+                    response.headers.get("Content-Type")
+                    != "application/x-bittorrent"
+                ):
                     raise RequestException
 
             except RequestException:
@@ -876,9 +903,9 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
 
             torrent_name = get_torrent_info(response.content)[b"name"].decode()
         else:
-            torrent_name = get_torrent_info(requests.get(download_link).content)[
-                b"name"
-            ].decode()
+            torrent_name = get_torrent_info(
+                requests.get(download_link).content
+            )[b"name"].decode()
 
         self._filename_body = ""
         if settings.rename_downloaded_files:
@@ -953,5 +980,7 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
     def as_dict(self) -> dict[str, Any]:
         return {
             **super().as_dict(),
-            "client": self.external_client.id if self._external_client else None,
+            "client": self.external_client.id
+            if self._external_client
+            else None,
         }

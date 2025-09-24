@@ -64,18 +64,24 @@ export default function MediaManagement() {
                 <Form id="downloadSettings">
                     <FieldSet legend={translate('DownloadLocation')}>
                         <FormGroup>
-                            <FormLabel>{translate('DownloadTempFolder')}</FormLabel>
+                            <FormLabel>
+                                {translate('DownloadTempFolder')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.TEXT}
                                 name="downloadFolder"
-                                helpText={translate('DownloadTempFolderHelpText')}
+                                helpText={translate(
+                                    'DownloadTempFolderHelpText',
+                                )}
                                 onChange={handleInputChange}
                                 value={changes.downloadFolder}
                             />
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel>{translate('DownloadTempFolderEmpty')}</FormLabel>
+                            <FormLabel>
+                                {translate('DownloadTempFolderEmpty')}
+                            </FormLabel>
                             <div>
                                 <FormInputButton
                                     style={{
@@ -88,7 +94,9 @@ export default function MediaManagement() {
                                     {translate('Reset')}
                                 </FormInputButton>
                                 <FormInputHelpText
-                                    text={translate('DownloadTempFolderEmptyHelpText')}
+                                    text={translate(
+                                        'DownloadTempFolderEmptyHelpText',
+                                    )}
                                 />
                             </div>
                         </FormGroup>
@@ -96,30 +104,40 @@ export default function MediaManagement() {
 
                     <FieldSet legend={translate('Queue')}>
                         <FormGroup>
-                            <FormLabel>{translate('ConcurrentDownloads')}</FormLabel>
+                            <FormLabel>
+                                {translate('ConcurrentDownloads')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.NUMBER}
                                 min={1}
                                 name="concurrentDirectDownloads"
-                                helpText={translate('ConcurrentDownloadsHelpText')}
+                                helpText={translate(
+                                    'ConcurrentDownloadsHelpText',
+                                )}
                                 onChange={handleNonNullInputChange}
                                 value={changes.concurrentDirectDownloads}
                             />
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel>{translate('FailingDownloadTimeout')}</FormLabel>
+                            <FormLabel>
+                                {translate('FailingDownloadTimeout')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.NUMBER}
                                 name="failingDownloadTimeout"
-                                helpText={translate('FailingDownloadTimeoutHelpText')}
+                                helpText={translate(
+                                    'FailingDownloadTimeoutHelpText',
+                                )}
                                 onChange={handleNonNullInputChange}
                                 value={changes.failingDownloadTimeout}
                             />
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel>{translate('SeedingHandling')}</FormLabel>
+                            <FormLabel>
+                                {translate('SeedingHandling')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.SELECT}
                                 name="seedingHandling"
@@ -131,11 +149,15 @@ export default function MediaManagement() {
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel>{translate('DeleteCompletedDownloads')}</FormLabel>
+                            <FormLabel>
+                                {translate('DeleteCompletedDownloads')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.CHECK}
                                 name="deleteCompletedDownloads"
-                                helpText={translate('DeleteCompletedDownloadsHelpText')}
+                                helpText={translate(
+                                    'DeleteCompletedDownloadsHelpText',
+                                )}
                                 onChange={handleInputChange}
                                 value={changes.deleteCompletedDownloads}
                             />

@@ -112,7 +112,9 @@ export default function TaskScheduled() {
                                 }
 
                                 if (name === 'actions') {
-                                    return <TaskButton taskName={item.taskName} />;
+                                    return (
+                                        <TaskButton taskName={item.taskName} />
+                                    );
                                 }
                             })}
                         </TableRow>

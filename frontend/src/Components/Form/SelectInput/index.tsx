@@ -1,7 +1,12 @@
 // IMPORTS
 
 // React
-import { type ChangeEvent, type ComponentProps, type SyntheticEvent, useCallback } from 'react';
+import {
+    type ChangeEvent,
+    type ComponentProps,
+    type SyntheticEvent,
+    useCallback,
+} from 'react';
 
 // Misc
 import classNames from 'classnames';
@@ -12,7 +17,8 @@ import styles from './index.module.css';
 // Types
 import type { InputChanged } from 'typings/Inputs';
 
-export interface SelectInputOption extends Pick<ComponentProps<'option'>, 'disabled'> {
+export interface SelectInputOption
+    extends Pick<ComponentProps<'option'>, 'disabled'> {
     key: string | number;
     value: string | number | (() => string | number);
 }
@@ -76,7 +82,9 @@ export default function SelectInput<K extends string, T>({
 
                 return (
                     <option key={key} value={key} {...otherOptionProps}>
-                        {typeof optionValue === 'function' ? optionValue() : optionValue}
+                        {typeof optionValue === 'function'
+                            ? optionValue()
+                            : optionValue}
                     </option>
                 );
             })}

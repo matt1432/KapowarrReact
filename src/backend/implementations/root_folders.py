@@ -44,7 +44,10 @@ class RootFolders(metaclass=Singleton):
                         cast(
                             SizeData,
                             dict(
-                                zip(("total", "used", "free"), disk_usage(r["folder"]))
+                                zip(
+                                    ("total", "used", "free"),
+                                    disk_usage(r["folder"]),
+                                )
                             ),
                         ),
                     )
@@ -142,9 +145,9 @@ class RootFolders(metaclass=Singleton):
             Settings().sv.download_folder,
         )
         for other_folder in other_folders:
-            if folder_is_inside_folder(other_folder, folder) or folder_is_inside_folder(
-                folder, other_folder
-            ):
+            if folder_is_inside_folder(
+                other_folder, folder
+            ) or folder_is_inside_folder(folder, other_folder):
                 raise RootFolderInvalid(folder)
 
         root_folder_id = (
@@ -188,12 +191,15 @@ class RootFolders(metaclass=Singleton):
             f"to {new_folder}"
         )
 
-        new_id = self.add(new_folder, _exclude_folder_from_check=current_folder).id
+        new_id = self.add(
+            new_folder, _exclude_folder_from_check=current_folder
+        ).id
 
         cursor = get_db()
         volume_ids: list[int] = first_of_subarrays(
             cursor.execute(
-                "SELECT id FROM volumes WHERE root_folder = ?;", (root_folder_id,)
+                "SELECT id FROM volumes WHERE root_folder = ?;",
+                (root_folder_id,),
             )
         )
 
@@ -228,7 +234,9 @@ class RootFolders(metaclass=Singleton):
         # Remove from database
         cursor = get_db()
         try:
-            cursor.execute("DELETE FROM root_folders WHERE id = ?", (root_folder_id,))
+            cursor.execute(
+                "DELETE FROM root_folders WHERE id = ?", (root_folder_id,)
+            )
             if not cursor.rowcount:
                 raise RootFolderNotFound(root_folder_id)
         except IntegrityError:

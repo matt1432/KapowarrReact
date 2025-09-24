@@ -55,7 +55,11 @@ export default function DeleteVolumeModalContent({
             refetchOnMountOrArgChange: true,
             selectFromResult: ({ data }) => ({
                 title: data?.title ?? '',
-                issueFileCount: data?.issues.reduce((acc, v) => (acc += v.files.length), 0) ?? 0,
+                issueFileCount:
+                    data?.issues.reduce(
+                        (acc, v) => (acc += v.files.length),
+                        0,
+                    ) ?? 0,
                 sizeOnDisk: data?.totalSize ?? 0,
                 path: data?.folder ?? '',
             }),
@@ -68,9 +72,12 @@ export default function DeleteVolumeModalContent({
 
     const [deleteFiles, setDeleteFiles] = useState(false);
 
-    const handleDeleteFilesChange = useCallback(({ value }: CheckInputChanged<'deleteFiles'>) => {
-        setDeleteFiles(value);
-    }, []);
+    const handleDeleteFilesChange = useCallback(
+        ({ value }: CheckInputChanged<'deleteFiles'>) => {
+            setDeleteFiles(value);
+        },
+        [],
+    );
 
     const handleDeleteVolumeConfirmed = useCallback(() => {
         deleteVolume({ volumeId, deleteFolder: deleteFiles }).then(() => {
@@ -83,7 +90,9 @@ export default function DeleteVolumeModalContent({
 
     return (
         <ModalContent onModalClose={onModalClose}>
-            <ModalHeader>{translate('DeleteVolumeModalHeader', { title })}</ModalHeader>
+            <ModalHeader>
+                {translate('DeleteVolumeModalHeader', { title })}
+            </ModalHeader>
 
             <ModalBody>
                 <div className={styles.pathContainer}>
@@ -96,7 +105,9 @@ export default function DeleteVolumeModalContent({
                     <FormLabel>
                         {issueFileCount === 0
                             ? translate('DeleteVolumeFolder')
-                            : translate('DeleteIssuesFiles', { issueFileCount })}
+                            : translate('DeleteIssuesFiles', {
+                                  issueFileCount,
+                              })}
                     </FormLabel>
 
                     <FormInputGroup
@@ -117,7 +128,10 @@ export default function DeleteVolumeModalContent({
                     <div className={styles.deleteFilesMessage}>
                         <div>
                             <InlineMarkdown
-                                data={translate('DeleteVolumeFolderConfirmation', { path })}
+                                data={translate(
+                                    'DeleteVolumeFolderConfirmation',
+                                    { path },
+                                )}
                                 blockClassName={styles.folderPath}
                             />
                         </div>
@@ -137,7 +151,10 @@ export default function DeleteVolumeModalContent({
             <ModalFooter>
                 <Button onPress={onModalClose}>{translate('Close')}</Button>
 
-                <Button kind={kinds.DANGER} onPress={handleDeleteVolumeConfirmed}>
+                <Button
+                    kind={kinds.DANGER}
+                    onPress={handleDeleteVolumeConfirmed}
+                >
                     {translate('Delete')}
                 </Button>
             </ModalFooter>

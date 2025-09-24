@@ -31,7 +31,10 @@ export default function TaskButton({ taskName }: TaskButtonProps) {
         (state) => state.socketEvents,
     );
     const isRunning = useMemo(
-        () => (taskName === commandNames.SEARCH_ALL ? isSearchAllRunning : isUpdateAllRunning),
+        () =>
+            taskName === commandNames.SEARCH_ALL
+                ? isSearchAllRunning
+                : isUpdateAllRunning,
         [isSearchAllRunning, isUpdateAllRunning, taskName],
     );
 

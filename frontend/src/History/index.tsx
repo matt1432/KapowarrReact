@@ -95,26 +95,35 @@ export default function History({
         },
     ];
 
-    const [fetchHistory, { items, isFetching, isPopulated, error }] = useGetDownloadHistoryMutation(
-        {
-            selectFromResult: ({ data, isLoading, isUninitialized, error }) => ({
+    const [fetchHistory, { items, isFetching, isPopulated, error }] =
+        useGetDownloadHistoryMutation({
+            selectFromResult: ({
+                data,
+                isLoading,
+                isUninitialized,
+                error,
+            }) => ({
                 items: data ?? [],
                 isFetching: isLoading,
                 isPopulated: !isUninitialized,
                 error,
             }),
+        });
+    const [fetchNextPage, { nextPageHasItems }] = useGetDownloadHistoryMutation(
+        {
+            selectFromResult: ({ data }) => ({
+                nextPageHasItems: Boolean(data?.length),
+            }),
         },
     );
-    const [fetchNextPage, { nextPageHasItems }] = useGetDownloadHistoryMutation({
-        selectFromResult: ({ data }) => ({
-            nextPageHasItems: Boolean(data?.length),
-        }),
-    });
 
     const hasItems = !!items.length;
 
     const [page, setPage] = useState(1);
-    const lastPage = useMemo(() => (nextPageHasItems ? page + 1 : page), [nextPageHasItems, page]);
+    const lastPage = useMemo(
+        () => (nextPageHasItems ? page + 1 : page),
+        [nextPageHasItems, page],
+    );
 
     const handlePageSelect = useCallback((pageNumber: number) => {
         setPage(pageNumber);
@@ -139,7 +148,11 @@ export default function History({
     }
 
     if (!isFetching && !!error) {
-        return <Alert kind={kinds.DANGER}>{translate('IssueHistoryLoadError')}</Alert>;
+        return (
+            <Alert kind={kinds.DANGER}>
+                {translate('IssueHistoryLoadError')}
+            </Alert>
+        );
     }
 
     if (isPopulated && !hasItems && !error) {

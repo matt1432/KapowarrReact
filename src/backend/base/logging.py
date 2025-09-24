@@ -37,7 +37,9 @@ class MPRotatingFileHandler(RotatingFileHandler):
         do_rollover: bool = True,
     ) -> None:
         self.do_rollover = do_rollover
-        return super().__init__(filename, mode, maxBytes, backupCount, encoding, delay)
+        return super().__init__(
+            filename, mode, maxBytes, backupCount, encoding, delay
+        )
 
     def shouldRollover(self, record: logging.LogRecord) -> int:
         if not self.do_rollover:
@@ -134,7 +136,9 @@ def setup_logging(
     if log_folder is None:
         LOGGING_CONFIG["handlers"]["file"]["filename"] = folder_path(log_file)
     else:
-        LOGGING_CONFIG["handlers"]["file"]["filename"] = join(log_folder, log_file)
+        LOGGING_CONFIG["handlers"]["file"]["filename"] = join(
+            log_folder, log_file
+        )
 
     LOGGING_CONFIG["handlers"]["file"]["do_rollover"] = do_rollover
 
@@ -149,7 +153,8 @@ def setup_logging(
 
     def log_uncaught_exceptions(e_type, value, tb):
         LOGGER.error(
-            "UNCAUGHT EXCEPTION:\n" + "".join(format_exception(e_type, value, tb))
+            "UNCAUGHT EXCEPTION:\n"
+            + "".join(format_exception(e_type, value, tb))
         )
         return
 

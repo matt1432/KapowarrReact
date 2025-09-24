@@ -32,7 +32,8 @@ export function getDownloadedIssuesProgress({
     const { issuesDownloadedMonitored, issueCountMonitored } = volume;
 
     const newDownloads =
-        queue.length - queue.filter((item) => FAILED_STATE.includes(item.status)).length;
+        queue.length -
+        queue.filter((item) => FAILED_STATE.includes(item.status)).length;
 
     const progress = issueCountMonitored
         ? (issuesDownloadedMonitored / issueCountMonitored) * 100
@@ -42,7 +43,11 @@ export function getDownloadedIssuesProgress({
         ? `${issuesDownloadedMonitored} + ${newDownloads} / ${issueCountMonitored}`
         : `${issuesDownloadedMonitored} / ${issueCountMonitored}`;
 
-    const kind = getProgressBarKind(volume.monitored, progress, queue.length > 0);
+    const kind = getProgressBarKind(
+        volume.monitored,
+        progress,
+        queue.length > 0,
+    );
 
     return {
         issueCount: issueCountMonitored,

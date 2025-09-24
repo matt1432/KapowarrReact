@@ -38,7 +38,10 @@ interface ProposalRowProps {
     columns: Column<ProposalColumnName>[];
     isSelected?: boolean;
     onSelectedChange: (props: SelectStateInputProps) => void;
-    onEditMatch: (newValues: { filepath: string; id: number }, match: ProposedImport['cv']) => void;
+    onEditMatch: (
+        newValues: { filepath: string; id: number },
+        match: ProposedImport['cv'],
+    ) => void;
     onEditGroupMatch: (
         newValues: { filepath: string; id: number },
         match: ProposedImport['cv'],
@@ -57,8 +60,11 @@ export default function ProposalRow({
     onEditMatch,
     onEditGroupMatch,
 }: ProposalRowProps) {
-    const [isChangeMatchModalOpen, setChangeMatchModalOpen, setChangeMatchModalClosed] =
-        useModalOpenState(false);
+    const [
+        isChangeMatchModalOpen,
+        setChangeMatchModalOpen,
+        setChangeMatchModalClosed,
+    ] = useModalOpenState(false);
 
     const handleEditMatch = useCallback(
         (isGroup: boolean) => (match: VolumeMetadata) => {
@@ -77,7 +83,12 @@ export default function ProposalRow({
             );
             setChangeMatchModalClosed();
         },
-        [onEditMatch, onEditGroupMatch, proposal.filepath, setChangeMatchModalClosed],
+        [
+            onEditMatch,
+            onEditGroupMatch,
+            proposal.filepath,
+            setChangeMatchModalClosed,
+        ],
     );
 
     const handleSelectedChange = useCallback(
@@ -113,18 +124,24 @@ export default function ProposalRow({
                 }
                 if (name === 'file') {
                     return (
-                        <TableRowCell title={proposal.fileTitle}>{proposal.filepath}</TableRowCell>
+                        <TableRowCell title={proposal.fileTitle}>
+                            {proposal.filepath}
+                        </TableRowCell>
                     );
                 }
                 if (name === 'cvLink') {
                     return (
                         <TableRowCell>
-                            <Link to={currentMatch.link}>{currentMatch.title}</Link>
+                            <Link to={currentMatch.link}>
+                                {currentMatch.title}
+                            </Link>
                         </TableRowCell>
                     );
                 }
                 if (name === 'issueCount') {
-                    return <TableRowCell>{currentMatch.issueCount}</TableRowCell>;
+                    return (
+                        <TableRowCell>{currentMatch.issueCount}</TableRowCell>
+                    );
                 }
                 if (name === 'actions') {
                     return (

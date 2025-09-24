@@ -1,7 +1,11 @@
 // IMPORTS
 
 // React
-import React, { Children, type ComponentPropsWithoutRef, type ReactNode } from 'react';
+import React, {
+    Children,
+    type ComponentPropsWithoutRef,
+    type ReactNode,
+} from 'react';
 
 // Misc
 import classNames from 'classnames';

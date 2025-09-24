@@ -31,9 +31,12 @@ interface InputRowProps {
 export default function InputRow({ columns, onAddPress }: InputRowProps) {
     const [folder, setFolder] = useState<string>('');
 
-    const handleInputChange = useCallback(({ value }: InputChanged<string, string>) => {
-        setFolder(value);
-    }, []);
+    const handleInputChange = useCallback(
+        ({ value }: InputChanged<string, string>) => {
+            setFolder(value);
+        },
+        [],
+    );
 
     const handleAddPress = useCallback(() => {
         onAddPress(folder);

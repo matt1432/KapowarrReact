@@ -1,7 +1,13 @@
 // IMPORTS
 
 // React
-import { type ChangeEvent, type SyntheticEvent, useCallback, useEffect, useRef } from 'react';
+import {
+    type ChangeEvent,
+    type SyntheticEvent,
+    useCallback,
+    useEffect,
+    useRef,
+} from 'react';
 
 // Misc
 import classNames from 'classnames';
@@ -63,7 +69,8 @@ export default function TextArea<K extends string>({
             const end = inputRef.current.selectionEnd;
 
             const selectionChanged =
-                selectionStart.current !== start || selectionEnd.current !== end;
+                selectionStart.current !== start ||
+                selectionEnd.current !== end;
 
             selectionStart.current = start;
             selectionEnd.current = end;

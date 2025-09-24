@@ -54,7 +54,9 @@ export default function Tooltip({
     canFlip = true,
 }: TooltipProps) {
     const arrowColor = useThemeColor(
-        kind === 'inverse' ? 'popoverArrowBorderInverseColor' : 'popoverArrowBorderColor',
+        kind === 'inverse'
+            ? 'popoverArrowBorderInverseColor'
+            : 'popoverArrowBorderColor',
     );
     const [isOpen, setIsOpen] = useState(false);
 
@@ -86,11 +88,19 @@ export default function Tooltip({
         handleClose: safePolygon(),
     });
 
-    const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss, hover]);
+    const { getReferenceProps, getFloatingProps } = useInteractions([
+        click,
+        dismiss,
+        hover,
+    ]);
 
     return (
         <>
-            <span ref={refs.setReference} {...getReferenceProps()} className={className}>
+            <span
+                ref={refs.setReference}
+                {...getReferenceProps()}
+                className={className}
+            >
                 {anchor}
             </span>
             {isOpen ? (
@@ -101,8 +111,14 @@ export default function Tooltip({
                         style={floatingStyles}
                         {...getFloatingProps()}
                     >
-                        <FloatingArrow ref={arrowRef} context={context} fill={arrowColor} />
-                        <div className={classNames(styles.tooltip, styles[kind])}>
+                        <FloatingArrow
+                            ref={arrowRef}
+                            context={context}
+                            fill={arrowColor}
+                        />
+                        <div
+                            className={classNames(styles.tooltip, styles[kind])}
+                        >
                             <div className={bodyClassName}>{tooltip}</div>
                         </div>
                     </div>

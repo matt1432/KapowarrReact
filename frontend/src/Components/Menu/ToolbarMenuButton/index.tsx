@@ -13,7 +13,8 @@ import MenuButton, { type MenuButtonProps } from 'Components/Menu/MenuButton';
 import styles from './index.module.css';
 
 // Types
-export interface ToolbarMenuButtonProps extends Omit<MenuButtonProps, 'children'> {
+export interface ToolbarMenuButtonProps
+    extends Omit<MenuButtonProps, 'children'> {
     className?: string;
     iconName: IconName;
     showIndicator?: boolean;
@@ -34,7 +35,12 @@ export default function ToolbarMenuButton({
                 <Icon name={iconName} size={21} />
 
                 {showIndicator ? (
-                    <span className={classNames(styles.indicatorContainer, 'fa-layers fa-fw')}>
+                    <span
+                        className={classNames(
+                            styles.indicatorContainer,
+                            'fa-layers fa-fw',
+                        )}
+                    >
                         <Icon name={icons.CIRCLE} size={9} />
                     </span>
                 ) : null}

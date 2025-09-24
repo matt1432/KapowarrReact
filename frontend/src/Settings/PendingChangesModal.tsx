@@ -56,7 +56,11 @@ export default function PendingChangesModal({
                         {translate('PendingChangesStayReview')}
                     </Button>
 
-                    <Button autoFocus={true} kind={kinds.DANGER} onPress={onConfirm}>
+                    <Button
+                        autoFocus={true}
+                        kind={kinds.DANGER}
+                        onPress={onConfirm}
+                    >
                         {translate('PendingChangesDiscardChanges')}
                     </Button>
                 </ModalFooter>

@@ -30,7 +30,12 @@ import type { Column } from 'Components/Table/Column';
 import type { ProposedImport } from 'typings/Search';
 import type { CheckInputChanged, SelectStateInputProps } from 'typings/Inputs';
 
-export type ProposalColumnName = 'selected' | 'file' | 'cvLink' | 'issueCount' | 'actions';
+export type ProposalColumnName =
+    | 'selected'
+    | 'file'
+    | 'cvLink'
+    | 'issueCount'
+    | 'actions';
 
 interface ImportProposalsProps {
     proposals: (ProposedImport & { id: number })[];
@@ -50,15 +55,22 @@ function getValue(allSelected: boolean, allUnselected: boolean) {
     return null;
 }
 
-export default function ImportProposals({ proposals, returnToSearchPage }: ImportProposalsProps) {
+export default function ImportProposals({
+    proposals,
+    returnToSearchPage,
+}: ImportProposalsProps) {
     // SELECTION
-    const [{ allSelected, allUnselected, selectedState }, setSelectState] = useSelectState();
+    const [{ allSelected, allUnselected, selectedState }, setSelectState] =
+        useSelectState();
 
     const selectAllValue = getValue(allSelected, allUnselected);
 
     const handleSelectAllChange = useCallback(
         ({ value }: CheckInputChanged<string>) => {
-            setSelectState({ type: value ? 'selectAll' : 'unselectAll', items: proposals });
+            setSelectState({
+                type: value ? 'selectAll' : 'unselectAll',
+                items: proposals,
+            });
         },
         [proposals, setSelectState],
     );
@@ -78,7 +90,10 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
 
     // IMPORTING
     const [currentMatches, setCurrentMatches] = useState<
-        { match: ProposedImport['cv']; body: { filepath: string; id: number } }[]
+        {
+            match: ProposedImport['cv'];
+            body: { filepath: string; id: number };
+        }[]
     >(
         proposals.map((item) => ({
             match: item.cv,
@@ -103,7 +118,10 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
 
     const handleEditMatch = useCallback(
         (id: number) =>
-            (newValues: { filepath: string; id: number }, match: ProposedImport['cv']) => {
+            (
+                newValues: { filepath: string; id: number },
+                match: ProposedImport['cv'],
+            ) => {
                 const tempArr = [...currentMatches];
                 tempArr[id] = {
                     match,
@@ -116,7 +134,10 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
 
     const handleEditGroupMatch = useCallback(
         (group: number) =>
-            (newValues: { filepath: string; id: number }, match: ProposedImport['cv']) => {
+            (
+                newValues: { filepath: string; id: number },
+                match: ProposedImport['cv'],
+            ) => {
                 const groupIds = proposals
                     .filter((proposal) => proposal.groupNumber === group)
                     .map((p) => p.id);
@@ -191,7 +212,9 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
     return (
         <>
             <div className={styles.buttonContainer}>
-                <Button onPress={returnToSearchPage}>{translate('Cancel')}</Button>
+                <Button onPress={returnToSearchPage}>
+                    {translate('Cancel')}
+                </Button>
 
                 <Button
                     title="Add volumes, set volume folder to the folder that the files are in, don't rename the volume folder, don't rename the files."
@@ -218,7 +241,9 @@ export default function ImportProposals({ proposals, returnToSearchPage }: Impor
                             proposal={proposal}
                             currentMatch={currentMatches[proposal.id].match}
                             onEditMatch={handleEditMatch(proposal.id)}
-                            onEditGroupMatch={handleEditGroupMatch(proposal.groupNumber)}
+                            onEditGroupMatch={handleEditGroupMatch(
+                                proposal.groupNumber,
+                            )}
                             isSelected={selectedState[proposal.id]}
                             onSelectedChange={handleSelectedChange}
                         />

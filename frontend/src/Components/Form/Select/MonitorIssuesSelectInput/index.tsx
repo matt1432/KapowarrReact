@@ -14,7 +14,11 @@ import type { MonitoringScheme } from 'Volume/Volume';
 // Types
 export interface MonitorIssuesSelectInputProps<K extends string>
     extends Omit<
-        EnhancedSelectInputProps<K, EnhancedSelectInputValue<MonitoringScheme>, MonitoringScheme>,
+        EnhancedSelectInputProps<
+            K,
+            EnhancedSelectInputValue<MonitoringScheme>,
+            MonitoringScheme
+        >,
         'values'
     > {
     includeNoChange?: boolean;
@@ -26,7 +30,9 @@ export default function MonitorIssuesSelectInput<K extends string>({
     includeNoChange = false,
     ...otherProps
 }: MonitorIssuesSelectInputProps<K>) {
-    const values: EnhancedSelectInputValue<MonitoringScheme>[] = [...monitorOptions];
+    const values: EnhancedSelectInputValue<MonitoringScheme>[] = [
+        ...monitorOptions,
+    ];
 
     if (includeNoChange) {
         values.unshift({

@@ -23,15 +23,19 @@ export default function WeTransfer() {
                             <a href="https://wetransfer.com/" target="_blank">
                                 WeTransfer
                             </a>{' '}
-                            is a file sharing service from which Kapowarr can download files.
+                            is a file sharing service from which Kapowarr can
+                            download files.
                             <br />
                             <br />
-                            WeTransfer does not limit how much you can download per day.
+                            WeTransfer does not limit how much you can download
+                            per day.
                         </p>
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button onPress={onModalClose}>{translate('Close')}</Button>
+                        <Button onPress={onModalClose}>
+                            {translate('Close')}
+                        </Button>
                     </ModalFooter>
                 </>
             )}

@@ -22,7 +22,10 @@ export default function ChangeMatchModal({
 }: ChangeMatchModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
-            <ChangeMatchModalContent {...otherProps} onModalClose={onModalClose} />
+            <ChangeMatchModalContent
+                {...otherProps}
+                onModalClose={onModalClose}
+            />
         </Modal>
     );
 }

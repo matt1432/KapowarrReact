@@ -36,17 +36,21 @@ export default function VolumeIndexFooter() {
                                 <div
                                     className={classNames(
                                         styles.continuing,
-                                        enableColorImpairedMode && 'colorImpaired',
+                                        enableColorImpairedMode &&
+                                            'colorImpaired',
                                     )}
                                 />
-                                <div>{translate('VolumeIndexFooterContinuing')}</div>
+                                <div>
+                                    {translate('VolumeIndexFooterContinuing')}
+                                </div>
                             </div>
 
                             <div className={styles.legendItem}>
                                 <div
                                     className={classNames(
                                         styles.ended,
-                                        enableColorImpairedMode && 'colorImpaired',
+                                        enableColorImpairedMode &&
+                                            'colorImpaired',
                                     )}
                                 />
                                 <div>{translate('VolumeIndexFooterEnded')}</div>
@@ -56,30 +60,43 @@ export default function VolumeIndexFooter() {
                                 <div
                                     className={classNames(
                                         styles.missingMonitored,
-                                        enableColorImpairedMode && 'colorImpaired',
+                                        enableColorImpairedMode &&
+                                            'colorImpaired',
                                     )}
                                 />
-                                <div>{translate('VolumeIndexFooterMissingMonitored')}</div>
+                                <div>
+                                    {translate(
+                                        'VolumeIndexFooterMissingMonitored',
+                                    )}
+                                </div>
                             </div>
 
                             <div className={styles.legendItem}>
                                 <div
                                     className={classNames(
                                         styles.missingUnmonitored,
-                                        enableColorImpairedMode && 'colorImpaired',
+                                        enableColorImpairedMode &&
+                                            'colorImpaired',
                                     )}
                                 />
-                                <div>{translate('VolumeIndexFooterMissingUnmonitored')}</div>
+                                <div>
+                                    {translate(
+                                        'VolumeIndexFooterMissingUnmonitored',
+                                    )}
+                                </div>
                             </div>
 
                             <div className={styles.legendItem}>
                                 <div
                                     className={classNames(
                                         styles.downloading,
-                                        enableColorImpairedMode && 'colorImpaired',
+                                        enableColorImpairedMode &&
+                                            'colorImpaired',
                                     )}
                                 />
-                                <div>{translate('VolumeIndexFooterDownloading')}</div>
+                                <div>
+                                    {translate('VolumeIndexFooterDownloading')}
+                                </div>
                             </div>
                         </div>
 
@@ -113,7 +130,9 @@ export default function VolumeIndexFooter() {
                             <DescriptionList>
                                 <DescriptionListItem
                                     title={translate('TotalFileSize')}
-                                    data={formatBytes(stats?.totalFileSize ?? 0)}
+                                    data={formatBytes(
+                                        stats?.totalFileSize ?? 0,
+                                    )}
                                 />
                             </DescriptionList>
                         </div>

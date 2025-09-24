@@ -14,7 +14,8 @@ import EnhancedSelectInputOption, {
 import styles from './index.module.css';
 
 // Types
-interface RootFolderSelectInputOptionProps extends EnhancedSelectInputOptionProps {
+interface RootFolderSelectInputOptionProps
+    extends EnhancedSelectInputOptionProps {
     id: string;
     value: string;
     freeSpace?: number;
@@ -35,12 +36,19 @@ export default function RootFolderSelectInputOption({
 }: RootFolderSelectInputOptionProps) {
     return (
         <EnhancedSelectInputOption id={id} isMobile={isMobile} {...otherProps}>
-            <div className={classNames(styles.optionText, isMobile && styles.isMobile)}>
+            <div
+                className={classNames(
+                    styles.optionText,
+                    isMobile && styles.isMobile,
+                )}
+            >
                 <div className={styles.value}>
                     {value}
 
                     {volumeFolder && id !== 'addNew' ? (
-                        <div className={styles.volumeFolder}>{volumeFolder}</div>
+                        <div className={styles.volumeFolder}>
+                            {volumeFolder}
+                        </div>
                     ) : null}
                 </div>
 

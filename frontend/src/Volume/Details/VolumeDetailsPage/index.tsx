@@ -28,13 +28,19 @@ export default function VolumeDetailsPage() {
     const navigate = useNavigate();
 
     const volumeIndex = useMemo(() => {
-        return allVolumes.findIndex((volume) => volume.id.toString() === titleSlug);
+        return allVolumes.findIndex(
+            (volume) => volume.id.toString() === titleSlug,
+        );
     }, [allVolumes, titleSlug]);
 
     const previousIndex = usePrevious(volumeIndex);
 
     useEffect(() => {
-        if (volumeIndex === -1 && previousIndex !== -1 && previousIndex !== undefined) {
+        if (
+            volumeIndex === -1 &&
+            previousIndex !== -1 &&
+            previousIndex !== undefined
+        ) {
             navigate(`/`);
         }
     }, [navigate, volumeIndex, previousIndex]);

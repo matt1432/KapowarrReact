@@ -23,7 +23,12 @@ export default {
         postcssNested,
 
         postcssSimpleVars({
-            variables: [cssDimensions, cssFonts, cssAnimations, cssZIndexes].reduce((acc, vars) => {
+            variables: [
+                cssDimensions,
+                cssFonts,
+                cssAnimations,
+                cssZIndexes,
+            ].reduce((acc, vars) => {
                 return Object.assign(acc, vars);
             }, {}),
         }),

@@ -40,9 +40,12 @@ export default function RootFolderModalContent({
 }: RootFolderModalContentProps) {
     const [rootFolderPath, setRootFolderPath] = useState(initRootFolderPath);
 
-    const onInputChange = useCallback(({ value }: InputChanged<string, string>) => {
-        setRootFolderPath(value);
-    }, []);
+    const onInputChange = useCallback(
+        ({ value }: InputChanged<string, string>) => {
+            setRootFolderPath(value);
+        },
+        [],
+    );
 
     const handleSavePress = useCallback(() => {
         onSavePress({ newRootFolderPath: rootFolderPath });
@@ -70,7 +73,9 @@ export default function RootFolderModalContent({
             <ModalFooter>
                 <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
-                <Button onPress={handleSavePress}>{translate('UpdatePath')}</Button>
+                <Button onPress={handleSavePress}>
+                    {translate('UpdatePath')}
+                </Button>
             </ModalFooter>
         </ModalContent>
     );

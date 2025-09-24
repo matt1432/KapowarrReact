@@ -35,10 +35,11 @@ export default function VolumeIndexProgressBar({
 }: VolumeIndexProgressBarProps) {
     const { queue } = useFetchQueueDetails({ volumeId: volume.id });
 
-    const { issueCount, issueFileCount, kind, progress, text } = getDownloadedIssuesProgress({
-        queue,
-        volume,
-    });
+    const { issueCount, issueFileCount, kind, progress, text } =
+        getDownloadedIssuesProgress({
+            queue,
+            volume,
+        });
 
     return (
         <ProgressBar

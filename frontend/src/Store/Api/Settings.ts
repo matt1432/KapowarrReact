@@ -11,7 +11,9 @@ import snakeify from 'Utilities/Object/snakeify';
 import type { SettingsValue, RawSettingsValue } from 'typings/Settings';
 import type { TranslateKey } from 'Utilities/String/translate';
 
-type SaveSettingsParams = Partial<Omit<SettingsValue, 'apiKey'>> & { apiKey?: never };
+type SaveSettingsParams = Partial<Omit<SettingsValue, 'apiKey'>> & {
+    apiKey?: never;
+};
 
 // IMPLEMENTATIONS
 
@@ -38,7 +40,8 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: { result: TranslateKey[] }) => response.result,
+            transformResponse: (response: { result: TranslateKey[] }) =>
+                response.result,
         }),
 
         // POST

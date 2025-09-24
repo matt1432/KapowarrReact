@@ -53,9 +53,8 @@ export default function VolumeIndexPoster({
     posterHeight,
     sortKey,
 }: VolumeIndexPosterProps) {
-    const { isRefreshing: isRefreshingVolume, isSearching: isSearchingVolume } = useRootSelector(
-        (state) => getVolumeStatus(state, volumeId),
-    );
+    const { isRefreshing: isRefreshingVolume, isSearching: isSearchingVolume } =
+        useRootSelector((state) => getVolumeStatus(state, volumeId));
 
     const { volumePublicInfo } = useGetVolumesQuery(undefined, {
         selectFromResult: ({ data }) => ({
@@ -80,7 +79,8 @@ export default function VolumeIndexPoster({
 
     const [hasPosterError, setHasPosterError] = useState(false);
     const [isEditVolumeModalOpen, setIsEditVolumeModalOpen] = useState(false);
-    const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] = useState(false);
+    const [isDeleteVolumeModalOpen, setIsDeleteVolumeModalOpen] =
+        useState(false);
 
     const [executeCommand] = useExecuteCommandMutation();
 
@@ -127,7 +127,15 @@ export default function VolumeIndexPoster({
         return null;
     }
 
-    const { title, monitored, folder, publisher, totalSize, volumeNumber, year } = volume;
+    const {
+        title,
+        monitored,
+        folder,
+        publisher,
+        totalSize,
+        volumeNumber,
+        year,
+    } = volume;
 
     const link = `/volumes/${volumeId}`;
 
@@ -139,7 +147,9 @@ export default function VolumeIndexPoster({
     return (
         <div className={styles.content}>
             <div className={styles.posterContainer} title={title}>
-                {isSelectMode ? <VolumeIndexPosterSelect volumeId={volumeId} /> : null}
+                {isSelectMode ? (
+                    <VolumeIndexPosterSelect volumeId={volumeId} />
+                ) : null}
 
                 <Label className={styles.controls}>
                     <SpinnerIconButton
@@ -178,7 +188,9 @@ export default function VolumeIndexPoster({
                         onLoad={onPosterLoad}
                     />
 
-                    {hasPosterError ? <div className={styles.overlayTitle}>{title}</div> : null}
+                    {hasPosterError ? (
+                        <div className={styles.overlayTitle}>{title}</div>
+                    ) : null}
                 </Link>
             </div>
 
@@ -197,7 +209,9 @@ export default function VolumeIndexPoster({
 
             {showMonitored ? (
                 <div className={styles.title}>
-                    {monitored ? translate('Monitored') : translate('Unmonitored')}
+                    {monitored
+                        ? translate('Monitored')
+                        : translate('Unmonitored')}
                 </div>
             ) : null}
 

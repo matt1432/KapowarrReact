@@ -40,7 +40,10 @@ export default function PageToolbarButton({
 }: PageToolbarButtonProps) {
     return (
         <Link
-            className={classNames(styles.toolbarButton, isDisabled && styles.isDisabled)}
+            className={classNames(
+                styles.toolbarButton,
+                isDisabled && styles.isDisabled,
+            )}
             isDisabled={isDisabled || isSpinning}
             title={label}
             {...otherProps}

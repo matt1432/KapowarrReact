@@ -66,15 +66,28 @@ def _rank_search_result(
     # the search results' title, the higher ranked it gets
     split_title = title.split(" ")
     rating.append(
-        len([word for word in result["series"].split(" ") if word not in split_title])
+        len(
+            [
+                word
+                for word in result["series"].split(" ")
+                if word not in split_title
+            ]
+        )
     )
 
     # Prefer volume number or year matches, even better if both match
     vy_score = 3
-    if result["volume_number"] is not None and result["volume_number"] == volume_number:
+    if (
+        result["volume_number"] is not None
+        and result["volume_number"] == volume_number
+    ):
         vy_score -= 1
 
-    if year[1] is not None and result["year"] is not None and year[1] == result["year"]:
+    if (
+        year[1] is not None
+        and result["year"] is not None
+        and year[1] == result["year"]
+    ):
         # issue year direct match
         vy_score -= 2
 
@@ -136,7 +149,14 @@ def _rank_search_result(
         # Search was for volume
         if isinstance(result["issue_number"], tuple):
             rating.append(
-                int(1.0 / (result["issue_number"][1] - result["issue_number"][0] + 1))
+                int(
+                    1.0
+                    / (
+                        result["issue_number"][1]
+                        - result["issue_number"][0]
+                        + 1
+                    )
+                )
             )
 
         elif isinstance(result["issue_number"], float):
@@ -178,7 +198,10 @@ class SearchLibgenPlus:
 
         volume_data = self.volume.get_data()
 
-        if libgen_file_url is not None and libgen_file_url.count("file.php?id=") != 0:
+        if (
+            libgen_file_url is not None
+            and libgen_file_url.count("file.php?id=") != 0
+        ):
             file_id = int(libgen_file_url.split("file.php?id=")[-1])
             file_result = ResultFile(
                 id=file_id, libgen_site_url=Constants.LIBGEN_SITE_URL
@@ -354,7 +377,8 @@ def manual_search(
     volume_data = volume.get_data()
     volume_issues = volume.get_issues()
     number_to_year: dict[float, int | None] = {
-        i.calculated_issue_number: extract_year_from_date(i.date) for i in volume_issues
+        i.calculated_issue_number: extract_year_from_date(i.date)
+        for i in volume_issues
     }
     issue_number: str | None = None
     calculated_issue_number: float | None = None
@@ -508,7 +532,9 @@ def auto_search(
         LOGGER.debug(f"Auto search results: {issue_result}")
         return issue_result
 
-    search_results = [r for r in manual_search(volume_id, issue_id) if r["match"]]
+    search_results = [
+        r for r in manual_search(volume_id, issue_id) if r["match"]
+    ]
 
     if issue_id is not None or (
         special_version.value is not None
@@ -558,7 +584,10 @@ def auto_search(
             SpecialVersion.HARD_COVER,
             SpecialVersion.TPB,
             SpecialVersion.OMNIBUS,
-        ) and result["special_version"] in (special_version, SpecialVersion.TPB):
+        ) and result["special_version"] in (
+            special_version,
+            SpecialVersion.TPB,
+        ):
             # OS/HC/Omnibus using no issue number, TPB
             result["_issue_number"] = 1.0
             covered_issues = volume.get_issues()

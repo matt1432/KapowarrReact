@@ -2,7 +2,10 @@ import type { VolumePublicInfo } from 'Volume/Volume';
 
 const STARTS_WITH_NUMBER_REGEX = /^\d/;
 
-export default function getIndexOfFirstCharacter(items: VolumePublicInfo[], character: string) {
+export default function getIndexOfFirstCharacter(
+    items: VolumePublicInfo[],
+    character: string,
+) {
     return items.findIndex((item) => {
         const firstCharacter = item.title.charAt(0);
 

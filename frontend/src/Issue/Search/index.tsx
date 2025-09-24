@@ -41,16 +41,22 @@ export default function IssueSearch({
     startLibgenFileSearch,
     onModalClose,
 }: IssueSearchProps) {
-    const { isSearching } = useRootSelector((state) => getIssueStatus(state, volumeId, issueId));
+    const { isSearching } = useRootSelector((state) =>
+        getIssueStatus(state, volumeId, issueId),
+    );
 
     const [executeCommand] = useExecuteCommandMutation();
 
-    const [isInteractiveSearchOpen, setIsInteractiveSearchOpen] = useState(startInteractiveSearch);
+    const [isInteractiveSearchOpen, setIsInteractiveSearchOpen] = useState(
+        startInteractiveSearch,
+    );
     useEffect(() => {
         setIsInteractiveSearchOpen(startInteractiveSearch);
     }, [startInteractiveSearch]);
 
-    const [isLibgenFileSearchOpen, setIsLibgenFileSearchOpen] = useState(startLibgenFileSearch);
+    const [isLibgenFileSearchOpen, setIsLibgenFileSearchOpen] = useState(
+        startLibgenFileSearch,
+    );
     useEffect(() => {
         setIsLibgenFileSearchOpen(startLibgenFileSearch);
     }, [startLibgenFileSearch]);
@@ -103,7 +109,10 @@ export default function IssueSearch({
                     size={sizes.LARGE}
                     onPress={handleInteractiveSearchPress}
                 >
-                    <Icon className={styles.buttonIcon} name={icons.INTERACTIVE} />
+                    <Icon
+                        className={styles.buttonIcon}
+                        name={icons.INTERACTIVE}
+                    />
 
                     {translate('InteractiveSearch')}
                 </Button>
@@ -116,7 +125,10 @@ export default function IssueSearch({
                     size={sizes.LARGE}
                     onPress={handleLibgenFileSearchPress}
                 >
-                    <Icon className={styles.buttonIcon} name={icons.LIBGEN_FILE_SEARCH} />
+                    <Icon
+                        className={styles.buttonIcon}
+                        name={icons.LIBGEN_FILE_SEARCH}
+                    />
 
                     {translate('LibgenFileSearch')}
                 </Button>

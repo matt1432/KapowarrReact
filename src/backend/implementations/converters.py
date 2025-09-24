@@ -83,14 +83,19 @@ def extract_files_from_folder(source_folder: str, volume_id: int) -> list[str]:
         for c in folder_contents
         if (
             folder_extraction_filter(
-                extract_filename_data(c, False), volume_data, volume_issues, end_year
+                extract_filename_data(c, False),
+                volume_data,
+                volume_issues,
+                end_year,
             )
             and "variant cover" not in c.lower().replace(" ", "")
         )
     ]
 
     if not rel_files:
-        LOGGER.warning("No relevant files found in folder. Keeping all media files.")
+        LOGGER.warning(
+            "No relevant files found in folder. Keeping all media files."
+        )
         rel_files = folder_contents
 
     LOGGER.debug(f"Relevant files: {rel_files}")
@@ -154,7 +159,9 @@ class ZIPtoRAR(FileConverter):
                 "a",  # Add files to archive
                 "-ep",  # Exclude paths from names
                 "-inul",  # Disable all messages
-                splitext(file)[0],  # Ext-less target filename of created archive
+                splitext(file)[
+                    0
+                ],  # Ext-less target filename of created archive
                 archive_folder,  # Source folder
             ]
         )
@@ -205,9 +212,13 @@ class ZIPtoFOLDER(FileConverter):
 
         if resulting_files:
             scan_files(
-                volume_id, filepath_filter=resulting_files, file_extra_info=file_data
+                volume_id,
+                filepath_filter=resulting_files,
+                file_extra_info=file_data,
             )
-            resulting_files = mass_rename(volume_id, filepath_filter=resulting_files)
+            resulting_files = mass_rename(
+                volume_id, filepath_filter=resulting_files
+            )
 
         delete_file_folder(file)
         delete_empty_parent_folders(dirname(file), volume_folder)
@@ -312,7 +323,9 @@ class RARtoZIP(FileConverter):
         # modification time.
         for f in list_files(archive_folder):
             if getmtime(f) <= Constants.ZIP_MIN_MOD_TIME:
-                utime(f, (Constants.ZIP_MIN_MOD_TIME, Constants.ZIP_MIN_MOD_TIME))
+                utime(
+                    f, (Constants.ZIP_MIN_MOD_TIME, Constants.ZIP_MIN_MOD_TIME)
+                )
 
         target_file = splitext(file)[0] + ".zip"
         create_zip_archive(archive_folder, target_file)
@@ -373,9 +386,13 @@ class RARtoFOLDER(FileConverter):
 
         if resulting_files:
             scan_files(
-                volume_id, filepath_filter=resulting_files, file_extra_info=file_data
+                volume_id,
+                filepath_filter=resulting_files,
+                file_extra_info=file_data,
             )
-            resulting_files = mass_rename(volume_id, filepath_filter=resulting_files)
+            resulting_files = mass_rename(
+                volume_id, filepath_filter=resulting_files
+            )
 
         delete_file_folder(file)
         delete_empty_parent_folders(dirname(file), volume_folder)

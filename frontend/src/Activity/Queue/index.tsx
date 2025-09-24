@@ -109,7 +109,9 @@ const columns: Column<QueueColumnName>[] = [
 
 export default function Queue() {
     const dispatch = useRootDispatch();
-    const { sortKey, sortDirection } = useRootSelector((state) => state.queueTable);
+    const { sortKey, sortDirection } = useRootSelector(
+        (state) => state.queueTable,
+    );
 
     const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -121,7 +123,8 @@ export default function Queue() {
                     ...item,
                     priority: i,
                     sizeLeft,
-                    timeLeft: item.speed === 0 ? 0 : (sizeLeft / item.speed) * 1000,
+                    timeLeft:
+                        item.speed === 0 ? 0 : (sizeLeft / item.speed) * 1000,
                 } as QueueColumn;
             }),
             isSuccess,
@@ -148,8 +151,11 @@ export default function Queue() {
         [deleteQueueItem, refetch],
     );
 
-    const [isClearQueueModalOpen, setClearQueueModalOpen, setClearQueueModalClosed] =
-        useModalOpenState(false);
+    const [
+        isClearQueueModalOpen,
+        setClearQueueModalOpen,
+        setClearQueueModalClosed,
+    ] = useModalOpenState(false);
 
     const [clearQueuePost] = useClearQueueMutation();
     const [isClearing, setIsClearing] = useState(false);
@@ -226,7 +232,11 @@ export default function Queue() {
                         }}
                         items={items}
                         itemRenderer={(item) => (
-                            <QueueRow {...item} columns={columns} onDeletePress={onDeletePress} />
+                            <QueueRow
+                                {...item}
+                                columns={columns}
+                                onDeletePress={onDeletePress}
+                            />
                         )}
                     />
                 )}

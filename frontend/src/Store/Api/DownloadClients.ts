@@ -63,7 +63,8 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: { result: DownloadClientOptions }) => response.result,
+            transformResponse: (response: { result: DownloadClientOptions }) =>
+                response.result,
         }),
 
         getCredentials: build.query<CredentialData[], void>({
@@ -126,7 +127,10 @@ const extendedApi = baseApi.injectEndpoints({
         saveDownloadClient: build.mutation<void, EditParams>({
             query: ({ id, ...body }) => ({
                 method: typeof id === 'number' ? 'PUT' : 'POST',
-                url: typeof id === 'number' ? `externalclients/${id}` : 'externalclients',
+                url:
+                    typeof id === 'number'
+                        ? `externalclients/${id}`
+                        : 'externalclients',
                 params: {
                     apiKey: window.Kapowarr.apiKey,
                 },

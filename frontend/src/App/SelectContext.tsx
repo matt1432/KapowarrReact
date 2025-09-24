@@ -7,7 +7,10 @@ import React, { useCallback, useEffect } from 'react';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 
 // Types
-import type { SelectState, SelectStateModel } from 'Helpers/Hooks/useSelectState';
+import type {
+    SelectState,
+    SelectStateModel,
+} from 'Helpers/Hooks/useSelectState';
 
 export type SelectContextAction =
     | { type: 'reset' }
@@ -37,9 +40,9 @@ interface SelectProviderOptions<T extends SelectStateModel> {
 
 // IMPLEMENTATIONS
 
-const SelectContext = React.createContext<[SelectState, SelectDispatch] | undefined>(
-    structuredClone(undefined),
-);
+const SelectContext = React.createContext<
+    [SelectState, SelectDispatch] | undefined
+>(structuredClone(undefined));
 
 export function SelectProvider<T extends SelectStateModel>({
     children,
@@ -72,7 +75,11 @@ export function SelectProvider<T extends SelectStateModel>({
         dispatch({ type: 'updateItems', items });
     }, [items, dispatch]);
 
-    return <SelectContext.Provider value={value}>{children}</SelectContext.Provider>;
+    return (
+        <SelectContext.Provider value={value}>
+            {children}
+        </SelectContext.Provider>
+    );
 }
 
 // eslint-disable-next-line

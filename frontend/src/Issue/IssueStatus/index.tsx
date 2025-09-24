@@ -26,7 +26,10 @@ interface IssueStatusProps {
 // IMPLEMENTATIONS
 
 export default function IssueStatus({ issue, issueFile }: IssueStatusProps) {
-    const { queue } = useFetchQueueDetails({ volumeId: issue.volumeId, issueId: issue.id });
+    const { queue } = useFetchQueueDetails({
+        volumeId: issue.volumeId,
+        issueId: issue.id,
+    });
 
     const hasIssueFile = Boolean(issueFile);
     const isQueued = queue.length !== 0;
@@ -36,7 +39,11 @@ export default function IssueStatus({ issue, issueFile }: IssueStatusProps) {
 
         return (
             <div className={styles.center}>
-                <ProgressBar progress={progress} kind={kinds.PURPLE} size={sizes.MEDIUM} />
+                <ProgressBar
+                    progress={progress}
+                    kind={kinds.PURPLE}
+                    size={sizes.MEDIUM}
+                />
             </div>
         );
     }
@@ -44,7 +51,11 @@ export default function IssueStatus({ issue, issueFile }: IssueStatusProps) {
     if (hasIssueFile) {
         return (
             <div className={styles.center}>
-                <Icon name={icons.FILE} kind={kinds.SUCCESS} title={translate('IssueDownloaded')} />
+                <Icon
+                    name={icons.FILE}
+                    kind={kinds.SUCCESS}
+                    title={translate('IssueDownloaded')}
+                />
             </div>
         );
     }
@@ -55,7 +66,10 @@ export default function IssueStatus({ issue, issueFile }: IssueStatusProps) {
 
     return (
         <div className={styles.center}>
-            <Icon name={icons.DANGER} title={translate('IssueMissingFromDisk')} />
+            <Icon
+                name={icons.DANGER}
+                title={translate('IssueMissingFromDisk')}
+            />
         </div>
     );
 }

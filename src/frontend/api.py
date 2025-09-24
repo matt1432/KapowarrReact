@@ -56,7 +56,10 @@ from backend.features.download_queue import (
     delete_download_history,
     get_download_history,
 )
-from backend.features.library_import import import_library, propose_library_import
+from backend.features.library_import import (
+    import_library,
+    propose_library_import,
+)
 from backend.features.mass_edit import run_mass_editor_action
 from backend.features.search import manual_search
 from backend.features.tasks import (
@@ -97,7 +100,9 @@ library = Library()
 type ApiReturn = tuple[dict[str, Any], int]
 
 
-def return_api(result: Any, error: str | None = None, code: int = 200) -> ApiReturn:
+def return_api(
+    result: Any, error: str | None = None, code: int = 200
+) -> ApiReturn:
     return {"error": error, "result": result}, code
 
 
@@ -147,7 +152,9 @@ def error_handler(method: Callable[[Any], Any]) -> Any:
     return wrapper
 
 
-def extract_key(request: Request, key: str, check_existence: bool = True) -> Any:
+def extract_key(
+    request: Request, key: str, check_existence: bool = True
+) -> Any:
     """Extract and format a value of a parameter from a request
 
     Args:
@@ -213,7 +220,13 @@ def extract_key(request: Request, key: str, check_existence: bool = True) -> Any
             except KeyError:
                 raise InvalidKeyValue(key, value)
 
-        elif key in ("root_folder_id", "root_folder", "offset", "limit", "index"):
+        elif key in (
+            "root_folder_id",
+            "root_folder",
+            "offset",
+            "limit",
+            "index",
+        ):
             try:
                 value = int(value)
             except (ValueError, TypeError):
@@ -288,7 +301,9 @@ def auth(method: Callable) -> Any:
         try:
             extract_key(request, "api_key")
         except (KeyNotFound, InvalidKeyValue):
-            ip = request.environ.get("HTTP_X_FORWARDED_FOR", request.remote_addr)
+            ip = request.environ.get(
+                "HTTP_X_FORWARDED_FOR", request.remote_addr
+            )
             LOGGER.warning(f"Unauthorised request from {ip}")
             return return_api({}, "ApiKeyInvalid", 401)
 
@@ -297,7 +312,9 @@ def auth(method: Callable) -> Any:
         result = method(*args, **kwargs)
 
         if result[1] > 300:
-            LOGGER.debug(f"{request.method} {request.path} {result[1]} {result[0]}")
+            LOGGER.debug(
+                f"{request.method} {request.path} {result[1]} {result[0]}"
+            )
 
         return result
 
@@ -420,7 +437,9 @@ def api_tasks() -> ApiReturn | None:
             "mass_convert_issue",
         ):
             filepath_filter = data.get("filepath_filter")
-            if not (filepath_filter is None or isinstance(filepath_filter, list)):
+            if not (
+                filepath_filter is None or isinstance(filepath_filter, list)
+            ):
                 raise InvalidKeyValue("filepath_filter", filepath_filter)
             kwargs["filepath_filter"] = filepath_filter or []
 
@@ -588,7 +607,9 @@ def api_library_import() -> ApiReturn | None:
             request, "excluded_folders", check_existence=False
         )
         limit = extract_key(request, "limit", check_existence=False)
-        only_english = extract_key(request, "only_english", check_existence=False)
+        only_english = extract_key(
+            request, "only_english", check_existence=False
+        )
         limit_parent_folder = extract_key(
             request, "limit_parent_folder", check_existence=False
         )
@@ -632,7 +653,13 @@ def api_volumes_search() -> ApiReturn | None:
 
     elif request.method == "POST":
         data: dict[str, Any] = request.get_json()
-        for key in ("comicvine_id", "title", "year", "volume_number", "publisher"):
+        for key in (
+            "comicvine_id",
+            "title",
+            "year",
+            "volume_number",
+            "publisher",
+        ):
             if key not in data:
                 raise KeyNotFound(key)
 
@@ -761,7 +788,9 @@ def api_volume(id: int) -> ApiReturn | None:
 
         if "monitoring_scheme" in edit_info:
             try:
-                monitoring_scheme = MonitorScheme(edit_info["monitoring_scheme"])
+                monitoring_scheme = MonitorScheme(
+                    edit_info["monitoring_scheme"]
+                )
 
             except ValueError:
                 raise InvalidKeyValue(
@@ -814,7 +843,9 @@ def api_issues(id: int) -> ApiReturn | None:
         edit_info: dict = request.get_json()
         monitored = edit_info.get("monitored")
         if monitored is not None:
-            issue.update({"monitored": bool(monitored)}, edit_info["called_from"])
+            issue.update(
+                {"monitored": bool(monitored)}, edit_info["called_from"]
+            )
 
         result = issue.get_data()
         return return_api(result)
@@ -926,7 +957,9 @@ def api_issue_download(id: int) -> ApiReturn:
     result_key: SearchResultData = extract_key(request, "result")
     force_match: bool = extract_key(request, "force_match")
     result = run(
-        DownloadHandler().add(result_key, volume_id, id, force_match=force_match)
+        DownloadHandler().add(
+            result_key, volume_id, id, force_match=force_match
+        )
     )
     return return_api(
         {
@@ -952,7 +985,9 @@ def api_downloads() -> ApiReturn | None:
         return return_api({})
 
 
-@api.route("/activity/queue/<int:download_id>", methods=["GET", "PUT", "DELETE"])
+@api.route(
+    "/activity/queue/<int:download_id>", methods=["GET", "PUT", "DELETE"]
+)
 @error_handler
 @auth
 def api_delete_download(download_id: int) -> ApiReturn | None:
@@ -1031,13 +1066,17 @@ def api_blocklist() -> ApiReturn | None:
 
         web_sub_title = data.get("web_sub_title")
         if not (
-            web_sub_title is None or web_sub_title and isinstance(web_sub_title, str)
+            web_sub_title is None
+            or web_sub_title
+            and isinstance(web_sub_title, str)
         ):
             raise InvalidKeyValue("web_sub_title", web_sub_title)
 
         download_link = data.get("download_link")
         if not (
-            download_link is None or download_link and isinstance(download_link, str)
+            download_link is None
+            or download_link
+            and isinstance(download_link, str)
         ):
             raise InvalidKeyValue("download_link", download_link)
 
@@ -1062,7 +1101,9 @@ def api_blocklist() -> ApiReturn | None:
             raise InvalidKeyValue("issue_id", issue_id)
 
         try:
-            reason = BlocklistReason[BlocklistReasonID(data.get("reason_id")).name]
+            reason = BlocklistReason[
+                BlocklistReasonID(data.get("reason_id")).name
+            ]
 
         except ValueError:
             raise InvalidKeyValue("reason_id", data.get("reason_id"))
@@ -1184,7 +1225,8 @@ def api_external_clients() -> ApiReturn | None:
 @auth
 def api_external_clients_keys() -> ApiReturn:
     result = {
-        k: v.required_tokens for k, v in ExternalClients.get_client_types().items()
+        k: v.required_tokens
+        for k, v in ExternalClients.get_client_types().items()
     }
     return return_api(result)
 
@@ -1196,7 +1238,13 @@ def api_external_clients_test() -> ApiReturn:
     data: dict = request.get_json()
     data = {
         k: data.get(k)
-        for k in ("client_type", "base_url", "username", "password", "api_token")
+        for k in (
+            "client_type",
+            "base_url",
+            "username",
+            "password",
+            "api_token",
+        )
     }
     result = ExternalClients.test(**data)
     return return_api(result)
@@ -1246,7 +1294,8 @@ def api_mass_editor() -> ApiReturn:
     args: dict[str, Any] = data.get("args", {})
 
     if not (
-        isinstance(volume_ids, list) and all(isinstance(v, int) for v in volume_ids)
+        isinstance(volume_ids, list)
+        and all(isinstance(v, int) for v in volume_ids)
     ):
         raise InvalidKeyValue("volume_ids", volume_ids)
 

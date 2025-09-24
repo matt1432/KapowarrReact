@@ -32,7 +32,10 @@ const IssueTableSlice = createSlice({
     name: 'issueTable',
     initialState,
     reducers: {
-        setIssuesSort: (state, { payload }: PayloadAction<SetIssuesSortParams>) => {
+        setIssuesSort: (
+            state,
+            { payload }: PayloadAction<SetIssuesSortParams>,
+        ) => {
             const newState = structuredClone(payload);
 
             if (!newState.sortDirection) {
@@ -52,9 +55,12 @@ const IssueTableSlice = createSlice({
 
         setIssuesTableOption: (
             state,
-            { payload }: PayloadAction<TableOptionsChangePayload<IssueColumnName>>,
+            {
+                payload,
+            }: PayloadAction<TableOptionsChangePayload<IssueColumnName>>,
         ) => {
-            state = Object.assign(state, payload);
+            const newState = { ...state };
+            state = Object.assign(newState, payload);
         },
     },
 });

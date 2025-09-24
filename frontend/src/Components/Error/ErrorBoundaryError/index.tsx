@@ -33,7 +33,9 @@ export default function ErrorBoundaryError({
     error,
     info,
 }: ErrorBoundaryErrorProps) {
-    const [detailedError, setDetailedError] = useState<StackTrace.StackFrame[] | null>(null);
+    const [detailedError, setDetailedError] = useState<
+        StackTrace.StackFrame[] | null
+    >(null);
 
     useEffect(() => {
         if (error) {
@@ -72,7 +74,9 @@ export default function ErrorBoundaryError({
                     <div>{info.componentStack}</div>
                 )}
 
-                <div className={styles.version}>Version: {window.Kapowarr.version}</div>
+                <div className={styles.version}>
+                    Version: {window.Kapowarr.version}
+                </div>
             </details>
         </div>
     );

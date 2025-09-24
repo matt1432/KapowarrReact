@@ -39,8 +39,13 @@ const logLevelOptions: EnhancedSelectInputValue<number>[] = [
 ];
 
 export default function GeneralSettings() {
-    const { isSaving, hasPendingChanges, onSavePress, handleInputChange, changes } =
-        useEditSettings();
+    const {
+        isSaving,
+        hasPendingChanges,
+        onSavePress,
+        handleInputChange,
+        changes,
+    } = useEditSettings();
 
     const handlePortChange = useCallback(
         ({ name, value }: InputChanged<'port', string>) => {
@@ -49,7 +54,8 @@ export default function GeneralSettings() {
         [handleInputChange],
     );
 
-    const [resetApiKey, { isLoading: isResettingApiKey }] = useResetApiKeyMutation();
+    const [resetApiKey, { isLoading: isResettingApiKey }] =
+        useResetApiKeyMutation();
 
     const handleResetApiKeyPress = useCallback(() => {
         resetApiKey();
@@ -65,7 +71,10 @@ export default function GeneralSettings() {
 
             <PageContentBody>
                 <Form id="generalSettings">
-                    <FieldSet legend={translate('Host')} subLegend={translate('HostInfo')}>
+                    <FieldSet
+                        legend={translate('Host')}
+                        subLegend={translate('HostInfo')}
+                    >
                         <FormGroup>
                             <FormLabel>{translate('BindAddress')}</FormLabel>
                             <FormInputGroup
@@ -132,7 +141,10 @@ export default function GeneralSettings() {
                                         kind={kinds.DANGER}
                                         onPress={handleResetApiKeyPress}
                                     >
-                                        <Icon name={icons.REFRESH} isSpinning={isResettingApiKey} />
+                                        <Icon
+                                            name={icons.REFRESH}
+                                            isSpinning={isResettingApiKey}
+                                        />
                                     </FormInputButton>,
                                 ]}
                             />
@@ -141,7 +153,9 @@ export default function GeneralSettings() {
 
                     <FieldSet legend={translate('ExternalWebsites')}>
                         <FormGroup>
-                            <FormLabel>{translate('ComicVineAPIKey')}</FormLabel>
+                            <FormLabel>
+                                {translate('ComicVineAPIKey')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.TEXT}
                                 name="comicvineApiKey"
@@ -152,11 +166,15 @@ export default function GeneralSettings() {
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel>{translate('FlareSolverrBaseURL')}</FormLabel>
+                            <FormLabel>
+                                {translate('FlareSolverrBaseURL')}
+                            </FormLabel>
                             <FormInputGroup
                                 type={inputTypes.TEXT}
                                 name="flaresolverrBaseUrl"
-                                helpText={translate('FlareSolverrBaseURLHelpText')}
+                                helpText={translate(
+                                    'FlareSolverrBaseURLHelpText',
+                                )}
                                 onChange={handleInputChange}
                                 value={changes.flaresolverrBaseUrl}
                             />

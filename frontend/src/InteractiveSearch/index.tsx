@@ -7,7 +7,10 @@ import { useCallback, useMemo, useState } from 'react';
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { setInteractiveSearchSort } from 'Store/Slices/SearchResults';
 
-import { useLibgenFileSearchMutation, useManualSearchQuery } from 'Store/Api/Command';
+import {
+    useLibgenFileSearchMutation,
+    useManualSearchQuery,
+} from 'Store/Api/Command';
 
 // Misc
 import { icons, inputTypes, kinds, sortDirections } from 'Helpers/Props';
@@ -35,7 +38,11 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 
-import type { InteractiveSearchPayload, InteractiveSearchSort, SearchResult } from 'typings/Search';
+import type {
+    InteractiveSearchPayload,
+    InteractiveSearchSort,
+    SearchResult,
+} from 'typings/Search';
 
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { AnyError } from 'typings/Api';
@@ -134,7 +141,9 @@ const columns: Column<InteractiveSearchSort>[] = [
     },
     {
         name: 'matchRejections',
-        label: <Icon name={icons.DANGER} title={() => translate('Rejections')} />,
+        label: (
+            <Icon name={icons.DANGER} title={() => translate('Rejections')} />
+        ),
         isSortable: true,
         fixedSortDirection: sortDirections.ASCENDING,
         isVisible: true,
@@ -158,13 +167,17 @@ function InternalSearch({
 }: SearchProps) {
     const dispatch = useRootDispatch();
 
-    const { sortKey, sortDirection } = useRootSelector((state) => state.searchResults);
+    const { sortKey, sortDirection } = useRootSelector(
+        (state) => state.searchResults,
+    );
 
     const lastIssueNumber = useMemo(() => {
         return Math.max(
             ...items
                 .map((item) =>
-                    Array.isArray(item.issueNumber) ? item.issueNumber[1] : item.issueNumber,
+                    Array.isArray(item.issueNumber)
+                        ? item.issueNumber[1]
+                        : item.issueNumber,
                 )
                 .filter((issueNumber) => issueNumber !== null),
         );
@@ -184,9 +197,14 @@ function InternalSearch({
             {!isFetching && error ? (
                 <div>
                     {errorMessage
-                        ? translate('InteractiveSearchResultsVolumeFailedErrorMessage', {
-                              message: errorMessage.charAt(0).toLowerCase() + errorMessage.slice(1),
-                          })
+                        ? translate(
+                              'InteractiveSearchResultsVolumeFailedErrorMessage',
+                              {
+                                  message:
+                                      errorMessage.charAt(0).toLowerCase() +
+                                      errorMessage.slice(1),
+                              },
+                          )
                         : translate('IssueSearchResultsLoadError')}
                 </div>
             ) : null}
@@ -214,7 +232,9 @@ function InternalSearch({
                         />
                     )}
                     predicates={{
-                        match: (a, b) => parseInt(a.rank.join('')) - parseInt(b.rank.join('')),
+                        match: (a, b) =>
+                            parseInt(a.rank.join('')) -
+                            parseInt(b.rank.join('')),
 
                         issueNumber: (a, b) =>
                             weighIssueNumber(a.issueNumber, lastIssueNumber) -
@@ -246,7 +266,8 @@ export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
             isPopulated: !isUninitialized,
             error,
             errorMessage: getErrorMessage(error),
-            items: (data?.map((item, id) => ({ ...item, id })) ?? []) as (SearchResult & {
+            items: (data?.map((item, id) => ({ ...item, id })) ??
+                []) as (SearchResult & {
                 id: number;
                 download: never;
             })[],
@@ -256,9 +277,12 @@ export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
 
     const [libgenFileUrl, setLibgenFileUrl] = useState('');
 
-    const onUrlChange = useCallback(({ value }: InputChanged<'url', string>) => {
-        setLibgenFileUrl(value);
-    }, []);
+    const onUrlChange = useCallback(
+        ({ value }: InputChanged<'url', string>) => {
+            setLibgenFileUrl(value);
+        },
+        [],
+    );
 
     const startSearch = useCallback(() => {
         search({
@@ -279,7 +303,10 @@ export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
                         value={libgenFileUrl}
                         helpText={translate('LibgenFileSearchHelpText')}
                         buttons={[
-                            <FormInputButton title={translate('Search')} onPress={startSearch}>
+                            <FormInputButton
+                                title={translate('Search')}
+                                onPress={startSearch}
+                            >
                                 <Icon name={icons.SEARCH} />
                             </FormInputButton>,
                         ]}
@@ -294,7 +321,9 @@ export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
     return <InternalSearch searchPayload={searchPayload} {...searchProps} />;
 }
 
-export default function InteractiveSearch({ searchPayload }: InteractiveSearchProps) {
+export default function InteractiveSearch({
+    searchPayload,
+}: InteractiveSearchProps) {
     const searchProps = useManualSearchQuery(searchPayload, {
         refetchOnMountOrArgChange: true,
         selectFromResult: ({ isFetching, isUninitialized, error, data }) => ({
@@ -302,7 +331,8 @@ export default function InteractiveSearch({ searchPayload }: InteractiveSearchPr
             isPopulated: !isUninitialized,
             error,
             errorMessage: getErrorMessage(error),
-            items: (data?.map((item, id) => ({ ...item, id })) ?? []) as (SearchResult & {
+            items: (data?.map((item, id) => ({ ...item, id })) ??
+                []) as (SearchResult & {
                 id: number;
                 download: never;
             })[],

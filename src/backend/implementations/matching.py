@@ -26,7 +26,9 @@ clean_title_regex = compile(
 )
 
 
-def _match_title(title1: str, title2: str, allow_contains: bool = False) -> bool:
+def _match_title(
+    title1: str, title2: str, allow_contains: bool = False
+) -> bool:
     """Determine if two titles match; if they refer to the same thing.
 
     Args:
@@ -39,7 +41,9 @@ def _match_title(title1: str, title2: str, allow_contains: bool = False) -> bool
     Returns:
         bool: Whether the titles match.
     """
-    clean_reference_title = clean_title_regex.sub("", title1.lower()).replace(" ", "")
+    clean_reference_title = clean_title_regex.sub("", title1.lower()).replace(
+        " ", ""
+    )
 
     clean_title = clean_title_regex.sub("", title2.lower()).replace(" ", "")
 
@@ -129,7 +133,9 @@ def _match_volume_number(
         return False
 
     number_found = 0
-    numbers = check_number if isinstance(check_number, tuple) else (check_number,)
+    numbers = (
+        check_number if isinstance(check_number, tuple) else (check_number,)
+    )
     for issue in volume_issues:
         if issue.calculated_issue_number in numbers:
             number_found += 1
@@ -182,7 +188,10 @@ def _match_special_version(
     ):
         return True
 
-    if "omnibus" in volume_title.lower() and check_version == SpecialVersion.OMNIBUS:
+    if (
+        "omnibus" in volume_title.lower()
+        and check_version == SpecialVersion.OMNIBUS
+    ):
         return True
 
     # Volume's Special Version could be one that often isn't explicitly
@@ -228,7 +237,10 @@ def folder_extraction_filter(
     )
 
     # Neither are found (we play it safe so we keep those)
-    neither_found = (file_data["year"], file_data["volume_number"]) == (None, None)
+    neither_found = (file_data["year"], file_data["volume_number"]) == (
+        None,
+        None,
+    )
 
     return (
         matching_title
@@ -282,7 +294,9 @@ def file_importing_filter(
         number_to_year.get(force_range(issue_number)[-1]),
     )
 
-    is_match = matching_special_version and (matching_volume_number or matching_year)
+    is_match = matching_special_version and (
+        matching_volume_number or matching_year
+    )
 
     return is_match
 
@@ -311,7 +325,10 @@ def gc_group_filter(
     matching_title = _match_title(volume_data.title, processed_desc["series"])
 
     matching_volume_number = _match_volume_number(
-        volume_data, volume_issues, processed_desc["volume_number"], conservative=True
+        volume_data,
+        volume_issues,
+        processed_desc["volume_number"],
+        conservative=True,
     )
 
     matching_year = _match_year(

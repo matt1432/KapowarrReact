@@ -29,7 +29,11 @@ interface PageJumpBarProps {
 
 const ITEM_HEIGHT = parseInt(dimensions.jumpBarItemHeight);
 
-export default function PageJumpBar({ items, minimumItems = 5, onItemPress }: PageJumpBarProps) {
+export default function PageJumpBar({
+    items,
+    minimumItems = 5,
+    onItemPress,
+}: PageJumpBarProps) {
     const [jumpBarRef, { height }] = useMeasure();
 
     const visibleItems = useMemo(() => {
@@ -54,7 +58,10 @@ export default function PageJumpBar({ items, minimumItems = 5, onItemPress }: Pa
             .map((x) => characters[x])
             .sort((a, b) => b - a);
         const minCount = sorted[maximumItems - 3];
-        const greater = sorted.reduce((acc, value) => acc + (value > minCount ? 1 : 0), 0);
+        const greater = sorted.reduce(
+            (acc, value) => acc + (value > minCount ? 1 : 0),
+            0,
+        );
         let minAllowed = maximumItems - 2 - greater;
 
         for (let i = 1; i < order.length - 1; i++) {
@@ -80,7 +87,13 @@ export default function PageJumpBar({ items, minimumItems = 5, onItemPress }: Pa
         <div ref={jumpBarRef} className={styles.jumpBar}>
             <div className={styles.jumpBarItems}>
                 {visibleItems.map((item) => {
-                    return <PageJumpBarItem key={item} label={item} onItemPress={onItemPress} />;
+                    return (
+                        <PageJumpBarItem
+                            key={item}
+                            label={item}
+                            onItemPress={onItemPress}
+                        />
+                    );
                 })}
             </div>
         </div>

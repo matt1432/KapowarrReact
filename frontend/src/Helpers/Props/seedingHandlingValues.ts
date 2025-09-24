@@ -5,4 +5,5 @@ export const seedingHandlingValues = {
 
 export default seedingHandlingValues;
 
-export type SeedingHandling = (typeof seedingHandlingValues)[keyof typeof seedingHandlingValues];
+export type SeedingHandling =
+    (typeof seedingHandlingValues)[keyof typeof seedingHandlingValues];

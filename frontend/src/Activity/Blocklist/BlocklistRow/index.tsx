@@ -62,10 +62,15 @@ export default function BlocklistRow({
             <TableRowCell>{source}</TableRowCell>
 
             <TableRowCell>
-                {typeof volumeId === 'number' || typeof issue?.volumeId === 'number' ? (
+                {typeof volumeId === 'number' ||
+                typeof issue?.volumeId === 'number' ? (
                     <VolumeTitleLink
                         title={(volumeId ?? issue?.volumeId ?? '').toString()}
-                        titleSlug={(volumeId ?? issue?.volumeId ?? '').toString()}
+                        titleSlug={(
+                            volumeId ??
+                            issue?.volumeId ??
+                            ''
+                        ).toString()}
                     />
                 ) : null}
             </TableRowCell>
@@ -82,7 +87,11 @@ export default function BlocklistRow({
 
             <TableRowCell>{reason}</TableRowCell>
 
-            <RelativeDateCell date={addedAt * 1000} includeSeconds={true} includeTime={true} />
+            <RelativeDateCell
+                date={addedAt * 1000}
+                includeSeconds={true}
+                includeTime={true}
+            />
 
             <TableRowCell>
                 <SpinnerIconButton

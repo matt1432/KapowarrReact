@@ -31,7 +31,9 @@ export default function NoVolume({ totalItems }: NoVolumeProps) {
 
     return (
         <div>
-            <div className={styles.message}>{translate('NoVolumeFoundImportOrAdd')}</div>
+            <div className={styles.message}>
+                {translate('NoVolumeFoundImportOrAdd')}
+            </div>
 
             <div className={styles.buttonContainer}>
                 <Button to="/add/import" kind={kinds.PRIMARY}>

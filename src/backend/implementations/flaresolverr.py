@@ -98,7 +98,9 @@ class FlareSolverr:
             return
 
         if not self.base_url:
-            LOGGER.warning("Request blocked by CloudFlare and FlareSolverr not setup")
+            LOGGER.warning(
+                "Request blocked by CloudFlare and FlareSolverr not setup"
+            )
             return
 
         with Session() as session:
@@ -152,7 +154,9 @@ class FlareSolverr:
             return
 
         if not self.base_url:
-            LOGGER.warning("Request blocked by CloudFlare and FlareSolverr not setup")
+            LOGGER.warning(
+                "Request blocked by CloudFlare and FlareSolverr not setup"
+            )
             return
 
         session_id = (
@@ -169,7 +173,11 @@ class FlareSolverr:
             await (
                 await session.post(
                     self.base_url + Constants.FS_API_BASE,
-                    json={"cmd": "request.get", "session": session_id, "url": url},
+                    json={
+                        "cmd": "request.get",
+                        "session": session_id,
+                        "url": url,
+                    },
                     headers={"Content-Type": "application/json"},
                 )
             ).json()

@@ -34,9 +34,13 @@ interface DownloadClientProps {
 export default function DownloadClient({ id, title }: DownloadClientProps) {
     const [deleteDownloadClient] = useDeleteDownloadClientMutation();
 
-    const [isEditDownloadClientModalOpen, setIsEditDownloadClientModalOpen] = useState(false);
+    const [isEditDownloadClientModalOpen, setIsEditDownloadClientModalOpen] =
+        useState(false);
 
-    const [isDeleteDownloadClientModalOpen, setIsDeleteDownloadClientModalOpen] = useState(false);
+    const [
+        isDeleteDownloadClientModalOpen,
+        setIsDeleteDownloadClientModalOpen,
+    ] = useState(false);
 
     const handleEditDownloadClientPress = useCallback(() => {
         setIsEditDownloadClientModalOpen(true);
@@ -78,7 +82,9 @@ export default function DownloadClient({ id, title }: DownloadClientProps) {
                 isOpen={isDeleteDownloadClientModalOpen}
                 kind={kinds.DANGER}
                 title={translate('DeleteDownloadClient')}
-                message={translate('DeleteDownloadClientMessageText', { name: title })}
+                message={translate('DeleteDownloadClientMessageText', {
+                    name: title,
+                })}
                 confirmLabel={translate('Delete')}
                 onConfirm={handleConfirmDeleteDownloadClient}
                 onCancel={handleDeleteDownloadClientModalClose}

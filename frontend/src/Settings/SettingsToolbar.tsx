@@ -94,7 +94,9 @@ export default function SettingsToolbar({
                 {showSave ? (
                     <PageToolbarButton
                         label={
-                            hasPendingChanges ? translate('SaveChanges') : translate('NoChanges')
+                            hasPendingChanges
+                                ? translate('SaveChanges')
+                                : translate('NoChanges')
                         }
                         iconName={icons.SAVE}
                         isSpinning={isSaving}

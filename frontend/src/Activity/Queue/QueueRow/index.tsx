@@ -67,13 +67,21 @@ export default function QueueRow({
                 }
 
                 if (name === 'priority') {
-                    return <TableRowCell className={styles[name]}>{priority}</TableRowCell>;
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {priority}
+                        </TableRowCell>
+                    );
                 }
 
                 if (name === 'status') {
                     return (
                         <TableRowCell className={styles[name]}>
-                            <QueueStatus sourceTitle={title} status={status} position="right" />
+                            <QueueStatus
+                                sourceTitle={title}
+                                status={status}
+                                position="right"
+                            />
                         </TableRowCell>
                     );
                 }
@@ -81,24 +89,35 @@ export default function QueueRow({
                 if (name === 'title') {
                     return (
                         <TableRowCell className={styles[name]}>
-                            <VolumeTitleLink title={title} titleSlug={volumeId.toString()} />
+                            <VolumeTitleLink
+                                title={title}
+                                titleSlug={volumeId.toString()}
+                            />
                         </TableRowCell>
                     );
                 }
 
                 if (name === 'sourceName') {
-                    return <TableRowCell className={styles[name]}>{sourceName}</TableRowCell>;
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {sourceName}
+                        </TableRowCell>
+                    );
                 }
 
                 if (name === 'size') {
                     return (
-                        <TableRowCell className={styles[name]}>{formatBytes(size)}</TableRowCell>
+                        <TableRowCell className={styles[name]}>
+                            {formatBytes(size)}
+                        </TableRowCell>
                     );
                 }
 
                 if (name === 'speed') {
                     return (
-                        <TableRowCell className={styles[name]}>{formatBytes(speed)}/s</TableRowCell>
+                        <TableRowCell className={styles[name]}>
+                            {formatBytes(speed)}/s
+                        </TableRowCell>
                     );
                 }
 
@@ -116,7 +135,10 @@ export default function QueueRow({
                 if (name === 'progress') {
                     return (
                         <TableRowCell className={styles[name]}>
-                            <ProgressBar progress={progress} title={`${progress.toFixed(1)}%`} />
+                            <ProgressBar
+                                progress={progress}
+                                title={`${progress.toFixed(1)}%`}
+                            />
                         </TableRowCell>
                     );
                 }

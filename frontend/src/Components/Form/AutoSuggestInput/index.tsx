@@ -36,7 +36,10 @@ import styles from './index.module.css';
 import type { InputChanged } from 'typings/Inputs';
 
 interface AutoSuggestInputProps<K extends string, T>
-    extends Omit<AutosuggestPropsBase<T>, 'renderInputComponent' | 'inputProps'> {
+    extends Omit<
+        AutosuggestPropsBase<T>,
+        'renderInputComponent' | 'inputProps'
+    > {
     forwardedRef?: MutableRefObject<Autosuggest<T> | null>;
     className?: string;
     inputContainerClassName?: string;
@@ -52,10 +55,16 @@ interface AutoSuggestInputProps<K extends string, T>
         inputProps: RenderInputComponentProps,
         ref: Ref<HTMLDivElement>,
     ) => ReactNode;
-    onInputChange: (event: FormEvent<HTMLElement>, params: ChangeEvent) => unknown;
+    onInputChange: (
+        event: FormEvent<HTMLElement>,
+        params: ChangeEvent,
+    ) => unknown;
     onInputKeyDown?: KeyboardEventHandler<HTMLElement>;
     onInputFocus?: (event: SyntheticEvent) => unknown;
-    onInputBlur: (event: FocusEvent<HTMLElement>, params?: BlurEvent<T>) => unknown;
+    onInputBlur: (
+        event: FocusEvent<HTMLElement>,
+        params?: BlurEvent<T>,
+    ) => unknown;
     onChange?: (change: InputChanged<K, string>) => unknown;
 }
 
@@ -128,7 +137,9 @@ export default function AutoSuggestInput<T, K extends string>({
                 <div
                     ref={refs.setFloating}
                     style={floatingStyles}
-                    className={children ? styles.suggestionsContainerOpen : undefined}
+                    className={
+                        children ? styles.suggestionsContainerOpen : undefined
+                    }
                 >
                     <div
                         {...containerProps}
@@ -146,7 +157,11 @@ export default function AutoSuggestInput<T, K extends string>({
 
     const handleInputKeyDown = useCallback(
         (event: KeyboardEvent<HTMLElement>) => {
-            if (event.key === 'Tab' && suggestions.length && suggestions[0] !== value) {
+            if (
+                event.key === 'Tab' &&
+                suggestions.length &&
+                suggestions[0] !== value
+            ) {
                 event.preventDefault();
 
                 if (value) {

@@ -9,4 +9,5 @@ export const GCDownloadSources = {
 
 export default GCDownloadSources;
 
-export type GCDownloadSource = (typeof GCDownloadSources)[keyof typeof GCDownloadSources];
+export type GCDownloadSource =
+    (typeof GCDownloadSources)[keyof typeof GCDownloadSources];

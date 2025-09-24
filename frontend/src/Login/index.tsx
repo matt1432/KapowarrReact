@@ -49,7 +49,9 @@ export default function LoginPage() {
                 </div>
 
                 <div className={styles.panelBody}>
-                    <div className={styles.signIn}>{translate('SignInMessage')}</div>
+                    <div className={styles.signIn}>
+                        {translate('SignInMessage')}
+                    </div>
 
                     <div className={styles.formGroup}>
                         <Form>

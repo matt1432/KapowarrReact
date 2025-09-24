@@ -45,7 +45,9 @@ export default function TaskHistory() {
                 <TableBody>
                     {items.map((item) => (
                         <TableRow>
-                            <TableRowCell className={styles.cell}>{item.displayTitle}</TableRowCell>
+                            <TableRowCell className={styles.cell}>
+                                {item.displayTitle}
+                            </TableRowCell>
 
                             <RelativeDateCell
                                 className={styles.cell}

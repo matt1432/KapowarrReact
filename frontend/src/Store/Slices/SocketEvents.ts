@@ -71,11 +71,17 @@ const SocketEventsSlice = createSlice({
             state.isConnected = value;
         },
 
-        setIsSearchAllRunning: (state, { payload: value }: PayloadAction<boolean>) => {
+        setIsSearchAllRunning: (
+            state,
+            { payload: value }: PayloadAction<boolean>,
+        ) => {
             state.isSearchAllRunning = value;
         },
 
-        setIsUpdateAllRunning: (state, { payload: value }: PayloadAction<boolean>) => {
+        setIsUpdateAllRunning: (
+            state,
+            { payload: value }: PayloadAction<boolean>,
+        ) => {
             state.isUpdateAllRunning = value;
         },
 
@@ -103,7 +109,10 @@ const SocketEventsSlice = createSlice({
                 payload: { key, callback },
             }: PayloadAction<{ key: Key; callback: SocketEventHandler<Key> }>,
         ) => {
-            state.callbacks[key].splice(state.callbacks[key].indexOf(callback), 1);
+            state.callbacks[key].splice(
+                state.callbacks[key].indexOf(callback),
+                1,
+            );
         },
 
         editVolumeStatus: (
@@ -122,13 +131,19 @@ const SocketEventsSlice = createSlice({
             state,
             {
                 payload: { volumeId, issueId, status },
-            }: PayloadAction<{ volumeId: number; issueId: number; status: StatusState }>,
+            }: PayloadAction<{
+                volumeId: number;
+                issueId: number;
+                status: StatusState;
+            }>,
         ) => {
             state.volumesStatus[volumeId] = {
                 ...(state.volumesStatus[volumeId] ?? {}),
                 issues: {
                     [issueId]: {
-                        ...((state.volumesStatus[volumeId]?.issues ?? {})[issueId] ?? {}),
+                        ...((state.volumesStatus[volumeId]?.issues ?? {})[
+                            issueId
+                        ] ?? {}),
                         ...status,
                     },
                 },

@@ -61,20 +61,29 @@ export default function PageHeaderActionsMenu({
     return (
         <div>
             <Menu alignMenu={align.RIGHT}>
-                <MenuButton className={styles.menuButton} aria-label="Menu Button">
+                <MenuButton
+                    className={styles.menuButton}
+                    aria-label="Menu Button"
+                >
                     <Icon name={icons.INTERACTIVE} title={translate('Menu')} />
                 </MenuButton>
 
                 <MenuContent>
                     <MenuItem onPress={onKeyboardShortcutsPress}>
-                        <Icon className={styles.itemIcon} name={icons.KEYBOARD} />
+                        <Icon
+                            className={styles.itemIcon}
+                            name={icons.KEYBOARD}
+                        />
                         {translate('KeyboardShortcuts')}
                     </MenuItem>
 
                     <MenuItemSeparator />
 
                     <MenuItem onPress={handleRestartPress}>
-                        <Icon className={styles.itemIcon} name={icons.RESTART} />
+                        <Icon
+                            className={styles.itemIcon}
+                            name={icons.RESTART}
+                        />
                         {translate('Restart')}
                     </MenuItem>
 
@@ -92,7 +101,10 @@ export default function PageHeaderActionsMenu({
                             <MenuItemSeparator />
 
                             <MenuItem onPress={handleLogoutPress}>
-                                <Icon className={styles.itemIcon} name={icons.LOGOUT} />
+                                <Icon
+                                    className={styles.itemIcon}
+                                    name={icons.LOGOUT}
+                                />
                                 {translate('Logout')}
                             </MenuItem>
                         </>

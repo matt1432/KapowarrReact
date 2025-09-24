@@ -49,10 +49,14 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: { result: RawQueueItem[] }) => camelize(response.result),
+            transformResponse: (response: { result: RawQueueItem[] }) =>
+                camelize(response.result),
         }),
 
-        getDownloadHistory: build.mutation<DownloadHistoryItem[], GetDownloadHistoryParams>({
+        getDownloadHistory: build.mutation<
+            DownloadHistoryItem[],
+            GetDownloadHistoryParams
+        >({
             query: (params) => ({
                 method: 'GET',
                 url: 'activity/history',
@@ -62,8 +66,9 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: { result: RawDownloadHistoryItem[] }) =>
-                camelize(response.result),
+            transformResponse: (response: {
+                result: RawDownloadHistoryItem[];
+            }) => camelize(response.result),
         }),
 
         getBlocklist: build.mutation<BlocklistItem[], GetBlocklistParams>({

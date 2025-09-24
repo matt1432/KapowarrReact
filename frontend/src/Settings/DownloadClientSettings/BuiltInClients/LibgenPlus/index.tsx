@@ -4,7 +4,10 @@
 import { useCallback, useEffect, useState } from 'react';
 
 // Redux
-import { useGetSettingsQuery, useSaveSettingsMutation } from 'Store/Api/Settings';
+import {
+    useGetSettingsQuery,
+    useSaveSettingsMutation,
+} from 'Store/Api/Settings';
 
 // Misc
 import translate from 'Utilities/String/translate';
@@ -29,17 +32,15 @@ import type { CheckInputChanged } from 'typings/Inputs';
 export default function LibgenPlus() {
     const [saveSettings] = useSaveSettingsMutation();
 
-    const { enableLibgen, includeCoverOnlyFiles, includeScannedBooks } = useGetSettingsQuery(
-        undefined,
-        {
+    const { enableLibgen, includeCoverOnlyFiles, includeScannedBooks } =
+        useGetSettingsQuery(undefined, {
             refetchOnMountOrArgChange: true,
             selectFromResult: ({ data }) => ({
                 enableLibgen: Boolean(data?.enableLibgen),
                 includeCoverOnlyFiles: Boolean(data?.includeCoverOnlyFiles),
                 includeScannedBooks: Boolean(data?.includeScannedBooks),
             }),
-        },
-    );
+        });
 
     const [enable, setEnable] = useState(enableLibgen);
 
@@ -89,12 +90,15 @@ export default function LibgenPlus() {
                 <>
                     <ModalBody>
                         <p>
-                            <a href="https://libgen.gs/json.php" target="_blank">
+                            <a
+                                href="https://libgen.gs/json.php"
+                                target="_blank"
+                            >
                                 Libgen+
                             </a>{' '}
-                            is a website that offers a vast amount of downloads for comics. Kapowarr
-                            can search this website to find downloads for the volumes in your
-                            library.
+                            is a website that offers a vast amount of downloads
+                            for comics. Kapowarr can search this website to find
+                            downloads for the volumes in your library.
                         </p>
 
                         <FieldSet legend={translate('Settings')}>
@@ -109,22 +113,30 @@ export default function LibgenPlus() {
                             </FormGroup>
 
                             <FormGroup>
-                                <FormLabel>{translate('IncludeCoverOnlyFiles')}</FormLabel>
+                                <FormLabel>
+                                    {translate('IncludeCoverOnlyFiles')}
+                                </FormLabel>
                                 <FormInputGroup
                                     type="check"
                                     name="coverOnly"
-                                    helpText={translate('IncludeCoverOnlyFilesHelpText')}
+                                    helpText={translate(
+                                        'IncludeCoverOnlyFilesHelpText',
+                                    )}
                                     onChange={handleCoverOnlyChange}
                                     value={coverOnly}
                                 />
                             </FormGroup>
 
                             <FormGroup>
-                                <FormLabel>{translate('IncludeScannedBooks')}</FormLabel>
+                                <FormLabel>
+                                    {translate('IncludeScannedBooks')}
+                                </FormLabel>
                                 <FormInputGroup
                                     type="check"
                                     name="scanned"
-                                    helpText={translate('IncludeScannedBooksHelpText')}
+                                    helpText={translate(
+                                        'IncludeScannedBooksHelpText',
+                                    )}
                                     onChange={handleScannedChange}
                                     value={scanned}
                                 />
@@ -133,7 +145,9 @@ export default function LibgenPlus() {
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button onPress={onModalClose}>{translate('Close')}</Button>
+                        <Button onPress={onModalClose}>
+                            {translate('Close')}
+                        </Button>
                     </ModalFooter>
                 </>
             )}

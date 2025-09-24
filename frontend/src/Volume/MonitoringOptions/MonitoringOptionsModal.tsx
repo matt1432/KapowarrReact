@@ -9,7 +9,8 @@ import MonitoringOptionsModalContent, {
 } from './MonitoringOptionsModalContent';
 
 // Types
-interface MonitoringOptionsModalProps extends MonitoringOptionsModalContentProps {
+interface MonitoringOptionsModalProps
+    extends MonitoringOptionsModalContentProps {
     isOpen: boolean;
 }
 
@@ -22,7 +23,10 @@ export default function MonitoringOptionsModal({
 }: MonitoringOptionsModalProps) {
     return (
         <Modal isOpen={isOpen} onModalClose={onModalClose}>
-            <MonitoringOptionsModalContent {...otherProps} onModalClose={onModalClose} />
+            <MonitoringOptionsModalContent
+                {...otherProps}
+                onModalClose={onModalClose}
+            />
         </Modal>
     );
 }

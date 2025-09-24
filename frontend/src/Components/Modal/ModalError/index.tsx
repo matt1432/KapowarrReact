@@ -23,7 +23,10 @@ interface ModalErrorProps extends ErrorBoundaryErrorProps {
 
 // IMPLEMENTATIONS
 
-export default function ModalError({ onModalClose, ...otherProps }: ModalErrorProps) {
+export default function ModalError({
+    onModalClose,
+    ...otherProps
+}: ModalErrorProps) {
     return (
         <ModalContent onModalClose={onModalClose}>
             <ModalHeader>{translate('Error')}</ModalHeader>

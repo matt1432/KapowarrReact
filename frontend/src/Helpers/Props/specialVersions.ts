@@ -11,4 +11,5 @@ export const specialVersions = {
 
 export default specialVersions;
 
-export type SpecialVersion = (typeof specialVersions)[keyof typeof specialVersions];
+export type SpecialVersion =
+    (typeof specialVersions)[keyof typeof specialVersions];

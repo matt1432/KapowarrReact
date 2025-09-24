@@ -6,7 +6,8 @@ const getMobileDetect = (userAgent: string) => {
     const isOSX = (): boolean => Boolean(userAgent.match(/Macintosh/i));
     const isSSR = (): boolean => Boolean(userAgent.match(/SSR/i));
 
-    const isMobile = (): boolean => Boolean(isAndroid() || isIos() || isOpera() || isWindows());
+    const isMobile = (): boolean =>
+        Boolean(isAndroid() || isIos() || isOpera() || isWindows());
     const isDesktop = (): boolean => Boolean(!isMobile() && !isSSR());
     return {
         isMobile,

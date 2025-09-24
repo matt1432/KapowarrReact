@@ -83,14 +83,20 @@ const columns: Column<BlocklistColumnName>[] = [
 ];
 
 export default function BlocklistTable() {
-    const [fetchBlocklist, { items, isFetching, isPopulated, error }] = useGetBlocklistMutation({
-        selectFromResult: ({ data, isLoading, isUninitialized, error }) => ({
-            items: data ?? [],
-            isFetching: isLoading,
-            isPopulated: !isUninitialized,
-            error,
-        }),
-    });
+    const [fetchBlocklist, { items, isFetching, isPopulated, error }] =
+        useGetBlocklistMutation({
+            selectFromResult: ({
+                data,
+                isLoading,
+                isUninitialized,
+                error,
+            }) => ({
+                items: data ?? [],
+                isFetching: isLoading,
+                isPopulated: !isUninitialized,
+                error,
+            }),
+        });
     const [fetchNextPage, { nextPageHasItems }] = useGetBlocklistMutation({
         selectFromResult: ({ data }) => ({
             nextPageHasItems: Boolean(data?.length),
@@ -100,7 +106,10 @@ export default function BlocklistTable() {
     const hasItems = !!items.length;
 
     const [page, setPage] = useState(1);
-    const lastPage = useMemo(() => (nextPageHasItems ? page + 1 : page), [nextPageHasItems, page]);
+    const lastPage = useMemo(
+        () => (nextPageHasItems ? page + 1 : page),
+        [nextPageHasItems, page],
+    );
 
     const handlePageSelect = useCallback((pageNumber: number) => {
         setPage(pageNumber);
@@ -130,7 +139,9 @@ export default function BlocklistTable() {
     }
 
     if (!isFetching && !!error) {
-        return <Alert kind={kinds.DANGER}>{translate('BlocklistLoadError')}</Alert>;
+        return (
+            <Alert kind={kinds.DANGER}>{translate('BlocklistLoadError')}</Alert>
+        );
     }
 
     if (isPopulated && !hasItems && !error) {
@@ -143,7 +154,13 @@ export default function BlocklistTable() {
                 <Table columns={columns}>
                     <TableBody>
                         {items.map((item) => {
-                            return <BlocklistRow key={item.id} {...item} refetch={refetch} />;
+                            return (
+                                <BlocklistRow
+                                    key={item.id}
+                                    {...item}
+                                    refetch={refetch}
+                                />
+                            );
                         })}
                     </TableBody>
                 </Table>

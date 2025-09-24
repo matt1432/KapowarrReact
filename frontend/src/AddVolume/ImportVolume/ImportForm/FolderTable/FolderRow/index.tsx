@@ -27,7 +27,12 @@ interface FolderRowProps {
 
 // IMPLEMENTATIONS
 
-export default function FolderRow({ columns, folder, onEditRow, onDeletePress }: FolderRowProps) {
+export default function FolderRow({
+    columns,
+    folder,
+    onEditRow,
+    onDeletePress,
+}: FolderRowProps) {
     return (
         <TableRow>
             {columns.map(({ isVisible, name }) => {
@@ -38,7 +43,11 @@ export default function FolderRow({ columns, folder, onEditRow, onDeletePress }:
                 if (name === 'value') {
                     return (
                         <TableRowCell className={styles.cell}>
-                            <TextInput name="folder" value={folder} onChange={onEditRow} />
+                            <TextInput
+                                name="folder"
+                                value={folder}
+                                onChange={onEditRow}
+                            />
                         </TableRowCell>
                     );
                 }

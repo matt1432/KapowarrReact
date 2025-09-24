@@ -15,7 +15,8 @@ import PageToolbarButton, {
 } from 'Components/Page/Toolbar/PageToolbarButton';
 
 // Types
-interface VolumeIndexSelectAllButtonProps extends Omit<PageToolbarButtonProps, 'iconName'> {
+interface VolumeIndexSelectAllButtonProps
+    extends Omit<PageToolbarButtonProps, 'iconName'> {
     isSelectMode: boolean;
 }
 
@@ -45,7 +46,9 @@ export default function VolumeIndexSelectAllButton({
 
     return isSelectMode ? (
         <PageToolbarButton
-            label={allSelected ? translate('UnselectAll') : translate('SelectAll')}
+            label={
+                allSelected ? translate('UnselectAll') : translate('SelectAll')
+            }
             iconName={icon}
             overflowComponent={overflowComponent}
             onPress={onPress}

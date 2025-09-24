@@ -52,7 +52,8 @@ interface AddNewVolumeSuggestion {
     title: string;
 }
 
-export interface SuggestedVolume extends Pick<Volume, 'title' | 'id' | 'comicvineId'> {
+export interface SuggestedVolume
+    extends Pick<Volume, 'title' | 'id' | 'comicvineId'> {
     firstCharacter: string;
 }
 
@@ -131,7 +132,9 @@ export default function VolumeSearchInput() {
     }, [suggestions, value]);
 
     const handleSuggestionsReceived = useCallback(
-        (message: { data: { value: string; suggestions: VolumeSuggestion[] } }) => {
+        (message: {
+            data: { value: string; suggestions: VolumeSuggestion[] };
+        }) => {
             const { value, suggestions } = message.data;
 
             if (!isLoading.current) {
@@ -213,7 +216,10 @@ export default function VolumeSearchInput() {
     }, []);
 
     const renderSuggestion = useCallback(
-        (item: AddNewVolumeSuggestion | VolumeSuggestion, { query }: { query: string }) => {
+        (
+            item: AddNewVolumeSuggestion | VolumeSuggestion,
+            { query }: { query: string },
+        ) => {
             if ('type' in item) {
                 return (
                     <div className={styles.addNewVolumeSuggestion}>
@@ -222,7 +228,9 @@ export default function VolumeSearchInput() {
                 );
             }
 
-            return <VolumeSearchResult {...item.item} match={item.matches[0]} />;
+            return (
+                <VolumeSearchResult {...item.item} match={item.matches[0]} />
+            );
         },
         [],
     );
@@ -313,7 +321,9 @@ export default function VolumeSearchInput() {
     const handleSuggestionSelected = useCallback(
         (
             _event: SyntheticEvent,
-            { suggestion }: { suggestion: VolumeSuggestion | AddNewVolumeSuggestion },
+            {
+                suggestion,
+            }: { suggestion: VolumeSuggestion | AddNewVolumeSuggestion },
         ) => {
             if ('type' in suggestion) {
                 navigate(`/add/new?term=${encodeURIComponent(value)}`);
@@ -349,9 +359,12 @@ export default function VolumeSearchInput() {
     };
 
     useEffect(() => {
-        worker.current = new Worker(`${window.Kapowarr.urlBase}/static/js/fuse.worker.js`, {
-            type: 'module',
-        });
+        worker.current = new Worker(
+            `${window.Kapowarr.urlBase}/static/js/fuse.worker.js`,
+            {
+                type: 'module',
+            },
+        );
 
         return () => {
             if (worker.current) {
@@ -362,11 +375,19 @@ export default function VolumeSearchInput() {
     }, []);
 
     useEffect(() => {
-        worker.current?.addEventListener('message', handleSuggestionsReceived, false);
+        worker.current?.addEventListener(
+            'message',
+            handleSuggestionsReceived,
+            false,
+        );
 
         return () => {
             if (worker.current) {
-                worker.current.removeEventListener('message', handleSuggestionsReceived, false);
+                worker.current.removeEventListener(
+                    'message',
+                    handleSuggestionsReceived,
+                    false,
+                );
             }
         };
     }, [handleSuggestionsReceived]);

@@ -89,11 +89,19 @@ export default function FormatPreferenceInput({
 
     const isDragging = useMemo(() => dropIndex !== null, [dropIndex]);
     const isDraggingUp = useMemo(
-        () => isDragging && dropIndex !== null && dragIndex !== null && dropIndex < dragIndex,
+        () =>
+            isDragging &&
+            dropIndex !== null &&
+            dragIndex !== null &&
+            dropIndex < dragIndex,
         [dragIndex, dropIndex, isDragging],
     );
     const isDraggingDown = useMemo(
-        () => isDragging && dropIndex !== null && dragIndex !== null && dropIndex > dragIndex,
+        () =>
+            isDragging &&
+            dropIndex !== null &&
+            dragIndex !== null &&
+            dropIndex > dragIndex,
         [dragIndex, dropIndex, isDragging],
     );
 
@@ -113,7 +121,9 @@ export default function FormatPreferenceInput({
                 newFormats.splice(dropIndex, 0, items[0]);
 
                 setFormats(newFormats);
-                onChange(newFormats.filter((f) => f.isVisible).map((f) => f.name));
+                onChange(
+                    newFormats.filter((f) => f.isVisible).map((f) => f.name),
+                );
             }
 
             setDragIndex(null);
@@ -138,8 +148,12 @@ export default function FormatPreferenceInput({
                             isDraggingUp={isDraggingUp}
                             isDraggingDown={isDraggingDown}
                             onVisibleChange={handleVisibleChange}
-                            onFormatPreferenceDragMove={handleFormatPreferenceDragMove}
-                            onFormatPreferenceDragEnd={handleFormatPreferenceDragEnd}
+                            onFormatPreferenceDragMove={
+                                handleFormatPreferenceDragMove
+                            }
+                            onFormatPreferenceDragEnd={
+                                handleFormatPreferenceDragEnd
+                            }
                         />
                     ))}
                 </div>

@@ -11,7 +11,10 @@ import { useLazyGetAboutInfoQuery } from 'Store/Api/Status';
 import { useLazyGetDownloadClientsQuery } from 'Store/Api/DownloadClients';
 import { useLazyGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import { useLazyGetSettingsQuery } from 'Store/Api/Settings';
-import { useLazyGetTaskHistoryQuery, useLazyGetTaskPlanningQuery } from 'Store/Api/Status';
+import {
+    useLazyGetTaskHistoryQuery,
+    useLazyGetTaskPlanningQuery,
+} from 'Store/Api/Status';
 import { useLazyGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
@@ -29,11 +32,13 @@ export default function useAppPage() {
 
     // all queries needed before page is loaded
     const [getAboutInfo, getAboutInfoState] = useLazyGetAboutInfoQuery();
-    const [getDownloadClients, getDownloadClientsState] = useLazyGetDownloadClientsQuery();
+    const [getDownloadClients, getDownloadClientsState] =
+        useLazyGetDownloadClientsQuery();
     const [getRootFolders, getRootFoldersState] = useLazyGetRootFoldersQuery();
     const [getSettings, getSettingsState] = useLazyGetSettingsQuery();
     const [getTaskHistory, getTaskHistoryState] = useLazyGetTaskHistoryQuery();
-    const [getTaskPlanning, getTaskPlanningState] = useLazyGetTaskPlanningQuery();
+    const [getTaskPlanning, getTaskPlanningState] =
+        useLazyGetTaskPlanningQuery();
     const [getVolumes, getVolumesState] = useLazyGetVolumesQuery();
 
     useEffect(() => {
@@ -85,12 +90,18 @@ export default function useAppPage() {
         ],
     );
 
-    const erroredQueries = useMemo(() => queries.filter(({ isError }) => isError), [queries]);
+    const erroredQueries = useMemo(
+        () => queries.filter(({ isError }) => isError),
+        [queries],
+    );
     const isPopulated = useMemo(
         () => queries.every(({ data, isSuccess }) => data && isSuccess),
         [queries],
     );
-    const hasError = useMemo(() => erroredQueries.length > 0, [erroredQueries.length]);
+    const hasError = useMemo(
+        () => erroredQueries.length > 0,
+        [erroredQueries.length],
+    );
 
     useEffect(() => {
         if (apiKey) {
@@ -110,7 +121,12 @@ export default function useAppPage() {
                     volumesError: getVolumesState.error,
                 },
                 (item) => typeof item !== 'undefined',
-            ) as Partial<Record<'rootFoldersError' | 'settingsError' | 'volumesError', AnyError>>,
+            ) as Partial<
+                Record<
+                    'rootFoldersError' | 'settingsError' | 'volumesError',
+                    AnyError
+                >
+            >,
             needsAuth: !apiKey,
             hasError,
             isPopulated,

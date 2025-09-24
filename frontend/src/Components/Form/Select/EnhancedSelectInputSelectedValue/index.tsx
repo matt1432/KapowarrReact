@@ -22,5 +22,9 @@ export default function EnhancedSelectInputSelectedValue({
     children,
     isDisabled = false,
 }: EnhancedSelectInputSelectedValueProps) {
-    return <div className={classNames(className, isDisabled && styles.isDisabled)}>{children}</div>;
+    return (
+        <div className={classNames(className, isDisabled && styles.isDisabled)}>
+            {children}
+        </div>
+    );
 }

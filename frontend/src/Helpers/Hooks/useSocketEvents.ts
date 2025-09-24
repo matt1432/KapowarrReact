@@ -18,11 +18,11 @@ export default function useSocketEvents(_events: Events) {
         () =>
             Object.entries(_events).map(
                 ([name, handler]) =>
-                    // eslint-disable-next-line
-                    [snakeCase(name), (data: any) => handler(camelize(data))] as [
-                        SocketEvent,
-                        SocketEventHandler<SocketEvent>,
-                    ],
+                    [
+                        snakeCase(name),
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (data: any) => handler(camelize(data)),
+                    ] as [SocketEvent, SocketEventHandler<SocketEvent>],
             ),
         [_events],
     );

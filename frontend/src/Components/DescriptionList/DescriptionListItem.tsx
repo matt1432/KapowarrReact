@@ -28,7 +28,9 @@ export default function DescriptionListItem({
 }: DescriptionListItemProps) {
     return (
         <div className={className}>
-            <DescriptionListItemTitle className={titleClassName}>{title}</DescriptionListItemTitle>
+            <DescriptionListItemTitle className={titleClassName}>
+                {title}
+            </DescriptionListItemTitle>
 
             <DescriptionListItemDescription className={descriptionClassName}>
                 {data}

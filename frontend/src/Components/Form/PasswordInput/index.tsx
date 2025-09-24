@@ -14,6 +14,8 @@ function onCopy(e: SyntheticEvent) {
     e.nativeEvent.stopImmediatePropagation();
 }
 
-export default function PasswordInput<K extends string>(props: TextInputProps<K, 'password'>) {
+export default function PasswordInput<K extends string>(
+    props: TextInputProps<K, 'password'>,
+) {
     return <TextInput {...props} type="password" onCopy={onCopy} />;
 }

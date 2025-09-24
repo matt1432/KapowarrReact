@@ -4,7 +4,9 @@
 import React, { type ReactElement, useCallback, useState } from 'react';
 
 // Specific Components
-import TableOptionsModal, { type TableOptionsModalProps } from './TableOptionsModal';
+import TableOptionsModal, {
+    type TableOptionsModalProps,
+} from './TableOptionsModal';
 
 // Types
 import type { LinkProps } from 'Components/Link/Link';
@@ -23,7 +25,8 @@ export default function TableOptionsModalWrapper<T extends string>({
     children,
     ...otherProps
 }: TableOptionsModalWrapperProps<T>) {
-    const [isTableOptionsModalOpen, setIsTableOptionsModalOpen] = useState(false);
+    const [isTableOptionsModalOpen, setIsTableOptionsModalOpen] =
+        useState(false);
 
     const handleTableOptionsPress = useCallback(() => {
         setIsTableOptionsModalOpen(true);
@@ -36,7 +39,9 @@ export default function TableOptionsModalWrapper<T extends string>({
     return (
         <>
             {React.isValidElement(children)
-                ? React.cloneElement(children, { onPress: handleTableOptionsPress })
+                ? React.cloneElement(children, {
+                      onPress: handleTableOptionsPress,
+                  })
                 : null}
 
             <TableOptionsModal

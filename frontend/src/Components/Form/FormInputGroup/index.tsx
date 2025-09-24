@@ -14,10 +14,14 @@ import translate from 'Utilities/String/translate';
 import Link from 'Components/Link/Link';
 
 // Specific Components
-import AutoCompleteInput, { type AutoCompleteInputProps } from '../AutoCompleteInput';
+import AutoCompleteInput, {
+    type AutoCompleteInputProps,
+} from '../AutoCompleteInput';
 import CheckInput, { type CheckInputProps } from '../CheckInput';
 import FormInputHelpText from '../FormInputHelpText';
-import KeyValueListInput, { type KeyValueListInputProps } from '../KeyValueListInput';
+import KeyValueListInput, {
+    type KeyValueListInputProps,
+} from '../KeyValueListInput';
 import NumberInput, { type NumberInputProps } from '../NumberInput';
 import PasswordInput from '../PasswordInput';
 import TextArea, { type TextAreaProps } from '../TextArea';
@@ -68,7 +72,11 @@ type InputTypeMap<V, K extends string> = {
     umask: UMaskInputProps<K>;
 };
 
-type PickProps<V, C extends keyof InputTypeMap<V, K>, K extends string> = InputTypeMap<V, K>[C];
+type PickProps<
+    V,
+    C extends keyof InputTypeMap<V, K>,
+    K extends string,
+> = InputTypeMap<V, K>[C];
 
 export interface FormInputGroupValues<T> {
     key: T;
@@ -80,10 +88,11 @@ export interface ValidationMessage {
     message: string;
 }
 
-export type FormInputGroupProps<V, C extends InputType, K extends string> = Omit<
-    PickProps<V, C, K>,
-    'className'
-> & {
+export type FormInputGroupProps<
+    V,
+    C extends InputType,
+    K extends string,
+> = Omit<PickProps<V, C, K>, 'className'> & {
     type: C;
     className?: string;
     containerClassName?: string;
@@ -124,7 +133,11 @@ const componentMap: Record<InputType, ElementType> = {
     umask: UMaskInput,
 } as const;
 
-export default function FormInputGroup<T, C extends InputType, K extends string>({
+export default function FormInputGroup<
+    T,
+    C extends InputType,
+    K extends string,
+>({
     className = styles.inputGroup,
     containerClassName = styles.inputGroupContainer,
     inputClassName,
@@ -186,13 +199,19 @@ export default function FormInputGroup<T, C extends InputType, K extends string>
                 })}
             </div>
 
-            {!checkInput && helpText ? <FormInputHelpText text={helpText} /> : null}
+            {!checkInput && helpText ? (
+                <FormInputHelpText text={helpText} />
+            ) : null}
 
             {!checkInput && helpTexts ? (
                 <div>
                     {helpTexts.map((text, index) => {
                         return (
-                            <FormInputHelpText key={index} text={text} isCheckInput={checkInput} />
+                            <FormInputHelpText
+                                key={index}
+                                text={text}
+                                isCheckInput={checkInput}
+                            />
                         );
                     })}
                 </div>
@@ -202,7 +221,9 @@ export default function FormInputGroup<T, C extends InputType, K extends string>
                 <FormInputHelpText text={helpTextWarning} isWarning={true} />
             ) : null}
 
-            {helpLink ? <Link to={helpLink}>{translate('MoreInfo')}</Link> : null}
+            {helpLink ? (
+                <Link to={helpLink}>{translate('MoreInfo')}</Link>
+            ) : null}
 
             {errors.map((error, index) => {
                 return (

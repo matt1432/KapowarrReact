@@ -20,7 +20,10 @@ export default function PageContentError(props: ErrorBoundaryErrorProps) {
     return (
         <div className={styles.content}>
             <PageContentBody>
-                <ErrorBoundaryError {...props} message={translate('ErrorLoadingPage')} />
+                <ErrorBoundaryError
+                    {...props}
+                    message={translate('ErrorLoadingPage')}
+                />
             </PageContentBody>
         </div>
     );

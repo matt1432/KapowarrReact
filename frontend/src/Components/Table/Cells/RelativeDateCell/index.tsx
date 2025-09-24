@@ -34,9 +34,8 @@ export default function RelativeDateCell({
     component: Component = TableRowCell,
     ...otherProps
 }: RelativeDateCellProps) {
-    const { showRelativeDates, shortDateFormat, longDateFormat, timeFormat } = useRootSelector(
-        (state) => state.uiSettings,
-    );
+    const { showRelativeDates, shortDateFormat, longDateFormat, timeFormat } =
+        useRootSelector((state) => state.uiSettings);
 
     if (!date) {
         return <Component className={className} {...otherProps} />;

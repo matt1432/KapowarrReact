@@ -4,7 +4,11 @@
 import { useCallback, useEffect, useState } from 'react';
 
 // Redux
-import { useGetFileQuery, useUpdateFileMutation, type UpdateFileParams } from 'Store/Api/Files';
+import {
+    useGetFileQuery,
+    useUpdateFileMutation,
+    type UpdateFileParams,
+} from 'Store/Api/Files';
 
 // Misc
 import { inputTypes, kinds, sizes } from 'Helpers/Props';
@@ -47,7 +51,8 @@ export default function EditFileModalContent({
     onDeleteFilePress,
     refetchFiles,
 }: EditFileModalContentProps) {
-    const [updateFile, { isLoading: isSaving, error: saveError }] = useUpdateFileMutation();
+    const [updateFile, { isLoading: isSaving, error: saveError }] =
+        useUpdateFileMutation();
 
     const {
         title,
@@ -99,7 +104,10 @@ export default function EditFileModalContent({
     ]);
 
     const handleInputChange = useCallback(
-        <K extends keyof UpdateFileParams>({ name, value }: InputChanged<K, string>) => {
+        <K extends keyof UpdateFileParams>({
+            name,
+            value,
+        }: InputChanged<K, string>) => {
             switch (name) {
                 case 'dpi':
                     setDpi(value);
@@ -138,7 +146,9 @@ export default function EditFileModalContent({
 
     return (
         <ModalContent onModalClose={onModalClose}>
-            <ModalHeader>{translate('EditFileModalHeader', { title })}</ModalHeader>
+            <ModalHeader>
+                {translate('EditFileModalHeader', { title })}
+            </ModalHeader>
 
             <ModalBody>
                 <Form>

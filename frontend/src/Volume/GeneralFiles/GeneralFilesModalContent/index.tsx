@@ -28,7 +28,11 @@ import GeneralFileRow from '../GeneralFileRow';
 // Types
 import type { Column } from 'Components/Table/Column';
 
-export type GeneralFilesColumnName = 'path' | 'fileType' | 'filesize' | 'actions';
+export type GeneralFilesColumnName =
+    | 'path'
+    | 'fileType'
+    | 'filesize'
+    | 'actions';
 
 export interface GeneralFilesModalContentProps {
     volumeId: number;
@@ -102,17 +106,21 @@ export default function GeneralFilesModalContent({
                 {generalFiles.length !== 0 ? (
                     <Table columns={COLUMNS}>
                         <TableBody>
-                            {generalFiles.map(({ id, fileType, filepath, size }) => (
-                                <GeneralFileRow
-                                    key={id}
-                                    id={id}
-                                    fileType={fileType}
-                                    path={filepath}
-                                    size={size}
-                                    columns={COLUMNS}
-                                    onDeleteGeneralFile={() => handleDeleteGeneralFile(id)}
-                                />
-                            ))}
+                            {generalFiles.map(
+                                ({ id, fileType, filepath, size }) => (
+                                    <GeneralFileRow
+                                        key={id}
+                                        id={id}
+                                        fileType={fileType}
+                                        path={filepath}
+                                        size={size}
+                                        columns={COLUMNS}
+                                        onDeleteGeneralFile={() =>
+                                            handleDeleteGeneralFile(id)
+                                        }
+                                    />
+                                ),
+                            )}
                         </TableBody>
                     </Table>
                 ) : (

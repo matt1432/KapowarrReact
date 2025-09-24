@@ -52,7 +52,11 @@ export default function FormInputHelpText({
             ) : null}
 
             {!link && tooltip ? (
-                <Icon containerClassName={styles.details} name={icons.INFO} title={tooltip} />
+                <Icon
+                    containerClassName={styles.details}
+                    name={icons.INFO}
+                    title={tooltip}
+                />
             ) : null}
         </div>
     );

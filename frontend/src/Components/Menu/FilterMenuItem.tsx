@@ -4,7 +4,9 @@
 import React from 'react';
 
 // Specific Components
-import SelectedMenuItem, { type SelectedMenuItemProps } from './SelectedMenuItem';
+import SelectedMenuItem, {
+    type SelectedMenuItemProps,
+} from './SelectedMenuItem';
 
 // Types
 interface FilterMenuItemProps<T extends string>
@@ -24,5 +26,7 @@ export default function FilterMenuItem<T extends string>({
 }: FilterMenuItemProps<T>) {
     const isSelected = name === filterKey;
 
-    return <SelectedMenuItem name={name} isSelected={isSelected} {...otherProps} />;
+    return (
+        <SelectedMenuItem name={name} isSelected={isSelected} {...otherProps} />
+    );
 }

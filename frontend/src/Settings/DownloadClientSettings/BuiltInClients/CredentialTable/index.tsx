@@ -72,7 +72,10 @@ export default function CredentialTable({
     ];
 
     const { data, refetch } = useGetCredentialsQuery();
-    const items = useMemo(() => data?.filter((c) => c.source === source) ?? [], [data, source]);
+    const items = useMemo(
+        () => data?.filter((c) => c.source === source) ?? [],
+        [data, source],
+    );
 
     const [addCredential] = useAddCredentialMutation();
     const onAddPress = useCallback(

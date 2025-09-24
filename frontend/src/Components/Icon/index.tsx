@@ -2,7 +2,10 @@
 
 // Misc
 import { kinds } from 'Helpers/Props';
-import { FontAwesomeIcon, type FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
+import {
+    FontAwesomeIcon,
+    type FontAwesomeIconProps,
+} from '@fortawesome/react-fontawesome';
 
 import classNames from 'classnames';
 
@@ -17,7 +20,10 @@ export type IconName = FontAwesomeIconProps['icon'];
 export type IconKind = Extract<Kind, keyof typeof styles>;
 
 export interface IconProps
-    extends Omit<FontAwesomeIconProps, 'icon' | 'spin' | 'name' | 'title' | 'size'> {
+    extends Omit<
+        FontAwesomeIconProps,
+        'icon' | 'spin' | 'name' | 'title' | 'size'
+    > {
     containerClassName?: ComponentProps<'span'>['className'];
     name: IconName;
     kind?: IconKind;

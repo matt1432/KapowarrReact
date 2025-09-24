@@ -16,7 +16,10 @@ import type { TableProps } from './Table';
 import type { Column } from './Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 
-interface SortedTableProps<ColumnName extends string, T extends Item<ColumnName>> {
+interface SortedTableProps<
+    ColumnName extends string,
+    T extends Item<ColumnName>,
+> {
     columns: Column<ColumnName>[];
     items: T[];
     itemRenderer: (item: T) => React.ReactElement;
@@ -36,7 +39,10 @@ interface SortedTableProps<ColumnName extends string, T extends Item<ColumnName>
 
 // IMPLEMENTATIONS
 
-export default function SortedTable<ColumnName extends string, T extends Item<ColumnName>>({
+export default function SortedTable<
+    ColumnName extends string,
+    T extends Item<ColumnName>,
+>({
     columns,
     items,
     itemRenderer,
