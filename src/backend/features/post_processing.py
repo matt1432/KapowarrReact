@@ -271,7 +271,8 @@ def remove_ads_from_files(download: Download) -> None:
         return
 
     for f in download.files:
-        remove_ads(f)
+        if exists(f):
+            remove_ads(f)
     return
 
 
