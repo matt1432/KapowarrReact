@@ -1515,3 +1515,56 @@ class MigrateAddIssueIDToQueue(DBMigrator):
             COMMIT;
         """)
         return
+
+
+class MigrateDropIssueIDInQueue(DBMigrator):
+    start_version = 50
+
+    def run(self) -> None:
+        # V50 -> V51
+
+        get_db().executescript("""
+            BEGIN TRANSACTION;
+            PRAGMA defer_foreign_keys = ON;
+
+            CREATE TEMPORARY TABLE temp_download_queue_51 AS
+                SELECT * FROM download_queue;
+            DROP TABLE download_queue;
+
+            ALTER TABLE temp_download_queue_51 DROP COLUMN issue_id;
+
+            CREATE TABLE download_queue(
+                id INTEGER PRIMARY KEY,
+                volume_id INTEGER NOT NULL,
+                client_type VARCHAR(255) NOT NULL,
+                external_client_id INTEGER,
+                external_id VARCHAR(255),
+
+                download_link TEXT NOT NULL,
+                covered_issues VARCHAR(255),
+                force_original_name BOOL,
+
+                source_type VARCHAR(25) NOT NULL,
+                source_name VARCHAR(255) NOT NULL,
+
+                web_link TEXT,
+                web_title TEXT,
+                web_sub_title TEXT,
+
+                releaser VARCHAR(255),
+                scan_type VARCHAR(255),
+                resolution VARCHAR(255),
+                dpi VARCHAR(255),
+
+                FOREIGN KEY (external_client_id) REFERENCES external_download_clients(id),
+                FOREIGN KEY (volume_id) REFERENCES volumes(id)
+            );
+
+            INSERT INTO download_queue
+                SELECT *
+                FROM temp_download_queue_51;
+
+            COMMIT;
+        """)
+
+        return

@@ -390,7 +390,6 @@ def setup_db() -> None:
         CREATE TABLE IF NOT EXISTS download_queue(
             id INTEGER PRIMARY KEY,
             volume_id INTEGER NOT NULL,
-            issue_id INTEGER,
             client_type VARCHAR(255) NOT NULL,
             external_client_id INTEGER,
             external_id VARCHAR(255),
@@ -412,9 +411,7 @@ def setup_db() -> None:
             dpi VARCHAR(255),
 
             FOREIGN KEY (external_client_id) REFERENCES external_download_clients(id),
-            FOREIGN KEY (volume_id) REFERENCES volumes(id),
-            FOREIGN KEY (issue_id) REFERENCES issues(id)
-                ON DELETE SET NULL
+            FOREIGN KEY (volume_id) REFERENCES volumes(id)
         );
         CREATE TABLE IF NOT EXISTS download_history(
             web_link TEXT,

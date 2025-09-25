@@ -221,7 +221,6 @@ class BaseDirectDownload(Download):
         web_link: str | None,
         web_title: str | None,
         web_sub_title: str | None,
-        issue_id: int | None = None,
         releaser: str | None = None,
         scan_type: str | None = None,
         resolution: str | None = None,
@@ -238,7 +237,7 @@ class BaseDirectDownload(Download):
         self.__r = None
         self._download_link = download_link
         self._volume_id = volume_id
-        self._issue_id = issue_id
+        self._issue_id = None
         self._covered_issues = covered_issues
         self._source_type = source_type
         self._source_name = source_name
@@ -688,7 +687,6 @@ class MegaDownload(BaseDirectDownload):
         web_link: str | None,
         web_title: str | None,
         web_sub_title: str | None,
-        issue_id: int | None = None,
         releaser: str | None = None,
         scan_type: str | None = None,
         resolution: str | None = None,
@@ -705,7 +703,7 @@ class MegaDownload(BaseDirectDownload):
 
         self._download_link = download_link
         self._volume_id = volume_id
-        self._issue_id = issue_id
+        self._issue_id = None
         self._covered_issues = covered_issues
         self._source_type = source_type
         self._source_name = source_name

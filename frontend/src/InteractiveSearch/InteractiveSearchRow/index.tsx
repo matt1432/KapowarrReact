@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import { useAddDownloadMutation } from 'Store/Api/Command';
@@ -17,7 +17,6 @@ import translate from 'Utilities/String/translate';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
-import NumberInput from 'Components/Form/NumberInput';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import Popover from 'Components/Tooltip/Popover';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
@@ -102,14 +101,11 @@ export default function InteractiveSearchRow({
     result,
     searchPayload,
 }: InteractiveSearchRowProps) {
-    const initialIssueNumber = useMemo(
-        () =>
-            Array.isArray(result.issueNumber)
-                ? result.issueNumber[0]
-                : result.issueNumber,
-        [result.issueNumber],
+    const [issueNumber, setIssueNumber] = useState(
+        Array.isArray(result.issueNumber)
+            ? `${result.issueNumber[0]},${result.issueNumber[1]}`
+            : (result.issueNumber?.toString() ?? ''),
     );
-    const [issueNumber, setIssueNumber] = useState(initialIssueNumber);
     const [releaser, setReleaser] = useState(result.releaser ?? '');
     const [scanType, setScanType] = useState(result.scanType ?? '');
     const [resolution, setResolution] = useState(result.resolution ?? '');
@@ -142,9 +138,12 @@ export default function InteractiveSearchRow({
                 ...searchPayload,
                 result: {
                     ...result,
-                    issueNumber: Array.isArray(result.issueNumber)
-                        ? result.issueNumber
-                        : issueNumber,
+                    issueNumber: issueNumber.includes(',')
+                        ? [
+                              parseFloat(issueNumber.split(',')[0]),
+                              parseFloat(issueNumber.split(',')[1]),
+                          ]
+                        : parseFloat(issueNumber),
                     releaser,
                     scanType,
                     resolution,
@@ -172,7 +171,7 @@ export default function InteractiveSearchRow({
     const onGrabPressWrapper = useCallback(() => {
         if (
             result.matchRejections.length === 0 ||
-            typeof issueNumber === 'number'
+            /^\d+(\.\d+)?(,\d+(\.\d+)?){0,1}$/.test(issueNumber)
         ) {
             onGrabPress();
 
@@ -180,10 +179,10 @@ export default function InteractiveSearchRow({
         }
 
         setIsConfirmGrabModalOpen(true);
-    }, [onGrabPress, issueNumber, result.matchRejections]);
+    }, [issueNumber, onGrabPress, result.matchRejections]);
 
     const onGrabTorrentPressWrapper = useCallback(() => {
-        onGrabPress(true, true);
+        onGrabPress(false, true);
     }, [onGrabPress]);
 
     const onOverridePress = useCallback(() => {
@@ -201,7 +200,7 @@ export default function InteractiveSearchRow({
     }, [setIsConfirmGrabModalOpen]);
 
     const handleIssueNumberChange = useCallback(
-        ({ value }: InputChanged<'issueNumber', number | null>) => {
+        ({ value }: InputChanged<'issueNumber', string>) => {
             setIssueNumber(value);
         },
         [],
@@ -256,15 +255,11 @@ export default function InteractiveSearchRow({
                 if (name === 'issueNumber') {
                     return (
                         <TableRowCell className={styles[name]}>
-                            {Array.isArray(result.issueNumber) ? (
-                                `${result.issueNumber[0]} - ${result.issueNumber[1]}`
-                            ) : (
-                                <NumberInput
-                                    name="issueNumber"
-                                    value={issueNumber}
-                                    onChange={handleIssueNumberChange}
-                                />
-                            )}
+                            <TextInput
+                                name="issueNumber"
+                                value={issueNumber}
+                                onChange={handleIssueNumberChange}
+                            />
                         </TableRowCell>
                     );
                 }

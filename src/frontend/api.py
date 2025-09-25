@@ -3,7 +3,7 @@ from collections.abc import Callable
 from datetime import datetime
 from io import BytesIO, StringIO
 from os.path import exists
-from typing import Any, cast
+from typing import Any
 
 from flask import Blueprint, Request, Response, request, send_file
 
@@ -84,6 +84,7 @@ from backend.implementations.conversion import (
 )
 from backend.implementations.credentials import Credentials
 from backend.implementations.external_clients import ExternalClients
+from backend.implementations.matching import parse_covered_issues
 from backend.implementations.naming import (
     generate_volume_folder_name,
     preview_mass_rename,
@@ -173,13 +174,40 @@ def extract_key(
 
     if key == "result":
         try:
-            return cast(
-                SearchResultData,
-                {
-                    key: request.values.get(key)
-                    for key in SearchResultData.__annotations__.keys()
-                },
+
+            def parse_int(key: str) -> int | None:
+                val = request.values.get(key)
+                return None if val is None else int(val)
+
+            def parse_bool(key: str) -> bool | None:
+                val = request.values.get(key)
+                return None if val is None else bool(val)
+
+            return SearchResultData(
+                series=request.values.get("series") or "",
+                year=parse_int("year"),
+                volume_number=parse_int("volume_number"),
+                special_version=request.values.get("special_version"),
+                issue_number=parse_covered_issues(
+                    request.values.get("issue_number")
+                ),
+                annual=parse_bool("annual") or False,
+                is_metadata_file=parse_bool("is_metadata_file") or False,
+                is_image_file=parse_bool("is_image_file") or False,
+                link=request.values.get("link") or "",
+                display_title=request.values.get("display_title") or "",
+                source=request.values.get("source") or "",
+                filesize=parse_int("filesize") or 0,
+                pages=parse_int("pages") or 0,
+                releaser=request.values.get("releaser"),
+                scan_type=request.values.get("scan_type"),
+                resolution=request.values.get("resolution"),
+                dpi=request.values.get("dpi"),
+                extension=request.values.get("extension"),
+                comics_id=parse_int("comics_id"),
+                md5=request.values.get("md5") or request.values.get("md_5"),
             )
+
         except (ValueError, TypeError):
             raise InvalidKeyValue(key)
 

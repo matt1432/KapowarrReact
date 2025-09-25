@@ -26,6 +26,26 @@ clean_title_regex = compile(
 )
 
 
+def parse_covered_issues(
+    issue_str: str | None,
+) -> tuple[float, float] | float | None:
+    covered_issues: tuple[float, float] | float | None
+
+    if issue_str is None:
+        covered_issues = None
+
+    elif "," in issue_str:
+        covered_issues = (
+            float(issue_str.split(",")[0]),
+            float(issue_str.split(",")[1]),
+        )
+
+    else:
+        covered_issues = float(issue_str)
+
+    return covered_issues
+
+
 def _match_title(
     title1: str, title2: str, allow_contains: bool = False
 ) -> bool:
