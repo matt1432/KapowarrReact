@@ -839,7 +839,8 @@ def api_volume(id: int) -> ApiReturn | None:
                     "called_from",
                 )
             },
-            edit_info["called_from"],
+            False,
+            edit_info.get("called_from", ""),
         )
         return return_api(None)
 
@@ -872,7 +873,7 @@ def api_issues(id: int) -> ApiReturn | None:
         monitored = edit_info.get("monitored")
         if monitored is not None:
             issue.update(
-                {"monitored": bool(monitored)}, edit_info["called_from"]
+                {"monitored": bool(monitored)}, edit_info.get("called_from", "")
             )
 
         result = issue.get_data()
