@@ -131,8 +131,7 @@ class MassEditorSearch(MassEditorAction):
 
             search_results = auto_search(volume_id)
             download_handler.add_multiple(
-                (result["link"], volume_id, None, False)
-                for result in search_results
+                (result, volume_id, None, False) for result in search_results
             )
 
         return

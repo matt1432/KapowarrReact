@@ -416,7 +416,7 @@ class DownloadHandler(metaclass=Singleton):
 
     async def add(
         self,
-        result: SearchResultData | str,
+        result: SearchResultData,
         volume_id: int,
         issue_id: int | None = None,
         force_match: bool = False,
@@ -442,7 +442,7 @@ class DownloadHandler(metaclass=Singleton):
             Queue entries that were added from the link and reason for failing
             if no entries were added.
         """
-        link = result if isinstance(result, str) else result["link"]
+        link = str(result["link"])
 
         LOGGER.info(
             "Adding download for "
@@ -580,7 +580,7 @@ class DownloadHandler(metaclass=Singleton):
         return [r.as_dict() for r in dl_result], None
 
     def add_multiple(
-        self, add_args: Iterable[tuple[str, int, int | None, bool]]
+        self, add_args: Iterable[tuple[SearchResultData, int, int | None, bool]]
     ) -> None:
         async def add_wrapper() -> None:
             await gather(*(self.add(*entry) for entry in add_args))

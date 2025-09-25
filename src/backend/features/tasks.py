@@ -16,6 +16,7 @@ from backend.base.custom_exceptions import (
     TaskNotDeletable,
     TaskNotFound,
 )
+from backend.base.definitions import SearchResultData
 from backend.base.helpers import Singleton, get_subclasses
 from backend.base.logging import LOGGER
 from backend.features.download_queue import DownloadHandler
@@ -56,13 +57,13 @@ class Task(ABC):
     def __init__(self, **kwargs: Any) -> None: ...
 
     @abstractmethod
-    def run(self) -> None | list[tuple[str, int, int | None]]:
+    def run(self) -> None | list[tuple[SearchResultData, int, int | None]]:
         """Run the task
 
         Returns:
-            Union[None, List[Tuple[str, int, Union[int, None]]]]:
+            Union[None, List[Tuple[SearchResultData, int, Union[int, None]]]]:
             Either `None` if the task has no result or
-            `List[Tuple[str, int, Union[int, None]]]` if the task returns
+            `List[Tuple[SearchResultData, int, Union[int, None]]]` if the task returns
             search results.
         """
         ...
@@ -104,7 +105,7 @@ class AutoSearchIssue(Task):
         self._called_from = called_from
         return
 
-    def run(self) -> list[tuple[str, int, int | None]]:
+    def run(self) -> list[tuple[SearchResultData, int, int | None]]:
         volume_title = Volume(self._volume_id).vd.title
         issue_number = Issue(self._issue_id).get_data().issue_number
         self.message = f"Searching for {volume_title} #{issue_number}"
@@ -114,8 +115,7 @@ class AutoSearchIssue(Task):
         results = auto_search(self._volume_id, self._issue_id)
         if results:
             return [
-                (result["link"], self._volume_id, self._issue_id)
-                for result in results
+                (result, self._volume_id, self._issue_id) for result in results
             ]
         return []
 
@@ -263,7 +263,7 @@ class AutoSearchVolume(Task):
         self._called_from = called_from
         return
 
-    def run(self) -> list[tuple[str, int, int | None]]:
+    def run(self) -> list[tuple[SearchResultData, int, int | None]]:
         volume_title = Volume(self._volume_id).vd.title
         self.message = f"Searching for {volume_title}"
         WebSocket().update_task_status(self)
@@ -271,9 +271,7 @@ class AutoSearchVolume(Task):
         # Get search results and download them
         results = auto_search(self._volume_id)
         if results:
-            return [
-                (result["link"], self._volume_id, None) for result in results
-            ]
+            return [(result, self._volume_id, None) for result in results]
         return []
 
 
@@ -488,10 +486,10 @@ class SearchAll(Task):
         self._called_from = called_from
         return
 
-    def run(self) -> list[tuple[str, int, int | None]]:
+    def run(self) -> list[tuple[SearchResultData, int, int | None]]:
         cursor = get_db(force_new=True)
         cursor.execute("SELECT id, title FROM volumes WHERE monitored = 1;")
-        downloads: list[tuple[str, int, int | None]] = []
+        downloads: list[tuple[SearchResultData, int, int | None]] = []
         ws = WebSocket()
         for volume_id, volume_title in cursor:
             if self.stop:
@@ -501,9 +499,7 @@ class SearchAll(Task):
             # Get search results and download them
             results = auto_search(volume_id)
             if results:
-                downloads += [
-                    (result["link"], volume_id, None) for result in results
-                ]
+                downloads += [(result, volume_id, None) for result in results]
         return downloads
 
 
