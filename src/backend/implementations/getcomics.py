@@ -688,6 +688,7 @@ async def _test_paths(
     web_link: str,
     web_title: str | None,
     volume_id: int,
+    edits: SearchResultData,
     issue_id: int | None = None,
     forced_match: bool = False,
 ) -> list[Download]:
@@ -722,11 +723,11 @@ async def _test_paths(
     Returns:
         List[Download]: A list of downloads.
     """
-    downloads: tuple[(Download | None), ...] = tuple()
+    _downloads: tuple[(Download | None), ...] = tuple()
     limit_reached: tuple[bool, ...] = tuple()
 
     for path in link_paths:
-        downloads, limit_reached = zip(
+        _downloads, limit_reached = zip(
             *(
                 await gather(
                     *(
@@ -743,13 +744,41 @@ async def _test_paths(
                 )
             )
         )
-        downloads = tuple(d for d in downloads if d is not None)
+        _downloads = tuple(d for d in _downloads if d is not None)
 
-        if not downloads:
+        if not _downloads:
             continue
 
+        downloads: list[Download] = []
+
+        for download in list(_downloads):
+            dl_class = download.__class__
+            downloads.append(
+                dl_class(
+                    download_link=download.download_link,
+                    volume_id=download.volume_id,
+                    covered_issues=edits["issue_number"]
+                    or download.covered_issues,
+                    source_type=download.source_type,
+                    source_name=download.source_name,
+                    web_link=download.web_link,
+                    web_title=download.web_title,
+                    web_sub_title=download.web_sub_title,
+                    releaser=edits["releaser"] if "releaser" in edits else None,
+                    scan_type=edits["scan_type"]
+                    if "scan_type" in edits
+                    else None,
+                    resolution=edits["resolution"]
+                    if "resolution" in edits
+                    else None,
+                    dpi=edits["dpi"] if "dpi" in edits else None,
+                    forced_match=forced_match,
+                )
+            )
+
         LOGGER.debug(f"Chosen links: {downloads}")
-        return list(downloads)
+
+        return downloads
 
     # Nothing worked
     if limit_reached is not None and any(limit_reached):
@@ -863,6 +892,7 @@ class GetComicsPage:
 
     async def create_downloads(
         self,
+        edits: SearchResultData,
         volume_id: int,
         issue_id: int | None = None,
         force_match: bool = False,
@@ -903,6 +933,7 @@ class GetComicsPage:
             web_title=self.title,
             volume_id=volume_id,
             issue_id=issue_id,
+            edits=edits,
             forced_match=force_match,
         )
 

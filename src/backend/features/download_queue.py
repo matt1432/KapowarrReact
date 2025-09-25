@@ -550,7 +550,7 @@ class DownloadHandler(metaclass=Singleton):
 
             try:
                 downloads = await gcp.create_downloads(
-                    volume_id, issue_id, force_match
+                    result, volume_id, issue_id, force_match
                 )
 
             except FailedGCPage as e:
