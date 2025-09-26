@@ -115,7 +115,11 @@ export default function FormatPreferenceInput({
 
     const handleFormatPreferenceDragEnd = useCallback(
         (didDrop: boolean) => {
-            if (didDrop && dragIndex && dropIndex !== null) {
+            if (
+                didDrop &&
+                typeof dragIndex === 'number' &&
+                typeof dropIndex === 'number'
+            ) {
                 const newFormats = [...formats];
                 const items = newFormats.splice(dragIndex, 1);
                 newFormats.splice(dropIndex, 0, items[0]);

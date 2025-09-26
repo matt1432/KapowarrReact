@@ -65,7 +65,11 @@ export default function ServicePreferenceInput({
 
     const handleServicePreferenceDragEnd = useCallback(
         (didDrop: boolean) => {
-            if (didDrop && dragIndex && dropIndex !== null) {
+            if (
+                didDrop &&
+                typeof dragIndex === 'number' &&
+                typeof dropIndex === 'number'
+            ) {
                 const newServices = [...value];
                 const items = newServices.splice(dragIndex, 1);
                 newServices.splice(dropIndex, 0, items[0]);

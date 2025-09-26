@@ -1,7 +1,9 @@
 // IMPORTS
 
 // React
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { HTML5toTouch } from 'rdndmb-html5-to-touch';
+import { DndProvider } from 'react-dnd-multi-backend';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -10,6 +12,7 @@ import {
     useClearQueueMutation,
     useDeleteQueueItemMutation,
     useGetQueueQuery,
+    useMoveQueueItemMutation,
     type DeleteQueueItemParams,
 } from 'Store/Api/Queue';
 
@@ -46,68 +49,12 @@ export type QueueColumn = QueueItem & {
     timeLeft: number;
 
     // Columns
+    drag: never;
     actions: never;
 };
 export type QueueColumnName = keyof QueueColumn;
 
 // IMPLEMENTATIONS
-
-const columns: Column<QueueColumnName>[] = [
-    {
-        name: 'priority',
-        label: () => translate('Priority'),
-        isVisible: true,
-        isSortable: true,
-    },
-    {
-        name: 'status',
-        label: () => translate('Status'),
-        isVisible: true,
-        isSortable: true,
-    },
-    {
-        name: 'title',
-        label: () => translate('Title'),
-        isVisible: true,
-        isSortable: true,
-    },
-    {
-        name: 'sourceName',
-        label: () => translate('Source'),
-        isVisible: true,
-        isSortable: true,
-    },
-    {
-        name: 'size',
-        label: () => translate('Size'),
-        isVisible: true,
-        isSortable: true,
-    },
-    {
-        name: 'speed',
-        label: () => translate('Speed'),
-        isVisible: true,
-        isSortable: true,
-    },
-    {
-        name: 'timeLeft',
-        label: () => translate('TimeLeft'),
-        isVisible: true,
-        isSortable: true,
-    },
-    {
-        name: 'progress',
-        label: () => translate('Progress'),
-        isVisible: true,
-        isSortable: true,
-    },
-    {
-        name: 'actions',
-        label: '',
-        isSortable: false,
-        isVisible: true,
-    },
-];
 
 export default function Queue() {
     const dispatch = useRootDispatch();
@@ -179,6 +126,127 @@ export default function Queue() {
         [dispatch],
     );
 
+    const columns = useMemo(
+        () =>
+            [
+                {
+                    name: 'drag',
+                    label: '',
+                    isVisible: sortKey === 'priority',
+                },
+                {
+                    name: 'priority',
+                    label: () => translate('Priority'),
+                    isVisible: true,
+                    isSortable: true,
+                },
+                {
+                    name: 'status',
+                    label: () => translate('Status'),
+                    isVisible: true,
+                    isSortable: true,
+                },
+                {
+                    name: 'title',
+                    label: () => translate('Title'),
+                    isVisible: true,
+                    isSortable: true,
+                },
+                {
+                    name: 'sourceName',
+                    label: () => translate('Source'),
+                    isVisible: true,
+                    isSortable: true,
+                },
+                {
+                    name: 'size',
+                    label: () => translate('Size'),
+                    isVisible: true,
+                    isSortable: true,
+                },
+                {
+                    name: 'speed',
+                    label: () => translate('Speed'),
+                    isVisible: true,
+                    isSortable: true,
+                },
+                {
+                    name: 'timeLeft',
+                    label: () => translate('TimeLeft'),
+                    isVisible: true,
+                    isSortable: true,
+                },
+                {
+                    name: 'progress',
+                    label: () => translate('Progress'),
+                    isVisible: true,
+                    isSortable: true,
+                },
+                {
+                    name: 'actions',
+                    label: '',
+                    isSortable: false,
+                    isVisible: true,
+                },
+            ] satisfies Column<QueueColumnName>[],
+        [sortKey],
+    );
+
+    // DnD
+    const [dragIndex, setDragIndex] = useState<number | null>(null);
+    const [dropIndex, setDropIndex] = useState<number | null>(null);
+
+    const isDragging = useMemo(() => dropIndex !== null, [dropIndex]);
+    const isDraggingUp = useMemo(
+        () =>
+            isDragging &&
+            dropIndex !== null &&
+            dragIndex !== null &&
+            dropIndex < dragIndex,
+        [dragIndex, dropIndex, isDragging],
+    );
+    const isDraggingDown = useMemo(
+        () =>
+            isDragging &&
+            dropIndex !== null &&
+            dragIndex !== null &&
+            dropIndex > dragIndex,
+        [dragIndex, dropIndex, isDragging],
+    );
+
+    const handleDragMove = useCallback(
+        (newDragIndex: number, newDropIndex: number) => {
+            setDropIndex(newDropIndex);
+            setDragIndex(newDragIndex);
+        },
+        [],
+    );
+
+    const [moveQueueItem] = useMoveQueueItemMutation();
+
+    const handleDragEnd = useCallback(
+        (didDrop: boolean) => {
+            if (
+                !isRefreshing &&
+                didDrop &&
+                typeof dragIndex === 'number' &&
+                typeof dropIndex === 'number' &&
+                dragIndex !== dropIndex
+            ) {
+                moveQueueItem({
+                    id: items[dragIndex].id,
+                    index: dropIndex,
+                }).finally(() => {
+                    refetch();
+                });
+            }
+
+            setDragIndex(null);
+            setDropIndex(null);
+        },
+        [dragIndex, dropIndex, moveQueueItem, refetch, items, isRefreshing],
+    );
+
     return (
         <PageContent title={translate('Queue')}>
             <PageToolbar>
@@ -213,23 +281,30 @@ export default function Queue() {
                 {!items.length ? (
                     <Alert kind={kinds.INFO}>{translate('QueueIsEmpty')}</Alert>
                 ) : (
-                    <SortedTable
-                        columns={columns}
-                        sortKey={sortKey}
-                        sortDirection={sortDirection}
-                        onSortPress={handleSortPress}
-                        tableProps={{
-                            onTableOptionChange: handleTableOptionChange,
-                        }}
-                        items={items}
-                        itemRenderer={(item) => (
-                            <QueueRow
-                                {...item}
-                                columns={columns}
-                                onDeletePress={onDeletePress}
-                            />
-                        )}
-                    />
+                    <DndProvider options={HTML5toTouch}>
+                        <SortedTable
+                            columns={columns}
+                            sortKey={sortKey}
+                            sortDirection={sortDirection}
+                            onSortPress={handleSortPress}
+                            tableProps={{
+                                onTableOptionChange: handleTableOptionChange,
+                            }}
+                            items={items}
+                            itemRenderer={(item) => (
+                                <QueueRow
+                                    key={item.id}
+                                    {...item}
+                                    columns={columns}
+                                    onDeletePress={onDeletePress}
+                                    isDraggingUp={isDraggingUp}
+                                    isDraggingDown={isDraggingDown}
+                                    onDragMove={handleDragMove}
+                                    onDragEnd={handleDragEnd}
+                                />
+                            )}
+                        />
+                    </DndProvider>
                 )}
             </PageContentBody>
         </PageContent>

@@ -126,7 +126,11 @@ export default function TableOptionsModal<T extends string>({
 
     const handleColumnDragEnd = useCallback(
         (didDrop: boolean) => {
-            if (didDrop && dragIndex && dropIndex !== null) {
+            if (
+                didDrop &&
+                typeof dragIndex === 'number' &&
+                typeof dropIndex === 'number'
+            ) {
                 const newColumns = [...columns];
                 const items = newColumns.splice(dragIndex, 1);
                 newColumns.splice(dropIndex, 0, items[0]);

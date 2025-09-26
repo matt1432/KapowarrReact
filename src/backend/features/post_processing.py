@@ -266,7 +266,7 @@ def convert_file(download: Download) -> None:
 
 
 def remove_ads_from_files(download: Download) -> None:
-    "Remove most last page ads from all CBZ files downloaded"
+    "Remove most last page ads from files downloaded"
     if not Settings().sv.remove_ads:
         return
 
@@ -354,6 +354,7 @@ class PostProcessorTorrentsComplete(PostProcessor):
         add_to_history,
         move_torrent_to_dest,
         convert_file,
+        remove_ads_from_files,
     ]
 
 
