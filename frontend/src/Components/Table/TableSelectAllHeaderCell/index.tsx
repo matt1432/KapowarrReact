@@ -19,6 +19,9 @@ interface TableSelectAllHeaderCellProps {
     allSelected: boolean;
     allUnselected: boolean;
     onSelectAllChange: (change: CheckInputChanged<string>) => void;
+    isSortable?: boolean;
+    isVisible?: boolean;
+    isModifiable?: boolean;
 }
 
 // IMPLEMENTATIONS
@@ -27,6 +30,9 @@ export default function TableSelectAllHeaderCell({
     allSelected,
     allUnselected,
     onSelectAllChange,
+    isSortable = false,
+    isVisible = true,
+    isModifiable = false,
 }: TableSelectAllHeaderCellProps) {
     const value = useMemo(() => {
         if (allSelected) {
@@ -43,6 +49,9 @@ export default function TableSelectAllHeaderCell({
         <VirtualTableHeaderCell
             className={styles.selectAllHeaderCell}
             name="selectAll"
+            isSortable={isSortable}
+            isVisible={isVisible}
+            isModifiable={isModifiable}
         >
             <CheckInput
                 className={styles.input}

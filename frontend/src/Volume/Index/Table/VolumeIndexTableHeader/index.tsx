@@ -33,6 +33,7 @@ import type { CheckInputChanged } from 'typings/Inputs';
 import type { IndexSort } from '../..';
 import type { TableOptionsChangePayload } from 'typings/Table';
 import type { VolumeColumnName } from 'Volume/Volume';
+import translate, { type TranslateKey } from 'Utilities/String/translate';
 
 interface VolumeIndexTableHeaderProps {
     columns: Column<VolumeColumnName>[];
@@ -86,7 +87,7 @@ export default function VolumeIndexTableHeader({
             ) : null}
 
             {columns.map((column) => {
-                const { name, label, isSortable, isVisible } = column;
+                const { name, isSortable, isVisible } = column;
 
                 if (!isVisible) {
                     return null;
@@ -110,20 +111,21 @@ export default function VolumeIndexTableHeader({
                         </VirtualTableHeaderCell>
                     );
                 }
+                const columnLabel = translate(
+                    `${column.name}Key` as TranslateKey,
+                );
 
                 return (
                     <VirtualTableHeaderCell
                         key={name}
-                        className={classNames(
-                            styles[name as keyof typeof styles],
-                        )}
+                        className={classNames(styles[name])}
                         name={name}
                         sortKey={sortKey}
                         sortDirection={sortDirection}
                         isSortable={isSortable}
                         onSortPress={onSortPress}
                     >
-                        {typeof label === 'function' ? label() : label}
+                        {column.hideHeaderLabel ? '' : columnLabel}
                     </VirtualTableHeaderCell>
                 );
             })}

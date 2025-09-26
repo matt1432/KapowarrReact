@@ -27,12 +27,15 @@ import styles from './index.module.css';
 
 // Types
 import type { InputChanged } from 'typings/Inputs';
+import type { Column } from 'Components/Table/Column';
+import type { RootFolderColumnName } from '..';
 
 interface RootFolderRowProps {
     id: number;
     path: string;
     freeSpace?: number;
     totalSpace?: number;
+    columns: Column<RootFolderColumnName>[];
 }
 
 // IMPLEMENTATIONS
@@ -42,6 +45,7 @@ function RootFolderRow({
     path,
     freeSpace = 0,
     totalSpace = 0,
+    columns,
 }: RootFolderRowProps) {
     const [editRootFolder] = useEditRootFolderMutation();
     const [deleteRootFolder] = useDeleteRootFolderMutation();
@@ -85,39 +89,65 @@ function RootFolderRow({
 
     return (
         <TableRow>
-            <TableRowCell>
-                {isEditing ? (
-                    <TextInput
-                        name="path"
-                        value={pathChange}
-                        onChange={handlePathChange}
-                    />
-                ) : (
-                    path
-                )}
-            </TableRowCell>
+            {columns.map(({ isVisible, name }) => {
+                if (!isVisible) {
+                    return null;
+                }
 
-            <TableRowCell className={styles.freeSpace}>
-                {isNaN(Number(freeSpace)) ? '-' : formatBytes(freeSpace)}
-            </TableRowCell>
+                if (name === 'path') {
+                    return (
+                        <TableRowCell>
+                            {isEditing ? (
+                                <TextInput
+                                    name="path"
+                                    value={pathChange}
+                                    onChange={handlePathChange}
+                                />
+                            ) : (
+                                path
+                            )}
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell className={styles.freeSpace}>
-                {isNaN(Number(totalSpace)) ? '-' : formatBytes(totalSpace)}
-            </TableRowCell>
+                if (name === 'freeSpace') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {isNaN(Number(freeSpace))
+                                ? '-'
+                                : formatBytes(freeSpace)}
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell className={styles.actions}>
-                <IconButton
-                    title={translate('EditRootFolder')}
-                    name={icons.EDIT}
-                    onPress={onEditPress}
-                />
+                if (name === 'totalSpace') {
+                    return (
+                        <TableRowCell className={styles.freeSpace}>
+                            {isNaN(Number(totalSpace))
+                                ? '-'
+                                : formatBytes(totalSpace)}
+                        </TableRowCell>
+                    );
+                }
 
-                <IconButton
-                    title={translate('RemoveRootFolder')}
-                    name={icons.REMOVE}
-                    onPress={onDeletePress}
-                />
-            </TableRowCell>
+                if (name === 'actions') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <IconButton
+                                title={translate('EditRootFolder')}
+                                name={icons.EDIT}
+                                onPress={onEditPress}
+                            />
+
+                            <IconButton
+                                title={translate('RemoveRootFolder')}
+                                name={icons.REMOVE}
+                                onPress={onDeletePress}
+                            />
+                        </TableRowCell>
+                    );
+                }
+            })}
 
             <ConfirmModal
                 isOpen={isDeleteModalOpen}

@@ -129,7 +129,8 @@ export default function TableOptionsModal<T extends string>({
             if (
                 didDrop &&
                 typeof dragIndex === 'number' &&
-                typeof dropIndex === 'number'
+                typeof dropIndex === 'number' &&
+                dragIndex !== dropIndex
             ) {
                 const newColumns = [...columns];
                 const items = newColumns.splice(dragIndex, 1);
@@ -211,8 +212,6 @@ export default function TableOptionsModal<T extends string>({
                                                     (column, index) => {
                                                         const {
                                                             name,
-                                                            label,
-                                                            columnLabel,
                                                             isVisible,
                                                             isModifiable = true,
                                                         } = column;
@@ -221,10 +220,6 @@ export default function TableOptionsModal<T extends string>({
                                                             <TableOptionsColumn
                                                                 key={name}
                                                                 name={name}
-                                                                label={
-                                                                    columnLabel ??
-                                                                    label
-                                                                }
                                                                 isVisible={
                                                                     isVisible
                                                                 }

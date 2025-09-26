@@ -15,7 +15,6 @@ import { socketEvents } from 'Helpers/Props';
 
 import formatBytes from 'Utilities/Number/formatBytes';
 import getToggledRange from 'Utilities/Table/getToggledRange';
-import translate from 'Utilities/String/translate';
 
 // Hooks
 import useSocketCallback from 'Helpers/Hooks/useSocketCallback';
@@ -58,55 +57,58 @@ interface IssueTableProps {
 const columns: Column<IssueColumnName>[] = [
     {
         name: 'monitored',
-        columnLabel: () => translate('Monitored'),
-        isVisible: true,
         isModifiable: false,
+        isSortable: true,
+        isVisible: true,
     },
     {
         name: 'issueNumber',
-        label: '#',
-        isVisible: true,
+        isModifiable: true,
         isSortable: true,
+        isVisible: true,
     },
     {
         name: 'title',
-        label: () => translate('Title'),
-        isVisible: true,
+        isModifiable: true,
         isSortable: true,
+        isVisible: true,
     },
     {
         name: 'path',
-        label: () => translate('Path'),
-        isVisible: false,
+        isModifiable: true,
         isSortable: true,
+        isVisible: false,
     },
     {
         name: 'relativePath',
-        label: () => translate('RelativePath'),
-        isVisible: false,
+        isModifiable: true,
         isSortable: true,
+        isVisible: false,
     },
     {
         name: 'size',
-        label: () => translate('Size'),
-        isVisible: false,
+        isModifiable: true,
         isSortable: true,
+        isVisible: false,
     },
     {
         name: 'releaseGroup',
-        label: () => translate('ReleaseGroup'),
+        isModifiable: true,
+        isSortable: true,
         isVisible: false,
     },
     {
         name: 'status',
-        label: () => translate('Status'),
+        isModifiable: true,
+        isSortable: true,
         isVisible: true,
     },
     {
         name: 'actions',
-        columnLabel: () => translate('Actions'),
-        isVisible: true,
+        hideHeaderLabel: true,
         isModifiable: false,
+        isSortable: false,
+        isVisible: true,
     },
 ];
 

@@ -12,7 +12,7 @@ interface CssExports {
     resolution: string;
     dpi: string;
     source: string;
-    download: string;
+    actions: string;
     downloadIcon: string;
     interactiveIcon: string;
     manualDownloadContent: string;

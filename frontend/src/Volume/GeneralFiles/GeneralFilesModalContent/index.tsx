@@ -41,28 +41,29 @@ export interface GeneralFilesModalContentProps {
 
 // IMPLEMENTATIONS
 
-const COLUMNS: Column<GeneralFilesColumnName>[] = [
+const columns: Column<GeneralFilesColumnName>[] = [
     {
         name: 'path',
-        label: () => translate('Path'),
+        isModifiable: false,
         isSortable: false,
         isVisible: true,
     },
     {
         name: 'fileType',
-        label: () => translate('FileType'),
+        isModifiable: false,
         isSortable: false,
         isVisible: true,
     },
     {
         name: 'filesize',
-        label: () => translate('Size'),
+        isModifiable: false,
         isSortable: false,
         isVisible: true,
     },
     {
         name: 'actions',
-        label: '',
+        hideHeaderLabel: true,
+        isModifiable: false,
         isSortable: false,
         isVisible: true,
     },
@@ -103,7 +104,7 @@ export default function GeneralFilesModalContent({
 
             <ModalBody>
                 {generalFiles.length !== 0 ? (
-                    <Table columns={COLUMNS}>
+                    <Table columns={columns}>
                         <TableBody>
                             {generalFiles.map(
                                 ({ id, fileType, filepath, size }) => (
@@ -113,7 +114,7 @@ export default function GeneralFilesModalContent({
                                         fileType={fileType}
                                         path={filepath}
                                         size={size}
-                                        columns={COLUMNS}
+                                        columns={columns}
                                         onDeleteGeneralFile={handleDeleteGeneralFile(
                                             id,
                                         )}

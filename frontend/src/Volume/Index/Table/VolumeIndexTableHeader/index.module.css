@@ -37,13 +37,13 @@
     flex: 0 0 180px;
 }
 
-.issueProgress {
+.issuesDownloadedMonitored {
     composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
 
     flex: 0 0 150px;
 }
 
-.issueCount {
+.issueCountMonitored {
     composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
 
     flex: 0 0 130px;
@@ -61,16 +61,21 @@
     flex: 1 0 150px;
 }
 
-.sizeOnDisk {
+.totalSize {
     composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
 
     flex: 0 0 120px;
 }
 
-.monitorNewItems {
+.monitorNewIssues {
     composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
 
     flex: 0 0 175px;
+}
+
+.volumeNumber,
+.monitored {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
 }
 
 .actions {

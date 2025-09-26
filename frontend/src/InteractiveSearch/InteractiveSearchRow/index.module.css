@@ -65,7 +65,7 @@
     min-width: 90px;
 }
 
-.download {
+.actions {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
     width: 100px;

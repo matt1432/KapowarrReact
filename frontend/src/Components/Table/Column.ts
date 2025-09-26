@@ -1,20 +1,20 @@
-// IMPORTS
-
-// React
-import React from 'react';
-
-// Types
 import type { SortDirection } from 'Helpers/Props/sortDirections';
+import type { IconKind, IconName } from 'Components/Icon';
+import type { TranslateKey } from 'Utilities/String/translate';
 
-type PropertyFunction<T> = () => T;
+interface IconProps {
+    name: IconName;
+    kind?: IconKind;
+    title?: TranslateKey;
+}
 
 export interface Column<T extends string> {
     name: T;
-    label?: string | PropertyFunction<string> | React.ReactNode;
+    icon?: IconProps;
     className?: string;
-    columnLabel?: string | PropertyFunction<string>;
-    isSortable?: boolean;
-    fixedSortDirection?: SortDirection;
+    hideHeaderLabel?: boolean;
+    isModifiable: boolean;
     isVisible: boolean;
-    isModifiable?: boolean;
+    isSortable: boolean;
+    fixedSortDirection?: SortDirection;
 }

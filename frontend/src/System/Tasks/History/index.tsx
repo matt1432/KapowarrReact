@@ -31,12 +31,14 @@ import type { TaskHistory } from 'typings/Task';
 const columns: Column<keyof TaskHistory>[] = [
     {
         name: 'displayTitle',
-        label: () => translate('Title'),
+        isModifiable: false,
+        isSortable: false,
         isVisible: true,
     },
     {
         name: 'runAt',
-        label: () => translate('Date'),
+        isModifiable: false,
+        isSortable: false,
         isVisible: true,
     },
 ];

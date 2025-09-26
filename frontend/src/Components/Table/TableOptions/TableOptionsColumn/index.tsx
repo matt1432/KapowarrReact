@@ -12,6 +12,7 @@ import {
 // Misc
 import { icons } from 'Helpers/Props';
 
+import translate, { type TranslateKey } from 'Utilities/String/translate';
 import classNames from 'classnames';
 
 import DragType from 'Helpers/DragType';
@@ -25,7 +26,6 @@ import styles from './index.module.css';
 
 // Types
 import type { CheckInputChanged } from 'typings/Inputs';
-import type { Column } from '../../Column';
 
 interface DragItem {
     name: string;
@@ -34,7 +34,6 @@ interface DragItem {
 
 interface TableOptionsColumnProps<T extends string> {
     name: T;
-    label: Column<T>['label'];
     isDraggingDown: boolean;
     isDraggingUp: boolean;
     isVisible: boolean;
@@ -49,7 +48,6 @@ interface TableOptionsColumnProps<T extends string> {
 
 export default function TableOptionsColumn<T extends string>({
     name,
-    label,
     index,
     isDraggingDown,
     isDraggingUp,
@@ -83,6 +81,7 @@ export default function TableOptionsColumn<T extends string>({
 
             // Don't replace items with themselves
             if (dragIndex === hoverIndex) {
+                onColumnDragMove(dragIndex, hoverIndex);
                 return;
             }
 
@@ -171,7 +170,7 @@ export default function TableOptionsColumn<T extends string>({
                         isDisabled={isModifiable === false}
                         onChange={onVisibleChange}
                     />
-                    {typeof label === 'function' ? label() : label}
+                    {translate(`${name}Key` as TranslateKey)}
                 </label>
 
                 {isModifiable ? (

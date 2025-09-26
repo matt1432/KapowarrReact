@@ -376,7 +376,7 @@ export default function InteractiveSearchRow({
                     );
                 }
 
-                if (name === 'download') {
+                if (name === 'actions') {
                     return (
                         <TableRowCell className={styles[name]}>
                             <SpinnerIconButton

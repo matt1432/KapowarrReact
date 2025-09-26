@@ -19,11 +19,10 @@ import type { SortDirection } from 'Helpers/Props/sortDirections';
 interface TableHeaderCellProps<T extends string> {
     className?: string;
     name: T;
-    label?: string | (() => string) | React.ReactNode;
-    columnLabel?: string | (() => string);
-    isSortable?: boolean;
-    isVisible?: boolean;
-    isModifiable?: boolean;
+    columnLabel?: string;
+    isSortable: boolean;
+    isVisible: boolean;
+    isModifiable: boolean;
     sortKey?: string;
     fixedSortDirection?: SortDirection;
     sortDirection?: string;
@@ -65,9 +64,7 @@ export default function TableHeaderCell<T extends string>({
             {...otherProps}
             component="th"
             className={className}
-            title={
-                typeof columnLabel === 'function' ? columnLabel() : columnLabel
-            }
+            title={columnLabel}
             onPress={handlePress}
         >
             {children}

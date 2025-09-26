@@ -57,7 +57,7 @@ interface SearchProps extends InteractiveSearchProps {
     isPopulated: boolean;
     error: AnyError | undefined;
     errorMessage: string;
-    items: (SearchResult & { id: number; download: never })[];
+    items: (SearchResult & { id: number; actions: never })[];
     totalItems: number;
 }
 
@@ -81,76 +81,79 @@ function weighIssueNumber(
 const columns: Column<InteractiveSearchSort>[] = [
     {
         name: 'match',
-        label: () => translate('Match'),
+        isModifiable: false,
         isSortable: true,
         isVisible: true,
     },
     {
         name: 'issueNumber',
-        label: '#',
+        isModifiable: false,
         isSortable: true,
         isVisible: true,
     },
     {
         name: 'displayTitle',
-        label: () => translate('Title'),
+        isModifiable: false,
         isSortable: true,
         isVisible: true,
     },
     {
         name: 'filesize',
-        label: () => translate('Size'),
+        isModifiable: false,
         isSortable: true,
         isVisible: true,
     },
     {
         name: 'pages',
-        label: () => translate('Pages'),
+        isModifiable: false,
         isSortable: true,
         isVisible: true,
     },
     {
         name: 'releaser',
-        label: () => translate('ReleaseGroup'),
+        isModifiable: false,
         isSortable: true,
         isVisible: true,
     },
     {
         name: 'scanType',
-        label: () => translate('ScanType'),
+        isModifiable: false,
         isSortable: true,
         isVisible: true,
     },
     {
         name: 'resolution',
-        label: () => translate('Resolution'),
+        isModifiable: false,
         isSortable: true,
         isVisible: true,
     },
     {
         name: 'dpi',
-        label: () => translate('DPI'),
+        isModifiable: false,
         isSortable: true,
         isVisible: true,
     },
     {
         name: 'source',
-        label: () => translate('Source'),
+        isModifiable: false,
         isSortable: true,
         isVisible: true,
     },
     {
         name: 'matchRejections',
-        label: (
-            <Icon name={icons.DANGER} title={() => translate('Rejections')} />
-        ),
+        icon: {
+            name: icons.DANGER,
+            title: 'Rejections',
+        },
+        isModifiable: false,
         isSortable: true,
         fixedSortDirection: sortDirections.ASCENDING,
         isVisible: true,
     },
     {
-        name: 'download',
-        label: '',
+        name: 'actions',
+        hideHeaderLabel: true,
+        isModifiable: false,
         isSortable: false,
         isVisible: true,
     },
@@ -269,7 +272,7 @@ export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
             items: (data?.map((item, id) => ({ ...item, id })) ??
                 []) as (SearchResult & {
                 id: number;
-                download: never;
+                actions: never;
             })[],
             totalItems: data?.length ?? 0,
         }),
@@ -334,7 +337,7 @@ export default function InteractiveSearch({
             items: (data?.map((item, id) => ({ ...item, id })) ??
                 []) as (SearchResult & {
                 id: number;
-                download: never;
+                actions: never;
             })[],
             totalItems: data?.length ?? 0,
         }),

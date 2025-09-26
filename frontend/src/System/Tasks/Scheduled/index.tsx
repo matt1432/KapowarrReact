@@ -34,27 +34,33 @@ import type { TaskPlanning } from 'typings/Task';
 const columns: Column<keyof TaskPlanning | 'actions'>[] = [
     {
         name: 'displayName',
-        label: () => translate('Name'),
+        isModifiable: false,
+        isSortable: false,
         isVisible: true,
     },
     {
         name: 'interval',
-        label: () => translate('Interval'),
+        isModifiable: false,
+        isSortable: false,
         isVisible: true,
     },
     {
         name: 'lastRun',
-        label: () => translate('LastExecution'),
+        isModifiable: false,
+        isSortable: false,
         isVisible: true,
     },
     {
         name: 'nextRun',
-        label: () => translate('NextExecution'),
+        isModifiable: false,
+        isSortable: false,
         isVisible: true,
     },
     {
         name: 'actions',
-        label: '',
+        hideHeaderLabel: true,
+        isModifiable: false,
+        isSortable: false,
         isVisible: true,
     },
 ];

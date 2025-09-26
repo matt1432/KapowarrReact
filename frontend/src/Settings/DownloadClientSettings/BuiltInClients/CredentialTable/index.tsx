@@ -11,9 +11,6 @@ import {
     type AddCredentialParams,
 } from 'Store/Api/DownloadClients';
 
-// Misc
-import translate from 'Utilities/String/translate';
-
 // General Components
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
@@ -46,27 +43,33 @@ export default function CredentialTable({
     const columns: Column<keyof CredentialData | 'actions'>[] = [
         {
             name: 'email',
-            label: 'Email',
+            isModifiable: false,
+            isSortable: false,
             isVisible: showEmail,
         },
         {
             name: 'username',
-            label: () => translate('Username'),
+            isModifiable: false,
+            isSortable: false,
             isVisible: showUsername,
         },
         {
             name: 'password',
-            label: () => translate('Password'),
+            isModifiable: false,
+            isSortable: false,
             isVisible: showPassword,
         },
         {
             name: 'apiKey',
-            label: () => translate('ApiKey'),
+            isModifiable: false,
+            isSortable: false,
             isVisible: showApiKey,
         },
         {
             name: 'actions',
-            label: '',
+            hideHeaderLabel: true,
+            isModifiable: false,
+            isSortable: false,
             isVisible: true,
         },
     ];

@@ -31,13 +31,16 @@ interface FolderTableProps<T extends string> {
 const columns: Column<'value' | 'actions'>[] = [
     {
         name: 'value',
-        label: '',
+        hideHeaderLabel: true,
+        isModifiable: false,
+        isSortable: false,
         isVisible: true,
         className: '',
     },
     {
         name: 'actions',
-        label: '',
+        isModifiable: false,
+        isSortable: false,
         isVisible: true,
         className: '',
     },

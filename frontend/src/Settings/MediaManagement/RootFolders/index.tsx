@@ -20,27 +20,38 @@ import RootFolderRow from './RootFolderRow';
 // Types
 import type { Column } from 'Components/Table/Column';
 
+export type RootFolderColumnName =
+    | 'path'
+    | 'freeSpace'
+    | 'totalSpace'
+    | 'actions';
+
 // IMPLEMENTATIONS
 
-const rootFolderColumns: Column<string>[] = [
+const columns: Column<RootFolderColumnName>[] = [
     {
         name: 'path',
-        label: () => translate('Path'),
+        isModifiable: false,
+        isSortable: false,
         isVisible: true,
     },
     {
         name: 'freeSpace',
-        label: () => translate('FreeSpace'),
+        isModifiable: false,
+        isSortable: false,
         isVisible: true,
     },
     {
         name: 'totalSpace',
-        label: () => translate('TotalSpace'),
+        isModifiable: false,
+        isSortable: false,
         isVisible: true,
     },
     {
         name: 'actions',
-        label: '',
+        hideHeaderLabel: true,
+        isModifiable: false,
+        isSortable: false,
         isVisible: true,
     },
 ];
@@ -66,7 +77,7 @@ export default function RootFolders() {
     }
 
     return (
-        <Table columns={rootFolderColumns}>
+        <Table columns={columns}>
             <TableBody>
                 {items.map((rootFolder) => {
                     return (
@@ -76,6 +87,7 @@ export default function RootFolders() {
                             path={rootFolder.folder}
                             freeSpace={rootFolder.size.free}
                             totalSpace={rootFolder.size.total}
+                            columns={columns}
                         />
                     );
                 })}

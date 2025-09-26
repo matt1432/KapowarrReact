@@ -42,19 +42,20 @@ interface IssueSummaryProps {
 const COLUMNS: Column<IssueSummaryColumnName>[] = [
     {
         name: 'path',
-        label: () => translate('Path'),
+        isModifiable: false,
         isSortable: false,
         isVisible: true,
     },
     {
         name: 'filesize',
-        label: () => translate('Size'),
+        isModifiable: false,
         isSortable: false,
         isVisible: true,
     },
     {
         name: 'actions',
-        label: '',
+        hideHeaderLabel: true,
+        isModifiable: false,
         isSortable: false,
         isVisible: true,
     },

@@ -104,24 +104,21 @@ export default function ProposalRow({
 
     return (
         <TableRow>
+            <TableRowCell>
+                <CheckInput
+                    className={styles.selectedInput}
+                    containerClassName={styles.selectedContainer}
+                    name={id.toString()}
+                    value={isSelected}
+                    onChange={handleSelectedChange}
+                />
+            </TableRowCell>
+
             {columns.map(({ isVisible, name }) => {
                 if (!isVisible) {
                     return null;
                 }
 
-                if (name === 'selected') {
-                    return (
-                        <TableRowCell>
-                            <CheckInput
-                                className={styles.selectedInput}
-                                containerClassName={styles.selectedContainer}
-                                name={id.toString()}
-                                value={isSelected}
-                                onChange={handleSelectedChange}
-                            />
-                        </TableRowCell>
-                    );
-                }
                 if (name === 'file') {
                     return (
                         <TableRowCell title={proposal.fileTitle}>

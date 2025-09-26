@@ -15,7 +15,6 @@ import useSelectState from 'Helpers/Hooks/useSelectState';
 
 // General Components
 import Button from 'Components/Link/Button';
-import CheckInput from 'Components/Form/CheckInput';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 
@@ -44,17 +43,6 @@ interface ImportProposalsProps {
 
 // IMPLEMENTATIONS
 
-function getValue(allSelected: boolean, allUnselected: boolean) {
-    if (allSelected) {
-        return true;
-    }
-    else if (allUnselected) {
-        return false;
-    }
-
-    return null;
-}
-
 export default function ImportProposals({
     proposals,
     returnToSearchPage,
@@ -62,8 +50,6 @@ export default function ImportProposals({
     // SELECTION
     const [{ allSelected, allUnselected, selectedState }, setSelectState] =
         useSelectState();
-
-    const selectAllValue = getValue(allSelected, allUnselected);
 
     const handleSelectAllChange = useCallback(
         ({ value }: CheckInputChanged<string>) => {
@@ -175,36 +161,28 @@ export default function ImportProposals({
     // COLUMNS
     const columns: Column<ProposalColumnName>[] = [
         {
-            name: 'selected',
-            label: proposals.length ? (
-                <CheckInput
-                    className={styles.selectAllInput}
-                    containerClassName={styles.selectAllInputContainer}
-                    name="selectAll"
-                    value={selectAllValue}
-                    onChange={handleSelectAllChange}
-                />
-            ) : null,
-            isVisible: true,
-        },
-        {
             name: 'file',
-            label: () => translate('File'),
+            isSortable: false,
+            isModifiable: false,
             isVisible: true,
         },
         {
             name: 'cvLink',
-            label: () => translate('Match'),
+            isSortable: false,
+            isModifiable: false,
             isVisible: true,
         },
         {
             name: 'issueCount',
-            label: () => translate('IssueCount'),
+            isSortable: false,
+            isModifiable: false,
             isVisible: true,
         },
         {
             name: 'actions',
-            label: '',
+            hideHeaderLabel: true,
+            isSortable: false,
+            isModifiable: false,
             isVisible: true,
         },
     ];
@@ -231,7 +209,13 @@ export default function ImportProposals({
                 </Button>
             </div>
 
-            <Table columns={columns}>
+            <Table
+                columns={columns}
+                selectAll
+                allSelected={allSelected}
+                allUnselected={allUnselected}
+                onSelectAllChange={handleSelectAllChange}
+            >
                 <TableBody>
                     {proposals.map((proposal) => (
                         <ProposalRow

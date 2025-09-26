@@ -7,8 +7,10 @@ import React from 'react';
 import { icons, scrollDirections } from 'Helpers/Props';
 
 import classNames from 'classnames';
+import translate from 'Utilities/String/translate';
 
 // General Components
+import Icon from 'Components/Icon';
 import IconButton from 'Components/Link/IconButton';
 import Scroller from 'Components/Scroller/Scroller';
 import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
@@ -22,10 +24,11 @@ import TableSelectAllHeaderCell from '../TableSelectAllHeaderCell';
 import styles from './index.module.css';
 
 // Types
+import type { Column } from '../Column';
+import type { TranslateKey } from 'Utilities/String/translate';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { CheckInputChanged } from 'typings/Inputs';
 import type { TableOptionsChangePayload } from 'typings/Table';
-import type { Column } from '../Column';
 
 export interface TableProps<T extends string> {
     className?: string;
@@ -96,6 +99,10 @@ export default function Table<T extends string>({
                             return null;
                         }
 
+                        const columnLabel = translate(
+                            `${column.name}Key` as TranslateKey,
+                        );
+
                         if (
                             (name === 'actions' || name === 'details') &&
                             onTableOptionChange
@@ -104,7 +111,8 @@ export default function Table<T extends string>({
                                 <TableHeaderCell
                                     key={name}
                                     name={name}
-                                    isSortable={false}
+                                    columnLabel={columnLabel}
+                                    isVisible={isVisible}
                                     {...otherColumnProps}
                                 >
                                     <TableOptionsModalWrapper
@@ -128,13 +136,26 @@ export default function Table<T extends string>({
                             <TableHeaderCell
                                 key={column.name}
                                 {...column}
+                                columnLabel={columnLabel}
                                 sortKey={sortKey}
                                 sortDirection={sortDirection}
                                 onSortPress={onSortPress}
                             >
-                                {typeof column.label === 'function'
-                                    ? column.label()
-                                    : column.label}
+                                {column.icon ? (
+                                    <Icon
+                                        name={column.icon.name}
+                                        kind={column.icon.kind}
+                                        title={
+                                            column.icon.title
+                                                ? translate(column.icon.title)
+                                                : undefined
+                                        }
+                                    />
+                                ) : column.hideHeaderLabel ? (
+                                    ''
+                                ) : (
+                                    columnLabel
+                                )}
                             </TableHeaderCell>
                         );
                     })}

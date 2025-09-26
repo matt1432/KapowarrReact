@@ -53,21 +53,22 @@ export interface ChangeMatchModalContentProps {
 const columns: Column<keyof VolumeSearchResult>[] = [
     {
         name: 'title',
-        label: () => translate('Title'),
-        isVisible: true,
+        isModifiable: true,
         isSortable: true,
+        isVisible: true,
     },
     {
         name: 'issueCount',
-        label: () => translate('IssueCount'),
-        isVisible: true,
+        isModifiable: true,
         isSortable: true,
+        isVisible: true,
     },
     {
         name: 'actions',
-        label: '',
-        isVisible: true,
+        hideHeaderLabel: true,
+        isModifiable: false,
         isSortable: true,
+        isVisible: true,
     },
 ];
 
