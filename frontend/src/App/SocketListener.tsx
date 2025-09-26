@@ -466,13 +466,13 @@ export default function SocketListener() {
         SocketEventHandler<typeof socketEvents.ISSUE_UPDATED>
     >(
         async (data) => {
-            await fetchVolume({ volumeId: data.issue.volumeId });
+            await refreshVolumeEndpoints(data.issue.volumeId);
 
             callbacks.issue_updated.forEach((callback) => {
                 callback(data);
             });
         },
-        [callbacks.issue_updated, fetchVolume],
+        [callbacks.issue_updated, refreshVolumeEndpoints],
     );
 
     const handleVolumeUpdated = useCallback<
@@ -492,13 +492,13 @@ export default function SocketListener() {
         SocketEventHandler<typeof socketEvents.ISSUE_DELETED>
     >(
         async (data) => {
-            await fetchVolume({ volumeId: data.volumeId });
+            await refreshVolumeEndpoints(data.volumeId);
 
             callbacks.issue_deleted.forEach((callback) => {
                 callback(data);
             });
         },
-        [callbacks.issue_deleted, fetchVolume],
+        [callbacks.issue_deleted, refreshVolumeEndpoints],
     );
 
     const handleVolumeDeleted = useCallback<
