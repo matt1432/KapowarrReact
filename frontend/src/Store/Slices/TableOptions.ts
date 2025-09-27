@@ -77,6 +77,7 @@ const initialState = {
         columns: [
             {
                 name: 'monitored',
+                hideHeaderLabel: true,
                 isModifiable: false,
                 isSortable: true,
                 isVisible: true,
