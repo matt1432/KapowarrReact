@@ -22,6 +22,8 @@ import {
 import {
     faArrowCircleLeft as fasArrowCircleLeft,
     faArrowCircleRight as fasArrowCircleRight,
+    faArrowUp as fasArrowUp,
+    faArrowDown as fasArrowDown,
     faAsterisk as fasAsterisk,
     faBackward as fasBackward,
     faBan as fasBan,
@@ -122,6 +124,8 @@ export const icons = {
     ADVANCED_SETTINGS: fasCog,
     ARROW_LEFT: fasArrowCircleLeft,
     ARROW_RIGHT: fasArrowCircleRight,
+    ARROW_UP: fasArrowUp,
+    ARROW_DOWN: fasArrowDown,
     BACKUP: farFileArchive,
     BLOCK: fasBan,
     BUG: fasBug,

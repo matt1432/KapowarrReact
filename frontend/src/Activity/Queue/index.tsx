@@ -1,9 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useMemo, useState } from 'react';
-import { HTML5toTouch } from 'rdndmb-html5-to-touch';
-import { DndProvider } from 'react-dnd-multi-backend';
+import { useCallback, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -140,59 +138,14 @@ export default function Queue() {
         [dispatch],
     );
 
-    // DnD
-    const [dragIndex, setDragIndex] = useState<number | null>(null);
-    const [dropIndex, setDropIndex] = useState<number | null>(null);
-
-    const isDragging = useMemo(() => dropIndex !== null, [dropIndex]);
-    const isDraggingUp = useMemo(
-        () =>
-            isDragging &&
-            dropIndex !== null &&
-            dragIndex !== null &&
-            dropIndex < dragIndex,
-        [dragIndex, dropIndex, isDragging],
-    );
-    const isDraggingDown = useMemo(
-        () =>
-            isDragging &&
-            dropIndex !== null &&
-            dragIndex !== null &&
-            dropIndex > dragIndex,
-        [dragIndex, dropIndex, isDragging],
-    );
-
-    const handleDragMove = useCallback(
-        (newDragIndex: number, newDropIndex: number) => {
-            setDropIndex(newDropIndex);
-            setDragIndex(newDragIndex);
-        },
-        [],
-    );
-
     const [moveQueueItem] = useMoveQueueItemMutation();
-
-    const handleDragEnd = useCallback(
-        (didDrop: boolean) => {
-            if (
-                !isRefreshing &&
-                didDrop &&
-                typeof dragIndex === 'number' &&
-                typeof dropIndex === 'number' &&
-                dragIndex !== dropIndex
-            ) {
-                moveQueueItem({
-                    id: items[dragIndex].id,
-                    index: dropIndex,
-                }).finally(() => {
-                    refetch();
-                });
-            }
-
-            setDragIndex(null);
-            setDropIndex(null);
+    const handleMoveQueueItem = useCallback(
+        (params: { id: number; index: number }) => {
+            moveQueueItem(params).finally(() => {
+                refetch();
+            });
         },
-        [dragIndex, dropIndex, moveQueueItem, refetch, items, isRefreshing],
+        [moveQueueItem, refetch],
     );
 
     return (
@@ -229,31 +182,27 @@ export default function Queue() {
                 {!items.length ? (
                     <Alert kind={kinds.INFO}>{translate('QueueIsEmpty')}</Alert>
                 ) : (
-                    <DndProvider options={HTML5toTouch}>
-                        <SortedTable
-                            tableName="queueTable"
-                            columns={columns}
-                            sortKey={sortKey}
-                            sortDirection={sortDirection}
-                            onSortPress={handleSortPress}
-                            tableProps={{
-                                onTableOptionChange: handleTableOptionChange,
-                            }}
-                            items={items}
-                            itemRenderer={(item) => (
-                                <QueueRow
-                                    key={item.id}
-                                    {...item}
-                                    columns={columns}
-                                    onDeletePress={onDeletePress}
-                                    isDraggingUp={isDraggingUp}
-                                    isDraggingDown={isDraggingDown}
-                                    onDragMove={handleDragMove}
-                                    onDragEnd={handleDragEnd}
-                                />
-                            )}
-                        />
-                    </DndProvider>
+                    <SortedTable
+                        tableName="queueTable"
+                        columns={columns}
+                        sortKey={sortKey}
+                        sortDirection={sortDirection}
+                        onSortPress={handleSortPress}
+                        tableProps={{
+                            onTableOptionChange: handleTableOptionChange,
+                        }}
+                        items={items}
+                        itemRenderer={(item) => (
+                            <QueueRow
+                                key={item.id}
+                                {...item}
+                                columns={columns}
+                                queueLength={items.length}
+                                onDeletePress={onDeletePress}
+                                onMoveQueueItem={handleMoveQueueItem}
+                            />
+                        )}
+                    />
                 )}
             </PageContentBody>
         </PageContent>
