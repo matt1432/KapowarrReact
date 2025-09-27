@@ -73,7 +73,7 @@ export interface TableOptionsState {
 const initialState = {
     issueTable: {
         sortKey: 'issueNumber',
-        sortDirection: sortDirections.ASCENDING,
+        sortDirection: sortDirections.DESCENDING,
         columns: [
             {
                 name: 'monitored',
