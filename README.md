@@ -44,7 +44,8 @@ whole process is automated and can be customised in the settings.
 
 ## Screenshots
 
-![](https://github.com/user-attachments/assets/04656209-288e-4263-a2df-93e06758c443)
-![](https://github.com/user-attachments/assets/3fa8177c-f016-4cbd-b73e-6b577840b08e)
-![](https://github.com/user-attachments/assets/69d59c21-3983-4acc-8777-ae0c7b65fdff)
-![](https://github.com/user-attachments/assets/6e26c4e9-3c75-4b2c-b853-9fe2b56c9617)
+![](https://github.com/user-attachments/assets/300f677d-0089-4ef5-a543-42a15cabee16)
+![](https://github.com/user-attachments/assets/d02fae76-591c-4a14-9602-45919d85289e)
+![](https://github.com/user-attachments/assets/d11e290a-0f17-45ba-ad17-e5fb4d0650f7)
+![](https://github.com/user-attachments/assets/c871093c-e595-4d44-8d64-534a8de68def)
+
