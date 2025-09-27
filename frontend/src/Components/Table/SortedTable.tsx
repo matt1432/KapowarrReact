@@ -15,11 +15,15 @@ import type { Item, Predicates } from 'Helpers/Hooks/useSort';
 import type { TableProps } from './Table';
 import type { Column } from './Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
+import type { ColumnNameMap } from 'Store/Slices/TableOptions';
 
 interface SortedTableProps<
-    ColumnName extends string,
     T extends Item<ColumnName>,
+    ColumnName extends ColumnNameMap[K],
+    K extends keyof ColumnNameMap,
+    ExtraOptions extends object,
 > {
+    tableName: K;
     columns: Column<ColumnName>[];
     items: T[];
     itemRenderer: (item: T) => React.ReactElement;
@@ -32,17 +36,25 @@ interface SortedTableProps<
     onSortPress?: (name: ColumnName, sortDirection?: SortDirection) => void;
 
     tableProps?: Omit<
-        TableProps<ColumnName>,
-        'columns' | 'sortKey' | 'sortDirection' | 'children' | 'onSortPress'
+        TableProps<ColumnName, K, ExtraOptions>,
+        | 'tableName'
+        | 'columns'
+        | 'sortKey'
+        | 'sortDirection'
+        | 'children'
+        | 'onSortPress'
     >;
 }
 
 // IMPLEMENTATIONS
 
 export default function SortedTable<
-    ColumnName extends string,
     T extends Item<ColumnName>,
+    ColumnName extends ColumnNameMap[K],
+    K extends keyof ColumnNameMap,
+    ExtraOptions extends object,
 >({
+    tableName,
     columns,
     items,
     itemRenderer,
@@ -52,7 +64,7 @@ export default function SortedTable<
     sortDirection = sortDirections.ASCENDING,
     onSortPress,
     tableProps,
-}: SortedTableProps<ColumnName, T>) {
+}: SortedTableProps<T, ColumnName, K, ExtraOptions>) {
     const sortedItems = useSort({
         columns,
         items,
@@ -64,6 +76,7 @@ export default function SortedTable<
 
     return (
         <Table
+            tableName={tableName}
             columns={columns}
             sortKey={sortKey}
             sortDirection={sortDirection}

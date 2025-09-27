@@ -20,6 +20,8 @@ import styles from './index.module.css';
 import type { Column } from 'Components/Table/Column';
 import type { InputChanged } from 'typings/Inputs';
 
+export type FolderTableColumnName = 'value' | 'actions';
+
 interface FolderTableProps<T extends string> {
     name: T;
     values: string[];
@@ -28,7 +30,7 @@ interface FolderTableProps<T extends string> {
 
 // IMPLEMENTATIONS
 
-const columns: Column<'value' | 'actions'>[] = [
+const columns: Column<FolderTableColumnName>[] = [
     {
         name: 'value',
         hideHeaderLabel: true,
@@ -76,7 +78,11 @@ export default function FolderTable<T extends string>({
     );
 
     return (
-        <Table columns={columns} containerClassName={styles.container}>
+        <Table
+            tableName="folderTable"
+            columns={columns}
+            containerClassName={styles.container}
+        >
             <TableBody>
                 {values.map((folder, i) => {
                     return (

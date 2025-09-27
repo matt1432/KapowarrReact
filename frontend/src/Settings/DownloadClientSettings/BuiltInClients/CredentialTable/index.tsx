@@ -21,7 +21,14 @@ import InputRow from './InputRow';
 
 // Types
 import type { Column } from 'Components/Table/Column';
-import type { CredentialData, CredentialSource } from 'typings/DownloadClient';
+import type { CredentialSource } from 'typings/DownloadClient';
+
+export type CredentialColumnName =
+    | 'email'
+    | 'username'
+    | 'password'
+    | 'apiKey'
+    | 'actions';
 
 interface CredentialTableProps {
     source: CredentialSource;
@@ -40,7 +47,7 @@ export default function CredentialTable({
     showPassword = false,
     showApiKey = false,
 }: CredentialTableProps) {
-    const columns: Column<keyof CredentialData | 'actions'>[] = [
+    const columns: Column<CredentialColumnName>[] = [
         {
             name: 'email',
             isModifiable: false,
@@ -101,7 +108,7 @@ export default function CredentialTable({
     );
 
     return (
-        <Table columns={columns}>
+        <Table tableName="credentialTable" columns={columns}>
             <TableBody>
                 {items.map((item) => {
                     return (

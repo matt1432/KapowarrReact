@@ -210,6 +210,7 @@ export default function ImportProposals({
             </div>
 
             <Table
+                tableName="importProposals"
                 columns={columns}
                 selectAll
                 allSelected={allSelected}

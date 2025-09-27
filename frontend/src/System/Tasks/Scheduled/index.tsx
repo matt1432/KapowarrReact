@@ -27,11 +27,17 @@ import styles from './index.module.css';
 
 // Types
 import type { Column } from 'Components/Table/Column';
-import type { TaskPlanning } from 'typings/Task';
+
+export type TaskPlanningColumnName =
+    | 'displayName'
+    | 'interval'
+    | 'lastRun'
+    | 'nextRun'
+    | 'actions';
 
 // IMPLEMENTATIONS
 
-const columns: Column<keyof TaskPlanning | 'actions'>[] = [
+const columns: Column<TaskPlanningColumnName>[] = [
     {
         name: 'displayName',
         isModifiable: false,
@@ -72,7 +78,7 @@ export default function TaskScheduled() {
 
     return (
         <FieldSet legend={translate('Scheduled')}>
-            <Table columns={columns}>
+            <Table tableName="taskPlanning" columns={columns}>
                 <TableBody>
                     {items.map((item) => (
                         <TableRow>

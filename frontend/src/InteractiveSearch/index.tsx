@@ -5,7 +5,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import { setInteractiveSearchSort } from 'Store/Slices/SearchResults';
+import { setTableSort } from 'Store/Slices/TableOptions';
 
 import {
     useLibgenFileSearchMutation,
@@ -171,7 +171,7 @@ function InternalSearch({
     const dispatch = useRootDispatch();
 
     const { sortKey, sortDirection } = useRootSelector(
-        (state) => state.searchResults,
+        (state) => state.tableOptions.searchResults,
     );
 
     const lastIssueNumber = useMemo(() => {
@@ -188,7 +188,13 @@ function InternalSearch({
 
     const handleSortPress = useCallback(
         (sortKey: InteractiveSearchSort, sortDirection?: SortDirection) => {
-            dispatch(setInteractiveSearchSort({ sortKey, sortDirection }));
+            dispatch(
+                setTableSort({
+                    tableName: 'searchResults',
+                    sortKey,
+                    sortDirection,
+                }),
+            );
         },
         [dispatch],
     );
@@ -224,6 +230,7 @@ function InternalSearch({
 
             {!isFetching && isPopulated && items.length ? (
                 <SortedTable
+                    tableName="searchResults"
                     columns={columns}
                     items={items}
                     itemRenderer={(item) => (

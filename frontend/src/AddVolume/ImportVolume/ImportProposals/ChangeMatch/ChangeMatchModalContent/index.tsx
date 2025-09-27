@@ -37,6 +37,8 @@ import type { VolumeMetadata } from 'AddVolume/AddVolume';
 import type { InputChanged } from 'typings/Inputs';
 import type { Column } from 'Components/Table/Column';
 
+export type ChangeMatchColumnName = 'title' | 'issueCount' | 'actions';
+
 export type VolumeSearchResult = VolumeMetadata & {
     actions: never;
 };
@@ -50,7 +52,7 @@ export interface ChangeMatchModalContentProps {
 
 // IMPLEMENTATIONS
 
-const columns: Column<keyof VolumeSearchResult>[] = [
+const columns: Column<ChangeMatchColumnName>[] = [
     {
         name: 'title',
         isModifiable: true,
@@ -158,6 +160,7 @@ export default function ChangeMatchModalContent({
 
                 {!isFetching && !error && showResults ? (
                     <SortedTable
+                        tableName="changeMatch"
                         columns={columns}
                         items={data}
                         itemRenderer={(item) => (

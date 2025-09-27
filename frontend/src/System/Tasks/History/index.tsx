@@ -26,9 +26,11 @@ import styles from './index.module.css';
 import type { Column } from 'Components/Table/Column';
 import type { TaskHistory } from 'typings/Task';
 
+export type TaskHistoryColumnName = 'displayTitle' | 'runAt';
+
 // IMPLEMENTATIONS
 
-const columns: Column<keyof TaskHistory>[] = [
+const columns: Column<TaskHistoryColumnName>[] = [
     {
         name: 'displayTitle',
         isModifiable: false,
@@ -50,7 +52,7 @@ export default function TaskHistory() {
 
     return (
         <FieldSet legend={translate('History')}>
-            <Table columns={columns}>
+            <Table tableName="taskHistory" columns={columns}>
                 <TableBody>
                     {items.map((item) => (
                         <TableRow>

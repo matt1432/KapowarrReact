@@ -5,13 +5,21 @@ import { useCallback } from 'react';
 
 // Redux
 import { useRootDispatch } from 'Store/createAppStore';
-import { setVolumeSort, setVolumeTableOption } from 'Store/Slices/VolumeIndex';
+import {
+    setVolumeTableOption,
+    type VolumeIndexState,
+} from 'Store/Slices/VolumeIndex';
+import {
+    setTableSort,
+    type SetTableOptionsParams,
+} from 'Store/Slices/TableOptions';
 
 // Misc
 import { useSelect } from 'App/SelectContext';
 import { icons } from 'Helpers/Props';
 
 import classNames from 'classnames';
+import translate, { type TranslateKey } from 'Utilities/String/translate';
 
 // General Components
 import IconButton from 'Components/Link/IconButton';
@@ -31,9 +39,7 @@ import type { Column } from 'Components/Table/Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { CheckInputChanged } from 'typings/Inputs';
 import type { IndexSort } from '../..';
-import type { TableOptionsChangePayload } from 'typings/Table';
 import type { VolumeColumnName } from 'Volume/Volume';
-import translate, { type TranslateKey } from 'Utilities/String/translate';
 
 interface VolumeIndexTableHeaderProps {
     columns: Column<VolumeColumnName>[];
@@ -55,13 +61,23 @@ export default function VolumeIndexTableHeader({
 
     const onSortPress = useCallback(
         (sortKey: string) => {
-            dispatch(setVolumeSort({ sortKey: sortKey as IndexSort }));
+            dispatch(
+                setTableSort({
+                    tableName: 'volumeIndex',
+                    sortKey: sortKey as IndexSort,
+                }),
+            );
         },
         [dispatch],
     );
 
     const onTableOptionChange = useCallback(
-        (payload: TableOptionsChangePayload<VolumeColumnName>) => {
+        (
+            payload: Partial<
+                SetTableOptionsParams<'volumeIndex'> &
+                    VolumeIndexState['tableOptions']
+            >,
+        ) => {
             dispatch(setVolumeTableOption(payload));
         },
         [dispatch],
@@ -101,7 +117,12 @@ export default function VolumeIndexTableHeader({
                             name={name}
                             isSortable={false}
                         >
-                            <TableOptionsModalWrapper
+                            <TableOptionsModalWrapper<
+                                IndexSort,
+                                'volumeIndex',
+                                { showSearchAction: boolean }
+                            >
+                                tableName="volumeIndex"
                                 columns={columns}
                                 optionsComponent={VolumeIndexTableOptions}
                                 onTableOptionChange={onTableOptionChange}

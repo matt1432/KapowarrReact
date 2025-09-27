@@ -7,11 +7,14 @@ import { useCallback, useMemo, useRef, useState, type RefObject } from 'react';
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import {
     setVolumeFilter,
-    setVolumeSort,
     setVolumeView,
     setVolumeTableOption,
     type VolumeIndexState,
 } from 'Store/Slices/VolumeIndex';
+import {
+    setTableSort,
+    type SetTableOptionsParams,
+} from 'Store/Slices/TableOptions';
 import { setScrollPosition } from 'Store/Slices/App';
 
 import { useGetVolumesQuery } from 'Store/Api/Volumes';
@@ -142,9 +145,11 @@ const columns: Column<VolumeColumnName>[] = [
 ];
 
 const useIndexVolumes = () => {
-    const { filterKey, sortKey, sortDirection } = useRootSelector(
-        (state) => state.volumeIndex,
+    const { sortKey, sortDirection } = useRootSelector(
+        (state) => state.tableOptions.volumeIndex,
     );
+
+    const { filterKey } = useRootSelector((state) => state.volumeIndex);
 
     const { isFetching, isPopulated, error, data } = useGetVolumesQuery(
         undefined,
@@ -202,7 +207,11 @@ const VolumeIndex = withScrollPosition(
     ({ initialScrollTop }: VolumeIndexProps) => {
         const dispatch = useRootDispatch();
 
-        const { filterKey, sortDirection, sortKey, view } = useRootSelector(
+        const { sortKey, sortDirection } = useRootSelector(
+            (state) => state.tableOptions.volumeIndex,
+        );
+
+        const { filterKey, view } = useRootSelector(
             (state) => state.volumeIndex,
         );
 
@@ -227,7 +236,12 @@ const VolumeIndex = withScrollPosition(
         }, [isSelectMode, setIsSelectMode]);
 
         const onTableOptionChange = useCallback(
-            (payload: Partial<VolumeIndexState['tableOptions']>) => {
+            (
+                payload: Partial<
+                    SetTableOptionsParams<'volumeIndex'> &
+                        VolumeIndexState['tableOptions']
+                >,
+            ) => {
                 dispatch(setVolumeTableOption(payload));
             },
             [dispatch],
@@ -246,7 +260,7 @@ const VolumeIndex = withScrollPosition(
 
         const onSortSelect = useCallback(
             (sortKey: IndexSort) => {
-                dispatch(setVolumeSort({ sortKey }));
+                dispatch(setTableSort({ tableName: 'volumeIndex', sortKey }));
             },
             [dispatch],
         );
@@ -383,7 +397,12 @@ const VolumeIndex = withScrollPosition(
                             collapseButtons={false}
                         >
                             {view === 'table' ? (
-                                <TableOptionsModalWrapper
+                                <TableOptionsModalWrapper<
+                                    IndexSort,
+                                    'volumeIndex',
+                                    { showSearchAction: boolean }
+                                >
+                                    tableName="volumeIndex"
                                     columns={columns}
                                     optionsComponent={VolumeIndexTableOptions}
                                     onTableOptionChange={onTableOptionChange}

@@ -163,7 +163,7 @@ export default function BlocklistTable() {
     if (isPopulated && hasItems && !error) {
         return (
             <div>
-                <Table columns={columns}>
+                <Table tableName="blocklistTable" columns={columns}>
                     <TableBody>
                         {items.map((item) => {
                             return (

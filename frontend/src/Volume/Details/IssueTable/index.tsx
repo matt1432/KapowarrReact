@@ -5,7 +5,11 @@ import { useCallback, useRef, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import { setIssuesSort, setIssuesTableOption } from 'Store/Slices/IssueTable';
+import {
+    setTableSort,
+    setTableOptions,
+    type SetTableOptionsParams,
+} from 'Store/Slices/TableOptions';
 
 import { useUpdateIssueMutation } from 'Store/Api/Issues';
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
@@ -30,7 +34,6 @@ import styles from './index.module.css';
 
 // Types
 import type { SortDirection } from 'Helpers/Props/sortDirections';
-import type { TableOptionsChangePayload } from 'typings/Table';
 import type { IssueColumnName, IssueData, IssueFileData } from 'Issue/Issue';
 import type { Column } from 'Components/Table/Column';
 import type { SocketEventHandler } from 'typings/Socket';
@@ -157,7 +160,7 @@ export default function IssueTable({ volumeId }: IssueTableProps) {
     const dispatch = useRootDispatch();
 
     const { sortKey, sortDirection } = useRootSelector(
-        (state) => state.issueTable,
+        (state) => state.tableOptions.issueTable,
     );
 
     const { issues, volumeMonitored } = useIssuesSelector(volumeId);
@@ -230,7 +233,8 @@ export default function IssueTable({ volumeId }: IssueTableProps) {
     const handleSortPress = useCallback(
         (sortKey: IssueColumnName, sortDirection?: SortDirection) => {
             dispatch(
-                setIssuesSort({
+                setTableSort({
+                    tableName: 'issueTable',
                     sortKey: sortKey,
                     sortDirection,
                 }),
@@ -240,8 +244,8 @@ export default function IssueTable({ volumeId }: IssueTableProps) {
     );
 
     const handleTableOptionChange = useCallback(
-        (payload: TableOptionsChangePayload<IssueColumnName>) => {
-            dispatch(setIssuesTableOption(payload));
+        (payload: SetTableOptionsParams<'issueTable'>) => {
+            dispatch(setTableOptions(payload));
         },
         [dispatch],
     );
@@ -249,6 +253,7 @@ export default function IssueTable({ volumeId }: IssueTableProps) {
     return (
         <div className={styles.issues}>
             <SortedTable
+                tableName="issueTable"
                 columns={columns}
                 sortKey={sortKey}
                 sortDirection={sortDirection}

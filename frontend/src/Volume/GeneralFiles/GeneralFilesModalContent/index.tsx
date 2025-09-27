@@ -104,7 +104,7 @@ export default function GeneralFilesModalContent({
 
             <ModalBody>
                 {generalFiles.length !== 0 ? (
-                    <Table columns={columns}>
+                    <Table tableName="generalFiles" columns={columns}>
                         <TableBody>
                             {generalFiles.map(
                                 ({ id, fileType, filepath, size }) => (

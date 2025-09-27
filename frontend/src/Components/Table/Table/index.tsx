@@ -28,9 +28,17 @@ import type { Column } from '../Column';
 import type { TranslateKey } from 'Utilities/String/translate';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { CheckInputChanged } from 'typings/Inputs';
-import type { TableOptionsChangePayload } from 'typings/Table';
+import type {
+    ColumnNameMap,
+    SetTableOptionsParams,
+} from 'Store/Slices/TableOptions';
 
-export interface TableProps<T extends string> {
+export interface TableProps<
+    T extends ColumnNameMap[K],
+    K extends keyof ColumnNameMap,
+    ExtraOptions extends object,
+> {
+    tableName: K;
     className?: string;
     containerClassName?: string;
     horizontalScroll?: boolean;
@@ -39,19 +47,27 @@ export interface TableProps<T extends string> {
     allUnselected?: boolean;
     columns: Column<T>[];
     optionsComponent?: React.ElementType;
-    pageSize?: number;
     canModifyColumns?: boolean;
     sortKey?: T;
     sortDirection?: SortDirection;
     children?: React.ReactNode;
     onSortPress?: (name: T, sortDirection?: SortDirection) => void;
-    onTableOptionChange?: (payload: TableOptionsChangePayload<T>) => void;
     onSelectAllChange?: (change: CheckInputChanged<string>) => void;
+    onTableOptionChange?: (
+        payload:
+            | SetTableOptionsParams<K>
+            | (SetTableOptionsParams<K> & ExtraOptions),
+    ) => void;
 }
 
 // IMPLEMENTATIONS
 
-export default function Table<T extends string>({
+export default function Table<
+    T extends ColumnNameMap[K],
+    K extends keyof ColumnNameMap,
+    ExtraOptions extends object,
+>({
+    tableName,
     className = styles.table,
     containerClassName = styles.tableContainer,
     horizontalScroll = true,
@@ -60,15 +76,14 @@ export default function Table<T extends string>({
     allUnselected = false,
     columns,
     optionsComponent,
-    pageSize,
     canModifyColumns,
     sortKey,
     sortDirection,
     children,
     onSortPress,
-    onTableOptionChange,
     onSelectAllChange,
-}: TableProps<T>) {
+    onTableOptionChange,
+}: TableProps<T, K, ExtraOptions>) {
     return (
         <Scroller
             className={classNames(
@@ -104,8 +119,8 @@ export default function Table<T extends string>({
                         );
 
                         if (
-                            (name === 'actions' || name === 'details') &&
-                            onTableOptionChange
+                            name === 'actions' &&
+                            typeof onTableOptionChange === 'function'
                         ) {
                             return (
                                 <TableHeaderCell
@@ -116,9 +131,9 @@ export default function Table<T extends string>({
                                     {...otherColumnProps}
                                 >
                                     <TableOptionsModalWrapper
+                                        tableName={tableName}
                                         columns={columns}
                                         optionsComponent={optionsComponent}
-                                        pageSize={pageSize}
                                         canModifyColumns={canModifyColumns}
                                         onTableOptionChange={
                                             onTableOptionChange

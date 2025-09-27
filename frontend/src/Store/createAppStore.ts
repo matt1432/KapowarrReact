@@ -28,11 +28,8 @@ export const store = configureStore({
                     'addVolume',
                     'auth',
                     'importVolume',
-                    'issueTable',
-                    'queueTable',
-                    'settings',
+                    'tableOptions',
                     'uiSettings',
-                    'volumeIndex',
                 ],
                 {
                     prefix: 'kapowarr_',

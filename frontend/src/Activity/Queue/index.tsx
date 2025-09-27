@@ -7,7 +7,7 @@ import { DndProvider } from 'react-dnd-multi-backend';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import { setQueueSort, setQueueTableOption } from 'Store/Slices/QueueTable';
+import { setTableOptions, setTableSort } from 'Store/Slices/TableOptions';
 import {
     useClearQueueMutation,
     useDeleteQueueItemMutation,
@@ -41,7 +41,7 @@ import QueueRow from './QueueRow';
 import type { Column } from 'Components/Table/Column';
 import type { QueueItem } from 'typings/Queue';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
-import type { TableOptionsChangePayload } from 'typings/Table';
+import type { SetTableOptionsParams } from 'Store/Slices/TableOptions';
 
 export type QueueColumn = QueueItem & {
     priority: number;
@@ -60,7 +60,7 @@ export default function Queue() {
     const dispatch = useRootDispatch();
 
     const { sortKey, sortDirection } = useRootSelector(
-        (state) => state.queueTable,
+        (state) => state.tableOptions.queueTable,
     );
 
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -110,7 +110,8 @@ export default function Queue() {
     const handleSortPress = useCallback(
         (sortKey: QueueColumnName, sortDirection?: SortDirection) => {
             dispatch(
-                setQueueSort({
+                setTableSort({
+                    tableName: 'queueTable',
                     sortKey: sortKey,
                     sortDirection,
                 }),
@@ -120,8 +121,8 @@ export default function Queue() {
     );
 
     const handleTableOptionChange = useCallback(
-        (payload: TableOptionsChangePayload<QueueColumnName>) => {
-            dispatch(setQueueTableOption(payload));
+        (payload: SetTableOptionsParams<'queueTable'>) => {
+            dispatch(setTableOptions(payload));
         },
         [dispatch],
     );
@@ -286,6 +287,7 @@ export default function Queue() {
                 ) : (
                     <DndProvider options={HTML5toTouch}>
                         <SortedTable
+                            tableName="queueTable"
                             columns={columns}
                             sortKey={sortKey}
                             sortDirection={sortDirection}

@@ -173,7 +173,7 @@ export default function History({
     if (isPopulated && hasItems && !error) {
         return (
             <div>
-                <Table columns={columns}>
+                <Table tableName="historyTable" columns={columns}>
                     <TableBody>
                         {items.map((item) => {
                             return (

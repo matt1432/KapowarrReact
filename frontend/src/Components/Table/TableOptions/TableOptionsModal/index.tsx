@@ -1,18 +1,16 @@
 // IMPORTS
 
 // React
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { HTML5toTouch } from 'rdndmb-html5-to-touch';
 import { DndProvider } from 'react-dnd-multi-backend';
 
 // Misc
-import { inputTypes } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 
 // General Components
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
-import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormInputHelpText from 'Components/Form/FormInputHelpText';
 import FormLabel from 'Components/Form/FormLabel';
 import Button from 'Components/Link/Button';
@@ -29,39 +27,50 @@ import TableOptionsColumn from '../TableOptionsColumn';
 import styles from './index.module.css';
 
 // Types
-import type { CheckInputChanged, InputChanged } from 'typings/Inputs';
+import type { EmptyObject } from 'type-fest';
+import type { CheckInputChanged } from 'typings/Inputs';
 import type { Column } from '../../Column';
-import type { TableOptionsChangePayload } from 'typings/Table';
+import type {
+    ColumnNameMap,
+    SetTableOptionsParams,
+} from 'Store/Slices/TableOptions';
 
-export interface TableOptionsModalProps<T extends string> {
+export interface TableOptionsModalProps<
+    T extends ColumnNameMap[K],
+    K extends keyof ColumnNameMap,
+    ExtraOptions extends object = EmptyObject,
+> {
+    tableName: K;
     isOpen: boolean;
     columns: Column<T>[];
-    pageSize?: number;
-    maxPageSize?: number;
     canModifyColumns?: boolean;
     optionsComponent?: React.ElementType;
-    onTableOptionChange: (payload: TableOptionsChangePayload<T>) => void;
+    onTableOptionChange: (
+        payload:
+            | SetTableOptionsParams<K>
+            | (SetTableOptionsParams<K> & ExtraOptions),
+    ) => void;
     onModalClose: () => void;
 }
 
 // IMPLEMENTATIONS
 
-export default function TableOptionsModal<T extends string>({
+export default function TableOptionsModal<
+    T extends ColumnNameMap[K],
+    K extends keyof ColumnNameMap,
+    ExtraOptions extends object,
+>({
+    tableName,
     isOpen,
     columns,
     canModifyColumns = true,
     optionsComponent: OptionsComponent,
-    pageSize: propsPageSize,
-    maxPageSize = 250,
     onTableOptionChange,
     onModalClose,
-}: TableOptionsModalProps<T>) {
-    const [pageSize, setPageSize] = useState(propsPageSize);
-    const [pageSizeError, setPageSizeError] = useState<string | null>(null);
+}: TableOptionsModalProps<T, K, ExtraOptions>) {
     const [dragIndex, setDragIndex] = useState<number | null>(null);
     const [dropIndex, setDropIndex] = useState<number | null>(null);
 
-    const hasPageSize = !!propsPageSize;
     const isDragging = dropIndex !== null;
     const isDraggingUp =
         isDragging &&
@@ -73,30 +82,6 @@ export default function TableOptionsModal<T extends string>({
         dropIndex !== null &&
         dragIndex !== null &&
         dropIndex > dragIndex;
-
-    const handlePageSizeChange = useCallback(
-        ({ value }: InputChanged<string, number | null>) => {
-            let error: string | null = null;
-
-            if (value === null || value < 5) {
-                error = translate('TablePageSizeMinimum', {
-                    minimumValue: '5',
-                });
-            }
-            else if (value > maxPageSize) {
-                error = translate('TablePageSizeMaximum', {
-                    maximumValue: `${maxPageSize}`,
-                });
-            }
-            else {
-                onTableOptionChange({ pageSize: value });
-            }
-
-            setPageSize(value ?? 0);
-            setPageSizeError(error);
-        },
-        [maxPageSize, onTableOptionChange],
-    );
 
     const handleVisibleChange = useCallback(
         ({ name, value }: CheckInputChanged<T>) => {
@@ -111,9 +96,9 @@ export default function TableOptionsModal<T extends string>({
                 return column;
             });
 
-            onTableOptionChange({ columns: newColumns });
+            onTableOptionChange({ tableName, columns: newColumns });
         },
-        [columns, onTableOptionChange],
+        [columns, onTableOptionChange, tableName],
     );
 
     const handleColumnDragMove = useCallback(
@@ -136,18 +121,14 @@ export default function TableOptionsModal<T extends string>({
                 const items = newColumns.splice(dragIndex, 1);
                 newColumns.splice(dropIndex, 0, items[0]);
 
-                onTableOptionChange({ columns: newColumns });
+                onTableOptionChange({ tableName, columns: newColumns });
             }
 
             setDragIndex(null);
             setDropIndex(null);
         },
-        [dragIndex, dropIndex, columns, onTableOptionChange],
+        [dragIndex, dropIndex, columns, onTableOptionChange, tableName],
     );
-
-    useEffect(() => {
-        setPageSize(propsPageSize);
-    }, [propsPageSize]);
 
     return (
         <DndProvider options={HTML5toTouch}>
@@ -158,34 +139,6 @@ export default function TableOptionsModal<T extends string>({
 
                         <ModalBody>
                             <Form>
-                                {hasPageSize ? (
-                                    <FormGroup>
-                                        <FormLabel>
-                                            {translate('TablePageSize')}
-                                        </FormLabel>
-
-                                        <FormInputGroup
-                                            type={inputTypes.NUMBER}
-                                            name="pageSize"
-                                            value={pageSize || 0}
-                                            helpText={translate(
-                                                'TablePageSizeHelpText',
-                                            )}
-                                            errors={
-                                                pageSizeError
-                                                    ? [
-                                                          {
-                                                              message:
-                                                                  pageSizeError,
-                                                          },
-                                                      ]
-                                                    : undefined
-                                            }
-                                            onChange={handlePageSizeChange}
-                                        />
-                                    </FormGroup>
-                                ) : null}
-
                                 {OptionsComponent ? (
                                     <OptionsComponent
                                         onTableOptionChange={

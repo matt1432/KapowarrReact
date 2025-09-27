@@ -77,7 +77,7 @@ export default function RootFolders() {
     }
 
     return (
-        <Table columns={columns}>
+        <Table tableName="rootFolders" columns={columns}>
             <TableBody>
                 {items.map((rootFolder) => {
                     return (

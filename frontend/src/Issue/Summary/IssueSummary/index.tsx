@@ -39,7 +39,7 @@ interface IssueSummaryProps {
 
 // IMPLEMENTATIONS
 
-const COLUMNS: Column<IssueSummaryColumnName>[] = [
+const columns: Column<IssueSummaryColumnName>[] = [
     {
         name: 'path',
         isModifiable: false,
@@ -110,7 +110,7 @@ export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
             </div>
 
             {files.length !== 0 ? (
-                <Table columns={COLUMNS}>
+                <Table tableName="issueSummary" columns={columns}>
                     <TableBody>
                         {files.map(
                             ({
@@ -130,7 +130,7 @@ export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
                                     scanType={scanType}
                                     resolution={resolution}
                                     dpi={dpi}
-                                    columns={COLUMNS}
+                                    columns={columns}
                                     onDeleteIssueFile={() =>
                                         handleDeleteIssueFile(id)
                                     }

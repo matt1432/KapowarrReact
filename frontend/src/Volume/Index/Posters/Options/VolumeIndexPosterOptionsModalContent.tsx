@@ -5,7 +5,10 @@ import { useCallback } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import { setVolumePosterOption } from 'Store/Slices/VolumeIndex';
+import {
+    setVolumePosterOption,
+    type VolumeIndexState,
+} from 'Store/Slices/VolumeIndex';
 
 // Misc
 import { inputTypes } from 'Helpers/Props';
@@ -24,8 +27,6 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 
 // Types
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
-import type { TableOptionsChangePayload } from 'typings/Table';
-import type { VolumeColumnName } from 'Volume/Volume';
 
 interface VolumeIndexPosterOptionsModalContentProps {
     onModalClose(...args: unknown[]): unknown;
@@ -73,7 +74,7 @@ export default function VolumeIndexPosterOptionsModalContent({
         ({ name, value }: { name: string; value: unknown }) => {
             const payload = {
                 [name]: value,
-            } as Partial<TableOptionsChangePayload<VolumeColumnName>>;
+            } as Partial<VolumeIndexState['tableOptions']>;
             dispatch(setVolumePosterOption(payload));
         },
         [dispatch],
