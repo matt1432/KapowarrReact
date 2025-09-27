@@ -45,7 +45,13 @@ whole process is automated and can be customised in the settings.
 ## Screenshots
 
 ![](https://github.com/user-attachments/assets/300f677d-0089-4ef5-a543-42a15cabee16)
+<br></br>
+<br></br>
 ![](https://github.com/user-attachments/assets/d02fae76-591c-4a14-9602-45919d85289e)
+<br></br>
+<br></br>
 ![](https://github.com/user-attachments/assets/d11e290a-0f17-45ba-ad17-e5fb4d0650f7)
+<br></br>
+<br></br>
 ![](https://github.com/user-attachments/assets/c871093c-e595-4d44-8d64-534a8de68def)
 
