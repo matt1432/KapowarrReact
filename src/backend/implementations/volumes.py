@@ -194,7 +194,7 @@ class Issue:
 
         return converted_value
 
-    def update(self, data: Mapping[str, Any], called_from: str = "") -> None:
+    def update(self, data: Mapping[str, Any], called_from: str = "", update_websocket = True) -> None:
         """Change aspects of the issue, in a `dict.update()` type of way.
 
         Args:
@@ -228,7 +228,8 @@ class Issue:
                 f"UPDATE issues SET {key} = ? WHERE id = ?;", (value, self.id)
             )
 
-        WebSocket().send_issue_updated(self, called_from)
+        if update_websocket:
+            WebSocket().send_issue_updated(self, called_from)
 
         LOGGER.info(f"For issue {self.id}, changed: {formatted_data}")
         return
@@ -578,6 +579,7 @@ class Volume:
         data: Mapping[str, Any],
         from_public: bool = False,
         called_from: str = "",
+        update_websocket = True,
     ) -> None:
         allowed_keys: Sequence[str]
 
@@ -602,7 +604,8 @@ class Volume:
                 f"UPDATE volumes SET {key} = ? WHERE id = ?;", (value, self.id)
             )
 
-        WebSocket().send_volume_updated(self, called_from)
+        if update_websocket:
+            WebSocket().send_volume_updated(self, called_from)
 
         return
 
@@ -1215,13 +1218,13 @@ class Library:
 
             if special_version is None:
                 special_version = determine_special_version(volume.id)
-            volume["special_version"] = special_version
+            volume.update({"special_version": special_version}, update_websocket=False)
 
             folder = generate_volume_folder_path(
                 root_folder.folder, volume_folder or volume_id
             )
 
-            volume["folder"] = folder
+            volume.update({"folder": folder}, update_websocket=False)
 
             if Settings().sv.create_empty_volume_folders:
                 create_folder(folder)
