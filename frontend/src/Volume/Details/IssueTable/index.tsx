@@ -35,7 +35,6 @@ import styles from './index.module.css';
 // Types
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { IssueColumnName, IssueData, IssueFileData } from 'Issue/Issue';
-import type { Column } from 'Components/Table/Column';
 import type { SocketEventHandler } from 'typings/Socket';
 
 export interface IssueRowData extends IssueData {
@@ -56,64 +55,6 @@ interface IssueTableProps {
 }
 
 // IMPLEMENTATIONS
-
-const columns: Column<IssueColumnName>[] = [
-    {
-        name: 'monitored',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'issueNumber',
-        isModifiable: true,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'title',
-        isModifiable: true,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'path',
-        isModifiable: true,
-        isSortable: true,
-        isVisible: false,
-    },
-    {
-        name: 'relativePath',
-        isModifiable: true,
-        isSortable: true,
-        isVisible: false,
-    },
-    {
-        name: 'size',
-        isModifiable: true,
-        isSortable: true,
-        isVisible: false,
-    },
-    {
-        name: 'releaseGroup',
-        isModifiable: true,
-        isSortable: true,
-        isVisible: false,
-    },
-    {
-        name: 'status',
-        isModifiable: true,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'actions',
-        hideHeaderLabel: true,
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-];
 
 function useIssuesSelector(volumeId: number) {
     return useSearchVolumeQuery(
@@ -159,7 +100,7 @@ function useIssuesSelector(volumeId: number) {
 export default function IssueTable({ volumeId }: IssueTableProps) {
     const dispatch = useRootDispatch();
 
-    const { sortKey, sortDirection } = useRootSelector(
+    const { columns, sortKey, sortDirection } = useRootSelector(
         (state) => state.tableOptions.issueTable,
     );
 

@@ -38,7 +38,6 @@ import SortedTable from 'Components/Table/SortedTable';
 import QueueRow from './QueueRow';
 
 // Types
-import type { Column } from 'Components/Table/Column';
 import type { QueueItem } from 'typings/Queue';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { SetTableOptionsParams } from 'Store/Slices/TableOptions';
@@ -59,7 +58,7 @@ export type QueueColumnName = keyof QueueColumn;
 export default function Queue() {
     const dispatch = useRootDispatch();
 
-    const { sortKey, sortDirection } = useRootSelector(
+    const { columns, sortKey, sortDirection } = useRootSelector(
         (state) => state.tableOptions.queueTable,
     );
 
@@ -116,8 +115,22 @@ export default function Queue() {
                     sortDirection,
                 }),
             );
+            dispatch(
+                setTableOptions({
+                    tableName: 'queueTable',
+                    columns: columns.map((column) => {
+                        if (column.name !== 'drag') {
+                            return column;
+                        }
+                        return {
+                            ...column,
+                            isVisible: sortKey === 'priority',
+                        };
+                    }),
+                }),
+            );
         },
-        [dispatch],
+        [columns, dispatch],
     );
 
     const handleTableOptionChange = useCallback(
@@ -125,75 +138,6 @@ export default function Queue() {
             dispatch(setTableOptions(payload));
         },
         [dispatch],
-    );
-
-    const columns = useMemo(
-        () =>
-            [
-                {
-                    name: 'drag',
-                    hideHeaderLabel: true,
-                    isModifiable: false,
-                    isSortable: false,
-                    isVisible: sortKey === 'priority',
-                },
-                {
-                    name: 'priority',
-                    isModifiable: true,
-                    isSortable: true,
-                    isVisible: true,
-                },
-                {
-                    name: 'status',
-                    isModifiable: true,
-                    isSortable: true,
-                    isVisible: true,
-                },
-                {
-                    name: 'title',
-                    isModifiable: true,
-                    isSortable: true,
-                    isVisible: true,
-                },
-                {
-                    name: 'sourceName',
-                    isModifiable: true,
-                    isSortable: true,
-                    isVisible: true,
-                },
-                {
-                    name: 'size',
-                    isModifiable: true,
-                    isSortable: true,
-                    isVisible: true,
-                },
-                {
-                    name: 'speed',
-                    isModifiable: true,
-                    isSortable: true,
-                    isVisible: true,
-                },
-                {
-                    name: 'timeLeft',
-                    isModifiable: true,
-                    isSortable: true,
-                    isVisible: true,
-                },
-                {
-                    name: 'progress',
-                    isModifiable: true,
-                    isSortable: true,
-                    isVisible: true,
-                },
-                {
-                    name: 'actions',
-                    hideHeaderLabel: true,
-                    isModifiable: false,
-                    isSortable: false,
-                    isVisible: true,
-                },
-            ] satisfies Column<QueueColumnName>[],
-        [sortKey],
     );
 
     // DnD

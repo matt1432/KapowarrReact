@@ -67,7 +67,6 @@ import VolumeIndexTable from './Table/VolumeIndexTable';
 import styles from './index.module.css';
 
 // Types
-import type { Column } from 'Components/Table/Column';
 import type { VolumeColumnName } from 'Volume/Volume';
 
 export type IndexView = 'posters' | 'table';
@@ -80,72 +79,8 @@ interface VolumeIndexProps {
 
 // IMPLEMENTATIONS
 
-const columns: Column<VolumeColumnName>[] = [
-    {
-        name: 'monitored',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'title',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'year',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'publisher',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'issuesDownloadedMonitored',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'issueCountMonitored',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: false,
-    },
-    {
-        name: 'folder',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: false,
-    },
-    {
-        name: 'totalSize',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: false,
-    },
-    {
-        name: 'monitorNewIssues',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: false,
-    },
-    {
-        name: 'actions',
-        hideHeaderLabel: true,
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-];
-
 const useIndexVolumes = () => {
-    const { sortKey, sortDirection } = useRootSelector(
+    const { columns, sortKey, sortDirection } = useRootSelector(
         (state) => state.tableOptions.volumeIndex,
     );
 
@@ -207,7 +142,7 @@ const VolumeIndex = withScrollPosition(
     ({ initialScrollTop }: VolumeIndexProps) => {
         const dispatch = useRootDispatch();
 
-        const { sortKey, sortDirection } = useRootSelector(
+        const { columns, sortKey, sortDirection } = useRootSelector(
             (state) => state.tableOptions.volumeIndex,
         );
 

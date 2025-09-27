@@ -13,7 +13,7 @@ import {
 } from 'Store/Api/Command';
 
 // Misc
-import { icons, inputTypes, kinds, sortDirections } from 'Helpers/Props';
+import { icons, inputTypes, kinds } from 'Helpers/Props';
 import { getErrorMessage } from 'Utilities/Object/error';
 
 import translate from 'Utilities/String/translate';
@@ -36,8 +36,6 @@ import InteractiveSearchRow from './InteractiveSearchRow';
 import styles from './index.module.css';
 
 // Types
-import type { Column } from 'Components/Table/Column';
-
 import type {
     InteractiveSearchPayload,
     InteractiveSearchSort,
@@ -78,87 +76,6 @@ function weighIssueNumber(
     return issueNumber;
 }
 
-const columns: Column<InteractiveSearchSort>[] = [
-    {
-        name: 'match',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'issueNumber',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'displayTitle',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'filesize',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'pages',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'releaser',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'scanType',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'resolution',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'dpi',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'source',
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'matchRejections',
-        icon: {
-            name: icons.DANGER,
-            title: 'Rejections',
-        },
-        isModifiable: false,
-        isSortable: true,
-        fixedSortDirection: sortDirections.ASCENDING,
-        isVisible: true,
-    },
-    {
-        name: 'actions',
-        hideHeaderLabel: true,
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-];
-
 function InternalSearch({
     isFetching,
     isPopulated,
@@ -170,7 +87,7 @@ function InternalSearch({
 }: SearchProps) {
     const dispatch = useRootDispatch();
 
-    const { sortKey, sortDirection } = useRootSelector(
+    const { columns, sortKey, sortDirection } = useRootSelector(
         (state) => state.tableOptions.searchResults,
     );
 

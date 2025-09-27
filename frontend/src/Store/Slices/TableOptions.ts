@@ -4,7 +4,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 // Misc
-import { sortDirections } from 'Helpers/Props';
+import { icons, sortDirections } from 'Helpers/Props';
 
 // Types
 import type { Column } from 'Components/Table/Column';
@@ -55,24 +55,17 @@ export interface SetTableOptionsParams<T extends keyof ColumnNameMap> {
     columns: Column<ColumnNameMap[T]>[];
 }
 
-// TODO: add columns here
+interface TableState<T extends keyof ColumnNameMap> {
+    sortKey: ColumnNameMap[T];
+    sortDirection: SortDirection;
+    columns: Column<ColumnNameMap[T]>[];
+}
+
 export interface TableOptionsState {
-    issueTable: {
-        sortKey: IssueColumnName;
-        sortDirection: SortDirection;
-    };
-    queueTable: {
-        sortKey: QueueColumnName;
-        sortDirection: SortDirection;
-    };
-    searchResults: {
-        sortKey: InteractiveSearchSort;
-        sortDirection: SortDirection;
-    };
-    volumeIndex: {
-        sortKey: IndexSort;
-        sortDirection: SortDirection;
-    };
+    issueTable: TableState<'issueTable'>;
+    queueTable: TableState<'queueTable'>;
+    searchResults: TableState<'searchResults'>;
+    volumeIndex: TableState<'volumeIndex'>;
 }
 
 // IMPLEMENTATIONS
@@ -81,18 +74,282 @@ const initialState = {
     issueTable: {
         sortKey: 'issueNumber',
         sortDirection: sortDirections.ASCENDING,
+        columns: [
+            {
+                name: 'monitored',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'issueNumber',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'title',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'path',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: false,
+            },
+            {
+                name: 'relativePath',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: false,
+            },
+            {
+                name: 'size',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: false,
+            },
+            {
+                name: 'releaseGroup',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: false,
+            },
+            {
+                name: 'status',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'actions',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+        ],
     },
     queueTable: {
         sortKey: 'priority',
         sortDirection: sortDirections.ASCENDING,
+        columns: [
+            {
+                name: 'drag',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'priority',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'status',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'title',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'sourceName',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'size',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'speed',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'timeLeft',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'progress',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'actions',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+        ],
     },
     searchResults: {
         sortKey: 'issueNumber',
         sortDirection: sortDirections.ASCENDING,
+        columns: [
+            {
+                name: 'match',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'issueNumber',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'displayTitle',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'filesize',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'pages',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'releaser',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'scanType',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'resolution',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'dpi',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'source',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'matchRejections',
+                icon: {
+                    name: icons.DANGER,
+                    title: 'Rejections',
+                },
+                isModifiable: false,
+                isSortable: true,
+                fixedSortDirection: sortDirections.ASCENDING,
+                isVisible: true,
+            },
+            {
+                name: 'actions',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+        ],
     },
     volumeIndex: {
         sortKey: 'title',
         sortDirection: sortDirections.ASCENDING,
+        columns: [
+            {
+                name: 'monitored',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'title',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'year',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'publisher',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'issuesDownloadedMonitored',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'issueCountMonitored',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: false,
+            },
+            {
+                name: 'folder',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: false,
+            },
+            {
+                name: 'totalSize',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: false,
+            },
+            {
+                name: 'monitorNewIssues',
+                isModifiable: false,
+                isSortable: true,
+                isVisible: false,
+            },
+            {
+                name: 'actions',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+        ],
     },
 } satisfies TableOptionsState as TableOptionsState;
 
