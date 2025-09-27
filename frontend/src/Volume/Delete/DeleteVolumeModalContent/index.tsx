@@ -17,6 +17,9 @@ import { icons, inputTypes, kinds, socketEvents } from 'Helpers/Props';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 
+// Hooks
+import useSocketCallback from 'Helpers/Hooks/useSocketCallback';
+
 // General Components
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -35,7 +38,6 @@ import styles from './index.module.css';
 // Types
 import type { CheckInputChanged } from 'typings/Inputs';
 import type { SocketEventHandler } from 'typings/Socket';
-import useSocketCallback from 'Helpers/Hooks/useSocketCallback';
 
 // IMPLEMENTATIONS
 

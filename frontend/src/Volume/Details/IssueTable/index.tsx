@@ -123,14 +123,13 @@ export default function IssueTable({ volumeId }: IssueTableProps) {
         (data) => {
             if (data.calledFrom === 'IssueTable') {
                 setIsToggling(
-                    [...isToggling].splice(
-                        isToggling.indexOf(data.issue.id),
-                        1,
-                    ),
+                    isToggling.toSpliced(isToggling.indexOf(data.issue.id), 1),
                 );
+                // Needed to refresh the row
+                getIsSaving(data.issue.id);
             }
         },
-        [isToggling],
+        [isToggling, getIsSaving],
     );
     useSocketCallback(socketEvents.ISSUE_UPDATED, socketCallback);
 
