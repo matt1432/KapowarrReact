@@ -194,7 +194,12 @@ class Issue:
 
         return converted_value
 
-    def update(self, data: Mapping[str, Any], called_from: str = "", update_websocket = True) -> None:
+    def update(
+        self,
+        data: Mapping[str, Any],
+        called_from: str = "",
+        update_websocket=True,
+    ) -> None:
         """Change aspects of the issue, in a `dict.update()` type of way.
 
         Args:
@@ -579,7 +584,7 @@ class Volume:
         data: Mapping[str, Any],
         from_public: bool = False,
         called_from: str = "",
-        update_websocket = True,
+        update_websocket=True,
     ) -> None:
         allowed_keys: Sequence[str]
 
@@ -1218,7 +1223,9 @@ class Library:
 
             if special_version is None:
                 special_version = determine_special_version(volume.id)
-            volume.update({"special_version": special_version}, update_websocket=False)
+            volume.update(
+                {"special_version": special_version}, update_websocket=False
+            )
 
             folder = generate_volume_folder_path(
                 root_folder.folder, volume_folder or volume_id

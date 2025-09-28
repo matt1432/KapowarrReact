@@ -27,6 +27,44 @@ def get_latest_db_version() -> int:
     """
     return max(get_db_migration_map()) + 1
 
+def migrate_react() -> None:
+    from backend.internals.settings import Settings
+
+    s = Settings()
+
+    if not s["added_kapowarr_react_columns"]:
+        get_db().executescript("""
+            BEGIN TRANSACTION;
+            PRAGMA defer_foreign_keys = ON;
+
+            ALTER TABLE volumes ADD COLUMN
+                libgen_series_id INTEGER;
+
+            ALTER TABLE files ADD COLUMN
+                releaser VARCHAR(255);
+            ALTER TABLE files ADD COLUMN
+                scan_type VARCHAR(255);
+            ALTER TABLE files ADD COLUMN
+                resolution VARCHAR(255);
+            ALTER TABLE files ADD COLUMN
+                dpi VARCHAR(255);
+
+            ALTER TABLE download_queue ADD COLUMN
+                releaser VARCHAR(255);
+            ALTER TABLE download_queue ADD COLUMN
+                scan_type VARCHAR(255);
+            ALTER TABLE download_queue ADD COLUMN
+                resolution VARCHAR(255);
+            ALTER TABLE download_queue ADD COLUMN
+                dpi VARCHAR(255);
+
+            ALTER TABLE download_queue ADD COLUMN
+                external_id VARCHAR(255);
+
+            COMMIT;
+        """)
+        s["added_kapowarr_react_columns"] = True
+
 
 def migrate_db() -> None:
     """
@@ -39,6 +77,7 @@ def migrate_db() -> None:
     current_db_version = s["database_version"]
     newest_version = get_latest_db_version()
     if current_db_version == newest_version:
+        migrate_react()
         get_db_migration_map.cache_clear()
         return
 
@@ -53,6 +92,8 @@ def migrate_db() -> None:
             continue
         db_migration_map[start_version]().run()
         s["database_version"] = start_version + 1
+
+    migrate_react()
 
     get_db().execute("VACUUM;")
     s._fetch_settings()
@@ -317,6 +358,7 @@ class MigrateUpdateManifest(DBMigrator):
         # That has since been replaced by the dynamic endpoint serving the JSON.
         # So the migration doesn't do anything anymore, and a function used
         # doesn't exist anymore, so the whole migration is just removed.
+
         return
 
 
@@ -904,9 +946,10 @@ class MigrateRemoveUnusedSettings(DBMigrator):
 
         # This migration would remove unused settings, but one of those was
         # used in migration V31 -> V32, so removing the unused settings was
-        # moved to that migration. But because people already ran this migration,
-        # their database version already updated to 31, so this migration couldn't
-        # be removed.
+        # moved to that migration, after using the setting. But because people
+        # already ran this migration, their database version already updated to
+        # 31, so this migration couldn't be removed.
+
         return
 
 
@@ -1147,85 +1190,11 @@ class MigrateAddMonitorNewIssuesToVolumes(DBMigrator):
         return
 
 
-class MigrateAddFileInfo(DBMigrator):
+class MigrateTorrentTimeoutToDownloadTimeout(DBMigrator):
     start_version = 38
 
     def run(self) -> None:
         # V38 -> V39
-
-        get_db().executescript("""
-            BEGIN TRANSACTION;
-            PRAGMA defer_foreign_keys = ON;
-
-            ALTER TABLE files ADD COLUMN
-                releaser VARCHAR(255);
-            ALTER TABLE files ADD COLUMN
-                scan_type VARCHAR(255);
-            ALTER TABLE files ADD COLUMN
-                resolution VARCHAR(255);
-            ALTER TABLE files ADD COLUMN
-                dpi VARCHAR(255);
-
-            COMMIT;
-        """)
-        return
-
-
-class MigrateAddLibgenURLToVolumes(DBMigrator):
-    start_version = 39
-
-    def run(self) -> None:
-        # V39 -> V40
-
-        get_db().execute("""
-            ALTER TABLE volumes ADD COLUMN
-                libgen_url VARCHAR(255);
-        """)
-        return
-
-
-class MigrateAddExternalIDToDownloadQueue(DBMigrator):
-    start_version = 40
-
-    def run(self) -> None:
-        # V40 -> V41
-
-        get_db().execute("""
-            ALTER TABLE download_queue ADD COLUMN
-                external_id VARCHAR(255);
-        """)
-        return
-
-
-class MigrateAddFileInfoToDownloadQueue(DBMigrator):
-    start_version = 41
-
-    def run(self) -> None:
-        # V41 -> V42
-
-        get_db().executescript("""
-            BEGIN TRANSACTION;
-            PRAGMA defer_foreign_keys = ON;
-
-            ALTER TABLE download_queue ADD COLUMN
-                releaser VARCHAR(255);
-            ALTER TABLE download_queue ADD COLUMN
-                scan_type VARCHAR(255);
-            ALTER TABLE download_queue ADD COLUMN
-                resolution VARCHAR(255);
-            ALTER TABLE download_queue ADD COLUMN
-                dpi VARCHAR(255);
-
-            COMMIT;
-        """)
-        return
-
-
-class MigrateTorrentTimeoutToDownloadTimeout(DBMigrator):
-    start_version = 42
-
-    def run(self) -> None:
-        # V42 -> V43
 
         cursor = get_db()
 
@@ -1246,10 +1215,10 @@ class MigrateTorrentTimeoutToDownloadTimeout(DBMigrator):
 
 
 class MigrateDeleteCompletedTorrentsToDownloads(DBMigrator):
-    start_version = 43
+    start_version = 39
 
     def run(self) -> None:
-        # V43 -> V44
+        # V39 -> V40
 
         cursor = get_db()
 
@@ -1270,10 +1239,10 @@ class MigrateDeleteCompletedTorrentsToDownloads(DBMigrator):
 
 
 class MigrateHashPassword(DBMigrator):
-    start_version = 44
+    start_version = 40
 
     def run(self) -> None:
-        # V44 -> V45
+        # V40 -> V41
 
         from backend.internals.settings import Settings
 
@@ -1287,10 +1256,10 @@ class MigrateHashPassword(DBMigrator):
 
 
 class MigrateAddSuccessToDownloadHistory(DBMigrator):
-    start_version = 45
+    start_version = 41
 
     def run(self) -> None:
-        # V45 -> V46
+        # V41 -> V42
 
         get_db().execute("""
             ALTER TABLE download_history ADD COLUMN
@@ -1301,10 +1270,10 @@ class MigrateAddSuccessToDownloadHistory(DBMigrator):
 
 
 class MigrateSeperateCoversTable(DBMigrator):
-    start_version = 46
+    start_version = 42
 
     def run(self) -> None:
-        # V46 -> V47
+        # V42 -> V43
 
         cursor = get_db()
 
@@ -1316,10 +1285,9 @@ class MigrateSeperateCoversTable(DBMigrator):
                 SELECT id, cover
                 FROM volumes;
 
-            CREATE TEMPORARY TABLE temp_volumes_46 AS SELECT
+            CREATE TEMPORARY TABLE temp_volumes_43 AS SELECT
                 id,
                 comicvine_id,
-                libgen_url,
                 title,
                 alt_title,
                 year,
@@ -1341,7 +1309,6 @@ class MigrateSeperateCoversTable(DBMigrator):
             CREATE TABLE volumes(
                 id INTEGER PRIMARY KEY,
                 comicvine_id INTEGER NOT NULL,
-                libgen_url VARCHAR(255),
                 title VARCHAR(255) NOT NULL,
                 alt_title VARCHAR(255),
                 year INTEGER(5),
@@ -1363,208 +1330,10 @@ class MigrateSeperateCoversTable(DBMigrator):
 
             INSERT INTO volumes
                 SELECT *
-                FROM temp_volumes_46;
+                FROM temp_volumes_43;
 
             COMMIT;
             PRAGMA foreign_keys = ON;
-        """)
-
-        return
-
-
-class MigrateAddLibgenURLToVolumesAgain(DBMigrator):
-    start_version = 47
-
-    def run(self) -> None:
-        # V47 -> V48
-
-        # For myself since I lost that column after mistake from
-        # previous migration
-
-        # from backend.internals.db import get_db
-
-        # get_db().execute("""
-        #     ALTER TABLE volumes ADD COLUMN
-        #         libgen_url VARCHAR(255);
-        # """)
-        return
-
-
-class MigrateRenameLibgenID(DBMigrator):
-    start_version = 48
-
-    def run(self) -> None:
-        # V48 -> V49
-
-        cursor = get_db()
-
-        cursor.executescript("""
-            PRAGMA foreign_keys = OFF;
-            BEGIN TRANSACTION;
-
-            CREATE TEMPORARY TABLE temp_volumes_48 AS SELECT
-                id,
-                comicvine_id,
-                title,
-                alt_title,
-                year,
-                publisher,
-                volume_number,
-                description,
-                site_url,
-                monitored,
-                monitor_new_issues,
-                root_folder,
-                folder,
-                custom_folder,
-                last_cv_fetch,
-                special_version,
-                special_version_locked
-            FROM volumes;
-
-            ALTER TABLE temp_volumes_48 ADD COLUMN
-                libgen_series_id INTEGER;
-
-            DROP TABLE volumes;
-
-            CREATE TABLE volumes(
-                id INTEGER PRIMARY KEY,
-                comicvine_id INTEGER NOT NULL,
-                libgen_series_id INTEGER,
-                title VARCHAR(255) NOT NULL,
-                alt_title VARCHAR(255),
-                year INTEGER(5),
-                publisher VARCHAR(255),
-                volume_number INTEGER(8) DEFAULT 1,
-                description TEXT,
-                site_url TEXT NOT NULL DEFAULT "",
-                monitored BOOL NOT NULL DEFAULT 0,
-                monitor_new_issues BOOL NOT NULL DEFAULT 1,
-                root_folder INTEGER NOT NULL,
-                folder TEXT,
-                custom_folder BOOL NOT NULL DEFAULT 0,
-                last_cv_fetch INTEGER(8) DEFAULT 0,
-                special_version VARCHAR(255),
-                special_version_locked BOOL NOT NULL DEFAULT 0,
-
-                FOREIGN KEY (root_folder) REFERENCES root_folders(id)
-            );
-
-            INSERT INTO volumes
-                SELECT *
-                FROM temp_volumes_48;
-
-            COMMIT;
-            PRAGMA foreign_keys = ON;
-        """)
-
-        return
-
-
-class MigrateAddIssueIDToQueue(DBMigrator):
-    start_version = 49
-
-    def run(self) -> None:
-        # V49 -> V50
-
-        get_db().executescript("""
-            BEGIN TRANSACTION;
-            PRAGMA defer_foreign_keys = ON;
-
-            CREATE TEMPORARY TABLE temp_download_queue_50 AS
-                SELECT * FROM download_queue;
-            DROP TABLE download_queue;
-
-            ALTER TABLE temp_download_queue_50 ADD COLUMN
-                issue_id INTEGER;
-
-            CREATE TABLE download_queue(
-                id INTEGER PRIMARY KEY,
-                volume_id INTEGER NOT NULL,
-                issue_id INTEGER,
-                client_type VARCHAR(255) NOT NULL,
-                external_client_id INTEGER,
-                external_id VARCHAR(255),
-
-                download_link TEXT NOT NULL,
-                covered_issues VARCHAR(255),
-                force_original_name BOOL,
-
-                source_type VARCHAR(25) NOT NULL,
-                source_name VARCHAR(255) NOT NULL,
-
-                web_link TEXT,
-                web_title TEXT,
-                web_sub_title TEXT,
-
-                releaser VARCHAR(255),
-                scan_type VARCHAR(255),
-                resolution VARCHAR(255),
-                dpi VARCHAR(255),
-
-                FOREIGN KEY (external_client_id) REFERENCES external_download_clients(id),
-                FOREIGN KEY (volume_id) REFERENCES volumes(id),
-                FOREIGN KEY (issue_id) REFERENCES issues(id)
-                    ON DELETE SET NULL
-            );
-
-            INSERT INTO download_queue
-                SELECT *
-                FROM temp_download_queue_50;
-
-            COMMIT;
-        """)
-        return
-
-
-class MigrateDropIssueIDInQueue(DBMigrator):
-    start_version = 50
-
-    def run(self) -> None:
-        # V50 -> V51
-
-        get_db().executescript("""
-            BEGIN TRANSACTION;
-            PRAGMA defer_foreign_keys = ON;
-
-            CREATE TEMPORARY TABLE temp_download_queue_51 AS
-                SELECT * FROM download_queue;
-            DROP TABLE download_queue;
-
-            ALTER TABLE temp_download_queue_51 DROP COLUMN issue_id;
-
-            CREATE TABLE download_queue(
-                id INTEGER PRIMARY KEY,
-                volume_id INTEGER NOT NULL,
-                client_type VARCHAR(255) NOT NULL,
-                external_client_id INTEGER,
-                external_id VARCHAR(255),
-
-                download_link TEXT NOT NULL,
-                covered_issues VARCHAR(255),
-                force_original_name BOOL,
-
-                source_type VARCHAR(25) NOT NULL,
-                source_name VARCHAR(255) NOT NULL,
-
-                web_link TEXT,
-                web_title TEXT,
-                web_sub_title TEXT,
-
-                releaser VARCHAR(255),
-                scan_type VARCHAR(255),
-                resolution VARCHAR(255),
-                dpi VARCHAR(255),
-
-                FOREIGN KEY (external_client_id) REFERENCES external_download_clients(id),
-                FOREIGN KEY (volume_id) REFERENCES volumes(id)
-            );
-
-            INSERT INTO download_queue
-                SELECT *
-                FROM temp_download_queue_51;
-
-            COMMIT;
         """)
 
         return

@@ -42,6 +42,7 @@ from backend.internals.db_migration import get_latest_db_version
 @dataclass(frozen=True)
 class SettingsValues:
     database_version: int = get_latest_db_version()
+    added_kapowarr_react_columns: bool = False
     log_level: int = INFO
     auth_password: str = ""
     auth_salt: bytes = token_bytes()

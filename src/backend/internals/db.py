@@ -299,7 +299,6 @@ def setup_db() -> None:
         CREATE TABLE IF NOT EXISTS volumes(
             id INTEGER PRIMARY KEY,
             comicvine_id INTEGER NOT NULL,
-            libgen_series_id INTEGER,
             title VARCHAR(255) NOT NULL,
             alt_title VARCHAR(255),
             year INTEGER(5),
@@ -347,11 +346,7 @@ def setup_db() -> None:
         CREATE TABLE IF NOT EXISTS files(
             id INTEGER PRIMARY KEY,
             filepath TEXT UNIQUE NOT NULL,
-            size INTEGER,
-            releaser VARCHAR(255),
-            scan_type VARCHAR(255),
-            resolution VARCHAR(255),
-            dpi VARCHAR(255)
+            size INTEGER
         );
         CREATE TABLE IF NOT EXISTS issues_files(
             file_id INTEGER NOT NULL,
@@ -392,7 +387,6 @@ def setup_db() -> None:
             volume_id INTEGER NOT NULL,
             client_type VARCHAR(255) NOT NULL,
             external_client_id INTEGER,
-            external_id VARCHAR(255),
 
             download_link TEXT NOT NULL,
             covered_issues VARCHAR(255),
@@ -404,11 +398,6 @@ def setup_db() -> None:
             web_link TEXT,
             web_title TEXT,
             web_sub_title TEXT,
-
-            releaser VARCHAR(255),
-            scan_type VARCHAR(255),
-            resolution VARCHAR(255),
-            dpi VARCHAR(255),
 
             FOREIGN KEY (external_client_id) REFERENCES external_download_clients(id),
             FOREIGN KEY (volume_id) REFERENCES volumes(id)
