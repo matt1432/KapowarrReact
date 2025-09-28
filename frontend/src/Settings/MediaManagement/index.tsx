@@ -163,7 +163,7 @@ export default function MediaManagement() {
                             <FormInputGroup
                                 type={inputTypes.SELECT}
                                 name="issuePadding"
-                                onChange={handleInputChange<'issuePadding'>}
+                                onChange={handleInputChange}
                                 value={changes.issuePadding}
                                 values={issuePaddingOptions}
                             />
@@ -174,7 +174,7 @@ export default function MediaManagement() {
                             <FormInputGroup
                                 type={inputTypes.SELECT}
                                 name="volumePadding"
-                                onChange={handleInputChange<'volumePadding'>}
+                                onChange={handleInputChange}
                                 value={changes.volumePadding}
                                 values={volumePaddingOptions}
                             />

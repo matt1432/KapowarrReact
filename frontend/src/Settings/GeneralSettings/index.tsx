@@ -29,7 +29,6 @@ import SettingsToolbar from 'Settings/SettingsToolbar';
 
 // Types
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
-import type { InputChanged } from 'typings/Inputs';
 
 // IMPLEMENTATIONS
 
@@ -44,15 +43,9 @@ export default function GeneralSettings() {
         hasPendingChanges,
         onSavePress,
         handleInputChange,
+        handleNonNullInputChange,
         changes,
     } = useEditSettings();
-
-    const handlePortChange = useCallback(
-        ({ name, value }: InputChanged<'port', string>) => {
-            handleInputChange<'port'>({ name, value: parseInt(value) });
-        },
-        [handleInputChange],
-    );
 
     const [resetApiKey, { isLoading: isResettingApiKey }] =
         useResetApiKeyMutation();
@@ -89,10 +82,10 @@ export default function GeneralSettings() {
                         <FormGroup>
                             <FormLabel>{translate('Port')}</FormLabel>
                             <FormInputGroup
-                                type={inputTypes.TEXT}
+                                type={inputTypes.NUMBER}
                                 name="port"
                                 helpText={translate('PortHelpText')}
-                                onChange={handlePortChange}
+                                onChange={handleNonNullInputChange}
                                 value={changes.port}
                             />
                         </FormGroup>
@@ -188,7 +181,7 @@ export default function GeneralSettings() {
                                 type={inputTypes.SELECT}
                                 name="logLevel"
                                 helpText={translate('LogLevelHelpText')}
-                                onChange={handleInputChange<'logLevel'>}
+                                onChange={handleInputChange}
                                 value={changes.logLevel}
                                 values={logLevelOptions}
                             />

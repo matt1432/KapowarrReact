@@ -79,7 +79,7 @@ export default function UISettings() {
     const themeOptions = Object.keys(themes).map((theme) => ({
         key: theme,
         value: titleCase(theme),
-    }));
+    })) as EnhancedSelectInputValue<'auto' | 'dark' | 'light'>[];
 
     const handleInputChange = useCallback(
         <Key extends keyof UISettingsState>({
@@ -105,7 +105,7 @@ export default function UISettings() {
                                 name="theme"
                                 helpText={translate('ThemeHelpText')}
                                 values={themeOptions}
-                                onChange={handleInputChange<'theme'>}
+                                onChange={handleInputChange}
                                 value={theme}
                             />
                         </FormGroup>
@@ -120,9 +120,7 @@ export default function UISettings() {
                                 helpText={translate(
                                     'EnableColorImpairedModeHelpText',
                                 )}
-                                onChange={
-                                    handleInputChange<'enableColorImpairedMode'>
-                                }
+                                onChange={handleInputChange}
                                 value={enableColorImpairedMode}
                             />
                         </FormGroup>
@@ -138,7 +136,7 @@ export default function UISettings() {
                                 type={inputTypes.SELECT}
                                 name="shortDateFormat"
                                 values={shortDateFormatOptions}
-                                onChange={handleInputChange<'shortDateFormat'>}
+                                onChange={handleInputChange}
                                 value={shortDateFormat}
                             />
                         </FormGroup>
@@ -150,7 +148,7 @@ export default function UISettings() {
                                 type={inputTypes.SELECT}
                                 name="longDateFormat"
                                 values={longDateFormatOptions}
-                                onChange={handleInputChange<'longDateFormat'>}
+                                onChange={handleInputChange}
                                 value={longDateFormat}
                             />
                         </FormGroup>
@@ -162,7 +160,7 @@ export default function UISettings() {
                                 type={inputTypes.SELECT}
                                 name="timeFormat"
                                 values={timeFormatOptions}
-                                onChange={handleInputChange<'timeFormat'>}
+                                onChange={handleInputChange}
                                 value={timeFormat}
                             />
                         </FormGroup>
@@ -178,9 +176,7 @@ export default function UISettings() {
                                 helpText={translate(
                                     'ShowRelativeDatesHelpText',
                                 )}
-                                onChange={
-                                    handleInputChange<'showRelativeDates'>
-                                }
+                                onChange={handleInputChange}
                                 value={showRelativeDates}
                             />
                         </FormGroup>

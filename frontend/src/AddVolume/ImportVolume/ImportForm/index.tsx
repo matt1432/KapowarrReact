@@ -101,7 +101,7 @@ export default function ImportForm({ onScanPress }: ImportFormProps) {
                 <FormInputGroup
                     type={inputTypes.SELECT}
                     name="maxFoldersScanned"
-                    onChange={handleInputChange<'maxFoldersScanned'>}
+                    onChange={handleInputChange}
                     value={maxFoldersScanned}
                     values={maxFoldersScannedOptions}
                 />

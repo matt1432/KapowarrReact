@@ -20,10 +20,11 @@ import SettingsToolbar from 'Settings/SettingsToolbar';
 
 // Types
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
+import type { DateType } from 'Helpers/Props/dateTypes';
 
 // IMPLEMENTATIONS
 
-const dateTypeOptions: EnhancedSelectInputValue<string>[] = [
+const dateTypeOptions: EnhancedSelectInputValue<DateType>[] = [
     { key: 'cover_date', value: 'Cover Date' },
     { key: 'store_date', value: 'In Store Date' },
 ];
@@ -54,7 +55,7 @@ export default function MetadataSettings() {
                                 type={inputTypes.SELECT}
                                 name="dateType"
                                 helpText={translate('DateTypeHelpText')}
-                                onChange={handleInputChange<'dateType'>}
+                                onChange={handleInputChange}
                                 value={changes.dateType}
                                 values={dateTypeOptions}
                             />

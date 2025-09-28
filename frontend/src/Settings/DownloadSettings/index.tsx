@@ -29,10 +29,11 @@ import SettingsToolbar from 'Settings/SettingsToolbar';
 // Types
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 import ServicePreferenceInput from './ServicePreferenceInput';
+import type { SeedingHandling } from 'Helpers/Props/seedingHandlingValues';
 
 // IMPLEMENTATIONS
 
-const seedingHandlingOptions: EnhancedSelectInputValue<string>[] = [
+const seedingHandlingOptions: EnhancedSelectInputValue<SeedingHandling>[] = [
     { key: 'complete', value: 'Complete' },
     { key: 'copy', value: 'Copy' },
 ];
@@ -142,7 +143,7 @@ export default function MediaManagement() {
                                 type={inputTypes.SELECT}
                                 name="seedingHandling"
                                 helpText={translate('SeedingHandlingHelpText')}
-                                onChange={handleInputChange<'seedingHandling'>}
+                                onChange={handleInputChange}
                                 value={changes.seedingHandling}
                                 values={seedingHandlingOptions}
                             />

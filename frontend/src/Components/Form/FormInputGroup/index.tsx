@@ -28,7 +28,10 @@ import TextArea, { type TextAreaProps } from '../TextArea';
 import TextInput, { type TextInputProps } from '../TextInput';
 
 import EnhancedSelectInput from '../Select/EnhancedSelectInput';
-import type { EnhancedSelectInputProps } from '../Select/EnhancedSelectInput';
+import type {
+    EnhancedSelectInputProps,
+    EnhancedSelectInputValue,
+} from '../Select/EnhancedSelectInput';
 
 import MonitorIssuesSelectInput from '../Select/MonitorIssuesSelectInput';
 import type { MonitorIssuesSelectInputProps } from '../Select/MonitorIssuesSelectInput';
@@ -66,7 +69,7 @@ type InputTypeMap<V, K extends string> = {
     number: NumberInputProps<K>;
     password: TextInputProps<K, 'password'>;
     rootFolderSelect: RootFolderSelectInputProps<K>;
-    select: EnhancedSelectInputProps<K, any, V>; // eslint-disable-line @typescript-eslint/no-explicit-any
+    select: EnhancedSelectInputProps<K, EnhancedSelectInputValue<V>, V>;
     specialVersionSelect: SpecialVersionSelectInputProps<K>;
     textArea: TextAreaProps<K>;
     umask: UMaskInputProps<K>;
@@ -92,8 +95,9 @@ export type FormInputGroupProps<
     V,
     C extends InputType,
     K extends string,
-> = Omit<PickProps<V, C, K>, 'className'> & {
+> = Omit<PickProps<V, C, K>, 'className' | 'value'> & {
     type: C;
+    value: V;
     className?: string;
     containerClassName?: string;
     inputClassName?: string;

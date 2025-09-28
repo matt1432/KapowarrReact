@@ -26,15 +26,16 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 
 // Types
+import type { Size } from 'Helpers/Props/sizes';
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 
 interface VolumeIndexPosterOptionsModalContentProps {
-    onModalClose(...args: unknown[]): unknown;
+    onModalClose(): void;
 }
 
 // IMPLEMENTATIONS
 
-const posterSizeOptions: EnhancedSelectInputValue<string>[] = [
+const posterSizeOptions: EnhancedSelectInputValue<Size>[] = [
     {
         key: 'small',
         get value() {
