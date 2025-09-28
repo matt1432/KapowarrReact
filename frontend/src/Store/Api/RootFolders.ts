@@ -3,14 +3,36 @@
 // Redux
 import { baseApi } from './base';
 
+// Misc
+import camelize from 'Utilities/Object/camelize';
+import snakeify from 'Utilities/Object/snakeify';
+
 // Types
-import type { RootFolder } from 'typings/RootFolder';
+import type {
+    RawRemoteMapping,
+    RemoteMapping,
+    RootFolder,
+} from 'typings/RootFolder';
+
+export type AddRemoteMappingParams = Omit<RemoteMapping, 'id'>;
 
 // IMPLEMENTATIONS
 
 const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         // GET
+        getRemoteMappings: build.query<RemoteMapping[], void>({
+            query: () => ({
+                url: 'remotemapping',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+
+            transformResponse: (response: { result: RawRemoteMapping[] }) =>
+                camelize(response.result),
+        }),
+
         getRootFolders: build.query<RootFolder[], void>({
             query: () => ({
                 url: 'rootfolder',
@@ -24,6 +46,16 @@ const extendedApi = baseApi.injectEndpoints({
         }),
 
         // DELETE
+        deleteRemoteMapping: build.mutation<void, { id: number }>({
+            query: ({ id }) => ({
+                method: 'DELETE',
+                url: `remotemapping/${id}`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+        }),
+
         deleteRootFolder: build.mutation<void, { id: number }>({
             query: ({ id }) => ({
                 method: 'DELETE',
@@ -35,6 +67,28 @@ const extendedApi = baseApi.injectEndpoints({
         }),
 
         // POST
+        addRemoteMapping: build.mutation<void, AddRemoteMappingParams>({
+            query: (body) => ({
+                method: 'POST',
+                url: 'remotemapping',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+                body: snakeify(body),
+            }),
+        }),
+
+        editRemoteMapping: build.mutation<void, RemoteMapping>({
+            query: ({ id, ...body }) => ({
+                method: 'POST',
+                url: `remotemapping/${id}`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+                body: snakeify(body),
+            }),
+        }),
+
         addRootFolder: build.mutation<void, { folder: string }>({
             query: (body) => ({
                 method: 'POST',
@@ -60,9 +114,14 @@ const extendedApi = baseApi.injectEndpoints({
 });
 
 export const {
+    useAddRemoteMappingMutation,
     useAddRootFolderMutation,
+    useEditRemoteMappingMutation,
     useEditRootFolderMutation,
+    useDeleteRemoteMappingMutation,
     useDeleteRootFolderMutation,
+    useGetRemoteMappingsQuery,
     useGetRootFoldersQuery,
+    useLazyGetRemoteMappingsQuery,
     useLazyGetRootFoldersQuery,
 } = extendedApi;

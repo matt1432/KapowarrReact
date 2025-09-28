@@ -458,6 +458,16 @@ def setup_db() -> None:
             password TEXT,
             api_key TEXT
         );
+        CREATE TABLE IF NOT EXISTS remote_mappings(
+            id INTEGER PRIMARY KEY,
+            external_download_client_id INTEGER NOT NULL,
+            remote_path TEXT NOT NULL,
+            local_path TEXT NOT NULL,
+
+            FOREIGN KEY (external_download_client_id)
+                REFERENCES external_download_clients(id)
+                ON DELETE CASCADE
+        );
     """
     cursor.executescript(setup_commands)
 

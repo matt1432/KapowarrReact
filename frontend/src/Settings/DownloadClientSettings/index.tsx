@@ -24,6 +24,7 @@ import SettingsToolbar from 'Settings/SettingsToolbar';
 // Specific Components
 import BuiltInClients from './BuiltInClients';
 import DownloadClients from './DownloadClients';
+import RemoteMappings from './RemoteMappings';
 
 // Types
 import type { DownloadClient } from 'typings/DownloadClient';
@@ -80,6 +81,8 @@ export default function MediaManagement() {
                 <FieldSet legend={translate('TorrentClients')}>
                     <DownloadClients />
                 </FieldSet>
+
+                <RemoteMappings />
             </PageContentBody>
         </PageContent>
     );

@@ -45,6 +45,7 @@ from backend.implementations.direct_clients.mega import (
 )
 from backend.implementations.external_clients import ExternalClients
 from backend.implementations.naming import generate_issue_name
+from backend.implementations.remote_mapping import RemoteMappings
 from backend.implementations.torrent_clients.qBittorrent import qBittorrent
 from backend.implementations.volumes import Issue, Volume
 from backend.internals.db import get_db
@@ -954,9 +955,12 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         if not self.external_id:
             self._external_id = self.external_client.add_download(
                 self.download_link,
-                self._download_folder
-                if not self._filename
-                else join(self._download_folder, self._filename),
+                RemoteMappings.local_to_remote(
+                    self._external_client.id,
+                    self._download_folder
+                    if not self._filename
+                    else join(self._download_folder, self._filename),
+                ),
                 self.title,
                 self._filename,
             )

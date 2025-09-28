@@ -9,7 +9,10 @@ import { setFormsAuth } from 'Store/Slices/Auth';
 
 import { useLazyGetAboutInfoQuery } from 'Store/Api/Status';
 import { useLazyGetDownloadClientsQuery } from 'Store/Api/DownloadClients';
-import { useLazyGetRootFoldersQuery } from 'Store/Api/RootFolders';
+import {
+    useLazyGetRemoteMappingsQuery,
+    useLazyGetRootFoldersQuery,
+} from 'Store/Api/RootFolders';
 import { useLazyGetSettingsQuery } from 'Store/Api/Settings';
 import {
     useLazyGetTaskHistoryQuery,
@@ -34,6 +37,8 @@ export default function useAppPage() {
     const [getAboutInfo, getAboutInfoState] = useLazyGetAboutInfoQuery();
     const [getDownloadClients, getDownloadClientsState] =
         useLazyGetDownloadClientsQuery();
+    const [getRemoteMappings, getRemoteMappingsState] =
+        useLazyGetRemoteMappingsQuery();
     const [getRootFolders, getRootFoldersState] = useLazyGetRootFoldersQuery();
     const [getSettings, getSettingsState] = useLazyGetSettingsQuery();
     const [getTaskHistory, getTaskHistoryState] = useLazyGetTaskHistoryQuery();
@@ -53,6 +58,7 @@ export default function useAppPage() {
         () => [
             getAboutInfoState,
             getDownloadClientsState,
+            getRemoteMappingsState,
             getRootFoldersState,
             getSettingsState,
             getTaskHistoryState,
@@ -62,6 +68,7 @@ export default function useAppPage() {
         [
             getAboutInfoState,
             getDownloadClientsState,
+            getRemoteMappingsState,
             getRootFoldersState,
             getSettingsState,
             getTaskHistoryState,
@@ -73,6 +80,7 @@ export default function useAppPage() {
         () => [
             () => getAboutInfo(),
             () => getDownloadClients(),
+            () => getRemoteMappings(),
             () => getRootFolders(),
             () => getSettings(),
             () => getTaskHistory(),
@@ -82,6 +90,7 @@ export default function useAppPage() {
         [
             getAboutInfo,
             getDownloadClients,
+            getRemoteMappings,
             getRootFolders,
             getSettings,
             getTaskHistory,

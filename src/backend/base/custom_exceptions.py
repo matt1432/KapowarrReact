@@ -232,6 +232,47 @@ class RootFolderInvalid(KapowarrException):
         }
 
 
+# region Remote Mapping
+class RemoteMappingNotFound(KapowarrException):
+    "Remote mapping with given ID not found"
+
+    def __init__(self, mapping_id: int) -> None:
+        self.mapping_id = mapping_id
+        LOGGER.warning(f"Remote mapping with given ID not found: {mapping_id}")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 404,
+            "error": self.__class__.__name__,
+            "result": {"mapping_id": self.mapping_id},
+        }
+
+
+class RemoteMappingInvalid(KapowarrException):
+    """
+    A folder is a parent or child of an existing mapping folder,
+    which is not allowed
+    """
+
+    def __init__(self, folder: str) -> None:
+        self.folder = folder
+        LOGGER.warning(
+            "The mapped folder is a parent or child of an existing mapped folder, "
+            f"which is not allowed: {folder}"
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"folder": self.folder},
+        }
+
+
 # region Volumes
 class VolumeNotFound(KapowarrException):
     "The volume with the given (comicvine) key was not found"

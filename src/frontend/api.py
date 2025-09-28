@@ -89,6 +89,7 @@ from backend.implementations.naming import (
     generate_volume_folder_name,
     preview_mass_rename,
 )
+from backend.implementations.remote_mapping import RemoteMappings
 from backend.implementations.root_folders import RootFolders
 from backend.implementations.volumes import Library, delete_issue_file
 from backend.internals.db_models import FilesDB
@@ -615,6 +616,90 @@ def api_rootfolder_id(id: int) -> ApiReturn | None:
 
     elif request.method == "DELETE":
         root_folders.delete(id)
+        return return_api({})
+
+
+@api.route("/remotemapping", methods=["GET", "POST"])
+@error_handler
+@auth
+def api_remote_mappings() -> ApiReturn | None:
+    remote_mappings = RemoteMappings
+
+    if request.method == "GET":
+        return return_api(remote_mappings.get_all())
+
+    elif request.method == "POST":
+        data: dict = request.get_json()
+
+        external_download_client_id = data.get("external_download_client_id")
+        remote_path = data.get("remote_path")
+        local_path = data.get("local_path")
+
+        if (
+            not isinstance(external_download_client_id, int)
+            or external_download_client_id < 1
+        ):
+            raise InvalidKeyValue(
+                "external_download_client_id", external_download_client_id
+            )
+
+        if not isinstance(remote_path, str) or not remote_path:
+            raise InvalidKeyValue("remote_path", remote_path)
+
+        if not isinstance(local_path, str) or not local_path:
+            raise InvalidKeyValue("local_path", local_path)
+
+        result = remote_mappings.add(
+            external_download_client_id, remote_path, local_path
+        ).get()
+        return return_api(result, code=201)
+
+
+@api.route("/remotemapping/<int:id>", methods=["GET", "PUT", "DELETE"])
+@error_handler
+@auth
+def api_remote_mapping(id: int) -> ApiReturn | None:
+    remote_mapping = RemoteMappings.get_one(id)
+
+    if request.method == "GET":
+        return return_api(remote_mapping.get())
+
+    elif request.method == "PUT":
+        data: dict = request.get_json()
+
+        external_download_client_id = data.get("external_download_client_id")
+        remote_path = data.get("remote_path")
+        local_path = data.get("local_path")
+
+        if not (
+            external_download_client_id is None
+            or (
+                isinstance(external_download_client_id, int)
+                and external_download_client_id >= 1
+            )
+        ):
+            raise InvalidKeyValue(
+                "external_download_client_id", external_download_client_id
+            )
+
+        if not (
+            remote_path is None
+            or (isinstance(remote_path, str) and remote_path)
+        ):
+            raise InvalidKeyValue("remote_path", remote_path)
+
+        if not (
+            local_path is None or (isinstance(local_path, str) and local_path)
+        ):
+            raise InvalidKeyValue("local_path", local_path)
+
+        result = remote_mapping.update(
+            external_download_client_id, remote_path, local_path
+        )
+        return return_api(result, code=201)
+
+    elif request.method == "DELETE":
+        remote_mapping.delete()
         return return_api({})
 
 
