@@ -27,6 +27,7 @@ def get_latest_db_version() -> int:
     """
     return max(get_db_migration_map()) + 1
 
+
 def migrate_react() -> None:
     from backend.internals.settings import Settings
 

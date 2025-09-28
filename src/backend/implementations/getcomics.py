@@ -514,6 +514,7 @@ async def __purify_link(
 
     Raises:
         LinkBroken: Link is invalid, not supported or broken.
+        ClientError: Failed to fetch link.
 
     Returns:
         Tuple[str, Type[Download]]: The pure link, and the download class for
@@ -639,6 +640,10 @@ async def __purify_download_group(
                     issue_id=issue_id,
                     reason=lb.reason,
                 )
+                continue
+
+            except ClientError:
+                # Page blocked by CF and FS not setup
                 continue
 
             try:

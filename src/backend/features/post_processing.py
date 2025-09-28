@@ -46,7 +46,9 @@ def reset_file_link(download: TorrentDownload) -> None:
 # region Database
 def remove_from_queue(download: Download) -> None:
     "Delete the download from the queue in the database"
-    get_db().execute("DELETE FROM download_queue WHERE id = ?", (download.id,))
+    get_db().execute(
+        "DELETE FROM download_queue WHERE id = ?", (download.id,)
+    ).connection.commit()
     return
 
 
