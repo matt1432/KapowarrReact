@@ -232,8 +232,7 @@ def folder_extraction_filter(
     end_year: int | None,
 ) -> bool:
     """The filter applied to the files when extracting from a folder,
-    which decides which file is relevant and which one isn't.
-    This filter is relatively conservative.
+    which decides whether a file is relevant or not.
 
     Args:
         file_data (FilenameData): Extracted data from file.
@@ -242,9 +241,10 @@ def folder_extraction_filter(
         end_year (Union[int, None]): Year of last issue or volume year.
 
     Returns:
-        bool: Whether the file passes the filter (if it should be kept or not).
+        bool: Whether the file passes the filter and thus be kept.
     """
     annual = "annual" in volume_data.title.lower()
+    matching_annual = file_data["annual"] == annual
 
     matching_title = _match_title(file_data["series"], volume_data.title)
 
@@ -256,6 +256,13 @@ def folder_extraction_filter(
         file_data["volume_number"],
     )
 
+    matching_special_version = _match_special_version(
+        volume_data.special_version,
+        file_data["special_version"],
+        volume_data.title,
+        file_data["issue_number"],
+    )
+
     # Neither are found (we play it safe so we keep those)
     neither_found = (file_data["year"], file_data["volume_number"]) == (
         None,
@@ -264,7 +271,8 @@ def folder_extraction_filter(
 
     return (
         matching_title
-        and file_data["annual"] == annual
+        and matching_annual
+        and matching_special_version
         and (matching_year or matching_volume_number or neither_found)
     )
 
