@@ -86,9 +86,8 @@ const useIndexVolumes = () => {
 
     const { filterKey } = useRootSelector((state) => state.volumeIndex);
 
-    const { isFetching, isPopulated, error, data } = useGetVolumesQuery(
-        undefined,
-        {
+    const { isFetching, isPopulated, error, data, totalItems } =
+        useGetVolumesQuery(undefined, {
             selectFromResult: ({
                 isFetching,
                 isUninitialized,
@@ -99,9 +98,9 @@ const useIndexVolumes = () => {
                 isPopulated: !isUninitialized,
                 error,
                 data: data ?? [],
+                totalItems: data?.length ?? 0,
             }),
-        },
-    );
+        });
 
     const sortedItems = useSort({
         columns,
@@ -135,6 +134,7 @@ const useIndexVolumes = () => {
         isPopulated,
         error,
         items,
+        totalItems,
     };
 };
 
@@ -150,9 +150,8 @@ const VolumeIndex = withScrollPosition(
             (state) => state.volumeIndex,
         );
 
-        const { isFetching, isPopulated, error, items } = useIndexVolumes();
-
-        const totalItems = items.length;
+        const { isFetching, isPopulated, error, items, totalItems } =
+            useIndexVolumes();
 
         const { isSmallScreen } = useRootSelector(
             (state) => state.app.dimensions,
@@ -280,7 +279,7 @@ const VolumeIndex = withScrollPosition(
             [view],
         );
 
-        const isLoaded = !error && isPopulated && items.length;
+        const isLoaded = !error && isPopulated && totalItems;
         const hasNoVolume = !totalItems;
 
         return (
@@ -418,7 +417,7 @@ const VolumeIndex = withScrollPosition(
                                 </div>
                             ) : null}
 
-                            {!error && isPopulated && !items.length ? (
+                            {!error && isPopulated && !totalItems ? (
                                 <NoVolume totalItems={totalItems} />
                             ) : null}
                         </PageContentBody>
