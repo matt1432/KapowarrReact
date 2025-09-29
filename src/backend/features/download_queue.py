@@ -495,7 +495,7 @@ class DownloadHandler(metaclass=Singleton):
                 )
 
             else:
-                download_link = link.replace("ads.php", "get.php")
+                download_link = link.replace("file.php", "get.php")
 
                 downloads.append(
                     DirectDownload(
