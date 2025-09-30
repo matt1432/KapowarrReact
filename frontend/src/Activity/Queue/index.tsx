@@ -46,7 +46,6 @@ export type QueueColumn = QueueItem & {
     timeLeft: number;
 
     // Columns
-    drag: never;
     actions: never;
 };
 export type QueueColumnName = keyof QueueColumn;
@@ -113,22 +112,8 @@ export default function Queue() {
                     sortDirection,
                 }),
             );
-            dispatch(
-                setTableOptions({
-                    tableName: 'queueTable',
-                    columns: columns.map((column) => {
-                        if (column.name !== 'drag') {
-                            return column;
-                        }
-                        return {
-                            ...column,
-                            isVisible: sortKey === 'priority',
-                        };
-                    }),
-                }),
-            );
         },
-        [columns, dispatch],
+        [dispatch],
     );
 
     const handleTableOptionChange = useCallback(

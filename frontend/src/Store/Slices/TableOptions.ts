@@ -138,13 +138,6 @@ const initialState = {
         sortDirection: sortDirections.ASCENDING,
         columns: [
             {
-                name: 'drag',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
                 name: 'priority',
                 isModifiable: true,
                 isSortable: true,
