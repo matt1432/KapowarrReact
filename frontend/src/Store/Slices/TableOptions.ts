@@ -25,6 +25,7 @@ import type { ProposalColumnName } from 'AddVolume/ImportVolume/ImportProposals'
 import type { ChangeMatchColumnName } from 'AddVolume/ImportVolume/ImportProposals/ChangeMatch/ChangeMatchModalContent';
 import type { FolderTableColumnName } from 'AddVolume/ImportVolume/ImportForm/FolderTable';
 import type { BlocklistColumnName } from 'Activity/Blocklist/BlocklistTable';
+import type { EmptyObject } from 'type-fest';
 
 export interface ColumnNameMap {
     blocklistTable: BlocklistColumnName;
@@ -44,22 +45,39 @@ export interface ColumnNameMap {
     volumeIndex: IndexSort;
 }
 
+interface _ExtraPropsMap {
+    searchResults: {
+        hideDownloaded: boolean;
+        hideUnmonitored: boolean;
+    };
+}
+
+export type ExtraPropsMap = {
+    [Key in Exclude<keyof ColumnNameMap, keyof _ExtraPropsMap>]: EmptyObject;
+} & _ExtraPropsMap;
+
 export interface SetTableSortParams<T extends keyof ColumnNameMap> {
     tableName: T;
     sortKey: ColumnNameMap[T];
     sortDirection?: SortDirection;
 }
 
-export interface SetTableOptionsParams<T extends keyof ColumnNameMap> {
+export type SetTableOptionsParams<
+    T extends keyof ColumnNameMap,
+    ExtraProps extends ExtraPropsMap[T] = ExtraPropsMap[T],
+> = {
     tableName: T;
-    columns: Column<ColumnNameMap[T]>[];
-}
+    columns?: Column<ColumnNameMap[T]>[];
+} & Partial<ExtraProps>;
 
-interface TableState<T extends keyof ColumnNameMap> {
+type TableState<
+    T extends keyof ColumnNameMap,
+    ExtraProps extends ExtraPropsMap[T] = ExtraPropsMap[T],
+> = {
     sortKey: ColumnNameMap[T];
     sortDirection: SortDirection;
     columns: Column<ColumnNameMap[T]>[];
-}
+} & ExtraProps;
 
 export interface TableOptionsState {
     issueTable: TableState<'issueTable'>;
@@ -195,6 +213,9 @@ const initialState = {
         ],
     },
     searchResults: {
+        hideDownloaded: false,
+        hideUnmonitored: false,
+
         sortKey: 'issueNumber',
         sortDirection: sortDirections.ASCENDING,
         columns: [

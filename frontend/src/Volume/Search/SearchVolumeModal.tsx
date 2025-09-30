@@ -1,5 +1,8 @@
 // IMPORTS
 
+// Redux
+import { useSearchVolumeQuery } from 'Store/Api/Volumes';
+
 // Misc
 import { scrollDirections, sizes } from 'Helpers/Props';
 
@@ -30,6 +33,15 @@ export default function SearchVolumeModal({
     volumeId,
     onModalClose,
 }: SearchVolumeModalProps) {
+    const { issues } = useSearchVolumeQuery(
+        { volumeId },
+        {
+            selectFromResult: ({ data }) => ({
+                issues: data?.issues ?? [],
+            }),
+        },
+    );
+
     return (
         <Modal
             isOpen={isOpen}
@@ -42,7 +54,7 @@ export default function SearchVolumeModal({
                 </ModalHeader>
 
                 <ModalBody scrollDirection={scrollDirections.BOTH}>
-                    <InteractiveSearch searchPayload={{ volumeId }} />
+                    <InteractiveSearch searchPayload={{ volumeId, issues }} />
                 </ModalBody>
 
                 <ModalFooter>

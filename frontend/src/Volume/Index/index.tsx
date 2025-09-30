@@ -331,11 +331,7 @@ const VolumeIndex = withScrollPosition(
                             collapseButtons={false}
                         >
                             {view === 'table' ? (
-                                <TableOptionsModalWrapper<
-                                    IndexSort,
-                                    'volumeIndex',
-                                    { showSearchAction: boolean }
-                                >
+                                <TableOptionsModalWrapper
                                     tableName="volumeIndex"
                                     columns={columns}
                                     optionsComponent={VolumeIndexTableOptions}

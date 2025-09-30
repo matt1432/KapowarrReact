@@ -27,7 +27,6 @@ import TableOptionsColumn from '../TableOptionsColumn';
 import styles from './index.module.css';
 
 // Types
-import type { EmptyObject } from 'type-fest';
 import type { CheckInputChanged } from 'typings/Inputs';
 import type { Column } from '../../Column';
 import type {
@@ -38,18 +37,13 @@ import type {
 export interface TableOptionsModalProps<
     T extends ColumnNameMap[K],
     K extends keyof ColumnNameMap,
-    ExtraOptions extends object = EmptyObject,
 > {
     tableName: K;
     isOpen: boolean;
     columns: Column<T>[];
     canModifyColumns?: boolean;
     optionsComponent?: React.ElementType;
-    onTableOptionChange: (
-        payload:
-            | SetTableOptionsParams<K>
-            | (SetTableOptionsParams<K> & ExtraOptions),
-    ) => void;
+    onTableOptionChange: (payload: SetTableOptionsParams<K>) => void;
     onModalClose: () => void;
 }
 
@@ -58,7 +52,6 @@ export interface TableOptionsModalProps<
 export default function TableOptionsModal<
     T extends ColumnNameMap[K],
     K extends keyof ColumnNameMap,
-    ExtraOptions extends object,
 >({
     tableName,
     isOpen,
@@ -67,7 +60,7 @@ export default function TableOptionsModal<
     optionsComponent: OptionsComponent,
     onTableOptionChange,
     onModalClose,
-}: TableOptionsModalProps<T, K, ExtraOptions>) {
+}: TableOptionsModalProps<T, K>) {
     const [dragIndex, setDragIndex] = useState<number | null>(null);
     const [dropIndex, setDropIndex] = useState<number | null>(null);
 
@@ -96,7 +89,10 @@ export default function TableOptionsModal<
                 return column;
             });
 
-            onTableOptionChange({ tableName, columns: newColumns });
+            onTableOptionChange({
+                tableName,
+                columns: newColumns,
+            } as unknown as SetTableOptionsParams<K>);
         },
         [columns, onTableOptionChange, tableName],
     );
@@ -121,7 +117,10 @@ export default function TableOptionsModal<
                 const items = newColumns.splice(dragIndex, 1);
                 newColumns.splice(dropIndex, 0, items[0]);
 
-                onTableOptionChange({ tableName, columns: newColumns });
+                onTableOptionChange({
+                    tableName,
+                    columns: newColumns,
+                } as unknown as SetTableOptionsParams<K>);
             }
 
             setDragIndex(null);

@@ -1,6 +1,7 @@
 import type { CamelCasedProperties, CamelCasedPropertiesDeep } from 'type-fest';
 
 import type { MatchRejection } from 'Helpers/Props/matchRejections';
+import type { IssueData } from 'Issue/Issue';
 
 export interface RawSearchResult {
     series: string;
@@ -53,6 +54,7 @@ interface IssueSearchPayload {
 
 interface VolumeSearchPayload {
     volumeId: number;
+    issues: IssueData[];
 }
 
 export type InteractiveSearchPayload = IssueSearchPayload | VolumeSearchPayload;

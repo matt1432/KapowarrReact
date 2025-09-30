@@ -5,7 +5,11 @@ import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import { setTableSort } from 'Store/Slices/TableOptions';
+import {
+    setTableOptions,
+    setTableSort,
+    type SetTableOptionsParams,
+} from 'Store/Slices/TableOptions';
 
 import {
     useLibgenFileSearchMutation,
@@ -31,6 +35,7 @@ import SortedTable from 'Components/Table/SortedTable';
 
 // Specific Components
 import InteractiveSearchRow from './InteractiveSearchRow';
+import InteractiveSearchTableOptions from './TableOptions';
 
 // CSS
 import styles from './index.module.css';
@@ -116,6 +121,13 @@ function InternalSearch({
         [dispatch],
     );
 
+    const handleTableOptionChange = useCallback(
+        (payload: SetTableOptionsParams<'searchResults'>) => {
+            dispatch(setTableOptions(payload));
+        },
+        [dispatch],
+    );
+
     return (
         <div>
             {isFetching ? <LoadingIndicator /> : null}
@@ -139,13 +151,7 @@ function InternalSearch({
                 <Alert kind={kinds.INFO}>{translate('NoResultsFound')}</Alert>
             ) : null}
 
-            {!!totalItems && isPopulated && !items.length ? (
-                <Alert kind={kinds.WARNING}>
-                    {translate('AllResultsAreHiddenByTheAppliedFilter')}
-                </Alert>
-            ) : null}
-
-            {!isFetching && isPopulated && items.length ? (
+            {!isFetching && isPopulated ? (
                 <SortedTable
                     tableName="searchResults"
                     columns={columns}
@@ -174,7 +180,22 @@ function InternalSearch({
                     secondarySortKey="issueNumber"
                     sortDirection={sortDirection}
                     onSortPress={handleSortPress}
+                    tableProps={
+                        'issues' in searchPayload
+                            ? {
+                                  onTableOptionChange: handleTableOptionChange,
+                                  optionsComponent:
+                                      InteractiveSearchTableOptions,
+                              }
+                            : {}
+                    }
                 />
+            ) : null}
+
+            {!!totalItems && isPopulated && !items.length ? (
+                <Alert kind={kinds.WARNING}>
+                    {translate('AllResultsAreHiddenByTheAppliedFilter')}
+                </Alert>
             ) : null}
 
             {totalItems !== items.length && items.length ? (
@@ -251,14 +272,14 @@ export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
 export default function InteractiveSearch({
     searchPayload,
 }: InteractiveSearchProps) {
-    const searchProps = useManualSearchQuery(searchPayload, {
+    const { data, ...searchProps } = useManualSearchQuery(searchPayload, {
         refetchOnMountOrArgChange: true,
         selectFromResult: ({ isFetching, isUninitialized, error, data }) => ({
             isFetching,
             isPopulated: !isUninitialized,
             error,
             errorMessage: getErrorMessage(error),
-            items: (data?.map((item, id) => ({ ...item, id })) ??
+            data: (data?.map((item, id) => ({ ...item, id })) ??
                 []) as (SearchResult & {
                 id: number;
                 actions: never;
@@ -267,5 +288,52 @@ export default function InteractiveSearch({
         }),
     });
 
-    return <InternalSearch searchPayload={searchPayload} {...searchProps} />;
+    const { hideDownloaded, hideUnmonitored } = useRootSelector(
+        (state) => state.tableOptions.searchResults,
+    );
+
+    const issues = useMemo(() => {
+        const volumeIssues =
+            'issues' in searchPayload ? searchPayload.issues : undefined;
+
+        if (!volumeIssues || (!hideDownloaded && !hideUnmonitored)) {
+            return undefined;
+        }
+
+        let result = volumeIssues;
+
+        if (hideDownloaded) {
+            result = result.filter((issue) => issue.files.length === 0);
+        }
+
+        if (hideUnmonitored) {
+            result = result.filter((issue) => issue.monitored);
+        }
+
+        return result.map((issue) => issue.calculatedIssueNumber);
+    }, [hideDownloaded, hideUnmonitored, searchPayload]);
+
+    const items = useMemo(() => {
+        if (!issues) {
+            return data;
+        }
+
+        return data.filter((item) => {
+            const issueNumber = item.issueNumber;
+
+            return Array.isArray(issueNumber)
+                ? issues.some(
+                      (id) => id >= issueNumber[0] && id <= issueNumber[1],
+                  )
+                : issues.includes(issueNumber ?? -1);
+        });
+    }, [data, issues]);
+
+    return (
+        <InternalSearch
+            searchPayload={searchPayload}
+            items={items}
+            {...searchProps}
+        />
+    );
 }

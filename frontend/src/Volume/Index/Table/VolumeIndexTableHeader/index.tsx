@@ -117,11 +117,7 @@ export default function VolumeIndexTableHeader({
                             name={name}
                             isSortable={false}
                         >
-                            <TableOptionsModalWrapper<
-                                IndexSort,
-                                'volumeIndex',
-                                { showSearchAction: boolean }
-                            >
+                            <TableOptionsModalWrapper
                                 tableName="volumeIndex"
                                 columns={columns}
                                 optionsComponent={VolumeIndexTableOptions}
