@@ -115,8 +115,11 @@ class DownloadHandler(metaclass=Singleton):
                     f"Attempt #{download.attempts + 1} for Libgen Download with id {download.id}"
                 )
                 download.state = DownloadState.QUEUED_STATE
-                self.queue += self.__prepare_downloads_for_queue(
-                    [download], forced_match=False
+                self.queue.insert(
+                    0,
+                    self.__prepare_downloads_for_queue(
+                        [download], forced_match=False
+                    )[0],
                 )
 
                 self._process_queue()
