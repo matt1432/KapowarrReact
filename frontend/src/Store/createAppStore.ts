@@ -30,6 +30,7 @@ export const store = configureStore({
                     'importVolume',
                     'tableOptions',
                     'uiSettings',
+                    'volumeIndex',
                 ],
                 {
                     prefix: 'kapowarr_',
