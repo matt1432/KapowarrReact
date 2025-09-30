@@ -12,6 +12,7 @@ interface CssExports {
     issueCountMonitored: string;
     issuesDownloadedMonitored: string;
     link: string;
+    monitored: string;
     monitorNewIssues: string;
     publisher: string;
     overlayTitle: string;

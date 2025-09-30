@@ -73,8 +73,13 @@
     flex: 0 0 175px;
 }
 
-.volumeNumber,
 .monitored {
+    composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
+
+    width: 42px;
+}
+
+.volumeNumber {
     composes: headerCell from 'Components/Table/VirtualTableHeaderCell/index.module.css';
 }
 

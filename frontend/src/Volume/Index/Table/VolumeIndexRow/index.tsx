@@ -1,24 +1,29 @@
 // IMPORTS
 
 // React
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
 import { getVolumeStatus } from 'Store/Slices/SocketEvents';
 
 import { useExecuteCommandMutation } from 'Store/Api/Command';
+import { useUpdateVolumeMutation } from 'Store/Api/Volumes';
 
 // Misc
-import { commandNames, icons } from 'Helpers/Props';
+import { commandNames, icons, socketEvents } from 'Helpers/Props';
 import { useSelect } from 'App/SelectContext';
 
 import classNames from 'classnames';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 
+// Hooks
+import useSocketCallback from 'Helpers/Hooks/useSocketCallback';
+
 // General Components
 import IconButton from 'Components/Link/IconButton';
+import MonitorToggleButton from 'Components/MonitorToggleButton';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import VirtualTableRowCell from 'Components/Table/Cells/VirtualTableRowCell';
 import VirtualTableSelectCell from 'Components/Table/Cells/VirtualTableSelectCell';
@@ -37,6 +42,7 @@ import styles from './index.module.css';
 import type { Column } from 'Components/Table/Column';
 import type { SelectStateInputProps } from 'typings/Inputs';
 import type { VolumeColumnName, VolumePublicInfo } from 'Volume/Volume';
+import type { SocketEventHandler } from 'typings/Socket';
 
 interface VolumeIndexRowProps {
     volume: VolumePublicInfo;
@@ -52,6 +58,8 @@ export default function VolumeIndexRow({
     columns,
     isSelectMode,
 }: VolumeIndexRowProps) {
+    const calledFrom = useMemo(() => `VolumeIndexRow${volume.id}`, [volume.id]);
+
     const { isRefreshing: isRefreshingVolume, isSearching: isSearchingVolume } =
         useRootSelector((state) => getVolumeStatus(state, volume.id));
 
@@ -79,6 +87,34 @@ export default function VolumeIndexRow({
             volumeId: volume.id,
         });
     }, [executeCommand, volume.id]);
+
+    const [toggleMonitored] = useUpdateVolumeMutation();
+
+    const [isToggling, setIsToggling] = useState(false);
+
+    const socketCallback = useCallback<
+        SocketEventHandler<typeof socketEvents.VOLUME_UPDATED>
+    >(
+        (data) => {
+            if (data.calledFrom === calledFrom) {
+                setIsToggling(false);
+            }
+        },
+        [calledFrom],
+    );
+    useSocketCallback(socketEvents.VOLUME_UPDATED, socketCallback);
+
+    const handleMonitorTogglePress = useCallback(
+        (value: boolean) => {
+            setIsToggling(true);
+            toggleMonitored({
+                volumeId: volume.id,
+                monitored: value,
+                calledFrom,
+            });
+        },
+        [calledFrom, volume.id, toggleMonitored],
+    );
 
     const onEditVolumePress = useCallback(() => {
         setIsEditVolumeModalOpen(true);
@@ -129,6 +165,21 @@ export default function VolumeIndexRow({
 
                 if (!isVisible) {
                     return null;
+                }
+
+                if (name === 'monitored') {
+                    return (
+                        <VirtualTableRowCell
+                            key={name}
+                            className={styles.monitored}
+                        >
+                            <MonitorToggleButton
+                                monitored={volume.monitored}
+                                isSaving={isToggling}
+                                onPress={handleMonitorTogglePress}
+                            />
+                        </VirtualTableRowCell>
+                    );
                 }
 
                 if (name === 'title') {
