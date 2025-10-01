@@ -80,15 +80,21 @@ type TableState<
 } & ExtraProps;
 
 export interface TableOptionsState {
+    sliceVersion: number;
+
     issueTable: TableState<'issueTable'>;
     queueTable: TableState<'queueTable'>;
     searchResults: TableState<'searchResults'>;
     volumeIndex: TableState<'volumeIndex'>;
 }
 
+export type TableName = Exclude<keyof TableOptionsState, 'sliceVersion'>;
+
 // IMPLEMENTATIONS
 
 const initialState = {
+    sliceVersion: 0,
+
     issueTable: {
         sortKey: 'issueNumber',
         sortDirection: sortDirections.DESCENDING,
@@ -373,7 +379,7 @@ const TableOptionsSlice = createSlice({
     name: 'tableOptions',
     initialState,
     reducers: {
-        setTableSort: <T extends keyof TableOptionsState>(
+        setTableSort: <T extends TableName>(
             state: TableOptionsState,
             {
                 payload: { tableName, sortKey, sortDirection },
@@ -397,7 +403,7 @@ const TableOptionsSlice = createSlice({
             state[tableName] = Object.assign(state[tableName], newState);
         },
 
-        setTableOptions: <T extends keyof TableOptionsState>(
+        setTableOptions: <T extends TableName>(
             state: TableOptionsState,
             {
                 payload: { tableName, ...options },
@@ -410,11 +416,11 @@ const TableOptionsSlice = createSlice({
 });
 
 // This fixes generic types
-export const setTableSort = <T extends keyof TableOptionsState>(
+export const setTableSort = <T extends TableName>(
     payload: SetTableSortParams<T>,
 ) => TableOptionsSlice.actions.setTableSort(payload);
 
-export const setTableOptions = <T extends keyof TableOptionsState>(
+export const setTableOptions = <T extends TableName>(
     payload: SetTableOptionsParams<T>,
 ) => TableOptionsSlice.actions.setTableOptions(payload);
 

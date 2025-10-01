@@ -20,20 +20,32 @@ import { baseApi } from './Api/base';
 
 // IMPLEMENTATIONS
 
+export const slices = {
+    [AddVolumeSlice.reducerPath]: AddVolumeSlice,
+    [AppSlice.reducerPath]: AppSlice,
+    [AuthSlice.reducerPath]: AuthSlice,
+    [ImportVolumeSlice.reducerPath]: ImportVolumeSlice,
+    [MessagesSlice.reducerPath]: MessagesSlice,
+    [SocketEventsSlice.reducerPath]: SocketEventsSlice,
+    [TableOptionsSlice.reducerPath]: TableOptionsSlice,
+    [UISettingsSlice.reducerPath]: UISettingsSlice,
+    [VolumeIndexSlice.reducerPath]: VolumeIndexSlice,
+} as const;
+
+export type SliceName = keyof typeof slices;
+
 export default function createReducers() {
     return rememberReducer(
         combineReducers({
             [baseApi.reducerPath]: baseApi.reducer,
-
-            [AddVolumeSlice.reducerPath]: AddVolumeSlice.reducer,
-            [AppSlice.reducerPath]: AppSlice.reducer,
-            [AuthSlice.reducerPath]: AuthSlice.reducer,
-            [ImportVolumeSlice.reducerPath]: ImportVolumeSlice.reducer,
-            [MessagesSlice.reducerPath]: MessagesSlice.reducer,
-            [SocketEventsSlice.reducerPath]: SocketEventsSlice.reducer,
-            [TableOptionsSlice.reducerPath]: TableOptionsSlice.reducer,
-            [UISettingsSlice.reducerPath]: UISettingsSlice.reducer,
-            [VolumeIndexSlice.reducerPath]: VolumeIndexSlice.reducer,
+            ...(Object.fromEntries(
+                Object.entries(slices).map(([key, slice]) => [
+                    key as SliceName,
+                    slice.reducer,
+                ]),
+            ) as {
+                [S in SliceName]: (typeof slices)[S]['reducer'];
+            }),
         }),
     );
 }

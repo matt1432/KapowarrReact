@@ -16,6 +16,8 @@ export interface SetVolumeSortParams {
 // IMPLEMENTATIONS
 
 export interface VolumeIndexState {
+    sliceVersion: number;
+
     view: IndexView;
     filterKey: IndexFilter;
 
@@ -35,6 +37,8 @@ export interface VolumeIndexState {
 }
 
 const initialState = {
+    sliceVersion: 0,
+
     view: 'posters',
     filterKey: '', // equivalent to 'all'
 

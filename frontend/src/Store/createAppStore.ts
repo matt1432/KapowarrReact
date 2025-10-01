@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 // Store
 import { baseApi } from './Api/base';
 
-import createReducers from './createReducers';
+import createReducers, { slices } from './createReducers';
 
 // IMPLEMENTATIONS
 
@@ -24,14 +24,12 @@ export const store = configureStore({
         getDefaultEnhancers().concat(
             rememberEnhancer(
                 window.localStorage,
-                [
-                    'addVolume',
-                    'auth',
-                    'importVolume',
-                    'tableOptions',
-                    'uiSettings',
-                    'volumeIndex',
-                ],
+                Object.entries(slices)
+                    .filter(
+                        ([, slice]) =>
+                            'sliceVersion' in slice.getInitialState(),
+                    )
+                    .map(([sliceName]) => sliceName),
                 {
                     prefix: 'kapowarr_',
                     persistDebounce: 300,

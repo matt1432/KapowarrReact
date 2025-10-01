@@ -14,6 +14,7 @@ import { HistoryRouter } from './HistoryRouter';
 
 import ApplyTheme from './ApplyTheme';
 import AppRoutes from './AppRoutes';
+import BreakingChangeHandler from 'Store/BreakingChangeHandler';
 import SocketListener from './SocketListener';
 
 // Types
@@ -32,7 +33,9 @@ export default function App({ store }: AppProps) {
         <Provider store={store}>
             <HistoryRouter>
                 <ApplyTheme />
+                <BreakingChangeHandler />
                 <SocketListener />
+
                 <Page>
                     <AppRoutes />
                 </Page>

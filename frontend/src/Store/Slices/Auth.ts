@@ -5,6 +5,8 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 // Types
 export interface AuthState {
+    sliceVersion: number;
+
     apiKey: string | null;
     lastLogin: number;
     formsAuth: boolean;
@@ -13,6 +15,8 @@ export interface AuthState {
 // IMPLEMENTATIONS
 
 const initialState = {
+    sliceVersion: 0,
+
     apiKey: null,
     lastLogin: 0,
     formsAuth: false,
@@ -40,4 +44,5 @@ const AuthSlice = createSlice({
 });
 
 export const { setApiKey, setLastLogin, setFormsAuth } = AuthSlice.actions;
+
 export default AuthSlice;

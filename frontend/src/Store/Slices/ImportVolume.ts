@@ -5,6 +5,8 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 // Types
 export interface ImportVolumeState {
+    sliceVersion: number;
+
     maxFoldersScanned: number;
     applyLimitToParentFolder: boolean;
     onlyMatchEnglishVolumes: boolean;
@@ -16,6 +18,8 @@ export interface ImportVolumeState {
 // IMPLEMENTATIONS
 
 const initialState = {
+    sliceVersion: 0,
+
     maxFoldersScanned: 20,
     applyLimitToParentFolder: false,
     onlyMatchEnglishVolumes: true,

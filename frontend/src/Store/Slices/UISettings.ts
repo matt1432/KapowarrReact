@@ -5,6 +5,8 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 // Types
 export interface UISettingsState {
+    sliceVersion: number;
+
     theme: 'auto' | 'dark' | 'light';
     enableColorImpairedMode: boolean;
     showRelativeDates: boolean;
@@ -16,6 +18,8 @@ export interface UISettingsState {
 // IMPLEMENTATIONS
 
 const initialState = {
+    sliceVersion: 0,
+
     theme: 'auto',
     enableColorImpairedMode: false,
     showRelativeDates: true,

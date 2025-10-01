@@ -9,6 +9,8 @@ import type { MonitoringScheme } from 'Volume/Volume';
 import type { SpecialVersion } from 'Helpers/Props/specialVersions';
 
 export interface AddVolumeState {
+    sliceVersion: number;
+
     autoSearch: boolean;
     rootFolder: RootFolder | null;
     monitor: boolean;
@@ -19,6 +21,8 @@ export interface AddVolumeState {
 // IMPLEMENTATIONS
 
 const initialState = {
+    sliceVersion: 0,
+
     autoSearch: false,
     rootFolder: null,
     monitor: true,
