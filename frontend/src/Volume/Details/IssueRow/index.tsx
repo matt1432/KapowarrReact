@@ -83,7 +83,12 @@ export default function IssueRow({
                 if (name === 'issueNumber') {
                     return (
                         <TableRowCell key={name} className={styles.issueNumber}>
-                            <span>{issueNumber}</span>
+                            <IssueTitleLink
+                                issueId={id}
+                                volumeId={volumeId}
+                                issueTitle={issueNumber}
+                                showOpenVolumeButton={false}
+                            />
                         </TableRowCell>
                     );
                 }
