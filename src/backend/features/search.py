@@ -240,29 +240,41 @@ class SearchLibgenPlus:
                 )
 
         else:
-            libgen_series_id: int | None = None
+            libgen_series_id: str | None = None
 
             if volume_data.libgen_series_id is not None:
                 libgen_series_id = volume_data.libgen_series_id
 
-            file_results = await LibgenSearch().search_comicvine_id(
-                api_key=settings.comicvine_api_key,
-                id=self.comicvine_id,
-                issue_number=self.issue_number,
-                libgen_series_id=libgen_series_id,
-                libgen_site_url=Constants.LIBGEN_SITE_URL,
-            )
+            file_results: list[ResultFile] = []
+
+            if libgen_series_id is not None:
+                for id in libgen_series_id.split(","):
+                    file_results += await LibgenSearch().search_comicvine_id(
+                        api_key=settings.comicvine_api_key,
+                        id=self.comicvine_id,
+                        issue_number=self.issue_number,
+                        libgen_series_id=int(id),
+                        libgen_site_url=Constants.LIBGEN_SITE_URL,
+                    )
+            else:
+                file_results += await LibgenSearch().search_comicvine_id(
+                    api_key=settings.comicvine_api_key,
+                    id=self.comicvine_id,
+                    issue_number=self.issue_number,
+                    libgen_series_id=None,
+                    libgen_site_url=Constants.LIBGEN_SITE_URL,
+                )
 
             if len(file_results) > 0:
                 issue = file_results[0].issue
 
                 if issue is not None:
-                    new_libgen_series_id = int(issue.series.id)
+                    new_libgen_series_id = issue.series.id
 
-                    if volume_data.libgen_series_id != new_libgen_series_id:
+                    if volume_data.libgen_series_id is None:
                         self.volume.update(
                             {
-                                "libgen_series_id": new_libgen_series_id,
+                                "libgen_series_id": str(new_libgen_series_id),
                             }
                         )
 

@@ -39,7 +39,7 @@ def migrate_react() -> None:
             PRAGMA defer_foreign_keys = ON;
 
             ALTER TABLE volumes ADD COLUMN
-                libgen_series_id INTEGER;
+                libgen_series_id VARCHAR(255);
 
             ALTER TABLE files ADD COLUMN
                 releaser VARCHAR(255);

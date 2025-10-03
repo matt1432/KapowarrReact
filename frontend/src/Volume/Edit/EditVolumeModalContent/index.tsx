@@ -89,7 +89,7 @@ export default function EditVolumeModalContent({
         initialSpecialVersion ?? '',
     );
     const [libgenSeriesId, setLibgenSeriesId] = useState(
-        initialLibgenSeriesId ?? null,
+        initialLibgenSeriesId ?? '',
     );
     const [volumeFolder, setVolumeFolder] = useState(initialVolumeFolder);
 
@@ -99,7 +99,7 @@ export default function EditVolumeModalContent({
     );
 
     useEffect(() => {
-        setLibgenSeriesId(initialLibgenSeriesId ?? null);
+        setLibgenSeriesId(initialLibgenSeriesId ?? '');
         setMonitored(initialMonitored);
         setSpecialVersion(initialSpecialVersion ?? '');
         setVolumeFolder(initialVolumeFolder);
@@ -125,7 +125,7 @@ export default function EditVolumeModalContent({
                     setSpecialVersion(value as SpecialVersion);
                     break;
                 case 'libgenSeriesId':
-                    setLibgenSeriesId(value as number | null);
+                    setLibgenSeriesId(value as string);
                     break;
                 case 'volumeFolder':
                     setVolumeFolder(
@@ -162,7 +162,18 @@ export default function EditVolumeModalContent({
         setIsConfirmMoveModalOpen(false);
     }, []);
 
+    const libgenSeriesIdHasError = useMemo(() => {
+        if (!libgenSeriesId || libgenSeriesId === '') {
+            return false;
+        }
+        return !libgenSeriesId.split(',').every((id) => /^\d+$/.test(id));
+    }, [libgenSeriesId]);
+
     const saveVolume = useCallback(() => {
+        if (libgenSeriesIdHasError) {
+            return;
+        }
+
         updateVolume({
             volumeId,
             rootFolder: rootFolderId,
@@ -173,6 +184,7 @@ export default function EditVolumeModalContent({
             libgenSeriesId,
         });
     }, [
+        libgenSeriesIdHasError,
         libgenSeriesId,
         monitored,
         rootFolderId,
@@ -239,11 +251,12 @@ export default function EditVolumeModalContent({
                         <FormLabel>{translate('LibgenSeriesID')}</FormLabel>
 
                         <FormInputGroup
-                            type={inputTypes.NUMBER}
+                            type={inputTypes.TEXT}
                             name="libgenSeriesId"
                             value={libgenSeriesId}
                             helpText={translate('LibgenSeriesIDHelpText')}
                             onChange={handleInputChange}
+                            hasError={libgenSeriesIdHasError}
                         />
                     </FormGroup>
 

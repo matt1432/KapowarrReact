@@ -804,7 +804,7 @@ class IssueData:
 class VolumeData:
     id: int
     comicvine_id: int
-    libgen_series_id: int | None
+    libgen_series_id: str | None
     title: str
     alt_title: str | None
     year: int

@@ -41,7 +41,7 @@ export interface UpdateVolumeParams {
     specialVersion?: null | SpecialVersion;
     rootFolder?: number;
     volumeFolder?: string;
-    libgenSeriesId?: number | null;
+    libgenSeriesId?: string | null;
     volumeId: number;
     calledFrom?: string;
 }
