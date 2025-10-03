@@ -15,11 +15,14 @@ import {
 } from 'Store/Slices/TableOptions';
 
 // Misc
-import { useSelect } from 'App/SelectContext';
 import { icons } from 'Helpers/Props';
 
-import classNames from 'classnames';
 import translate, { type TranslateKey } from 'Utilities/String/translate';
+
+import classNames from 'classnames';
+
+// Hooks
+import { useSelect } from 'App/SelectContext';
 
 // General Components
 import IconButton from 'Components/Link/IconButton';
@@ -43,8 +46,10 @@ import type { VolumeColumnName } from 'Volume/Volume';
 
 interface VolumeIndexTableHeaderProps {
     columns: Column<VolumeColumnName>[];
-    sortKey?: string;
-    sortDirection?: SortDirection;
+    sortKey?: IndexSort | null;
+    sortDirection?: SortDirection | null;
+    secondarySortKey?: IndexSort | null;
+    secondarySortDirection?: SortDirection | null;
     isSelectMode: boolean;
 }
 
@@ -54,17 +59,19 @@ export default function VolumeIndexTableHeader({
     columns,
     sortKey,
     sortDirection,
+    secondarySortKey,
+    secondarySortDirection,
     isSelectMode,
 }: VolumeIndexTableHeaderProps) {
     const dispatch = useRootDispatch();
     const [selectState, selectDispatch] = useSelect();
 
     const onSortPress = useCallback(
-        (sortKey: string) => {
+        (newSortKey: string) => {
             dispatch(
                 setTableSort({
                     tableName: 'volumeIndex',
-                    sortKey: sortKey as IndexSort,
+                    sortKey: newSortKey as IndexSort,
                 }),
             );
         },
@@ -139,6 +146,8 @@ export default function VolumeIndexTableHeader({
                         name={name}
                         sortKey={sortKey}
                         sortDirection={sortDirection}
+                        secondarySortKey={secondarySortKey}
+                        secondarySortDirection={secondarySortDirection}
                         isSortable={isSortable}
                         onSortPress={onSortPress}
                     >

@@ -80,9 +80,13 @@ interface VolumeIndexProps {
 // IMPLEMENTATIONS
 
 const useIndexVolumes = () => {
-    const { columns, sortKey, sortDirection } = useRootSelector(
-        (state) => state.tableOptions.volumeIndex,
-    );
+    const {
+        columns,
+        sortKey,
+        sortDirection,
+        secondarySortKey,
+        secondarySortDirection,
+    } = useRootSelector((state) => state.tableOptions.volumeIndex);
 
     const { filterKey } = useRootSelector((state) => state.volumeIndex);
 
@@ -106,8 +110,9 @@ const useIndexVolumes = () => {
         columns,
         items: data,
         sortKey,
-        secondarySortKey: 'title',
+        secondarySortKey,
         sortDirection,
+        secondarySortDirection,
         predicates: {
             issueCountMonitored: (a, b) =>
                 a.issueCountMonitored -
@@ -142,9 +147,13 @@ const VolumeIndex = withScrollPosition(
     ({ initialScrollTop }: VolumeIndexProps) => {
         const dispatch = useRootDispatch();
 
-        const { columns, sortKey, sortDirection } = useRootSelector(
-            (state) => state.tableOptions.volumeIndex,
-        );
+        const {
+            columns,
+            sortKey,
+            sortDirection,
+            secondarySortKey,
+            secondarySortDirection,
+        } = useRootSelector((state) => state.tableOptions.volumeIndex);
 
         const { filterKey, view } = useRootSelector(
             (state) => state.volumeIndex,
@@ -236,7 +245,7 @@ const VolumeIndex = withScrollPosition(
 
         const jumpBarItems: PageJumpBarItems = useMemo(() => {
             // Reset if not sorting by title
-            if (sortKey !== 'title') {
+            if (sortKey !== 'title' && secondarySortKey !== 'title') {
                 return {
                     characters: {},
                     order: [],
@@ -264,7 +273,12 @@ const VolumeIndex = withScrollPosition(
             const order = Object.keys(characters).sort();
 
             // Reverse if sorting descending
-            if (sortDirection === sortDirections.DESCENDING) {
+            if (
+                (sortKey === 'title' &&
+                    sortDirection === sortDirections.DESCENDING) ||
+                (secondarySortKey === 'title' &&
+                    secondarySortDirection === sortDirections.DESCENDING)
+            ) {
                 order.reverse();
             }
 
@@ -272,7 +286,13 @@ const VolumeIndex = withScrollPosition(
                 characters,
                 order,
             };
-        }, [items, sortKey, sortDirection]);
+        }, [
+            items,
+            sortKey,
+            sortDirection,
+            secondarySortKey,
+            secondarySortDirection,
+        ]);
 
         const ViewComponent = useMemo(
             () => (view === 'posters' ? VolumeIndexPosters : VolumeIndexTable),
@@ -366,6 +386,8 @@ const VolumeIndex = withScrollPosition(
                             <VolumeIndexSortMenu
                                 sortKey={sortKey}
                                 sortDirection={sortDirection}
+                                secondarySortKey={secondarySortKey}
+                                secondarySortDirection={secondarySortDirection}
                                 isDisabled={hasNoVolume}
                                 onSortSelect={onSortSelect}
                             />
@@ -401,8 +423,6 @@ const VolumeIndex = withScrollPosition(
                                     <ViewComponent
                                         scrollerRef={scrollerRef}
                                         items={items}
-                                        sortKey={sortKey}
-                                        sortDirection={sortDirection}
                                         jumpToCharacter={jumpToCharacter}
                                         isSelectMode={isSelectMode}
                                         isSmallScreen={isSmallScreen}

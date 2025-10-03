@@ -59,7 +59,7 @@ export type ExtraPropsMap = {
 export interface SetTableSortParams<T extends keyof ColumnNameMap> {
     tableName: T;
     sortKey: ColumnNameMap[T];
-    sortDirection?: SortDirection;
+    sortDirection?: SortDirection | null;
 }
 
 export type SetTableOptionsParams<
@@ -74,14 +74,17 @@ type TableState<
     T extends keyof ColumnNameMap,
     ExtraProps extends ExtraPropsMap[T] = ExtraPropsMap[T],
 > = {
-    sortKey: ColumnNameMap[T];
-    sortDirection: SortDirection;
+    sortKey: ColumnNameMap[T] | null;
+    sortDirection: SortDirection | null;
+    secondarySortKey: ColumnNameMap[T] | null;
+    secondarySortDirection: SortDirection | null;
     columns: Column<ColumnNameMap[T]>[];
 } & ExtraProps;
 
 export interface TableOptionsState {
     sliceVersion: number;
 
+    changeMatch: TableState<'changeMatch'>;
     issueTable: TableState<'issueTable'>;
     queueTable: TableState<'queueTable'>;
     searchResults: TableState<'searchResults'>;
@@ -93,11 +96,45 @@ export type TableName = Exclude<keyof TableOptionsState, 'sliceVersion'>;
 // IMPLEMENTATIONS
 
 const initialState = {
-    sliceVersion: 0,
+    sliceVersion: 1,
+
+    changeMatch: {
+        sortKey: 'title',
+        sortDirection: sortDirections.ASCENDING,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
+        columns: [
+            {
+                name: 'title',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'issueCount',
+                isModifiable: true,
+                isSortable: true,
+                isVisible: true,
+            },
+            {
+                name: 'actions',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: true,
+                isVisible: true,
+            },
+        ],
+    },
 
     issueTable: {
         sortKey: 'issueNumber',
         sortDirection: sortDirections.DESCENDING,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
         columns: [
             {
                 name: 'monitored',
@@ -160,6 +197,10 @@ const initialState = {
     queueTable: {
         sortKey: 'priority',
         sortDirection: sortDirections.ASCENDING,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
         columns: [
             {
                 name: 'priority',
@@ -223,7 +264,11 @@ const initialState = {
         hideUnmonitored: false,
 
         sortKey: 'issueNumber',
-        sortDirection: sortDirections.ASCENDING,
+        sortDirection: sortDirections.DESCENDING,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
         columns: [
             {
                 name: 'match',
@@ -308,6 +353,10 @@ const initialState = {
     volumeIndex: {
         sortKey: 'title',
         sortDirection: sortDirections.ASCENDING,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
         columns: [
             {
                 name: 'monitored',
@@ -382,25 +431,73 @@ const TableOptionsSlice = createSlice({
         setTableSort: <T extends TableName>(
             state: TableOptionsState,
             {
-                payload: { tableName, sortKey, sortDirection },
+                payload: { tableName, sortKey, sortDirection = null },
             }: PayloadAction<SetTableSortParams<T>>,
         ) => {
-            const newState = { sortKey, sortDirection };
+            const currentState = state[tableName];
 
-            if (!newState.sortDirection) {
-                if (newState.sortKey === state[tableName].sortKey) {
-                    newState.sortDirection =
-                        state[tableName].sortDirection ===
-                        sortDirections.ASCENDING
-                            ? sortDirections.DESCENDING
-                            : sortDirections.ASCENDING;
+            if (currentState.sortKey === sortKey) {
+                if (sortDirection) {
+                    state[tableName].sortDirection = sortDirection;
                 }
                 else {
-                    newState.sortDirection = state[tableName].sortDirection;
+                    // cycle sortDirection
+                    switch (currentState.sortDirection) {
+                        case sortDirections.DESCENDING: {
+                            state[tableName].sortKey = null;
+                            state[tableName].sortDirection = null;
+                            break;
+                        }
+                        case sortDirections.ASCENDING: {
+                            state[tableName].sortDirection =
+                                sortDirections.DESCENDING;
+                            break;
+                        }
+                        case null: {
+                            state[tableName].sortDirection =
+                                sortDirections.ASCENDING;
+                            break;
+                        }
+                    }
                 }
             }
-
-            state[tableName] = Object.assign(state[tableName], newState);
+            else if (currentState.secondarySortKey === sortKey) {
+                if (sortDirection) {
+                    state[tableName].secondarySortDirection = sortDirection;
+                }
+                else {
+                    // cycle secondarySortDirection
+                    switch (currentState.secondarySortDirection) {
+                        case sortDirections.DESCENDING: {
+                            state[tableName].secondarySortKey = null;
+                            state[tableName].secondarySortDirection = null;
+                            break;
+                        }
+                        case sortDirections.ASCENDING: {
+                            state[tableName].secondarySortDirection =
+                                sortDirections.DESCENDING;
+                            break;
+                        }
+                        case null: {
+                            state[tableName].secondarySortDirection =
+                                sortDirections.ASCENDING;
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (currentState.sortKey === null) {
+                // init sortKey
+                state[tableName].sortKey = sortKey;
+                state[tableName].sortDirection =
+                    sortDirection ?? sortDirections.ASCENDING;
+            }
+            else {
+                // init secondarySortKey
+                state[tableName].secondarySortKey = sortKey;
+                state[tableName].secondarySortDirection =
+                    sortDirection ?? sortDirections.ASCENDING;
+            }
         },
 
         setTableOptions: <T extends TableName>(

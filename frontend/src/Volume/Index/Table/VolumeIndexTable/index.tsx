@@ -8,6 +8,9 @@ import {
     type RowComponentProps,
 } from 'react-window';
 
+// Redux
+import { useRootSelector } from 'Store/createAppStore';
+
 // Misc
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
 
@@ -23,20 +26,16 @@ import styles from './index.module.css';
 
 // Types
 import type { Column } from 'Components/Table/Column';
-import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { VolumeColumnName, VolumePublicInfo } from 'Volume/Volume';
 
 interface RowItemData {
     items: VolumePublicInfo[];
-    sortKey: string;
     columns: Column<VolumeColumnName>[];
     isSelectMode: boolean;
 }
 
 interface VolumeIndexTableProps {
     items: VolumePublicInfo[];
-    sortKey: string;
-    sortDirection?: SortDirection;
     jumpToCharacter?: string;
     scrollTop?: number;
     scrollerRef: RefObject<HTMLElement>;
@@ -46,14 +45,12 @@ interface VolumeIndexTableProps {
 }
 
 // IMPLEMENTATIONS
-//
 
 function Row({
     index,
     style,
     columns,
     items,
-    sortKey,
     isSelectMode,
 }: RowComponentProps<RowItemData>) {
     if (index >= items.length) {
@@ -73,7 +70,6 @@ function Row({
         >
             <VolumeIndexRow
                 volume={volume}
-                sortKey={sortKey}
                 columns={columns}
                 isSelectMode={isSelectMode}
             />
@@ -83,14 +79,15 @@ function Row({
 
 export default function VolumeIndexTable({
     items,
-    sortKey,
-    sortDirection,
     jumpToCharacter,
     isSelectMode,
     isSmallScreen,
     scrollerRef,
     columns,
 }: VolumeIndexTableProps) {
+    const { sortKey, sortDirection, secondarySortKey, secondarySortDirection } =
+        useRootSelector((state) => state.tableOptions.volumeIndex);
+
     const listRef = useListRef(undefined) as RefObject<ListImperativeAPI>;
 
     useEffect(() => {
@@ -121,13 +118,14 @@ export default function VolumeIndexTable({
                     columns={columns}
                     sortKey={sortKey}
                     sortDirection={sortDirection}
+                    secondarySortKey={secondarySortKey}
+                    secondarySortDirection={secondarySortDirection}
                     isSelectMode={isSelectMode}
                 />
             }
             itemCount={items.length}
             itemData={{
                 items,
-                sortKey,
                 columns,
                 isSelectMode,
             }}

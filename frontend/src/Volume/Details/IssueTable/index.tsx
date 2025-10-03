@@ -100,7 +100,7 @@ function useIssuesSelector(volumeId: number) {
 export default function IssueTable({ volumeId }: IssueTableProps) {
     const dispatch = useRootDispatch();
 
-    const { columns, sortKey, sortDirection } = useRootSelector(
+    const { columns } = useRootSelector(
         (state) => state.tableOptions.issueTable,
     );
 
@@ -195,8 +195,6 @@ export default function IssueTable({ volumeId }: IssueTableProps) {
             <SortedTable
                 tableName="issueTable"
                 columns={columns}
-                sortKey={sortKey}
-                sortDirection={sortDirection}
                 onSortPress={handleSortPress}
                 tableProps={{
                     onTableOptionChange: handleTableOptionChange,

@@ -4,7 +4,7 @@
 import React from 'react';
 
 // Misc
-import { icons } from 'Helpers/Props';
+import { icons, sortDirections } from 'Helpers/Props';
 
 // Specific Components
 import SelectedMenuItem, {
@@ -18,8 +18,10 @@ import type { IndexSort } from 'Volume/Index';
 interface SortMenuItemProps
     extends Omit<SelectedMenuItemProps<IndexSort>, 'isSelected' | 'onPress'> {
     name?: IndexSort;
-    sortKey?: IndexSort;
-    sortDirection?: SortDirection;
+    sortKey?: IndexSort | null;
+    sortDirection?: SortDirection | null;
+    secondarySortKey?: IndexSort | null;
+    secondarySortDirection?: SortDirection | null;
     children: string | React.ReactNode;
     onPress: (sortKey: IndexSort) => void;
 }
@@ -30,15 +32,20 @@ export default function SortMenuItem({
     name,
     sortKey,
     sortDirection,
+    secondarySortKey,
+    secondarySortDirection,
     ...otherProps
 }: SortMenuItemProps) {
-    const isSelected = name === sortKey;
+    const isSelected = name === sortKey || name === secondarySortKey;
 
     return (
         <SelectedMenuItem
             name={name}
             selectedIconName={
-                sortDirection === 'ascending'
+                (name === sortKey &&
+                    sortDirection === sortDirections.ASCENDING) ||
+                (name === secondarySortKey &&
+                    secondarySortDirection === sortDirections.ASCENDING)
                     ? icons.SORT_ASCENDING
                     : icons.SORT_DESCENDING
             }

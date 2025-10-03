@@ -23,9 +23,10 @@ interface UseSortProps<ColumnName extends string, T extends Item<ColumnName>> {
 
     predicates?: Predicates<T, ColumnName>;
 
-    sortKey?: ColumnName;
-    secondarySortKey?: ColumnName;
-    sortDirection?: SortDirection;
+    sortKey?: ColumnName | null;
+    sortDirection?: SortDirection | null;
+    secondarySortKey?: ColumnName | null;
+    secondarySortDirection?: SortDirection | null;
 }
 
 // IMPLEMENTATIONS
@@ -120,22 +121,30 @@ export default function useSort<
     items,
     predicates = {},
     sortKey,
-    secondarySortKey = sortKey,
     sortDirection = sortDirections.ASCENDING,
+    secondarySortKey,
+    secondarySortDirection,
 }: UseSortProps<ColumnName, T>) {
     const sorters = useMemo(
         () => predicatesToSorters(columns, predicates),
         [columns, predicates],
     );
     const secondarySorter = useMemo(() => {
-        return sortKey === secondarySortKey
-            ? undefined
-            : sorters[secondarySortKey]?.(sortDirection);
-    }, [sortKey, secondarySortKey, sortDirection, sorters]);
+        return secondarySortKey
+            ? sorters[secondarySortKey]?.(
+                  secondarySortDirection ?? sortDirections.ASCENDING,
+              )
+            : undefined;
+    }, [secondarySortKey, secondarySortDirection, sorters]);
 
     return useMemo(
         () =>
-            items.toSorted(sorters[sortKey]?.(sortDirection, secondarySorter)),
+            items.toSorted(
+                sorters[sortKey]?.(
+                    sortDirection ?? sortDirections.ASCENDING,
+                    secondarySorter,
+                ),
+            ),
         [items, secondarySorter, sortDirection, sorters, sortKey],
     );
 }

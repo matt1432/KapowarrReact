@@ -46,7 +46,6 @@ import type { SocketEventHandler } from 'typings/Socket';
 
 interface VolumeIndexRowProps {
     volume: VolumePublicInfo;
-    sortKey: string;
     columns: Column<VolumeColumnName>[];
     isSelectMode: boolean;
 }

@@ -14,8 +14,10 @@ import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { IndexSort } from '..';
 
 interface VolumeIndexSortMenuProps {
-    sortKey?: IndexSort;
-    sortDirection?: SortDirection;
+    sortKey?: IndexSort | null;
+    sortDirection?: SortDirection | null;
+    secondarySortKey?: IndexSort | null;
+    secondarySortDirection?: SortDirection | null;
     isDisabled: boolean;
     onSortSelect(sortKey: IndexSort): void;
 }
@@ -25,6 +27,8 @@ interface VolumeIndexSortMenuProps {
 export default function VolumeIndexSortMenu({
     sortKey,
     sortDirection,
+    secondarySortKey,
+    secondarySortDirection,
     isDisabled,
     onSortSelect,
 }: VolumeIndexSortMenuProps) {
@@ -35,6 +39,8 @@ export default function VolumeIndexSortMenu({
                     name="title"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
+                    secondarySortKey={secondarySortKey}
+                    secondarySortDirection={secondarySortDirection}
                     onPress={onSortSelect}
                 >
                     {translate('Title')}
@@ -44,6 +50,8 @@ export default function VolumeIndexSortMenu({
                     name="year"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
+                    secondarySortKey={secondarySortKey}
+                    secondarySortDirection={secondarySortDirection}
                     onPress={onSortSelect}
                 >
                     {translate('Year')}
@@ -53,6 +61,8 @@ export default function VolumeIndexSortMenu({
                     name="volumeNumber"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
+                    secondarySortKey={secondarySortKey}
+                    secondarySortDirection={secondarySortDirection}
                     onPress={onSortSelect}
                 >
                     {translate('VolumeNumber')}
@@ -62,6 +72,8 @@ export default function VolumeIndexSortMenu({
                     name="publisher"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
+                    secondarySortKey={secondarySortKey}
+                    secondarySortDirection={secondarySortDirection}
                     onPress={onSortSelect}
                 >
                     {translate('Publisher')}
@@ -71,6 +83,8 @@ export default function VolumeIndexSortMenu({
                     name="issueCountMonitored"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
+                    secondarySortKey={secondarySortKey}
+                    secondarySortDirection={secondarySortDirection}
                     onPress={onSortSelect}
                 >
                     {translate('MissingIssues')}
@@ -80,6 +94,8 @@ export default function VolumeIndexSortMenu({
                     name="totalSize"
                     sortKey={sortKey}
                     sortDirection={sortDirection}
+                    secondarySortKey={secondarySortKey}
+                    secondarySortDirection={secondarySortDirection}
                     onPress={onSortSelect}
                 >
                     {translate('SizeOnDisk')}

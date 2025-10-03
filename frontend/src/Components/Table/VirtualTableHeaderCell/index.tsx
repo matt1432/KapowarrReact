@@ -20,9 +20,11 @@ interface VirtualTableHeaderCellProps {
     className?: string;
     name: string;
     isSortable?: boolean;
-    sortKey?: string;
+    sortKey?: string | null;
+    sortDirection?: SortDirection | null;
+    secondarySortKey?: string | null;
+    secondarySortDirection?: SortDirection | null;
     fixedSortDirection?: SortDirection;
-    sortDirection?: string;
     children?: React.ReactNode;
     onSortPress?: (name: string, sortDirection?: SortDirection) => void;
 }
@@ -35,14 +37,19 @@ export default function VirtualTableHeaderCell({
     isSortable = false,
     sortKey,
     sortDirection,
+    secondarySortKey,
+    secondarySortDirection,
     fixedSortDirection,
     children,
     onSortPress,
     ...otherProps
 }: VirtualTableHeaderCellProps) {
-    const isSorting = isSortable && sortKey === name;
+    const isSorting =
+        isSortable && (name === sortKey || name === secondarySortKey);
     const sortIcon =
-        sortDirection === sortDirections.ASCENDING
+        (name === sortKey && sortDirection === sortDirections.ASCENDING) ||
+        (name === secondarySortKey &&
+            secondarySortDirection === sortDirections.ASCENDING)
             ? icons.SORT_ASCENDING
             : icons.SORT_DESCENDING;
 

@@ -55,7 +55,7 @@ export type QueueColumnName = keyof QueueColumn;
 export default function Queue() {
     const dispatch = useRootDispatch();
 
-    const { columns, sortKey, sortDirection } = useRootSelector(
+    const { columns } = useRootSelector(
         (state) => state.tableOptions.queueTable,
     );
 
@@ -170,8 +170,6 @@ export default function Queue() {
                     <SortedTable
                         tableName="queueTable"
                         columns={columns}
-                        sortKey={sortKey}
-                        sortDirection={sortDirection}
                         onSortPress={handleSortPress}
                         tableProps={{
                             onTableOptionChange: handleTableOptionChange,

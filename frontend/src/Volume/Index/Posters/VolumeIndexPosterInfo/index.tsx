@@ -11,7 +11,7 @@ import type { IndexSort } from '../..';
 
 interface VolumeIndexPosterInfoProps {
     publisher?: string;
-    sortKey: IndexSort;
+    sortKey: IndexSort | null;
     volumeNumber: number;
     year: number;
 }

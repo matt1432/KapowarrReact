@@ -38,7 +38,8 @@ import type { IndexSort } from '../..';
 
 interface VolumeIndexPosterProps {
     volumeId: number;
-    sortKey: IndexSort;
+    sortKey: IndexSort | null;
+    secondarySortKey: IndexSort | null;
     isSelectMode: boolean;
     posterWidth: number;
     posterHeight: number;
@@ -52,6 +53,7 @@ export default function VolumeIndexPoster({
     posterWidth,
     posterHeight,
     sortKey,
+    secondarySortKey,
 }: VolumeIndexPosterProps) {
     const { isRefreshing: isRefreshingVolume, isSearching: isSearchingVolume } =
         useRootSelector((state) => getVolumeStatus(state, volumeId));
@@ -229,6 +231,13 @@ export default function VolumeIndexPoster({
 
             <VolumeIndexPosterInfo
                 sortKey={sortKey}
+                publisher={publisher}
+                volumeNumber={volumeNumber}
+                year={year}
+            />
+
+            <VolumeIndexPosterInfo
+                sortKey={secondarySortKey}
                 publisher={publisher}
                 volumeNumber={volumeNumber}
                 year={year}

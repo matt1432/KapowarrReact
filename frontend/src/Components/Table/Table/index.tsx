@@ -48,8 +48,10 @@ export interface TableProps<
     columns: Column<T>[];
     optionsComponent?: React.ElementType;
     canModifyColumns?: boolean;
-    sortKey?: T;
-    sortDirection?: SortDirection;
+    sortKey?: T | null;
+    sortDirection?: SortDirection | null;
+    secondarySortKey?: T | null;
+    secondarySortDirection?: SortDirection | null;
     children?: React.ReactNode;
     onSortPress?: (name: T, sortDirection?: SortDirection) => void;
     onSelectAllChange?: (change: CheckInputChanged<string>) => void;
@@ -79,6 +81,8 @@ export default function Table<
     canModifyColumns,
     sortKey,
     sortDirection,
+    secondarySortKey,
+    secondarySortDirection,
     children,
     onSortPress,
     onSelectAllChange,
@@ -154,6 +158,8 @@ export default function Table<
                                 columnLabel={columnLabel}
                                 sortKey={sortKey}
                                 sortDirection={sortDirection}
+                                secondarySortKey={secondarySortKey}
+                                secondarySortDirection={secondarySortDirection}
                                 onSortPress={onSortPress}
                             >
                                 {column.icon ? (

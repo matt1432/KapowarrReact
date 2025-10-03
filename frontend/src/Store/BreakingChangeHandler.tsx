@@ -27,7 +27,9 @@ export default function BreakingChangeHandler() {
         });
 
         if (hadChanges) {
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         }
 
         // Run this only once at start

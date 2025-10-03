@@ -92,7 +92,7 @@ function InternalSearch({
 }: SearchProps) {
     const dispatch = useRootDispatch();
 
-    const { columns, sortKey, sortDirection } = useRootSelector(
+    const { columns } = useRootSelector(
         (state) => state.tableOptions.searchResults,
     );
 
@@ -176,9 +176,6 @@ function InternalSearch({
                         matchRejections: (a, b) =>
                             a.matchRejections.length - b.matchRejections.length,
                     }}
-                    sortKey={sortKey}
-                    secondarySortKey="issueNumber"
-                    sortDirection={sortDirection}
                     onSortPress={handleSortPress}
                     tableProps={
                         'issues' in searchPayload

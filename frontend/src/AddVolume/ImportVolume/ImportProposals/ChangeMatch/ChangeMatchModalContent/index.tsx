@@ -4,6 +4,8 @@
 import { useCallback, useEffect, useState } from 'react';
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
+
 import { useLazyLookupVolumeQuery } from 'Store/Api/Volumes';
 
 // Misc
@@ -35,11 +37,11 @@ import styles from './index.module.css';
 import type { ProposedImport } from 'typings/Search';
 import type { VolumeMetadata } from 'AddVolume/AddVolume';
 import type { InputChanged } from 'typings/Inputs';
-import type { Column } from 'Components/Table/Column';
 
 export type ChangeMatchColumnName = 'title' | 'issueCount' | 'actions';
 
 export type VolumeSearchResult = VolumeMetadata & {
+    id: number;
     actions: never;
 };
 
@@ -52,34 +54,16 @@ export interface ChangeMatchModalContentProps {
 
 // IMPLEMENTATIONS
 
-const columns: Column<ChangeMatchColumnName>[] = [
-    {
-        name: 'title',
-        isModifiable: true,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'issueCount',
-        isModifiable: true,
-        isSortable: true,
-        isVisible: true,
-    },
-    {
-        name: 'actions',
-        hideHeaderLabel: true,
-        isModifiable: false,
-        isSortable: true,
-        isVisible: true,
-    },
-];
-
 export default function ChangeMatchModalContent({
     proposal,
     onEditMatch,
     onEditGroupMatch,
     onModalClose,
 }: ChangeMatchModalContentProps) {
+    const { columns } = useRootSelector(
+        (state) => state.tableOptions.changeMatch,
+    );
+
     const [query, setQuery] = useState('');
     const [showResults, setShowResults] = useState(false);
 
@@ -98,7 +82,10 @@ export default function ChangeMatchModalContent({
     const [lookupVolume, { isFetching, error, data }] =
         useLazyLookupVolumeQuery({
             selectFromResult: ({ data, isFetching, error }) => ({
-                data: (data ?? []) as VolumeSearchResult[],
+                data: (data ?? []).map((item, id) => ({
+                    ...item,
+                    id,
+                })) as VolumeSearchResult[],
                 isFetching,
                 error,
             }),
@@ -165,6 +152,7 @@ export default function ChangeMatchModalContent({
                         items={data}
                         itemRenderer={(item) => (
                             <ChangeMatchRow
+                                key={item.id}
                                 columns={columns}
                                 match={item}
                                 onEditMatch={onEditMatch}

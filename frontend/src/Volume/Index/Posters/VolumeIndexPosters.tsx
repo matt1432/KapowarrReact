@@ -24,7 +24,6 @@ import VolumeIndexPoster from 'Volume/Index/Posters/VolumeIndexPoster';
 import dimensions from 'Styles/Variables/dimensions';
 
 // Types
-import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { VolumePublicInfo } from 'Volume/Volume';
 import type { IndexSort } from '..';
 import type { Size } from 'Helpers/Props/sizes';
@@ -37,14 +36,13 @@ interface CellItemData {
         posterHeight: number;
     };
     items: VolumePublicInfo[];
-    sortKey: IndexSort;
+    sortKey: IndexSort | null;
+    secondarySortKey: IndexSort | null;
     isSelectMode: boolean;
 }
 
 interface VolumeIndexPostersProps {
     items: VolumePublicInfo[];
-    sortKey: IndexSort;
-    sortDirection?: SortDirection;
     jumpToCharacter?: string;
     scrollTop?: number;
     scrollerRef: RefObject<HTMLElement>;
@@ -80,6 +78,7 @@ function Cell({
     layout,
     items,
     sortKey,
+    secondarySortKey,
     isSelectMode,
 }: CellComponentProps<CellItemData>) {
     const { columnCount, padding, posterWidth, posterHeight } = layout;
@@ -101,6 +100,7 @@ function Cell({
             <VolumeIndexPoster
                 volumeId={volume.id}
                 sortKey={sortKey}
+                secondarySortKey={secondarySortKey}
                 isSelectMode={isSelectMode}
                 posterWidth={posterWidth}
                 posterHeight={posterHeight}
@@ -116,11 +116,13 @@ function getWindowScrollTopPosition() {
 export default function VolumeIndexPosters({
     scrollerRef,
     items,
-    sortKey,
     jumpToCharacter,
     isSelectMode,
     isSmallScreen,
 }: VolumeIndexPostersProps) {
+    const { sortKey, secondarySortKey } = useRootSelector(
+        (state) => state.tableOptions.volumeIndex,
+    );
     const { posterOptions } = useRootSelector((state) => state.volumeIndex);
     const ref = useGridRef(null);
     const [measureRef, bounds] = useMeasure();
@@ -188,18 +190,18 @@ export default function VolumeIndexPosters({
             heights.push(EXTRA_ROW_HEIGHT);
         }
 
-        switch (sortKey) {
-            case 'year':
-            case 'volumeNumber':
-            case 'publisher':
-                heights.push(EXTRA_ROW_HEIGHT);
-                break;
-            default:
-            // No need to add a height of 0
+        if (sortKey === 'year' || secondarySortKey === 'year') {
+            heights.push(EXTRA_ROW_HEIGHT);
+        }
+        if (sortKey === 'volumeNumber' || secondarySortKey === 'volumeNumber') {
+            heights.push(EXTRA_ROW_HEIGHT);
+        }
+        if (sortKey === 'publisher' || secondarySortKey === 'publisher') {
+            heights.push(EXTRA_ROW_HEIGHT);
         }
 
         return heights.reduce((acc, height) => acc + height, 0);
-    }, [isSmallScreen, posterOptions, sortKey, posterHeight]);
+    }, [isSmallScreen, posterOptions, sortKey, secondarySortKey, posterHeight]);
 
     useEffect(() => {
         const current = scrollerRef.current;
@@ -316,6 +318,7 @@ export default function VolumeIndexPosters({
                     },
                     items,
                     sortKey,
+                    secondarySortKey,
                     isSelectMode,
                 }}
                 cellComponent={Cell}

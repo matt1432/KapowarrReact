@@ -23,9 +23,11 @@ interface TableHeaderCellProps<T extends string> {
     isSortable: boolean;
     isVisible: boolean;
     isModifiable: boolean;
-    sortKey?: string;
+    sortKey?: T | null;
+    sortDirection?: SortDirection | null;
+    secondarySortKey?: T | null;
+    secondarySortDirection?: SortDirection | null;
     fixedSortDirection?: SortDirection;
-    sortDirection?: string;
     children?: React.ReactNode;
     onSortPress?: (name: T, sortDirection?: SortDirection) => void;
 }
@@ -39,14 +41,20 @@ export default function TableHeaderCell<T extends string>({
     isSortable = false,
     sortKey,
     sortDirection,
+    secondarySortKey,
+    secondarySortDirection,
     fixedSortDirection,
     children,
     onSortPress,
     ...otherProps
 }: TableHeaderCellProps<T>) {
-    const isSorting = isSortable && sortKey === name;
+    const isSorting =
+        isSortable && (sortKey === name || secondarySortKey === name);
+
     const sortIcon =
-        sortDirection === sortDirections.ASCENDING
+        (name === sortKey && sortDirection === sortDirections.ASCENDING) ||
+        (name === secondarySortKey &&
+            secondarySortDirection === sortDirections.ASCENDING)
             ? icons.SORT_ASCENDING
             : icons.SORT_DESCENDING;
 
