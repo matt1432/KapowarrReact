@@ -1,10 +1,16 @@
 import { useEffect } from 'react';
 
+import { useRootDispatch, useRootSelector } from './createAppStore';
+import { setIsHandlingBreakingChange } from './Slices/App';
+
 import { slices } from './createReducers';
-import { useRootSelector } from './createAppStore';
 
 export default function BreakingChangeHandler() {
+    const dispatch = useRootDispatch();
+
     const state = useRootSelector((state) => state);
+
+    const { isHandlingBreakingChange } = useRootSelector((state) => state.app);
 
     useEffect(() => {
         let hadChanges = false;
@@ -27,13 +33,15 @@ export default function BreakingChangeHandler() {
         });
 
         if (hadChanges) {
-            setTimeout(() => {
-                window.location.reload();
-            }, 500);
+            dispatch(setIsHandlingBreakingChange(true));
         }
 
-        // Run this only once at start
+        if (isHandlingBreakingChange) {
+            window.location.reload();
+        }
+
+        // Run this only once at start and after isHandlingBreakingChange changes
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [isHandlingBreakingChange]);
     return null;
 }

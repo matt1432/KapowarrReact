@@ -892,6 +892,7 @@
     "GrabSelected": "Grab Selected",
     "Grabbed": "Grabbed",
     "Group": "Group",
+    "HandleBreakingChange": "Handling breaking changes of persisted data on your browser...",
     "HardlinkCopyFiles": "Hardlink/Copy Files",
     "Health": "Health",
     "HealthMessagesInfoBox": "You can find more information about the cause of these health check messages by clicking the wiki link (book icon) at the end of the row, or by checking your [logs]({link}). If you have difficulty interpreting these messages then you can reach out to our support, at the links below.",

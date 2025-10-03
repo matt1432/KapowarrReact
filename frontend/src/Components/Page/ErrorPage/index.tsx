@@ -12,23 +12,26 @@ import styles from './index.module.css';
 import type { AnyError } from 'typings/Api';
 
 interface ErrorPageProps {
-    version: string;
     volumesError?: AnyError;
     settingsError?: AnyError;
     rootFoldersError?: AnyError;
+    isHandlingBreakingChange: boolean;
 }
 
 // IMPLEMENTATIONS
 
 export default function ErrorPage({
-    version,
     volumesError,
     settingsError,
     rootFoldersError,
+    isHandlingBreakingChange,
 }: ErrorPageProps) {
     let errorMessage = translate('FailedToLoadKapowarr');
 
-    if (volumesError) {
+    if (isHandlingBreakingChange) {
+        errorMessage = translate('HandleBreakingChange');
+    }
+    else if (volumesError) {
         errorMessage = getErrorMessage(
             volumesError,
             translate('FailedToLoadVolumeFromApi'),
@@ -52,7 +55,9 @@ export default function ErrorPage({
             <div>{errorMessage}</div>
 
             <div className={styles.version}>
-                {translate('VersionNumber', { version })}
+                {translate('VersionNumber', {
+                    version: window.Kapowarr.version,
+                })}
             </div>
         </div>
     );

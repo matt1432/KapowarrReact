@@ -23,6 +23,7 @@ export type ScrollPayload = PayloadAction<{
 export interface AppState {
     dimensions: Dimensions;
     isSidebarVisible: boolean;
+    isHandlingBreakingChange: boolean;
 
     scrollPositions: {
         volumeIndex: number;
@@ -48,6 +49,7 @@ const initialState = {
     dimensions: getDimensions(window.innerWidth, window.innerHeight),
     isSidebarVisible: !getDimensions(window.innerWidth, window.innerHeight)
         .isSmallScreen,
+    isHandlingBreakingChange: false,
 
     scrollPositions: {
         volumeIndex: 0,
@@ -73,12 +75,24 @@ const AppSlice = createSlice({
             state.isSidebarVisible = value;
         },
 
+        setIsHandlingBreakingChange(
+            state,
+            { payload: value }: PayloadAction<boolean>,
+        ) {
+            state.isHandlingBreakingChange = value;
+        },
+
         setScrollPosition(state, { payload: { name, value } }: ScrollPayload) {
             state.scrollPositions[name] = value;
         },
     },
 });
 
-export const { saveDimensions, setIsSidebarVisible, setScrollPosition } =
-    AppSlice.actions;
+export const {
+    saveDimensions,
+    setIsSidebarVisible,
+    setIsHandlingBreakingChange,
+    setScrollPosition,
+} = AppSlice.actions;
+
 export default AppSlice;

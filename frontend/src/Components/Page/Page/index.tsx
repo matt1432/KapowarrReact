@@ -36,14 +36,17 @@ export default function Page({ children = [] }: PageProps) {
 
     const { isConnected } = useRootSelector((state) => state.socketEvents);
 
-    const { hasError, errors, isPopulated, needsAuth } = useAppPage();
+    const { isHandlingBreakingChange, isSidebarVisible } = useRootSelector(
+        (state) => state.app,
+    );
 
     const { isSmallScreen } = useRootSelector((state) => state.app.dimensions);
+
     const { enableColorImpairedMode } = useRootSelector(
         (state) => state.uiSettings,
     );
 
-    const { isSidebarVisible } = useRootSelector((state) => state.app);
+    const { hasError, errors, isPopulated, needsAuth } = useAppPage();
 
     const handleResize = useCallback(() => {
         dispatch(
@@ -62,8 +65,13 @@ export default function Page({ children = [] }: PageProps) {
         };
     }, [handleResize]);
 
-    if (hasError) {
-        return <ErrorPage {...errors} version={window.Kapowarr.version} />;
+    if (hasError || isHandlingBreakingChange) {
+        return (
+            <ErrorPage
+                {...errors}
+                isHandlingBreakingChange={isHandlingBreakingChange}
+            />
+        );
     }
 
     if (needsAuth) {
