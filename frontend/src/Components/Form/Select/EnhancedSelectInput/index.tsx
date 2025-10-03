@@ -34,8 +34,6 @@ import classNames from 'classnames';
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
-import Modal from 'Components/Modal/Modal';
-import ModalBody from 'Components/Modal/ModalBody';
 import Scroller from 'Components/Scroller/Scroller';
 
 // Specific Components
@@ -391,10 +389,6 @@ export default function EnhancedSelectInput<
         ],
     );
 
-    const handleOptionsModalClose = useCallback(() => {
-        setIsOpen(false);
-    }, [setIsOpen]);
-
     const handleEditChange = useCallback(
         (change: InputChanged<K, string>) => {
             onChange(change as EnhancedSelectInputChanged<K, V>);
@@ -535,62 +529,47 @@ export default function EnhancedSelectInput<
                 </FloatingPortal>
             ) : null}
 
-            {isMobile ? (
-                <Modal
-                    className={styles.optionsModal}
-                    size="extraSmall"
-                    isOpen={isOpen}
-                    onModalClose={handleOptionsModalClose}
-                >
-                    <ModalBody
-                        className={styles.optionsModalBody}
-                        innerClassName={styles.optionsInnerModalBody}
-                        scrollDirection="none"
+            {isMobile && isOpen ? (
+                <FloatingPortal id="portal-root">
+                    <Scroller
+                        className={styles.options}
+                        ref={refs.setFloating}
+                        style={floatingStyles}
+                        {...getFloatingProps()}
                     >
-                        <Scroller className={styles.optionsModalScroller}>
-                            <div className={styles.mobileCloseButtonContainer}>
-                                <Link
-                                    className={styles.mobileCloseButton}
-                                    onPress={handleOptionsModalClose}
+                        {values.map((v, index) => {
+                            const hasParent = v.parentKey !== undefined;
+                            const depth = hasParent ? 1 : 0;
+                            const parentSelected =
+                                v.parentKey !== undefined &&
+                                isMultiSelect &&
+                                value.includes(v.parentKey);
+
+                            const { key, ...other } = v;
+
+                            return (
+                                <OptionComponent
+                                    key={key}
+                                    id={key}
+                                    depth={depth}
+                                    isSelected={isSelectedItem(
+                                        index,
+                                        value,
+                                        values,
+                                    )}
+                                    isMultiSelect={isMultiSelect}
+                                    isDisabled={parentSelected}
+                                    {...valueOptions}
+                                    {...other}
+                                    isMobile={true}
+                                    onSelect={handleSelect}
                                 >
-                                    <Icon name={icons.CLOSE} size={18} />
-                                </Link>
-                            </div>
-
-                            {values.map((v, index) => {
-                                const hasParent = v.parentKey !== undefined;
-                                const depth = hasParent ? 1 : 0;
-                                const parentSelected =
-                                    v.parentKey !== undefined &&
-                                    isMultiSelect &&
-                                    value.includes(v.parentKey);
-
-                                const { key, ...other } = v;
-
-                                return (
-                                    <OptionComponent
-                                        key={key}
-                                        id={key}
-                                        depth={depth}
-                                        isSelected={isSelectedItem(
-                                            index,
-                                            value,
-                                            values,
-                                        )}
-                                        isMultiSelect={isMultiSelect}
-                                        isDisabled={parentSelected}
-                                        {...valueOptions}
-                                        {...other}
-                                        isMobile={true}
-                                        onSelect={handleSelect}
-                                    >
-                                        {v.value}
-                                    </OptionComponent>
-                                );
-                            })}
-                        </Scroller>
-                    </ModalBody>
-                </Modal>
+                                    {v.value}
+                                </OptionComponent>
+                            );
+                        })}
+                    </Scroller>
+                </FloatingPortal>
             ) : null}
         </>
     );
