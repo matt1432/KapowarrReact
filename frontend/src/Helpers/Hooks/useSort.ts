@@ -82,33 +82,17 @@ function predicatesToSorters<
             ][]
         ).map(([key, func]) => [
             key,
-            (
-                sortDirection: SortDirection,
-                secondarySorter?: (a: T, b: T) => number,
-            ) => {
-                return (a: T, b: T) => {
-                    const firstSort =
-                        sortDirection === sortDirections.ASCENDING
-                            ? func(a, b)
-                            : func(b, a);
-
-                    if (firstSort === 0 && secondarySorter) {
-                        return sortDirection === sortDirections.ASCENDING
-                            ? secondarySorter(a, b)
-                            : secondarySorter(b, a);
-                    }
-
-                    return firstSort;
-                };
+            (sortDirection: SortDirection) => {
+                return (a: T, b: T) =>
+                    sortDirection === sortDirections.ASCENDING
+                        ? func(a, b)
+                        : func(b, a);
             },
         ]),
     ) as Partial<
         Record<
             ColumnName,
-            (
-                sortDirection: SortDirection,
-                secondarySorter?: (a: T, b: T) => number,
-            ) => (a: T, b: T) => number
+            (sortDirection: SortDirection) => (a: T, b: T) => number
         >
     >;
 }
@@ -129,22 +113,26 @@ export default function useSort<
         () => predicatesToSorters(columns, predicates),
         [columns, predicates],
     );
-    const secondarySorter = useMemo(() => {
-        return secondarySortKey
-            ? sorters[secondarySortKey]?.(
-                  secondarySortDirection ?? sortDirections.ASCENDING,
-              )
-            : undefined;
-    }, [secondarySortKey, secondarySortDirection, sorters]);
 
     return useMemo(
         () =>
             items.toSorted(
-                sorters[sortKey]?.(
-                    sortDirection ?? sortDirections.ASCENDING,
-                    secondarySorter,
-                ),
+                (a, b) =>
+                    (sorters[sortKey]?.(
+                        sortDirection ?? sortDirections.ASCENDING,
+                    )(a, b) ||
+                        sorters[secondarySortKey]?.(
+                            secondarySortDirection ?? sortDirections.ASCENDING,
+                        )(a, b)) ??
+                    0,
             ),
-        [items, secondarySorter, sortDirection, sorters, sortKey],
+        [
+            items,
+            sorters,
+            sortKey,
+            sortDirection,
+            secondarySortKey,
+            secondarySortDirection,
+        ],
     );
 }
