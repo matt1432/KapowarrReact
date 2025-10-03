@@ -78,6 +78,8 @@ export default function SortedTable<
             columns={columns}
             sortKey={sortKey as ColumnName}
             sortDirection={sortDirection}
+            secondarySortKey={secondarySortKey as ColumnName}
+            secondarySortDirection={secondarySortDirection}
             onSortPress={onSortPress}
             {...tableProps}
         >

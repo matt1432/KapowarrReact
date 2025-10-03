@@ -108,7 +108,7 @@ export default function Queue() {
             dispatch(
                 setTableSort({
                     tableName: 'queueTable',
-                    sortKey: sortKey,
+                    sortKey,
                     sortDirection,
                 }),
             );
