@@ -70,7 +70,7 @@ export type SetTableOptionsParams<
     columns?: Column<ColumnNameMap[T]>[];
 } & Partial<ExtraProps>;
 
-type TableState<
+export type TableState<
     T extends keyof ColumnNameMap,
     ExtraProps extends ExtraPropsMap[T] = ExtraPropsMap[T],
 > = {
