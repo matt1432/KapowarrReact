@@ -212,6 +212,10 @@ def batched[T](lst: Sequence[T], n: int) -> Iterator[Sequence[T]]:
         yield lst[ndx : ndx + n]
 
 
+def flatten(xss):
+    return [x for xs in xss for x in xs]
+
+
 def first_of_range[T](n: T | tuple[T, ...] | list[T]) -> T:
     """Get the first element from a variable that could potentially be a range,
     but could also be a single value. In the case of a single value, the value

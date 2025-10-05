@@ -18,6 +18,7 @@ from backend.base.helpers import (
     AsyncSession,
     check_overlapping_issues,
     extract_year_from_date,
+    flatten,
     force_range,
     get_subclasses,
 )
@@ -245,25 +246,25 @@ class SearchLibgenPlus:
             if volume_data.libgen_series_id is not None:
                 libgen_series_id = volume_data.libgen_series_id
 
-            file_results: list[ResultFile] = []
+            series_ids = (
+                list(map(int, libgen_series_id.split(",")))
+                if libgen_series_id is not None
+                else [None]
+            )
 
-            if libgen_series_id is not None:
-                for id in libgen_series_id.split(","):
-                    file_results += await LibgenSearch().search_comicvine_id(
+            file_results: list[ResultFile]
+            file_results = flatten(await gather(
+                *(
+                    LibgenSearch().search_comicvine_id(
                         api_key=settings.comicvine_api_key,
                         id=self.comicvine_id,
                         issue_number=self.issue_number,
-                        libgen_series_id=int(id),
+                        libgen_series_id=id,
                         libgen_site_url=Constants.LIBGEN_SITE_URL,
                     )
-            else:
-                file_results += await LibgenSearch().search_comicvine_id(
-                    api_key=settings.comicvine_api_key,
-                    id=self.comicvine_id,
-                    issue_number=self.issue_number,
-                    libgen_series_id=None,
-                    libgen_site_url=Constants.LIBGEN_SITE_URL,
+                    for id in series_ids
                 )
+            ))
 
             if len(file_results) > 0:
                 issue = file_results[0].issue
