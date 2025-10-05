@@ -1,8 +1,7 @@
 from asyncio import run
 from collections.abc import Callable
 from datetime import datetime
-from io import BytesIO, StringIO
-from os.path import exists
+from io import BytesIO
 from typing import Any
 
 from flask import Blueprint, Request, Response, request, send_file
@@ -50,7 +49,7 @@ from backend.base.definitions import (
     VolumeData,
 )
 from backend.base.helpers import hash_password
-from backend.base.logging import LOGGER, get_log_filepath
+from backend.base.logging import LOGGER, get_log_file_contents
 from backend.features.download_queue import (
     DownloadHandler,
     delete_download_history,
@@ -395,17 +394,7 @@ def api_about() -> ApiReturn:
 @error_handler
 @auth
 def api_logs() -> tuple[Response, int]:
-    file = get_log_filepath()
-    if not exists(file):
-        raise LogFileNotFound
-
-    sio = StringIO()
-    for ext in (".1", ""):
-        lf = file + ext
-        if not exists(lf):
-            continue
-        with open(lf) as f:
-            sio.writelines(f)
+    sio = get_log_file_contents()
 
     return send_file(
         BytesIO(sio.getvalue().encode("utf-8")),
