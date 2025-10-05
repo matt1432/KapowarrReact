@@ -165,6 +165,7 @@ const extendedApi = baseApi.injectEndpoints({
 export const {
     useAddDownloadMutation,
     useExecuteCommandMutation,
+    useLazyManualSearchQuery,
     useLibgenFileSearchMutation,
     useManualSearchQuery,
     useRestartMutation,

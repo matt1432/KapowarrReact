@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -12,8 +12,8 @@ import {
 } from 'Store/Slices/TableOptions';
 
 import {
+    useLazyManualSearchQuery,
     useLibgenFileSearchMutation,
-    useManualSearchQuery,
 } from 'Store/Api/Command';
 
 // Misc
@@ -269,8 +269,7 @@ export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
 export default function InteractiveSearch({
     searchPayload,
 }: InteractiveSearchProps) {
-    const { data, ...searchProps } = useManualSearchQuery(searchPayload, {
-        refetchOnMountOrArgChange: true,
+    const [search, { data, ...searchProps }] = useLazyManualSearchQuery({
         selectFromResult: ({ isFetching, isUninitialized, error, data }) => ({
             isFetching,
             isPopulated: !isUninitialized,
@@ -284,6 +283,11 @@ export default function InteractiveSearch({
             totalItems: data?.length ?? 0,
         }),
     });
+
+    // Always fetch on mount
+    useEffect(() => {
+        search(searchPayload);
+    }, []);
 
     const { hideDownloaded, hideUnmonitored } = useRootSelector(
         (state) => state.tableOptions.searchResults,
