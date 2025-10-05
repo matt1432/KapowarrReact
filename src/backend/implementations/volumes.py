@@ -19,8 +19,8 @@ from backend.base.custom_exceptions import (
     VolumeNotFound,
 )
 from backend.base.definitions import (
-    SCANNABLE_EXTENSIONS,
     Constants,
+    FileConstants,
     FileData,
     FileExtraInfo,
     GeneralFileData,
@@ -383,7 +383,7 @@ class Volume:
             volume_info["folder"], volume_info["root_folder_path"]
         )
         del volume_info["root_folder_path"]
-        volume_info["issues"] = [i.as_dict() for i in self.get_issues()]
+        volume_info["issues"] = [i.todict() for i in self.get_issues()]
         volume_info["general_files"] = self.get_general_files()
 
         return volume_info
@@ -1381,7 +1381,7 @@ def scan_files(
     bindings: list[tuple[int, int]] = []
     general_bindings: list[tuple[int, str]] = []
     folder_contents = list_files(
-        folder=volume_data.folder, ext=SCANNABLE_EXTENSIONS
+        folder=volume_data.folder, ext=FileConstants.SCANNABLE_EXTENSIONS
     )
     for file in filtered_iter(folder_contents, set(filepath_filter)):
         file_data = extract_filename_data(file)

@@ -889,7 +889,7 @@ class GetComicsPage:
                 soup = BeautifulSoup(await response.text(), "html.parser")
 
             except ClientError:
-                raise FailedGCPage(FailReason.BROKEN)
+                raise FailedGCPage(FailReason.WEBPAGE_BROKEN)
 
         self.title = _get_title(soup)
         self.download_groups = _get_download_groups(soup)

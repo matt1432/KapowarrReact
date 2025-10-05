@@ -148,7 +148,7 @@ class Credentials:
             INSERT INTO credentials(source, username, email, password, api_key)
             VALUES (:source, :username, :email, :password, :api_key);
             """,
-                credential_data.as_dict(),
+                credential_data.todict(),
             )
             .lastrowid
         )

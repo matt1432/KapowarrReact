@@ -9,7 +9,6 @@ from backend.base.custom_exceptions import (
     VolumeAlreadyAdded,
 )
 from backend.base.definitions import (
-    CONTENT_EXTENSIONS,
     CVFileMapping,
     FileConstants,
     FilenameData,
@@ -105,7 +104,7 @@ def propose_library_import(
         try:
             all_excluded_files = set(
                 chain.from_iterable(
-                    list_files(f, CONTENT_EXTENSIONS)
+                    list_files(f, FileConstants.CONTENT_EXTENSIONS)
                     for f in scan_excluded_folders
                 )
             )
@@ -115,7 +114,8 @@ def propose_library_import(
     try:
         all_files = set(
             chain.from_iterable(
-                list_files(f, CONTENT_EXTENSIONS) for f in scan_folders
+                list_files(f, FileConstants.CONTENT_EXTENSIONS)
+                for f in scan_folders
             )
         )
 

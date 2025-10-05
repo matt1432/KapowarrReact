@@ -10,9 +10,9 @@ from time import time
 from typing import TYPE_CHECKING
 
 from backend.base.definitions import (
-    SCANNABLE_EXTENSIONS,
     BlocklistReason,
     DownloadState,
+    FileConstants,
 )
 from backend.base.files import (
     copy_directory,
@@ -118,7 +118,7 @@ def move_to_dest(download: Download) -> None:
 
     folder = Volume(download.volume_id).vd.folder
     extension = splitext(download.files[0])[1].lower()
-    if extension not in SCANNABLE_EXTENSIONS:
+    if extension not in FileConstants.SCANNABLE_EXTENSIONS:
         extension = ""
 
     file_dest = join(folder, download.filename_body + extension)

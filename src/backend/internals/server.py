@@ -433,7 +433,7 @@ class WebSocket(SocketIO, metaclass=Singleton):
             SocketEvent.ISSUE_UPDATED.value,
             {
                 "called_from": called_from,
-                "issue": issue.get_data().as_dict(),
+                "issue": issue.get_data().todict(),
             },
         )
         return

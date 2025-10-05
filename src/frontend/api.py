@@ -585,7 +585,7 @@ def api_rootfolder() -> ApiReturn | None:
     root_folders = RootFolders()
 
     if request.method == "GET":
-        result = [rf.as_dict() for rf in root_folders.get_all()]
+        result = [rf.todict() for rf in root_folders.get_all()]
         return return_api(result)
 
     elif request.method == "POST":
@@ -593,7 +593,7 @@ def api_rootfolder() -> ApiReturn | None:
         folder = data.get("folder")
         if folder is None:
             raise KeyNotFound("folder")
-        root_folder = root_folders.add(folder).as_dict()
+        root_folder = root_folders.add(folder).todict()
         return return_api(root_folder, code=201)
 
 
@@ -604,7 +604,7 @@ def api_rootfolder_id(id: int) -> ApiReturn | None:
     root_folders = RootFolders()
 
     if request.method == "GET":
-        root_folder = root_folders.get_one(id).as_dict()
+        root_folder = root_folders.get_one(id).todict()
         return return_api(root_folder)
 
     elif request.method == "PUT":
@@ -1163,7 +1163,7 @@ def api_blocklist() -> ApiReturn | None:
         offset = extract_key(request, "offset", False)
 
         blocklist = get_blocklist(offset)
-        return return_api([b.as_dict() for b in blocklist])
+        return return_api([b.todict() for b in blocklist])
 
     elif request.method == "POST":
         data = request.get_json()
@@ -1231,7 +1231,7 @@ def api_blocklist() -> ApiReturn | None:
             volume_id=volume_id,
             issue_id=issue_id,
             reason=reason,
-        ).as_dict()
+        ).todict()
         return return_api(result, code=201)
 
     elif request.method == "DELETE":
@@ -1244,7 +1244,7 @@ def api_blocklist() -> ApiReturn | None:
 @auth
 def api_blocklist_entry(id: int) -> ApiReturn | None:
     if request.method == "GET":
-        result = get_blocklist_entry(id).as_dict()
+        result = get_blocklist_entry(id).todict()
         return return_api(result)
 
     elif request.method == "DELETE":
@@ -1262,7 +1262,7 @@ def api_credentials() -> ApiReturn | None:
     cred = Credentials()
 
     if request.method == "GET":
-        result_get = [c.as_dict() for c in cred.get_all()]
+        result_get = [c.todict() for c in cred.get_all()]
         return return_api(result_get)
 
     elif request.method == "POST":
@@ -1289,7 +1289,7 @@ def api_credentials() -> ApiReturn | None:
                 api_key=data.get("api_key"),
             )
         )
-        return return_api(result.as_dict(), code=201)
+        return return_api(result.todict(), code=201)
 
 
 @api.route("/credentials/<int:id>", methods=["GET", "DELETE"])
@@ -1298,7 +1298,7 @@ def api_credentials() -> ApiReturn | None:
 def api_credential(id: int) -> ApiReturn | None:
     cred = Credentials()
     if request.method == "GET":
-        result = cred.get_one(id).as_dict()
+        result = cred.get_one(id).todict()
         return return_api(result)
 
     elif request.method == "DELETE":

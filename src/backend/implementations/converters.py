@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING, final
 from zipfile import ZipFile
 
 from backend.base.definitions import (
-    SCANNABLE_EXTENSIONS,
     Constants,
     FileConstants,
     FileConverter,
@@ -70,7 +69,9 @@ def extract_files_from_folder(source_folder: str, volume_id: int) -> list[str]:
     Returns:
         List[str]: The filepaths of the files that were extracted.
     """
-    folder_contents = list_files(source_folder, SCANNABLE_EXTENSIONS)
+    folder_contents = list_files(
+        source_folder, FileConstants.SCANNABLE_EXTENSIONS
+    )
 
     volume = Volume(volume_id)
     volume_data = volume.get_data()
