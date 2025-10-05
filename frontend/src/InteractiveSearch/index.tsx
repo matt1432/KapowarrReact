@@ -18,6 +18,7 @@ import {
 
 // Misc
 import { icons, inputTypes, kinds } from 'Helpers/Props';
+
 import { getErrorMessage } from 'Utilities/Object/error';
 
 import translate from 'Utilities/String/translate';
@@ -284,9 +285,10 @@ export default function InteractiveSearch({
         }),
     });
 
-    // Always fetch on mount
     useEffect(() => {
         search(searchPayload);
+        // only fetch on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const { hideDownloaded, hideUnmonitored } = useRootSelector(
