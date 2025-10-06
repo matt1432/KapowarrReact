@@ -15,8 +15,6 @@ import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
 // Hooks
 import useMeasure from 'Helpers/Hooks/useMeasure';
 
-// General Components
-
 // Specific Components
 import VolumeIndexPoster from 'Volume/Index/Posters/VolumeIndexPoster';
 

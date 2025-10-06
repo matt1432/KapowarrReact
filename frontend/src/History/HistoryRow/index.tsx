@@ -17,6 +17,7 @@ import VolumeTitleLink from 'Volume/VolumeTitleLink';
 
 // Types
 import type { DownloadHistoryItem } from 'typings/Queue';
+import Link from 'Components/Link/Link';
 
 type HistoryRowProps = DownloadHistoryItem & {
     showVolumes: boolean;
@@ -72,7 +73,9 @@ export default function HistoryRow({
 
             {showIssues ? <TableRowCell>{issueId}</TableRowCell> : null}
 
-            <TableRowCell>{webLink}</TableRowCell>
+            <TableRowCell>
+                <Link to={webLink}>{webLink}</Link>
+            </TableRowCell>
 
             <TableRowCell>{webTitle}</TableRowCell>
 
