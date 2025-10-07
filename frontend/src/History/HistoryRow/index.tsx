@@ -10,23 +10,28 @@ import { useLazyGetIssueQuery } from 'Store/Api/Issues';
 import translate from 'Utilities/String/translate';
 
 // General Components
+import Link from 'Components/Link/Link';
 import RelativeDateCell from 'Components/Table/Cells/RelativeDateCell';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
 import VolumeTitleLink from 'Volume/VolumeTitleLink';
 
+// CSS
+import styles from './index.module.css';
+
 // Types
+import type { Column } from 'Components/Table/Column';
 import type { DownloadHistoryItem } from 'typings/Queue';
-import Link from 'Components/Link/Link';
+import type { HistoryColumnName } from 'History';
 
 type HistoryRowProps = DownloadHistoryItem & {
-    showVolumes: boolean;
-    showIssues: boolean;
+    columns: Column<HistoryColumnName>[];
 };
 
 // IMPLEMENTATIONS
 
 export default function HistoryRow({
+    columns,
     source,
     volumeId,
     issueId,
@@ -36,8 +41,6 @@ export default function HistoryRow({
     fileTitle,
     downloadedAt,
     success,
-    showVolumes,
-    showIssues,
 }: HistoryRowProps) {
     const [getIssue, { data: issue }] = useLazyGetIssueQuery();
 
@@ -49,49 +52,101 @@ export default function HistoryRow({
 
     return (
         <TableRow>
-            <TableRowCell>{source}</TableRowCell>
+            {columns.map(({ isVisible, name }) => {
+                if (!isVisible) {
+                    return null;
+                }
 
-            {showVolumes ? (
-                <TableRowCell>
-                    {typeof volumeId === 'number' ||
-                    typeof issue?.volumeId === 'number' ? (
-                        <VolumeTitleLink
-                            title={(
-                                volumeId ??
-                                issue?.volumeId ??
-                                ''
-                            ).toString()}
-                            titleSlug={(
-                                volumeId ??
-                                issue?.volumeId ??
-                                ''
-                            ).toString()}
+                if (name === 'source') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {source}
+                        </TableRowCell>
+                    );
+                }
+
+                if (name === 'volumeId') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {typeof volumeId === 'number' ||
+                            typeof issue?.volumeId === 'number' ? (
+                                <VolumeTitleLink
+                                    title={(
+                                        volumeId ??
+                                        issue?.volumeId ??
+                                        ''
+                                    ).toString()}
+                                    titleSlug={(
+                                        volumeId ??
+                                        issue?.volumeId ??
+                                        ''
+                                    ).toString()}
+                                />
+                            ) : null}
+                        </TableRowCell>
+                    );
+                }
+
+                if (name === 'issueId') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {issueId}
+                        </TableRowCell>
+                    );
+                }
+
+                if (name === 'webLink') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <Link to={webLink}>{webLink}</Link>
+                        </TableRowCell>
+                    );
+                }
+
+                if (name === 'webTitle') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {webTitle}
+                        </TableRowCell>
+                    );
+                }
+
+                if (name === 'webSubTitle') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {webSubTitle}
+                        </TableRowCell>
+                    );
+                }
+
+                if (name === 'fileTitle') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {fileTitle}
+                        </TableRowCell>
+                    );
+                }
+
+                if (name === 'downloadedAt') {
+                    return (
+                        <RelativeDateCell
+                            date={downloadedAt * 1000}
+                            includeSeconds={true}
+                            includeTime={true}
                         />
-                    ) : null}
-                </TableRowCell>
-            ) : null}
+                    );
+                }
 
-            {showIssues ? <TableRowCell>{issueId}</TableRowCell> : null}
-
-            <TableRowCell>
-                <Link to={webLink}>{webLink}</Link>
-            </TableRowCell>
-
-            <TableRowCell>{webTitle}</TableRowCell>
-
-            <TableRowCell>{webSubTitle}</TableRowCell>
-
-            <TableRowCell>{fileTitle}</TableRowCell>
-
-            <RelativeDateCell
-                date={downloadedAt * 1000}
-                includeSeconds={true}
-                includeTime={true}
-            />
-
-            <TableRowCell>
-                {success ? translate('Completed') : translate('Failed')}
-            </TableRowCell>
+                if (name === 'success') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {success
+                                ? translate('Completed')
+                                : translate('Failed')}
+                        </TableRowCell>
+                    );
+                }
+            })}
         </TableRow>
     );
 }

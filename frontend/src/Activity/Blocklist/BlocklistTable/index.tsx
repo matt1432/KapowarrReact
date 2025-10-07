@@ -179,6 +179,7 @@ export default function BlocklistTable() {
                         {items.map((item) => (
                             <BlocklistRow
                                 key={item.id}
+                                columns={columns}
                                 {...item}
                                 refetch={refetch}
                             />

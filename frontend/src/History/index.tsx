@@ -97,13 +97,6 @@ export default function History({
             isSortable: false,
             isVisible: true,
         },
-        {
-            name: 'actions',
-            hideHeaderLabel: true,
-            isModifiable: false,
-            isSortable: false,
-            isVisible: true,
-        },
     ];
 
     const [fetchHistory, { data, isFetching, error }] =
@@ -189,9 +182,8 @@ export default function History({
                         {items.map((item) => (
                             <HistoryRow
                                 key={item.webLink}
+                                columns={columns}
                                 {...item}
-                                showVolumes={showVolumes}
-                                showIssues={showIssues}
                             />
                         ))}
                     </TableBody>

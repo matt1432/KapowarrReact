@@ -1,0 +1,40 @@
+
+.source {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.volumeId {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.issueId {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.downloadLink {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.webLink {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.webTitle {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.webSubTitle {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.reason {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.addedAt {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}
+
+.actions {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+}

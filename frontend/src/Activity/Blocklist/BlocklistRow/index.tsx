@@ -5,6 +5,7 @@ import { useCallback, useEffect } from 'react';
 
 // Redux
 import { useLazyGetIssueQuery } from 'Store/Api/Issues';
+import { useDeleteBlocklistItemMutation } from 'Store/Api/Queue';
 
 // Misc
 import { icons } from 'Helpers/Props';
@@ -18,17 +19,23 @@ import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
 import VolumeTitleLink from 'Volume/VolumeTitleLink';
 
+// CSS
+import styles from './index.module.css';
+
 // Types
+import type { Column } from 'Components/Table/Column';
 import type { BlocklistItem } from 'typings/Queue';
-import { useDeleteBlocklistItemMutation } from 'Store/Api/Queue';
+import type { BlocklistColumnName } from '../BlocklistTable';
 
 type BlocklistRowProps = BlocklistItem & {
+    columns: Column<BlocklistColumnName>[];
     refetch: () => void;
 };
 
 // IMPLEMENTATIONS
 
 export default function BlocklistRow({
+    columns,
     id,
     source,
     volumeId,
@@ -59,48 +66,112 @@ export default function BlocklistRow({
 
     return (
         <TableRow>
-            <TableRowCell>{source}</TableRowCell>
+            {columns.map(({ isVisible, name }) => {
+                if (!isVisible) {
+                    return null;
+                }
 
-            <TableRowCell>
-                {typeof volumeId === 'number' ||
-                typeof issue?.volumeId === 'number' ? (
-                    <VolumeTitleLink
-                        title={(volumeId ?? issue?.volumeId ?? '').toString()}
-                        titleSlug={(
-                            volumeId ??
-                            issue?.volumeId ??
-                            ''
-                        ).toString()}
-                    />
-                ) : null}
-            </TableRowCell>
+                if (name === 'source') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {source}
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell>{issueId}</TableRowCell>
+                if (name === 'volumeId') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {typeof volumeId === 'number' ||
+                            typeof issue?.volumeId === 'number' ? (
+                                <VolumeTitleLink
+                                    title={(
+                                        volumeId ??
+                                        issue?.volumeId ??
+                                        ''
+                                    ).toString()}
+                                    titleSlug={(
+                                        volumeId ??
+                                        issue?.volumeId ??
+                                        ''
+                                    ).toString()}
+                                />
+                            ) : null}
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell>{downloadLink}</TableRowCell>
+                if (name === 'issueId') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {issueId}
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell>{webLink}</TableRowCell>
+                if (name === 'downloadLink') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {downloadLink}
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell>{webTitle}</TableRowCell>
+                if (name === 'webLink') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {webLink}
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell>{webSubTitle}</TableRowCell>
+                if (name === 'webTitle') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {webTitle}
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell>{reason}</TableRowCell>
+                if (name === 'webSubTitle') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {webSubTitle}
+                        </TableRowCell>
+                    );
+                }
 
-            <RelativeDateCell
-                date={addedAt * 1000}
-                includeSeconds={true}
-                includeTime={true}
-            />
+                if (name === 'reason') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            {reason}
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell>
-                <SpinnerIconButton
-                    name={icons.DELETE}
-                    title={translate('RemoveFromBlocklist')}
-                    isSpinning={isLoading}
-                    onPress={onDeletePress}
-                />
-            </TableRowCell>
+                if (name === 'addedAt') {
+                    return (
+                        <RelativeDateCell
+                            date={addedAt * 1000}
+                            includeSeconds={true}
+                            includeTime={true}
+                        />
+                    );
+                }
+
+                if (name === 'actions') {
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <SpinnerIconButton
+                                name={icons.DELETE}
+                                title={translate('RemoveFromBlocklist')}
+                                isSpinning={isLoading}
+                                onPress={onDeletePress}
+                            />
+                        </TableRowCell>
+                    );
+                }
+            })}
         </TableRow>
     );
 }
