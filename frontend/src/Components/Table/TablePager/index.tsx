@@ -1,29 +1,44 @@
-import classNames from 'classnames';
+// IMPORTS
+
+// React
 import { useCallback, useMemo, useState } from 'react';
-import SelectInput, {
-    type SelectInputOption,
-} from 'Components/Form/SelectInput';
+
+// Misc
+import { icons } from 'Helpers/Props';
+
+import translate from 'Utilities/String/translate';
+
+import classNames from 'classnames';
+
+// General Components
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
-import { icons } from 'Helpers/Props';
-import type { InputChanged } from 'typings/Inputs';
-import translate from 'Utilities/String/translate';
+import SelectInput from 'Components/Form/SelectInput';
+
+// CSS
 import styles from './index.module.css';
 
+// Types
+import type { InputChanged } from 'typings/Inputs';
+import type { SelectInputOption } from 'Components/Form/SelectInput';
+import type { Nullable } from 'typings/Misc';
+
 interface TablePagerProps {
-    page?: number;
-    totalPages?: number;
-    totalRecords?: number;
-    isFetching?: boolean;
-    onFirstPagePress?: () => void;
-    onPreviousPagePress?: () => void;
-    onNextPagePress?: () => void;
-    onLastPagePress?: () => void;
+    page: Nullable<number>;
+    totalPages: Nullable<number>;
+    totalRecords: number;
+    isFetching: boolean;
+    onFirstPagePress: () => void;
+    onPreviousPagePress: () => void;
+    onNextPagePress: () => void;
+    onLastPagePress: () => void;
     onPageSelect: (page: number) => void;
 }
 
-function TablePager({
+// IMPLEMENTATIONS
+
+export default function TablePager({
     page,
     totalPages,
     totalRecords,
@@ -182,5 +197,3 @@ function TablePager({
         </div>
     );
 }
-
-export default TablePager;

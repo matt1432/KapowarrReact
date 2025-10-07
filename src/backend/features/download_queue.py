@@ -913,6 +913,51 @@ def get_download_history(
     )
 
 
+def get_download_history_total_records(
+    volume_id: int | None = None,
+    issue_id: int | None = None,
+) -> int:
+    if issue_id is not None:
+        comm = """
+            SELECT
+                COUNT(*) as count
+            FROM download_history
+            WHERE issue_id = :issue_id
+            """
+
+    elif volume_id is not None:
+        comm = """
+            SELECT
+                COUNT(*) as count
+            FROM download_history
+            WHERE volume_id = :volume_id
+            """
+
+    else:
+        comm = """
+            SELECT
+                COUNT(*) as count
+            FROM download_history
+            """
+
+    entry = (
+        get_db()
+        .execute(
+            comm,
+            {
+                "issue_id": issue_id,
+                "volume_id": volume_id,
+            },
+        )
+        .fetchonedict()
+    )
+
+    if not entry:
+        return 0
+
+    return int(entry["count"])
+
+
 def delete_download_history() -> None:
     """
     Delete complete download history

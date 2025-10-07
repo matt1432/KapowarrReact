@@ -13,7 +13,6 @@ import translate from 'Utilities/String/translate';
 
 // General Components
 import Alert from 'Components/Alert';
-import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TablePager from 'Components/Table/TablePager';
@@ -94,7 +93,7 @@ const columns: Column<BlocklistColumnName>[] = [
 ];
 
 export default function BlocklistTable() {
-    const [fetchBlocklist, { items, isFetching, isPopulated, error }] =
+    const [fetchBlocklist, { data, isFetching, isPopulated, error }] =
         useGetBlocklistMutation({
             selectFromResult: ({
                 data,
@@ -102,53 +101,61 @@ export default function BlocklistTable() {
                 isUninitialized,
                 error,
             }) => ({
-                items: data ?? [],
+                data,
                 isFetching: isLoading,
                 isPopulated: !isUninitialized,
                 error,
             }),
         });
 
-    const [fetchNextPage, { nextPageHasItems }] = useGetBlocklistMutation({
-        selectFromResult: ({ data }) => ({
-            nextPageHasItems: Boolean(data?.length),
-        }),
-    });
+    const [items, setItems] = useState(data?.blocklist ?? []);
+    const [totalRecords, setTotalRecords] = useState(data?.totalRecords ?? 0);
+    useEffect(() => {
+        if (
+            data &&
+            typeof data.totalRecords === 'number' &&
+            Array.isArray(data.blocklist)
+        ) {
+            setTotalRecords(data.totalRecords);
+            setItems(data.blocklist);
+        }
+    }, [data]);
 
-    const hasItems = Boolean(items.length);
+    const hasItems = useMemo(() => Boolean(items.length), [items.length]);
+    const totalPages = useMemo(
+        () => Math.ceil(totalRecords / 50),
+        [totalRecords],
+    );
 
     const [page, setPage] = useState(1);
-    const lastPage = useMemo(
-        () => (nextPageHasItems ? page + 1 : page),
-        [nextPageHasItems, page],
-    );
 
     const handlePageSelect = useCallback((pageNumber: number) => {
         setPage(pageNumber);
     }, []);
+
     const handleFirstPagePress = useCallback(() => {
         handlePageSelect(1);
     }, [handlePageSelect]);
+
     const handlePreviousPagePress = useCallback(() => {
         handlePageSelect(page - 1);
     }, [handlePageSelect, page]);
+
     const handleNextPagePress = useCallback(() => {
         handlePageSelect(page + 1);
     }, [handlePageSelect, page]);
 
+    const handleLastPagePress = useCallback(() => {
+        handlePageSelect(totalPages);
+    }, [handlePageSelect, totalPages]);
+
     const refetch = useCallback(() => {
         fetchBlocklist({ offset: page - 1 });
-        fetchNextPage({ offset: page });
-    }, [fetchBlocklist, fetchNextPage, page]);
+    }, [fetchBlocklist, page]);
 
     useEffect(() => {
         fetchBlocklist({ offset: page - 1 });
-        fetchNextPage({ offset: page });
-    }, [fetchBlocklist, fetchNextPage, page]);
-
-    if (isFetching) {
-        return <LoadingIndicator />;
-    }
+    }, [fetchBlocklist, page]);
 
     if (!isFetching && !!error) {
         return (
@@ -178,11 +185,13 @@ export default function BlocklistTable() {
                 </Table>
                 <TablePager
                     page={page}
-                    totalPages={lastPage}
+                    totalPages={totalPages}
+                    totalRecords={totalRecords}
                     isFetching={isFetching}
                     onFirstPagePress={handleFirstPagePress}
                     onPreviousPagePress={handlePreviousPagePress}
                     onNextPagePress={handleNextPagePress}
+                    onLastPagePress={handleLastPagePress}
                     onPageSelect={handlePageSelect}
                 />
             </div>

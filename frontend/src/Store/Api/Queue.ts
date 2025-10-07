@@ -5,11 +5,10 @@ import { baseApi } from './base';
 
 // Misc
 import camelize from 'Utilities/Object/camelize';
+import type { CamelCasedPropertiesDeep } from 'type-fest';
 
 // Types
 import type {
-    BlocklistItem,
-    DownloadHistoryItem,
     QueueItem,
     RawBlocklistItem,
     RawDownloadHistoryItem,
@@ -36,6 +35,15 @@ export interface DeleteQueueItemParams {
     blocklist?: boolean;
 }
 
+interface RawGetBlocklistReturn {
+    blocklist: RawBlocklistItem[];
+    total_records: number;
+}
+interface RawGetHistoryReturn {
+    history: RawDownloadHistoryItem[];
+    total_records: number;
+}
+
 // IMPLEMENTATIONS
 
 const extendedApi = baseApi.injectEndpoints({
@@ -54,7 +62,7 @@ const extendedApi = baseApi.injectEndpoints({
         }),
 
         getDownloadHistory: build.mutation<
-            DownloadHistoryItem[],
+            CamelCasedPropertiesDeep<RawGetHistoryReturn>,
             GetDownloadHistoryParams
         >({
             query: (params) => ({
@@ -66,12 +74,14 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: {
-                result: RawDownloadHistoryItem[];
-            }) => camelize(response.result),
+            transformResponse: (response: { result: RawGetHistoryReturn }) =>
+                camelize(response.result),
         }),
 
-        getBlocklist: build.mutation<BlocklistItem[], GetBlocklistParams>({
+        getBlocklist: build.mutation<
+            CamelCasedPropertiesDeep<RawGetBlocklistReturn>,
+            GetBlocklistParams
+        >({
             query: ({ offset = 0 }) => ({
                 method: 'GET',
                 url: 'blocklist',
@@ -81,7 +91,7 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: { result: RawBlocklistItem[] }) =>
+            transformResponse: (response: { result: RawGetBlocklistReturn }) =>
                 camelize(response.result),
         }),
 

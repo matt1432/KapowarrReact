@@ -59,6 +59,19 @@ def get_blocklist(offset: int = 0) -> list[BlocklistEntry]:
     return result
 
 
+def get_blocklist_total_records() -> int:
+    entry = (
+        get_db()
+        .execute("SELECT COUNT(*) as count FROM blocklist;")
+        .fetchonedict()
+    )
+
+    if not entry:
+        return 0
+
+    return int(entry["count"])
+
+
 def get_blocklist_entry(id: int) -> BlocklistEntry:
     """Get info about a blocklist entry.
 

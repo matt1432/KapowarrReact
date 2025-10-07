@@ -54,6 +54,7 @@ from backend.features.download_queue import (
     DownloadHandler,
     delete_download_history,
     get_download_history,
+    get_download_history_total_records,
 )
 from backend.features.library_import import (
     import_library,
@@ -75,6 +76,7 @@ from backend.implementations.blocklist import (
     delete_blocklist_entry,
     get_blocklist,
     get_blocklist_entry,
+    get_blocklist_total_records,
 )
 from backend.implementations.comicvine import ComicVine
 from backend.implementations.conversion import (
@@ -1123,8 +1125,14 @@ def api_download_history() -> ApiReturn | None:
         volume_id: int = extract_key(request, "volume_id", False)
         issue_id: int = extract_key(request, "issue_id", False)
         offset: int = extract_key(request, "offset", False)
-        result = get_download_history(volume_id, issue_id, offset)
-        return return_api(result)
+        history = get_download_history(volume_id, issue_id, offset)
+        total_records = get_download_history_total_records(volume_id, issue_id)
+        return return_api(
+            {
+                "history": history,
+                "total_records": total_records,
+            }
+        )
 
     elif request.method == "DELETE":
         delete_download_history()
@@ -1152,7 +1160,13 @@ def api_blocklist() -> ApiReturn | None:
         offset = extract_key(request, "offset", False)
 
         blocklist = get_blocklist(offset)
-        return return_api([b.todict() for b in blocklist])
+        total_records = get_blocklist_total_records()
+        return return_api(
+            {
+                "blocklist": [b.todict() for b in blocklist],
+                "total_records": total_records,
+            }
+        )
 
     elif request.method == "POST":
         data = request.get_json()
