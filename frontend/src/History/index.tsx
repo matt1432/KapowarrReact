@@ -13,6 +13,7 @@ import translate from 'Utilities/String/translate';
 
 // General Components
 import Alert from 'Components/Alert';
+import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TablePager from 'Components/Table/TablePager';
@@ -105,24 +106,23 @@ export default function History({
         },
     ];
 
-    const [fetchHistory, { data, isFetching, isPopulated, error }] =
+    const [fetchHistory, { data, isFetching, error }] =
         useGetDownloadHistoryMutation({
-            selectFromResult: ({
-                data,
-                isLoading,
-                isUninitialized,
-                error,
-            }) => ({
+            selectFromResult: ({ data, isLoading, error }) => ({
                 data,
                 isFetching: isLoading,
-                isPopulated: !isUninitialized,
                 error,
             }),
         });
 
+    const [isPopulated, setIsPopulated] = useState(false);
     const [items, setItems] = useState(data?.history ?? []);
     const [totalRecords, setTotalRecords] = useState(data?.totalRecords ?? 0);
     useEffect(() => {
+        if (data) {
+            setIsPopulated(true);
+        }
+
         if (
             data &&
             typeof data.totalRecords === 'number' &&
@@ -165,6 +165,10 @@ export default function History({
         fetchHistory({ volumeId, issueId, offset: page - 1 });
     }, [fetchHistory, volumeId, issueId, page]);
 
+    if (!isPopulated && isFetching) {
+        return <LoadingIndicator />;
+    }
+
     if (!isFetching && !!error) {
         return (
             <Alert kind={kinds.DANGER}>
@@ -182,16 +186,14 @@ export default function History({
             <div>
                 <Table tableName="historyTable" columns={columns}>
                     <TableBody>
-                        {items.map((item) => {
-                            return (
-                                <HistoryRow
-                                    key={item.webLink}
-                                    {...item}
-                                    showVolumes={showVolumes}
-                                    showIssues={showIssues}
-                                />
-                            );
-                        })}
+                        {items.map((item) => (
+                            <HistoryRow
+                                key={item.webLink}
+                                {...item}
+                                showVolumes={showVolumes}
+                                showIssues={showIssues}
+                            />
+                        ))}
                     </TableBody>
                 </Table>
                 <TablePager
