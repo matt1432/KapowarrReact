@@ -9,13 +9,13 @@ const ResizeObserver = window.ResizeObserver || ResizeObserverPolyfill;
 
 export type Measurements = RectReadOnly;
 
-function useMeasure(
+export default function useMeasure<
+    T extends HTMLOrSVGElement = HTMLOrSVGElement,
+>(
     options?: Omit<Options, 'polyfill'>,
-): ReturnType<typeof useMeasureHook> {
+): [(element: T | null) => void, RectReadOnly, () => void] {
     return useMeasureHook({
         polyfill: ResizeObserver,
         ...options,
-    });
+    }) as [(element: T | null) => void, RectReadOnly, () => void];
 }
-
-export default useMeasure;
