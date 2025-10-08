@@ -9,7 +9,6 @@ interface CssExports {
     webTitle: string;
     webSubTitle: string;
     reason: string;
-    addedAt: string;
     actions: string;
 }
 export const cssExports: CssExports;

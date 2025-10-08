@@ -8,8 +8,8 @@ interface CssExports {
     webTitle: string;
     webSubTitle: string;
     fileTitle: string;
-    downloadedAt: string;
     success: string;
+    actions: string;
 }
 export const cssExports: CssExports;
 export default cssExports;

@@ -26,10 +26,10 @@
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 }
 
-.downloadedAt {
+.success {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 }
 
-.success {
+.actions {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 }

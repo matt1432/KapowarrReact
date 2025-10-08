@@ -146,6 +146,10 @@ export default function HistoryRow({
                         </TableRowCell>
                     );
                 }
+
+                if (name === 'actions') {
+                    return null;
+                }
             })}
         </TableRow>
     );

@@ -2,4 +2,5 @@
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
     width: 180px;
+    min-width: 180px;
 }

@@ -97,6 +97,13 @@ export default function History({
             isSortable: false,
             isVisible: true,
         },
+        {
+            name: 'actions',
+            hideHeaderLabel: true,
+            isModifiable: false,
+            isSortable: false,
+            isVisible: true,
+        },
     ];
 
     const [fetchHistory, { data, isFetching, error }] =

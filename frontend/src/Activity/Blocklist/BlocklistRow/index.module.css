@@ -31,10 +31,6 @@
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 }
 
-.addedAt {
-    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
-}
-
 .actions {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 }
