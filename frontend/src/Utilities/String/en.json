@@ -1199,6 +1199,8 @@
     "LastSearched": "Last Searched",
     "LastUsed": "Last Used",
     "LastWriteTime": "Last Write Time",
+    "ShowMore": "Expand",
+    "ShowLess": "Collapse",
     "Level": "Level",
     "LiberaWebchat": "Libera Webchat",
     "LibgenFileSearch": "Libgen File Search",

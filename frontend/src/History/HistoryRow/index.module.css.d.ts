@@ -10,6 +10,7 @@ interface CssExports {
     fileTitle: string;
     success: string;
     actions: string;
+    truncate: string;
 }
 export const cssExports: CssExports;
 export default cssExports;

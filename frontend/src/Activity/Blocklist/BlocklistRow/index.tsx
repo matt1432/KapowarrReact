@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 // Redux
 import { useLazyGetIssueQuery } from 'Store/Api/Issues';
@@ -12,7 +12,10 @@ import { icons } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
+import classNames from 'classnames';
+
 // General Components
+import IconButton from 'Components/Link/IconButton';
 import RelativeDateCell from 'Components/Table/Cells/RelativeDateCell';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
@@ -29,6 +32,7 @@ import type { BlocklistColumnName } from '../BlocklistTable';
 
 type BlocklistRowProps = BlocklistItem & {
     columns: Column<BlocklistColumnName>[];
+    columnWidth: number;
     refetch: () => void;
 };
 
@@ -36,6 +40,7 @@ type BlocklistRowProps = BlocklistItem & {
 
 export default function BlocklistRow({
     columns,
+    columnWidth,
     id,
     source,
     volumeId,
@@ -49,6 +54,16 @@ export default function BlocklistRow({
     refetch,
 }: BlocklistRowProps) {
     const [getIssue, { data: issue }] = useLazyGetIssueQuery();
+
+    const [isTruncated, setIsTruncated] = useState(true);
+    useEffect(() => {
+        // Reset truncated status when link changes
+        setIsTruncated(true);
+    }, [webLink]);
+
+    const toggleTruncated = useCallback(() => {
+        setIsTruncated(!isTruncated);
+    }, [isTruncated]);
 
     useEffect(() => {
         if (typeof issueId === 'number') {
@@ -65,7 +80,7 @@ export default function BlocklistRow({
     }, [deleteItem, id, refetch]);
 
     return (
-        <TableRow>
+        <TableRow onClick={toggleTruncated}>
             {columns.map(({ isVisible, name }) => {
                 if (!isVisible) {
                     return null;
@@ -111,7 +126,13 @@ export default function BlocklistRow({
 
                 if (name === 'downloadLink') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell
+                            className={classNames(
+                                styles[name],
+                                isTruncated && styles.truncate,
+                            )}
+                            style={{ maxWidth: columnWidth }}
+                        >
                             {downloadLink}
                         </TableRowCell>
                     );
@@ -119,7 +140,13 @@ export default function BlocklistRow({
 
                 if (name === 'webLink') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell
+                            className={classNames(
+                                styles[name],
+                                isTruncated && styles.truncate,
+                            )}
+                            style={{ maxWidth: columnWidth }}
+                        >
                             {webLink}
                         </TableRowCell>
                     );
@@ -127,7 +154,13 @@ export default function BlocklistRow({
 
                 if (name === 'webTitle') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell
+                            className={classNames(
+                                styles[name],
+                                isTruncated && styles.truncate,
+                            )}
+                            style={{ maxWidth: columnWidth }}
+                        >
                             {webTitle}
                         </TableRowCell>
                     );
@@ -135,7 +168,13 @@ export default function BlocklistRow({
 
                 if (name === 'webSubTitle') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell
+                            className={classNames(
+                                styles[name],
+                                isTruncated && styles.truncate,
+                            )}
+                            style={{ maxWidth: columnWidth }}
+                        >
                             {webSubTitle}
                         </TableRowCell>
                     );
@@ -143,7 +182,13 @@ export default function BlocklistRow({
 
                 if (name === 'reason') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell
+                            className={classNames(
+                                styles[name],
+                                isTruncated && styles.truncate,
+                            )}
+                            style={{ maxWidth: columnWidth }}
+                        >
                             {reason}
                         </TableRowCell>
                     );
@@ -162,6 +207,15 @@ export default function BlocklistRow({
                 if (name === 'actions') {
                     return (
                         <TableRowCell className={styles[name]}>
+                            <IconButton
+                                name={isTruncated ? icons.INFO : icons.SUBTRACT}
+                                title={
+                                    isTruncated
+                                        ? translate('ShowMore')
+                                        : translate('ShowLess')
+                                }
+                                onPress={toggleTruncated}
+                            />
                             <SpinnerIconButton
                                 name={icons.DELETE}
                                 title={translate('RemoveFromBlocklist')}

@@ -11,6 +11,9 @@ import { kinds } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
+// Hooks
+import useMeasure from 'Helpers/Hooks/useMeasure';
+
 // General Components
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
@@ -127,6 +130,9 @@ export default function BlocklistTable() {
         [totalRecords],
     );
 
+    const [tableRef, { width }] = useMeasure<HTMLDivElement>();
+    const columnWidth = useMemo(() => (width - 3 * 75 - 180 - 95) / 5, [width]);
+
     const [page, setPage] = useState(1);
 
     const handlePageSelect = useCallback((pageNumber: number) => {
@@ -173,13 +179,14 @@ export default function BlocklistTable() {
 
     if (isPopulated && hasItems && !error) {
         return (
-            <div>
+            <div ref={tableRef}>
                 <Table tableName="blocklistTable" columns={columns}>
                     <TableBody>
-                        {items.map((item) => (
+                        {items.map((item, key) => (
                             <BlocklistRow
-                                key={item.id}
+                                key={key}
                                 columns={columns}
+                                columnWidth={columnWidth}
                                 {...item}
                                 refetch={refetch}
                             />

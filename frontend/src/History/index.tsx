@@ -11,6 +11,9 @@ import { kinds } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
 
+// Hooks
+import useMeasure from 'Helpers/Hooks/useMeasure';
+
 // General Components
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
@@ -139,6 +142,12 @@ export default function History({
         [totalRecords],
     );
 
+    const [tableRef, { width }] = useMeasure<HTMLDivElement>();
+    const columnWidth = useMemo(
+        () => (width - 2 * 75 - 180 - 30 - 85 - 95) / 4,
+        [width],
+    );
+
     const [page, setPage] = useState(1);
 
     const handlePageSelect = useCallback((pageNumber: number) => {
@@ -183,13 +192,14 @@ export default function History({
 
     if (isPopulated && hasItems && !error) {
         return (
-            <div>
+            <div ref={tableRef}>
                 <Table tableName="historyTable" columns={columns}>
                     <TableBody>
-                        {items.map((item) => (
+                        {items.map((item, key) => (
                             <HistoryRow
-                                key={item.webLink}
+                                key={key}
                                 columns={columns}
+                                columnWidth={columnWidth}
                                 {...item}
                             />
                         ))}

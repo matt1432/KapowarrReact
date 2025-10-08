@@ -1,15 +1,20 @@
 // IMPORTS
 
 // React
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 // Redux
 import { useLazyGetIssueQuery } from 'Store/Api/Issues';
 
 // Misc
+import { icons } from 'Helpers/Props';
+
 import translate from 'Utilities/String/translate';
 
+import classNames from 'classnames';
+
 // General Components
+import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
 import RelativeDateCell from 'Components/Table/Cells/RelativeDateCell';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
@@ -26,12 +31,14 @@ import type { HistoryColumnName } from 'History';
 
 type HistoryRowProps = DownloadHistoryItem & {
     columns: Column<HistoryColumnName>[];
+    columnWidth: number;
 };
 
 // IMPLEMENTATIONS
 
 export default function HistoryRow({
     columns,
+    columnWidth,
     source,
     volumeId,
     issueId,
@@ -44,6 +51,16 @@ export default function HistoryRow({
 }: HistoryRowProps) {
     const [getIssue, { data: issue }] = useLazyGetIssueQuery();
 
+    const [isTruncated, setIsTruncated] = useState(true);
+    useEffect(() => {
+        // Reset truncated status when link changes
+        setIsTruncated(true);
+    }, [webLink]);
+
+    const toggleTruncated = useCallback(() => {
+        setIsTruncated(!isTruncated);
+    }, [isTruncated]);
+
     useEffect(() => {
         if (typeof issueId === 'number') {
             getIssue({ issueId });
@@ -51,7 +68,7 @@ export default function HistoryRow({
     }, [getIssue, issueId]);
 
     return (
-        <TableRow>
+        <TableRow onClick={toggleTruncated}>
             {columns.map(({ isVisible, name }) => {
                 if (!isVisible) {
                     return null;
@@ -97,7 +114,13 @@ export default function HistoryRow({
 
                 if (name === 'webLink') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell
+                            className={classNames(
+                                styles[name],
+                                isTruncated && styles.truncate,
+                            )}
+                            style={{ maxWidth: columnWidth }}
+                        >
                             <Link to={webLink}>{webLink}</Link>
                         </TableRowCell>
                     );
@@ -105,7 +128,13 @@ export default function HistoryRow({
 
                 if (name === 'webTitle') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell
+                            className={classNames(
+                                styles[name],
+                                isTruncated && styles.truncate,
+                            )}
+                            style={{ maxWidth: columnWidth }}
+                        >
                             {webTitle}
                         </TableRowCell>
                     );
@@ -113,7 +142,13 @@ export default function HistoryRow({
 
                 if (name === 'webSubTitle') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell
+                            className={classNames(
+                                styles[name],
+                                isTruncated && styles.truncate,
+                            )}
+                            style={{ maxWidth: columnWidth }}
+                        >
                             {webSubTitle}
                         </TableRowCell>
                     );
@@ -121,7 +156,13 @@ export default function HistoryRow({
 
                 if (name === 'fileTitle') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell
+                            className={classNames(
+                                styles[name],
+                                isTruncated && styles.truncate,
+                            )}
+                            style={{ maxWidth: columnWidth }}
+                        >
                             {fileTitle}
                         </TableRowCell>
                     );
@@ -148,7 +189,19 @@ export default function HistoryRow({
                 }
 
                 if (name === 'actions') {
-                    return null;
+                    return (
+                        <TableRowCell className={styles[name]}>
+                            <IconButton
+                                name={isTruncated ? icons.INFO : icons.SUBTRACT}
+                                title={
+                                    isTruncated
+                                        ? translate('ShowMore')
+                                        : translate('ShowLess')
+                                }
+                                onPress={toggleTruncated}
+                            />
+                        </TableRowCell>
+                    );
                 }
             })}
         </TableRow>
