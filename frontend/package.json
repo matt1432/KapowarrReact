@@ -36,8 +36,8 @@
         "react-focus-lock": "2.13.6",
         "react-lazy-load-image-component": "1.6.3",
         "react-redux": "9.2.0",
-        "react-router": "7.9.3",
-        "react-router-dom": "7.9.3",
+        "react-router": "7.9.4",
+        "react-router-dom": "7.9.4",
         "react-tabs": "6.1.0",
         "react-use-measure": "2.1.7",
         "react-window": "2.2.0",
@@ -49,17 +49,17 @@
     "devDependencies": {
         "@types/lodash": "4.17.20",
         "@types/mousetrap": "1.6.15",
-        "@types/node": "24.6.2",
-        "@types/react": "19.2.0",
+        "@types/node": "24.7.1",
+        "@types/react": "19.2.2",
         "@types/react-autosuggest": "10.1.11",
-        "@types/react-dom": "19.2.0",
+        "@types/react-dom": "19.2.1",
         "@types/react-lazy-load-image-component": "1.6.4",
         "@vitejs/plugin-react": "5.0.4",
         "autoprefixer": "10.4.21",
         "eslint": "9.37.0",
         "eslint-config-prettier": "10.1.8",
         "eslint-plugin-prettier": "5.5.4",
-        "eslint-plugin-react-hooks": "5.2.0",
+        "eslint-plugin-react-hooks": "7.0.0",
         "eslint-plugin-react-refresh": "0.4.23",
         "globals": "16.4.0",
         "jiti": "2.6.1",
@@ -74,8 +74,8 @@
         "prettier-plugin-brace-style": "0.8.1",
         "type-fest": "5.0.1",
         "typescript": "5.9.3",
-        "typescript-eslint": "8.45.0",
+        "typescript-eslint": "8.46.0",
         "vite": "7.1.9",
-        "vite-css-modules": "1.11.0"
+        "vite-css-modules": "1.11.1"
     }
 }
