@@ -1,9 +1,12 @@
 // IMPORTS
 
 // React
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 // Redux
+import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
+
+import { setTableOptions } from 'Store/Slices/TableOptions';
 import {
     useAddCredentialMutation,
     useDeleteCredentialMutation,
@@ -20,7 +23,6 @@ import CredentialRow from './CredentialRow';
 import InputRow from './InputRow';
 
 // Types
-import type { Column } from 'Components/Table/Column';
 import type { CredentialSource } from 'typings/DownloadClient';
 
 export type CredentialColumnName =
@@ -47,39 +49,47 @@ export default function CredentialTable({
     showPassword = false,
     showApiKey = false,
 }: CredentialTableProps) {
-    const columns: Column<CredentialColumnName>[] = [
-        {
-            name: 'email',
-            isModifiable: false,
-            isSortable: false,
-            isVisible: showEmail,
-        },
-        {
-            name: 'username',
-            isModifiable: false,
-            isSortable: false,
-            isVisible: showUsername,
-        },
-        {
-            name: 'password',
-            isModifiable: false,
-            isSortable: false,
-            isVisible: showPassword,
-        },
-        {
-            name: 'apiKey',
-            isModifiable: false,
-            isSortable: false,
-            isVisible: showApiKey,
-        },
-        {
-            name: 'actions',
-            hideHeaderLabel: true,
-            isModifiable: false,
-            isSortable: false,
-            isVisible: true,
-        },
-    ];
+    const dispatch = useRootDispatch();
+
+    const { columns } = useRootSelector(
+        (state) => state.tableOptions.credentialTable,
+    );
+
+    useEffect(() => {
+        dispatch(
+            setTableOptions({
+                tableName: 'credentialTable',
+                columns: columns.map((column) => {
+                    if (column.name === 'email') {
+                        return {
+                            ...column,
+                            isVisible: showEmail,
+                        };
+                    }
+                    if (column.name === 'username') {
+                        return {
+                            ...column,
+                            isVisible: showUsername,
+                        };
+                    }
+                    if (column.name === 'password') {
+                        return {
+                            ...column,
+                            isVisible: showPassword,
+                        };
+                    }
+                    if (column.name === 'apiKey') {
+                        return {
+                            ...column,
+                            isVisible: showApiKey,
+                        };
+                    }
+                    return column;
+                }),
+            }),
+        );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [showEmail, showUsername, showPassword, showApiKey]);
 
     const { data, refetch } = useGetCredentialsQuery();
     const items = useMemo(

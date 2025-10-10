@@ -7,6 +7,8 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { icons, sortDirections } from 'Helpers/Props';
 
 // Types
+import type { EmptyObject } from 'type-fest';
+
 import type { Column } from 'Components/Table/Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 
@@ -25,7 +27,6 @@ import type { ProposalColumnName } from 'AddVolume/ImportVolume/ImportProposals'
 import type { ChangeMatchColumnName } from 'AddVolume/ImportVolume/ImportProposals/ChangeMatch/ChangeMatchModalContent';
 import type { FolderTableColumnName } from 'AddVolume/ImportVolume/ImportForm/FolderTable';
 import type { BlocklistColumnName } from 'Activity/Blocklist/BlocklistTable';
-import type { EmptyObject } from 'type-fest';
 
 export interface ColumnNameMap {
     blocklistTable: BlocklistColumnName;
@@ -84,10 +85,20 @@ export type TableState<
 export interface TableOptionsState {
     sliceVersion: number;
 
+    blocklistTable: TableState<'blocklistTable'>;
     changeMatch: TableState<'changeMatch'>;
+    credentialTable: TableState<'credentialTable'>;
+    folderTable: TableState<'folderTable'>;
+    generalFiles: TableState<'generalFiles'>;
+    historyTable: TableState<'historyTable'>;
+    importProposals: TableState<'importProposals'>;
+    issueSummary: TableState<'issueSummary'>;
     issueTable: TableState<'issueTable'>;
     queueTable: TableState<'queueTable'>;
+    rootFolders: TableState<'rootFolders'>;
     searchResults: TableState<'searchResults'>;
+    taskHistory: TableState<'taskHistory'>;
+    taskPlanning: TableState<'taskPlanning'>;
     volumeIndex: TableState<'volumeIndex'>;
 }
 
@@ -96,7 +107,79 @@ export type TableName = Exclude<keyof TableOptionsState, 'sliceVersion'>;
 // IMPLEMENTATIONS
 
 const initialState = {
-    sliceVersion: 1,
+    sliceVersion: 2,
+
+    blocklistTable: {
+        sortKey: null,
+        sortDirection: null,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
+        columns: [
+            {
+                name: 'source',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'volumeId',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'issueId',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'downloadLink',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'webLink',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'webTitle',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'webSubTitle',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'reason',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'addedAt',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'actions',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+        ],
+    },
 
     changeMatch: {
         sortKey: 'title',
@@ -123,6 +206,248 @@ const initialState = {
                 hideHeaderLabel: true,
                 isModifiable: false,
                 isSortable: true,
+                isVisible: true,
+            },
+        ],
+    },
+
+    credentialTable: {
+        sortKey: null,
+        sortDirection: null,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
+        columns: [
+            {
+                name: 'email',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: false,
+            },
+            {
+                name: 'username',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: false,
+            },
+            {
+                name: 'password',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: false,
+            },
+            {
+                name: 'apiKey',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'actions',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+        ],
+    },
+
+    generalFiles: {
+        sortKey: null,
+        sortDirection: null,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
+        columns: [
+            {
+                name: 'path',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'fileType',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'filesize',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'actions',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+        ],
+    },
+
+    folderTable: {
+        sortKey: null,
+        sortDirection: null,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
+        columns: [
+            {
+                name: 'value',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+                className: '',
+            },
+            {
+                name: 'actions',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+                className: '',
+            },
+        ],
+    },
+
+    historyTable: {
+        sortKey: null,
+        sortDirection: null,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
+        columns: [
+            {
+                name: 'source',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'volumeId',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: false,
+            },
+            {
+                name: 'issueId',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: false,
+            },
+            {
+                name: 'webLink',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'webTitle',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'webSubTitle',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'fileTitle',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'downloadedAt',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'success',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'actions',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+        ],
+    },
+
+    importProposals: {
+        sortKey: null,
+        sortDirection: null,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
+        columns: [
+            {
+                name: 'file',
+                isSortable: false,
+                isModifiable: false,
+                isVisible: true,
+            },
+            {
+                name: 'cvLink',
+                isSortable: false,
+                isModifiable: false,
+                isVisible: true,
+            },
+            {
+                name: 'issueCount',
+                isSortable: false,
+                isModifiable: false,
+                isVisible: true,
+            },
+            {
+                name: 'actions',
+                hideHeaderLabel: true,
+                isSortable: false,
+                isModifiable: false,
+                isVisible: true,
+            },
+        ],
+    },
+
+    issueSummary: {
+        sortKey: null,
+        sortDirection: null,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
+        columns: [
+            {
+                name: 'path',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'filesize',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'actions',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: false,
                 isVisible: true,
             },
         ],
@@ -194,6 +519,7 @@ const initialState = {
             },
         ],
     },
+
     queueTable: {
         sortKey: 'priority',
         sortDirection: sortDirections.ASCENDING,
@@ -259,6 +585,43 @@ const initialState = {
             },
         ],
     },
+
+    rootFolders: {
+        sortKey: null,
+        sortDirection: null,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
+        columns: [
+            {
+                name: 'path',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'freeSpace',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'totalSpace',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'actions',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+        ],
+    },
+
     searchResults: {
         hideDownloaded: false,
         hideUnmonitored: false,
@@ -350,6 +713,72 @@ const initialState = {
             },
         ],
     },
+
+    taskHistory: {
+        sortKey: null,
+        sortDirection: null,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
+        columns: [
+            {
+                name: 'displayTitle',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'runAt',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+        ],
+    },
+
+    taskPlanning: {
+        sortKey: null,
+        sortDirection: null,
+
+        secondarySortKey: null,
+        secondarySortDirection: null,
+
+        columns: [
+            {
+                name: 'displayName',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'interval',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'lastRun',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'nextRun',
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+            {
+                name: 'actions',
+                hideHeaderLabel: true,
+                isModifiable: false,
+                isSortable: false,
+                isVisible: true,
+            },
+        ],
+    },
+
     volumeIndex: {
         sortKey: 'title',
         sortDirection: sortDirections.ASCENDING,

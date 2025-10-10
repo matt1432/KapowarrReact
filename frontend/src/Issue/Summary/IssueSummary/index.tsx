@@ -4,6 +4,7 @@
 import { useCallback } from 'react';
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 import { useDeleteFileMutation } from 'Store/Api/Files';
 
@@ -27,8 +28,7 @@ import IssueFileRow from '../IssueFileRow';
 import styles from './index.module.css';
 
 // Types
-import type { Column } from 'Components/Table/Column';
-import type { IssueData, IssueSummaryColumnName } from 'Issue/Issue';
+import type { IssueData } from 'Issue/Issue';
 import type { SocketEventHandler } from 'typings/Socket';
 
 interface IssueSummaryProps {
@@ -39,29 +39,11 @@ interface IssueSummaryProps {
 
 // IMPLEMENTATIONS
 
-const columns: Column<IssueSummaryColumnName>[] = [
-    {
-        name: 'path',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'filesize',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'actions',
-        hideHeaderLabel: true,
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-];
-
 export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
+    const { columns } = useRootSelector(
+        (state) => state.tableOptions.issueSummary,
+    );
+
     const {
         description,
         files = [],

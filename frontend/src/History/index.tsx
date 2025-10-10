@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
+import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { useGetDownloadHistoryMutation } from 'Store/Api/Queue';
 
 // Misc
@@ -23,12 +24,20 @@ import TablePager from 'Components/Table/TablePager';
 
 // Specific Components
 import HistoryRow from './HistoryRow';
+import { setTableOptions } from 'Store/Slices/TableOptions';
 
 // Types
-import type { Column } from 'Components/Table/Column';
-import type { DownloadHistoryItem } from 'typings/Queue';
-
-export type HistoryColumnName = keyof DownloadHistoryItem | 'actions';
+export type HistoryColumnName =
+    | 'source'
+    | 'volumeId'
+    | 'issueId'
+    | 'webLink'
+    | 'webTitle'
+    | 'webSubTitle'
+    | 'fileTitle'
+    | 'downloadedAt'
+    | 'success'
+    | 'actions';
 
 interface HistoryProps {
     issueId?: number;
@@ -45,69 +54,35 @@ export default function History({
     showIssues = false,
     showVolumes = false,
 }: HistoryProps = {}) {
-    const columns: Column<HistoryColumnName>[] = [
-        {
-            name: 'source',
-            isModifiable: false,
-            isSortable: false,
-            isVisible: true,
-        },
-        {
-            name: 'volumeId',
-            isModifiable: false,
-            isSortable: false,
-            isVisible: showVolumes,
-        },
-        {
-            name: 'issueId',
-            isModifiable: false,
-            isSortable: false,
-            isVisible: showIssues,
-        },
-        {
-            name: 'webLink',
-            isModifiable: false,
-            isSortable: false,
-            isVisible: true,
-        },
-        {
-            name: 'webTitle',
-            isModifiable: false,
-            isSortable: false,
-            isVisible: true,
-        },
-        {
-            name: 'webSubTitle',
-            isModifiable: false,
-            isSortable: false,
-            isVisible: true,
-        },
-        {
-            name: 'fileTitle',
-            isModifiable: false,
-            isSortable: false,
-            isVisible: true,
-        },
-        {
-            name: 'downloadedAt',
-            isModifiable: false,
-            isSortable: false,
-            isVisible: true,
-        },
-        {
-            name: 'success',
-            isModifiable: false,
-            isSortable: false,
-            isVisible: true,
-        },
-        {
-            name: 'actions',
-            hideHeaderLabel: true,
-            isModifiable: false,
-            isSortable: false,
-            isVisible: true,
-        },
-    ];
+    const dispatch = useRootDispatch();
+
+    const { columns } = useRootSelector(
+        (state) => state.tableOptions.historyTable,
+    );
+
+    useEffect(() => {
+        dispatch(
+            setTableOptions({
+                tableName: 'historyTable',
+                columns: columns.map((column) => {
+                    if (column.name === 'issueId') {
+                        return {
+                            ...column,
+                            isVisible: showIssues,
+                        };
+                    }
+                    if (column.name === 'volumeId') {
+                        return {
+                            ...column,
+                            isVisible: showVolumes,
+                        };
+                    }
+                    return column;
+                }),
+            }),
+        );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [showIssues, showVolumes]);
 
     const [fetchHistory, { data, isFetching, error }] =
         useGetDownloadHistoryMutation({

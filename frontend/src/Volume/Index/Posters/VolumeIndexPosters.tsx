@@ -129,13 +129,14 @@ export default function VolumeIndexPosters({
     const columnWidth = useMemo(() => {
         const { width } = size;
         const maximumColumnWidth = isSmallScreen ? 172 : 182;
-        const columns = Math.floor(width / maximumColumnWidth);
+        const columnCount = Math.floor(width / maximumColumnWidth);
         const remainder = width % maximumColumnWidth;
         return remainder === 0
             ? maximumColumnWidth
             : Math.floor(
                   width /
-                      (columns + ADDITIONAL_COLUMN_COUNT[posterOptions.size]),
+                      (columnCount +
+                          ADDITIONAL_COLUMN_COUNT[posterOptions.size]),
               );
     }, [isSmallScreen, posterOptions, size]);
 

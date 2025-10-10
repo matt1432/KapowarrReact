@@ -3,7 +3,8 @@
 // React
 import { useCallback } from 'react';
 
-// Misc
+// Redux
+import { useRootSelector } from 'Store/createAppStore';
 
 // General Components
 import Table from 'Components/Table/Table';
@@ -17,7 +18,6 @@ import InputRow from './InputRow';
 import styles from './index.module.css';
 
 // Types
-import type { Column } from 'Components/Table/Column';
 import type { InputChanged } from 'typings/Inputs';
 
 export type FolderTableColumnName = 'value' | 'actions';
@@ -30,29 +30,15 @@ interface FolderTableProps<T extends string> {
 
 // IMPLEMENTATIONS
 
-const columns: Column<FolderTableColumnName>[] = [
-    {
-        name: 'value',
-        hideHeaderLabel: true,
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-        className: '',
-    },
-    {
-        name: 'actions',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-        className: '',
-    },
-];
-
 export default function FolderTable<T extends string>({
     name,
     values,
     onChange,
 }: FolderTableProps<T>) {
+    const { columns } = useRootSelector(
+        (state) => state.tableOptions.folderTable,
+    );
+
     const onAddPress = useCallback(
         (folder: string) => {
             onChange({ name, value: [...values, folder] });

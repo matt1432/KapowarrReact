@@ -4,6 +4,7 @@
 import { useCallback, useEffect } from 'react';
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
 import { useDeleteFileMutation } from 'Store/Api/Files';
 
@@ -26,8 +27,6 @@ import TableBody from 'Components/Table/TableBody';
 import GeneralFileRow from '../GeneralFileRow';
 
 // Types
-import type { Column } from 'Components/Table/Column';
-
 export type GeneralFilesColumnName =
     | 'path'
     | 'fileType'
@@ -41,38 +40,14 @@ export interface GeneralFilesModalContentProps {
 
 // IMPLEMENTATIONS
 
-const columns: Column<GeneralFilesColumnName>[] = [
-    {
-        name: 'path',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'fileType',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'filesize',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'actions',
-        hideHeaderLabel: true,
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-];
-
 export default function GeneralFilesModalContent({
     volumeId,
     onModalClose,
 }: GeneralFilesModalContentProps) {
+    const { columns } = useRootSelector(
+        (state) => state.tableOptions.generalFiles,
+    );
+
     const { generalFiles = [], refetch } = useSearchVolumeQuery(
         { volumeId },
         {

@@ -1,6 +1,7 @@
 // IMPORTS
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
 import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
 
 // Misc
@@ -18,8 +19,6 @@ import TableBody from 'Components/Table/TableBody';
 import RootFolderRow from './RootFolderRow';
 
 // Types
-import type { Column } from 'Components/Table/Column';
-
 export type RootFolderColumnName =
     | 'path'
     | 'freeSpace'
@@ -28,35 +27,11 @@ export type RootFolderColumnName =
 
 // IMPLEMENTATIONS
 
-const columns: Column<RootFolderColumnName>[] = [
-    {
-        name: 'path',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'freeSpace',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'totalSpace',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'actions',
-        hideHeaderLabel: true,
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-];
-
 export default function RootFolders() {
+    const { columns } = useRootSelector(
+        (state) => state.tableOptions.rootFolders,
+    );
+
     const {
         isFetching,
         isUninitialized,

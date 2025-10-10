@@ -70,7 +70,8 @@ export default function SortedTable<
 }: SortedTableProps<K, T, ExtraOptions>) {
     const { sortKey, sortDirection, secondarySortKey, secondarySortDirection } =
         useRootSelector(
-            (state) => state.tableOptions[tableName] as TableState<K>,
+            (state) =>
+                state.tableOptions[tableName] as unknown as TableState<K>,
         );
 
     const sortedItems = useSort({

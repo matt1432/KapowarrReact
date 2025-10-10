@@ -1,6 +1,7 @@
 // IMPORTS
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
 import { useGetTaskHistoryQuery } from 'Store/Api/Status';
 
 // Misc
@@ -23,29 +24,17 @@ import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import styles from './index.module.css';
 
 // Types
-import type { Column } from 'Components/Table/Column';
 import type { TaskHistory } from 'typings/Task';
 
 export type TaskHistoryColumnName = 'displayTitle' | 'runAt';
 
 // IMPLEMENTATIONS
 
-const columns: Column<TaskHistoryColumnName>[] = [
-    {
-        name: 'displayTitle',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'runAt',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-];
-
 export default function TaskHistory() {
+    const { columns } = useRootSelector(
+        (state) => state.tableOptions.taskHistory,
+    );
+
     const { data: items = [], refetch } = useGetTaskHistoryQuery();
 
     useSocketCallback(socketEvents.TASK_ENDED, refetch);

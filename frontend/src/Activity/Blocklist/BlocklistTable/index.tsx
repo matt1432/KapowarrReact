@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
 import { useGetBlocklistMutation } from 'Store/Api/Queue';
 
 // Misc
@@ -25,78 +26,25 @@ import TablePager from 'Components/Table/TablePager';
 import BlocklistRow from '../BlocklistRow';
 
 // Types
-import type { Column } from 'Components/Table/Column';
-import type { BlocklistItem } from 'typings/Queue';
-
-export type BlocklistColumnName = keyof BlocklistItem | 'actions';
+export type BlocklistColumnName =
+    | 'source'
+    | 'volumeId'
+    | 'issueId'
+    | 'downloadLink'
+    | 'webLink'
+    | 'webTitle'
+    | 'webSubTitle'
+    | 'reason'
+    | 'addedAt'
+    | 'actions';
 
 // IMPLEMENTATIONS
 
-const columns: Column<BlocklistColumnName>[] = [
-    {
-        name: 'source',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'volumeId',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'issueId',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'downloadLink',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'webLink',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'webTitle',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'webSubTitle',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'reason',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'addedAt',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'actions',
-        hideHeaderLabel: true,
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-];
-
 export default function BlocklistTable() {
+    const { columns } = useRootSelector(
+        (state) => state.tableOptions.blocklistTable,
+    );
+
     const [fetchBlocklist, { data, isFetching, error }] =
         useGetBlocklistMutation({
             selectFromResult: ({ data, isLoading, error }) => ({

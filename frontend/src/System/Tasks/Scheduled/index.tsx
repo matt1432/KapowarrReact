@@ -1,6 +1,7 @@
 // IMPORTS
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
 import { useGetTaskPlanningQuery } from 'Store/Api/Status';
 
 // Misc
@@ -26,8 +27,6 @@ import TaskButton from './TaskButton';
 import styles from './index.module.css';
 
 // Types
-import type { Column } from 'Components/Table/Column';
-
 export type TaskPlanningColumnName =
     | 'displayName'
     | 'interval'
@@ -37,41 +36,11 @@ export type TaskPlanningColumnName =
 
 // IMPLEMENTATIONS
 
-const columns: Column<TaskPlanningColumnName>[] = [
-    {
-        name: 'displayName',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'interval',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'lastRun',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'nextRun',
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-    {
-        name: 'actions',
-        hideHeaderLabel: true,
-        isModifiable: false,
-        isSortable: false,
-        isVisible: true,
-    },
-];
-
 export default function TaskScheduled() {
+    const { columns } = useRootSelector(
+        (state) => state.tableOptions.taskPlanning,
+    );
+
     const { data: items = [], refetch } = useGetTaskPlanningQuery();
 
     useSocketCallback(socketEvents.TASK_ENDED, refetch);

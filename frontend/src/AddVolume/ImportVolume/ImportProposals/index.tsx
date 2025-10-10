@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
 import { useImportLibraryMutation } from 'Store/Api/Volumes';
 
 // Misc
@@ -25,7 +26,6 @@ import ProposalRow from './ProposalRow';
 import styles from './index.module.css';
 
 // Types
-import type { Column } from 'Components/Table/Column';
 import type { ProposedImport } from 'typings/Search';
 import type { CheckInputChanged, SelectStateInputProps } from 'typings/Inputs';
 
@@ -47,6 +47,10 @@ export default function ImportProposals({
     proposals,
     returnToSearchPage,
 }: ImportProposalsProps) {
+    const { columns } = useRootSelector(
+        (state) => state.tableOptions.importProposals,
+    );
+
     // SELECTION
     const [{ allSelected, allUnselected, selectedState }, setSelectState] =
         useSelectState();
@@ -157,35 +161,6 @@ export default function ImportProposals({
         },
         [currentMatches, importLibrary, selectedState],
     );
-
-    // COLUMNS
-    const columns: Column<ProposalColumnName>[] = [
-        {
-            name: 'file',
-            isSortable: false,
-            isModifiable: false,
-            isVisible: true,
-        },
-        {
-            name: 'cvLink',
-            isSortable: false,
-            isModifiable: false,
-            isVisible: true,
-        },
-        {
-            name: 'issueCount',
-            isSortable: false,
-            isModifiable: false,
-            isVisible: true,
-        },
-        {
-            name: 'actions',
-            hideHeaderLabel: true,
-            isSortable: false,
-            isModifiable: false,
-            isVisible: true,
-        },
-    ];
 
     return (
         <>
