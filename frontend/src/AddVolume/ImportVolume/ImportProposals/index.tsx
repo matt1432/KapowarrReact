@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -94,7 +94,9 @@ export default function ImportProposals({
         })),
     );
 
-    useEffect(() => {
+    const [prevProposals, setPrevProposals] = useState(proposals);
+    if (proposals !== prevProposals) {
+        setPrevProposals(proposals);
         setCurrentMatches(
             proposals.map((item) => ({
                 match: item.cv,
@@ -104,7 +106,7 @@ export default function ImportProposals({
                 },
             })),
         );
-    }, [proposals]);
+    }
 
     const handleEditMatch = useCallback(
         (id: number) =>

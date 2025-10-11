@@ -1,13 +1,9 @@
 // IMPORTS
 
 // React
-import { useRef } from 'react';
-import {
-    type DragSourceMonitor,
-    useDrag,
-    useDrop,
-    type XYCoord,
-} from 'react-dnd';
+import { useEffect, useRef } from 'react';
+
+import { useDrag, useDrop } from 'react-dnd';
 
 // Misc
 import { icons } from 'Helpers/Props';
@@ -23,6 +19,7 @@ import Icon from 'Components/Icon';
 import styles from './index.module.css';
 
 // Types
+import type { DragSourceMonitor, XYCoord } from 'react-dnd';
 import type { GCDownloadSource } from 'Helpers/Props/GCDownloadSources';
 
 interface DragItem {
@@ -125,9 +122,13 @@ export default function ServiceRow({
         },
     });
 
-    dragRefConnector(dragRef);
+    useEffect(() => {
+        dragRefConnector(dragRef);
+    }, [dragRef, dragRefConnector]);
 
-    dropRef(previewRef(ref));
+    useEffect(() => {
+        dropRef(previewRef(ref));
+    }, [dropRef, previewRef, ref]);
 
     const isBefore = !isDragging && isDraggingUp && isOver;
     const isAfter = !isDragging && isDraggingDown && isOver;

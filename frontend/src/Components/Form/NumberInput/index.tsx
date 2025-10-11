@@ -1,10 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useRef, useState } from 'react';
-
-// Hooks
-import usePrevious from 'Helpers/Hooks/usePrevious';
+import { useCallback, useState } from 'react';
 
 // Specific Components
 import TextInput from '../TextInput';
@@ -58,8 +55,7 @@ export default function NumberInput<K extends string>({
     const [value, setValue] = useState(
         inputValue === null ? '' : inputValue.toString(),
     );
-    const isFocused = useRef(false);
-    const previousValue = usePrevious(inputValue);
+    const [isFocused, setIsFocused] = useState(false);
 
     const handleChange = useCallback(
         ({ name, value: newValue }: InputChanged<K, string>) => {
@@ -74,7 +70,7 @@ export default function NumberInput<K extends string>({
     );
 
     const handleFocus = useCallback(() => {
-        isFocused.current = true;
+        setIsFocused(true);
     }, []);
 
     const handleBlur = useCallback(() => {
@@ -90,21 +86,28 @@ export default function NumberInput<K extends string>({
             value: parsedValue,
         });
 
-        isFocused.current = false;
+        setIsFocused(false);
     }, [name, value, isFloat, min, max, onChange]);
 
-    useEffect(() => {
+    const [prevValue, setPrevValue] = useState<string | number | null>(value);
+    const [prevInputValue, setPrevInputValue] = useState<
+        string | number | null
+    >(inputValue);
+    if (prevInputValue !== inputValue || value !== prevValue) {
+        setPrevValue(value);
+        setPrevInputValue(inputValue);
+
         if (inputValue === null) {
             setValue('');
         }
         else if (
             !isNaN(inputValue) &&
-            inputValue !== previousValue &&
-            !isFocused.current
+            inputValue !== prevValue &&
+            !isFocused
         ) {
             setValue(inputValue === null ? '' : inputValue.toString());
         }
-    }, [inputValue, previousValue, setValue]);
+    }
 
     return (
         <TextInput

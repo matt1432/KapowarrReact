@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import {
@@ -14,9 +14,6 @@ import {
 import { inputTypes, kinds, sizes } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
-
-// Hooks
-import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
 import Form from 'Components/Form/Form';
@@ -35,12 +32,27 @@ import styles from './index.module.css';
 
 // Types
 import type { InputChanged } from 'typings/Inputs';
+import type {
+    QueryActionCreatorResult,
+    QueryDefinition,
+} from '@reduxjs/toolkit/query';
+import type { CustomBaseQuery } from 'Store/Api/base';
+import type { Volume } from 'Volume/Volume';
 
 export interface EditFileModalContentProps {
     fileId: number;
     onModalClose: () => void;
     onDeleteFilePress: () => void;
-    refetchFiles: () => void;
+    refetchFiles: () => QueryActionCreatorResult<
+        QueryDefinition<
+            { volumeId: number },
+            CustomBaseQuery,
+            never,
+            Volume,
+            'api',
+            unknown
+        >
+    >;
 }
 
 // IMPLEMENTATIONS
@@ -54,55 +66,33 @@ export default function EditFileModalContent({
     const [updateFile, { isLoading: isSaving, error: saveError }] =
         useUpdateFileMutation();
 
-    const {
-        title,
-        initialDpi,
-        initialReleaser,
-        initialResolution,
-        initialScanType,
-        isPopulated: _isPopulated,
-    } = useGetFileQuery(
+    const { data, title } = useGetFileQuery(
         { fileId },
         {
             refetchOnMountOrArgChange: true,
-            selectFromResult: ({ data: file, isUninitialized }) => ({
-                title: file?.filepath?.split('/').at(-1) ?? '',
-                initialDpi: file?.dpi ?? '',
-                initialReleaser: file?.releaser ?? '',
-                initialResolution: file?.resolution ?? '',
-                initialScanType: file?.scanType ?? '',
-                isPopulated: !isUninitialized,
+            selectFromResult: ({ data }) => ({
+                data,
+                title: data?.filepath?.split('/').at(-1) ?? '',
             }),
         },
     );
 
-    const [dpi, setDpi] = useState(initialDpi);
-    const [releaser, setReleaser] = useState(initialReleaser);
-    const [resolution, setResolution] = useState(initialResolution);
-    const [scanType, setScanType] = useState(initialScanType);
+    const [dpi, setDpi] = useState(data?.dpi ?? '');
+    const [releaser, setReleaser] = useState(data?.releaser ?? '');
+    const [resolution, setResolution] = useState(data?.resolution ?? '');
+    const [scanType, setScanType] = useState(data?.scanType ?? '');
 
-    const wasSaving = usePrevious(isSaving);
+    const [prevData, setPrevData] = useState(data);
+    if (data !== prevData) {
+        setPrevData(data);
 
-    // For some reason the values are only available after isPopulated is true,
-    // not at the same time
-    const isPopulated = usePrevious(_isPopulated);
-    const wasPopulated = usePrevious(isPopulated);
-
-    useEffect(() => {
-        if (!wasPopulated && isPopulated) {
-            setDpi(initialDpi);
-            setReleaser(initialReleaser);
-            setResolution(initialResolution);
-            setScanType(initialScanType);
+        if (data) {
+            setDpi(data.dpi ?? '');
+            setReleaser(data.releaser ?? '');
+            setResolution(data.resolution ?? '');
+            setScanType(data.scanType ?? '');
         }
-    }, [
-        isPopulated,
-        wasPopulated,
-        initialDpi,
-        initialReleaser,
-        initialResolution,
-        initialScanType,
-    ]);
+    }
 
     const handleInputChange = useCallback(
         <K extends keyof UpdateFileParams>({
@@ -127,23 +117,30 @@ export default function EditFileModalContent({
         [],
     );
 
-    const handleSavePress = useCallback(() => {
-        updateFile({
+    const handleSavePress = useCallback(async () => {
+        const { error: updateError } = await updateFile({
             fileId,
             dpi,
             releaser,
             resolution,
             scanType,
-        }).then(() => {
-            refetchFiles();
         });
-    }, [dpi, releaser, resolution, scanType, updateFile, fileId, refetchFiles]);
 
-    useEffect(() => {
-        if (!isSaving && wasSaving && !saveError) {
+        if (!updateError) {
+            await refetchFiles();
+
             onModalClose();
         }
-    }, [isSaving, wasSaving, saveError, onModalClose]);
+    }, [
+        dpi,
+        releaser,
+        resolution,
+        scanType,
+        updateFile,
+        fileId,
+        refetchFiles,
+        onModalClose,
+    ]);
 
     return (
         <ModalContent onModalClose={onModalClose}>

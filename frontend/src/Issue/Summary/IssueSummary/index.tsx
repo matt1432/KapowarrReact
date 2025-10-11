@@ -61,10 +61,11 @@ export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
 
     const handleDeleteIssueFile = useCallback(
         (issueFileId: number) => {
-            if (issueFileId)
+            if (issueFileId) {
                 deleteFile({
                     fileId: issueFileId,
                 });
+            }
         },
         [deleteFile],
     );

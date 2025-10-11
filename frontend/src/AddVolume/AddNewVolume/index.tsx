@@ -13,8 +13,10 @@ import {
 import { icons, kinds } from 'Helpers/Props';
 import { getErrorMessage } from 'Utilities/Object/error';
 
-import useQueryParams from 'Helpers/Hooks/useQueryParams';
 import translate from 'Utilities/String/translate';
+
+// Hooks
+import useQueryParams from 'Helpers/Hooks/useQueryParams';
 
 // General Components
 import Alert from 'Components/Alert';
@@ -45,44 +47,33 @@ export default function AddNewVolume() {
         }),
     });
 
-    const [_term, _setTerm] = useState(initialTerm);
-    const [term, setTerm] = useState(initialTerm);
-    const [showResults, setShowResults] = useState(false);
+    const [currentTerm, setCurrentTerm] = useState(initialTerm);
+    const [searchedTerm, setSearchedTerm] = useState(initialTerm);
 
     const handleSearchInputChange = useCallback(
         ({ value }: InputChanged<string, string>) => {
-            _setTerm(value);
+            setCurrentTerm(value);
         },
         [],
     );
 
-    const handleClearVolumeLookupPress = useCallback(() => {
-        _setTerm('');
-        setTerm('');
-        setShowResults(false);
-    }, []);
-
     const [lookupVolume, { isFetching, error, data = [] }] =
         useLazyLookupVolumeQuery();
 
-    useEffect(() => {
-        setShowResults(true);
-    }, [data]);
+    const handleClearVolumeLookupPress = useCallback(() => {
+        setCurrentTerm('');
+        setSearchedTerm('');
+    }, []);
 
     const handleSubmit = useCallback(() => {
-        setTerm(_term);
+        setSearchedTerm(currentTerm);
 
-        if (_term !== '') {
-            lookupVolume({ query: _term });
+        if (currentTerm !== '') {
+            lookupVolume({ query: currentTerm });
         }
-        else {
-            setShowResults(false);
-        }
-    }, [lookupVolume, _term]);
+    }, [lookupVolume, currentTerm]);
 
     useEffect(() => {
-        setTerm(initialTerm);
-
         if (initialTerm !== '') {
             lookupVolume({ query: initialTerm });
         }
@@ -102,7 +93,7 @@ export default function AddNewVolume() {
                     <TextInput
                         className={styles.searchInput}
                         name="volumeLookup"
-                        value={_term}
+                        value={currentTerm}
                         placeholder="eg. Avengers, cv:4050-2127"
                         autoFocus={true}
                         onChange={handleSearchInputChange}
@@ -131,7 +122,7 @@ export default function AddNewVolume() {
                     </div>
                 ) : null}
 
-                {!isFetching && !error && showResults ? (
+                {!isFetching && !error && searchedTerm !== '' ? (
                     <div className={styles.searchResults}>
                         {data.map((item) => {
                             return (
@@ -144,17 +135,19 @@ export default function AddNewVolume() {
                     </div>
                 ) : null}
 
-                {!isFetching && !error && !data.length && term ? (
+                {!isFetching && !error && !data.length && searchedTerm ? (
                     <div className={styles.message}>
                         <div className={styles.noResults}>
-                            {translate('CouldNotFindResults', { term })}
+                            {translate('CouldNotFindResults', {
+                                term: searchedTerm,
+                            })}
                         </div>
                         <div>{translate('SearchByComicVineId')}</div>
                         <div>{translate('WhyCantIFindMyVolume')}</div>
                     </div>
                 ) : null}
 
-                {term ? null : (
+                {searchedTerm ? null : (
                     <div className={styles.message}>
                         <div className={styles.helpText}>
                             {translate('AddNewVolumeHelpText')}
@@ -163,7 +156,7 @@ export default function AddNewVolume() {
                     </div>
                 )}
 
-                {!term && !volumeCount ? (
+                {!searchedTerm && !volumeCount ? (
                     <div className={styles.message}>
                         <div className={styles.noVolumeText}>
                             {translate('NoVolumeHaveBeenAdded')}

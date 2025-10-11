@@ -37,14 +37,15 @@ export default function ErrorBoundaryError({
         StackTrace.StackFrame[] | null
     >(null);
 
+    if (!detailedError) {
+        setDetailedError(null);
+    }
+
     useEffect(() => {
         if (error) {
             StackTrace.fromError(error).then((de) => {
                 setDetailedError(de);
             });
-        }
-        else {
-            setDetailedError(null);
         }
     }, [error, setDetailedError]);
 

@@ -1,11 +1,22 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+// IMPORTS
+
+// React
+import { useCallback, useMemo, useState } from 'react';
+
+// Redux
 import {
     useGetSettingsQuery,
     useSaveSettingsMutation,
 } from 'Store/Api/Settings';
+
+// Misc
+import filterObject from 'Utilities/Object/filterObject';
+
+// Types
 import type { InputChanged } from 'typings/Inputs';
 import type { SettingsValue } from 'typings/Settings';
-import filterObject from 'Utilities/Object/filterObject';
+
+// IMPLEMENTATIONS
 
 export default function useEditSettings() {
     const { settings, isSuccess, refetch } = useGetSettingsQuery(undefined, {
@@ -20,12 +31,16 @@ export default function useEditSettings() {
     const [isSaving, setIsSaving] = useState(false);
     const [changes, setChanges] = useState<SettingsValue>(settings!);
 
-    useEffect(() => {
+    const [wasSuccess, setWasSuccess] = useState(false);
+
+    if (isSuccess !== wasSuccess) {
+        setWasSuccess(isSuccess);
+
         if (isSuccess) {
             setIsSaving(false);
             setChanges(settings!);
         }
-    }, [isSuccess, settings]);
+    }
 
     const onSavePress = useCallback(() => {
         setIsSaving(true);

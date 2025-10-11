@@ -1,5 +1,8 @@
 // IMPORTS
 
+// React
+import { useEffect } from 'react';
+
 // CSS
 import styles from './index.module.css';
 
@@ -22,10 +25,10 @@ const messages = [
 let message: string | null = null;
 
 export default function LoadingMessage() {
-    if (!message) {
+    useEffect(() => {
         const index = Math.floor(Math.random() * messages.length);
         message = messages[index];
-    }
+    }, []);
 
     return <div className={styles.loadingMessage}>{message}</div>;
 }

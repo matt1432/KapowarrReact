@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
@@ -15,9 +15,6 @@ import {
 import { icons, inputTypes, kinds, sizes } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
-
-// Hooks
-import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
 import Form from 'Components/Form/Form';
@@ -73,8 +70,6 @@ export default function EditVolumeModalContent({
         rootFolder: initialRootFolderPath,
     } = volume!;
 
-    const wasSaving = usePrevious(isSaving);
-
     const [isRootFolderModalOpen, setIsRootFolderModalOpen] = useState(false);
     const [isConfirmMoveModalOpen, setIsConfirmMoveModalOpen] = useState(false);
 
@@ -98,19 +93,15 @@ export default function EditVolumeModalContent({
         [initialVolumeFolder, volumeFolder],
     );
 
-    useEffect(() => {
+    const [prevVolume, setPrevVolume] = useState(volume);
+    if (volume !== prevVolume) {
+        setPrevVolume(volume);
         setLibgenSeriesId(initialLibgenSeriesId ?? '');
         setMonitored(initialMonitored);
         setSpecialVersion(initialSpecialVersion ?? '');
         setVolumeFolder(initialVolumeFolder);
         setRootFolderId(initialRootFolderPath);
-    }, [
-        initialLibgenSeriesId,
-        initialMonitored,
-        initialSpecialVersion,
-        initialVolumeFolder,
-        initialRootFolderPath,
-    ]);
+    }
 
     const handleInputChange = useCallback(
         <K extends keyof UpdateVolumeParams>({
@@ -169,12 +160,12 @@ export default function EditVolumeModalContent({
         return !libgenSeriesId.split(',').every((id) => /^\d+$/.test(id));
     }, [libgenSeriesId]);
 
-    const saveVolume = useCallback(() => {
+    const saveVolume = useCallback(async () => {
         if (libgenSeriesIdHasError) {
             return;
         }
 
-        updateVolume({
+        const { error: updateError } = await updateVolume({
             volumeId,
             rootFolder: rootFolderId,
             monitored,
@@ -183,6 +174,10 @@ export default function EditVolumeModalContent({
             volumeFolder,
             libgenSeriesId,
         });
+
+        if (!updateError) {
+            onModalClose();
+        }
     }, [
         libgenSeriesIdHasError,
         libgenSeriesId,
@@ -192,6 +187,7 @@ export default function EditVolumeModalContent({
         updateVolume,
         volumeFolder,
         volumeId,
+        onModalClose,
     ]);
 
     const handleSavePress = useCallback(() => {
@@ -208,12 +204,6 @@ export default function EditVolumeModalContent({
         setIsConfirmMoveModalOpen(false);
         saveVolume();
     }, [saveVolume]);
-
-    useEffect(() => {
-        if (!isSaving && wasSaving && !saveError) {
-            onModalClose();
-        }
-    }, [isSaving, wasSaving, saveError, onModalClose]);
 
     return (
         <ModalContent onModalClose={onModalClose}>

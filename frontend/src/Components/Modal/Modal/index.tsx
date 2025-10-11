@@ -7,7 +7,9 @@ import React, {
     useEffect,
     useId,
     useRef,
+    useState,
 } from 'react';
+
 import ReactDOM from 'react-dom';
 import FocusLock from 'react-focus-lock';
 
@@ -20,9 +22,6 @@ import { setScrollLock } from 'Utilities/scrollLock';
 import * as keyCodes from 'Utilities/Constants/keyCodes';
 
 import classNames from 'classnames';
-
-// Hooks
-import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
 import ErrorBoundary from 'Components/Error/ErrorBoundary';
@@ -91,8 +90,12 @@ export default function Modal({
     const backgroundRef = useRef<HTMLDivElement>(null);
     const isBackdropPressed = useRef(false);
     const bodyScrollTop = useRef(0);
-    const wasOpen = usePrevious(isOpen);
     const modalId = useId();
+
+    const [wasOpen, setWasOpen] = useState(isOpen);
+    if (isOpen !== wasOpen) {
+        setWasOpen(isOpen);
+    }
 
     const isTargetBackdrop = useCallback((event: TouchEvent | MouseEvent) => {
         const targetElement = findEventTarget(event);

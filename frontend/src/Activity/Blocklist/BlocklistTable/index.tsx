@@ -57,7 +57,11 @@ export default function BlocklistTable() {
     const [isPopulated, setIsPopulated] = useState(false);
     const [items, setItems] = useState(data?.blocklist ?? []);
     const [totalRecords, setTotalRecords] = useState(data?.totalRecords ?? 0);
-    useEffect(() => {
+
+    const [prevData, setPrevData] = useState(data);
+    if (data !== prevData) {
+        setPrevData(data);
+
         if (data) {
             setIsPopulated(true);
         }
@@ -70,7 +74,7 @@ export default function BlocklistTable() {
             setTotalRecords(data.totalRecords);
             setItems(data.blocklist);
         }
-    }, [data]);
+    }
 
     const hasItems = useMemo(() => Boolean(items.length), [items.length]);
     const totalPages = useMemo(

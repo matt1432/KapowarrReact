@@ -1,18 +1,15 @@
 // IMPORTS
 
 // React
-import { useRef } from 'react';
-import {
-    type DragSourceMonitor,
-    useDrag,
-    useDrop,
-    type XYCoord,
-} from 'react-dnd';
+import { useEffect, useRef } from 'react';
+
+import { useDrag, useDrop } from 'react-dnd';
 
 // Misc
 import { icons } from 'Helpers/Props';
 
 import translate, { type TranslateKey } from 'Utilities/String/translate';
+
 import classNames from 'classnames';
 
 import DragType from 'Helpers/DragType';
@@ -25,6 +22,7 @@ import Icon from 'Components/Icon';
 import styles from './index.module.css';
 
 // Types
+import type { DragSourceMonitor, XYCoord } from 'react-dnd';
 import type { CheckInputChanged } from 'typings/Inputs';
 
 interface DragItem {
@@ -138,9 +136,13 @@ export default function TableOptionsColumn<T extends string>({
         },
     });
 
-    dragRefConnector(dragRef);
+    useEffect(() => {
+        dragRefConnector(dragRef);
+    }, [dragRef, dragRefConnector]);
 
-    dropRef(previewRef(ref));
+    useEffect(() => {
+        dropRef(previewRef(ref));
+    }, [dropRef, previewRef, ref]);
 
     const isBefore = !isDragging && isDraggingUp && isOver;
     const isAfter = !isDragging && isDraggingDown && isOver;

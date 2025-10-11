@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -10,9 +10,6 @@ import { useDeleteFileMutation } from 'Store/Api/Files';
 
 // Misc
 import translate from 'Utilities/String/translate';
-
-// Hooks
-import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
 import Button from 'Components/Link/Button';
@@ -48,7 +45,7 @@ export default function GeneralFilesModalContent({
         (state) => state.tableOptions.generalFiles,
     );
 
-    const { generalFiles = [], refetch } = useSearchVolumeQuery(
+    const { generalFiles, refetch } = useSearchVolumeQuery(
         { volumeId },
         {
             selectFromResult: ({ data }) => ({
@@ -57,20 +54,17 @@ export default function GeneralFilesModalContent({
         },
     );
 
-    const [deleteFile, { isLoading, isSuccess }] = useDeleteFileMutation();
-    const wasLoading = usePrevious(isLoading);
-
-    useEffect(() => {
-        if (!isLoading && wasLoading && isSuccess) {
-            refetch();
-        }
-    }, [isLoading, isSuccess, wasLoading, refetch]);
+    const [deleteFile] = useDeleteFileMutation();
 
     const handleDeleteGeneralFile = useCallback(
-        (fileId: number) => () => {
-            deleteFile({ fileId });
+        (fileId: number) => async () => {
+            const { error: deleteError } = await deleteFile({ fileId });
+
+            if (!deleteError) {
+                refetch();
+            }
         },
-        [deleteFile],
+        [deleteFile, refetch],
     );
 
     return (

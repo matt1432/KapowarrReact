@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -16,8 +16,6 @@ import getSelectedIds from 'Utilities/Table/getSelectedIds';
 
 // Hooks
 import { useSelect } from 'App/SelectContext';
-
-import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // General Components
 import SpinnerButton from 'Components/Link/SpinnerButton';
@@ -67,8 +65,6 @@ export default function VolumeIndexSelectFooter() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-    const wasDeleting = usePrevious(isDeleting);
 
     const [{ selectedState }, selectDispatch] = useSelect();
 
@@ -123,11 +119,13 @@ export default function VolumeIndexSelectFooter() {
         });
     }, [runMassEditAction, volumeIds]);
 
-    useEffect(() => {
+    const [wasDeleting, setWasDeleting] = useState(isDeleting);
+    if (isDeleting !== wasDeleting) {
+        setWasDeleting(isDeleting);
         if (wasDeleting && !isDeleting) {
             selectDispatch({ type: 'unselectAll' });
         }
-    }, [wasDeleting, isDeleting, selectDispatch]);
+    }
 
     const anySelected = selectedCount > 0;
 

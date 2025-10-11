@@ -1,8 +1,8 @@
 // IMPORTS
 
 // React
-import { type RefObject, useEffect, useMemo, useState } from 'react';
-import { Grid, useGridRef, type CellComponentProps } from 'react-window';
+import { useEffect, useMemo, useState } from 'react';
+import { Grid, useGridRef } from 'react-window';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -22,6 +22,8 @@ import VolumeIndexPoster from 'Volume/Index/Posters/VolumeIndexPoster';
 import dimensions from 'Styles/Variables/dimensions';
 
 // Types
+import type { RefObject } from 'react';
+import type { CellComponentProps } from 'react-window';
 import type { VolumePublicInfo } from 'Volume/Volume';
 import type { IndexSort } from '..';
 import type { Size } from 'Helpers/Props/sizes';
@@ -203,39 +205,36 @@ export default function VolumeIndexPosters({
     }, [isSmallScreen, posterOptions, sortKey, secondarySortKey, posterHeight]);
 
     useEffect(() => {
-        const current = scrollerRef.current;
-
         if (isSmallScreen) {
             const padding = bodyPaddingSmallScreen - 5;
             const width = window.innerWidth - padding * 2;
             const height = window.innerHeight;
 
             if (width !== size.width || height !== size.height) {
+                // FIXME: figure this out
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setSize({
                     width,
                     height,
                 });
             }
-
-            return;
         }
-
-        if (current) {
-            const width = current.clientWidth;
+        else if (scrollerRef.current) {
+            const width = scrollerRef.current.clientWidth;
             const padding = bodyPadding - 5;
             const finalWidth = width - padding * 2;
 
             if (
-                Math.abs(size.width - finalWidth) < 20 ||
-                size.width === finalWidth
+                !(
+                    Math.abs(size.width - finalWidth) < 20 ||
+                    size.width === finalWidth
+                )
             ) {
-                return;
+                setSize({
+                    width: finalWidth,
+                    height: window.innerHeight,
+                });
             }
-
-            setSize({
-                width: finalWidth,
-                height: window.innerHeight,
-            });
         }
     }, [isSmallScreen, size, scrollerRef, bounds]);
 

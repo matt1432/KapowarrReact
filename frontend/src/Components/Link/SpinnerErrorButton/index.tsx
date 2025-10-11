@@ -7,9 +7,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { icons } from 'Helpers/Props';
 import { isFetchError } from 'Utilities/Object/error';
 
-// Hooks
-import usePrevious from 'Helpers/Hooks/usePrevious';
-
 // General Components
 import Icon from 'Components/Icon';
 
@@ -62,7 +59,6 @@ export default function SpinnerErrorButton({
     children,
     ...otherProps
 }: SpinnerErrorButtonProps) {
-    const wasSpinning = usePrevious(isSpinning);
     const updateTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
     const [result, setResult] = useState({
@@ -90,7 +86,9 @@ export default function SpinnerErrorButton({
         };
     }, [kind, hasError]);
 
-    useEffect(() => {
+    const [wasSpinning, setWasSpinning] = useState(isSpinning);
+    if (isSpinning !== wasSpinning) {
+        setWasSpinning(isSpinning);
         if (wasSpinning && !isSpinning) {
             const testResult = getTestResult(error);
 
@@ -99,6 +97,8 @@ export default function SpinnerErrorButton({
             const { wasSuccessful, hasError } = testResult;
 
             if (wasSuccessful || hasError) {
+                // Updating it is fine
+                // eslint-disable-next-line react-hooks/refs
                 updateTimeout.current = setTimeout(() => {
                     setResult({
                         wasSuccessful: false,
@@ -107,7 +107,7 @@ export default function SpinnerErrorButton({
                 }, 3000);
             }
         }
-    }, [isSpinning, wasSpinning, error]);
+    }
 
     useEffect(() => {
         return () => {

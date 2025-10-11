@@ -52,10 +52,13 @@ export default function HistoryRow({
     const [getIssue, { data: issue }] = useLazyGetIssueQuery();
 
     const [isTruncated, setIsTruncated] = useState(true);
-    useEffect(() => {
+
+    const [prevWebLink, setPrevWebLink] = useState(webLink);
+    if (webLink !== prevWebLink) {
+        setPrevWebLink(webLink);
         // Reset truncated status when link changes
         setIsTruncated(true);
-    }, [webLink]);
+    }
 
     const toggleTruncated = useCallback(() => {
         setIsTruncated(!isTruncated);
@@ -68,7 +71,7 @@ export default function HistoryRow({
     }, [getIssue, issueId]);
 
     return (
-        <TableRow onClick={toggleTruncated}>
+        <TableRow>
             {columns.map(({ isVisible, name }) => {
                 if (!isVisible) {
                     return null;

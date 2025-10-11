@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
@@ -28,9 +28,9 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import Popover from 'Components/Tooltip/Popover';
+import SpecialVersionPopoverContent from 'AddVolume/SpecialVersionPopoverContent';
 import SpinnerButton from 'Components/Link/SpinnerButton';
 import VolumePoster from 'Volume/VolumePoster';
-import SpecialVersionPopoverContent from 'AddVolume/SpecialVersionPopoverContent';
 
 // CSS
 import styles from './index.module.css';
@@ -68,11 +68,9 @@ export default function AddNewVolumeModalContent({
 
     const [rootFolderPath, setRootFolderPath] = useState('');
 
-    useEffect(() => {
-        if (rootFolderPath === '' && rootFolders.length !== 0) {
-            setRootFolderPath(rootFolders[0].folder);
-        }
-    }, [rootFolderPath, rootFolders]);
+    if (rootFolderPath === '' && rootFolders.length !== 0) {
+        setRootFolderPath(rootFolders[0].folder);
+    }
 
     const handleRootFolderChange = useCallback(
         ({ value }: InputChanged<'rootFolder', string>) => {

@@ -32,6 +32,12 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { IssueSummaryColumnName } from 'Issue/Issue';
+import type {
+    QueryActionCreatorResult,
+    QueryDefinition,
+} from '@reduxjs/toolkit/query';
+import type { CustomBaseQuery } from 'Store/Api/base';
+import type { Volume } from 'Volume/Volume';
 
 interface IssueFileRowProps {
     id: number;
@@ -43,7 +49,16 @@ interface IssueFileRowProps {
     dpi: string | undefined;
     columns: Column<IssueSummaryColumnName>[];
     onDeleteIssueFile(): void;
-    refetchFiles(): void;
+    refetchFiles: () => QueryActionCreatorResult<
+        QueryDefinition<
+            { volumeId: number },
+            CustomBaseQuery,
+            never,
+            Volume,
+            'api',
+            unknown
+        >
+    >;
 }
 
 // IMPLEMENTATIONS

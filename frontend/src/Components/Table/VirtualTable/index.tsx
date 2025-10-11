@@ -65,6 +65,8 @@ export default function VirtualTable<T extends ExtendableRecord>({
         const current = scrollerRef?.current as HTMLElement;
 
         if (isSmallScreen) {
+            // FIXME: figure this out
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSize({
                 width: windowWidth,
                 height: windowHeight,

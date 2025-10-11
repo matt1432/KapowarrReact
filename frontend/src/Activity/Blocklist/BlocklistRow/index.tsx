@@ -56,10 +56,13 @@ export default function BlocklistRow({
     const [getIssue, { data: issue }] = useLazyGetIssueQuery();
 
     const [isTruncated, setIsTruncated] = useState(true);
-    useEffect(() => {
+
+    const [prevWebLink, setPrevWebLink] = useState(webLink);
+    if (webLink !== prevWebLink) {
+        setPrevWebLink(webLink);
         // Reset truncated status when link changes
         setIsTruncated(true);
-    }, [webLink]);
+    }
 
     const toggleTruncated = useCallback(() => {
         setIsTruncated(!isTruncated);
@@ -80,7 +83,7 @@ export default function BlocklistRow({
     }, [deleteItem, id, refetch]);
 
     return (
-        <TableRow onClick={toggleTruncated}>
+        <TableRow>
             {columns.map(({ isVisible, name }) => {
                 if (!isVisible) {
                     return null;

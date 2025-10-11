@@ -13,7 +13,9 @@ import {
     useCallback,
     useEffect,
     useRef,
+    useState,
 } from 'react';
+
 import Autosuggest, {
     type AutosuggestPropsBase,
     type BlurEvent,
@@ -25,9 +27,6 @@ import { autoUpdate, flip, size, useFloating } from '@floating-ui/react-dom';
 
 // Misc
 import classNames from 'classnames';
-
-// Hooks
-import usePrevious from 'Helpers/Hooks/usePrevious';
 
 // CSS
 import styles from './index.module.css';
@@ -95,7 +94,10 @@ export default function AutoSuggestInput<T, K extends string>({
     ...otherProps
 }: AutoSuggestInputProps<K, T>) {
     const updater = useRef<(() => void) | null>(null);
-    const previousSuggestions = usePrevious(suggestions);
+    const [previousSuggestions, setPreviousSuggestions] = useState(suggestions);
+    if (suggestions !== previousSuggestions) {
+        setPreviousSuggestions(suggestions);
+    }
 
     const { refs, floatingStyles } = useFloating({
         middleware: [

@@ -35,7 +35,9 @@ export default function TableSelectCell({
     const initialIsSelected = useRef(isSelected);
     const handleSelectedChange = useRef(onSelectedChange);
 
-    handleSelectedChange.current = onSelectedChange;
+    useEffect(() => {
+        handleSelectedChange.current = onSelectedChange;
+    }, [onSelectedChange]);
 
     const handleChange = useCallback(
         ({ value, shiftKey }: CheckInputChanged<string>) => {

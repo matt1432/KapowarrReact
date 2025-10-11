@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useGetDownloadClientsQuery } from 'Store/Api/DownloadClients';
@@ -53,38 +53,37 @@ export default function EditRemoteMappingModalContent({
 }: EditRemoteMappingModalContentProps) {
     const { data: downloadClientHosts = [] } = useGetDownloadClientsQuery();
 
-    const {
-        remotePath,
-        localPath,
-        externalDownloadClientId,
-        isFetching,
-        error,
-        refetch,
-    } = useGetRemoteMappingsQuery(undefined, {
-        selectFromResult: ({ data = [], isFetching, error }) => ({
-            ...data.find((rm) => rm.id === id),
-            isFetching,
-            error,
-        }),
-    });
+    const { data, isFetching, error, refetch } = useGetRemoteMappingsQuery(
+        undefined,
+        {
+            selectFromResult: ({ data = [], isFetching, error }) => ({
+                data: data.find((rm) => rm.id === id),
+                isFetching,
+                error,
+            }),
+        },
+    );
 
     const [saveRemoteMapping, { isLoading: isSaving, error: saveError }] =
         useEditRemoteMappingMutation();
 
     const [changes, setChanges] = useState<RemoteMapping>({
         id: id ?? 0,
-        externalDownloadClientId: externalDownloadClientId ?? 0,
-        remotePath: remotePath ?? '',
-        localPath: localPath ?? '',
+        externalDownloadClientId: data?.externalDownloadClientId ?? 0,
+        remotePath: data?.remotePath ?? '',
+        localPath: data?.localPath ?? '',
     });
-    useEffect(() => {
+
+    const [prevData, setPrevData] = useState(data);
+    if (data !== prevData) {
+        setPrevData(data);
         setChanges({
             id: id ?? 0,
-            externalDownloadClientId: externalDownloadClientId ?? 0,
-            remotePath: remotePath ?? '',
-            localPath: localPath ?? '',
+            externalDownloadClientId: data?.externalDownloadClientId ?? 0,
+            remotePath: data?.remotePath ?? '',
+            localPath: data?.localPath ?? '',
         });
-    }, [externalDownloadClientId, id, localPath, remotePath]);
+    }
 
     const handleInputChange = useCallback(
         <Key extends keyof RemoteMapping, Prop extends RemoteMapping[Key]>({

@@ -192,7 +192,11 @@ export default function EnhancedSelectInput<
     const isMultiSelect = Array.isArray(value);
     const selectedOption = getSelectedOption(selectedIndex, values);
 
-    const { refs, context, floatingStyles } = useFloating({
+    const {
+        refs: { setFloating, setReference },
+        context,
+        floatingStyles,
+    } = useFloating({
         middleware: [
             flip({
                 crossAxis: false,
@@ -404,7 +408,7 @@ export default function EnhancedSelectInput<
 
     return (
         <>
-            <div ref={refs.setReference} {...getReferenceProps()}>
+            <div ref={setReference} {...getReferenceProps()}>
                 {isEditable && typeof value === 'string' ? (
                     <div className={styles.editableContainer}>
                         <TextInput
@@ -489,7 +493,7 @@ export default function EnhancedSelectInput<
             {!isMobile && isOpen ? (
                 <FloatingPortal id="portal-root">
                     <Scroller
-                        ref={refs.setFloating}
+                        ref={setFloating}
                         className={styles.options}
                         style={floatingStyles}
                         {...getFloatingProps()}
@@ -533,7 +537,7 @@ export default function EnhancedSelectInput<
                 <FloatingPortal id="portal-root">
                     <Scroller
                         className={styles.options}
-                        ref={refs.setFloating}
+                        ref={setFloating}
                         style={floatingStyles}
                         {...getFloatingProps()}
                     >

@@ -52,6 +52,8 @@ export default function FormatPreferenceInput({
 
     useEffect(() => {
         if (availableFormats.length !== formats.length) {
+            // FIXME: figure this out
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setFormats([
                 ...formats,
                 ...availableFormats

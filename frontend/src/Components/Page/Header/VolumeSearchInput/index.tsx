@@ -11,9 +11,8 @@ import {
     useRef,
     useState,
 } from 'react';
-import Autosuggest from 'react-autosuggest';
 
-import { useNavigate } from 'react-router';
+import Autosuggest from 'react-autosuggest';
 
 // Redux
 import { useGetVolumesQuery } from 'Store/Api/Volumes';
@@ -25,6 +24,7 @@ import translate from 'Utilities/String/translate';
 
 // Hooks
 import { useDebouncedCallback } from 'use-debounce';
+import { useNavigate } from 'react-router';
 
 import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
 
@@ -100,20 +100,20 @@ export default function VolumeSearchInput() {
     const [value, setValue] = useState('');
     const [requestLoading, setRequestLoading] = useState(false);
     const [suggestions, setSuggestions] = useState<VolumeSuggestion[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const autosuggestRef = useRef<Autosuggest>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const worker = useRef<Worker | null>(null);
-    const isLoading = useRef(false);
     const requestValue = useRef<string | null>(null);
 
     const suggestionGroups = useMemo(() => {
         const result: Section[] = [];
 
-        if (suggestions.length || isLoading.current) {
+        if (suggestions.length || isLoading) {
             result.push({
                 title: translate('ExistingVolume'),
-                loading: isLoading.current,
+                loading: isLoading,
                 suggestions,
             });
         }
@@ -129,7 +129,7 @@ export default function VolumeSearchInput() {
         });
 
         return result;
-    }, [suggestions, value]);
+    }, [isLoading, suggestions, value]);
 
     const handleSuggestionsReceived = useCallback(
         (message: {
@@ -137,7 +137,7 @@ export default function VolumeSearchInput() {
         }) => {
             const { value, suggestions } = message.data;
 
-            if (!isLoading.current) {
+            if (!isLoading) {
                 requestValue.current = null;
                 setRequestLoading(false);
             }
@@ -145,7 +145,7 @@ export default function VolumeSearchInput() {
                 setSuggestions(suggestions);
                 requestValue.current = null;
                 setRequestLoading(false);
-                isLoading.current = false;
+                setIsLoading(false);
             }
             else {
                 setSuggestions(suggestions);
@@ -159,11 +159,11 @@ export default function VolumeSearchInput() {
                 worker.current?.postMessage(payload);
             }
         },
-        [volumes],
+        [isLoading, volumes],
     );
 
     const requestSuggestions = useDebouncedCallback((value: string) => {
-        if (!isLoading.current) {
+        if (!isLoading) {
             return;
         }
 
@@ -183,7 +183,7 @@ export default function VolumeSearchInput() {
     const reset = useCallback(() => {
         setValue('');
         setSuggestions([]);
-        isLoading.current = false;
+        setIsLoading(false);
     }, []);
 
     const focusInput = useCallback((event: ExtendedKeyboardEvent) => {
@@ -306,7 +306,7 @@ export default function VolumeSearchInput() {
 
     const handleSuggestionsFetchRequested = useCallback(
         ({ value }: { value: string }) => {
-            isLoading.current = true;
+            setIsLoading(true);
 
             requestSuggestions(value);
         },
@@ -315,7 +315,7 @@ export default function VolumeSearchInput() {
 
     const handleSuggestionsClearRequested = useCallback(() => {
         setSuggestions([]);
-        isLoading.current = false;
+        setIsLoading(false);
     }, []);
 
     const handleSuggestionSelected = useCallback(

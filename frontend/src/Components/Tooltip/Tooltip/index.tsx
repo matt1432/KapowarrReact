@@ -2,6 +2,7 @@
 
 // React
 import React, { useRef, useState } from 'react';
+
 import {
     arrow,
     autoUpdate,
@@ -22,9 +23,11 @@ import {
 // Misc
 import { isMobile } from 'Utilities/browser';
 import { kinds } from 'Helpers/Props';
-import { useThemeColor } from 'Helpers/Hooks/useTheme';
 
 import classNames from 'classnames';
+
+// Hooks
+import { useThemeColor } from 'Helpers/Hooks/useTheme';
 
 // CSS
 import styles from './index.module.css';
@@ -64,6 +67,7 @@ export default function Tooltip({
 
     const { refs, context, floatingStyles } = useFloating({
         middleware: [
+            // eslint-disable-next-line react-hooks/refs
             arrow({
                 element: arrowRef,
             }),
@@ -106,6 +110,7 @@ export default function Tooltip({
             {isOpen ? (
                 <FloatingPortal id="portal-root">
                     <div
+                        // eslint-disable-next-line react-hooks/refs
                         ref={refs.setFloating}
                         className={styles.tooltipContainer}
                         style={floatingStyles}

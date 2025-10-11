@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import {
@@ -102,7 +102,14 @@ export default function EditDownloadClientModalContent({
             apiToken: undefined,
         },
     );
-    useEffect(() => {
+
+    const [wasSuccess, setWasSuccess] = useState(isSuccess);
+    const [prevClient, setPrevClient] = useState(client);
+
+    if (isSuccess !== wasSuccess || client !== prevClient) {
+        setWasSuccess(isSuccess);
+        setPrevClient(client);
+
         if (isSuccess) {
             setIsSaving(false);
             setChanges(
@@ -116,7 +123,7 @@ export default function EditDownloadClientModalContent({
                 },
             );
         }
-    }, [isSuccess, client]);
+    }
 
     const handleInputChange = useCallback(
         <Key extends keyof DownloadClient>({
