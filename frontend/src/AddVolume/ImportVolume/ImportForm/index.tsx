@@ -30,6 +30,7 @@ import type { ImportVolumeState } from 'Store/Slices/ImportVolume';
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 import type { InputChanged } from 'typings/Inputs';
 import type { GetImportProposalsParams } from 'Store/Api/Volumes';
+import FormInputHelpText from 'Components/Form/FormInputHelpText';
 
 interface ImportFormProps {
     onScanPress: (params: GetImportProposalsParams) => void;
@@ -143,20 +144,30 @@ export default function ImportForm({ onScanPress }: ImportFormProps) {
                 <>
                     <FormGroup>
                         <FormLabel>{translate('IncludedFolders')}</FormLabel>
-                        <FolderTable
-                            name="includedFolders"
-                            values={includedFolders}
-                            onChange={handleInputChange}
-                        />
+                        <div>
+                            <FolderTable
+                                name="includedFolders"
+                                values={includedFolders}
+                                onChange={handleInputChange}
+                            />
+                            <FormInputHelpText
+                                text={translate('FolderTableHelpText')}
+                            />
+                        </div>
                     </FormGroup>
 
                     <FormGroup>
                         <FormLabel>{translate('ExcludedFolders')}</FormLabel>
-                        <FolderTable
-                            name="excludedFolders"
-                            values={excludedFolders}
-                            onChange={handleInputChange}
-                        />
+                        <div>
+                            <FolderTable
+                                name="excludedFolders"
+                                values={excludedFolders}
+                                onChange={handleInputChange}
+                            />
+                            <FormInputHelpText
+                                text={translate('FolderTableHelpText')}
+                            />
+                        </div>
                     </FormGroup>
                 </>
             ) : null}
