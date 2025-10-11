@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -12,7 +12,6 @@ import TableBody from 'Components/Table/TableBody';
 
 // Specific Components
 import FolderRow from './FolderRow';
-import InputRow from './InputRow';
 
 // CSS
 import styles from './index.module.css';
@@ -39,11 +38,17 @@ export default function FolderTable<T extends string>({
         (state) => state.tableOptions.folderTable,
     );
 
-    const onAddPress = useCallback(
-        (folder: string) => {
-            onChange({ name, value: [...values, folder] });
+    const [newFolder, setNewFolder] = useState('');
+
+    const onAddPress = useCallback(() => {
+        onChange({ name, value: [...values, newFolder] });
+    }, [name, newFolder, onChange, values]);
+
+    const onEditNewFolder = useCallback(
+        ({ value }: InputChanged<string, string>) => {
+            setNewFolder(value);
         },
-        [name, onChange, values],
+        [],
     );
 
     const onDeletePress = useCallback(
@@ -82,7 +87,12 @@ export default function FolderTable<T extends string>({
                     );
                 })}
 
-                <InputRow columns={columns} onAddPress={onAddPress} />
+                <FolderRow
+                    columns={columns}
+                    folder={newFolder}
+                    onEditRow={onEditNewFolder}
+                    onAddPress={onAddPress}
+                />
             </TableBody>
         </Table>
     );

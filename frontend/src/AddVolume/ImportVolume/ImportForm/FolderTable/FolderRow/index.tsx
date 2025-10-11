@@ -22,7 +22,8 @@ interface FolderRowProps {
     columns: Column<'value' | 'actions'>[];
     folder: string;
     onEditRow: (change: InputChanged<string, string>) => void;
-    onDeletePress: () => void;
+    onAddPress?: () => void;
+    onDeletePress?: () => void;
 }
 
 // IMPLEMENTATIONS
@@ -31,10 +32,11 @@ export default function FolderRow({
     columns,
     folder,
     onEditRow,
+    onAddPress,
     onDeletePress,
 }: FolderRowProps) {
     return (
-        <TableRow>
+        <TableRow className={styles.row}>
             {columns.map(({ isVisible, name }) => {
                 if (!isVisible) {
                     return null;
@@ -47,6 +49,7 @@ export default function FolderRow({
                                 name="folder"
                                 value={folder}
                                 onChange={onEditRow}
+                                onSubmit={onAddPress}
                             />
                         </TableRowCell>
                     );
@@ -55,11 +58,21 @@ export default function FolderRow({
                 if (name === 'actions') {
                     return (
                         <TableRowCell className={styles.cell}>
-                            <IconButton
-                                title={translate('Delete')}
-                                name={icons.REMOVE}
-                                onPress={onDeletePress}
-                            />
+                            {onAddPress ? (
+                                <IconButton
+                                    title={translate('Add')}
+                                    name={icons.ADD}
+                                    onPress={onAddPress}
+                                />
+                            ) : null}
+
+                            {onDeletePress ? (
+                                <IconButton
+                                    title={translate('Delete')}
+                                    name={icons.REMOVE}
+                                    onPress={onDeletePress}
+                                />
+                            ) : null}
                         </TableRowCell>
                     );
                 }

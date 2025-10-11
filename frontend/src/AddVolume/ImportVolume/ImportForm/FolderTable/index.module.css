@@ -7,3 +7,5 @@
     composes: tableContainer from 'Components/Table/Table/index.module.css';
     margin-top: -8px;
 }
+
+.row {}
