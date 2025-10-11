@@ -107,7 +107,7 @@ export type TableName = Exclude<keyof TableOptionsState, 'sliceVersion'>;
 // IMPLEMENTATIONS
 
 const initialState = {
-    sliceVersion: 2,
+    sliceVersion: 3,
 
     blocklistTable: {
         sortKey: null,
@@ -307,6 +307,7 @@ const initialState = {
             },
             {
                 name: 'actions',
+                hideHeaderLabel: true,
                 isModifiable: false,
                 isSortable: false,
                 isVisible: true,
