@@ -5,11 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import {
-    setTableOptions,
-    setTableSort,
-    type SetTableOptionsParams,
-} from 'Store/Slices/TableOptions';
+import { setTableSort } from 'Store/Slices/TableOptions';
 
 import {
     useLazyManualSearchQuery,
@@ -122,13 +118,6 @@ function InternalSearch({
         [dispatch],
     );
 
-    const handleTableOptionChange = useCallback(
-        (payload: SetTableOptionsParams<'searchResults'>) => {
-            dispatch(setTableOptions(payload));
-        },
-        [dispatch],
-    );
-
     return (
         <div>
             {isFetching ? <LoadingIndicator /> : null}
@@ -181,7 +170,6 @@ function InternalSearch({
                     tableProps={
                         'issues' in searchPayload
                             ? {
-                                  onTableOptionChange: handleTableOptionChange,
                                   optionsComponent:
                                       InteractiveSearchTableOptions,
                               }

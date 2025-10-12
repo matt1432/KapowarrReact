@@ -1,7 +1,11 @@
 // IMPORTS
 
+// React
+import { useCallback, useMemo } from 'react';
+
 // Redux
-import { useRootSelector } from 'Store/createAppStore';
+import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
+import { setTableOptions } from 'Store/Slices/TableOptions';
 
 // Hooks
 import useSort from 'Helpers/Hooks/useSort';
@@ -17,7 +21,10 @@ import type { TableProps } from './Table';
 import type { Item, Predicates } from 'Helpers/Hooks/useSort';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 
-import type { ColumnNameMap } from 'Store/Slices/TableOptions';
+import type {
+    ColumnNameMap,
+    SetTableOptionsParams,
+} from 'Store/Slices/TableOptions';
 
 interface SortedTableProps<
     Name extends keyof ColumnNameMap,
@@ -59,6 +66,8 @@ export default function SortedTable<
     onSortPress,
     tableProps,
 }: SortedTableProps<Name, ColumnName, T>) {
+    const dispatch = useRootDispatch();
+
     const { sortKey, sortDirection, secondarySortKey, secondarySortDirection } =
         useRootSelector((state) => state.tableOptions[tableName]);
 
@@ -72,6 +81,20 @@ export default function SortedTable<
         secondarySortDirection,
     });
 
+    const hasOptions = useMemo(
+        () =>
+            columns.filter((col) => col.isModifiable).length !== 0 ||
+            tableProps?.optionsComponent,
+        [columns, tableProps],
+    );
+
+    const handleTableOptionChange = useCallback(
+        (payload: SetTableOptionsParams<Name>) => {
+            dispatch(setTableOptions(payload));
+        },
+        [dispatch],
+    );
+
     return (
         <Table
             tableName={tableName}
@@ -81,6 +104,9 @@ export default function SortedTable<
             secondarySortKey={secondarySortKey as ColumnName | null}
             secondarySortDirection={secondarySortDirection}
             onSortPress={onSortPress}
+            onTableOptionChange={
+                hasOptions ? handleTableOptionChange : undefined
+            }
             {...tableProps}
         >
             <TableBody>{sortedItems.map(itemRenderer)}</TableBody>

@@ -5,11 +5,7 @@ import { useCallback, useRef, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import {
-    setTableSort,
-    setTableOptions,
-    type SetTableOptionsParams,
-} from 'Store/Slices/TableOptions';
+import { setTableSort } from 'Store/Slices/TableOptions';
 
 import { useUpdateIssueMutation } from 'Store/Api/Issues';
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
@@ -183,22 +179,12 @@ export default function IssueTable({ volumeId }: IssueTableProps) {
         [dispatch],
     );
 
-    const handleTableOptionChange = useCallback(
-        (payload: SetTableOptionsParams<'issueTable'>) => {
-            dispatch(setTableOptions(payload));
-        },
-        [dispatch],
-    );
-
     return (
         <div className={styles.issues}>
             <SortedTable
                 tableName="issueTable"
                 columns={columns}
                 onSortPress={handleSortPress}
-                tableProps={{
-                    onTableOptionChange: handleTableOptionChange,
-                }}
                 items={issues}
                 itemRenderer={(issue) => (
                     <IssueRow
