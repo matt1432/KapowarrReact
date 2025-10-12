@@ -10,18 +10,28 @@ import { sortDirections } from 'Helpers/Props';
 import type { Column } from 'Components/Table/Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { ExtendableRecord } from 'typings/Misc';
+import type { ColumnNameMap } from 'Store/Slices/TableOptions';
 
-export type Predicates<T, ColumnName extends string> = Partial<
-    Record<ColumnName, (a: T, b: T) => number>
->;
+export type Predicates<
+    Name extends keyof ColumnNameMap,
+    ColumnName extends ColumnNameMap[Name],
+    T extends Item<Name, ColumnName>,
+> = Partial<Record<ColumnName, (a: T, b: T) => number>>;
 
-export type Item<ColumnName extends string> = ExtendableRecord<ColumnName>;
+export type Item<
+    Name extends keyof ColumnNameMap,
+    ColumnName extends ColumnNameMap[Name],
+> = ExtendableRecord<ColumnName>;
 
-interface UseSortProps<ColumnName extends string, T extends Item<ColumnName>> {
+interface UseSortProps<
+    Name extends keyof ColumnNameMap,
+    ColumnName extends ColumnNameMap[Name],
+    T extends Item<Name, ColumnName>,
+> {
     columns: Column<ColumnName>[];
     items: T[];
 
-    predicates?: Predicates<T, ColumnName>;
+    predicates?: Predicates<Name, ColumnName, T>;
 
     sortKey?: ColumnName | null;
     sortDirection?: SortDirection | null;
@@ -32,9 +42,10 @@ interface UseSortProps<ColumnName extends string, T extends Item<ColumnName>> {
 // IMPLEMENTATIONS
 
 function predicatesToSorters<
-    ColumnName extends string,
-    T extends Item<ColumnName>,
->(columns: Column<ColumnName>[], predicates: Predicates<T, ColumnName>) {
+    Name extends keyof ColumnNameMap,
+    ColumnName extends ColumnNameMap[Name],
+    T extends Item<Name, ColumnName>,
+>(columns: Column<ColumnName>[], predicates: Predicates<Name, ColumnName, T>) {
     const predicateKeys = Object.keys(predicates);
     const missingSortableColumns: ColumnName[] = columns
         .filter((c) => c.isSortable && !predicateKeys.includes(c.name))
@@ -98,8 +109,9 @@ function predicatesToSorters<
 }
 
 export default function useSort<
-    ColumnName extends string,
-    T extends Item<ColumnName>,
+    Name extends keyof ColumnNameMap,
+    ColumnName extends ColumnNameMap[Name],
+    T extends Item<Name, ColumnName> = Item<Name, ColumnName>,
 >({
     columns,
     items,
@@ -108,7 +120,7 @@ export default function useSort<
     sortDirection = sortDirections.ASCENDING,
     secondarySortKey,
     secondarySortDirection,
-}: UseSortProps<ColumnName, T>) {
+}: UseSortProps<Name, ColumnName, T>) {
     const sorters = useMemo(
         () => predicatesToSorters(columns, predicates),
         [columns, predicates],

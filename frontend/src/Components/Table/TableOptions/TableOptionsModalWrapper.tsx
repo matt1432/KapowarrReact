@@ -4,29 +4,35 @@
 import React, { type ReactElement, useCallback, useState } from 'react';
 
 // Specific Components
-import TableOptionsModal, {
-    type TableOptionsModalProps,
-} from './TableOptionsModal';
+import TableOptionsModal from './TableOptionsModal';
 
 // Types
 import type { LinkProps } from 'Components/Link/Link';
 import type { Column } from '../Column';
 import type { ColumnNameMap } from 'Store/Slices/TableOptions';
+import type { TableOptionsModalProps } from './TableOptionsModal';
 
 interface TableOptionsModalWrapperProps<
-    T extends ColumnNameMap[K],
-    K extends keyof ColumnNameMap,
-> extends Omit<TableOptionsModalProps<T, K>, 'isOpen' | 'onModalClose'> {
-    columns: Column<T>[];
+    Name extends keyof ColumnNameMap,
+    ColumnName extends ColumnNameMap[Name],
+> extends Omit<
+        TableOptionsModalProps<Name, ColumnName>,
+        'isOpen' | 'onModalClose'
+    > {
+    columns: Column<ColumnName>[];
     children: ReactElement<LinkProps>;
 }
 
 // IMPLEMENTATIONS
 
 export default function TableOptionsModalWrapper<
-    T extends ColumnNameMap[K],
-    K extends keyof ColumnNameMap,
->({ columns, children, ...otherProps }: TableOptionsModalWrapperProps<T, K>) {
+    Name extends keyof ColumnNameMap,
+    ColumnName extends ColumnNameMap[Name],
+>({
+    columns,
+    children,
+    ...otherProps
+}: TableOptionsModalWrapperProps<Name, ColumnName>) {
     const [isTableOptionsModalOpen, setIsTableOptionsModalOpen] =
         useState(false);
 

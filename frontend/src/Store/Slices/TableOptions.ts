@@ -57,29 +57,29 @@ export type ExtraPropsMap = {
     [Key in Exclude<keyof ColumnNameMap, keyof _ExtraPropsMap>]: EmptyObject;
 } & _ExtraPropsMap;
 
-export interface SetTableSortParams<T extends keyof ColumnNameMap> {
-    tableName: T;
-    sortKey: ColumnNameMap[T];
+export interface SetTableSortParams<Name extends keyof ColumnNameMap> {
+    tableName: Name;
+    sortKey: ColumnNameMap[Name];
     sortDirection?: SortDirection | null;
 }
 
 export type SetTableOptionsParams<
-    T extends keyof ColumnNameMap,
-    ExtraProps extends ExtraPropsMap[T] = ExtraPropsMap[T],
+    Name extends keyof ColumnNameMap,
+    ExtraProps extends ExtraPropsMap[Name] = ExtraPropsMap[Name],
 > = {
-    tableName: T;
-    columns?: Column<ColumnNameMap[T]>[];
+    tableName: Name;
+    columns?: Column<ColumnNameMap[Name]>[];
 } & Partial<ExtraProps>;
 
 export type TableState<
-    T extends keyof ColumnNameMap,
-    ExtraProps extends ExtraPropsMap[T] = ExtraPropsMap[T],
+    Name extends keyof ColumnNameMap,
+    ExtraProps extends ExtraPropsMap[Name] = ExtraPropsMap[Name],
 > = {
-    sortKey: ColumnNameMap[T] | null;
+    sortKey: ColumnNameMap[Name] | null;
     sortDirection: SortDirection | null;
-    secondarySortKey: ColumnNameMap[T] | null;
+    secondarySortKey: ColumnNameMap[Name] | null;
     secondarySortDirection: SortDirection | null;
-    columns: Column<ColumnNameMap[T]>[];
+    columns: Column<ColumnNameMap[Name]>[];
 } & ExtraProps;
 
 export interface TableOptionsState {
@@ -101,8 +101,6 @@ export interface TableOptionsState {
     taskPlanning: TableState<'taskPlanning'>;
     volumeIndex: TableState<'volumeIndex'>;
 }
-
-export type TableName = Exclude<keyof TableOptionsState, 'sliceVersion'>;
 
 // IMPLEMENTATIONS
 
@@ -858,11 +856,11 @@ const TableOptionsSlice = createSlice({
     name: 'tableOptions',
     initialState,
     reducers: {
-        setTableSort: <T extends TableName>(
+        setTableSort: <Name extends keyof ColumnNameMap>(
             state: TableOptionsState,
             {
                 payload: { tableName, sortKey, sortDirection = null },
-            }: PayloadAction<SetTableSortParams<T>>,
+            }: PayloadAction<SetTableSortParams<Name>>,
         ) => {
             const currentState = state[tableName];
 
@@ -930,11 +928,11 @@ const TableOptionsSlice = createSlice({
             }
         },
 
-        setTableOptions: <T extends TableName>(
+        setTableOptions: <Name extends keyof ColumnNameMap>(
             state: TableOptionsState,
             {
                 payload: { tableName, ...options },
-            }: PayloadAction<SetTableOptionsParams<T>>,
+            }: PayloadAction<SetTableOptionsParams<Name>>,
         ) => {
             const newState = { ...state[tableName] };
             state[tableName] = Object.assign(newState, options);
@@ -943,12 +941,12 @@ const TableOptionsSlice = createSlice({
 });
 
 // This fixes generic types
-export const setTableSort = <T extends TableName>(
-    payload: SetTableSortParams<T>,
+export const setTableSort = <Name extends keyof ColumnNameMap>(
+    payload: SetTableSortParams<Name>,
 ) => TableOptionsSlice.actions.setTableSort(payload);
 
-export const setTableOptions = <T extends TableName>(
-    payload: SetTableOptionsParams<T>,
+export const setTableOptions = <Name extends keyof ColumnNameMap>(
+    payload: SetTableOptionsParams<Name>,
 ) => TableOptionsSlice.actions.setTableOptions(payload);
 
 export default TableOptionsSlice;

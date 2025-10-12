@@ -11,54 +11,45 @@ import Table from './Table';
 import TableBody from './TableBody';
 
 // Types
-import type { EmptyObject } from 'type-fest';
-
 import type { Column } from './Column';
 import type { TableProps } from './Table';
 
 import type { Item, Predicates } from 'Helpers/Hooks/useSort';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 
-import type {
-    ColumnNameMap,
-    TableName,
-    TableState,
-} from 'Store/Slices/TableOptions';
+import type { ColumnNameMap } from 'Store/Slices/TableOptions';
 
 interface SortedTableProps<
-    K extends keyof ColumnNameMap,
-    T extends Item<ColumnNameMap[K]> = Item<ColumnNameMap[K]>,
-    ExtraOptions extends object = EmptyObject,
+    Name extends keyof ColumnNameMap,
+    ColumnName extends ColumnNameMap[Name],
+    T extends Item<Name, ColumnName> = Item<Name, ColumnName>,
 > {
-    tableName: K;
-    columns: Column<ColumnNameMap[K]>[];
+    tableName: Name;
+    columns: Column<ColumnName>[];
     items: T[];
     itemRenderer: (item: T) => React.ReactElement;
 
-    predicates?: Predicates<T, ColumnNameMap[K]>;
+    predicates?: Predicates<Name, ColumnName, T>;
 
-    onSortPress?: (
-        name: ColumnNameMap[K],
-        sortDirection?: SortDirection,
-    ) => void;
+    onSortPress?: (name: ColumnName, sortDirection?: SortDirection) => void;
 
     tableProps?: Omit<
-        TableProps<ColumnNameMap[K], K, ExtraOptions>,
-        | 'tableName'
-        | 'columns'
-        | 'sortKey'
-        | 'sortDirection'
+        TableProps<Name, ColumnName>,
         | 'children'
+        | 'columns'
         | 'onSortPress'
+        | 'sortDirection'
+        | 'sortKey'
+        | 'tableName'
     >;
 }
 
 // IMPLEMENTATIONS
 
 export default function SortedTable<
-    K extends TableName,
-    T extends Item<ColumnNameMap[K]> = Item<ColumnNameMap[K]>,
-    ExtraOptions extends object = EmptyObject,
+    Name extends keyof ColumnNameMap,
+    ColumnName extends ColumnNameMap[Name],
+    T extends Item<Name, ColumnName> = Item<Name, ColumnName>,
 >({
     tableName,
     columns,
@@ -67,20 +58,17 @@ export default function SortedTable<
     predicates = {},
     onSortPress,
     tableProps,
-}: SortedTableProps<K, T, ExtraOptions>) {
+}: SortedTableProps<Name, ColumnName, T>) {
     const { sortKey, sortDirection, secondarySortKey, secondarySortDirection } =
-        useRootSelector(
-            (state) =>
-                state.tableOptions[tableName] as unknown as TableState<K>,
-        );
+        useRootSelector((state) => state.tableOptions[tableName]);
 
     const sortedItems = useSort({
         columns,
         items,
         predicates,
-        sortKey,
+        sortKey: sortKey as ColumnName | null,
         sortDirection,
-        secondarySortKey,
+        secondarySortKey: secondarySortKey as ColumnName | null,
         secondarySortDirection,
     });
 
@@ -88,9 +76,9 @@ export default function SortedTable<
         <Table
             tableName={tableName}
             columns={columns}
-            sortKey={sortKey}
+            sortKey={sortKey as ColumnName | null}
             sortDirection={sortDirection}
-            secondarySortKey={secondarySortKey}
+            secondarySortKey={secondarySortKey as ColumnName | null}
             secondarySortDirection={secondarySortDirection}
             onSortPress={onSortPress}
             {...tableProps}

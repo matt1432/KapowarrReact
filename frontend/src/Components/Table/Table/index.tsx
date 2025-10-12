@@ -34,40 +34,34 @@ import type {
 } from 'Store/Slices/TableOptions';
 
 export interface TableProps<
-    T extends ColumnNameMap[K],
-    K extends keyof ColumnNameMap,
-    ExtraOptions extends object,
+    Name extends keyof ColumnNameMap,
+    ColumnName extends ColumnNameMap[Name],
 > {
-    tableName: K;
+    tableName: Name;
     className?: string;
     containerClassName?: string;
     horizontalScroll?: boolean;
     selectAll?: boolean;
     allSelected?: boolean;
     allUnselected?: boolean;
-    columns: Column<T>[];
+    columns: Column<ColumnName>[];
     optionsComponent?: React.ElementType;
     canModifyColumns?: boolean;
-    sortKey?: T | null;
+    sortKey?: ColumnName | null;
     sortDirection?: SortDirection | null;
-    secondarySortKey?: T | null;
+    secondarySortKey?: ColumnName | null;
     secondarySortDirection?: SortDirection | null;
     children?: React.ReactNode;
-    onSortPress?: (name: T, sortDirection?: SortDirection) => void;
+    onSortPress?: (name: ColumnName, sortDirection?: SortDirection) => void;
     onSelectAllChange?: (change: CheckInputChanged<string>) => void;
-    onTableOptionChange?: (
-        payload:
-            | SetTableOptionsParams<K>
-            | (SetTableOptionsParams<K> & ExtraOptions),
-    ) => void;
+    onTableOptionChange?: (payload: SetTableOptionsParams<Name>) => void;
 }
 
 // IMPLEMENTATIONS
 
 export default function Table<
-    T extends ColumnNameMap[K],
-    K extends keyof ColumnNameMap,
-    ExtraOptions extends object,
+    Name extends keyof ColumnNameMap,
+    ColumnName extends ColumnNameMap[Name],
 >({
     tableName,
     className = styles.table,
@@ -87,7 +81,7 @@ export default function Table<
     onSortPress,
     onSelectAllChange,
     onTableOptionChange,
-}: TableProps<T, K, ExtraOptions>) {
+}: TableProps<Name, ColumnName>) {
     return (
         <Scroller
             className={classNames(

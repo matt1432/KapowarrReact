@@ -35,23 +35,23 @@ import type {
 } from 'Store/Slices/TableOptions';
 
 export interface TableOptionsModalProps<
-    T extends ColumnNameMap[K],
-    K extends keyof ColumnNameMap,
+    Name extends keyof ColumnNameMap,
+    ColumnName extends ColumnNameMap[Name],
 > {
-    tableName: K;
+    tableName: Name;
     isOpen: boolean;
-    columns: Column<T>[];
+    columns: Column<ColumnName>[];
     canModifyColumns?: boolean;
     optionsComponent?: React.ElementType;
-    onTableOptionChange: (payload: SetTableOptionsParams<K>) => void;
+    onTableOptionChange: (payload: SetTableOptionsParams<Name>) => void;
     onModalClose: () => void;
 }
 
 // IMPLEMENTATIONS
 
 export default function TableOptionsModal<
-    T extends ColumnNameMap[K],
-    K extends keyof ColumnNameMap,
+    Name extends keyof ColumnNameMap,
+    ColumnName extends ColumnNameMap[Name],
 >({
     tableName,
     isOpen,
@@ -60,7 +60,7 @@ export default function TableOptionsModal<
     optionsComponent: OptionsComponent,
     onTableOptionChange,
     onModalClose,
-}: TableOptionsModalProps<T, K>) {
+}: TableOptionsModalProps<Name, ColumnName>) {
     const [dragIndex, setDragIndex] = useState<number | null>(null);
     const [dropIndex, setDropIndex] = useState<number | null>(null);
 
@@ -77,7 +77,7 @@ export default function TableOptionsModal<
         dropIndex > dragIndex;
 
     const handleVisibleChange = useCallback(
-        ({ name, value }: CheckInputChanged<T>) => {
+        ({ name, value }: CheckInputChanged<ColumnName>) => {
             const newColumns = columns.map((column) => {
                 if (column.name === name) {
                     return {
@@ -92,7 +92,7 @@ export default function TableOptionsModal<
             onTableOptionChange({
                 tableName,
                 columns: newColumns,
-            } as unknown as SetTableOptionsParams<K>);
+            } as unknown as SetTableOptionsParams<Name>);
         },
         [columns, onTableOptionChange, tableName],
     );
@@ -120,7 +120,7 @@ export default function TableOptionsModal<
                 onTableOptionChange({
                     tableName,
                     columns: newColumns,
-                } as unknown as SetTableOptionsParams<K>);
+                } as unknown as SetTableOptionsParams<Name>);
             }
 
             setDragIndex(null);
