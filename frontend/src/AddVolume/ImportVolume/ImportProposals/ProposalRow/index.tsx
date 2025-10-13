@@ -121,14 +121,14 @@ export default function ProposalRow({
 
                 if (name === 'file') {
                     return (
-                        <TableRowCell title={proposal.fileTitle}>
+                        <TableRowCell key={name} title={proposal.fileTitle}>
                             {proposal.filepath}
                         </TableRowCell>
                     );
                 }
                 if (name === 'cvLink') {
                     return (
-                        <TableRowCell>
+                        <TableRowCell key={name}>
                             <Link to={currentMatch.link}>
                                 {currentMatch.title}
                             </Link>
@@ -137,12 +137,14 @@ export default function ProposalRow({
                 }
                 if (name === 'issueCount') {
                     return (
-                        <TableRowCell>{currentMatch.issueCount}</TableRowCell>
+                        <TableRowCell key={name}>
+                            {currentMatch.issueCount}
+                        </TableRowCell>
                     );
                 }
                 if (name === 'actions') {
                     return (
-                        <TableRowCell>
+                        <TableRowCell key={name}>
                             <IconButton
                                 title={translate('ChangeMatch')}
                                 name={icons.EDIT}

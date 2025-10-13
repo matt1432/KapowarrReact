@@ -44,7 +44,7 @@ export default function FolderRow({
 
                 if (name === 'value') {
                     return (
-                        <TableRowCell className={styles.cell}>
+                        <TableRowCell key={name} className={styles.cell}>
                             <TextInput
                                 name="folder"
                                 value={folder}
@@ -57,7 +57,7 @@ export default function FolderRow({
 
                 if (name === 'actions') {
                     return (
-                        <TableRowCell className={styles.cell}>
+                        <TableRowCell key={name} className={styles.cell}>
                             {onAddPress ? (
                                 <IconButton
                                     title={translate('Add')}

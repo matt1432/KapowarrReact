@@ -96,7 +96,7 @@ function RootFolderRow({
 
                 if (name === 'path') {
                     return (
-                        <TableRowCell>
+                        <TableRowCell key={name}>
                             {isEditing ? (
                                 <TextInput
                                     name="path"
@@ -112,7 +112,7 @@ function RootFolderRow({
 
                 if (name === 'freeSpace') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             {isNaN(Number(freeSpace))
                                 ? '-'
                                 : formatBytes(freeSpace)}
@@ -122,7 +122,7 @@ function RootFolderRow({
 
                 if (name === 'totalSpace') {
                     return (
-                        <TableRowCell className={styles.freeSpace}>
+                        <TableRowCell key={name} className={styles.freeSpace}>
                             {isNaN(Number(totalSpace))
                                 ? '-'
                                 : formatBytes(totalSpace)}
@@ -132,7 +132,7 @@ function RootFolderRow({
 
                 if (name === 'actions') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             <IconButton
                                 title={translate('EditRootFolder')}
                                 name={icons.EDIT}

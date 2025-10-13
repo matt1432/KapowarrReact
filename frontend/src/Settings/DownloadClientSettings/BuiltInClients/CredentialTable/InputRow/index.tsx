@@ -18,8 +18,11 @@ import TextInput from 'Components/Form/TextInput';
 import type { AddCredentialParams } from 'Store/Api/DownloadClients';
 import type { CredentialSource } from 'typings/DownloadClient';
 import type { InputChanged } from 'typings/Inputs';
+import type { CredentialColumnName } from '../columns';
+import type { Column } from 'Components/Table/Column';
 
 interface InputRowProps {
+    columns: Column<CredentialColumnName>[];
     source: CredentialSource;
     showUsername: boolean;
     showEmail: boolean;
@@ -31,11 +34,12 @@ interface InputRowProps {
 // IMPLEMENTATIONS
 
 export default function InputRow({
-    source,
+    columns,
     showUsername,
     showEmail,
     showPassword,
     showApiKey,
+    source,
     onAddPress,
 }: InputRowProps) {
     const [username, setUsername] = useState<string>('');
@@ -91,53 +95,71 @@ export default function InputRow({
 
     return (
         <TableRow>
-            {showUsername ? (
-                <TableRowCell>
-                    <TextInput
-                        name="username"
-                        value={username}
-                        onChange={handleUsernameChange}
-                    />
-                </TableRowCell>
-            ) : null}
+            {columns.map(({ name, isVisible }) => {
+                if (!isVisible) {
+                    return null;
+                }
 
-            {showEmail ? (
-                <TableRowCell>
-                    <TextInput
-                        name="email"
-                        value={email}
-                        onChange={handleEmailChange}
-                    />
-                </TableRowCell>
-            ) : null}
+                if (name === 'username') {
+                    return (
+                        <TableRowCell key={name}>
+                            <TextInput
+                                name="username"
+                                value={username}
+                                onChange={handleUsernameChange}
+                            />
+                        </TableRowCell>
+                    );
+                }
 
-            {showPassword ? (
-                <TableRowCell>
-                    <TextInput
-                        name="password"
-                        value={password}
-                        onChange={handlePasswordChange}
-                    />
-                </TableRowCell>
-            ) : null}
+                if (name === 'email') {
+                    return (
+                        <TableRowCell key={name}>
+                            <TextInput
+                                name="email"
+                                value={email}
+                                onChange={handleEmailChange}
+                            />
+                        </TableRowCell>
+                    );
+                }
 
-            {showApiKey ? (
-                <TableRowCell>
-                    <TextInput
-                        name="apiKey"
-                        value={apiKey}
-                        onChange={handleApiKeyChange}
-                    />
-                </TableRowCell>
-            ) : null}
+                if (name === 'password') {
+                    return (
+                        <TableRowCell key={name}>
+                            <TextInput
+                                name="password"
+                                value={password}
+                                onChange={handlePasswordChange}
+                            />
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell>
-                <IconButton
-                    title={translate('Add')}
-                    name={icons.ADD}
-                    onPress={handleAddPress}
-                />
-            </TableRowCell>
+                if (name === 'apiKey') {
+                    return (
+                        <TableRowCell key={name}>
+                            <TextInput
+                                name="apiKey"
+                                value={apiKey}
+                                onChange={handleApiKeyChange}
+                            />
+                        </TableRowCell>
+                    );
+                }
+
+                if (name === 'actions') {
+                    return (
+                        <TableRowCell key={name}>
+                            <IconButton
+                                title={translate('Add')}
+                                name={icons.ADD}
+                                onPress={handleAddPress}
+                            />
+                        </TableRowCell>
+                    );
+                }
+            })}
         </TableRow>
     );
 }

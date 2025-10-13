@@ -54,17 +54,21 @@ export default function ChangeMatchRow({
 
                 if (name === 'title') {
                     return (
-                        <TableRowCell>
+                        <TableRowCell key={name}>
                             <Link to={match.siteUrl}>{match.title}</Link>
                         </TableRowCell>
                     );
                 }
                 if (name === 'issueCount') {
-                    return <TableRowCell>{match.issueCount}</TableRowCell>;
+                    return (
+                        <TableRowCell key={name}>
+                            {match.issueCount}
+                        </TableRowCell>
+                    );
                 }
                 if (name === 'actions') {
                     return (
-                        <TableRowCell className={styles.actions}>
+                        <TableRowCell key={name} className={styles.actions}>
                             <IconButton
                                 title={translate('Select')}
                                 name={icons.ADD}

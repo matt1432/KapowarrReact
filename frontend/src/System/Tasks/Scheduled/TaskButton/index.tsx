@@ -45,7 +45,7 @@ export default function TaskButton({ taskName }: TaskButtonProps) {
     }, [executeCommand, taskName]);
 
     return (
-        <TableRowCell>
+        <TableRowCell key={taskName}>
             <SpinnerIconButton
                 name={icons.PLAY}
                 title={translate('RunTask', { taskName: taskName })}

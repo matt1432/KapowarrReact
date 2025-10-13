@@ -240,7 +240,7 @@ export default function InteractiveSearchRow({
 
                 if (name === 'match') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             <Icon
                                 name={result.match ? icons.CHECK : icons.CLOSE}
                                 className={styles.matchIcon}
@@ -251,7 +251,7 @@ export default function InteractiveSearchRow({
 
                 if (name === 'issueNumber') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             <TextInput
                                 name="issueNumber"
                                 value={issueNumber}
@@ -263,7 +263,7 @@ export default function InteractiveSearchRow({
 
                 if (name === 'displayTitle') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             <Link to={result.link}>{result.displayTitle}</Link>
                         </TableRowCell>
                     );
@@ -271,7 +271,7 @@ export default function InteractiveSearchRow({
 
                 if (name === 'filesize') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             {formatBytes(result.filesize)}
                         </TableRowCell>
                     );
@@ -279,7 +279,7 @@ export default function InteractiveSearchRow({
 
                 if (name === 'pages') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             {result.pages}
                         </TableRowCell>
                     );
@@ -287,7 +287,7 @@ export default function InteractiveSearchRow({
 
                 if (name === 'releaser') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             <TextInput
                                 name="releaser"
                                 value={releaser}
@@ -299,7 +299,7 @@ export default function InteractiveSearchRow({
 
                 if (name === 'scanType') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             <TextInput
                                 name="scanType"
                                 value={scanType}
@@ -311,7 +311,7 @@ export default function InteractiveSearchRow({
 
                 if (name === 'resolution') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             <TextInput
                                 name="resolution"
                                 value={resolution}
@@ -323,7 +323,7 @@ export default function InteractiveSearchRow({
 
                 if (name === 'dpi') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             <TextInput
                                 name="dpi"
                                 value={dpi}
@@ -335,7 +335,7 @@ export default function InteractiveSearchRow({
 
                 if (name === 'source') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             {result.source}
                         </TableRowCell>
                     );
@@ -343,7 +343,7 @@ export default function InteractiveSearchRow({
 
                 if (name === 'matchRejections') {
                     return (
-                        <TableRowCell className={styles.rejected}>
+                        <TableRowCell key={name} className={styles.rejected}>
                             {result.matchRejections.length ? (
                                 <Popover
                                     anchor={
@@ -375,7 +375,7 @@ export default function InteractiveSearchRow({
 
                 if (name === 'actions') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             <SpinnerIconButton
                                 name={getDownloadIcon(
                                     isGrabbing,

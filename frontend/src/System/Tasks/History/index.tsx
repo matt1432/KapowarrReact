@@ -43,15 +43,32 @@ export default function TaskHistory() {
                 <TableBody>
                     {items.map((item) => (
                         <TableRow>
-                            <TableRowCell className={styles.cell}>
-                                {item.displayTitle}
-                            </TableRowCell>
+                            {columns.map(({ name, isVisible }) => {
+                                if (!isVisible) {
+                                    return null;
+                                }
 
-                            <RelativeDateCell
-                                className={styles.cell}
-                                date={item.runAt * 1000}
-                                includeTime
-                            />
+                                if (name === 'displayTitle') {
+                                    return (
+                                        <TableRowCell
+                                            key={name}
+                                            className={styles.cell}
+                                        >
+                                            {item.displayTitle}
+                                        </TableRowCell>
+                                    );
+                                }
+                                if (name === 'runAt') {
+                                    return (
+                                        <RelativeDateCell
+                                            key={name}
+                                            className={styles.cell}
+                                            date={item.runAt * 1000}
+                                            includeTime
+                                        />
+                                    );
+                                }
+                            })}
                         </TableRow>
                     ))}
                 </TableBody>

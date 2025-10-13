@@ -50,7 +50,10 @@ export default function TaskScheduled() {
 
                                 if (name === 'displayName') {
                                     return (
-                                        <TableRowCell className={styles[name]}>
+                                        <TableRowCell
+                                            key={name}
+                                            className={styles[name]}
+                                        >
                                             {item.displayName}
                                         </TableRowCell>
                                     );
@@ -59,6 +62,7 @@ export default function TaskScheduled() {
                                 if (name === 'interval') {
                                     return (
                                         <TableRowCell
+                                            key={name}
                                             className={styles[name]}
                                         >{`${Math.round(item.interval / 3600)} hours`}</TableRowCell>
                                     );
@@ -67,6 +71,7 @@ export default function TaskScheduled() {
                                 if (name === 'lastRun') {
                                     return (
                                         <RelativeDateCell
+                                            key={name}
                                             className={styles[name]}
                                             date={item.lastRun * 1000}
                                             includeTime
@@ -77,6 +82,7 @@ export default function TaskScheduled() {
                                 if (name === 'nextRun') {
                                     return (
                                         <RelativeDateCell
+                                            key={name}
                                             className={styles[name]}
                                             date={item.nextRun * 1000}
                                             includeTime

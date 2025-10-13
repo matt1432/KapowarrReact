@@ -79,7 +79,7 @@ export default function HistoryRow({
 
                 if (name === 'source') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             {source}
                         </TableRowCell>
                     );
@@ -87,7 +87,7 @@ export default function HistoryRow({
 
                 if (name === 'volumeId') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             {typeof volumeId === 'number' ||
                             typeof issue?.volumeId === 'number' ? (
                                 <VolumeTitleLink
@@ -109,7 +109,7 @@ export default function HistoryRow({
 
                 if (name === 'issueId') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             {issueId}
                         </TableRowCell>
                     );
@@ -118,6 +118,7 @@ export default function HistoryRow({
                 if (name === 'webLink') {
                     return (
                         <TableRowCell
+                            key={name}
                             className={classNames(
                                 styles[name],
                                 isTruncated && styles.truncate,
@@ -132,6 +133,7 @@ export default function HistoryRow({
                 if (name === 'webTitle') {
                     return (
                         <TableRowCell
+                            key={name}
                             className={classNames(
                                 styles[name],
                                 isTruncated && styles.truncate,
@@ -146,6 +148,7 @@ export default function HistoryRow({
                 if (name === 'webSubTitle') {
                     return (
                         <TableRowCell
+                            key={name}
                             className={classNames(
                                 styles[name],
                                 isTruncated && styles.truncate,
@@ -160,6 +163,7 @@ export default function HistoryRow({
                 if (name === 'fileTitle') {
                     return (
                         <TableRowCell
+                            key={name}
                             className={classNames(
                                 styles[name],
                                 isTruncated && styles.truncate,
@@ -174,6 +178,7 @@ export default function HistoryRow({
                 if (name === 'downloadedAt') {
                     return (
                         <RelativeDateCell
+                            key={name}
                             date={downloadedAt * 1000}
                             includeSeconds={true}
                             includeTime={true}
@@ -183,7 +188,7 @@ export default function HistoryRow({
 
                 if (name === 'success') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             {success
                                 ? translate('Completed')
                                 : translate('Failed')}
@@ -193,7 +198,7 @@ export default function HistoryRow({
 
                 if (name === 'actions') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             <IconButton
                                 name={isTruncated ? icons.INFO : icons.SUBTRACT}
                                 title={

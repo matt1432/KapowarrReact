@@ -117,17 +117,15 @@ export default function CredentialTable({
                     return (
                         <CredentialRow
                             key={item.id}
+                            columns={columns}
                             {...item}
-                            showUsername={showUsername}
-                            showEmail={showEmail}
-                            showPassword={showPassword}
-                            showApiKey={showApiKey}
                             onDeletePress={onDeletePress(item.id)}
                         />
                     );
                 })}
 
                 <InputRow
+                    columns={columns}
                     source={source}
                     showUsername={showUsername}
                     showEmail={showEmail}

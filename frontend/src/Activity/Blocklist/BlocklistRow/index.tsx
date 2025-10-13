@@ -91,7 +91,7 @@ export default function BlocklistRow({
 
                 if (name === 'source') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             {source}
                         </TableRowCell>
                     );
@@ -99,7 +99,7 @@ export default function BlocklistRow({
 
                 if (name === 'volumeId') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             {typeof volumeId === 'number' ||
                             typeof issue?.volumeId === 'number' ? (
                                 <VolumeTitleLink
@@ -121,7 +121,7 @@ export default function BlocklistRow({
 
                 if (name === 'issueId') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             {issueId}
                         </TableRowCell>
                     );
@@ -130,6 +130,7 @@ export default function BlocklistRow({
                 if (name === 'downloadLink') {
                     return (
                         <TableRowCell
+                            key={name}
                             className={classNames(
                                 styles[name],
                                 isTruncated && styles.truncate,
@@ -144,6 +145,7 @@ export default function BlocklistRow({
                 if (name === 'webLink') {
                     return (
                         <TableRowCell
+                            key={name}
                             className={classNames(
                                 styles[name],
                                 isTruncated && styles.truncate,
@@ -158,6 +160,7 @@ export default function BlocklistRow({
                 if (name === 'webTitle') {
                     return (
                         <TableRowCell
+                            key={name}
                             className={classNames(
                                 styles[name],
                                 isTruncated && styles.truncate,
@@ -172,6 +175,7 @@ export default function BlocklistRow({
                 if (name === 'webSubTitle') {
                     return (
                         <TableRowCell
+                            key={name}
                             className={classNames(
                                 styles[name],
                                 isTruncated && styles.truncate,
@@ -186,6 +190,7 @@ export default function BlocklistRow({
                 if (name === 'reason') {
                     return (
                         <TableRowCell
+                            key={name}
                             className={classNames(
                                 styles[name],
                                 isTruncated && styles.truncate,
@@ -200,6 +205,7 @@ export default function BlocklistRow({
                 if (name === 'addedAt') {
                     return (
                         <RelativeDateCell
+                            key={name}
                             date={addedAt * 1000}
                             includeSeconds={true}
                             includeTime={true}
@@ -209,7 +215,7 @@ export default function BlocklistRow({
 
                 if (name === 'actions') {
                     return (
-                        <TableRowCell className={styles[name]}>
+                        <TableRowCell key={name} className={styles[name]}>
                             <IconButton
                                 name={isTruncated ? icons.INFO : icons.SUBTRACT}
                                 title={

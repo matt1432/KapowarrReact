@@ -11,58 +11,72 @@ import { icons } from 'Helpers/Props';
 
 // Types
 import type { CredentialData } from 'typings/DownloadClient';
+import type { Column } from 'Components/Table/Column';
+import type { CredentialColumnName } from '../columns';
 
 type CredentialRowProps = CredentialData & {
-    showUsername: boolean;
-    showEmail: boolean;
-    showPassword: boolean;
-    showApiKey: boolean;
+    columns: Column<CredentialColumnName>[];
     onDeletePress: () => void;
 };
 
 // IMPLEMENTATIONS
 
 export default function CredentialRow({
+    columns,
     username,
-    showUsername,
     email,
-    showEmail,
     password,
-    showPassword,
     apiKey,
-    showApiKey,
     onDeletePress,
 }: CredentialRowProps) {
     return (
         <TableRow>
-            {showUsername ? <TableRowCell>{username}</TableRowCell> : null}
+            {columns.map(({ name, isVisible }) => {
+                if (!isVisible) {
+                    return null;
+                }
 
-            {showEmail ? <TableRowCell>{email}</TableRowCell> : null}
+                if (name === 'username') {
+                    return <TableRowCell key={name}>{username}</TableRowCell>;
+                }
 
-            {showPassword ? (
-                <TableRowCell>
-                    {Array.from(password ?? '')
-                        .map(() => '*')
-                        .join('')}
-                </TableRowCell>
-            ) : null}
+                if (name === 'email') {
+                    return <TableRowCell key={name}>{email}</TableRowCell>;
+                }
 
-            {showApiKey ? (
-                <TableRowCell>
-                    {Array.from(apiKey?.slice(0, -5) ?? '')
-                        .map(() => '*')
-                        .join('')}
-                    {apiKey?.slice(-5)}
-                </TableRowCell>
-            ) : null}
+                if (name === 'password') {
+                    return (
+                        <TableRowCell key={name}>
+                            {Array.from(password ?? '')
+                                .map(() => '*')
+                                .join('')}
+                        </TableRowCell>
+                    );
+                }
 
-            <TableRowCell>
-                <IconButton
-                    title={translate('Delete')}
-                    name={icons.REMOVE}
-                    onPress={onDeletePress}
-                />
-            </TableRowCell>
+                if (name === 'apiKey') {
+                    return (
+                        <TableRowCell key={name}>
+                            {Array.from(apiKey?.slice(0, -5) ?? '')
+                                .map(() => '*')
+                                .join('')}
+                            {apiKey?.slice(-5)}
+                        </TableRowCell>
+                    );
+                }
+
+                if (name === 'actions') {
+                    return (
+                        <TableRowCell key={name}>
+                            <IconButton
+                                title={translate('Delete')}
+                                name={icons.REMOVE}
+                                onPress={onDeletePress}
+                            />
+                        </TableRowCell>
+                    );
+                }
+            })}
         </TableRow>
     );
 }
