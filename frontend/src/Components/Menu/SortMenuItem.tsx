@@ -13,17 +13,20 @@ import SelectedMenuItem, {
 
 // Types
 import type { SortDirection } from 'Helpers/Props/sortDirections';
-import type { IndexSort } from 'Volume/Index';
+import type { VolumeIndexColumnName } from 'Volume/Index/columns';
 
 interface SortMenuItemProps
-    extends Omit<SelectedMenuItemProps<IndexSort>, 'isSelected' | 'onPress'> {
-    name?: IndexSort;
-    sortKey?: IndexSort | null;
+    extends Omit<
+        SelectedMenuItemProps<VolumeIndexColumnName>,
+        'isSelected' | 'onPress'
+    > {
+    name?: VolumeIndexColumnName;
+    sortKey?: VolumeIndexColumnName | null;
     sortDirection?: SortDirection | null;
-    secondarySortKey?: IndexSort | null;
+    secondarySortKey?: VolumeIndexColumnName | null;
     secondarySortDirection?: SortDirection | null;
     children: string | React.ReactNode;
-    onPress: (sortKey: IndexSort) => void;
+    onPress: (sortKey: VolumeIndexColumnName) => void;
 }
 
 // IMPLEMENTATIONS

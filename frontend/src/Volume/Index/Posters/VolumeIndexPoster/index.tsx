@@ -34,12 +34,12 @@ import VolumeIndexPosterInfo from '../VolumeIndexPosterInfo';
 import styles from './index.module.css';
 
 // Types
-import type { IndexSort } from '../..';
+import type { VolumeIndexColumnName } from 'Volume/Index/columns';
 
 interface VolumeIndexPosterProps {
     volumeId: number;
-    sortKey: IndexSort | null;
-    secondarySortKey: IndexSort | null;
+    sortKey: VolumeIndexColumnName | null;
+    secondarySortKey: VolumeIndexColumnName | null;
     isSelectMode: boolean;
     posterWidth: number;
     posterHeight: number;

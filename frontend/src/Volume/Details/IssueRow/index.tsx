@@ -18,7 +18,7 @@ import styles from './index.module.css';
 
 // Types
 import type { Column } from 'Components/Table/Column';
-import type { IssueColumnName } from 'Issue/Issue';
+import type { IssueColumnName } from '../IssueTable/columns';
 import type { IssueRowData } from '../IssueTable';
 
 interface IssueRowProps extends IssueRowData {

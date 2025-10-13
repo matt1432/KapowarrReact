@@ -23,7 +23,7 @@ import styles from './index.module.css';
 
 // Types
 import type { Column } from 'Components/Table/Column';
-import type { GeneralFilesColumnName } from '../GeneralFilesModalContent';
+import type { GeneralFilesColumnName } from '../columns';
 
 interface GeneralFileRowProps {
     id: number;

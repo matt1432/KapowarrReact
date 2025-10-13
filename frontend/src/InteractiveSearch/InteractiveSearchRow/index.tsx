@@ -29,14 +29,11 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { InputChanged } from 'typings/Inputs';
-import type {
-    InteractiveSearchPayload,
-    InteractiveSearchSort,
-    SearchResult,
-} from 'typings/Search';
+import type { InteractiveSearchPayload, SearchResult } from 'typings/Search';
+import type { InteractiveSearchColumnName } from 'InteractiveSearch/columns';
 
 interface InteractiveSearchRowProps {
-    columns: Column<InteractiveSearchSort>[];
+    columns: Column<InteractiveSearchColumnName>[];
     result: SearchResult;
     searchPayload: InteractiveSearchPayload;
 }

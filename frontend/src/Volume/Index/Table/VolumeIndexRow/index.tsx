@@ -41,12 +41,13 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { SelectStateInputProps } from 'typings/Inputs';
-import type { VolumeColumnName, VolumePublicInfo } from 'Volume/Volume';
+import type { VolumePublicInfo } from 'Volume/Volume';
+import type { VolumeIndexColumnName } from 'Volume/Index/columns';
 import type { SocketEventHandler } from 'typings/Socket';
 
 interface VolumeIndexRowProps {
     volume: VolumePublicInfo;
-    columns: Column<VolumeColumnName>[];
+    columns: Column<VolumeIndexColumnName>[];
     isSelectMode: boolean;
 }
 

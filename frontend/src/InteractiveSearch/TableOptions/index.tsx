@@ -21,7 +21,9 @@ import type { CheckInputChanged } from 'typings/Inputs';
 import type { SetTableOptionsParams } from 'Store/Slices/TableOptions';
 
 interface InteractiveSearchTableOptionsProps {
-    onTableOptionChange(payload: SetTableOptionsParams<'searchResults'>): void;
+    onTableOptionChange(
+        payload: SetTableOptionsParams<'interactiveSearch'>,
+    ): void;
 }
 
 // IMPLEMENTATIONS
@@ -30,7 +32,7 @@ export default function InteractiveSearchTableOptions({
     onTableOptionChange,
 }: InteractiveSearchTableOptionsProps) {
     const { hideDownloaded, hideUnmonitored } = useRootSelector(
-        (state) => state.tableOptions.searchResults,
+        (state) => state.tableOptions.interactiveSearch,
     );
 
     const onTableOptionChangeWrapper = useCallback(
@@ -39,7 +41,7 @@ export default function InteractiveSearchTableOptions({
             value,
         }: CheckInputChanged<'hideUnmonitored' | 'hideDownloaded'>) => {
             onTableOptionChange({
-                tableName: 'searchResults',
+                tableName: 'interactiveSearch',
                 [name]: value,
             });
         },

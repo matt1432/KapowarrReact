@@ -4,7 +4,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 // Misc
-import { icons, sortDirections } from 'Helpers/Props';
+import { sortDirections } from 'Helpers/Props';
 
 // Types
 import type { EmptyObject } from 'type-fest';
@@ -12,21 +12,60 @@ import type { EmptyObject } from 'type-fest';
 import type { Column } from 'Components/Table/Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 
-// Column Names
-import type { IssueColumnName, IssueSummaryColumnName } from 'Issue/Issue';
-import type { QueueColumnName } from 'Activity/Queue';
-import type { InteractiveSearchSort } from 'typings/Search';
-import type { IndexSort } from 'Volume/Index';
-import type { GeneralFilesColumnName } from 'Volume/GeneralFiles/GeneralFilesModalContent';
-import type { TaskPlanningColumnName } from 'System/Tasks/Scheduled';
-import type { TaskHistoryColumnName } from 'System/Tasks/History';
-import type { RootFolderColumnName } from 'Settings/MediaManagement/RootFolders';
-import type { CredentialColumnName } from 'Settings/DownloadClientSettings/BuiltInClients/CredentialTable';
-import type { HistoryColumnName } from 'History';
-import type { ProposalColumnName } from 'AddVolume/ImportVolume/ImportProposals';
-import type { ChangeMatchColumnName } from 'AddVolume/ImportVolume/ImportProposals/ChangeMatch/ChangeMatchModalContent';
-import type { FolderTableColumnName } from 'AddVolume/ImportVolume/ImportForm/FolderTable';
-import type { BlocklistColumnName } from 'Activity/Blocklist/BlocklistTable';
+// Columns
+import blocklistTable, {
+    type BlocklistColumnName,
+} from 'Activity/Blocklist/columns';
+
+import changeMatch, {
+    type ChangeMatchColumnName,
+} from 'AddVolume/ImportVolume/ImportProposals/ChangeMatch/columns';
+
+import credentialTable, {
+    type CredentialColumnName,
+} from 'Settings/DownloadClientSettings/BuiltInClients/CredentialTable/columns';
+
+import folderTable, {
+    type FolderTableColumnName,
+} from 'AddVolume/ImportVolume/ImportForm/FolderTable/columns';
+
+import generalFiles, {
+    type GeneralFilesColumnName,
+} from 'Volume/GeneralFiles/columns';
+
+import historyTable, { type HistoryColumnName } from 'History/columns';
+
+import importProposals, {
+    type ProposalColumnName,
+} from 'AddVolume/ImportVolume/ImportProposals/columns';
+
+import issueSummary, {
+    type IssueSummaryColumnName,
+} from 'Issue/Summary/columns';
+
+import issueTable, {
+    type IssueColumnName,
+} from 'Volume/Details/IssueTable/columns';
+
+import queueTable, { type QueueColumnName } from 'Activity/Queue/columns';
+
+import rootFolders, {
+    type RootFolderColumnName,
+} from 'Settings/MediaManagement/RootFolders/columns';
+
+import interactiveSearch, {
+    type InteractiveSearchColumnName,
+} from 'InteractiveSearch/columns';
+
+import taskHistory, {
+    type TaskHistoryColumnName,
+} from 'System/Tasks/History/columns';
+
+import taskPlanning, {
+    type TaskPlanningColumnName,
+} from 'System/Tasks/Scheduled/columns';
+
+import volumeIndex, { type VolumeIndexColumnName } from 'Volume/Index/columns';
 
 export interface ColumnNameMap {
     blocklistTable: BlocklistColumnName;
@@ -36,18 +75,18 @@ export interface ColumnNameMap {
     generalFiles: GeneralFilesColumnName;
     historyTable: HistoryColumnName;
     importProposals: ProposalColumnName;
+    interactiveSearch: InteractiveSearchColumnName;
     issueSummary: IssueSummaryColumnName;
     issueTable: IssueColumnName;
     queueTable: QueueColumnName;
     rootFolders: RootFolderColumnName;
-    searchResults: InteractiveSearchSort;
     taskHistory: TaskHistoryColumnName;
     taskPlanning: TaskPlanningColumnName;
-    volumeIndex: IndexSort;
+    volumeIndex: VolumeIndexColumnName;
 }
 
 interface _ExtraPropsMap {
-    searchResults: {
+    interactiveSearch: {
         hideDownloaded: boolean;
         hideUnmonitored: boolean;
     };
@@ -92,11 +131,11 @@ export interface TableOptionsState {
     generalFiles: TableState<'generalFiles'>;
     historyTable: TableState<'historyTable'>;
     importProposals: TableState<'importProposals'>;
+    interactiveSearch: TableState<'interactiveSearch'>;
     issueSummary: TableState<'issueSummary'>;
     issueTable: TableState<'issueTable'>;
     queueTable: TableState<'queueTable'>;
     rootFolders: TableState<'rootFolders'>;
-    searchResults: TableState<'searchResults'>;
     taskHistory: TableState<'taskHistory'>;
     taskPlanning: TableState<'taskPlanning'>;
     volumeIndex: TableState<'volumeIndex'>;
@@ -107,749 +146,21 @@ export interface TableOptionsState {
 const initialState = {
     sliceVersion: 3,
 
-    blocklistTable: {
-        sortKey: null,
-        sortDirection: null,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'source',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'volumeId',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'issueId',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'downloadLink',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'webLink',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'webTitle',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'webSubTitle',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'reason',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'addedAt',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-        ],
-    },
-
-    changeMatch: {
-        sortKey: 'title',
-        sortDirection: sortDirections.ASCENDING,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'title',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'issueCount',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-        ],
-    },
-
-    credentialTable: {
-        sortKey: null,
-        sortDirection: null,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'email',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: false,
-            },
-            {
-                name: 'username',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: false,
-            },
-            {
-                name: 'password',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: false,
-            },
-            {
-                name: 'apiKey',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-        ],
-    },
-
-    generalFiles: {
-        sortKey: null,
-        sortDirection: null,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'path',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'fileType',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'filesize',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-        ],
-    },
-
-    folderTable: {
-        sortKey: null,
-        sortDirection: null,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'value',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-                className: '',
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-                className: '',
-            },
-        ],
-    },
-
-    historyTable: {
-        sortKey: null,
-        sortDirection: null,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'source',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'volumeId',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: false,
-            },
-            {
-                name: 'issueId',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: false,
-            },
-            {
-                name: 'webLink',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'webTitle',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'webSubTitle',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'fileTitle',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'downloadedAt',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'success',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-        ],
-    },
-
-    importProposals: {
-        sortKey: null,
-        sortDirection: null,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'file',
-                isSortable: false,
-                isModifiable: false,
-                isVisible: true,
-            },
-            {
-                name: 'cvLink',
-                isSortable: false,
-                isModifiable: false,
-                isVisible: true,
-            },
-            {
-                name: 'issueCount',
-                isSortable: false,
-                isModifiable: false,
-                isVisible: true,
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isSortable: false,
-                isModifiable: false,
-                isVisible: true,
-            },
-        ],
-    },
-
-    issueSummary: {
-        sortKey: null,
-        sortDirection: null,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'path',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'filesize',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-        ],
-    },
-
-    issueTable: {
-        sortKey: 'issueNumber',
-        sortDirection: sortDirections.DESCENDING,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'monitored',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'issueNumber',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'title',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'path',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: false,
-            },
-            {
-                name: 'relativePath',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: false,
-            },
-            {
-                name: 'size',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: false,
-            },
-            {
-                name: 'releaseGroup',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: false,
-            },
-            {
-                name: 'status',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-        ],
-    },
-
-    queueTable: {
-        sortKey: 'priority',
-        sortDirection: sortDirections.ASCENDING,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'priority',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'status',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'title',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'sourceName',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'size',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'speed',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'timeLeft',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'progress',
-                isModifiable: true,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-        ],
-    },
-
-    rootFolders: {
-        sortKey: null,
-        sortDirection: null,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'path',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'freeSpace',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'totalSpace',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-        ],
-    },
-
-    searchResults: {
-        hideDownloaded: false,
-        hideUnmonitored: false,
-
-        sortKey: 'issueNumber',
-        sortDirection: sortDirections.DESCENDING,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'match',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'issueNumber',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'displayTitle',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'filesize',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'pages',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'releaser',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'scanType',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'resolution',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'dpi',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'source',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'matchRejections',
-                icon: {
-                    name: icons.DANGER,
-                    title: 'Rejections',
-                },
-                isModifiable: false,
-                isSortable: true,
-                fixedSortDirection: sortDirections.ASCENDING,
-                isVisible: true,
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-        ],
-    },
-
-    taskHistory: {
-        sortKey: null,
-        sortDirection: null,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'displayTitle',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'runAt',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-        ],
-    },
-
-    taskPlanning: {
-        sortKey: null,
-        sortDirection: null,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'displayName',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'interval',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'lastRun',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'nextRun',
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-        ],
-    },
-
-    volumeIndex: {
-        sortKey: 'title',
-        sortDirection: sortDirections.ASCENDING,
-
-        secondarySortKey: null,
-        secondarySortDirection: null,
-
-        columns: [
-            {
-                name: 'monitored',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'title',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'year',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'publisher',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'issuesDownloadedMonitored',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: true,
-            },
-            {
-                name: 'issueCountMonitored',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: false,
-            },
-            {
-                name: 'folder',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: false,
-            },
-            {
-                name: 'totalSize',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: false,
-            },
-            {
-                name: 'monitorNewIssues',
-                isModifiable: false,
-                isSortable: true,
-                isVisible: false,
-            },
-            {
-                name: 'actions',
-                hideHeaderLabel: true,
-                isModifiable: false,
-                isSortable: false,
-                isVisible: true,
-            },
-        ],
-    },
+    blocklistTable,
+    changeMatch,
+    credentialTable,
+    folderTable,
+    generalFiles,
+    historyTable,
+    importProposals,
+    interactiveSearch,
+    issueSummary,
+    issueTable,
+    queueTable,
+    rootFolders,
+    taskHistory,
+    taskPlanning,
+    volumeIndex,
 } satisfies TableOptionsState as TableOptionsState;
 
 const TableOptionsSlice = createSlice({

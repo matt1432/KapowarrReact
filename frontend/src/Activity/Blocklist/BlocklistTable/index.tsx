@@ -25,19 +25,6 @@ import TablePager from 'Components/Table/TablePager';
 // Specific Components
 import BlocklistRow from '../BlocklistRow';
 
-// Types
-export type BlocklistColumnName =
-    | 'source'
-    | 'volumeId'
-    | 'issueId'
-    | 'downloadLink'
-    | 'webLink'
-    | 'webTitle'
-    | 'webSubTitle'
-    | 'reason'
-    | 'addedAt'
-    | 'actions';
-
 // IMPLEMENTATIONS
 
 export default function BlocklistTable() {

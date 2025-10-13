@@ -26,11 +26,12 @@ import styles from './index.module.css';
 
 // Types
 import type { Column } from 'Components/Table/Column';
-import type { VolumeColumnName, VolumePublicInfo } from 'Volume/Volume';
+import type { VolumePublicInfo } from 'Volume/Volume';
+import type { VolumeIndexColumnName } from 'Volume/Index/columns';
 
 interface RowItemData {
     items: VolumePublicInfo[];
-    columns: Column<VolumeColumnName>[];
+    columns: Column<VolumeIndexColumnName>[];
     isSelectMode: boolean;
 }
 
@@ -41,7 +42,7 @@ interface VolumeIndexTableProps {
     scrollerRef: RefObject<HTMLElement>;
     isSelectMode: boolean;
     isSmallScreen: boolean;
-    columns: Column<VolumeColumnName>[];
+    columns: Column<VolumeIndexColumnName>[];
 }
 
 // IMPLEMENTATIONS

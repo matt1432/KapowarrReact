@@ -28,7 +28,7 @@ import styles from './index.module.css';
 import type { CheckInputChanged, SelectStateInputProps } from 'typings/Inputs';
 import type { ProposedImport } from 'typings/Search';
 import type { Column } from 'Components/Table/Column';
-import type { ProposalColumnName } from '..';
+import type { ProposalColumnName } from '../columns';
 import type { VolumeMetadata } from 'AddVolume/AddVolume';
 
 interface ProposalRowProps {

@@ -18,13 +18,6 @@ import TableBody from 'Components/Table/TableBody';
 // Specific Components
 import RootFolderRow from './RootFolderRow';
 
-// Types
-export type RootFolderColumnName =
-    | 'path'
-    | 'freeSpace'
-    | 'totalSpace'
-    | 'actions';
-
 // IMPLEMENTATIONS
 
 export default function RootFolders() {

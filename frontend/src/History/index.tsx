@@ -27,18 +27,6 @@ import HistoryRow from './HistoryRow';
 import { setTableOptions } from 'Store/Slices/TableOptions';
 
 // Types
-export type HistoryColumnName =
-    | 'source'
-    | 'volumeId'
-    | 'issueId'
-    | 'webLink'
-    | 'webTitle'
-    | 'webSubTitle'
-    | 'fileTitle'
-    | 'downloadedAt'
-    | 'success'
-    | 'actions';
-
 interface HistoryProps {
     issueId?: number;
     volumeId?: number;

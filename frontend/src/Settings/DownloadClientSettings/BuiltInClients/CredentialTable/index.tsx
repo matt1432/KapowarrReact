@@ -25,13 +25,6 @@ import InputRow from './InputRow';
 // Types
 import type { CredentialSource } from 'typings/DownloadClient';
 
-export type CredentialColumnName =
-    | 'email'
-    | 'username'
-    | 'password'
-    | 'apiKey'
-    | 'actions';
-
 interface CredentialTableProps {
     source: CredentialSource;
     showUsername?: boolean;

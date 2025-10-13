@@ -26,14 +26,6 @@ import TaskButton from './TaskButton';
 // CSS
 import styles from './index.module.css';
 
-// Types
-export type TaskPlanningColumnName =
-    | 'displayName'
-    | 'interval'
-    | 'lastRun'
-    | 'nextRun'
-    | 'actions';
-
 // IMPLEMENTATIONS
 
 export default function TaskScheduled() {

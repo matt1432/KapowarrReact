@@ -24,12 +24,6 @@ import TableBody from 'Components/Table/TableBody';
 import GeneralFileRow from '../GeneralFileRow';
 
 // Types
-export type GeneralFilesColumnName =
-    | 'path'
-    | 'fileType'
-    | 'filesize'
-    | 'actions';
-
 export interface GeneralFilesModalContentProps {
     volumeId: number;
     onModalClose: () => void;

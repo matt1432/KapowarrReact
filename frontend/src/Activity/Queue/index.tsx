@@ -4,8 +4,7 @@
 import { useCallback, useState } from 'react';
 
 // Redux
-import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import { setTableSort } from 'Store/Slices/TableOptions';
+import { useRootSelector } from 'Store/createAppStore';
 import {
     useClearQueueMutation,
     useDeleteQueueItemMutation,
@@ -37,7 +36,6 @@ import QueueRow from './QueueRow';
 
 // Types
 import type { QueueItem } from 'typings/Queue';
-import type { SortDirection } from 'Helpers/Props/sortDirections';
 
 export type QueueColumn = QueueItem & {
     priority: number;
@@ -47,13 +45,10 @@ export type QueueColumn = QueueItem & {
     // Columns
     actions: never;
 };
-export type QueueColumnName = keyof QueueColumn;
 
 // IMPLEMENTATIONS
 
 export default function Queue() {
-    const dispatch = useRootDispatch();
-
     const { columns } = useRootSelector(
         (state) => state.tableOptions.queueTable,
     );
@@ -102,19 +97,6 @@ export default function Queue() {
         setClearQueueModalClosed();
     }, [clearQueuePost, setClearQueueModalClosed]);
 
-    const handleSortPress = useCallback(
-        (sortKey: QueueColumnName, sortDirection?: SortDirection) => {
-            dispatch(
-                setTableSort({
-                    tableName: 'queueTable',
-                    sortKey,
-                    sortDirection,
-                }),
-            );
-        },
-        [dispatch],
-    );
-
     const [moveQueueItem] = useMoveQueueItemMutation();
     const handleMoveQueueItem = useCallback(
         (params: { id: number; index: number }) => {
@@ -162,7 +144,6 @@ export default function Queue() {
                     <SortedTable
                         tableName="queueTable"
                         columns={columns}
-                        onSortPress={handleSortPress}
                         items={items}
                         itemRenderer={(item) => (
                             <QueueRow

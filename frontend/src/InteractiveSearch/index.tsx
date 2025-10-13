@@ -4,8 +4,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
-import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import { setTableSort } from 'Store/Slices/TableOptions';
+import { useRootSelector } from 'Store/createAppStore';
 
 import {
     useLazyManualSearchQuery,
@@ -38,13 +37,8 @@ import InteractiveSearchTableOptions from './TableOptions';
 import styles from './index.module.css';
 
 // Types
-import type {
-    InteractiveSearchPayload,
-    InteractiveSearchSort,
-    SearchResult,
-} from 'typings/Search';
+import type { InteractiveSearchPayload, SearchResult } from 'typings/Search';
 
-import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { AnyError } from 'typings/Api';
 import type { InputChanged } from 'typings/Inputs';
 
@@ -87,10 +81,8 @@ function InternalSearch({
     totalItems,
     searchPayload,
 }: SearchProps) {
-    const dispatch = useRootDispatch();
-
     const { columns } = useRootSelector(
-        (state) => state.tableOptions.searchResults,
+        (state) => state.tableOptions.interactiveSearch,
     );
 
     const lastIssueNumber = useMemo(() => {
@@ -104,19 +96,6 @@ function InternalSearch({
                 .filter((issueNumber) => issueNumber !== null),
         );
     }, [items]);
-
-    const handleSortPress = useCallback(
-        (sortKey: InteractiveSearchSort, sortDirection?: SortDirection) => {
-            dispatch(
-                setTableSort({
-                    tableName: 'searchResults',
-                    sortKey,
-                    sortDirection,
-                }),
-            );
-        },
-        [dispatch],
-    );
 
     return (
         <div>
@@ -143,7 +122,7 @@ function InternalSearch({
 
             {!isFetching && isPopulated ? (
                 <SortedTable
-                    tableName="searchResults"
+                    tableName="interactiveSearch"
                     columns={columns}
                     items={items}
                     itemRenderer={(item) => (
@@ -166,7 +145,6 @@ function InternalSearch({
                         matchRejections: (a, b) =>
                             a.matchRejections.length - b.matchRejections.length,
                     }}
-                    onSortPress={handleSortPress}
                     tableProps={
                         'issues' in searchPayload
                             ? {
@@ -280,7 +258,7 @@ export default function InteractiveSearch({
     }, []);
 
     const { hideDownloaded, hideUnmonitored } = useRootSelector(
-        (state) => state.tableOptions.searchResults,
+        (state) => state.tableOptions.interactiveSearch,
     );
 
     const issues = useMemo(() => {

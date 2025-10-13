@@ -28,7 +28,7 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { BlocklistItem } from 'typings/Queue';
-import type { BlocklistColumnName } from '../BlocklistTable';
+import type { BlocklistColumnName } from '../columns';
 
 type BlocklistRowProps = BlocklistItem & {
     columns: Column<BlocklistColumnName>[];

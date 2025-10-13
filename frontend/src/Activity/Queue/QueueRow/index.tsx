@@ -27,7 +27,8 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { DeleteQueueItemParams } from 'Store/Api/Queue';
-import type { QueueColumn, QueueColumnName } from '..';
+import type { QueueColumn } from '..';
+import type { QueueColumnName } from '../columns';
 
 type QueueRowProps = QueueColumn & {
     columns: Column<QueueColumnName>[];

@@ -51,16 +51,3 @@ export type IssueData = Omit<CamelCasedProperties<RawIssueData>, 'files'> & {
 export type RawIssue = RawIssueData;
 
 export type Issue = IssueData;
-
-export type IssueColumnName =
-    | 'monitored'
-    | 'issueNumber'
-    | 'title'
-    | 'path'
-    | 'relativePath'
-    | 'size'
-    | 'releaseGroup'
-    | 'status'
-    | 'actions';
-
-export type IssueSummaryColumnName = 'path' | 'filesize' | 'actions';

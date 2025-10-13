@@ -38,8 +38,6 @@ import type { ProposedImport } from 'typings/Search';
 import type { VolumeMetadata } from 'AddVolume/AddVolume';
 import type { InputChanged } from 'typings/Inputs';
 
-export type ChangeMatchColumnName = 'title' | 'issueCount' | 'actions';
-
 export type VolumeSearchResult = VolumeMetadata & {
     id: number;
     actions: never;

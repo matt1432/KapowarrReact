@@ -27,7 +27,7 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { DownloadHistoryItem } from 'typings/Queue';
-import type { HistoryColumnName } from 'History';
+import type { HistoryColumnName } from 'History/columns';
 
 type HistoryRowProps = DownloadHistoryItem & {
     columns: Column<HistoryColumnName>[];

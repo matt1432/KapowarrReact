@@ -3,19 +3,6 @@ import type { CamelCasedProperties } from 'type-fest';
 import type { GeneralFileData, Issue, RawIssue } from 'Issue/Issue';
 import type { SpecialVersion } from 'Helpers/Props/specialVersions';
 
-export type VolumeColumnName =
-    | 'monitored'
-    | 'title'
-    | 'volumeNumber'
-    | 'year'
-    | 'publisher'
-    | 'issuesDownloadedMonitored'
-    | 'issueCountMonitored'
-    | 'folder'
-    | 'totalSize'
-    | 'monitorNewIssues'
-    | 'actions';
-
 export type MonitoringScheme = 'all' | 'missing' | 'none' | 'noChange';
 
 export type RawVolume = {

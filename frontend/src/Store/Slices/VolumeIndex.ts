@@ -5,13 +5,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 // Types
 import type { Size } from 'Helpers/Props/sizes';
-import type { SortDirection } from 'Helpers/Props/sortDirections';
-import type { IndexFilter, IndexSort, IndexView } from 'Volume/Index';
-
-export interface SetVolumeSortParams {
-    sortKey: IndexSort;
-    sortDirection?: SortDirection;
-}
+import type { IndexFilter, IndexView } from 'Volume/Index';
 
 // IMPLEMENTATIONS
 

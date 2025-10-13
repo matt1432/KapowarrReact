@@ -31,7 +31,7 @@ import styles from './index.module.css';
 
 // Types
 import type { Column } from 'Components/Table/Column';
-import type { IssueSummaryColumnName } from 'Issue/Issue';
+import type { IssueSummaryColumnName } from '../columns';
 import type {
     QueryActionCreatorResult,
     QueryDefinition,

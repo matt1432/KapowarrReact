@@ -19,8 +19,6 @@ import styles from './index.module.css';
 // Types
 import type { InputChanged } from 'typings/Inputs';
 
-export type FolderTableColumnName = 'value' | 'actions';
-
 interface FolderTableProps<T extends string> {
     name: T;
     values: string[];

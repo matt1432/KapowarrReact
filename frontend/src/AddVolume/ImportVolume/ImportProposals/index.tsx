@@ -29,13 +29,6 @@ import styles from './index.module.css';
 import type { ProposedImport } from 'typings/Search';
 import type { CheckInputChanged, SelectStateInputProps } from 'typings/Inputs';
 
-export type ProposalColumnName =
-    | 'selected'
-    | 'file'
-    | 'cvLink'
-    | 'issueCount'
-    | 'actions';
-
 interface ImportProposalsProps {
     proposals: (ProposedImport & { id: number })[];
     returnToSearchPage: () => void;

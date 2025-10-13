@@ -34,20 +34,6 @@ export interface RawSearchResult {
 
 export type SearchResult = CamelCasedProperties<RawSearchResult>;
 
-export type InteractiveSearchSort =
-    | 'match'
-    | 'issueNumber'
-    | 'displayTitle'
-    | 'filesize'
-    | 'pages'
-    | 'releaser'
-    | 'scanType'
-    | 'resolution'
-    | 'dpi'
-    | 'source'
-    | 'matchRejections'
-    | 'actions';
-
 interface IssueSearchPayload {
     issueId: number;
 }

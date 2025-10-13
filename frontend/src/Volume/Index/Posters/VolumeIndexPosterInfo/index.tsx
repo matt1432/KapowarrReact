@@ -7,11 +7,11 @@ import translate from 'Utilities/String/translate';
 import styles from './index.module.css';
 
 // Types
-import type { IndexSort } from '../..';
+import type { VolumeIndexColumnName } from 'Volume/Index/columns';
 
 interface VolumeIndexPosterInfoProps {
     publisher?: string;
-    sortKey: IndexSort | null;
+    sortKey: VolumeIndexColumnName | null;
     volumeNumber: number;
     year: number;
 }

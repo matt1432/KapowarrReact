@@ -67,11 +67,10 @@ import VolumeIndexTable from './Table/VolumeIndexTable';
 import styles from './index.module.css';
 
 // Types
-import type { VolumeColumnName } from 'Volume/Volume';
+import type { VolumeIndexColumnName } from './columns';
 
 export type IndexView = 'posters' | 'table';
 export type IndexFilter = '' | 'wanted' | 'monitored';
-export type IndexSort = VolumeColumnName;
 
 interface VolumeIndexProps {
     initialScrollTop?: number;
@@ -202,7 +201,7 @@ const VolumeIndex = withScrollPosition(
         );
 
         const onSortSelect = useCallback(
-            (sortKey: IndexSort) => {
+            (sortKey: VolumeIndexColumnName) => {
                 dispatch(setTableSort({ tableName: 'volumeIndex', sortKey }));
             },
             [dispatch],

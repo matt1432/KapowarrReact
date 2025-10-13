@@ -25,7 +25,7 @@ import dimensions from 'Styles/Variables/dimensions';
 import type { RefObject } from 'react';
 import type { CellComponentProps } from 'react-window';
 import type { VolumePublicInfo } from 'Volume/Volume';
-import type { IndexSort } from '..';
+import type { VolumeIndexColumnName } from '../columns';
 import type { Size } from 'Helpers/Props/sizes';
 
 interface CellItemData {
@@ -36,8 +36,8 @@ interface CellItemData {
         posterHeight: number;
     };
     items: VolumePublicInfo[];
-    sortKey: IndexSort | null;
-    secondarySortKey: IndexSort | null;
+    sortKey: VolumeIndexColumnName | null;
+    secondarySortKey: VolumeIndexColumnName | null;
     isSelectMode: boolean;
 }
 

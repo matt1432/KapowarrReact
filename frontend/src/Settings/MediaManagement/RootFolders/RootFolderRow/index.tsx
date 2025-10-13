@@ -28,7 +28,7 @@ import styles from './index.module.css';
 // Types
 import type { InputChanged } from 'typings/Inputs';
 import type { Column } from 'Components/Table/Column';
-import type { RootFolderColumnName } from '..';
+import type { RootFolderColumnName } from '../columns';
 
 interface RootFolderRowProps {
     id: number;

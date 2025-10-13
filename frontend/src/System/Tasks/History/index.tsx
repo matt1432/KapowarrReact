@@ -26,8 +26,6 @@ import styles from './index.module.css';
 // Types
 import type { TaskHistory } from 'typings/Task';
 
-export type TaskHistoryColumnName = 'displayTitle' | 'runAt';
-
 // IMPLEMENTATIONS
 
 export default function TaskHistory() {

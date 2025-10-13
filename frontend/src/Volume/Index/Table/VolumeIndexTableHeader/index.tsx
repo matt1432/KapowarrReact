@@ -9,6 +9,7 @@ import {
     setVolumeTableOption,
     type VolumeIndexState,
 } from 'Store/Slices/VolumeIndex';
+
 import {
     setTableSort,
     type SetTableOptionsParams,
@@ -41,14 +42,13 @@ import styles from './index.module.css';
 import type { Column } from 'Components/Table/Column';
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 import type { CheckInputChanged } from 'typings/Inputs';
-import type { IndexSort } from '../..';
-import type { VolumeColumnName } from 'Volume/Volume';
+import type { VolumeIndexColumnName } from 'Volume/Index/columns';
 
 interface VolumeIndexTableHeaderProps {
-    columns: Column<VolumeColumnName>[];
-    sortKey?: IndexSort | null;
+    columns: Column<VolumeIndexColumnName>[];
+    sortKey?: VolumeIndexColumnName | null;
     sortDirection?: SortDirection | null;
-    secondarySortKey?: IndexSort | null;
+    secondarySortKey?: VolumeIndexColumnName | null;
     secondarySortDirection?: SortDirection | null;
     isSelectMode: boolean;
 }
@@ -71,7 +71,7 @@ export default function VolumeIndexTableHeader({
             dispatch(
                 setTableSort({
                     tableName: 'volumeIndex',
-                    sortKey: newSortKey as IndexSort,
+                    sortKey: newSortKey as VolumeIndexColumnName,
                 }),
             );
         },

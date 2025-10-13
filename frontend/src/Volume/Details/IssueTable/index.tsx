@@ -4,8 +4,7 @@
 import { useCallback, useRef, useState } from 'react';
 
 // Redux
-import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import { setTableSort } from 'Store/Slices/TableOptions';
+import { useRootSelector } from 'Store/createAppStore';
 
 import { useUpdateIssueMutation } from 'Store/Api/Issues';
 import { useSearchVolumeQuery } from 'Store/Api/Volumes';
@@ -29,8 +28,7 @@ import IssueRow from '../IssueRow';
 import styles from './index.module.css';
 
 // Types
-import type { SortDirection } from 'Helpers/Props/sortDirections';
-import type { IssueColumnName, IssueData, IssueFileData } from 'Issue/Issue';
+import type { IssueData, IssueFileData } from 'Issue/Issue';
 import type { SocketEventHandler } from 'typings/Socket';
 
 export interface IssueRowData extends IssueData {
@@ -94,8 +92,6 @@ function useIssuesSelector(volumeId: number) {
 }
 
 export default function IssueTable({ volumeId }: IssueTableProps) {
-    const dispatch = useRootDispatch();
-
     const { columns } = useRootSelector(
         (state) => state.tableOptions.issueTable,
     );
@@ -166,25 +162,11 @@ export default function IssueTable({ volumeId }: IssueTableProps) {
         [issues, isToggling, updateIssue],
     );
 
-    const handleSortPress = useCallback(
-        (sortKey: IssueColumnName, sortDirection?: SortDirection) => {
-            dispatch(
-                setTableSort({
-                    tableName: 'issueTable',
-                    sortKey: sortKey,
-                    sortDirection,
-                }),
-            );
-        },
-        [dispatch],
-    );
-
     return (
         <div className={styles.issues}>
             <SortedTable
                 tableName="issueTable"
                 columns={columns}
-                onSortPress={handleSortPress}
                 items={issues}
                 itemRenderer={(issue) => (
                     <IssueRow

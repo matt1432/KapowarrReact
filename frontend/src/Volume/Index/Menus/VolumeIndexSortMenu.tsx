@@ -11,15 +11,15 @@ import SortMenuItem from 'Components/Menu/SortMenuItem';
 
 // Types
 import type { SortDirection } from 'Helpers/Props/sortDirections';
-import type { IndexSort } from '..';
+import type { VolumeIndexColumnName } from '../columns';
 
 interface VolumeIndexSortMenuProps {
-    sortKey?: IndexSort | null;
+    sortKey?: VolumeIndexColumnName | null;
     sortDirection?: SortDirection | null;
-    secondarySortKey?: IndexSort | null;
+    secondarySortKey?: VolumeIndexColumnName | null;
     secondarySortDirection?: SortDirection | null;
     isDisabled: boolean;
-    onSortSelect(sortKey: IndexSort): void;
+    onSortSelect(sortKey: VolumeIndexColumnName): void;
 }
 
 // IMPLEMENTATIONS
