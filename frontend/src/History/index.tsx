@@ -107,8 +107,13 @@ export default function History({
 
     const [tableRef, { width }] = useMeasure<HTMLDivElement>();
     const columnWidth = useMemo(
-        () => (width - 2 * 75 - 180 - 30 - 85 - 95) / 4,
-        [width],
+        () =>
+            (width -
+                columns
+                    .filter((c) => c.isVisible && typeof c.width === 'number')
+                    .reduce((acc, col) => (acc += col.width!), 0)) /
+            4,
+        [columns, width],
     );
 
     const [page, setPage] = useState(1);

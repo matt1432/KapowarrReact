@@ -25,18 +25,21 @@ export default {
             isModifiable: false,
             isSortable: false,
             isVisible: true,
+            width: 95,
         },
         {
             name: 'volumeId',
             isModifiable: false,
             isSortable: false,
             isVisible: true,
+            width: 75,
         },
         {
             name: 'issueId',
             isModifiable: false,
             isSortable: false,
             isVisible: true,
+            width: 75,
         },
         {
             name: 'downloadLink',
@@ -73,6 +76,7 @@ export default {
             isModifiable: false,
             isSortable: false,
             isVisible: true,
+            width: 180, // RelativeDateCell
         },
         {
             name: 'actions',
@@ -80,6 +84,7 @@ export default {
             isModifiable: false,
             isSortable: false,
             isVisible: true,
+            width: 75,
         },
     ],
 } satisfies TableState<'blocklistTable'>;

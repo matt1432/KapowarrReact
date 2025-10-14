@@ -72,14 +72,25 @@ export default function HistoryRow({
 
     return (
         <TableRow>
-            {columns.map(({ isVisible, name }) => {
+            {columns.map(({ isVisible, name, width }) => {
                 if (!isVisible) {
                     return null;
                 }
 
+                const style = width
+                    ? {
+                          width,
+                          minWidth: width,
+                      }
+                    : undefined;
+
                 if (name === 'source') {
                     return (
-                        <TableRowCell key={name} className={styles[name]}>
+                        <TableRowCell
+                            key={name}
+                            className={styles[name]}
+                            style={style}
+                        >
                             {source}
                         </TableRowCell>
                     );
@@ -87,7 +98,11 @@ export default function HistoryRow({
 
                 if (name === 'volumeId') {
                     return (
-                        <TableRowCell key={name} className={styles[name]}>
+                        <TableRowCell
+                            key={name}
+                            className={styles[name]}
+                            style={style}
+                        >
                             {typeof volumeId === 'number' ||
                             typeof issue?.volumeId === 'number' ? (
                                 <VolumeTitleLink
@@ -109,7 +124,11 @@ export default function HistoryRow({
 
                 if (name === 'issueId') {
                     return (
-                        <TableRowCell key={name} className={styles[name]}>
+                        <TableRowCell
+                            key={name}
+                            className={styles[name]}
+                            style={style}
+                        >
                             {issueId}
                         </TableRowCell>
                     );
@@ -188,7 +207,11 @@ export default function HistoryRow({
 
                 if (name === 'success') {
                     return (
-                        <TableRowCell key={name} className={styles[name]}>
+                        <TableRowCell
+                            key={name}
+                            className={styles[name]}
+                            style={style}
+                        >
                             {success
                                 ? translate('Completed')
                                 : translate('Failed')}
@@ -198,7 +221,11 @@ export default function HistoryRow({
 
                 if (name === 'actions') {
                     return (
-                        <TableRowCell key={name} className={styles[name]}>
+                        <TableRowCell
+                            key={name}
+                            className={styles[name]}
+                            style={style}
+                        >
                             <IconButton
                                 name={isTruncated ? icons.INFO : icons.SUBTRACT}
                                 title={

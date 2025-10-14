@@ -17,4 +17,5 @@ export interface Column<T extends string> {
     isVisible: boolean;
     isSortable: boolean;
     fixedSortDirection?: SortDirection;
+    width?: number;
 }

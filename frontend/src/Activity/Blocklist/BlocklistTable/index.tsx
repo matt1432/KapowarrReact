@@ -70,7 +70,15 @@ export default function BlocklistTable() {
     );
 
     const [tableRef, { width }] = useMeasure<HTMLDivElement>();
-    const columnWidth = useMemo(() => (width - 3 * 75 - 180 - 95) / 5, [width]);
+    const columnWidth = useMemo(
+        () =>
+            (width -
+                columns
+                    .filter((c) => c.isVisible && typeof c.width === 'number')
+                    .reduce((acc, col) => (acc += col.width!), 0)) /
+            5,
+        [columns, width],
+    );
 
     const [page, setPage] = useState(1);
 

@@ -25,18 +25,21 @@ export default {
             isModifiable: false,
             isSortable: false,
             isVisible: true,
+            width: 95,
         },
         {
             name: 'volumeId',
             isModifiable: false,
             isSortable: false,
             isVisible: false,
+            width: 75,
         },
         {
             name: 'issueId',
             isModifiable: false,
             isSortable: false,
             isVisible: false,
+            width: 75,
         },
         {
             name: 'webLink',
@@ -67,12 +70,14 @@ export default {
             isModifiable: false,
             isSortable: false,
             isVisible: true,
+            width: 180, // RelativeDateCell
         },
         {
             name: 'success',
             isModifiable: false,
             isSortable: false,
             isVisible: true,
+            width: 85,
         },
         {
             name: 'actions',
@@ -80,6 +85,7 @@ export default {
             isModifiable: false,
             isSortable: false,
             isVisible: true,
+            width: 30,
         },
     ],
 } satisfies TableState<'historyTable'>;

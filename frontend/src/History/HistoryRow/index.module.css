@@ -1,19 +1,13 @@
 .source {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
-    width: 95px;
-    min-width: 95px;
 }
 
 .volumeId {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
-    width: 75px;
-    min-width: 75px;
 }
 
 .issueId {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
-    width: 75px;
-    min-width: 75px;
 }
 
 .webLink {
@@ -46,12 +40,8 @@
 
 .success {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
-    width: 85px;
-    min-width: 85px;
 }
 
 .actions {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
-    width: 30px;
-    min-width: 30px;
 }

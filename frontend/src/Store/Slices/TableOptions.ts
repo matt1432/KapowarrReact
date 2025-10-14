@@ -144,7 +144,7 @@ export interface TableOptionsState {
 // IMPLEMENTATIONS
 
 const initialState = {
-    sliceVersion: 3,
+    sliceVersion: 4,
 
     blocklistTable,
     changeMatch,
