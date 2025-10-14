@@ -10,8 +10,6 @@ export default function BreakingChangeHandler() {
 
     const state = useRootSelector((state) => state);
 
-    const { isHandlingBreakingChange } = useRootSelector((state) => state.app);
-
     useEffect(() => {
         let hadChanges = false;
 
@@ -36,12 +34,10 @@ export default function BreakingChangeHandler() {
             dispatch(setIsHandlingBreakingChange(true));
         }
 
-        if (isHandlingBreakingChange) {
+        if (state.app.isHandlingBreakingChange) {
             window.location.reload();
         }
+    }, [dispatch, state]);
 
-        // Run this only once at start and after isHandlingBreakingChange changes
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isHandlingBreakingChange]);
     return null;
 }
