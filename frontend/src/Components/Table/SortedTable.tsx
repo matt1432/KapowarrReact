@@ -5,7 +5,7 @@ import { useCallback, useMemo } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
-import { setTableOptions } from 'Store/Slices/TableOptions';
+import { setTableOptions, setTableSort } from 'Store/Slices/TableOptions';
 
 // Hooks
 import useSort from 'Helpers/Hooks/useSort';
@@ -81,6 +81,14 @@ export default function SortedTable<
         secondarySortDirection,
     });
 
+    const handleSortPress = useCallback(
+        (name: ColumnName, sortDirection?: SortDirection) => {
+            onSortPress?.(name, sortDirection);
+            dispatch(setTableSort({ tableName, sortKey: name, sortDirection }));
+        },
+        [dispatch, onSortPress, tableName],
+    );
+
     const hasOptions = useMemo(
         () =>
             columns.filter((col) => col.isModifiable).length !== 0 ||
@@ -103,7 +111,7 @@ export default function SortedTable<
             sortDirection={sortDirection}
             secondarySortKey={secondarySortKey as ColumnName | null}
             secondarySortDirection={secondarySortDirection}
-            onSortPress={onSortPress}
+            onSortPress={handleSortPress}
             onTableOptionChange={
                 hasOptions ? handleTableOptionChange : undefined
             }
