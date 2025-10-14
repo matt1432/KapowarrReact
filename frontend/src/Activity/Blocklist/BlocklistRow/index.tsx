@@ -29,6 +29,7 @@ import styles from './index.module.css';
 import type { Column } from 'Components/Table/Column';
 import type { BlocklistItem } from 'typings/Queue';
 import type { BlocklistColumnName } from '../columns';
+import Link from 'Components/Link/Link';
 
 type BlocklistRowProps = BlocklistItem & {
     columns: Column<BlocklistColumnName>[];
@@ -137,7 +138,7 @@ export default function BlocklistRow({
                             )}
                             style={{ maxWidth: columnWidth }}
                         >
-                            {downloadLink}
+                            <Link to={downloadLink ?? ''}>{downloadLink}</Link>
                         </TableRowCell>
                     );
                 }
@@ -152,7 +153,7 @@ export default function BlocklistRow({
                             )}
                             style={{ maxWidth: columnWidth }}
                         >
-                            {webLink}
+                            <Link to={webLink ?? ''}>{webLink}</Link>
                         </TableRowCell>
                     );
                 }
