@@ -51,11 +51,11 @@ def list_files(folder: str, ext: Iterable[str] = []) -> list[str]:
         folder (str): The base folder to search through.
 
         ext (Iterable[str], optional): File extensions to only include.
-            Dot-prefix not necessary. Let empty to allow all extensions.
+            Dot-prefix optional. Keep empty to allow all extensions.
             Defaults to [].
 
     Returns:
-        List[str]: The paths of the files in the folder.
+        List[str]: The absolute paths of the files in the folder.
     """
     files: list[str] = []
 
@@ -64,8 +64,9 @@ def list_files(folder: str, ext: Iterable[str] = []) -> list[str]:
 
         Args:
             folder (str): The base folder to search through.
-            ext (Set[str], optional): A set of lowercase, dot-prefixed,
-            extensions to filter for or empty for no filter. Defaults to set().
+            ext (Set[str], optional): A set of lowercase dot-prefixed
+                extensions to filter for, or empty for no filter.
+                Defaults to set().
         """
         for f in scandir(folder):
             if f.is_dir():
@@ -87,15 +88,15 @@ def get_archive_mimetype(filepath: str) -> str | None:
     """Find the archive type of a file based on its actual mimetype (via magic
     bytes) and return accompanying extension if found.
 
-    This function is not very fast because it has to read the first few bytes
-    of the file. So only use when really necessary.
+    Note: This function is not very fast because it has to read the first few
+    bytes of the file from disc. So only use when really necessary.
 
     Args:
         filepath (str): The (archive) file to check for.
 
     Returns:
-        Union[str, None]: The proper lowercase file extension without dot-prefix,
-            or None if it wasn't found or the file isn't an archive.
+        Union[str, None]: The proper lowercase file extension without dot-prefix.
+            If the file isn't an archive or isn't recognised as one, return None.
     """
     max_len = max(len(sig) for sig in FileConstants.ARCHIVE_MAGIC_BYTES)
 
@@ -115,7 +116,7 @@ def folder_is_inside_folder(base_folder: str, folder: str) -> bool:
     ```
     >>> folder_is_inside_folder('/foo', '/foo/bar')
     True
-    >>> folder_is_inside_folder('/foo', '/foo2/bar')
+    >>> folder_is_inside_folder('/foo', '/quux/bar')
     False
     >>> folder_is_inside_folder('/foo/', '/foo')
     True
@@ -123,10 +124,11 @@ def folder_is_inside_folder(base_folder: str, folder: str) -> bool:
 
     Args:
         base_folder (str): The base folder to check against.
-        folder (str): The folder that should be inside `base_folder`.
+        folder (str): The folder that should be inside `base_folder` or equal
+            to it.
 
     Returns:
-        bool: Whether `folder` is in `base_folder`.
+        bool: Whether `folder` is in `base_folder` or equal to it.
     """
     return (force_suffix(abspath(folder))).startswith(
         force_suffix(abspath(base_folder))
@@ -161,8 +163,8 @@ def set_detected_extension(filepath: str) -> str:
     is not an archive or the archive is not recognised, the original
     filepath is returned.
 
-    This function is not very fast because it has to read the first few bytes
-    of the file. So only use when really necessary.
+    Note: This function is not very fast because it has to read the first few
+    bytes of the file from disc. So only use when really necessary.
 
     Args:
         filepath (str): The filepath to check and possibly change the extension of.
@@ -182,8 +184,8 @@ def set_detected_extension(filepath: str) -> str:
         return filepath
 
     if current_extension in FileConstants.CB_TO_ARCHIVE_EXTENSIONS:
-        # Current file uses cb* extension, so find cb* version of proper
-        # extension
+        # Current file uses cb* extension instead of normal extension
+        # (e.g. cbz instead of zip), so find cb* version of proper extension
         for (
             cb_ext,
             normal_ext,
@@ -192,9 +194,45 @@ def set_detected_extension(filepath: str) -> str:
                 ext = cb_ext
                 break
         else:
+            # Not an archive
             return filepath
 
     return file_parts[0] + "." + ext
+
+
+def change_basefolder(
+    files: Iterable[str], current_base_folder: str, desired_base_folder: str
+) -> dict[str, str]:
+    """
+    Propose new filenames with a different base folder for a list of files.
+    It's only a proposition, so nothing is actually renamed.
+
+    ```
+    >>> change_basefolder(
+        ['/foo/bar/baz.cbr', '/foo/bar/quux/tac.cbr'],
+        '/foo/bar',
+        '/new'
+    )
+    {
+        '/foo/bar/baz.cbr': '/new/baz.cbr',
+        '/foo/bar/quux/tac.cbr': '/new/quux/tac.cbr'
+    }
+    ```
+
+    Args:
+        files (Iterable[str]): Files to change the base folder for.
+        current_base_folder (str): Current base folder, to replace.
+        desired_base_folder (str): Desired base folder, to replace with.
+
+    Returns:
+        Dict[str, str]: Key is old filename, value is new filename.
+    """
+    file_changes = {
+        f: abspath(join(desired_base_folder, relpath(f, current_base_folder)))
+        for f in files
+    }
+
+    return file_changes
 
 
 def clean_filepath_simple(filepath: str) -> str:
@@ -217,9 +255,10 @@ def clean_filepath_simple(filepath: str) -> str:
 
 
 def clean_filepath_smartly(filepath: str) -> str:
-    """Clean a filepath by replacing illegal characters smartly. Either remove
-    the character, replace it with a dash or dash with spaces around it. This
-    makes it safe to use in a filesystem.
+    """Clean a filepath by replacing illegal characters smartly. Remove the
+    character, replace it with a dash or replace it with a dash with spaces
+    around it, all based on the context. This makes it safe to use in a
+    filesystem.
 
     ```
     >>> clean_filepath_smartly('/comics/Batman: Joker>Riddler... ')
@@ -239,8 +278,9 @@ def clean_filepath_smartly(filepath: str) -> str:
 
 
 def clean_filestring_simple(filestring: str) -> str:
-    """Clean a part of a filename (so no path seperators) by removing illegal
-    characters. This makes it safe to use in a filesystem.
+    """Clean (a part of) a filename by removing illegal characters. This makes
+    it safe to use in a filesystem. This does the same as
+    `clean_filepath_simple()`, but also replaces `/` and `\\`.
 
     ```
     >>> clean_filestring_simple('Batman/Bruce: Which one is it?')
@@ -257,9 +297,11 @@ def clean_filestring_simple(filestring: str) -> str:
 
 
 def clean_filestring_smartly(filestring: str) -> str:
-    """Clean a part of a filename (so no path seperators) by replacing illegal
-    characters smartly. Either remove the character, replace it with a dash or
-    dash with spaces around it. This makes it safe to use in a filesystem.
+    """Clean (a part of) a filename by replacing illegal characters smartly.
+    Remove the character, replace it with a dash or replace it with a dash with
+    spaces around it, all based on the context. This does the same as
+    `clean_filepath_smartly()`, but also replaces `/` and `\\`. This makes it
+    safe to use in a filesystem.
 
     ```
     >>> clean_filestring_smartly('Batman/Bruce: Which one is it?')
@@ -302,41 +344,6 @@ def common_folder(files: Sequence[str]) -> str:
     return commonpath(files)
 
 
-def change_basefolder(
-    files: Iterable[str], current_base_folder: str, desired_base_folder: str
-) -> dict[str, str]:
-    """
-    Propose new filenames with a different base folder for a list of files.
-    It's only a proposition, so nothing is actually renamed.
-
-    ```
-    >>> change_basefolder(
-        ['/foo/bar/baz.cbr', '/foo/bar/quux/tac.cbr'],
-        '/foo/bar',
-        '/new'
-    )
-    {
-        '/foo/bar/baz.cbr': '/new/baz.cbr',
-        '/foo/bar/quux/tac.cbr': '/new/quux/tac.cbr'
-    }
-    ```
-
-    Args:
-        files (Iterable[str]): Iterable of files to change base folder for.
-        current_base_folder (str): Current base folder, to replace.
-        desired_base_folder (str): Desired base folder, to replace with.
-
-    Returns:
-        Dict[str, str]: Key is old filename, value is new filename.
-    """
-    file_changes = {
-        f: abspath(join(desired_base_folder, relpath(f, current_base_folder)))
-        for f in files
-    }
-
-    return file_changes
-
-
 def generate_archive_folder(volume_folder: str, archive_file: str) -> str:
     """Generate a folder in which the given archive file can be extracted. The
     folder is not created.
@@ -366,8 +373,7 @@ def generate_archive_folder(volume_folder: str, archive_file: str) -> str:
 
 # region Creation
 def create_folder(folder: str) -> None:
-    """Create a folder. Also creates any parent folders if they don't exist
-    already. Allows folder to already exist.
+    """Create a folder recursively, if any of the folders don't exist already.
 
     Args:
         folder (str): The path to the folder to create.
@@ -416,8 +422,9 @@ def __copy2(src, dst, *, follow_symlinks=True):
 
 
 def rename_file(before: str, after: str) -> None:
-    """Rename a file, taking care of new folder locations and the possible
-    complications with files on OS'es. Also logs the rename.
+    """Rename a file/folder, but also taking care of creating the new location,
+    handling the possible complications with files on OSes and filesystems,
+    moving a folder into a sub-folder of itself and logging the rename.
 
     Args:
         before (str): The current filepath of the file.
@@ -443,8 +450,8 @@ def copy_directory(source: str, target: str) -> None:
     """Copy a directory.
 
     Args:
-        source (str): The path to the source directory.
-        target (str): The path to where the directory should be copied.
+        source (str): The current folderpath of the source directory.
+        target (str): The desired folderpath to where the directory should be copied.
     """
     copytree(source, target, copy_function=__copy2)
     return
@@ -453,7 +460,8 @@ def copy_directory(source: str, target: str) -> None:
 # region Deletion
 def delete_file_folder(path: str) -> None:
     """Delete a file or folder. In the case of a folder, it is deleted
-    recursively. Does nothing if it doesn't exist.
+    recursively. Does nothing if it doesn't exist. I.E.: delete whatever it is,
+    if it exists.
 
     Args:
         path (str): The path to the file or folder.
@@ -516,7 +524,7 @@ def delete_empty_parent_folders(top_folder: str, root_folder: str) -> None:
                 break
 
             if listdir(parent_folder) not in ([], [child_folder]):
-                # Folder has content and it's not only the empty child
+                # Folder has content and that content isn't just the empty child
                 break
 
         child_folder = basename(parent_folder)
@@ -534,33 +542,37 @@ def delete_empty_child_folders(
     base_folder: str,
     skip_hidden_folders: bool = False,
 ) -> None:
-    """Delete child folders that don't (indirectly) contain any files. Take
-    notice of the difference between this function and
-    `delete_empty_parent_folders()`.
+    """Delete child folders that don't (recursively) contain any files. Take
+        notice of the difference between this function and
+        `delete_empty_parent_folders()`.
 
-    For example, assume the following folder and file structure:
+        For example, assume the following folder and file structure:
 
-    ```
-    /ant/bear/cat/dog/
-    /ant/bear/cat/deer/
-    /ant/bee/cow/
-    /ant/bee/camel.txt
-    /ant/bat.txt
-    ```
+        ```
+        /ant/bear/cat/dog/
+        /ant/bear/cat/deer/
+        /ant/bee/cow/
+        /ant/bee/camel.txt
+        /ant/bat.txt
+        ```
 
-    Then:
+        Then:
 
-    ```
-    >>> delete_empty_child_folders(base_folder="/ant")
-    # Deletes "/ant/bear" and "/ant/bee/cow"
-    ```
+        ```
+        >>> delete_empty_child_folders(base_folder="/ant")
+        # Deletes "/ant/bear" and "/ant/bee/cow"
+        ```
 
-    Args:
-        base_folder (str): The base folder to remove children of.
+        Args:
+    <<<<<<< HEAD:src/backend/base/files.py
+            base_folder (str): The base folder to remove children of.
 
-        skip_hidden_folders (bool, optional): Whether to skip hidden folders
-        (folders starting with `.`).
-            Defaults to False.
+    =======
+            base_folder (str): The base folder to remove empty children of.
+    >>>>>>> 87141ed0 (Improved docstrings in files.py):backend/base/files.py
+            skip_hidden_folders (bool, optional): Whether to skip hidden folders
+            (folders starting with `.`).
+                Defaults to False.
     """
     LOGGER.debug(f"Deleting empty child folders from {base_folder}")
 

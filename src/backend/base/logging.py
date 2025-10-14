@@ -101,7 +101,7 @@ def setup_logging(
     log_folder: str | None,
     log_file: str | None,
     log_level: int | None = None,
-    do_rollover: bool = True
+    do_rollover: bool = True,
 ) -> None:
     """Setup the basic config of the logging module.
 

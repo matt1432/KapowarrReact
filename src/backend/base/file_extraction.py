@@ -29,7 +29,7 @@ alphabet = {
 
 volume_regex_snippet = r"\b(?:(?:v(?:ol|olume))(?:\.\s|[\.\-\s])?|v)(\d+(?:(?:\-|\s\-\s|\.\-\.)\d+)?|(?<!v)I{1,3})"
 year_regex_snippet = r"(?:(\d{4})(?:-\d{2}){0,2}|(\d{4})[\s\.]?[\-\s](?:[\s\.]?\d{4})?|(?:\d{2}-){1,2}(\d{4})|(\d{4})[\s\.\-_]Edition|(\d{4})\-\d{4}\s{3}\d{4})"
-issue_regex_snippet = r'(?!\d+(?:p|th|rd|st|\s?(?:gb|mb|kb)))(?<!\')(?<!cv[\s\-_])(?:\d+(?:\.?[a-z0-9]+|[\s\-\._]?[½¼])?|[½¼∞])'
+issue_regex_snippet = r"(?!\d+(?:p|th|rd|st|\s?(?:gb|mb|kb)))(?<!\')(?<!cv[\s\-_])(?:\d+(?:\.?[a-z0-9]+|[\s\-\._]?[½¼])?|[½¼∞])"
 
 # Cleaning the filename
 strip_filename_regex = compile(r"\(.*?\)|\[.*?\]|\{.*?\}", IGNORECASE)
@@ -466,22 +466,12 @@ def extract_filename_data(
 
         if year is None:
             # Register first year we find following preference-order
-            year = next(
-                y
-                for y in year_result[0].groups()
-                if y
-            )
+            year = next(y for y in year_result[0].groups() if y)
         # Register the positions of any years we find in the complete string
         if location == filename:
-            all_year_pos = [
-                (r.start(0), r.end(0))
-                for r in year_result
-            ]
+            all_year_pos = [(r.start(0), r.end(0)) for r in year_result]
         if location == foldername:
-            all_year_folderpos = [
-                (r.start(0), r.end(0))
-                for r in year_result
-            ]
+            all_year_folderpos = [(r.start(0), r.end(0)) for r in year_result]
 
     # Find volume number
     volume_result = None
