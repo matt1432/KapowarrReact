@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "KapowarrReact"
-version = "2.0.0a4"
+version = "0.0.1"
 description = "Kapowarr React is a software to build and manage a comic book library, fitting in the *arr suite of software."
 authors = [
   {name = "Cas van Tijn"}
