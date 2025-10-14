@@ -5,6 +5,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
+
+import { setTableOptions } from 'Store/Slices/TableOptions';
+
 import { useGetDownloadHistoryMutation } from 'Store/Api/Queue';
 
 // Misc
@@ -24,7 +27,6 @@ import TablePager from 'Components/Table/TablePager';
 
 // Specific Components
 import HistoryRow from './HistoryRow';
-import { setTableOptions } from 'Store/Slices/TableOptions';
 
 // Types
 interface HistoryProps {
