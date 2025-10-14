@@ -59,7 +59,10 @@ const ACTION_MAP = {
 
 export default function SocketListener() {
     const dispatch = useRootDispatch();
-    const { callbacks } = useRootSelector((state) => state.socketEvents);
+
+    const { callbacks, wasConnected } = useRootSelector(
+        (state) => state.socketEvents,
+    );
 
     // Queries
     const [getAllVolumes] = useLazyGetVolumesQuery({
@@ -88,12 +91,16 @@ export default function SocketListener() {
     const handleConnect = useCallback<
         SocketEventHandler<typeof socketEvents.CONNECT>
     >(() => {
+        if (wasConnected) {
+            window.location.reload();
+        }
+
         dispatch(setIsConnected(true));
 
         callbacks.connect.forEach((callback) => {
             callback();
         });
-    }, [callbacks.connect, dispatch]);
+    }, [callbacks.connect, dispatch, wasConnected]);
 
     const handleDisconnect = useCallback<
         SocketEventHandler<typeof socketEvents.DISCONNECT>

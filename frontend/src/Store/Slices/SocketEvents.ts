@@ -27,6 +27,7 @@ interface StatusState {
 
 export interface SocketEventsState {
     isConnected: boolean;
+    wasConnected: boolean;
     massEditorStatus: Record<MassEditAction, MassEditState>;
     callbacks: { [Key in SocketEvent]: SocketEventHandler<Key>[] };
     volumesStatus: Partial<
@@ -44,7 +45,8 @@ export interface SocketEventsState {
 // IMPLEMENTATIONS
 
 const initialState = {
-    isConnected: true,
+    isConnected: false,
+    wasConnected: false,
     massEditorStatus: Object.fromEntries(
         Object.values(massEditActions).map((action) => [
             action,
@@ -69,6 +71,10 @@ const SocketEventsSlice = createSlice({
     reducers: {
         setIsConnected: (state, { payload: value }: PayloadAction<boolean>) => {
             state.isConnected = value;
+
+            if (!state.wasConnected && value) {
+                state.wasConnected = true;
+            }
         },
 
         setIsSearchAllRunning: (
