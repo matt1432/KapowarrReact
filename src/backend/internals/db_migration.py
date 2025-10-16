@@ -189,13 +189,13 @@ class MigrateRecalculateIssueNumber(DBMigrator):
     def run(self) -> None:
         # V4 -> V5
 
-        from backend.base.file_extraction import process_issue_number
+        from backend.base.file_extraction import extract_issue_number
 
         cursor = get_db()
         iter_cursor = get_db(force_new=True)
         iter_cursor.execute("SELECT id, issue_number FROM issues;")
         for result in iter_cursor:
-            calc_issue_number = process_issue_number(result[1])
+            calc_issue_number = extract_issue_number(result[1])
             cursor.execute(
                 "UPDATE issues SET calculated_issue_number = ? WHERE id = ?;",
                 (calc_issue_number, result[0]),

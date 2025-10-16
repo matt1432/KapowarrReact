@@ -38,8 +38,8 @@ from backend.base.definitions import (
     VolumeMetadata,
 )
 from backend.base.file_extraction import (
-    process_issue_number,
-    process_volume_number,
+    extract_issue_number,
+    extract_volume_number,
     volume_regex,
 )
 from backend.base.files import folder_path
@@ -277,7 +277,7 @@ class ComicVine:
         volume_result = volume_regex.search(volume_data.summary or "")
         if volume_result:
             result["volume_number"] = (
-                force_range(process_volume_number(volume_result.group(1)))[0]
+                force_range(extract_volume_number(volume_result.group(1)))[0]
                 or 1
             )
 
@@ -295,7 +295,7 @@ class ComicVine:
         Returns:
             VolumeMetadata: The formatted version.
         """
-        cin = force_range(process_issue_number(issue_data.number or "0"))[0]
+        cin = force_range(extract_issue_number(issue_data.number or "0"))[0]
 
         result: IssueMetadata = {
             "comicvine_id": issue_data.id,

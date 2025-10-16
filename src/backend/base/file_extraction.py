@@ -1,6 +1,6 @@
 """
-Extracting comic data from a string and generalising it.
-The string can be a filepath, filename or search result title, etc.
+Extracting comic data (like series name, issue number, etc.) from a string and
+generalising it. The string can be a filepath, filename, search result title, etc.
 """
 
 from collections.abc import Collection
@@ -23,13 +23,13 @@ from backend.base.logging import LOGGER
 
 # autopep8: off
 alphabet = {
-    letter: str(CharConstants.ALPHABET.index(letter) + 1).zfill(2)
-    for letter in CharConstants.ALPHABET
+    letter: str(idx + 1).zfill(2)
+    for idx, letter in enumerate(CharConstants.ALPHABET)
 }
 
 volume_regex_snippet = r"\b(?:(?:v(?:ol|olume))(?:\.\s|[\.\-\s])?|v)(\d+(?:(?:\-|\s\-\s|\.\-\.)\d+)?|(?<!v)I{1,3})"
 year_regex_snippet = r"(?:(\d{4})(?:-\d{2}){0,2}|(\d{4})[\s\.]?[\-\s](?:[\s\.]?\d{4})?|(?:\d{2}-){1,2}(\d{4})|(\d{4})[\s\.\-_]Edition|(\d{4})\-\d{4}\s{3}\d{4})"
-issue_regex_snippet = r"(?!\d+(?:p|th|rd|st|\s?(?:gb|mb|kb)))(?<!\')(?<!cv[\s\-_])(?:\d+(?:\.\d{1,2}|\.?[a-z0-9]+|[\s\-\._]?[½¼])?|[½¼∞])"
+issue_regex_snippet = r'(?!\d+(?:p|th|rd|st|\s?(?:gb|mb|kb)))(?<!\')(?<!cv[\s\-_])(?:\d+(?:\.?[a-z0-9]+|[\s\-\._]?[½¼])?|[½¼∞])'
 
 # Cleaning the filename
 strip_filename_regex = compile(r"\(.*?\)|\[.*?\]|\{.*?\}", IGNORECASE)
@@ -123,8 +123,18 @@ page_regex_2 = compile(r"(\d+)")
 # autopep8: on
 
 
-def _calculated_issue_number(issue_number: str) -> float | None:
-    """Convert an issue number from string to representive float.
+def _get_calculated_issue_number(issue_number: str) -> float | None:
+    """Convert an issue number from string to a representive float.
+    This "calculated issue number" can be used for sorting and comparisons.
+
+    ```
+    >>> _get_calculated_issue_number("3.5")
+    3.5
+    >>> _get_calculated_issue_number("3 ½")
+    3.5
+    >>> _get_calculated_issue_number("-10a")
+    -10.01
+    ```
 
     Args:
         issue_number (str): The issue number to convert.
@@ -135,15 +145,18 @@ def _calculated_issue_number(issue_number: str) -> float | None:
     try:
         # Number is already a valid float, just in string form.
         return float(issue_number)
+
     except ValueError:
+        # Issue has special number notation (e.g. `3a`),
+        # so use code below to convert
         pass
 
-    # Issue has special number notation
     issue_number = normalise_number(issue_number)
 
-    # Negative or not
+    # Handle negative numbers
     if issue_number.startswith("-"):
         converted_issue_number = "-"
+        issue_number = issue_number[1:]
     else:
         converted_issue_number = ""
 
@@ -176,7 +189,7 @@ def _calculated_issue_number(issue_number: str) -> float | None:
     return None
 
 
-def process_issue_number(
+def extract_issue_number(
     issue_number: str,
 ) -> float | tuple[float, float] | None:
     """Convert an issue number or issue range to a (tuple of) float(s).
@@ -184,8 +197,8 @@ def process_issue_number(
     ```
     >>> process_issue_number('2b')
     2.02
-    >>> process_issue_number('2b-4')
-    (2.02, 4.0)
+    >>> process_issue_number('2½ - 4.5')
+    (2.5, 4.5)
     ```
 
     Args:
@@ -199,7 +212,7 @@ def process_issue_number(
 
     if "-" not in issue_number[1:]:
         # Normal issue number
-        return _calculated_issue_number(issue_number)
+        return _get_calculated_issue_number(issue_number)
 
     # Issue range
     start, end = issue_number[1:].replace(" ", "").split("-", 1)
@@ -209,13 +222,16 @@ def process_issue_number(
         start.lstrip("-")[0] in CharConstants.DIGITS
         and end.lstrip("-")[0] in CharConstants.DIGITS
     ):
-        # Not both the start and end are starting with a (negative) number, so
-        # the idea that the input is a range was false.
-        return _calculated_issue_number(issue_number)
+        # It's NOT true that the start and end of the range are a (negative)
+        # number, so the idea that the input is a range turns out to be false.
+        # This is unlikely, so treat as single issue number and let the called
+        # function below figure it out.
+        return _get_calculated_issue_number(issue_number)
 
-    calc_start = _calculated_issue_number(start)
-    calc_end = _calculated_issue_number(end)
+    calc_start = _get_calculated_issue_number(start)
+    calc_end = _get_calculated_issue_number(end)
 
+    # Return both, the only one that was valid or None
     if calc_start is not None:
         if calc_end is not None:
             return (calc_start, calc_end)
@@ -227,11 +243,11 @@ def process_issue_number(
     return None
 
 
-def process_volume_number(
+def extract_volume_number(
     volume_number: str | None,
 ) -> int | tuple[int, int] | None:
     """Convert a volume number or volume range to a (tuple of) int(s). Also
-    supports roman numerals.
+    supports roman numerals in the range I-X.
 
     ```
     >>> process_volume_number('2')
@@ -258,15 +274,29 @@ def process_volume_number(
         CharConstants.ROMAN_DIGITS.get(volume_number.lower(), volume_number)
     )
 
-    result = process_issue_number(volume_number)
+    result = extract_issue_number(volume_number)
+
     if isinstance(result, float):
         result = int(result)
+
     elif isinstance(result, tuple):
         result = int(result[0]), int(result[1])
+
     return result
 
 
 def _translate_filepath(filepath: str) -> str:
+    """Sort of "translate" a filepath by replacing international terms for
+    "issue" and "volume" with their English equivalent. E.g. "3巻" is
+    replaced with "Volume 3".
+
+    Args:
+        filepath (str): The filepath.
+
+    Returns:
+        str: The filepath, with any international terms replaced with their
+            English versions.
+    """
     filepath = french_issue_regex.sub("Issue", filepath)
     if "Том" in filepath:
         filepath = russian_volume_regex.sub(r"Volume \1", filepath)
@@ -282,6 +312,16 @@ def _translate_filepath(filepath: str) -> str:
 
 
 def _extensionless_filename(filepath: str) -> str:
+    """Convert a filepath into a filename where recognised file extensions are
+    removed, where the recognised extensions are in
+    `backend.base.definitions.FileConstants.CONTENT_EXTENSIONS`.
+
+    Args:
+        filepath (str): The original filepath or filename.
+
+    Returns:
+        str: The filename without extension.
+    """
     filename = basename(filepath)
     if splitext(filename)[1].lower() in FileConstants.CONTENT_EXTENSIONS:
         filename = splitext(filename)[0]
@@ -317,7 +357,7 @@ def extract_filename_data(
     fix_year: bool = False,
 ) -> FilenameData:
     """Extract comic data from a string and generalise it. The string can be a
-    filepath, filename or search result title, etc.
+    filepath, filename, search result title, etc.
 
     ```
     >>> extract_filename_data(
@@ -331,28 +371,43 @@ def extract_filename_data(
         "issue_number": (11.0, 25.0),
         "annual": False
     }
+    >>> extract_filename_data(
+        "The Infinity Gauntlet Omnibus (2022) (some-Releaser) [cv-123]"
+    )
+    {
+        "series": "The Infinity Gauntlet",
+        "year": 2022,
+        "volume_number": 1,
+        "special_version": "omnibus",
+        "issue_number": None,
+        "annual": False
+    }
     ```
 
     Args:
         filepath (str): The source string.
 
-        assume_volume_number (bool, optional): If no volume number was found,
+        assume_volume_number (bool, optional): If no volume number is found,
             should `1` be assumed? When a series has only one volume, often the
-            volume number isn't included in the filename.
+            volume number isn't included in the filename...
             Defaults to True.
 
         prefer_folder_year (bool, optional): Use year in foldername instead of
-            year in filename, if available.
+            year in filename, if available. Often the foldername has the year
+            of the volume, which could sometimes be preferred over the year of
+            the specific issue at hand.
             Defaults to False.
 
-        fix_year (bool, optional): If the extracted year is most likely broken,
-            fix it. See `helpers.fix_year()`.
+        fix_year (bool, optional): If the extracted year could be broken because
+            it was user-entered, fix it. See `backend.base.helpers.fix_year()`.
             Defaults to False.
 
     Returns:
         FilenameData: The extracted data.
     """
     LOGGER.debug(f"Extracting filename data: {filepath}")
+    # These contain the parts extracted from the string,
+    # pre-processed or post-processed
     series, year, volume_number, special_version, issue_number = (
         None,
         None,
@@ -360,9 +415,18 @@ def extract_filename_data(
         None,
         None,
     )
+    # The searching, checking and filtering is based on the positions of
+    # everything else we found, so keep track of positions. E.g. if the number
+    # at a certain position is the issue number, then it can't be the year.
+    all_year_pos = [(10_000, 0)]
+    all_year_folderpos = [(10_000, 0)]
+    volume_pos, volume_end = 10_000, 0
+    volume_folderpos, volume_folderend = 10_000, 0
+    issue_pos, issue_folderpos = 10_000, 10_000
+    special_pos, special_end = 10_000, 0
 
     # Process folder if file is metadata file, as metadata filename contains
-    # no useful information.
+    # no useful information
     is_metadata_file = (
         basename(filepath.lower()) in FileConstants.METADATA_FILES
     )
@@ -379,19 +443,17 @@ def extract_filename_data(
     annual = not (annual_result and annual_folder_result)
     filepath = filepath.replace("+", " ")
 
-    # Prepare some variables
+    # Store parts of the input and converted versions of the input
     is_image_file = filepath.endswith(FileConstants.IMAGE_EXTENSIONS)
     foldername = basename(dirname(filepath))
     upper_foldername = basename(dirname(dirname(filepath)))
     filename = _extensionless_filename(filepath)
-    # Stripped version of filename without (), {}, [] and extension
+    # Stripped version of filename without (...), {...}, [...] and extension
     clean_filename = (
         strip_filename_regex.sub(lambda m: " " * len(m.group()), filename) + " "
     )
 
-    # Get year
-    all_year_pos, all_year_folderpos = [(10_000, 10_000)], [(10_000, 10_000)]
-
+    # Find year
     if prefer_folder_year:
         year_order = (foldername, filename, upper_foldername)
     else:
@@ -399,19 +461,29 @@ def extract_filename_data(
 
     for location in year_order:
         year_result = list(year_regex.finditer(location))
-        if year_result:
-            if year is None:
-                year = next(y for y in year_result[0].groups() if y)
+        if not year_result:
+            continue
 
-            if location == filename:
-                all_year_pos = [(r.start(0), r.end(0)) for r in year_result]
+        if year is None:
+            # Register first year we find following preference-order
+            year = next(
+                y
+                for y in year_result[0].groups()
+                if y
+            )
+        # Register the positions of any years we find in the complete string
+        if location == filename:
+            all_year_pos = [
+                (r.start(0), r.end(0))
+                for r in year_result
+            ]
+        if location == foldername:
+            all_year_folderpos = [
+                (r.start(0), r.end(0))
+                for r in year_result
+            ]
 
-            if location == foldername:
-                all_year_folderpos = [
-                    (r.start(0), r.end(0)) for r in year_result
-                ]
-
-    # Get volume number
+    # Find volume number
     volume_result = None
     volume_pos, volume_end, volume_folderpos, volume_folderend = (
         10_000,
@@ -423,11 +495,11 @@ def extract_filename_data(
         volume_result = volume_regex.search(clean_filename)
         if volume_result:
             # Volume number found (e.g. Series Volume 1 Issue 6.ext)
-            volume_number = process_volume_number(volume_result.group(1))
+            volume_number = extract_volume_number(volume_result.group(1))
             volume_pos = volume_result.start(0)
             volume_end = volume_result.end(1)
 
-    # Find volume match in folder for finding series name
+    # Find volume match in folder for finding series name in foldername
     # (or when volume number couldn't be found in filename)
     volume_folder_result = volume_folder_regex.search(foldername)
     if volume_folder_result:
@@ -435,16 +507,15 @@ def extract_filename_data(
         volume_folderpos = volume_folder_result.start(0)
         volume_folderend = volume_folder_result.end(0)
         if not volume_result:
-            volume_number = process_volume_number(
+            volume_number = extract_volume_number(
                 volume_folder_result.group(1) or volume_folder_result.group(2)
             )
 
+    # If allowed, make assumption
     if assume_volume_number and not volume_result and not volume_folder_result:
         volume_number = 1
 
-    # Get special version
-    issue_pos, issue_folderpos = 10_000, 10_000
-    special_pos, special_end = 10_000, 0
+    # Check for Special Version
     if not special_version:
         cover_result = cover_regex.search(filename)
         if cover_result:
@@ -459,6 +530,7 @@ def extract_filename_data(
         else:
             special_result = special_version_regex.search(filename)
             if special_result:
+                # Convert regex group name to value
                 special_version = [
                     k
                     for k, v in special_result.groupdict().items()
@@ -466,13 +538,13 @@ def extract_filename_data(
                 ][0].replace("_", "-")
                 special_pos = special_result.start(0)
 
-    # Get issue number
+    # Find issue number
     if special_version not in (
         None,
         SpecialVersion.COVER,
         SpecialVersion.METADATA,
     ):
-        # Special version, so don't search for issue number
+        # Special Version detected, so don't search for issue number
         pass
 
     elif not is_image_file:
@@ -555,9 +627,11 @@ def extract_filename_data(
                 break
 
     if not issue_number and not special_version:
+        # If no issue number is found and no Special Version is determined,
+        # assume the file is for a TPB (e.g. Iron-Man Volume 1.ext)
         special_version = SpecialVersion.TPB.value
 
-    # Get series
+    # Find series
     series_pos = min(all_year_pos[0][0], volume_pos, special_pos, issue_pos)
     if series_pos and not is_image_file:
         # Series name is assumed to be in the filename,
@@ -578,7 +652,7 @@ def extract_filename_data(
 
     # Format output
     if issue_number is not None:
-        calculated_issue_number = process_issue_number(issue_number)
+        calculated_issue_number = extract_issue_number(issue_number)
     else:
         calculated_issue_number = None
 

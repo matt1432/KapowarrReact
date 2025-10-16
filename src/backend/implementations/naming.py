@@ -25,9 +25,9 @@ from backend.base.definitions import (
 from backend.base.file_extraction import (
     cover_regex,
     extract_filename_data,
+    extract_issue_number,
     page_regex,
     page_regex_2,
-    process_issue_number,
 )
 from backend.base.files import (
     clean_filepath_simple,
@@ -553,7 +553,7 @@ def check_mock_filename(
                         comicvine_id=456,
                         issue_number="1",
                         calculated_issue_number=force_range(
-                            process_issue_number("1") or 0.0
+                            extract_issue_number("1") or 0.0
                         )[0],
                         title="One Shot",
                         date="2023-03-04",
@@ -591,7 +591,7 @@ def check_mock_filename(
                         comicvine_id=456,
                         issue_number="1",
                         calculated_issue_number=force_range(
-                            process_issue_number("1") or 0.0
+                            extract_issue_number("1") or 0.0
                         )[0],
                         title="",
                         date="2023-03-04",
@@ -631,7 +631,7 @@ def check_mock_filename(
                         comicvine_id=456,
                         issue_number="3b",
                         calculated_issue_number=force_range(
-                            process_issue_number("3b") or 0.0
+                            extract_issue_number("3b") or 0.0
                         )[0],
                         title="",
                         date="2023-03-04",
@@ -671,7 +671,7 @@ def check_mock_filename(
                         comicvine_id=456,
                         issue_number="8",
                         calculated_issue_number=force_range(
-                            process_issue_number("8") or 0.0
+                            extract_issue_number("8") or 0.0
                         )[0],
                         title="",
                         date="2023-03-04",
@@ -799,7 +799,7 @@ def preview_mass_rename(
         check the renaming.
             Defaults to None.
 
-        filepath_filter (Union[List[str], None], optional): Only process files
+        filepath_filter (Union[List[str], None], optional): Only extract files
         that are in the list.
             Defaults to None.
 
