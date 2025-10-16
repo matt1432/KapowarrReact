@@ -271,6 +271,33 @@ class BaseEnum(Enum):
         return id(self.value)
 
 
+class SocketEvent(BaseEnum):
+    "The websocket event"
+
+    TASK_ADDED = "task_added"
+    TASK_STATUS = "task_status"
+    TASK_ENDED = "task_ended"
+
+    QUEUE_ADDED = "queue_added"
+    "A download is added to the queue"
+    QUEUE_STATUS = "queue_status"
+    "A status update on a download in the queue"
+    QUEUE_ENDED = "queue_ended"
+    "A download has finished in the queue"
+
+    VOLUME_UPDATED = "volume_updated"
+    ISSUE_UPDATED = "issue_updated"
+
+    VOLUME_DELETED = "volume_deleted"
+    ISSUE_DELETED = "issue_deleted"
+
+    MASS_EDITOR_STATUS = "mass_editor_status"
+    "The progress of a mass editor action"
+
+    DOWNLOADED_STATUS = "downloaded_status"
+    "A change in what issues are marked as downloaded and which aren't"
+
+
 class StartType(BaseEnum):
     "The reason for or cause of starting up"
 
@@ -282,6 +309,11 @@ class StartType(BaseEnum):
 
     RESTART_HOSTING_CHANGES = 132
     "A restart because changes to the hosting settings were made"
+
+
+class GeneralFileType(BaseEnum):
+    METADATA = "metadata"
+    COVER = "cover"
 
 
 class SeedingHandling(BaseEnum):
@@ -302,24 +334,6 @@ class DateType(BaseEnum):
 
     COVER_DATE = "cover_date"
     STORE_DATE = "store_date"
-
-
-class BlocklistReasonID(BaseEnum):
-    "The ID assosiated with the reason for putting a link on the blocklist"
-
-    LINK_BROKEN = 1
-    SOURCE_NOT_SUPPORTED = 2
-    NO_WORKING_LINKS = 3
-    ADDED_BY_USER = 4
-
-
-class BlocklistReason(BaseEnum):
-    "The reason for putting a link on the blocklist"
-
-    LINK_BROKEN = "Link broken"
-    SOURCE_NOT_SUPPORTED = "Source not supported"
-    NO_WORKING_LINKS = "No supported or working links"
-    ADDED_BY_USER = "Added by user"
 
 
 class MatchRejections(BaseEnum):
@@ -411,46 +425,33 @@ class LibraryFilter(BaseEnum):
     MONITORED = "WHERE monitored = 1"
 
 
-class DownloadState(BaseEnum):
-    QUEUED_STATE = "queued"
-    PAUSED_STATE = "paused"
-    DOWNLOADING_STATE = "downloading"
-    SEEDING_STATE = "seeding"
-    IMPORTING_STATE = "importing"
-
-    FAILED_STATE = "failed"
-    "Download was unsuccessful"
-    CANCELED_STATE = "canceled"
-    "Download was removed from queue"
-    SHUTDOWN_STATE = "shutting down"
-    "Download was stopped because Kapowarr is shutting down"
+class MonitorScheme(BaseEnum):
+    ALL = "all"
+    MISSING = "missing"
+    NONE = "none"
 
 
-class SocketEvent(BaseEnum):
-    "The websocket event"
+class CredentialSource(BaseEnum):
+    MEGA = "mega"
+    PIXELDRAIN = "pixeldrain"
 
-    TASK_ADDED = "task_added"
-    TASK_STATUS = "task_status"
-    TASK_ENDED = "task_ended"
 
-    QUEUE_ADDED = "queue_added"
-    "A download is added to the queue"
-    QUEUE_STATUS = "queue_status"
-    "A status update on a download in the queue"
-    QUEUE_ENDED = "queue_ended"
-    "A download has finished in the queue"
+class BlocklistReasonID(BaseEnum):
+    "The ID assosiated with the reason for putting a link on the blocklist"
 
-    VOLUME_UPDATED = "volume_updated"
-    ISSUE_UPDATED = "issue_updated"
+    LINK_BROKEN = 1
+    SOURCE_NOT_SUPPORTED = 2
+    NO_WORKING_LINKS = 3
+    ADDED_BY_USER = 4
 
-    VOLUME_DELETED = "volume_deleted"
-    ISSUE_DELETED = "issue_deleted"
 
-    MASS_EDITOR_STATUS = "mass_editor_status"
-    "The progress of a mass editor action"
+class BlocklistReason(BaseEnum):
+    "The reason for putting a link on the blocklist"
 
-    DOWNLOADED_STATUS = "downloaded_status"
-    "A change in what issues are marked as downloaded and which aren't"
+    LINK_BROKEN = "Link broken"
+    SOURCE_NOT_SUPPORTED = "Source not supported"
+    NO_WORKING_LINKS = "No supported or working links"
+    ADDED_BY_USER = "Added by user"
 
 
 class FailReason(BaseEnum):
@@ -466,9 +467,11 @@ class FailReason(BaseEnum):
     LIMIT_REACHED = "Download limit reached for service"
 
 
-class GeneralFileType(BaseEnum):
-    METADATA = "metadata"
-    COVER = "cover"
+class DownloadType(BaseEnum):
+    "The download protocol (download type)"
+
+    DIRECT = 1
+    TORRENT = 2
 
 
 class GCDownloadSource(BaseEnum):
@@ -482,6 +485,21 @@ class GCDownloadSource(BaseEnum):
     "A direct download link straight from their own servers"
     GETCOMICS_TORRENT = "GetComics (torrent)"
     "A torrent magnet link directly on the webpage"
+
+
+class DownloadState(BaseEnum):
+    QUEUED_STATE = "queued"
+    PAUSED_STATE = "paused"
+    DOWNLOADING_STATE = "downloading"
+    SEEDING_STATE = "seeding"
+    IMPORTING_STATE = "importing"
+
+    FAILED_STATE = "failed"
+    "Download was unsuccessful"
+    CANCELED_STATE = "canceled"
+    "Download was removed from queue"
+    SHUTDOWN_STATE = "shutting down"
+    "Download was stopped because Kapowarr is shutting down"
 
 
 GC_DOWNLOAD_SOURCE_TERMS = {
@@ -542,24 +560,6 @@ class DownloadSource(BaseEnum):
     GETCOMICS_TORRENT = "GetComics (torrent)"
     "A torrent magnet link directly on the webpage"
     LIBGENPLUS = "Libgen+"
-
-
-class MonitorScheme(BaseEnum):
-    ALL = "all"
-    MISSING = "missing"
-    NONE = "none"
-
-
-class CredentialSource(BaseEnum):
-    MEGA = "mega"
-    PIXELDRAIN = "pixeldrain"
-
-
-class DownloadType(BaseEnum):
-    "The download protocol (download type)"
-
-    DIRECT = 1
-    TORRENT = 2
 
 
 QUERY_FORMATS: dict[str, tuple[str, ...]] = {
