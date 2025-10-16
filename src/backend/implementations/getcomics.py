@@ -146,7 +146,7 @@ def __check_download_link(
     if not link:
         return None
 
-    if not link.startswith(('http', 'magnet:?')):
+    if not link.startswith(("http", "magnet:?")):
         return
 
     # Check if link is in blocklist

@@ -719,6 +719,9 @@ class Session(RSession):
     """
     Inherits from `requests.Session`. Adds retries, sets user agent and handles
     CloudFlare blockages using FlareSolverr.
+
+    Either returns response as expected, raises `requests.exceptions.RetryError`
+    or any other `requests.exceptions.RequestException`.
     """
 
     def __init__(self) -> None:
@@ -764,60 +767,58 @@ class Session(RSession):
         self.headers.update({"User-Agent": ua})
         self.cookies.update(cf_cookies)
 
-        for round in range(1, 3):
-            result = super().request(
-                method,
-                url,
-                params,
-                data,
-                headers,
-                cookies,
-                files,
-                auth,
-                timeout,
-                allow_redirects,
-                proxies,
-                hooks,
-                stream,
-                verify,
-                cert,
-                json,
-            )
+        result = super().request(
+            method,
+            url,
+            params,
+            data,
+            headers,
+            cookies,
+            files,
+            auth,
+            timeout,
+            allow_redirects,
+            proxies,
+            hooks,
+            stream,
+            verify,
+            cert,
+            json,
+        )
 
-            if round == 1 and result.status_code == 403:
-                fs_result = self.fs.handle_cf_block(result.url, result.headers)
+        if result.status_code == 403:
+            fs_result = self.fs.handle_cf_block(result.url, result.headers)
 
-                if not fs_result:
-                    # FlareSolverr couldn't solve the problem or it wasn't
-                    # needed
-                    continue
-
+            if fs_result:
                 result.url = fs_result["url"]
                 result.status_code = fs_result["status"]
                 result._content = fs_result["response"].encode("utf-8")
                 result.headers = CaseInsensitiveDict(fs_result["headers"])
 
-            if 400 <= result.status_code < 500:
-                LOGGER.warning(
-                    "%s request to %s returned with code %d",
-                    result.request.method,
-                    result.request.url,
-                    result.status_code,
-                )
-                LOGGER.debug(
-                    "Request response for %s %s: %s",
-                    result.request.method,
-                    result.request.url,
-                    result.text,
-                )
+        if 400 <= result.status_code < 500:
+            LOGGER.warning(
+                "%s request to %s returned with code %d",
+                result.request.method,
+                result.request.url,
+                result.status_code,
+            )
+            LOGGER.debug(
+                "Request response for %s %s: %s",
+                result.request.method,
+                result.request.url,
+                result.text,
+            )
 
-            return result
+        return result
 
 
 class AsyncSession(ClientSession):
     """
     Inherits from `aiohttp.ClientSession`. Adds retries, sets user agent and
     handles CloudFlare blockages using FlareSolverr.
+
+    Either returns response as expected or raises
+    `aiohttp.client_exceptions.ClientError`.
     """
 
     def __init__(self) -> None:
@@ -857,10 +858,10 @@ class AsyncSession(ClientSession):
                 if response.status in Constants.STATUS_FORCELIST_RETRIES:
                     raise ClientError
 
-            except ClientError as e:
+            except ClientError:
                 if round == Constants.TOTAL_RETRIES:
                     # Exhausted retries
-                    raise e
+                    raise
 
                 LOGGER.warning(
                     "%s request failed for url %s. Retrying for round %d...",
@@ -875,22 +876,18 @@ class AsyncSession(ClientSession):
                 )
                 continue
 
-            if round == 1 and response.status == 403:
+            if response.status == 403:
                 fs_result = await self.fs.handle_cf_block_async(
                     self, str(response.url), response.headers
                 )
 
-                if not fs_result:
-                    # FlareSolverr couldn't solve the problem or it wasn't
-                    # needed
-                    continue
-
-                response._url = URL(fs_result["url"])
-                response.status = fs_result["status"]
-                response._body = fs_result["response"].encode("utf-8")
-                response._headers = CIMultiDictProxy(
-                    CIMultiDict(fs_result["headers"])
-                )
+                if fs_result:
+                    response._url = URL(fs_result["url"])
+                    response.status = fs_result["status"]
+                    response._body = fs_result["response"].encode("utf-8")
+                    response._headers = CIMultiDictProxy(
+                        CIMultiDict(fs_result["headers"])
+                    )
 
             if 400 <= response.status < 500:
                 LOGGER.warning(
@@ -924,12 +921,15 @@ class AsyncSession(ClientSession):
 
         Args:
             url (str): The URL to fetch from.
+
             params (dict[str, Any], optional): Any additional params.
                 Defaults to {}.
+
             headers (dict[str, Any], optional): Any additional headers.
                 Defaults to {}.
+
             quiet_fail (bool, optional): If True, don't raise an exception
-            if the request fails. Return an empty string instead.
+                if the request fails. Return an empty string instead.
                 Defaults to False.
 
         Raises:
@@ -944,10 +944,10 @@ class AsyncSession(ClientSession):
             ) as response:
                 return await response.text()
 
-        except ClientError as e:
+        except ClientError:
             if quiet_fail:
                 return ""
-            raise e
+            raise
 
     async def get_content(
         self,
@@ -960,12 +960,15 @@ class AsyncSession(ClientSession):
 
         Args:
             url (str): The URL to fetch from.
+
             params (dict[str, Any], optional): Any additional params.
                 Defaults to {}.
+
             headers (dict[str, Any], optional): Any additional headers.
                 Defaults to {}.
+
             quiet_fail (bool, optional): If True, don't raise an exception
-            if the request fails. Return an empty bytestring instead.
+                if the request fails. Return an empty bytestring instead.
                 Defaults to False.
 
         Raises:
@@ -980,10 +983,10 @@ class AsyncSession(ClientSession):
             ) as response:
                 return await response.content.read()
 
-        except ClientError as e:
+        except ClientError:
             if quiet_fail:
                 return b""
-            raise e
+            raise
 
 
 # region Multiprocessing

@@ -601,7 +601,7 @@ class PixelDrainDownload(BaseDirectDownload):
             for pd_cred in cred.get_from_source(CredentialSource.PIXELDRAIN):
                 try:
                     # Let ClientNotWorking bubble up
-                    self.login(pd_cred.api_key or '')
+                    self.login(pd_cred.api_key or "")
 
                 except (CredentialInvalid, DownloadLimitReached):
                     continue

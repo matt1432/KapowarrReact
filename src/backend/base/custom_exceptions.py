@@ -424,9 +424,7 @@ class LinkBroken(KapowarrException):
 
     def __init__(self, link: str) -> None:
         self.link = link
-        LOGGER.warning(
-            f"Link is broken: {self.link}"
-        )
+        LOGGER.warning(f"Link is broken: {self.link}")
         return
 
     @property
@@ -434,9 +432,7 @@ class LinkBroken(KapowarrException):
         return {
             "code": 400,
             "error": self.__class__.__name__,
-            "result": {
-                "link": self.link
-            }
+            "result": {"link": self.link},
         }
 
 
@@ -446,9 +442,7 @@ class EnqueuingDownloadFailure(KapowarrException):
     def __init__(self, reason: EnqueuingDownloadFailureReason) -> None:
         self.reason = reason
         self.reason_text = reason.value
-        LOGGER.warning(
-            f"Failed to enqueue download: {self.reason_text}"
-        )
+        LOGGER.warning(f"Failed to enqueue download: {self.reason_text}")
         return
 
     @property
@@ -456,9 +450,7 @@ class EnqueuingDownloadFailure(KapowarrException):
         return {
             "code": 400,
             "error": self.__class__.__name__,
-            "result": {
-                "reason_text": self.reason.value
-            }
+            "result": {"reason_text": self.reason.value},
         }
 
 
@@ -528,11 +520,7 @@ class CredentialInvalid(KapowarrException):
 
     @property
     def api_response(self) -> ApiResponse:
-        return {
-            "code": 400,
-            "error": self.__class__.__name__,
-            "result": {}
-        }
+        return {"code": 400, "error": self.__class__.__name__, "result": {}}
 
 
 # region Download Clients
@@ -542,9 +530,7 @@ class ClientNotWorking(KapowarrException):
     def __init__(self, reason: BrokenClientReason) -> None:
         self.reason = reason
         self.reason_text = reason.value
-        LOGGER.warning(
-            f"The download client isn't working: {self.reason_text}"
-        )
+        LOGGER.warning(f"The download client isn't working: {self.reason_text}")
         return
 
     @property
@@ -552,9 +538,7 @@ class ClientNotWorking(KapowarrException):
         return {
             "code": 400,
             "error": self.__class__.__name__,
-            "result": {
-                "reason_text": self.reason_text
-            }
+            "result": {"reason_text": self.reason_text},
         }
 
 
@@ -573,9 +557,7 @@ class ExternalClientNotFound(KapowarrException):
         return {
             "code": 404,
             "error": self.__class__.__name__,
-            "result": {
-                "external_client_id": self.external_client_id
-            }
+            "result": {"external_client_id": self.external_client_id},
         }
 
 
@@ -595,9 +577,7 @@ class ExternalClientDownloading(KapowarrException):
         return {
             "code": 400,
             "error": self.__class__.__name__,
-            "result": {
-                "external_client_id": self.external_client_id
-            }
+            "result": {"external_client_id": self.external_client_id},
         }
 
 

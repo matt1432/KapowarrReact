@@ -371,7 +371,8 @@ class MegaAccount:
 
         res = self.client.api_request(a=MegaCommands.PRELOGIN.value, user=user)
         if isinstance(res, int) or "e" in res:
-            raise ClientNotWorking(BrokenClientReason.FAILED_PROCESSING_RESPONSE
+            raise ClientNotWorking(
+                BrokenClientReason.FAILED_PROCESSING_RESPONSE
             )
 
         if res["v"] == 1:  # v1 account
@@ -393,8 +394,7 @@ class MegaAccount:
             ).replace("=", "")
 
         else:
-            raise ClientNotWorking(BrokenClientReason.VERSION_NOT_SUPPORTED
-            )
+            raise ClientNotWorking(BrokenClientReason.VERSION_NOT_SUPPORTED)
 
         return self._process_login(
             user=user, user_hash=user_hash, password_key=password_key
@@ -426,7 +426,8 @@ class MegaAccount:
             ).replace("=", ""),
         )  # type: ignore
         if isinstance(res, int):
-            raise ClientNotWorking(BrokenClientReason.FAILED_PROCESSING_RESPONSE
+            raise ClientNotWorking(
+                BrokenClientReason.FAILED_PROCESSING_RESPONSE
             )
 
         return self._process_login(
@@ -447,7 +448,8 @@ class MegaAccount:
             )
 
         if isinstance(res, int) or "e" in res:
-            raise ClientNotWorking(BrokenClientReason.FAILED_PROCESSING_RESPONSE
+            raise ClientNotWorking(
+                BrokenClientReason.FAILED_PROCESSING_RESPONSE
             )
 
         self.master_key = master_key = MegaCrypto.decrypt_key(
@@ -563,7 +565,9 @@ class Mega(MegaABC):
 
         attr = MegaCrypto.decrypt_attr(res["at"], self.__master_key)
         if not attr:
-            raise ClientNotWorking(BrokenClientReason.FAILED_PROCESSING_RESPONSE)
+            raise ClientNotWorking(
+                BrokenClientReason.FAILED_PROCESSING_RESPONSE
+            )
 
         self.mega_filename = attr["n"]
         self.size = res["s"]
@@ -896,7 +900,8 @@ class MegaFolder(MegaABC):
                                 break
                     else:
                         # Failed to download file
-                        raise ClientNotWorking(BrokenClientReason.CONNECTION_ERROR
+                        raise ClientNotWorking(
+                            BrokenClientReason.CONNECTION_ERROR
                         )
 
                 if self.downloading:

@@ -617,7 +617,7 @@ class MigrateClearUnsupportedSourceBlocklistEntries(DBMigrator):
 
         get_db().execute(
             "DELETE FROM blocklist WHERE reason = ?;",
-            (2,) # Source not supported
+            (2,),  # Source not supported
         )
         return
 
@@ -1346,6 +1346,6 @@ class MigrateRemoveUnsupportedSourceBlocklistEntries(DBMigrator):
 
         get_db().execute(
             "DELETE FROM blocklist WHERE reason = ?;",
-            (2,) # Source not supported
+            (2,),  # Source not supported
         )
         return

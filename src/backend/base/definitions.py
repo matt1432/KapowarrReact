@@ -451,8 +451,9 @@ class BlocklistReason(BaseEnum):
     NO_WORKING_LINKS = "No supported or working links"
     ADDED_BY_USER = "Added by user"
 
+
 class BrokenClientReason(BaseEnum):
-    """"
+    """ "
     The reason that a download client is not working
     (aside from an invalid link)
     """
@@ -461,7 +462,9 @@ class BrokenClientReason(BaseEnum):
     NOT_CLIENT_INSTANCE = "What was connected to was not the expected client"
     VERSION_NOT_SUPPORTED = "The version is not supported"
     FAILED_PROCESSING_RESPONSE = "Got an unexpected response back"
-    ACCESS_DENIED = "Access denied by client but not because of invalid credentials"
+    ACCESS_DENIED = (
+        "Access denied by client but not because of invalid credentials"
+    )
     """
     Access denied not because credentials are invalid but because,
     e.g., Mega failed to log in anonymously or a webpage is blocked by CF
@@ -472,7 +475,9 @@ class EnqueuingDownloadFailureReason(BaseEnum):
     "The reason a download failed to be added to the queue"
 
     WEBPAGE_BROKEN = "Webpage unavailable"
-    NO_MATCHES = "No links found on webpage that match to volume and are not blocklisted"
+    NO_MATCHES = (
+        "No links found on webpage that match to volume and are not blocklisted"
+    )
     NO_WORKING_LINKS = "All download links found on the webpage are broken"
     ONLY_RATE_LIMITED_LINKS = "All working download links on the webpage are from rate limited services"
 

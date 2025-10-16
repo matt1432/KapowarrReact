@@ -140,16 +140,16 @@ class qBittorrent(BaseExternalClient):
                 self.ssn.torrents_resume(torrent_hashes=t_hash)
 
         if t_hash is None:
-            raise ClientNotWorking(BrokenClientReason.FAILED_PROCESSING_RESPONSE)
+            raise ClientNotWorking(
+                BrokenClientReason.FAILED_PROCESSING_RESPONSE
+            )
 
         self.torrent_hashes[t_hash] = None
         return t_hash
 
     def get_download(self, download_id: str) -> dict | None:
         if not self.ssn:
-            self.ssn = self._login(
-                self.base_url, self.username, self.password
-            )
+            self.ssn = self._login(self.base_url, self.username, self.password)
 
         r = self.ssn.torrents_info(torrent_hashes=download_id).data
         if not r:

@@ -221,32 +221,27 @@ class ExternalClients:
 
         try:
             client_types[client_type].test(
-                normalise_base_url(base_url),
-                username,
-                password,
-                api_token
+                normalise_base_url(base_url), username, password, api_token
             )
 
         except KeyError:
-            raise InvalidKeyValue('type', client_type)
+            raise InvalidKeyValue("type", client_type)
 
         except ClientNotWorking as e:
-            return ClientTestResult({
-                'success': False,
-                'description': e.reason_text
-            })
+            return ClientTestResult(
+                {"success": False, "description": e.reason_text}
+            )
 
         except CredentialInvalid:
-            return ClientTestResult({
-                'success': False,
-                'description': 'Failed to login with the given credentials'
-            })
+            return ClientTestResult(
+                {
+                    "success": False,
+                    "description": "Failed to login with the given credentials",
+                }
+            )
 
         else:
-            return ClientTestResult({
-                'success': True,
-                'description': None
-            })
+            return ClientTestResult({"success": True, "description": None})
 
     @staticmethod
     def add(
@@ -302,13 +297,10 @@ class ExternalClients:
         try:
             ClientClass = ExternalClients.get_client_types()[client_type]
         except KeyError:
-            raise InvalidKeyValue('type', client_type)
+            raise InvalidKeyValue("type", client_type)
 
         ExternalClients.get_client_types()[client_type].test(
-            normalise_base_url(base_url),
-            username,
-            password,
-            api_token
+            normalise_base_url(base_url), username, password, api_token
         )
 
         data = {
