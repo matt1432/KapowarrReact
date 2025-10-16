@@ -76,6 +76,7 @@ class qBittorrent(BaseExternalClient):
         """
         try:
             ssn = Client(host=base_url, username=username, password=password)
+            ssn.auth_log_in()
 
         except Exception:
             LOGGER.exception("Can't connect to qBittorrent instance: ")
@@ -197,7 +198,6 @@ class qBittorrent(BaseExternalClient):
         del self.torrent_hashes[download_id]
         return
 
-    # FIXME: always successful?
     @staticmethod
     def test(
         base_url: str,

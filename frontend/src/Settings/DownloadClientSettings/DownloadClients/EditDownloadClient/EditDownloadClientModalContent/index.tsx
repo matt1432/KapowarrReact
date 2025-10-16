@@ -68,8 +68,13 @@ export default function EditDownloadClientModalContent({
     const { data: allOptions, isFetching: isFetchingOptions } =
         useGetDownloadClientOptionsQuery();
 
-    const [testDownloadClient, { isLoading: isTesting }] =
-        useTestDownloadClientMutation();
+    const [
+        testDownloadClient,
+        {
+            isLoading: isTesting,
+            data: { description } = { description: undefined },
+        },
+    ] = useTestDownloadClientMutation();
     const [saveDownloadClient, { error: saveError }] =
         useSaveDownloadClientMutation();
 
@@ -154,8 +159,8 @@ export default function EditDownloadClientModalContent({
     const handleSavePress = useCallback(async () => {
         setIsSaving(true);
 
-        const { error: testError } = await handleTestPress();
-        if (testError) {
+        const { data } = await handleTestPress();
+        if (data?.success) {
             setIsSaving(false);
             return;
         }
@@ -290,7 +295,7 @@ export default function EditDownloadClientModalContent({
 
                 <SpinnerErrorButton
                     isSpinning={isTesting}
-                    error={saveError}
+                    error={description ? { message: description } : undefined}
                     onPress={handleTestPress}
                 >
                     {translate('Test')}

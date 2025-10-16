@@ -101,7 +101,10 @@ const extendedApi = baseApi.injectEndpoints({
         }),
 
         // POST
-        testDownloadClient: build.mutation<void, TestParams>({
+        testDownloadClient: build.mutation<
+            { description: string; success: boolean },
+            TestParams
+        >({
             query: (body) => ({
                 method: 'POST',
                 url: `externalclients/test`,
@@ -110,6 +113,10 @@ const extendedApi = baseApi.injectEndpoints({
                 },
                 body: snakeify(body),
             }),
+
+            transformResponse: (response: {
+                result: { description: 'Failed to connect'; success: false };
+            }) => response.result,
         }),
 
         addCredential: build.mutation<void, AddCredentialParams>({
