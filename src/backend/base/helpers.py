@@ -596,7 +596,7 @@ class CommaList(list):
     Using str() will convert it back to a string with comma seperated values.
 
     ```
-    >>> c = CommaList('blue,green,red')
+    >>> c = Commalist('blue,green,red')
     >>> c.append('purple')
     >>> str(c)
     'blue,green,red,purple'
@@ -990,52 +990,46 @@ class AsyncSession(ClientSession):
 
 
 # region Multiprocessing
-class _ContextKeeper(metaclass=Singleton):
+def _create_context(
+    log_level: int,
+    log_folder: str,
+    log_file: str,
+    db_folder: str,
+    ws_queue: SimpleQueue[dict[str, Any]],
+):
     """
-    Run inside newly spawned process to setup environment and offer a
-    Flask application context
+    Should run inside a new subprocess to setup logging, the database and
+    websocket. Also offers a Flask application context via the `context` var.
     """
+    from backend.internals.server import setup_process
 
-    def __init__(
-        self,
-        log_level: int | None = None,
-        log_folder: str | None = None,
-        log_file: str | None = None,
-        db_folder: str | None = None,
-        ws_queue: SimpleQueue[dict[str, Any]] | None = None,
-    ) -> None:
-        if not (log_level and ws_queue):
-            return
-
-        from backend.internals.server import setup_process
-
-        self.ctx = setup_process(
-            log_level, log_folder, log_file, db_folder, ws_queue
-        )
-        return
+    globals()["context"] = setup_process(
+        log_level, log_folder, log_file, db_folder, ws_queue
+    )
+    return
 
 
-def pool_apply_func(args=(), kwds={}):
+def _pool_apply_func(args=(), kwds={}):
     func, value = args
-    with _ContextKeeper().ctx():
+    with globals()["context"]():
         return func(*value, **kwds)
 
 
-def pool_map_func(func_value):
+def _pool_map_func(func_value):
     func, value = func_value
-    with _ContextKeeper().ctx():
+    with globals()["context"]():
         return func(value)
 
 
-def pool_starmap_func(func, *args):
-    with _ContextKeeper().ctx():
+def _pool_starmap_func(func, *args):
+    with globals()["context"]():
         return func(*args)
 
 
 class PortablePool(Pool):
     """
     A multiprocessing pool where the processes run in a proper environment.
-    Stuff like logging, the database and websocket are set up, and everything
+    Logging, the database and the websocket are set up, and everything
     is run inside a Flask application context.
     """
 
@@ -1043,7 +1037,7 @@ class PortablePool(Pool):
         """Setup an instance.
 
         Args:
-            max_processes (int | None, optional): The amount of processes
+            max_processes (Union[int, None], optional): The amount of processes
                 that the pool should manage. Given value is limited to CPU count.
                 Give `None` for default, which is CPU count.
                 Defaults to None.
@@ -1051,21 +1045,22 @@ class PortablePool(Pool):
         from backend.internals.db import DBConnection
         from backend.internals.server import WebSocket
 
-        log_file = get_log_filepath()
+        if max_processes is None:
+            processes = None
+        else:
+            processes = min(cpu_count() or 1, max_processes)
+
+        log_level = LOGGER.root.level
+        log_filepath = get_log_filepath()
+        log_folder = dirname(log_filepath)
+        log_file = basename(log_filepath)
+        db_folder = dirname(DBConnection.file)
+        ws_queue = WebSocket().client_manager.queue
+
         super().__init__(
-            processes=(
-                min(cpu_count() or 1, max_processes)
-                if max_processes is not None
-                else None
-            ),
-            initializer=_ContextKeeper,
-            initargs=(
-                LOGGER.root.level,
-                dirname(log_file),
-                basename(log_file),
-                dirname(DBConnection.file),
-                WebSocket().client_manager.queue,
-            ),
+            processes=processes,
+            initializer=_create_context,
+            initargs=(log_level, log_folder, log_file, db_folder, ws_queue),
         )
         return
 
@@ -1076,14 +1071,14 @@ class PortablePool(Pool):
         kwds: Mapping[str, Any] = {},
     ) -> U:
         new_args = (func, args)
-        new_func = pool_apply_func
+        new_func = _pool_apply_func
         return super().apply(new_func, new_args, kwds)
 
     def apply_async(
         self, func, args=(), kwds={}, callback=None, error_callback=None
     ):
         new_args = (func, args)
-        new_func = pool_apply_func
+        new_func = _pool_apply_func
         return super().apply_async(
             new_func, new_args, kwds, callback, error_callback
         )
@@ -1095,7 +1090,7 @@ class PortablePool(Pool):
         chunksize: int | None = None,
     ) -> list[U]:
         new_iterable = ((func, i) for i in iterable)
-        new_func = pool_map_func
+        new_func = _pool_map_func
         return super().map(new_func, new_iterable, chunksize)
 
     def imap[T, U](
@@ -1105,7 +1100,7 @@ class PortablePool(Pool):
         chunksize: int | None = 1,
     ) -> IMapIterator[U]:
         new_iterable = ((func, i) for i in iterable)
-        new_func = pool_map_func
+        new_func = _pool_map_func
         return super().imap(new_func, new_iterable, chunksize)
 
     def imap_unordered[T, U](
@@ -1115,14 +1110,14 @@ class PortablePool(Pool):
         chunksize: int | None = 1,
     ) -> IMapIterator[U]:
         new_iterable = ((func, i) for i in iterable)
-        new_func = pool_map_func
+        new_func = _pool_map_func
         return super().imap_unordered(new_func, new_iterable, chunksize)
 
     def map_async(
         self, func, iterable, chunksize=None, callback=None, error_callback=None
     ):
         new_iterable = ((func, i) for i in iterable)
-        new_func = pool_map_func
+        new_func = _pool_map_func
         return super().map_async(
             new_func, new_iterable, chunksize, callback, error_callback
         )
@@ -1134,7 +1129,7 @@ class PortablePool(Pool):
         chunksize: int | None = None,
     ) -> list[U]:
         new_iterable = ((func, *i) for i in iterable)
-        new_func = pool_starmap_func
+        new_func = _pool_starmap_func
         return super().starmap(new_func, new_iterable, chunksize)
 
     def istarmap_unordered[T, U](
@@ -1145,14 +1140,14 @@ class PortablePool(Pool):
     ) -> IMapIterator[U]:
         "A combination of starmap and imap_unordered."
         new_iterable = ((func, i) for i in iterable)
-        new_func = pool_apply_func
+        new_func = _pool_apply_func
         return super().imap_unordered(new_func, new_iterable, chunksize)
 
     def starmap_async(
         self, func, iterable, chunksize=None, callback=None, error_callback=None
     ):
         new_iterable = ((func, *i) for i in iterable)
-        new_func = pool_starmap_func
+        new_func = _pool_starmap_func
         return super().starmap_async(
             new_func, new_iterable, chunksize, callback, error_callback
         )
