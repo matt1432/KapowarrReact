@@ -25,11 +25,17 @@ if TYPE_CHECKING:
 
 
 # region Constants
-FETCHED_CONSTANTS = json.loads(
-    requests.get(
-        "https://raw.githubusercontent.com/matt1432/Kapowarr/refs/heads/main/constants.json"
-    ).text
-)
+FETCHED_CONSTANTS: dict | None = None
+
+while not FETCHED_CONSTANTS:
+    try:
+        FETCHED_CONSTANTS = json.loads(
+            requests.get(
+                "https://raw.githubusercontent.com/matt1432/KapowarrReact/refs/heads/main/constants.json"
+            ).text
+        )
+    except Exception:
+        pass
 
 
 class Constants:
