@@ -19,12 +19,13 @@ from requests import RequestException
 
 from backend.base.custom_exceptions import (
     ClientNotWorking,
+    CredentialInvalid,
     DownloadLimitReached,
     IssueNotFound,
     LinkBroken,
 )
 from backend.base.definitions import (
-    BlocklistReason,
+    BrokenClientReason,
     Constants,
     CredentialSource,
     Download,
@@ -280,7 +281,7 @@ class BaseDirectDownload(Download):
                 # Pixeldrain rate limit because of hotlinking
                 raise DownloadLimitReached(DownloadSource.PIXELDRAIN)
 
-            raise LinkBroken(BlocklistReason.LINK_BROKEN)
+            raise LinkBroken(download_link)
 
         self._size = int(response.headers.get("Content-Length", -1))
 
@@ -475,7 +476,7 @@ class MediaFireDownload(BaseDirectDownload):
         soup = BeautifulSoup(r.text, "html.parser")
         button = soup.find("a", {"id": "downloadButton"})
         if not isinstance(button, Tag):
-            raise LinkBroken(BlocklistReason.LINK_BROKEN)
+            raise LinkBroken(self.download_link)
 
         if str(button["href"]).startswith("http"):
             return first_of_range(button["href"])
@@ -484,7 +485,7 @@ class MediaFireDownload(BaseDirectDownload):
             return b64decode(str(button["data-scrambled-url"])).decode("utf-8")
 
         else:
-            raise LinkBroken(BlocklistReason.LINK_BROKEN)
+            raise LinkBroken(self.download_link)
 
 
 # region MediaFire Folder
@@ -525,12 +526,12 @@ class WeTransferDownload(BaseDirectDownload):
             headers={"x-requested-with": "XMLHttpRequest"},
         )
         if not r.ok:
-            raise LinkBroken(BlocklistReason.LINK_BROKEN)
+            raise LinkBroken(self.download_link)
 
         direct_link = r.json().get("direct_link")
 
         if not direct_link:
-            raise LinkBroken(BlocklistReason.LINK_BROKEN)
+            raise LinkBroken(self.download_link)
 
         return direct_link
 
@@ -542,7 +543,7 @@ class PixelDrainDownload(BaseDirectDownload):
     identifier: str = "pd"
 
     @staticmethod
-    def login(api_key: str) -> int:
+    def login(api_key: str) -> None:
         LOGGER.debug("Logging into Pixeldrain with user api key")
         with Session() as session:
             enc_api_key = b64encode(f":{api_key}".encode()).decode()
@@ -552,13 +553,12 @@ class PixelDrainDownload(BaseDirectDownload):
                     Constants.PIXELDRAIN_API_URL + "/user",
                     headers={"Authorization": "Basic " + enc_api_key},
                 )
-                if r.status_code == 401:
-                    return -1
 
             except RequestException:
-                raise ClientNotWorking(
-                    "An unexpected error occured when making contact with Pixeldrain"
-                )
+                raise ClientNotWorking(BrokenClientReason.CONNECTION_ERROR)
+
+            if r.status_code == 401:
+                raise CredentialInvalid
 
             response = r.json()
             if (response["subscription"]["type"] or "free").lower() == "free":
@@ -584,7 +584,10 @@ class PixelDrainDownload(BaseDirectDownload):
         LOGGER.debug(
             f"Pixeldrain account transfer state: {transfer_limit_used}/{transfer_limit}"
         )
-        return int(transfer_limit_used < transfer_limit)
+        if transfer_limit_used > transfer_limit:
+            raise DownloadLimitReached(DownloadSource.PIXELDRAIN)
+
+        return None
 
     def _convert_to_pure_link(self) -> str:
         self._api_key = None
@@ -596,10 +599,18 @@ class PixelDrainDownload(BaseDirectDownload):
         if self._first_fetch:
             cred = Credentials()
             for pd_cred in cred.get_from_source(CredentialSource.PIXELDRAIN):
-                if self.login(pd_cred.api_key or "") == 1:
+                try:
+                    # Let ClientNotWorking bubble up
+                    self.login(pd_cred.api_key or '')
+
+                except (CredentialInvalid, DownloadLimitReached):
+                    continue
+
+                else:
                     # Key works and has not reached limit
                     self._api_key = pd_cred.api_key
                     break
+
             self._first_fetch = False
 
         headers: dict[str, str] = {}
@@ -728,10 +739,7 @@ class MegaDownload(BaseDirectDownload):
         self._dpi = dpi
         self._extension = extension
 
-        try:
-            self._mega = self._mega_class(download_link)
-        except ClientNotWorking:
-            raise LinkBroken(BlocklistReason.LINK_BROKEN)
+        self._mega = self._mega_class(download_link)
 
         self._filename_body = ""
         try:
@@ -914,7 +922,7 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
                     raise RequestException
 
             except RequestException:
-                raise LinkBroken(BlocklistReason.LINK_BROKEN)
+                raise LinkBroken(self.download_link)
 
             torrent_name = get_torrent_info(response.content)[b"name"].decode()
         else:

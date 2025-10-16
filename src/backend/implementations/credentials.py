@@ -1,9 +1,8 @@
 from typing import Any, assert_never
 
 from backend.base.custom_exceptions import (
-    ClientNotWorking,
-    CredentialInvalid,
     CredentialNotFound,
+    DownloadLimitReached,
 )
 from backend.base.definitions import CredentialData, CredentialSource
 from backend.base.logging import LOGGER
@@ -94,6 +93,7 @@ class Credentials:
             store.
 
         Raises:
+            ClientNotWorking: Can't connect to service.
             CredentialInvalid: The credential data is invalid.
 
         Returns:
@@ -108,15 +108,11 @@ class Credentials:
                 MegaAPIClient,
             )
 
-            try:
-                MegaAccount(
-                    MegaAPIClient(),
-                    credential_data.email or "",
-                    credential_data.password or "",
-                )
-
-            except ClientNotWorking as e:
-                raise CredentialInvalid(e.desc)
+            MegaAccount(
+                MegaAPIClient(),
+                credential_data.email or "",
+                credential_data.password or "",
+            )
 
             credential_data.api_key = None
             credential_data.username = None
@@ -127,12 +123,10 @@ class Credentials:
             )
 
             try:
-                result = PixelDrainDownload.login(credential_data.api_key or "")
-                if result == -1:
-                    raise ClientNotWorking("Failed to login into Pixeldrain")
+                PixelDrainDownload.login(credential_data.api_key or "")
 
-            except ClientNotWorking as e:
-                raise CredentialInvalid(e.desc)
+            except DownloadLimitReached:
+                pass
 
             credential_data.email = None
             credential_data.username = None

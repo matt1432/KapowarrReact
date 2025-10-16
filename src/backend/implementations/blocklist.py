@@ -176,6 +176,9 @@ def add_to_blocklist(
         reason (BlocklistReasons): The reason why the link is blocklisted.
             See `backend.enums.BlocklistReason`.
 
+    Raises:
+        ValueError: No page link or download link supplied.
+
     Returns:
         BlocklistEntry: Info about the blocklist entry.
     """

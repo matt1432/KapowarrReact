@@ -6,10 +6,9 @@ from typing import Any
 
 from backend.base.definitions import (
     ApiResponse,
-    BlocklistReason,
-    BlocklistReasonID,
+    BrokenClientReason,
     DownloadSource,
-    FailReason,
+    EnqueuingDownloadFailureReason,
     KapowarrException,
 )
 from backend.base.logging import LOGGER
@@ -421,35 +420,12 @@ class DownloadNotFound(KapowarrException):
 
 
 class LinkBroken(KapowarrException):
-    "Download link doesn't work"
+    "The link is broken"
 
-    def __init__(self, reason: BlocklistReason) -> None:
-        self.reason = reason
-        self.reason_text = reason.value
-        self.reason_id = BlocklistReasonID[reason.name].value
-        LOGGER.warning(f"Download link is broken: {self.reason_text}")
-        return
-
-    @property
-    def api_response(self) -> ApiResponse:
-        return {
-            "code": 400,
-            "error": self.__class__.__name__,
-            "result": {
-                "reason_text": self.reason_text,
-                "reason_id": self.reason_id,
-            },
-        }
-
-
-class FailedGCPage(KapowarrException):
-    "Something failed processing the GetComics page"
-
-    def __init__(self, reason: FailReason) -> None:
-        self.reason = reason
-        self.reason_text = reason.value
+    def __init__(self, link: str) -> None:
+        self.link = link
         LOGGER.warning(
-            f"Failed processing the GetComics page: {self.reason_text}"
+            f"Link is broken: {self.link}"
         )
         return
 
@@ -458,7 +434,31 @@ class FailedGCPage(KapowarrException):
         return {
             "code": 400,
             "error": self.__class__.__name__,
-            "result": {"reason_text": self.reason.value},
+            "result": {
+                "link": self.link
+            }
+        }
+
+
+class EnqueuingDownloadFailure(KapowarrException):
+    "Failed to enqueue download"
+
+    def __init__(self, reason: EnqueuingDownloadFailureReason) -> None:
+        self.reason = reason
+        self.reason_text = reason.value
+        LOGGER.warning(
+            f"Failed to enqueue download: {self.reason_text}"
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {
+                "reason_text": self.reason.value
+            }
         }
 
 
@@ -469,7 +469,7 @@ class DownloadLimitReached(KapowarrException):
         self.source = source
         self.source_text = source.value
         LOGGER.warning(
-            f"Download source {self.source_text} has reached it's download limit"
+            f"Download source {self.source_text} has reached its download limit"
         )
         return
 
@@ -520,12 +520,30 @@ class CredentialNotFound(KapowarrException):
 
 
 class CredentialInvalid(KapowarrException):
-    "A credential is incorrect (can't login with it)"
+    "Failed to login with the given credentials"
 
-    def __init__(self, description: str) -> None:
-        self.desc = description
+    def __init__(self) -> None:
+        LOGGER.warning("Failed to login with the given credentials")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {}
+        }
+
+
+# region Download Clients
+class ClientNotWorking(KapowarrException):
+    "The download client is not working"
+
+    def __init__(self, reason: BrokenClientReason) -> None:
+        self.reason = reason
+        self.reason_text = reason.value
         LOGGER.warning(
-            f"Failed to login with credentials with reason: {self.desc}"
+            f"The download client isn't working: {self.reason_text}"
         )
         return
 
@@ -534,11 +552,12 @@ class CredentialInvalid(KapowarrException):
         return {
             "code": 400,
             "error": self.__class__.__name__,
-            "result": {"description": self.desc},
+            "result": {
+                "reason_text": self.reason_text
+            }
         }
 
 
-# region Download Clients
 class ExternalClientNotFound(KapowarrException):
     "External client with given ID not found"
 
@@ -554,21 +573,20 @@ class ExternalClientNotFound(KapowarrException):
         return {
             "code": 404,
             "error": self.__class__.__name__,
-            "result": {"external_client_id": self.external_client_id},
+            "result": {
+                "external_client_id": self.external_client_id
+            }
         }
 
 
-class ClientDownloading(KapowarrException):
-    """
-    The external client is desired to be deleted
-    but there is a download using it
-    """
+class ExternalClientDownloading(KapowarrException):
+    "External client is desired to be deleted but there is a download using it"
 
-    def __init__(self, client_id: int) -> None:
-        self.client_id = client_id
+    def __init__(self, external_client_id: int) -> None:
+        self.external_client_id = external_client_id
         LOGGER.warning(
             "The external client is desired to be deleted but "
-            f"there is a download using it: {client_id}"
+            f"there is a download using it: {external_client_id}"
         )
         return
 
@@ -577,43 +595,9 @@ class ClientDownloading(KapowarrException):
         return {
             "code": 400,
             "error": self.__class__.__name__,
-            "result": {"client_id": self.client_id},
-        }
-
-
-class ClientNotWorking(KapowarrException):
-    "The download client is not working"
-
-    def __init__(self, description: str) -> None:
-        self.desc = description
-        LOGGER.warning(f"The download client isn't working: {self.desc}")
-        return
-
-    @property
-    def api_response(self) -> ApiResponse:
-        return {
-            "code": 400,
-            "error": self.__class__.__name__,
-            "result": {"description": self.desc},
-        }
-
-
-class ExternalClientNotWorking(KapowarrException):
-    "The external client is not working"
-
-    def __init__(self, description: str | None = None) -> None:
-        self.desc = description
-        LOGGER.warning(
-            f"Failed to connect to external client for the following reason: {self.desc}"
-        )
-        return
-
-    @property
-    def api_response(self) -> ApiResponse:
-        return {
-            "code": 400,
-            "error": self.__class__.__name__,
-            "result": {"description": self.desc},
+            "result": {
+                "external_client_id": self.external_client_id
+            }
         }
 
 

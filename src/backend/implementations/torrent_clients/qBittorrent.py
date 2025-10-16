@@ -5,8 +5,13 @@ from time import time
 import requests
 from qbittorrentapi import Client
 
-from backend.base.custom_exceptions import ExternalClientNotWorking
-from backend.base.definitions import Constants, DownloadState, DownloadType
+from backend.base.custom_exceptions import ClientNotWorking
+from backend.base.definitions import (
+    BrokenClientReason,
+    Constants,
+    DownloadState,
+    DownloadType,
+)
 from backend.base.logging import LOGGER
 from backend.implementations.external_clients import BaseExternalClient
 from backend.internals.settings import Settings
@@ -55,13 +60,26 @@ class qBittorrent(BaseExternalClient):
     @staticmethod
     def _login(
         base_url: str, username: str | None, password: str | None
-    ) -> Client | str:
+    ) -> Client:
+        """Login into qBittorrent client.
+        Args:
+            base_url (str): Base URL of instance.
+            username (Union[str, None]): Username to access client, if set.
+            password (Union[str, None]): Password to access client, if set.
+
+        Raises:
+            ClientNotWorking: Can't connect to client.
+            CredentialInvalid: Credentials are invalid.
+
+        Returns:
+            Session: Request session that is logged in.
+        """
         try:
             ssn = Client(host=base_url, username=username, password=password)
 
         except Exception:
             LOGGER.exception("Can't connect to qBittorrent instance: ")
-            return "Can't connect; invalid base URL"
+            raise ClientNotWorking(BrokenClientReason.CONNECTION_ERROR)
 
         return ssn
 
@@ -78,10 +96,7 @@ class qBittorrent(BaseExternalClient):
             )
 
         if not self.ssn:
-            result = self._login(self.base_url, self.username, self.password)
-            if isinstance(result, str):
-                raise ExternalClientNotWorking(result)
-            self.ssn = result
+            self.ssn = self._login(self.base_url, self.username, self.password)
 
         if download_link.startswith("magnet"):
             self.ssn.torrents_add(
@@ -125,19 +140,16 @@ class qBittorrent(BaseExternalClient):
                 self.ssn.torrents_resume(torrent_hashes=t_hash)
 
         if t_hash is None:
-            raise ExternalClientNotWorking()
+            raise ClientNotWorking(BrokenClientReason.FAILED_PROCESSING_RESPONSE)
 
         self.torrent_hashes[t_hash] = None
         return t_hash
 
     def get_download(self, download_id: str) -> dict | None:
         if not self.ssn:
-            ssn_result = self._login(
+            self.ssn = self._login(
                 self.base_url, self.username, self.password
             )
-            if isinstance(ssn_result, str):
-                raise ExternalClientNotWorking(ssn_result)
-            self.ssn = ssn_result
 
         r = self.ssn.torrents_info(torrent_hashes=download_id).data
         if not r:
@@ -176,10 +188,7 @@ class qBittorrent(BaseExternalClient):
 
     def delete_download(self, download_id: str, delete_files: bool) -> None:
         if not self.ssn:
-            result = self._login(self.base_url, self.username, self.password)
-            if isinstance(result, str):
-                raise ExternalClientNotWorking(result)
-            self.ssn = result
+            self.ssn = self._login(self.base_url, self.username, self.password)
 
         self.ssn.torrents_delete(
             torrent_hashes=download_id, delete_files=delete_files
@@ -195,9 +204,7 @@ class qBittorrent(BaseExternalClient):
         username: str | None = None,
         password: str | None = None,
         api_token: str | None = None,
-    ) -> str | None:
-        result = qBittorrent._login(base_url, username, password)
+    ) -> None:
+        qBittorrent._login(base_url, username, password)
 
-        if isinstance(result, str):
-            return result
-        return None
+        return

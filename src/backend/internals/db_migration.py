@@ -615,11 +615,9 @@ class MigrateClearUnsupportedSourceBlocklistEntries(DBMigrator):
     def run(self) -> None:
         # V20 -> V21
 
-        from backend.base.definitions import BlocklistReasonID
-
         get_db().execute(
             "DELETE FROM blocklist WHERE reason = ?;",
-            (BlocklistReasonID.SOURCE_NOT_SUPPORTED.value,),
+            (2,) # Source not supported
         )
         return
 
@@ -1337,4 +1335,17 @@ class MigrateSeperateCoversTable(DBMigrator):
             PRAGMA foreign_keys = ON;
         """)
 
+        return
+
+
+class MigrateRemoveUnsupportedSourceBlocklistEntries(DBMigrator):
+    start_version = 43
+
+    def run(self) -> None:
+        # V43 -> V44
+
+        get_db().execute(
+            "DELETE FROM blocklist WHERE reason = ?;",
+            (2,) # Source not supported
+        )
         return

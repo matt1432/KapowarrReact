@@ -11,6 +11,7 @@ from time import time
 from typing import Any, assert_never
 
 from backend.base.custom_exceptions import (
+    InvalidKey,
     InvalidKeyValue,
     IssueNotFound,
     TaskForVolumeRunning,
@@ -206,7 +207,7 @@ class Issue:
             data (Mapping[str, Any]): The keys and their new values.
 
         Raises:
-            KeyError: Key is not allowed.
+            InvalidKey: Key is not allowed.
             InvalidKeyValue: Value of key is not allowed.
         """
         allowed_keys: Sequence[str] = (
@@ -220,7 +221,7 @@ class Issue:
 
         for key, value in data.items():
             if key not in allowed_keys:
-                raise KeyError
+                raise InvalidKey(key)
             if key in allowed_keys:
                 if key == "monitored":
                     formatted_data[key] = self.__format_value(key, value)
@@ -247,7 +248,7 @@ class Issue:
             __value (Any): The new value of the aspect.
 
         Raises:
-            KeyError: Key is not allowed.
+            InvalidKey: Key is not allowed.
             InvalidKeyValue: Value of key is not allowed.
         """
         self.update({__name: __value})
@@ -601,7 +602,7 @@ class Volume:
 
         for key in data:
             if key not in allowed_keys:
-                raise KeyError
+                raise InvalidKey(key)
 
         cursor = get_db()
         for key, value in data.items():
@@ -622,7 +623,7 @@ class Volume:
             __value (Any): The new value of the aspect.
 
         Raises:
-            KeyError: Key is not allowed.
+            InvalidKey: Key is not allowed.
             InvalidKeyValue: Value of key is not allowed.
         """
         self.update({__name: __value})

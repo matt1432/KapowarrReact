@@ -932,6 +932,9 @@ class AsyncSession(ClientSession):
             if the request fails. Return an empty string instead.
                 Defaults to False.
 
+        Raises:
+            ClientError: Request failed and quiet_fail is False.
+
         Returns:
             str: The body of the response.
         """
@@ -964,6 +967,9 @@ class AsyncSession(ClientSession):
             quiet_fail (bool, optional): If True, don't raise an exception
             if the request fails. Return an empty bytestring instead.
                 Defaults to False.
+
+        Raises:
+            ClientError: Request failed and quiet_fail is False.
 
         Returns:
             bytes: The content of the response.

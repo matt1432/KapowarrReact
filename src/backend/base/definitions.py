@@ -440,7 +440,6 @@ class BlocklistReasonID(BaseEnum):
     "The ID assosiated with the reason for putting a link on the blocklist"
 
     LINK_BROKEN = 1
-    SOURCE_NOT_SUPPORTED = 2
     NO_WORKING_LINKS = 3
     ADDED_BY_USER = 4
 
@@ -449,22 +448,35 @@ class BlocklistReason(BaseEnum):
     "The reason for putting a link on the blocklist"
 
     LINK_BROKEN = "Link broken"
-    SOURCE_NOT_SUPPORTED = "Source not supported"
     NO_WORKING_LINKS = "No supported or working links"
     ADDED_BY_USER = "Added by user"
 
+class BrokenClientReason(BaseEnum):
+    """"
+    The reason that a download client is not working
+    (aside from an invalid link)
+    """
 
-class FailReason(BaseEnum):
+    CONNECTION_ERROR = "Failed to connect"
+    NOT_CLIENT_INSTANCE = "What was connected to was not the expected client"
+    VERSION_NOT_SUPPORTED = "The version is not supported"
+    FAILED_PROCESSING_RESPONSE = "Got an unexpected response back"
+    ACCESS_DENIED = "Access denied by client but not because of invalid credentials"
+    """
+    Access denied not because credentials are invalid but because,
+    e.g., Mega failed to log in anonymously or a webpage is blocked by CF
+    """
+
+
+class EnqueuingDownloadFailureReason(BaseEnum):
     "The reason a download failed to be added to the queue"
 
     WEBPAGE_BROKEN = "Webpage unavailable"
-    NO_MATCHES = (
-        "No links found on webpage that match to volume and are not blocklisted"
-    )
-    NO_WORKING_LINKS = "No working download links found on webpage"
+    NO_MATCHES = "No links found on webpage that match to volume and are not blocklisted"
+    NO_WORKING_LINKS = "All download links found on the webpage are broken"
+    ONLY_RATE_LIMITED_LINKS = "All working download links on the webpage are from rate limited services"
 
-    LINK_BROKEN = "Download broken"
-    LIMIT_REACHED = "Download limit reached for service"
+    LINK_BROKEN = "Download link broken"
 
 
 class DownloadType(BaseEnum):
@@ -990,8 +1002,9 @@ class ExternalDownloadClient(ABC):
             the client settings.
 
         Raises:
-            ClientDownloading: There is a download using the client.
-            ExternalClientNotWorking: Failed to connect to the client.
+            ExternalClientDownloading: There is a download using the client.
+            ClientNotWorking: Can't connect to client.
+            CredentialInvalid: Credentials are invalid.
             KeyNotFound: A required key was not found.
             InvalidKeyValue: One of the parameters has an invalid argument.
         """
@@ -1002,7 +1015,7 @@ class ExternalDownloadClient(ABC):
         """Delete the client.
 
         Raises:
-            ClientDownloading: There is a download using the client.
+            ExternalClientDownloading: There is a download using the client.
         """
         ...
 
@@ -1023,7 +1036,8 @@ class ExternalDownloadClient(ABC):
             or file. Set to `None` to keep original name.
 
         Raises:
-            ExternalClientNotWorking: Can't connect to client.
+            ClientNotWorking: Can't connect to client.
+            CredentialInvalid: Credentials are invalid.
 
         Returns:
             str: The ID/hash of the entry in the download client.
@@ -1038,7 +1052,8 @@ class ExternalDownloadClient(ABC):
             download_id (str): The ID/hash of the download to get info of.
 
         Raises:
-            ExternalClientNotWorking: Can't connect to client.
+            ClientNotWorking: Can't connect to client.
+            CredentialInvalid: Credentials are invalid.
 
         Returns:
             Union[dict[str, Any], None]: The status of the download,
@@ -1052,7 +1067,8 @@ class ExternalDownloadClient(ABC):
         """Remove the download from the client.
 
         Raises:
-            ExternalClientNotWorking: Can't connect to client.
+            ClientNotWorking: Can't connect to client.
+            CredentialInvalid: Credentials are invalid.
 
         Args:
             download_id (str): The ID/hash of the download to delete.
@@ -1067,7 +1083,7 @@ class ExternalDownloadClient(ABC):
         username: str | None,
         password: str | None,
         api_token: str | None,
-    ) -> str | None:
+    ) -> None:
         """Check if a download client is working.
 
         Args:
@@ -1076,9 +1092,12 @@ class ExternalDownloadClient(ABC):
             password (Union[str, None]): The password to access the client, if set.
             api_token (Union[str, None]): The API token to access the client, if set.
 
+        Raises:
+            ClientNotWorking: Can't connect to client.
+            CredentialInvalid: Credentials are invalid.
+
         Returns:
-            Union[str, None]: If it's a fail, the reason for failing. If it's
-            a success, `None`.
+            None: Test was successful
         """
         ...
 
@@ -1291,10 +1310,15 @@ class Download(ABC):
                 Defaults to False.
 
         Raises:
+            IssueNotFound: The download refers to issues that don't exist in the
+                volume, and download is not forced.
+
+            ClientNotWorking: Some problem occured in the client.
+
             LinkBroken: The link doesn't work.
 
-            IssueNotFound: The download refers to issues that don't exist in the
-            volume, and download is not forced.
+            DownloadLimitReached: Can't download because the limit of the service
+                is reached.
         """
         ...
 
@@ -1304,6 +1328,8 @@ class Download(ABC):
         Start the download.
 
         Raises:
+            LinkBroken: The link doesn't work.
+
             DownloadLimitReached: At the source that is downloaded from,
             we've reached a rate limit.
         """
@@ -1418,10 +1444,32 @@ class ExternalDownload(Download):
                 Defaults to None.
 
         Raises:
-            LinkBroken: The link doesn't work
-
             IssueNotFound: The download refers to issues that don't exist in the
-            volume, and download is not forced.
+                volume, and download is not forced.
+
+            ClientNotWorking: Some problem occured in the client.
+
+            LinkBroken: The link doesn't work.
+
+            DownloadLimitReached: Can't download because the limit of the service
+                is reached.
+        """
+        ...
+
+    @abstractmethod
+    def run(self) -> None:
+        """
+        Start the download.
+
+        Raises:
+            ClientNotWorking: Can't connect to client.
+
+            CredentialInvalid: Credentials are invalid.
+
+            LinkBroken: The link doesn't work.
+
+            DownloadLimitReached: At the source that is downloaded from,
+                we've reached a rate limit.
         """
         ...
 
@@ -1429,7 +1477,11 @@ class ExternalDownload(Download):
     def update_status(self) -> None:
         """
         Update the various variables about the state/progress
-        of the external download
+        of the external download.
+
+        Raises:
+            ClientNotWorking: Can't connect to client.
+            CredentialInvalid: Credentials are invalid.
         """
         ...
 
@@ -1439,6 +1491,10 @@ class ExternalDownload(Download):
 
         Args:
             delete_files (bool): Delete downloaded files.
+
+        Raises:
+            ClientNotWorking: Can't connect to client.
+            CredentialInvalid: Credentials are invalid.
         """
         ...
 
