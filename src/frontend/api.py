@@ -7,33 +7,10 @@ from typing import Any
 from flask import Blueprint, Request, Response, request, send_file
 
 from backend.base.custom_exceptions import (
-    BlocklistEntryNotFound,
-    ClientDownloading,
-    CredentialInvalid,
-    CredentialNotFound,
-    CVRateLimitReached,
-    DownloadNotFound,
-    ExternalClientNotFound,
-    ExternalClientNotWorking,
-    FileNotFound,
-    FolderNotFound,
-    InvalidComicVineApiKey,
     InvalidKeyValue,
-    InvalidSettingKey,
-    InvalidSettingModification,
-    InvalidSettingValue,
-    IssueNotFound,
+    KapowarrException,
     KeyNotFound,
-    LogFileNotFound,
-    RootFolderInUse,
-    RootFolderInvalid,
-    RootFolderNotFound,
-    TaskForVolumeRunning,
-    TaskNotDeletable,
     TaskNotFound,
-    VolumeAlreadyAdded,
-    VolumeDownloadedFor,
-    VolumeNotFound,
 )
 from backend.base.definitions import (
     BlocklistReason,
@@ -116,40 +93,8 @@ def error_handler(method: Callable[[Any], Any]) -> Any:
         try:
             return method(*args, **kwargs)
 
-        except (
-            BlocklistEntryNotFound,
-            ClientDownloading,
-            CredentialInvalid,
-            CredentialNotFound,
-            CVRateLimitReached,
-            DownloadNotFound,
-            ExternalClientNotFound,
-            ExternalClientNotWorking,
-            FileNotFound,
-            FolderNotFound,
-            InvalidComicVineApiKey,
-            InvalidKeyValue,
-            InvalidSettingKey,
-            InvalidSettingModification,
-            InvalidSettingValue,
-            IssueNotFound,
-            KeyNotFound,
-            LogFileNotFound,
-            RootFolderInUse,
-            RootFolderInvalid,
-            RootFolderNotFound,
-            TaskForVolumeRunning,
-            TaskNotDeletable,
-            TaskNotFound,
-            VolumeAlreadyAdded,
-            VolumeDownloadedFor,
-            VolumeNotFound,
-        ) as e:
-            return return_api(
-                e.api_response["result"],
-                e.api_response["error"],
-                e.api_response["code"],
-            )
+        except KapowarrException as e:
+            return return_api(**e.api_response)
 
     wrapper.__name__ = method.__name__
     return wrapper

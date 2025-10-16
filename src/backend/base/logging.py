@@ -182,16 +182,16 @@ def get_log_file_contents() -> StringIO:
     """Get all the logs from the log file(s).
 
     Raises:
-        LogFileNotFound: The log file does not exist.
+        FileNotFound: The log file does not exist.
 
     Returns:
         StringIO: The contents of the log file(s).
     """
-    from backend.base.custom_exceptions import LogFileNotFound
+    from backend.base.custom_exceptions import FileNotFound
 
     file = get_log_filepath()
     if not exists(file):
-        raise LogFileNotFound(file)
+        raise FileNotFound(file)
 
     sio = StringIO()
     for ext in (".1", ""):

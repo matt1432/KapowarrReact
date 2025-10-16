@@ -15,16 +15,17 @@ from backend.base.definitions import (
 from backend.base.logging import LOGGER
 
 
-# region API
+# region Input/Output
 class KeyNotFound(KapowarrException):
-    "A key that is required to be given in the API request was not found"
+    "A key was not found in the input that is required to be given"
 
     def __init__(self, key: str) -> None:
         self.key = key
         if key != "password":
             LOGGER.warning(
                 "This key was not found in the API request, "
-                f"even though it's required: {key}"
+                "even though it's required: %s",
+                key,
             )
         return
 
@@ -37,15 +38,35 @@ class KeyNotFound(KapowarrException):
         }
 
 
+class InvalidKey(KapowarrException):
+    "The given key is not recognised. E.g. an invalid setting key."
+
+    def __init__(self, key: str) -> None:
+        self.key = key
+        LOGGER.warning(f"The given key is not recognised: {key}")
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"key": self.key},
+        }
+
+
 class InvalidKeyValue(KapowarrException):
-    "A key given in the API request has an invalid value"
+    "The value of a key is invalid"
 
     def __init__(self, key: str = "", value: Any = "") -> None:
         self.key = key
         self.value = value
         if value not in ("undefined", "null"):
+            # Avoid logging when "null" API key is given by UI
             LOGGER.warning(
-                f"This key in the API request has an invalid value: {key} = {value}"
+                "This key in the API request has an invalid value: %s = %s",
+                key,
+                value,
             )
         return
 
@@ -59,41 +80,6 @@ class InvalidKeyValue(KapowarrException):
 
 
 # region Settings
-class InvalidSettingKey(KapowarrException):
-    "The setting key is unknown"
-
-    def __init__(self, key: str) -> None:
-        self.key = key
-        LOGGER.warning(f"No setting matched the given key: {key}")
-        return
-
-    @property
-    def api_response(self) -> ApiResponse:
-        return {
-            "code": 400,
-            "error": self.__class__.__name__,
-            "result": {"key": self.key},
-        }
-
-
-class InvalidSettingValue(KapowarrException):
-    "The setting value is invalid"
-
-    def __init__(self, key: str, value: Any):
-        self.key = key
-        self.value = value
-        LOGGER.warning(f"The value for this setting is invalid: {key}={value}")
-        return
-
-    @property
-    def api_response(self) -> ApiResponse:
-        return {
-            "code": 400,
-            "error": self.__class__.__name__,
-            "result": {"key": self.key, "value": self.value},
-        }
-
-
 class InvalidSettingModification(KapowarrException):
     "The setting is not allowed to be changed this way"
 
@@ -153,23 +139,6 @@ class FileNotFound(KapowarrException):
             "code": 404,
             "error": self.__class__.__name__,
             "result": {"file_id": self.file_id, "filepath": self.filepath},
-        }
-
-
-class LogFileNotFound(KapowarrException):
-    "The log file was not found"
-
-    def __init__(self, log_file: str) -> None:
-        self.log_file = log_file
-        LOGGER.warning("The log file was not found: %s", log_file)
-        return
-
-    @property
-    def api_response(self) -> ApiResponse:
-        return {
-            "code": 404,
-            "error": self.__class__.__name__,
-            "result": {"log_file": self.log_file},
         }
 
 

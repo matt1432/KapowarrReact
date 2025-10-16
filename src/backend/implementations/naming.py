@@ -8,7 +8,7 @@ from os.path import abspath, basename, isdir, isfile, join, splitext
 from re import compile, findall
 from sys import platform
 
-from backend.base.custom_exceptions import InvalidSettingValue
+from backend.base.custom_exceptions import InvalidKeyValue
 from backend.base.definitions import (
     SV_TO_FULL_TERM,
     SV_TO_SHORT_TERM,
@@ -521,7 +521,7 @@ def check_mock_filename(
         or `None` if the current one should be used.
 
     Raises:
-        InvalidSettingValue: One of the formats is insufficient.
+        InvalidKeyValue: One of the formats is insufficient.
     """
     naming_mocks = {
         "file_naming_special_version": [
@@ -744,7 +744,7 @@ def check_mock_filename(
                     )
                 )
             ):
-                raise InvalidSettingValue(key, value)
+                raise InvalidKeyValue(key, value)
     return
 
 
