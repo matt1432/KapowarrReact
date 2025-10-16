@@ -22,7 +22,7 @@ from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from backend.base.definitions import Constants, SocketEvent, StartType
 from backend.base.files import folder_path
 from backend.base.helpers import Singleton
-from backend.base.logging import LOGGER, set_log_level, setup_logging
+from backend.base.logging import LOGGER, setup_logging
 from backend.internals.db import (
     DBConnectionManager,
     close_db,
@@ -602,8 +602,7 @@ def setup_process(
     db_folder: str | None,
     ws_queue: SimpleQueue,
 ) -> Callable[[], AppContext]:
-    setup_logging(log_folder, log_file, do_rollover=False)
-    set_log_level(log_level)
+    setup_logging(log_folder, log_file, log_level, do_rollover=False)
     set_db_location(db_folder)
     setup_db_adapters_and_converters()
 
