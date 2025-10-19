@@ -4,7 +4,7 @@ from zipfile import ZipFile
 
 from PIL import Image
 
-from backend.base.definitions import Constants, ThumbnailData
+from backend.base.definitions import Constants, FileConstants, ThumbnailData
 from backend.base.files import (
     create_folder,
     delete_file_folder,
@@ -116,7 +116,8 @@ def _generate_page_thumbnails(
     new_pages: list[str] = []
 
     for page in original_pages:
-        new_pages.append(_generate_thumbnail(page, thumbnails_folder))
+        if page.endswith(FileConstants.IMAGE_EXTENSIONS):
+            new_pages.append(_generate_thumbnail(page, thumbnails_folder))
 
     volume_folder = Volume(volume_id).vd.folder
     delete_file_folder(generate_archive_folder(volume_folder, file_path))
