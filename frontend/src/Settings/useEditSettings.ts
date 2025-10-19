@@ -19,7 +19,7 @@ import type { SettingsValue } from 'typings/Settings';
 // IMPLEMENTATIONS
 
 export default function useEditSettings() {
-    const { settings, isSuccess, refetch } = useGetSettingsQuery(undefined, {
+    const { settings, refetch } = useGetSettingsQuery(undefined, {
         selectFromResult: ({ data, isSuccess }) => ({
             settings: data,
             isSuccess,
@@ -28,32 +28,30 @@ export default function useEditSettings() {
 
     const [saveSettings] = useSaveSettingsMutation();
 
-    const [isSaving, setIsSaving] = useState(false);
     const [changes, setChanges] = useState<SettingsValue>(settings!);
 
-    const [wasSuccess, setWasSuccess] = useState(false);
-
-    if (isSuccess !== wasSuccess) {
-        setWasSuccess(isSuccess);
-
-        if (isSuccess) {
-            setIsSaving(false);
-            setChanges(settings!);
-        }
+    const [isSaving, setIsSaving] = useState(false);
+    const [prevSettings, setPrevSettings] = useState(settings);
+    if (settings !== prevSettings) {
+        setPrevSettings(settings);
+        setChanges(settings!);
     }
 
-    const onSavePress = useCallback(() => {
+    const onSavePress = useCallback(async () => {
         setIsSaving(true);
-        saveSettings(
+
+        await saveSettings(
             filterObject(
                 changes,
                 ([key, value]) =>
                     key !== 'apiKey' &&
                     value !== settings?.[key as keyof typeof changes],
             ),
-        ).finally(() => {
-            refetch();
-        });
+        );
+
+        await refetch();
+
+        setIsSaving(false);
     }, [changes, refetch, saveSettings, settings]);
 
     const handleInputChange = useCallback(
