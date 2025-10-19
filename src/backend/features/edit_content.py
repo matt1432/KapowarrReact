@@ -126,6 +126,9 @@ def _generate_page_thumbnails(
 
 
 def _get_thumbnails_data(thumbnails: list[str]) -> list[ThumbnailData]:
+    if len(thumbnails) == 0:
+        return []
+
     thumbnails_data: list[ThumbnailData] = []
 
     filenames = [basename(thumbnail) for thumbnail in thumbnails]
