@@ -16,6 +16,10 @@ def get_files_prefix(files: list[str]) -> str:
     for filename in files:
         match = list(re.finditer(r"\d+", basename(filename)))
 
+        # Get positions relative to full path
+        if match:
+            match = list(re.finditer(r"[0-9]+", filename))
+
         if match:
             last = match[-1]
             prefixes.append(filename[: last.start()])
