@@ -34,7 +34,9 @@ def find_outliers(files: list[ZipInfo]) -> list[str]:
     filenames: list[str] = []
 
     for file in files:
-        if not file.is_dir():
+        if not file.is_dir() and file.filename.endswith(
+            FileConstants.IMAGE_EXTENSIONS
+        ):
             filenames.append(file.filename)
 
     most_common_prefix = get_files_prefix(filenames)
