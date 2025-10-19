@@ -4,6 +4,7 @@
 import { useCallback } from 'react';
 
 // Redux
+import { useGetThumbnailURLsMutation } from 'Store/Api/Issues';
 
 // Misc
 import { icons, kinds, tooltipPositions } from 'Helpers/Props';
@@ -25,6 +26,7 @@ import Popover from 'Components/Tooltip/Popover';
 // Specific Components
 import MediaInfo from '../MediaInfo';
 import EditFileModal from 'Issue/Edit/EditFileModal';
+import EditPagesModal from 'Issue/EditPages';
 
 // CSS
 import styles from './index.module.css';
@@ -40,6 +42,7 @@ import type { CustomBaseQuery } from 'Store/Api/base';
 import type { Volume } from 'Volume/Volume';
 
 interface IssueFileRowProps {
+    issueId: number;
     id: number;
     path: string | undefined;
     size: number | undefined;
@@ -64,6 +67,7 @@ interface IssueFileRowProps {
 // IMPLEMENTATIONS
 
 export default function IssueFileRow({
+    issueId,
     id,
     path,
     size = 0,
@@ -77,14 +81,30 @@ export default function IssueFileRow({
         setRemoveIssueFileModalOpen,
         setRemoveIssueFileModalClosed,
     ] = useModalOpenState(false);
+
     const [isEditFileModalOpen, setEditFileModalOpen, setEditFileModalClosed] =
         useModalOpenState(false);
+
+    const [
+        isEditPagesModalOpen,
+        setEditPagesModalOpen,
+        setEditPagesModalClosed,
+    ] = useModalOpenState(false);
 
     const handleRemoveIssueFilePress = useCallback(() => {
         onDeleteIssueFile();
 
         setRemoveIssueFileModalClosed();
     }, [onDeleteIssueFile, setRemoveIssueFileModalClosed]);
+
+    const [getThumbnails, { data: thumbnails }] = useGetThumbnailURLsMutation();
+
+    const handleEditPagesPress = useCallback(() => {
+        if (path) {
+            getThumbnails({ issueId, filepath: path });
+            setEditPagesModalOpen();
+        }
+    }, [getThumbnails, issueId, path, setEditPagesModalOpen]);
 
     return (
         <TableRow>
@@ -129,6 +149,12 @@ export default function IssueFileRow({
                             />
 
                             <IconButton
+                                title={translate('EditPages')}
+                                name={icons.EDIT_PAGES}
+                                onPress={handleEditPagesPress}
+                            />
+
+                            <IconButton
                                 title={translate('DeleteIssueFromDisk')}
                                 name={icons.REMOVE}
                                 onPress={setRemoveIssueFileModalOpen}
@@ -158,6 +184,13 @@ export default function IssueFileRow({
                 refetchFiles={refetchFiles}
                 onDeleteFilePress={setRemoveIssueFileModalOpen}
                 onModalClose={setEditFileModalClosed}
+            />
+
+            <EditPagesModal
+                fileId={id}
+                thumbnails={thumbnails}
+                isOpen={isEditPagesModalOpen}
+                onModalClose={setEditPagesModalClosed}
             />
         </TableRow>
     );

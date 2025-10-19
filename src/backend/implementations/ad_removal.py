@@ -8,6 +8,24 @@ from backend.base.logging import LOGGER
 from backend.implementations.converters import CBRtoCBZ, CBZtoCBR
 
 
+def get_files_prefix(files: list[str]) -> str:
+    # Extract prefix: everything up to the last occurrence of 1 or more digits
+    prefixes = []
+
+    for filename in files:
+        match = list(re.finditer(r"\d+", basename(filename)))
+
+        if match:
+            last = match[-1]
+            prefixes.append(filename[: last.start()])
+        else:
+            prefixes.append(
+                filename
+            )  # If no digit sequence, use the whole string as prefix
+
+    return Counter(prefixes).most_common(1)[0][0]
+
+
 def find_outliers(files: list[ZipInfo]) -> list[str]:
     """
     From a list of files inside a zip file, get a list of files
@@ -19,21 +37,7 @@ def find_outliers(files: list[ZipInfo]) -> list[str]:
         if not file.is_dir():
             filenames.append(file.filename)
 
-    # Extract prefix: everything up to the last occurrence of 1 or more digits
-    prefixes = []
-
-    for filename in filenames:
-        match = list(re.finditer(r"\d+", basename(filename)))
-
-        if match:
-            last = match[-1]
-            prefixes.append(filename[: last.start()])
-        else:
-            prefixes.append(
-                filename
-            )  # If no digit sequence, use the whole string as prefix
-
-    most_common_prefix = Counter(prefixes).most_common(1)[0][0]
+    most_common_prefix = get_files_prefix(filenames)
 
     outliers: list[str] = []
 

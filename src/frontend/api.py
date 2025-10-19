@@ -23,6 +23,7 @@ from backend.base.definitions import (
     MonitorScheme,
     SearchResultData,
     SpecialVersion,
+    ThumbnailData,
     VolumeData,
 )
 from backend.base.helpers import hash_password
@@ -32,6 +33,11 @@ from backend.features.download_queue import (
     delete_download_history,
     get_download_history,
     get_download_history_total_records,
+)
+from backend.features.edit_content import (
+    get_issue_page_thumbnail,
+    get_issue_page_thumbnails,
+    update_issue_pages,
 )
 from backend.features.library_import import (
     import_library,
@@ -879,6 +885,26 @@ def api_volume_cover(id: int) -> tuple[Response, int]:
     return send_file(cover, mimetype="image/jpeg"), 200
 
 
+@api.route("/issues/<int:id>/thumbnails", methods=["GET"])
+@error_handler
+@auth
+def api_issue_thumbnails(id: int) -> ApiReturn:
+    filepath = extract_key(request, "filepath", False)
+    thumbnails = get_issue_page_thumbnails(id, filepath)
+
+    return return_api(thumbnails)
+
+
+@api.route("/thumbnail", methods=["GET"])
+@error_handler
+@auth
+def api_issue_thumbnail() -> tuple[Response, int]:
+    filepath = extract_key(request, "filepath", False)
+    thumbnail = get_issue_page_thumbnail(filepath)
+
+    return send_file(thumbnail, mimetype="image/jpeg"), 200
+
+
 @api.route("/issues/<int:id>", methods=["GET", "PUT"])
 @error_handler
 @auth
@@ -1371,13 +1397,18 @@ def api_mass_editor() -> ApiReturn:
 # =====================
 # Files
 # =====================
-@api.route("/files/<int:f_id>", methods=["GET", "PUT", "DELETE"])
+@api.route("/files/<int:f_id>", methods=["GET", "POST", "PUT", "DELETE"])
 @error_handler
 @auth
 def api_files(f_id: int) -> ApiReturn | None:
     if request.method == "GET":
         result = FilesDB.fetch(file_id=f_id)[0]
         return return_api(result)
+
+    elif request.method == "POST":
+        new_pages: list[ThumbnailData] = request.get_json()
+        update_issue_pages(f_id, new_pages)
+        return return_api({})
 
     elif request.method == "PUT":
         edit_info: dict[str, Any] = request.get_json()

@@ -60,6 +60,8 @@ class Constants:
     CV_CACHE_NAME = "cv_cache.sqlite"
     "Name of database file itself"
 
+    THUMBNAILS_FOLDER_NAME = "thumbnails"
+
     DB_TIMEOUT = 10.0  # seconds
     "Seconds to wait on database command before timing out"
 
@@ -611,6 +613,12 @@ class ApiResponse(TypedDict):
     result: Any
     error: str | None
     code: int
+
+
+class ThumbnailData(TypedDict):
+    filepath: str
+    filename: str
+    prefix: str
 
 
 class FileExtraInfo(TypedDict):

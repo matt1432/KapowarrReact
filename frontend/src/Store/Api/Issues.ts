@@ -23,6 +23,16 @@ export interface UpdateIssueParams {
     calledFrom?: string;
 }
 
+export interface RawThumbnailData {
+    filepath: string;
+    filename: string;
+    prefix: string;
+}
+
+export type ThumbnailData = RawThumbnailData & {
+    src: string;
+};
+
 // IMPLEMENTATIONS
 
 const extendedApi = baseApi.injectEndpoints({
@@ -38,6 +48,42 @@ const extendedApi = baseApi.injectEndpoints({
 
             transformResponse: (response: { result: RawIssueData }) =>
                 camelize(response.result),
+        }),
+
+        getThumbnailURLs: build.mutation<
+            ThumbnailData[],
+            { issueId: number; filepath: string }
+        >({
+            query: ({ issueId, filepath }) => ({
+                method: 'GET',
+                url: `issues/${issueId}/thumbnails`,
+                params: {
+                    filepath,
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+
+            transformResponse: (response: { result: RawThumbnailData[] }) =>
+                response.result.map(({ filepath, ...rest }) => ({
+                    src: `${window.Kapowarr.urlBase}/api/thumbnail?api_key=${window.Kapowarr.apiKey}&filepath=${filepath}`,
+                    filepath,
+                    ...rest,
+                })),
+        }),
+
+        // POST
+        updateBookPages: build.mutation<
+            void,
+            { fileId: number; newPages: RawThumbnailData[] }
+        >({
+            query: ({ fileId, newPages: body }) => ({
+                method: 'POST',
+                url: `files/${fileId}`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+                body,
+            }),
         }),
 
         // PUT
@@ -56,6 +102,8 @@ const extendedApi = baseApi.injectEndpoints({
 
 export const {
     useGetIssueQuery,
+    useGetThumbnailURLsMutation,
     useLazyGetIssueQuery,
+    useUpdateBookPagesMutation,
     useUpdateIssueMutation,
 } = extendedApi;

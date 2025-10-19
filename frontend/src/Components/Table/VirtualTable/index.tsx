@@ -103,7 +103,7 @@ export default function VirtualTable<T extends ExtendableRecord>({
             listRef.current?.element?.scrollTo(0, scrollTop);
         }, 10);
 
-        currentScrollListener.addEventListener('scroll', handleScroll);
+        currentScrollListener?.addEventListener('scroll', handleScroll);
 
         return () => {
             handleScroll.cancel();

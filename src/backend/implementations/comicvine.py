@@ -376,7 +376,7 @@ class ComicVine:
         return run(_test_token())
 
     async def fetch_volume(self, cv_id: str | int) -> VolumeMetadata:
-        """Get the metadata of a volume from ComicVine, including it's issues.
+        """Get the metadata of a volume from ComicVine, including its issues.
 
         Args:
             cv_id (Union[str, int]): The CV ID of the volume.

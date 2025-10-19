@@ -72,6 +72,7 @@ in {
           simyan # from overrides
           libgencomics # from overrides
           qbittorrent-api
+          pillow
           ;
       };
 

@@ -7,7 +7,7 @@
 .actions {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
-    width: 95px;
+    width: 125px;
 }
 
 .pages {

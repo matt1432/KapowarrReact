@@ -106,6 +106,7 @@ export default function IssueSummary({ volumeId, issueId }: IssueSummaryProps) {
                                 dpi,
                             }) => (
                                 <IssueFileRow
+                                    issueId={issueId}
                                     id={id}
                                     path={filepath}
                                     size={size}

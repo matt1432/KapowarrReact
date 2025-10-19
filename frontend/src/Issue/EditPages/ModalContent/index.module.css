@@ -1,0 +1,23 @@
+.row {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+}
+
+.imageContainer {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+.inputContainer {
+    display: flex;
+    justify-content: center;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5;
+    justify-content: center;
+}
