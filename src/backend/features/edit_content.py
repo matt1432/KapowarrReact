@@ -18,7 +18,7 @@ from backend.implementations.volumes import Volume
 from backend.internals.db_models import FilesDB
 
 
-def extract_files(file: str) -> list[str]:
+def _extract_files(file: str) -> list[str]:
     volume_id = FilesDB.volume_of_file(file)
 
     if not volume_id:
@@ -36,7 +36,7 @@ def extract_files(file: str) -> list[str]:
     with ZipFile(file, "r") as zip:
         zip.extractall(archive_folder)
 
-    resulting_files = list_files(archive_folder)
+    resulting_files = list_files(archive_folder) if exists(archive_folder) else []
 
     if is_rar:
         CBZtoCBR.convert(file)
@@ -107,7 +107,7 @@ def _generate_page_thumbnails(
     if not volume_id or extension not in ("cbr", "cbz"):
         return []
 
-    original_pages = extract_files(file_path)
+    original_pages = _extract_files(file_path)
 
     thumbnails_folder = _get_thumbnails_folder(issue_id, file_path)
 
