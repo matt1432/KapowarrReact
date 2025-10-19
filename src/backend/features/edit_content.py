@@ -199,10 +199,10 @@ def update_issue_pages(file_id: int, new_pages: list[ThumbnailData]) -> None:
                 zip.write(filename=join(archive_folder, f), arcname=f)
 
             for page in new_pages:
-                if f == basename(page["filepath"]):
+                if basename(f) == basename(page["filepath"]):
                     zip.write(
                         filename=join(archive_folder, f),
-                        arcname=page["filename"],
+                        arcname=join(dirname(f), page["filename"]),
                     )
 
     delete_file_folder(archive_folder)
