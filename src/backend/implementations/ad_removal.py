@@ -3,6 +3,7 @@ from collections import Counter
 from os.path import basename, dirname, join
 from zipfile import ZipFile, ZipInfo
 
+from backend.base.definitions import FileConstants
 from backend.base.files import delete_file_folder, generate_archive_folder
 from backend.base.logging import LOGGER
 from backend.implementations.converters import CBRtoCBZ, CBZtoCBR
@@ -50,8 +51,14 @@ def find_outliers(files: list[ZipInfo]) -> list[str]:
 
     # If there are as many outliers as filenames - 1, there are no outliers
     # NB: filenames - 1 because there will always be one file that is not an outlier
-    if len(outliers) == len(filenames) - 1:
-        return []
+    if len(outliers) == len(filenames) - 1 or len(outliers) == 0:
+        no_numbers_outliers: list[str] = []
+
+        for filename in filenames:
+            if not re.search(r"\d+", basename(filename)):
+                no_numbers_outliers.append(filename)
+
+        return no_numbers_outliers
 
     return outliers
 
