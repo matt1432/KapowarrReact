@@ -53,9 +53,8 @@ def find_outliers(files: list[ZipInfo]) -> list[str]:
         if not basename(filename).startswith(most_common_prefix):
             outliers.append(filename)
 
-    # If there are as many outliers as filenames - 1, there are no outliers
-    # NB: filenames - 1 because there will always be one file that is not an outlier
-    if len(outliers) == len(filenames) - 1 or len(outliers) == 0:
+    # If there are as many outliers as filenames, there are no outliers
+    if len(outliers) == len(filenames) or len(outliers) == 0:
         no_numbers_outliers: list[str] = []
 
         for filename in filenames:
