@@ -132,11 +132,13 @@ def _get_thumbnails_data(thumbnails: list[str]) -> list[ThumbnailData]:
     prefix = get_files_prefix(filenames)
 
     for thumbnail, filename in zip(thumbnails, filenames):
-        thumbnails_data.append(ThumbnailData(
-            filepath=thumbnail,
-            filename=filename,
-            prefix=prefix,
-        ))
+        thumbnails_data.append(
+            ThumbnailData(
+                filepath=thumbnail,
+                filename=filename,
+                prefix=prefix,
+            )
+        )
 
     return thumbnails_data
 
@@ -147,14 +149,18 @@ def get_issue_page_thumbnails(
     refresh=False,
 ) -> list[ThumbnailData]:
     if refresh:
-        return _get_thumbnails_data(_generate_page_thumbnails(issue_id, file_path))
+        return _get_thumbnails_data(
+            _generate_page_thumbnails(issue_id, file_path)
+        )
 
     thumbnails_folder = _get_thumbnails_folder(issue_id, file_path)
 
     if exists(thumbnails_folder):
         return _get_thumbnails_data(list_files(thumbnails_folder))
     else:
-        return _get_thumbnails_data(_generate_page_thumbnails(issue_id, file_path))
+        return _get_thumbnails_data(
+            _generate_page_thumbnails(issue_id, file_path)
+        )
 
 
 def get_issue_page_thumbnail(page: str) -> BytesIO:
@@ -186,9 +192,15 @@ def update_issue_pages(file_id: int, new_pages: list[ThumbnailData]) -> None:
 
     with ZipFile(file, "w") as zip:
         for f in files:
+            if not f.endswith(FileConstants.IMAGE_EXTENSIONS):
+                zip.write(filename=join(archive_folder, f), arcname=f)
+
             for page in new_pages:
                 if f == basename(page["filepath"]):
-                    zip.write(filename=join(archive_folder, f), arcname=page["filename"])
+                    zip.write(
+                        filename=join(archive_folder, f),
+                        arcname=page["filename"],
+                    )
 
     delete_file_folder(archive_folder)
     delete_file_folder(dirname(new_pages[0]["filepath"]))
