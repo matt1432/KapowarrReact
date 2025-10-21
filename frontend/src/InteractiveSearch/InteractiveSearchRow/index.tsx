@@ -272,7 +272,9 @@ export default function InteractiveSearchRow({
                 if (name === 'filesize') {
                     return (
                         <TableRowCell key={name} className={styles[name]}>
-                            {formatBytes(result.filesize)}
+                            {result.filesize
+                                ? formatBytes(result.filesize)
+                                : ''}
                         </TableRowCell>
                     );
                 }

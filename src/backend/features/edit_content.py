@@ -36,7 +36,9 @@ def _extract_files(file: str) -> list[str]:
     with ZipFile(file, "r") as zip:
         zip.extractall(archive_folder)
 
-    resulting_files = list_files(archive_folder) if exists(archive_folder) else []
+    resulting_files = (
+        list_files(archive_folder) if exists(archive_folder) else []
+    )
 
     if is_rar:
         CBZtoCBR.convert(file)

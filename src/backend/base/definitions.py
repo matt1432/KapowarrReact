@@ -650,8 +650,8 @@ class SearchResultData(FilenameData):
     link: str
     display_title: str
     source: str
-    filesize: int
-    pages: int
+    filesize: int | None
+    pages: int | None
     releaser: str | None
     scan_type: str | None
     resolution: str | None

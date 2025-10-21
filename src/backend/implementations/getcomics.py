@@ -85,7 +85,7 @@ def _get_max_page(soup: BeautifulSoup) -> int:
     )
 
 
-def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str]]:
+def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str, str | None]]:
     """From a GC search result page, extract article (single search result)
     data.
 
@@ -94,9 +94,9 @@ def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str]]:
 
     Returns:
         List[Tuple[str, str]]: The data of the articles. First string of the
-        tuple is the link, second string is the title.
+        tuple is the link, second string is the title, third is the size.
     """
-    result: list[tuple[str, str]] = []
+    result: list[tuple[str, str, str | None]] = []
 
     for _article in soup.find_all("article", {"class": "post"}):
         article = cast(Tag, _article)
@@ -108,7 +108,14 @@ def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str]]:
         link_el = cast(Tag, title_el.find("a"))
         link = force_range(str(link_el.get("href", "")))[0]
         title = title_el.get_text(strip=True)
-        result.append((link, title))
+
+        size: str | None = None
+        size_el = cast(Tag, article.find("p", {"style": "text-align: center;"}))
+        if size_el:
+            split_size = size_el.get_text().split("Size : ")
+            size = split_size[1] if len(split_size) == 2 else None
+
+        result.append((link, title, size))
 
     return result
 
@@ -792,6 +799,22 @@ async def _test_paths(
         )
 
 
+def from_filesize(filesize: str) -> int | None:
+    suffixes = tuple("BKMGTP")
+    split_filesize = filesize.split(" ")
+
+    try:
+        num = float(split_filesize[0])
+        suffix = split_filesize[1][0]
+
+        for _n in range(suffixes.index(suffix)):
+            num *= 1024
+
+        return int(num)
+    except Exception:
+        return None
+
+
 # region Searching
 async def search_getcomics(
     session: AsyncSession, query: str
@@ -837,23 +860,42 @@ async def search_getcomics(
     ]
 
     # Process the search results on each page
-    formatted_results: list[SearchResultData] = [
-        cast(
-            SearchResultData,
-            (
-                {
-                    **extract_filename_data(
-                        article[1], assume_volume_number=False, fix_year=True
-                    ),
-                    "link": article[0],
-                    "display_title": article[1],
-                    "source": Constants.GC_SOURCE_TERM,
-                }
-                for soup in (first_soup, *other_soups)
-                for article in _get_articles(soup)
-            ),
-        )
-    ]
+    formatted_results: list[SearchResultData] = []
+    for soup in (first_soup, *other_soups):
+        for article in _get_articles(soup):
+            efd = extract_filename_data(
+                article[1],
+                assume_volume_number=False,
+                fix_year=True,
+            )
+
+            formatted_results.append(
+                SearchResultData(
+                    series=efd["series"],
+                    year=efd["year"],
+                    volume_number=efd["volume_number"],
+                    special_version=efd["special_version"],
+                    issue_number=efd["issue_number"],
+                    annual=efd["annual"],
+                    is_metadata_file=efd["is_metadata_file"],
+                    is_image_file=efd["is_image_file"],
+                    link=article[0],
+                    display_title=article[1],
+                    source=Constants.GC_SOURCE_TERM,
+                    # TODO:
+                    filesize=from_filesize(article[2])
+                    if article[2] is not None
+                    else None,
+                    pages=None,
+                    releaser=None,
+                    scan_type=None,
+                    resolution=None,
+                    dpi=None,
+                    extension=None,
+                    comics_id=None,
+                    md5=None,
+                )
+            )
 
     return formatted_results
 

@@ -19,8 +19,8 @@ export interface RawSearchResult {
     link: string;
     display_title: string;
     source: string;
-    filesize: number;
-    pages: number;
+    filesize: number | null;
+    pages: number | null;
 
     // Libgen stuff
     releaser: string | null;
