@@ -247,7 +247,7 @@ class SearchLibgenPlus:
 
             series_ids = (
                 list(map(int, libgen_series_id.split(",")))
-                if libgen_series_id is not None
+                if libgen_series_id is not None and libgen_series_id != ""
                 else None
             )
 
