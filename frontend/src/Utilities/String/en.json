@@ -1638,6 +1638,8 @@
     "OneMinute": "1 Minute",
     "HideUnmonitoredIssues": "Hide Unmonitored Issue Matches",
     "HideUnmonitoredIssuesHelpText": "Only show matches for monitored issues",
+    "HideUnmatchedIssues": "Hide Non Matching Issue Matches",
+    "HideUnmatchedIssuesHelpText": "Hide results that don't match",
     "HideDownloadedIssues": "Hide Downloaded Issue Matches",
     "HideDownloadedIssuesHelpText": "Only show matches for missing issues",
     "OnlyTorrent": "Only Torrent",

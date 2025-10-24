@@ -31,7 +31,7 @@ interface InteractiveSearchTableOptionsProps {
 export default function InteractiveSearchTableOptions({
     onTableOptionChange,
 }: InteractiveSearchTableOptionsProps) {
-    const { hideDownloaded, hideUnmonitored } = useRootSelector(
+    const { hideDownloaded, hideUnmonitored, hideUnmatched } = useRootSelector(
         (state) => state.tableOptions.interactiveSearch,
     );
 
@@ -39,7 +39,9 @@ export default function InteractiveSearchTableOptions({
         ({
             name,
             value,
-        }: CheckInputChanged<'hideUnmonitored' | 'hideDownloaded'>) => {
+        }: CheckInputChanged<
+            'hideUnmonitored' | 'hideDownloaded' | 'hideUnmatched'
+        >) => {
             onTableOptionChange({
                 tableName: 'interactiveSearch',
                 [name]: value,
@@ -70,6 +72,18 @@ export default function InteractiveSearchTableOptions({
                     name="hideUnmonitored"
                     value={hideUnmonitored}
                     helpText={translate('HideUnmonitoredIssuesHelpText')}
+                    onChange={onTableOptionChangeWrapper}
+                />
+            </FormGroup>
+
+            <FormGroup>
+                <FormLabel>{translate('HideUnmatchedIssues')}</FormLabel>
+
+                <FormInputGroup
+                    type={inputTypes.CHECK}
+                    name="hideUnmatched"
+                    value={hideUnmatched}
+                    helpText={translate('HideUnmatchedIssuesHelpText')}
                     onChange={onTableOptionChangeWrapper}
                 />
             </FormGroup>

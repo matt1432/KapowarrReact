@@ -19,6 +19,7 @@ export type InteractiveSearchColumnName =
 export default {
     hideDownloaded: false,
     hideUnmonitored: false,
+    hideUnmatched: false,
 
     sortKey: 'issueNumber',
     sortDirection: sortDirections.DESCENDING,

@@ -89,6 +89,7 @@ interface _ExtraPropsMap {
     interactiveSearch: {
         hideDownloaded: boolean;
         hideUnmonitored: boolean;
+        hideUnmatched: boolean;
     };
 }
 

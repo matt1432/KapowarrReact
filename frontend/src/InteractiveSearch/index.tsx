@@ -257,7 +257,7 @@ export default function InteractiveSearch({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const { hideDownloaded, hideUnmonitored } = useRootSelector(
+    const { hideDownloaded, hideUnmonitored, hideUnmatched } = useRootSelector(
         (state) => state.tableOptions.interactiveSearch,
     );
 
@@ -283,11 +283,13 @@ export default function InteractiveSearch({
     }, [hideDownloaded, hideUnmonitored, searchPayload]);
 
     const items = useMemo(() => {
+        const items = hideUnmatched ? data.filter((item) => item.match) : data;
+
         if (!issues) {
-            return data;
+            return items;
         }
 
-        return data.filter((item) => {
+        return items.filter((item) => {
             const issueNumber = item.issueNumber;
 
             return Array.isArray(issueNumber)
@@ -296,7 +298,7 @@ export default function InteractiveSearch({
                   )
                 : issues.includes(issueNumber ?? -1);
         });
-    }, [data, issues]);
+    }, [data, hideUnmatched, issues]);
 
     return (
         <InternalSearch
