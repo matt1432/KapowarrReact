@@ -4,6 +4,7 @@ Generic functions and classes
 
 from __future__ import annotations
 
+import time
 from asyncio import sleep
 from base64 import urlsafe_b64encode
 from collections import deque
@@ -32,6 +33,7 @@ from bencoding import bdecode
 from multidict import CIMultiDict, CIMultiDictProxy
 from requests import Session as RSession
 from requests.adapters import HTTPAdapter, Retry
+from requests.exceptions import ConnectionError
 from requests.structures import CaseInsensitiveDict
 from urllib3._version import __version__ as urllib3_version
 from yarl import URL
@@ -767,24 +769,49 @@ class Session(RSession):
         self.headers.update({"User-Agent": ua})
         self.cookies.update(cf_cookies)
 
-        result = super().request(
-            method,
-            url,
-            params,
-            data,
-            headers,
-            cookies,
-            files,
-            auth,
-            timeout,
-            allow_redirects,
-            proxies,
-            hooks,
-            stream,
-            verify,
-            cert,
-            json,
-        )
+        try:
+            result = super().request(
+                method,
+                url,
+                params,
+                data,
+                headers,
+                cookies,
+                files,
+                auth,
+                timeout,
+                allow_redirects,
+                proxies,
+                hooks,
+                stream,
+                verify,
+                cert,
+                json,
+            )
+        except ConnectionError:
+            # Sometimes the request times out and throws an
+            # error that is not properly handled. We wait for
+            # a few seconds and retry
+            time.sleep(30)
+            self.request(
+                method,
+                url,
+                params,
+                data,
+                headers,
+                cookies,
+                files,
+                auth,
+                timeout,
+                allow_redirects,
+                proxies,
+                hooks,
+                stream,
+                verify,
+                cert,
+                json,
+            )
+            return
 
         if result.status_code == 403:
             fs_result = self.fs.handle_cf_block(result.url, result.headers)
