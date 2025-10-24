@@ -15,7 +15,7 @@ from backend.base.definitions import (
     BaseNamingKeys,
     Constants,
     FileConstants,
-    FileData,
+    FileExtraInfo,
     IssueData,
     IssueNamingKeys,
     SpecialVersion,
@@ -109,7 +109,7 @@ def clean_filepath(filepath: str) -> str:
 def _get_volume_naming_keys(
     volume: int | VolumeData,
     _special_version: SpecialVersion | None = None,
-    file_data: FileData | None = None,
+    file_data: FileExtraInfo | None = None,
 ) -> SVNamingKeys:
     """Generate the values of the naming keys for a volume.
 
@@ -179,7 +179,7 @@ def _get_volume_naming_keys(
 def _get_issue_naming_keys(
     volume: int | VolumeData,
     issue: int | IssueData,
-    file_data: FileData | None = None,
+    file_data: FileExtraInfo | None = None,
 ) -> IssueNamingKeys:
     """Generate the values of the naming keys for an issue.
 
@@ -286,7 +286,7 @@ def generate_issue_name(
     volume_id: int,
     special_version: SpecialVersion,
     calculated_issue_number: float | tuple[float, float] | None,
-    file_data: FileData | None = None,
+    file_data: FileExtraInfo | None = None,
 ) -> str:
     """Generate an issue file name based on the format string for the issue
     type.
@@ -842,7 +842,7 @@ def preview_mass_rename(
 
         LOGGER.debug(f"Renaming: original filename: {file}")
 
-        file_data: FileData = FilesDB.fetch(filepath=file)[0]
+        file_data: FileExtraInfo = FilesDB.fetch(filepath=file)[0]
 
         issues = FilesDB.issues_covered(file)
         if len(issues) > 1:

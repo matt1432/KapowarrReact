@@ -10,7 +10,7 @@ from os.path import basename, join, sep, splitext
 from re import IGNORECASE, compile
 from threading import Event, Thread
 from time import perf_counter
-from typing import TYPE_CHECKING, Any, cast, final
+from typing import TYPE_CHECKING, Any, final
 from urllib.parse import unquote_plus
 
 import requests
@@ -34,7 +34,7 @@ from backend.base.definitions import (
     DownloadType,
     ExternalDownload,
     ExternalDownloadClient,
-    GeneralFileData,
+    FileExtraInfo,
 )
 from backend.base.helpers import Session, first_of_range, get_torrent_info
 from backend.base.logging import LOGGER
@@ -297,14 +297,11 @@ class BaseDirectDownload(Download):
                     volume_id,
                     volume.get_data().special_version,
                     covered_issues,
-                    cast(
-                        GeneralFileData,
-                        {
-                            "releaser": releaser,
-                            "scan_type": scan_type,
-                            "resolution": resolution,
-                            "dpi": dpi,
-                        },
+                    FileExtraInfo(
+                        releaser=releaser,
+                        scan_type=scan_type,
+                        resolution=resolution,
+                        dpi=dpi,
                     ),
                 )
 
@@ -753,14 +750,11 @@ class MegaDownload(BaseDirectDownload):
                     volume_id,
                     volume.get_data().special_version,
                     covered_issues,
-                    cast(
-                        GeneralFileData,
-                        {
-                            "releaser": releaser,
-                            "scan_type": scan_type,
-                            "resolution": resolution,
-                            "dpi": dpi,
-                        },
+                    FileExtraInfo(
+                        releaser=releaser,
+                        scan_type=scan_type,
+                        resolution=resolution,
+                        dpi=dpi,
                     ),
                 )
 
@@ -937,14 +931,11 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
                     volume_id,
                     Volume(volume_id).get_data().special_version,
                     covered_issues,
-                    cast(
-                        GeneralFileData,
-                        {
-                            "releaser": releaser,
-                            "scan_type": scan_type,
-                            "resolution": resolution,
-                            "dpi": dpi,
-                        },
+                    FileExtraInfo(
+                        releaser=releaser,
+                        scan_type=scan_type,
+                        resolution=resolution,
+                        dpi=dpi,
                     ),
                 )
 

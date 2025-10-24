@@ -622,10 +622,10 @@ class ThumbnailData(TypedDict):
 
 
 class FileExtraInfo(TypedDict):
-    releaser: str
-    scan_type: str
-    resolution: str
-    dpi: str
+    releaser: str | None
+    scan_type: str | None
+    resolution: str | None
+    dpi: str | None
 
 
 class FilenameData(TypedDict):
