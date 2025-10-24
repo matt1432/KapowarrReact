@@ -1,7 +1,6 @@
 from os.path import abspath, isdir, samefile
 from shutil import disk_usage
 from sqlite3 import IntegrityError
-from typing import cast
 
 from backend.base.custom_exceptions import (
     FolderNotFound,
@@ -35,31 +34,24 @@ class RootFolders(metaclass=Singleton):
             get_db().execute("SELECT id, folder FROM root_folders;").fetchall()
         )
 
-        for _ in range(2):
-            try:
-                self.cache = {
-                    r["id"]: RootFolder(
-                        r["id"],
-                        r["folder"],
-                        cast(
-                            SizeData,
-                            dict(
-                                zip(
-                                    ("total", "used", "free"),
-                                    disk_usage(r["folder"]),
-                                )
-                            ),
-                        ),
-                    )
-                    for r in root_folders
-                }
-                break
+        self.cache = {}
 
+        for r in root_folders:
+            try:
+                size_data = disk_usage(r["folder"])
             except FileNotFoundError:
-                # A root folder is registered in Kapowarr,
-                # but the folder no longer exists.
-                for r in root_folders:
-                    create_folder(r["folder"])
+                create_folder(r["folder"])
+                size_data = disk_usage(r["folder"])
+
+            self.cache[r["id"]] = RootFolder(
+                id=r["id"],
+                folder=r["folder"],
+                size=SizeData(
+                    total=size_data.total,
+                    used=size_data.used,
+                    free=size_data.free,
+                ),
+            )
 
         return
 

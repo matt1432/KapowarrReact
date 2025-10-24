@@ -267,7 +267,7 @@ class SearchLibgenPlus:
                 if issue is not None:
                     new_libgen_series_id = issue.series.id
 
-                    if volume_data.libgen_series_id is None:
+                    if not volume_data.libgen_series_id:
                         self.volume.update(
                             {
                                 "libgen_series_id": str(new_libgen_series_id),
