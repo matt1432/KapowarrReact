@@ -13,11 +13,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1761016975,
-        "narHash": "sha256-Mfzz9jW8reE02XBfYo2L/ZC+tJDwU2FuAYahQGeKoqg=",
+        "lastModified": 1761278339,
+        "narHash": "sha256-fy1uzBKxWeaDcvb1WkU/B0r8CvBszLUk1ouoCq2SQGU=",
         "owner": "matt1432",
         "repo": "LibgenComics",
-        "rev": "121ff09110a80c8106f31573f348455cec83cdd5",
+        "rev": "e472741140d433503b2b7e28bb9278ce0677d812",
         "type": "github"
       },
       "original": {

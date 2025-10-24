@@ -2,7 +2,7 @@ from asyncio import gather, run
 from collections.abc import Generator
 from typing import cast
 
-from libgencomics import LibgenSearch, LibgenSeriesNotFoundException, ResultFile
+from libgencomics import LibgenSearch, ResultFile
 
 from backend.base.definitions import (
     QUERY_FORMATS,
@@ -184,10 +184,7 @@ class SearchLibgenPlus:
     async def search(
         self, libgen_file_url: str | None = None
     ) -> list[SearchResultData]:
-        try:
-            return await self.__search(libgen_file_url)
-        except LibgenSeriesNotFoundException:
-            return []
+        return await self.__search(libgen_file_url)
 
     async def __search(
         self, libgen_file_url: str | None = None
@@ -256,7 +253,10 @@ class SearchLibgenPlus:
             ] = await LibgenSearch().search_comicvine_id(
                 api_key=settings.comicvine_api_key,
                 id=self.comicvine_id,
-                issue_number=self.issue_number,
+                issue_number=int(self.issue_number)
+                if isinstance(self.issue_number, float)
+                and self.issue_number.is_integer()
+                else self.issue_number,
                 libgen_series_id=series_ids,
                 libgen_site_url=Constants.LIBGEN_SITE_URL,
             )
@@ -279,12 +279,14 @@ class SearchLibgenPlus:
 
                 filename = file_result.filename
 
-                if not filename or not issue:
+                if not filename:
                     continue
 
                 if not settings.include_cover_only_files:
                     # we want to filter out cover only files
-                    if (file_result.get("scan_content") or "") == "cover only":
+                    if (
+                        file_result.get("scan_content") or ""
+                    ) == "cover only" or file_result.pages == 1:
                         continue
 
                 if not settings.include_scanned_books:
@@ -296,8 +298,10 @@ class SearchLibgenPlus:
 
                 results.append(
                     SearchResultData(
-                        series=issue.series.title or "",
-                        year=issue.year,
+                        series=issue.series.title or ""
+                        if issue
+                        else efd["series"],
+                        year=issue.year if issue else efd["year"],
                         volume_number=self.volume_number,
                         special_version=efd["special_version"],
                         issue_number=efd["issue_number"],
