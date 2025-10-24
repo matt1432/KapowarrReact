@@ -6,7 +6,6 @@ from asyncio import gather
 from functools import reduce
 from hashlib import sha1
 from re import IGNORECASE, compile
-from typing import cast
 
 from aiohttp import ClientError
 from bencoding import bencode
@@ -98,22 +97,25 @@ def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str, str | None]]:
     """
     result: list[tuple[str, str, str | None]] = []
 
-    for _article in soup.find_all("article", {"class": "post"}):
-        article = cast(Tag, _article)
-
-        title_el = cast(Tag, article.find("h1", {"class": "post-title"}))
+    for article in soup.select("article.post"):
+        title_el = article.select_one("h1.post-title")
         if not title_el:
             continue
 
-        link_el = cast(Tag, title_el.find("a"))
+        link_el = title_el.select_one("a")
+        if not link_el:
+            continue
+
         link = force_range(str(link_el.get("href", "")))[0]
         title = title_el.get_text(strip=True)
 
         size: str | None = None
-        size_el = cast(Tag, article.find("p", {"style": "text-align: center;"}))
-        if size_el:
-            split_size = size_el.get_text().split("Size : ")
-            size = split_size[1] if len(split_size) == 2 else None
+        size_el = article.select_one('p[style*="text-align: center;"]')
+        if not size_el:
+            continue
+
+        split_size = size_el.get_text().split("Size : ")
+        size = split_size[1] if len(split_size) == 2 else None
 
         result.append((link, title, size))
 
@@ -196,9 +198,12 @@ def __extract_button_links(
         List[DownloadGroup]: The download groups.
     """
     download_groups: list[DownloadGroup] = []
-    for _group in body.find_all(__link_filter_1):
-        group = cast(Tag, _group)
 
+    for group in [
+        group
+        for group in body.find_all(__link_filter_1)
+        if isinstance(group, Tag)
+    ]:
         if not group.next_sibling:
             continue
 
@@ -232,15 +237,16 @@ def __extract_button_links(
 
         # Extract links from group
         first_find = True
-        for _e in group.next_sibling.next_elements:
-            e: Tag = _e  # type: ignore
+        for e in [
+            e for e in group.next_sibling.next_elements if isinstance(e, Tag)
+        ]:
             if e.name == "hr":
                 break
 
             elif e.name == "div" and "aio-button-center" in (
                 e.attrs.get("class", [])
             ):
-                group_link: Tag | None = e.find("a")  # type: ignore
+                group_link = e.select_one("a")
                 if not group_link:
                     continue
                 link_title = group_link.text.strip().lower()
@@ -285,9 +291,11 @@ def __extract_list_links(
         List[DownloadGroup]: The download groups.
     """
     download_groups: list[DownloadGroup] = []
-    for _group in body.find_all(__link_filter_2):
-        group = cast(Tag, _group)
-
+    for group in [
+        group
+        for group in body.find_all(__link_filter_2)
+        if isinstance(group, Tag)
+    ]:
         # Process data about group
         title: str = group.get_text("\x00").partition("\x00")[0]
         processed_title = extract_filename_data(
@@ -305,8 +313,7 @@ def __extract_list_links(
 
         # Extract links from group
         first_find = True
-        for gk in group.find_all("a"):
-            group_link = cast(Tag, gk)
+        for group_link in group.select("a"):
             if group_link.get("href") is None:
                 continue
             link_title = group_link.text.strip().lower()
@@ -340,7 +347,7 @@ def _get_download_groups(soup: BeautifulSoup) -> list[DownloadGroup]:
 
     torrent_client_available = bool(ExternalClients.get_clients())
 
-    body: Tag | None = soup.find("section", {"class": "post-contents"})  # type: ignore
+    body = soup.select_one("section.post-contents")
     if not body:
         return []
 
@@ -584,7 +591,7 @@ async def __purify_link(
         and content_type == "application/x-bittorrent"
     ):
         # Link is to torrent file
-        hash = sha1(bencode(get_torrent_info(await r.read()))).hexdigest()  # type: ignore
+        hash = sha1(bencode(get_torrent_info(await r.read()))).hexdigest()
         return (
             "magnet:?xt=urn:btih:"
             + hash
@@ -658,7 +665,7 @@ async def __purify_download_group(
                     download_link=pure_link,
                     volume_id=volume_id,
                     covered_issues=group["info"]["issue_number"],
-                    source_type=source,  # type: ignore
+                    source_type=source,
                     source_name=source.value,
                     web_link=web_link,
                     web_title=web_title,

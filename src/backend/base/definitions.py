@@ -1282,7 +1282,7 @@ class Download(ABC):
         download_link: str,
         volume_id: int,
         covered_issues: float | tuple[float, float] | None,
-        source_type: DownloadSource,
+        source_type: DownloadSource | GCDownloadSource,
         source_name: str,
         web_link: str | None,
         web_title: str | None,
