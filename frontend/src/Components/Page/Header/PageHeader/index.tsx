@@ -66,7 +66,7 @@ export default function PageHeader() {
     return (
         <div className={styles.header}>
             <div className={styles.logoContainer}>
-                <Link className={styles.logoLink} to={window.Kapowarr.urlBase}>
+                <Link className={styles.logoLink} to="/">
                     <Logo />
                 </Link>
             </div>
