@@ -85,9 +85,9 @@ class ThreadedTaskDispatcher(TTD):
         LOGGER.info("Shutting down Kapowarr...")
 
         ws = WebSocket()
-        if "/" in ws.server.manager.rooms:  # type: ignore
-            for sid in tuple(ws.server.manager.rooms["/"][None]):  # type: ignore
-                ws.server.disconnect(sid)  # type: ignore
+        if "/" in ws.server.manager.rooms:
+            for sid in tuple(ws.server.manager.rooms["/"][None]):
+                ws.server.disconnect(sid)
 
         result = super().shutdown(cancel_pending, timeout)
         return result
@@ -222,14 +222,16 @@ class Server(metaclass=Singleton):
             url_base (str): The desired URL base to set it to.
         """
         self.app.config["APPLICATION_ROOT"] = url_base
-        self.app.wsgi_app = DispatcherMiddleware(  # type: ignore
+        self.app.wsgi_app = DispatcherMiddleware(
             Flask(__name__), {url_base: self.app.wsgi_app}
         )
         self.url_base = url_base
         return
 
     def __create_waitress_server(
-        self, host: str, port: int
+        self,
+        host: str,
+        port: int,
     ) -> MultiSocketServer | BaseWSGIServer:
         """From the `Flask` instance created in `self.create_app()`, create
         a waitress server instance.
@@ -273,7 +275,7 @@ class Server(metaclass=Singleton):
 
         self.server.task_dispatcher.shutdown()
         self.server.close()
-        self.server._map.clear()  # type: ignore
+        self.server._map.clear()  # pyright: ignore
         return
 
     def shutdown(self) -> None:
@@ -382,13 +384,16 @@ class MPWebSocketQueue(PubSubManager):
 
 class WebSocket(SocketIO, metaclass=Singleton):
     server_options: dict
+    server: Any
 
     @property
     def client_manager(self) -> MPWebSocketQueue:
         return self.server_options["client_manager"]
 
-    def emit(  # type: ignore
-        self, event: str, data: dict[str, Any]
+    def emit(  # pyright: ignore
+        self,
+        event: str,
+        data: dict[str, Any],
     ) -> None:
         cm = self.client_manager
 

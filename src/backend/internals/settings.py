@@ -307,7 +307,7 @@ class Settings(metaclass=Singleton):
         ):
             self[key] = SettingsValues.__dataclass_fields__[
                 key
-            ].default_factory()  # type: ignore
+            ].default_factory()
         else:
             self[key] = SettingsValues.__dataclass_fields__[key].default
 
@@ -366,13 +366,13 @@ class Settings(metaclass=Singleton):
         ].type is CommaList and isinstance(value, list):
             value = CommaList(value)
 
-        if issubclass(SettingsValues.__dataclass_fields__[key].type, BaseEnum):  # type: ignore
+        if issubclass(SettingsValues.__dataclass_fields__[key].type, BaseEnum):
             try:
-                value = SettingsValues.__dataclass_fields__[key].type(value)  # type: ignore
+                value = SettingsValues.__dataclass_fields__[key].type(value)
             except ValueError:
                 raise InvalidKeyValue(key, value)
 
-        if not isinstance(value, SettingsValues.__dataclass_fields__[key].type):  # type: ignore
+        if not isinstance(value, SettingsValues.__dataclass_fields__[key].type):
             raise InvalidKeyValue(key, value)
 
         if key == "auth_password":

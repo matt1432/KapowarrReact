@@ -479,7 +479,7 @@ def manual_search(
                         volume_data.volume_number,
                         (
                             volume_data.year,
-                            number_to_year.get(calculated_issue_number),  # type: ignore
+                            number_to_year.get(calculated_issue_number or 0),
                         ),
                         calculated_issue_number,
                     ),
@@ -487,9 +487,7 @@ def manual_search(
             )
 
         # Sort results; put best result at top
-        results.sort(
-            key=lambda r: r["rank"]  # type: ignore
-        )
+        results.sort(key=lambda r: r["rank"] if "rank" in r else [])
 
         LOGGER.debug("Manual search results: %s", results)
         return results

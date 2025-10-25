@@ -32,7 +32,7 @@ from backend.base.logging import LOGGER, set_log_level
 
 
 class KapowarrCursor(Cursor):
-    row_factory: type[Row] | None  # type: ignore
+    row_factory: type[Row] | None # pyright: ignore
 
     @property
     def lastrowid(self) -> int:
@@ -126,7 +126,7 @@ class DBConnection(Connection, metaclass=DBConnectionManager):
         self.closed = False
         return
 
-    def cursor(self, force_new: bool = False) -> KapowarrCursor:  # type: ignore
+    def cursor(self, force_new: bool = False) -> KapowarrCursor: # pyright: ignore
         """Get a database cursor from the connection.
 
         Args:

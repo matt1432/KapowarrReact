@@ -164,7 +164,7 @@ def _run_sub_process(start_type: StartType = StartType.STARTUP) -> int:
     }
 
     proc = Popen(argv, env=env)
-    proc._sigint_wait_secs = Constants.SUB_PROCESS_TIMEOUT  # type: ignore
+    proc._sigint_wait_secs = Constants.SUB_PROCESS_TIMEOUT  # pyright: ignore
     register(_stop_sub_process, proc=proc)
     signal(SIGTERM, lambda signal_no, frame: _stop_sub_process(proc))
 

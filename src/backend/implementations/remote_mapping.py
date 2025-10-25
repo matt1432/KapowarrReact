@@ -1,5 +1,6 @@
 from os.path import abspath, isdir
 from sqlite3 import IntegrityError
+from typing import cast
 
 from backend.base.custom_exceptions import (
     ExternalClientNotFound,
@@ -129,7 +130,8 @@ class RemoteMapping:
         Returns:
             RemoteMappingData: The data.
         """
-        return (
+        return cast(
+            RemoteMappingData,
             get_db()
             .execute(
                 """
@@ -140,8 +142,8 @@ class RemoteMapping:
             """,
                 (self.id,),
             )
-            .fetchonedict()
-        )  # type: ignore
+            .fetchonedict(),
+        )
 
     def update(
         self,

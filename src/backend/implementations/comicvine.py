@@ -7,7 +7,7 @@ from collections.abc import Sequence
 from os.path import dirname, join
 from pathlib import Path
 from re import IGNORECASE, compile
-from typing import Any, cast
+from typing import Any
 
 from aiohttp.client_exceptions import ClientError
 from bs4 import BeautifulSoup, Tag
@@ -109,8 +109,12 @@ def _clean_description(description: str, short: bool = False) -> str:
 
             if el.name in lists:
                 removed_elements.append(el)
-                prev_sib: Tag | None = el.previous_sibling  # type: ignore
-                if prev_sib is not None and prev_sib.text.endswith(":"):
+                prev_sib = el.previous_sibling
+                if (
+                    prev_sib is not None
+                    and isinstance(prev_sib, Tag)
+                    and prev_sib.text.endswith(":")
+                ):
                     removed_elements.append(prev_sib)
                 continue
 
@@ -128,8 +132,7 @@ def _clean_description(description: str, short: bool = False) -> str:
                 el.decompose()
 
     # Fix links
-    for _link in soup.find_all("a"):
-        link = cast(Tag, _link)
+    for link in soup.select("a"):
         link.attrs = {
             k: v for k, v in link.attrs.items() if not k.startswith("data-")
         }
@@ -567,12 +570,10 @@ class ComicVine:
                     return []
 
             else:
-                results: list[BasicVolume] = (  # type: ignore
-                    self.ssn.search(
-                        query=query,
-                        resource=ComicvineResource.VOLUME,
-                        max_results=50,
-                    )
+                results: list = self.ssn.search(
+                    query=query,
+                    resource=ComicvineResource.VOLUME,
+                    max_results=50,
                 )
 
         except (ServiceError, AuthenticationError):

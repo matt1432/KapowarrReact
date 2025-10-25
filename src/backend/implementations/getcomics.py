@@ -500,8 +500,8 @@ def _create_link_paths(
                         break
 
                     elif check_overlapping_issues(
-                        entry["info"]["issue_number"],  # type: ignore
-                        group["info"]["issue_number"],  # type: ignore
+                        entry["info"]["issue_number"] or 0,
+                        group["info"]["issue_number"] or 0,
                     ):
                         break
 

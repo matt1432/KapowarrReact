@@ -191,7 +191,7 @@ def get_torrent_info(torrent: bytes) -> dict[bytes, Any]:
     Returns:
         dict[bytes, Any]: The info.
     """
-    return bdecode(torrent)[b"info"]  # type: ignore
+    return bdecode(torrent)[b"info"]  # pyright: ignore
 
 
 # region Sequences
@@ -661,13 +661,13 @@ class DictKeyedDict(dict):
 
         return super().__contains__(self.__convert_dict(key))
 
-    def keys(self) -> Iterator[Any]:  # type: ignore
+    def keys(self) -> Iterator[Any]:  # pyright: ignore
         return (v[0] for v in super().values())
 
-    def values(self) -> Iterator[Any]:  # type: ignore
+    def values(self) -> Iterator[Any]:  # pyright: ignore
         return (v[1] for v in super().values())
 
-    def items(self) -> Iterator[tuple[Any, Any]]:  # type: ignore
+    def items(self) -> Iterator[tuple[Any, Any]]:  # pyright: ignore
         return zip(self.keys(), self.values())
 
 
@@ -704,14 +704,14 @@ def retry(
     if _running_urllib3_v2_and_above():
         return Retry(
             total=total,
-            allowed_methods=frozenset(method_whitelist),  # type: ignore
+            allowed_methods=frozenset(method_whitelist),  # pyright: ignore
             status_forcelist=status_forcelist,
             backoff_factor=backoff_factor,
         )
     else:
         return Retry(
             total=total,
-            method_whitelist=frozenset(method_whitelist),  # type: ignore
+            method_whitelist=frozenset(method_whitelist),  # pyright: ignore
             status_forcelist=status_forcelist,
             backoff_factor=backoff_factor,
         )
@@ -746,7 +746,7 @@ class Session(RSession):
 
         return
 
-    def request(  # type: ignore
+    def request(  # pyright: ignore
         self,
         method: str,
         url: str,

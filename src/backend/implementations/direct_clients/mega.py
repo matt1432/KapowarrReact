@@ -424,7 +424,7 @@ class MegaAccount:
                     )
                 )
             ).replace("=", ""),
-        )  # type: ignore
+        )  # pyright: ignore
         if isinstance(res, int):
             raise ClientNotWorking(
                 BrokenClientReason.FAILED_PROCESSING_RESPONSE
@@ -925,5 +925,5 @@ class MegaFolder(MegaABC):
             and self.__r._fp.fp is not None
             and self.__r._fp.fp.raw is not None
         ):
-            self.__r._fp.fp.raw._sock.shutdown(2)  # type: ignore
+            self.__r._fp.fp.raw._sock.shutdown(2)  # pyright: ignore
         return

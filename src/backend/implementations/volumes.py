@@ -177,7 +177,19 @@ class Issue:
             or {}
         )
 
-        return IssueData(**data, files=self.get_files())  # type: ignore
+        final_files = self.get_files()
+
+        final_files_data = [
+            IssueFileData(
+                {
+                    **file,
+                    **extract_filename_data(file["filepath"]),
+                }
+            )
+            for file in final_files
+        ]
+
+        return IssueData(**data, files=final_files_data)
 
     def get_files(self) -> list[FileData]:
         """Get all files linked to the issue.
@@ -678,7 +690,7 @@ class Volume:
             )
 
         else:
-            assert_never(monitoring_scheme)  # type: ignore
+            assert_never(monitoring_scheme)
 
         return
 
@@ -1440,16 +1452,17 @@ def scan_files(
             ):
                 issue_range = file_data["volume_number"]
 
-            matching_issues = volume.get_issues_in_range(
-                *force_range(issue_range)  # type: ignore
-            )
+            if issue_range:
+                matching_issues = volume.get_issues_in_range(
+                    *force_range(issue_range)
+                )
 
-            if matching_issues:
-                if file not in volume_files:
-                    volume_files[file] = FilesDB.add_file(file, file_extra_info)
+                if matching_issues:
+                    if file not in volume_files:
+                        volume_files[file] = FilesDB.add_file(file, file_extra_info)
 
-                for issue in matching_issues:
-                    bindings.append((volume_files[file], issue.id))
+                    for issue in matching_issues:
+                        bindings.append((volume_files[file], issue.id))
 
     cursor = get_db()
 

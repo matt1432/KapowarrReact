@@ -140,7 +140,7 @@ def propose_library_import(
             continue
 
         efd = extract_filename_data(f, prefer_folder_year=True)
-        del efd["issue_number"]  # type: ignore
+        del efd["issue_number"]  # pyright: ignore
 
         if (
             f.endswith(FileConstants.IMAGE_EXTENSIONS)

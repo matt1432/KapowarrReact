@@ -323,7 +323,7 @@ def generate_issue_name(
         # Iron-Man Volume 1 - 3
         issue = Issue.from_volume_and_calc_number(
             volume_id,
-            force_range(calculated_issue_number)[0],  # type: ignore
+            force_range(calculated_issue_number)[0],
         )
         formatting_data = _get_issue_naming_keys(
             volume_id, issue.id, file_data=file_data
@@ -342,7 +342,7 @@ def generate_issue_name(
         normal_filename = True
         issue = Issue.from_volume_and_calc_number(
             volume_id,
-            force_range(calculated_issue_number)[0],  # type: ignore
+            force_range(calculated_issue_number)[0],
         )
         formatting_data = _get_issue_naming_keys(
             volume_id, issue.id, file_data=file_data

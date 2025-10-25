@@ -133,7 +133,7 @@ class Credentials:
             credential_data.password = None
 
         else:
-            assert_never(credential_data.source)  # type: ignore
+            assert_never(credential_data.source)
 
         id = (
             get_db()

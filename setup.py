@@ -1,7 +1,7 @@
 import subprocess
 
-from setuptools import Command, setup  # type: ignore
-from setuptools.command.build import build  # type: ignore
+from setuptools import Command, setup  # pyright: ignore
+from setuptools.command.build import build  # pyright: ignore
 
 
 def system(command: str) -> type[Command]:

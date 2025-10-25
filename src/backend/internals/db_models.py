@@ -81,7 +81,7 @@ class FilesDB:
                 ORDER BY filepath;
                 """)
 
-        result: list[FileData] = cursor.fetchalldict()  # type: ignore
+        result: list = cursor.fetchalldict()
 
         if (file_id or filepath) and not result:
             raise FileNotFound(file_id or filepath or "")
@@ -301,8 +301,8 @@ class FilesDB:
 class GeneralFilesDB:
     @staticmethod
     def fetch(volume_id: int) -> list[GeneralFileData]:
-        result: list[GeneralFileData] = (
-            get_db()  # type: ignore
+        result: list = (
+            get_db()
             .execute(
                 """
             SELECT f.id, filepath, size, file_type, releaser, scan_type, resolution, dpi

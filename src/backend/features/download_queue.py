@@ -167,7 +167,7 @@ class DownloadHandler(metaclass=Singleton):
             post_processer = PostProcessorTorrentsCopy
 
         else:
-            assert_never(seeding_handling)  # type: ignore
+            assert_never(seeding_handling)
 
         # When seeding_handling is 'copy', keep track of whether we already
         # copied the files

@@ -703,7 +703,7 @@ def api_volumes_search() -> ApiReturn | None:
         query = extract_key(request, "query")
         search_results = run(ComicVine().search_volumes(query))
         for r in search_results:
-            del r["cover"]  # type: ignore
+            del r["cover"]  # pyright: ignore
         return return_api(search_results)
 
     elif request.method == "POST":
