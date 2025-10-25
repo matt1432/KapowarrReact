@@ -10,8 +10,8 @@ import TableRow from 'Components/Table/TableRow';
 
 // Specific Components
 import IssueSearchCell from 'Issue/IssueSearchCell';
-import IssueTitleLink from 'Issue/IssueTitleLink';
 import IssueStatus from 'Issue/IssueStatus';
+import IssueTitleLink from 'Issue/IssueTitleLink';
 
 // CSS
 import styles from './index.module.css';
@@ -154,8 +154,6 @@ export default function IssueRow({
                         />
                     );
                 }
-
-                return null;
             })}
         </TableRow>
     );

@@ -41,6 +41,7 @@ import type { InteractiveSearchPayload, SearchResult } from 'typings/Search';
 
 import type { AnyError } from 'typings/Api';
 import type { InputChanged } from 'typings/Inputs';
+import InteractiveSearchIssueTableOptions from './IssueTableOptions';
 
 export interface InteractiveSearchProps {
     searchPayload: InteractiveSearchPayload;
@@ -151,7 +152,10 @@ function InternalSearch({
                                   optionsComponent:
                                       InteractiveSearchTableOptions,
                               }
-                            : {}
+                            : {
+                                  optionsComponent:
+                                      InteractiveSearchIssueTableOptions,
+                              }
                     }
                 />
             ) : null}
