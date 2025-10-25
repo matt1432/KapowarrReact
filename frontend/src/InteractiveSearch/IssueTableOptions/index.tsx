@@ -31,17 +31,12 @@ interface InteractiveSearchIssueTableOptionsProps {
 export default function InteractiveSearchIssueTableOptions({
     onTableOptionChange,
 }: InteractiveSearchIssueTableOptionsProps) {
-    const { hideDownloaded, hideUnmonitored, hideUnmatched } = useRootSelector(
+    const { hideUnmatched } = useRootSelector(
         (state) => state.tableOptions.interactiveSearch,
     );
 
     const onTableOptionChangeWrapper = useCallback(
-        ({
-            name,
-            value,
-        }: CheckInputChanged<
-            'hideUnmonitored' | 'hideDownloaded' | 'hideUnmatched'
-        >) => {
+        ({ name, value }: CheckInputChanged<'hideUnmatched'>) => {
             onTableOptionChange({
                 tableName: 'interactiveSearch',
                 [name]: value,
@@ -52,30 +47,6 @@ export default function InteractiveSearchIssueTableOptions({
 
     return (
         <>
-            <FormGroup>
-                <FormLabel>{translate('HideDownloadedIssues')}</FormLabel>
-
-                <FormInputGroup
-                    type={inputTypes.CHECK}
-                    name="hideDownloaded"
-                    value={hideDownloaded}
-                    helpText={translate('HideDownloadedIssuesHelpText')}
-                    onChange={onTableOptionChangeWrapper}
-                />
-            </FormGroup>
-
-            <FormGroup>
-                <FormLabel>{translate('HideUnmonitoredIssues')}</FormLabel>
-
-                <FormInputGroup
-                    type={inputTypes.CHECK}
-                    name="hideUnmonitored"
-                    value={hideUnmonitored}
-                    helpText={translate('HideUnmonitoredIssuesHelpText')}
-                    onChange={onTableOptionChangeWrapper}
-                />
-            </FormGroup>
-
             <FormGroup>
                 <FormLabel>{translate('HideUnmatchedIssues')}</FormLabel>
 
