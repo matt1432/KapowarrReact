@@ -51,7 +51,7 @@ volume_regex = compile(volume_regex_snippet, IGNORECASE)
 volume_folder_regex = compile(volume_regex_snippet + r"|^(\d+)$", IGNORECASE)
 issue_regex = compile(r"\(_(\-?" + issue_regex_snippet + r")\)", IGNORECASE)
 issue_regex_2 = compile(
-    r"(?:(?<!\()(?:(?<![a-z])c(?!2c)|\bissues?|\bbooks?)(?!\))|no)(?:\.?[\s\-_]?|\s\-\s)(?:#\s*)?(\-?"
+    r"(?:(?<!\()(?:(?<![a-z])c(?!2c)|\bissues?|\bbooks?)(?!\))|\bno)(?:\.?[\s\-_]?|\s\-\s)(?:#\s*)?(\-?"
     + issue_regex_snippet
     + r"(?:(?:\-|\s\-\s|\.\-\.)\-?"
     + issue_regex_snippet
