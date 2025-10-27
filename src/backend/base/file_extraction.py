@@ -21,7 +21,6 @@ from backend.base.helpers import (
 from backend.base.helpers import fix_year as fix_broken_year
 from backend.base.logging import LOGGER
 
-# autopep8: off
 alphabet = {
     letter: str(idx + 1).zfill(2)
     for idx, letter in enumerate(CharConstants.ALPHABET)
@@ -120,7 +119,7 @@ page_regex = compile(
     r"^(\d+(?:[a-f]|_\d+)?)$|\b(?i:page|pg)[\s\.\-_]?(\d+(?:[a-f]|_\d+)?)|n?\d+[_\-p](\d+(?:[a-f]|_\d+)?)"
 )
 page_regex_2 = compile(r"(\d+)")
-# autopep8: on
+revision_regex = compile(r"[1-3]\.\d")
 
 
 def _get_calculated_issue_number(issue_number: str) -> float | None:
@@ -340,6 +339,15 @@ def _find_issue_numbers(
             )
             if not regex_result:
                 continue
+
+            if regex == issue_regex_7:
+                # Disprefer potential revision numbers at the end
+                regex_result.sort(
+                    key=lambda r: bool(
+                        r.endpos == len(file_part_with_issue)
+                        and revision_regex.fullmatch(r.group(0))
+                    )
+                )
 
             group_number = 1 if regex is not issue_regex_6 else 3
             for result in regex_result:
