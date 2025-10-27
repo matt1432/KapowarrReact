@@ -1459,7 +1459,9 @@ def scan_files(
 
                 if matching_issues:
                     if file not in volume_files:
-                        volume_files[file] = FilesDB.add_file(file, file_extra_info)
+                        volume_files[file] = FilesDB.add_file(
+                            file, file_extra_info
+                        )
 
                     for issue in matching_issues:
                         bindings.append((volume_files[file], issue.id))
