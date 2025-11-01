@@ -22,6 +22,7 @@ from multiprocessing.pool import Pool
 from os import cpu_count, sep
 from os.path import basename, dirname
 from sys import version_info
+from threading import current_thread
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -44,6 +45,16 @@ from backend.base.logging import LOGGER, get_log_filepath
 if TYPE_CHECKING:
     from multiprocessing import SimpleQueue
     from multiprocessing.pool import IMapIterator
+
+
+# region System
+def current_thread_id() -> int:
+    """Get the ID of the current thread.
+
+    Returns:
+        int: The ID.
+    """
+    return current_thread().native_id or -1
 
 
 # region Python
@@ -570,12 +581,12 @@ def fix_year(year: int) -> int:
     year_str = list(str(year))
 
     if len(year_str) == 3:
-        year_str.insert(1, '0')
+        year_str.insert(1, "0")
 
-    if year_str[0] in ('8', '9') and year_str[1] == '1':
+    if year_str[0] in ("8", "9") and year_str[1] == "1":
         year_str[0], year_str[1] = year_str[1], year_str[0]
 
-    result = int(''.join(year_str))
+    result = int("".join(year_str))
     if 1900 <= result < 2100:
         return result
 
