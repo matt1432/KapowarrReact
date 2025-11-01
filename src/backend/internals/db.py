@@ -189,7 +189,6 @@ def set_db_location(db_folder: str | None) -> None:
         ValueError: Value of `db_folder` exists but is not a folder.
     """
     from backend.base.files import create_folder, folder_path
-    from backend.internals.settings import about_data
 
     if db_folder:
         if exists(db_folder) and not isdir(db_folder):
@@ -203,7 +202,7 @@ def set_db_location(db_folder: str | None) -> None:
 
     create_folder(dirname(db_file_location))
 
-    DBConnection.file = about_data["database_location"] = db_file_location
+    DBConnection.file = db_file_location
 
     return
 

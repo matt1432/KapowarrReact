@@ -5,7 +5,7 @@ from typing import Any
 from flask import Blueprint, render_template, send_file
 
 from backend.internals.server import SERVER
-from backend.internals.settings import about_data
+from backend.internals.settings import get_about_data
 
 ui = Blueprint("ui", __name__)
 methods = ["GET"]
@@ -15,7 +15,7 @@ def render(filename: str, **kwargs: Any) -> str:
     return render_template(
         filename,
         url_base=SERVER.url_base,
-        version=about_data["version"],
+        version=get_about_data()["version"],
         **kwargs,
     )
 

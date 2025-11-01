@@ -15,6 +15,7 @@ from backend.base.files import (
 from backend.implementations.ad_removal import get_files_prefix
 from backend.implementations.converters import CBRtoCBZ, CBZtoCBR
 from backend.implementations.volumes import Volume
+from backend.internals.db import DBConnection
 from backend.internals.db_models import FilesDB
 
 
@@ -51,14 +52,11 @@ def _get_thumbnails_folder(
     file_path: str,
 ) -> str:
     # Place the thumbnails at the same place as the Kapowarr db
-    from backend.internals.settings import about_data
-
     volume_id = FilesDB.volume_of_file(file_path)
     file_id = FilesDB.fetch(filepath=file_path)[0]["id"]
 
     return join(
-        dirname(about_data["database_location"])
-        or folder_path(*Constants.DB_FOLDER),
+        dirname(DBConnection.file) or folder_path(*Constants.DB_FOLDER),
         Constants.THUMBNAILS_FOLDER_NAME,
         str(volume_id),
         str(issue_id),

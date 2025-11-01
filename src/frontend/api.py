@@ -78,7 +78,7 @@ from backend.implementations.root_folders import RootFolders
 from backend.implementations.volumes import Library, delete_issue_file
 from backend.internals.db_models import FilesDB
 from backend.internals.server import SERVER, diffuse_timers
-from backend.internals.settings import Settings, about_data
+from backend.internals.settings import Settings, get_about_data
 
 api = Blueprint("api", __name__)
 library = Library()
@@ -340,7 +340,7 @@ def api_auth_check() -> ApiReturn:
 @error_handler
 @auth
 def api_about() -> ApiReturn:
-    return return_api(about_data)
+    return return_api(get_about_data())
 
 
 @api.route("/system/logs", methods=["GET"])

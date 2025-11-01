@@ -54,7 +54,7 @@ from backend.base.helpers import (
 )
 from backend.base.logging import LOGGER
 from backend.implementations.matching import _match_title, _match_year
-from backend.internals.db import get_db
+from backend.internals.db import DBConnection, get_db
 from backend.internals.settings import Settings
 
 translation_regex = compile(
@@ -179,11 +179,8 @@ class ComicVine:
         self.date_type = settings.date_type.value
 
         # Place the cache db at the same place as the Kapowarr db
-        from backend.internals.settings import about_data
-
         cache_file_location = join(
-            dirname(about_data["database_location"])
-            or folder_path(*Constants.DB_FOLDER),
+            dirname(DBConnection.file) or folder_path(*Constants.DB_FOLDER),
             Constants.CV_CACHE_NAME,
         )
 

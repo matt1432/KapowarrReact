@@ -1,11 +1,12 @@
 from collections.abc import Mapping
 from dataclasses import _MISSING_TYPE, asdict, dataclass, field
+from functools import lru_cache
 from importlib.metadata import version
 from logging import INFO
 from os import urandom
 from os.path import abspath, isdir, join, sep
 from secrets import token_bytes
-from typing import Any
+from typing import Any, TypedDict
 
 from backend.base.custom_exceptions import (
     FolderNotFound,
@@ -35,8 +36,33 @@ from backend.base.helpers import (
     normalise_base_url,
 )
 from backend.base.logging import LOGGER, set_log_level
-from backend.internals.db import commit, get_db
+from backend.internals.db import DBConnection, commit, get_db
 from backend.internals.db_migration import DatabaseMigrationHandler
+
+
+class AboutData(TypedDict):
+    version: str
+    python_version: str
+    database_version: int
+    database_location: str
+    data_folder: str
+
+
+@lru_cache(1)
+def get_about_data() -> AboutData:
+    """Get data about the application and its environment.
+
+    Returns:
+        Dict[str, Any]: The information.
+    """
+
+    return AboutData(
+        version=f"v{version('KapowarrReact')}",
+        python_version=get_python_version(),
+        database_version=DatabaseMigrationHandler.latest_db_version(),
+        database_location=DBConnection.file,
+        data_folder=folder_path(),
+    )
 
 
 @dataclass(frozen=True)
@@ -124,15 +150,6 @@ class SettingsValues:
                 result[k] = v
 
         return result
-
-
-about_data = {
-    "version": f"v{version('KapowarrReact')}",
-    "python_version": get_python_version(),
-    "database_version": DatabaseMigrationHandler.latest_db_version(),
-    "database_location": None,  # Get's filled in by db.set_db_location()
-    "data_folder": folder_path(),
-}
 
 
 task_intervals = {
