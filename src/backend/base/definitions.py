@@ -878,13 +878,6 @@ class KapowarrException(Exception, ABC):
     def api_response(self) -> ApiResponse: ...
 
 
-class DBMigrator(ABC):
-    start_version: int
-
-    @abstractmethod
-    def run(self) -> None: ...
-
-
 class MassEditorAction(ABC):
     identifier: str
     "The string used in the API to refer to the action"

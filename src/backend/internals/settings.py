@@ -36,12 +36,12 @@ from backend.base.helpers import (
 )
 from backend.base.logging import LOGGER, set_log_level
 from backend.internals.db import commit, get_db
-from backend.internals.db_migration import get_latest_db_version
+from backend.internals.db_migration import DatabaseMigrationHandler
 
 
 @dataclass(frozen=True)
 class SettingsValues:
-    database_version: int = get_latest_db_version()
+    database_version: int = DatabaseMigrationHandler.latest_db_version()
     added_kapowarr_react_columns: bool = False
     log_level: int = INFO
     auth_password: str = ""
@@ -129,7 +129,7 @@ class SettingsValues:
 about_data = {
     "version": f"v{version('KapowarrReact')}",
     "python_version": get_python_version(),
-    "database_version": get_latest_db_version(),
+    "database_version": DatabaseMigrationHandler.latest_db_version(),
     "database_location": None,  # Get's filled in by db.set_db_location()
     "data_folder": folder_path(),
 }
