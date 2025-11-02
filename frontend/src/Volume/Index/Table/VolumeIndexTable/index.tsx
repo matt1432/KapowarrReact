@@ -55,7 +55,7 @@ function Row({
     isSelectMode,
 }: RowComponentProps<RowItemData>) {
     if (index >= items.length) {
-        return null;
+        return <></>;
     }
 
     const volume = items[index];

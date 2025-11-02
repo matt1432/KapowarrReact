@@ -31,7 +31,7 @@ interface VirtualTableProps<T extends ExtendableRecord> {
     isSmallScreen: boolean;
     listRef: RefObject<ListImperativeAPI>;
     rowHeight: number;
-    Row(props: RowComponentProps<T>): React.JSX.Element | null;
+    Row(props: RowComponentProps<T>): React.ReactElement;
     scrollerRef: RefObject<HTMLElement>;
 }
 

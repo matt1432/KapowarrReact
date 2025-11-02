@@ -85,7 +85,7 @@ function Cell({
     const index = rowIndex * columnCount + columnIndex;
 
     if (index >= items.length) {
-        return null;
+        return <></>;
     }
 
     const volume = items[index];

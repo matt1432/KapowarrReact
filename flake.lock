@@ -13,11 +13,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1761278339,
-        "narHash": "sha256-fy1uzBKxWeaDcvb1WkU/B0r8CvBszLUk1ouoCq2SQGU=",
+        "lastModified": 1762048891,
+        "narHash": "sha256-D/ZfCViAac1hwj7VCRjsCdLETFsta97TTpmHVjCIXLs=",
         "owner": "matt1432",
         "repo": "LibgenComics",
-        "rev": "e472741140d433503b2b7e28bb9278ce0677d812",
+        "rev": "4ae50dff37d28f0d4f990472581e8abb617c05c1",
         "type": "github"
       },
       "original": {
@@ -28,10 +28,10 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1761114652,
-        "narHash": "sha256-f/QCJM/YhrV/lavyCVz8iU3rlZun6d+dAiC3H+CDle4=",
+        "lastModified": 1761907660,
+        "narHash": "sha256-kJ8lIZsiPOmbkJypG+B5sReDXSD1KGu2VEPNqhRa/ew=",
         "ref": "nixos-unstable",
-        "rev": "01f116e4df6a15f4ccdffb1bcd41096869fb385c",
+        "rev": "2fb006b87f04c4d3bdf08cfdbc7fab9c13d94a15",
         "shallow": true,
         "type": "git",
         "url": "https://github.com/NixOS/nixpkgs"
@@ -73,11 +73,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1760945191,
-        "narHash": "sha256-ZRVs8UqikBa4Ki3X4KCnMBtBW0ux1DaT35tgsnB1jM4=",
+        "lastModified": 1761311587,
+        "narHash": "sha256-Msq86cR5SjozQGCnC6H8C+0cD4rnx91BPltZ9KK613Y=",
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "rev": "f56b1934f5f8fcab8deb5d38d42fd692632b47c2",
+        "rev": "2eddae033e4e74bf581c2d1dfa101f9033dbd2dc",
         "type": "github"
       },
       "original": {
