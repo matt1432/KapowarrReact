@@ -52,13 +52,13 @@ const extendedApi = baseApi.injectEndpoints({
 
         getThumbnailURLs: build.mutation<
             ThumbnailData[],
-            { issueId: number; filepath: string }
+            { issueId: number; filepath: string; refresh?: boolean }
         >({
-            query: ({ issueId, filepath }) => ({
+            query: ({ issueId, ...params }) => ({
                 method: 'GET',
                 url: `issues/${issueId}/thumbnails`,
                 params: {
-                    filepath,
+                    ...params,
                     apiKey: window.Kapowarr.apiKey,
                 },
             }),

@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import { useGetThumbnailURLsMutation } from 'Store/Api/Issues';
@@ -106,6 +106,15 @@ export default function IssueFileRow({
         }
     }, [getThumbnails, issueId, path, setEditPagesModalOpen]);
 
+    const [isRefreshingPages, setIsRefreshingPages] = useState(false);
+    const handleRefreshPages = useCallback(async () => {
+        if (path) {
+            setIsRefreshingPages(true);
+            await getThumbnails({ issueId, filepath: path, refresh: true });
+            setIsRefreshingPages(false);
+        }
+    }, [getThumbnails, issueId, path]);
+
     return (
         <TableRow>
             {columns.map(({ name, isVisible }) => {
@@ -191,6 +200,8 @@ export default function IssueFileRow({
                 thumbnails={thumbnails}
                 isOpen={isEditPagesModalOpen}
                 onModalClose={setEditPagesModalClosed}
+                onRefresh={handleRefreshPages}
+                isRefreshing={isRefreshingPages}
             />
         </TableRow>
     );

@@ -110,6 +110,7 @@ def _generate_page_thumbnails(
     original_pages = _extract_files(file_path)
 
     thumbnails_folder = _get_thumbnails_folder(issue_id, file_path)
+    delete_file_folder(thumbnails_folder)
 
     create_folder(thumbnails_folder)
 

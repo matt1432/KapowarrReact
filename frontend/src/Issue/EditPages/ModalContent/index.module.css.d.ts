@@ -5,6 +5,9 @@ interface CssExports {
     imageContainer: string;
     inputContainer: string;
     buttons: string;
+    modalHeader: string;
+    modalHeaderContainer: string;
+    refreshButton: string;
 }
 export const cssExports: CssExports;
 export default cssExports;

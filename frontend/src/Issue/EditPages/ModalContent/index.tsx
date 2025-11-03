@@ -30,6 +30,7 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import SpinnerErrorButton from 'Components/Link/SpinnerErrorButton';
+import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import TextInput from 'Components/Form/TextInput';
 import VirtualTable from 'Components/Table/VirtualTable';
 
@@ -53,12 +54,12 @@ interface RowProps {
 export interface EditPagesModalContentProps {
     fileId: number;
     thumbnails: ThumbnailData[] | undefined;
+    isRefreshing: boolean;
+    onRefresh: () => void;
     onModalClose: () => void;
 }
 
 // IMPLEMENTATIONS
-
-// TODO: add refresh button
 
 function parsePageNumbers(
     filename: string,
@@ -193,6 +194,8 @@ function Row({
 export default function EditPagesModalContent({
     fileId,
     thumbnails,
+    onRefresh,
+    isRefreshing,
     onModalClose,
 }: EditPagesModalContentProps) {
     const { title } = useGetFileQuery(
@@ -338,14 +341,23 @@ export default function EditPagesModalContent({
 
     return (
         <ModalContent onModalClose={onModalClose}>
-            <ModalHeader>
-                {translate('EditPagesModalHeader', { title })}
+            <ModalHeader className={styles.modalHeaderContainer}>
+                <div className={styles.modalHeader}>
+                    {translate('EditPagesModalHeader', { title })}
+                </div>
+
+                <SpinnerIconButton
+                    name={icons.REFRESH}
+                    className={styles.refreshButton}
+                    size={18}
+                    onPress={onRefresh}
+                    isSpinning={isRefreshing}
+                />
             </ModalHeader>
 
             <ModalBody>
                 {changes ? (
                     <VirtualTable
-                        // TODO: allow editing prefix in header?
                         Header={<></>}
                         listRef={listRef}
                         itemCount={changes.length}

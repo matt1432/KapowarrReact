@@ -21,3 +21,25 @@
     gap: 5;
     justify-content: center;
 }
+
+.modalHeader {
+    composes: modalHeader from 'Components/Modal/ModalHeader/index.module.css';
+    padding: unset;
+    border-bottom: unset;
+}
+
+.modalHeaderContainer {
+    composes: modalHeader from 'Components/Modal/ModalHeader/index.module.css';
+    display: flex;
+    justify-content: space-between;
+}
+
+.refreshButton {
+    composes: button from 'Components/Link/IconButton/index.module.css';
+
+    width: 60px;
+    height: 57px;
+    position: absolute;
+    top: 0;
+    right: 60px;
+}

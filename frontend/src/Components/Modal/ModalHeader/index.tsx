@@ -1,13 +1,15 @@
 // IMPORTS
 
 // React
-import React, { type ForwardedRef, forwardRef, type ReactNode } from 'react';
+import { forwardRef } from 'react';
 
 // CSS
 import styles from './index.module.css';
 
 // Types
-interface ModalHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+import type { ForwardedRef, HTMLAttributes, ReactNode } from 'react';
+
+interface ModalHeaderProps extends HTMLAttributes<HTMLDivElement> {
     children: ReactNode;
 }
 

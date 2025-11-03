@@ -218,6 +218,7 @@ def extract_key(
             "monitor",
             "delete_folder",
             "rename_files",
+            "refresh",
             "only_english",
             "limit_parent_folder",
             "force_match",
@@ -930,7 +931,8 @@ def api_volume_cover(id: int) -> tuple[Response, int]:
 @auth
 def api_issue_thumbnails(id: int) -> ApiReturn:
     filepath = extract_key(request, "filepath", False)
-    thumbnails = get_issue_page_thumbnails(id, filepath)
+    refresh = extract_key(request, "refresh", False)
+    thumbnails = get_issue_page_thumbnails(id, filepath, refresh)
 
     return return_api(thumbnails)
 
