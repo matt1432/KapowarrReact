@@ -204,6 +204,7 @@ def update_issue_pages(file_id: int, new_pages: list[ThumbnailData]) -> None:
                         filename=join(archive_folder, f),
                         arcname=join(dirname(f), page["filename"]),
                     )
+                    break
 
     delete_file_folder(archive_folder)
     delete_file_folder(dirname(new_pages[0]["filepath"]))
