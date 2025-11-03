@@ -22,8 +22,8 @@ in {
 
     package = mkOption {
       type = types.package;
-      default = pkgs.kapowarr-react or self.packages.${pkgs.system}.kapowarr-react;
-      defaultText = literalExpression "pkgs.kapowarr-react or kapowarr-react.packages.\${pkgs.system}.kapowarr-react";
+      default = pkgs.kapowarr-react or self.packages.${pkgs.stdenv.hostPlatform.system}.kapowarr-react;
+      defaultText = literalExpression "pkgs.kapowarr-react or kapowarr-react.packages.\${pkgs.stdenv.hostPlatform.system}.kapowarr-react";
       description = ''
         The Kapowarr React package to use.\
         By default, this option will use `kapowarr-react` from your `pkgs` if it finds it,
