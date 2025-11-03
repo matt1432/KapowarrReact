@@ -77,6 +77,18 @@ function weighIssueNumber(
     return issueNumber;
 }
 
+function filterDupeSearchResults(
+    item: SearchResult,
+    currentIndex: number,
+    arr: SearchResult[],
+): boolean {
+    // Filter out search results that have the same properties
+    const firstIndex = arr.findIndex(
+        (firstItem) => JSON.stringify(item) === JSON.stringify(firstItem),
+    );
+    return firstIndex === currentIndex;
+}
+
 function InternalSearch({
     isFetching,
     isPopulated,
@@ -244,7 +256,9 @@ export default function InteractiveSearch({
     const [search, { data, ...searchProps }] = useLazyManualSearchQuery({
         selectFromResult: ({ isFetching, isUninitialized, error, data }) => {
             const filteredData: SearchResultItem[] =
-                data?.map((item, id) => ({ ...item, id })) ?? [];
+                data
+                    ?.filter(filterDupeSearchResults)
+                    ?.map((item, id) => ({ ...item, id })) ?? [];
 
             return {
                 isFetching,
