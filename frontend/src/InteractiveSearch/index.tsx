@@ -32,6 +32,7 @@ import SortedTable from 'Components/Table/SortedTable';
 // Specific Components
 import InteractiveSearchRow from './InteractiveSearchRow';
 import InteractiveSearchTableOptions from './TableOptions';
+import InteractiveSearchIssueTableOptions from './IssueTableOptions';
 
 // CSS
 import styles from './index.module.css';
@@ -41,7 +42,10 @@ import type { InteractiveSearchPayload, SearchResult } from 'typings/Search';
 
 import type { AnyError } from 'typings/Api';
 import type { InputChanged } from 'typings/Inputs';
-import InteractiveSearchIssueTableOptions from './IssueTableOptions';
+
+interface SearchResultItem extends SearchResult {
+    id: number;
+}
 
 export interface InteractiveSearchProps {
     searchPayload: InteractiveSearchPayload;
@@ -52,7 +56,7 @@ interface SearchProps extends InteractiveSearchProps {
     isPopulated: boolean;
     error: AnyError | undefined;
     errorMessage: string;
-    items: (SearchResult & { id: number; actions: never })[];
+    items: SearchResultItem[];
     totalItems: number;
 }
 
@@ -183,10 +187,7 @@ export function LibgenFileSearch({ searchPayload }: InteractiveSearchProps) {
             error,
             errorMessage: getErrorMessage(error),
             items: (data?.map((item, id) => ({ ...item, id })) ??
-                []) as (SearchResult & {
-                id: number;
-                actions: never;
-            })[],
+                []) as SearchResultItem[],
             totalItems: data?.length ?? 0,
         }),
     });
@@ -241,18 +242,19 @@ export default function InteractiveSearch({
     searchPayload,
 }: InteractiveSearchProps) {
     const [search, { data, ...searchProps }] = useLazyManualSearchQuery({
-        selectFromResult: ({ isFetching, isUninitialized, error, data }) => ({
-            isFetching,
-            isPopulated: !isUninitialized,
-            error,
-            errorMessage: getErrorMessage(error),
-            data: (data?.map((item, id) => ({ ...item, id })) ??
-                []) as (SearchResult & {
-                id: number;
-                actions: never;
-            })[],
-            totalItems: data?.length ?? 0,
-        }),
+        selectFromResult: ({ isFetching, isUninitialized, error, data }) => {
+            const filteredData: SearchResultItem[] =
+                data?.map((item, id) => ({ ...item, id })) ?? [];
+
+            return {
+                isFetching,
+                isPopulated: !isUninitialized,
+                error,
+                errorMessage: getErrorMessage(error),
+                data: filteredData,
+                totalItems: filteredData.length,
+            };
+        },
     });
 
     useEffect(() => {

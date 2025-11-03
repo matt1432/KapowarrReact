@@ -21,10 +21,11 @@ import styles from './index.module.css';
 import type { Column } from 'Components/Table/Column';
 import type { VolumeSearchResult } from '../ChangeMatchModalContent';
 import type { VolumeMetadata } from 'AddVolume/AddVolume';
+import type { ChangeMatchColumnName } from '../columns';
 
 interface ChangeMatchRowProps {
     match: VolumeSearchResult;
-    columns: Column<keyof VolumeSearchResult>[];
+    columns: Column<ChangeMatchColumnName>[];
     onEditMatch: (match: VolumeMetadata) => void;
     onEditGroupMatch: (match: VolumeMetadata) => void;
 }

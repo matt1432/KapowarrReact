@@ -41,7 +41,6 @@ export interface IssueRowData extends IssueData {
 
     // Columns
     status: never;
-    actions: never;
 }
 
 interface IssueTableProps {

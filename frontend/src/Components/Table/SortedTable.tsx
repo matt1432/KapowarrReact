@@ -29,7 +29,10 @@ import type {
 interface SortedTableProps<
     Name extends keyof ColumnNameMap,
     ColumnName extends ColumnNameMap[Name],
-    T extends Item<Name, ColumnName> = Item<Name, ColumnName>,
+    T extends Item<Name, Exclude<ColumnName, 'actions'>> = Item<
+        Name,
+        Exclude<ColumnName, 'actions'>
+    >,
 > {
     tableName: Name;
     columns: Column<ColumnName>[];
@@ -56,7 +59,10 @@ interface SortedTableProps<
 export default function SortedTable<
     Name extends keyof ColumnNameMap,
     ColumnName extends ColumnNameMap[Name],
-    T extends Item<Name, ColumnName> = Item<Name, ColumnName>,
+    T extends Item<Name, Exclude<ColumnName, 'actions'>> = Item<
+        Name,
+        Exclude<ColumnName, 'actions'>
+    >,
 >({
     tableName,
     columns,

@@ -41,9 +41,6 @@ export type QueueColumn = QueueItem & {
     priority: number;
     sizeLeft: number;
     timeLeft: number;
-
-    // Columns
-    actions: never;
 };
 
 // IMPLEMENTATIONS

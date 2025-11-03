@@ -40,7 +40,6 @@ import type { InputChanged } from 'typings/Inputs';
 
 export type VolumeSearchResult = VolumeMetadata & {
     id: number;
-    actions: never;
 };
 
 export interface ChangeMatchModalContentProps {

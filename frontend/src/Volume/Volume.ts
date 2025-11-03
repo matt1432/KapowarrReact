@@ -55,8 +55,6 @@ export type RawVolumePublicInfo = Pick<
     issue_count_monitored: number;
     issue_file_count: number;
     issues_downloaded_monitored: number;
-} & {
-    actions: never; // for columns
 };
 
 export type VolumePublicInfo = CamelCasedProperties<RawVolumePublicInfo>;

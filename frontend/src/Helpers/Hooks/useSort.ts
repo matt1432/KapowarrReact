@@ -15,7 +15,10 @@ import type { ColumnNameMap } from 'Store/Slices/TableOptions';
 export type Predicates<
     Name extends keyof ColumnNameMap,
     ColumnName extends ColumnNameMap[Name],
-    T extends Item<Name, ColumnName>,
+    T extends Item<Name, Exclude<ColumnName, 'actions'>> = Item<
+        Name,
+        Exclude<ColumnName, 'actions'>
+    >,
 > = Partial<Record<ColumnName, (a: T, b: T) => number>>;
 
 export type Item<
@@ -26,7 +29,10 @@ export type Item<
 interface UseSortProps<
     Name extends keyof ColumnNameMap,
     ColumnName extends ColumnNameMap[Name],
-    T extends Item<Name, ColumnName>,
+    T extends Item<Name, Exclude<ColumnName, 'actions'>> = Item<
+        Name,
+        Exclude<ColumnName, 'actions'>
+    >,
 > {
     columns: Column<ColumnName>[];
     items: T[];
@@ -44,12 +50,15 @@ interface UseSortProps<
 function predicatesToSorters<
     Name extends keyof ColumnNameMap,
     ColumnName extends ColumnNameMap[Name],
-    T extends Item<Name, ColumnName>,
+    T extends Item<Name, Exclude<ColumnName, 'actions'>> = Item<
+        Name,
+        Exclude<ColumnName, 'actions'>
+    >,
 >(columns: Column<ColumnName>[], predicates: Predicates<Name, ColumnName, T>) {
     const predicateKeys = Object.keys(predicates);
-    const missingSortableColumns: ColumnName[] = columns
+    const missingSortableColumns = columns
         .filter((c) => c.isSortable && !predicateKeys.includes(c.name))
-        .map((c) => c.name);
+        .map((c) => c.name) as Exclude<ColumnName, 'actions'>[];
 
     const defaultPredicates = missingSortableColumns.map((key) => [
         key,
@@ -111,7 +120,10 @@ function predicatesToSorters<
 export default function useSort<
     Name extends keyof ColumnNameMap,
     ColumnName extends ColumnNameMap[Name],
-    T extends Item<Name, ColumnName> = Item<Name, ColumnName>,
+    T extends Item<Name, Exclude<ColumnName, 'actions'>> = Item<
+        Name,
+        Exclude<ColumnName, 'actions'>
+    >,
 >({
     columns,
     items,
