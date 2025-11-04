@@ -171,6 +171,8 @@ class SearchGetComics(SearchSource):
 
 
 class SearchLibgenPlus:
+    was_file_search = False
+
     def __init__(
         self,
         volume: Volume,
@@ -199,6 +201,8 @@ class SearchLibgenPlus:
             libgen_file_url is not None
             and libgen_file_url.count("file.php?id=") != 0
         ):
+            self.was_file_search = True
+
             file_id = int(libgen_file_url.split("file.php?id=")[-1])
             file_result = ResultFile(
                 id=file_id, libgen_site_url=Constants.LIBGEN_SITE_URL
@@ -429,9 +433,19 @@ def manual_search(
         if volume_data.year is None:
             formats = tuple(f.replace("({year})", "").strip() for f in formats)
 
+        libgen_results = []
+        was_file_search = False
+        if Settings().sv.enable_libgen:
+            libgen_search = SearchLibgenPlus(
+                volume,
+                calculated_issue_number,
+            )
+            libgen_results = run(libgen_search.search(libgen_series_id))
+            was_file_search = libgen_search.was_file_search
+
         search_title = title.replace(":", "")
         search_results = []
-        if Settings().sv.enable_getcomics:
+        if Settings().sv.enable_getcomics and not was_file_search:
             search_results = run(
                 search_multiple_queries(
                     *(
@@ -444,15 +458,6 @@ def manual_search(
                         for format in formats
                     )
                 )
-            )
-
-        libgen_results = []
-        if Settings().sv.enable_libgen:
-            libgen_results = run(
-                SearchLibgenPlus(
-                    volume,
-                    calculated_issue_number,
-                ).search(libgen_series_id)
             )
 
         if not search_results and not libgen_results:
