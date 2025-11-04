@@ -10,7 +10,6 @@ export interface RawSettingsValue {
     concurrent_direct_downloads: number;
     convert: boolean;
     create_empty_volume_folders: boolean;
-    database_version: number;
     date_type: DateType;
     delete_completed_downloads: boolean;
     delete_empty_folders: boolean;
