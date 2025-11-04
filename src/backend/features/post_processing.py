@@ -5,7 +5,7 @@ The post-download processing (a.k.a. post-processing or PP) of downloads.
 from __future__ import annotations
 
 from collections.abc import Callable
-from os.path import basename, exists, isfile, join, splitext
+from os.path import basename, dirname, exists, isfile, join, splitext
 from time import time
 from typing import TYPE_CHECKING
 
@@ -126,7 +126,7 @@ def move_to_dest(download: Download) -> None:
         f"Moving download to final destination: {download}, Dest: {file_dest}"
     )
 
-    # If it takes very long to delete/move the file/folder (because of it's size),
+    # If it takes very long to delete/move the file/folder (because of its size),
     # the DB is left locked for a long period leading to timeouts.
     commit()
 
@@ -141,7 +141,7 @@ def move_to_dest(download: Download) -> None:
     return
 
 
-def move_torrent_to_dest(download: Download) -> None:
+def move_torrent_to_dest(download: TorrentDownload) -> None:
     """
     Move folder downloaded using torrent from download folder to
     final destination, extract files, scan them, rename them.
@@ -149,17 +149,29 @@ def move_torrent_to_dest(download: Download) -> None:
     if not exists(download.files[0]):
         return
 
-    move_to_dest(download)
+    # Is a Libgen torrent file
+    if download.filename is not None:
+        download.files = [
+            join(
+                download.files[0],
+                basename(download.filename),
+                download.filename,
+            )
+        ]
+        move_to_dest(download)
+    else:
+        move_to_dest(download)
 
-    download.files = extract_files_from_folder(
-        download.files[0], download.volume_id
-    )
+        download.files = extract_files_from_folder(
+            download.files[0], download.volume_id
+        )
 
     if not download.files:
         return
 
     scan_files(
         download.volume_id,
+        file_extra_info=download.get_file_extra_info(),
         filepath_filter=download.files,
         update_websocket=True,
     )
@@ -183,30 +195,51 @@ def copy_file_torrent(download: TorrentDownload) -> None:
         return
 
     folder = Volume(download.volume_id).vd.folder
-    file_dest = join(folder, basename(download.files[0]))
-    LOGGER.debug(
-        f"Copying download to final destination: {download}, Dest: {file_dest}"
-    )
 
-    # If it takes very long to delete/copy the folder (because of it's size),
+    file_dest = join(folder, basename(download.files[0]))
+    if download.filename is None:
+        LOGGER.debug(
+            f"Copying download to final destination: {download}, Dest: {file_dest}"
+        )
+
+    # If it takes very long to delete/copy the folder (because of its size),
     # the DB is left locked for a long period leading to timeouts.
     commit()
 
-    if exists(file_dest):
-        LOGGER.warning(
-            f"The file/folder {file_dest} already exists; replacing with downloaded file"
+    # Is a Libgen torrent file
+    if download.filename is not None:
+        file_dest = join(
+            dirname(download.files[0]), f"{basename(download.files[0])}-copy"
         )
+        if exists(file_dest):
+            delete_file_folder(file_dest)
+
+        copy_directory(download.files[0], file_dest)
+
+        download.files = [
+            join(file_dest, basename(download.filename), download.filename)
+        ]
+        move_to_dest(download)
         delete_file_folder(file_dest)
+    else:
+        if exists(file_dest):
+            LOGGER.warning(
+                f"The file/folder {file_dest} already exists; replacing with downloaded file"
+            )
+            delete_file_folder(file_dest)
 
-    copy_directory(download.files[0], file_dest)
+        copy_directory(download.files[0], file_dest)
 
-    download.files = extract_files_from_folder(file_dest, download.volume_id)
+        download.files = extract_files_from_folder(
+            file_dest, download.volume_id
+        )
 
     if not download.files:
         return
 
     scan_files(
         download.volume_id,
+        file_extra_info=download.get_file_extra_info(),
         filepath_filter=download.files,
         update_websocket=True,
     )

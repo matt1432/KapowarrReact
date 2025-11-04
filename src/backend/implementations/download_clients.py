@@ -824,6 +824,10 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         return self._external_id
 
     @property
+    def filename(self) -> str | None:
+        return self._filename
+
+    @property
     def sleep_event(self) -> Event:
         return self._sleep_event
 
@@ -952,22 +956,26 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
 
     def run(self) -> None:
         if not self.external_id:
-            self._external_id = self.external_client.add_download(
-                self.download_link,
-                RemoteMappings.local_to_remote(
-                    self._external_client.id,
-                    self._download_folder
-                    if not self._filename
-                    else join(self._download_folder, self._filename),
-                ),
-                self.title,
-                self._filename,
-            )
-            if self.id:
-                get_db().execute(
-                    "UPDATE download_queue SET external_id = ? WHERE id = ?;",
-                    (self.external_id, self.id),
+            try:
+                self._external_id = self.external_client.add_download(
+                    self.download_link,
+                    RemoteMappings.local_to_remote(
+                        self._external_client.id,
+                        self._download_folder
+                        if not self._filename
+                        else join(self._download_folder, self._filename),
+                    ),
+                    self.title,
+                    self._filename,
                 )
+                if self.id:
+                    get_db().execute(
+                        "UPDATE download_queue SET external_id = ? WHERE id = ?;",
+                        (self.external_id, self.id),
+                    )
+            except ClientNotWorking:
+                self.state = DownloadState.FAILED_STATE
+                self.remove_from_client(True)
         return
 
     def update_status(self) -> None:

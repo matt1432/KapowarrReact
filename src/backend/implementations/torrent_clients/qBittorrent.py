@@ -115,6 +115,7 @@ class qBittorrent(BaseExternalClient):
                 save_path=target_folder,
                 category=Constants.TORRENT_TAG,
                 is_stopped=is_stopped,
+                rename=filename,
             )
 
             t_hash = None
@@ -129,15 +130,28 @@ class qBittorrent(BaseExternalClient):
                     t_hash = new_torrent.hash
 
             if is_stopped:
-                for file in self.ssn.torrents_files(torrent_hash=t_hash).data:
-                    if file and file.name != filename:
-                        self.ssn.torrents_file_priority(
-                            torrent_hash=t_hash, file_ids=file.id, priority=0
-                        )
-                    elif file:
-                        self.ssn.torrents_file_priority(
-                            torrent_hash=t_hash, file_ids=file.id, priority=1
-                        )
+                file_found = False
+
+                for _ in range(5):
+                    for file in self.ssn.torrents_files(torrent_hash=t_hash).data:
+                        if file and file.name != filename:
+                            self.ssn.torrents_file_priority(
+                                torrent_hash=t_hash, file_ids=file.id, priority=0
+                            )
+                        elif file:
+                            file_found = True
+                            self.ssn.torrents_file_priority(
+                                torrent_hash=t_hash, file_ids=file.id, priority=1
+                            )
+                    if file_found:
+                        break
+
+                if not file_found:
+                    LOGGER.info(f"Couldn't select file of torrent download {download_link}")
+                    raise ClientNotWorking(
+                        BrokenClientReason.FAILED_PROCESSING_RESPONSE
+                    )
+
                 self.ssn.torrents_resume(torrent_hashes=t_hash)
 
         if t_hash is None:
