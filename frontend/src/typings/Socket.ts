@@ -8,6 +8,7 @@ import type { DownloadState } from 'Helpers/Props/downloadStates';
 import type { RawTask } from './Task';
 import type { VolumePublicInfo } from 'Volume/Volume';
 import type { Issue } from 'Issue/Issue';
+import type { SettingsValue } from './Settings';
 
 type TaskData = CamelCasedPropertiesDeep<
     Pick<RawTask, 'action' | 'volume_id' | 'issue_id' | 'called_from'>
@@ -69,6 +70,7 @@ interface SpecificEventHandlers {
     queue_status: (data: QueueStatusData) => void;
     issue_updated: (data: IssueUpdatedData) => void;
     volume_updated: (data: VolumeUpdatedData) => void;
+    settings_updated: (data: { settings: SettingsValue }) => void;
     issue_deleted: (data: IssueDeletedData) => void;
     volume_deleted: (data: VolumeDeletedData) => void;
     mass_editor_status: (data: MassEditorData) => void;

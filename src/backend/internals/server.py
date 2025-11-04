@@ -38,6 +38,7 @@ if TYPE_CHECKING:
     from backend.base.definitions import Download
     from backend.features.tasks import Task
     from backend.implementations.volumes import Issue, Volume
+    from backend.internals.settings import PublicSettingsValues
 
 
 class ThreadedTaskDispatcher(TTD):
@@ -397,6 +398,15 @@ class WebSocket(SocketIO, metaclass=Singleton):
             cm._handle_emit(message)
             cm._publish(message)
 
+        return
+
+    def send_settings_updated(self, settings: PublicSettingsValues) -> None:
+        self.emit(
+            SocketEvent.SETTINGS_UPDATED.value,
+            {
+                "settings": settings.todict(),
+            },
+        )
         return
 
     def send_volume_updated(

@@ -34,7 +34,6 @@ export default function LibgenPlus() {
 
     const { enableLibgen, includeCoverOnlyFiles, includeScannedBooks } =
         useGetSettingsQuery(undefined, {
-            refetchOnMountOrArgChange: true,
             selectFromResult: ({ data }) => ({
                 enableLibgen: Boolean(data?.enableLibgen),
                 includeCoverOnlyFiles: Boolean(data?.includeCoverOnlyFiles),

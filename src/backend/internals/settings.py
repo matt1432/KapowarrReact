@@ -273,6 +273,7 @@ class Settings(metaclass=Singleton):
             NAMING_MAPPING,
             check_mock_filename,
         )
+        from backend.internals.server import WebSocket
 
         formatted_data = {}
         for key, value in data.items():
@@ -300,6 +301,8 @@ class Settings(metaclass=Singleton):
         self.clear_cache()
 
         LOGGER.info(f"Settings changed: {formatted_data}")
+
+        WebSocket().send_settings_updated(self.get_public_settings())
 
         return
 

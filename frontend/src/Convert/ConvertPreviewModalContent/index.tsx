@@ -99,7 +99,6 @@ export default function ConvertPreviewModalContent({
         format,
         convertFiles,
     } = useGetSettingsQuery(undefined, {
-        refetchOnMountOrArgChange: true,
         selectFromResult: ({ data, error, isFetching, isUninitialized }) => ({
             isFormatFetching: isFetching,
             isFormatPopulated: !isUninitialized,

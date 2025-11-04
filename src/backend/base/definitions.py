@@ -289,6 +289,7 @@ class SocketEvent(BaseEnum):
 
     VOLUME_UPDATED = "volume_updated"
     ISSUE_UPDATED = "issue_updated"
+    SETTINGS_UPDATED = "settings_updated"
 
     VOLUME_DELETED = "volume_deleted"
     ISSUE_DELETED = "issue_deleted"

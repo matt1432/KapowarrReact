@@ -41,6 +41,7 @@ import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
 import type { SocketEventHandler } from 'typings/Socket';
 import type { MassEditAction } from 'Helpers/Props/massEditActions';
 import type { IconName } from 'Components/Icon';
+import { useLazyGetSettingsQuery } from 'Store/Api/Settings';
 
 // IMPLEMENTATIONS
 
@@ -75,6 +76,9 @@ export default function SocketListener() {
         selectFromResult: () => ({}),
     });
     const [fetchQueue] = useLazyGetQueueQuery({
+        selectFromResult: () => ({}),
+    });
+    const [fetchSettings] = useLazyGetSettingsQuery({
         selectFromResult: () => ({}),
     });
 
@@ -521,6 +525,19 @@ export default function SocketListener() {
         [callbacks.volume_deleted, refreshVolumeEndpoints],
     );
 
+    const handleSettingsUpdated = useCallback<
+        SocketEventHandler<typeof socketEvents.SETTINGS_UPDATED>
+    >(
+        async (data) => {
+            await fetchSettings();
+
+            callbacks.settings_updated.forEach((callback) => {
+                callback(data);
+            });
+        },
+        [callbacks.settings_updated, fetchSettings],
+    );
+
     // Hook
     useSocketEvents({
         connect: handleConnect,
@@ -539,6 +556,7 @@ export default function SocketListener() {
 
         issueUpdated: handleIssueUpdated,
         volumeUpdated: handleVolumeUpdated,
+        settingsUpdated: handleSettingsUpdated,
 
         issueDeleted: handleIssueDeleted,
         volumeDeleted: handleVolumeDeleted,

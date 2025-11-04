@@ -102,7 +102,6 @@ export default function OrganizePreviewModalContent({
 
     const { isNamingFetching, isNamingPopulated, namingError, naming } =
         useGetSettingsQuery(undefined, {
-            refetchOnMountOrArgChange: true,
             selectFromResult: ({
                 data,
                 error,
