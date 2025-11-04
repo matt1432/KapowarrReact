@@ -8,6 +8,7 @@ import { useRootSelector } from 'Store/createAppStore';
 import { getIssueStatus } from 'Store/Slices/SocketEvents';
 
 import { useExecuteCommandMutation } from 'Store/Api/Command';
+import { useGetSettingsQuery } from 'Store/Api/Settings';
 
 // Misc
 import { commandNames, icons } from 'Helpers/Props';
@@ -44,6 +45,12 @@ export default function IssueSearchCell({
     issueTitle,
     showOpenVolumeButton,
 }: IssueSearchCellProps) {
+    const { isLibgenEnabled } = useGetSettingsQuery(undefined, {
+        selectFromResult: ({ data }) => ({
+            isLibgenEnabled: Boolean(data?.enableLibgen),
+        }),
+    });
+
     const { isSearching } = useRootSelector((state) =>
         getIssueStatus(state, volumeId, issueId),
     );
@@ -91,11 +98,13 @@ export default function IssueSearchCell({
                 onPress={handleInteractiveSearchPress}
             />
 
-            <IconButton
-                name={icons.LIBGEN_FILE_SEARCH}
-                title={translate('LibgenFileSearch')}
-                onPress={handleLibgenFileSearchPress}
-            />
+            {isLibgenEnabled ? (
+                <IconButton
+                    name={icons.LIBGEN_FILE_SEARCH}
+                    title={translate('LibgenFileSearch')}
+                    onPress={handleLibgenFileSearchPress}
+                />
+            ) : null}
 
             <IssueDetailsModal
                 isOpen={isDetailsModalOpen}

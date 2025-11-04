@@ -5,6 +5,7 @@ import { useCallback, useState } from 'react';
 
 // Redux
 import { useAddDownloadMutation } from 'Store/Api/Command';
+import { useGetSettingsQuery } from 'Store/Api/Settings';
 
 // Misc
 import { icons, kinds, tooltipPositions } from 'Helpers/Props';
@@ -98,6 +99,12 @@ export default function InteractiveSearchRow({
     result,
     searchPayload,
 }: InteractiveSearchRowProps) {
+    const { isLibgenEnabled } = useGetSettingsQuery(undefined, {
+        selectFromResult: ({ data }) => ({
+            isLibgenEnabled: Boolean(data?.enableLibgen),
+        }),
+    });
+
     const [issueNumber, setIssueNumber] = useState(
         Array.isArray(result.issueNumber)
             ? `${result.issueNumber[0]},${result.issueNumber[1]}`
@@ -395,28 +402,30 @@ export default function InteractiveSearchRow({
                                 onPress={onGrabPressWrapper}
                             />
 
-                            <SpinnerIconButton
-                                name={getDownloadIcon(
-                                    isGrabbingTorrent,
-                                    isTorrentGrabbed,
-                                    isTorrentError,
-                                    true,
-                                )}
-                                kind={getDownloadKind(
-                                    isTorrentGrabbed,
-                                    isTorrentError,
-                                )}
-                                title={getDownloadTooltip(
-                                    isGrabbingTorrent,
-                                    isTorrentGrabbed,
-                                    isTorrentError,
-                                    getErrorMessage(grabTorrentError),
-                                    true,
-                                )}
-                                isSpinning={isGrabbingTorrent}
-                                isDisabled={!result.comicsId}
-                                onPress={onGrabTorrentPressWrapper}
-                            />
+                            {isLibgenEnabled ? (
+                                <SpinnerIconButton
+                                    name={getDownloadIcon(
+                                        isGrabbingTorrent,
+                                        isTorrentGrabbed,
+                                        isTorrentError,
+                                        true,
+                                    )}
+                                    kind={getDownloadKind(
+                                        isTorrentGrabbed,
+                                        isTorrentError,
+                                    )}
+                                    title={getDownloadTooltip(
+                                        isGrabbingTorrent,
+                                        isTorrentGrabbed,
+                                        isTorrentError,
+                                        getErrorMessage(grabTorrentError),
+                                        true,
+                                    )}
+                                    isSpinning={isGrabbingTorrent}
+                                    isDisabled={!result.comicsId}
+                                    onPress={onGrabTorrentPressWrapper}
+                                />
+                            ) : null}
 
                             <Link
                                 className={styles.manualDownloadContent}
