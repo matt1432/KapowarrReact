@@ -1452,7 +1452,7 @@ def scan_files(
             ):
                 issue_range = file_data["volume_number"]
 
-            if issue_range:
+            if issue_range is not None:
                 matching_issues = volume.get_issues_in_range(
                     *force_range(issue_range)
                 )
