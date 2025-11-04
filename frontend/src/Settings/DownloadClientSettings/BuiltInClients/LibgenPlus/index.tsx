@@ -32,14 +32,19 @@ import type { CheckInputChanged } from 'typings/Inputs';
 export default function LibgenPlus() {
     const [saveSettings] = useSaveSettingsMutation();
 
-    const { enableLibgen, includeCoverOnlyFiles, includeScannedBooks } =
-        useGetSettingsQuery(undefined, {
-            selectFromResult: ({ data }) => ({
-                enableLibgen: Boolean(data?.enableLibgen),
-                includeCoverOnlyFiles: Boolean(data?.includeCoverOnlyFiles),
-                includeScannedBooks: Boolean(data?.includeScannedBooks),
-            }),
-        });
+    const {
+        enableLibgen,
+        autoSearchTorrents,
+        includeCoverOnlyFiles,
+        includeScannedBooks,
+    } = useGetSettingsQuery(undefined, {
+        selectFromResult: ({ data }) => ({
+            enableLibgen: Boolean(data?.enableLibgen),
+            autoSearchTorrents: Boolean(data?.autoSearchTorrents),
+            includeCoverOnlyFiles: Boolean(data?.includeCoverOnlyFiles),
+            includeScannedBooks: Boolean(data?.includeScannedBooks),
+        }),
+    });
 
     const [enable, setEnable] = useState(enableLibgen);
 
@@ -51,6 +56,20 @@ export default function LibgenPlus() {
         ({ value }: CheckInputChanged<'enable'>) => {
             setEnable(value);
             saveSettings({ enableLibgen: value });
+        },
+        [saveSettings],
+    );
+
+    const [autoTorrents, setAutoTorrents] = useState(autoSearchTorrents);
+
+    useEffect(() => {
+        setAutoTorrents(autoSearchTorrents);
+    }, [autoSearchTorrents]);
+
+    const handleAutoTorrentsChange = useCallback(
+        ({ value }: CheckInputChanged<'autoTorrents'>) => {
+            setAutoTorrents(value);
+            saveSettings({ autoSearchTorrents: value });
         },
         [saveSettings],
     );
@@ -108,6 +127,21 @@ export default function LibgenPlus() {
                                     name="enable"
                                     onChange={handleEnableChange}
                                     value={enable}
+                                />
+                            </FormGroup>
+
+                            <FormGroup>
+                                <FormLabel>
+                                    {translate('AutoSearchTorrents')}
+                                </FormLabel>
+                                <FormInputGroup
+                                    type="check"
+                                    name="autoTorrents"
+                                    helpText={translate(
+                                        'AutoSearchTorrentsHelpText',
+                                    )}
+                                    onChange={handleAutoTorrentsChange}
+                                    value={autoTorrents}
                                 />
                             </FormGroup>
 

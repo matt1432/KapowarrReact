@@ -125,6 +125,7 @@ class PublicSettingsValues:
     enable_getcomics: bool = True
 
     enable_libgen: bool = True
+    auto_search_torrents: bool = False
     include_cover_only_files: bool = False
     include_scanned_books: bool = False
 

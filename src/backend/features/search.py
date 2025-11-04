@@ -466,6 +466,9 @@ def manual_search(
         results: list[MatchedSearchResultData] = []
 
         for result in [*search_results, *libgen_results]:
+            if not Settings().sv.auto_search_torrents:
+                result["comics_id"] = None
+
             match_data = check_search_result_match(
                 result,
                 volume_data,
