@@ -43,7 +43,7 @@ import type { InteractiveSearchPayload, SearchResult } from 'typings/Search';
 import type { AnyError } from 'typings/Api';
 import type { InputChanged } from 'typings/Inputs';
 
-interface SearchResultItem extends SearchResult {
+export interface SearchResultItem extends SearchResult {
     id: number;
 }
 
@@ -147,6 +147,7 @@ function InternalSearch({
                             key={item.id}
                             columns={columns}
                             result={item}
+                            items={items}
                             searchPayload={searchPayload}
                         />
                     )}

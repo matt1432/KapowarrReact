@@ -30,12 +30,15 @@ import styles from './index.module.css';
 // Types
 import type { Column } from 'Components/Table/Column';
 import type { InputChanged } from 'typings/Inputs';
-import type { InteractiveSearchPayload, SearchResult } from 'typings/Search';
+import type { InteractiveSearchPayload } from 'typings/Search';
 import type { InteractiveSearchColumnName } from 'InteractiveSearch/columns';
+import type { SearchResultItem } from 'InteractiveSearch';
+import { filesize } from 'filesize';
 
 interface InteractiveSearchRowProps {
     columns: Column<InteractiveSearchColumnName>[];
-    result: SearchResult;
+    result: SearchResultItem;
+    items: SearchResultItem[];
     searchPayload: InteractiveSearchPayload;
 }
 
@@ -97,6 +100,7 @@ function getDownloadTooltip(
 export default function InteractiveSearchRow({
     columns,
     result,
+    items,
     searchPayload,
 }: InteractiveSearchRowProps) {
     const { isLibgenEnabled } = useGetSettingsQuery(undefined, {
@@ -132,6 +136,36 @@ export default function InteractiveSearchRow({
     const [scanType, setScanType] = useState(initialScanType);
     const [resolution, setResolution] = useState(initialResolution);
     const [dpi, setDpi] = useState(initialDpi);
+
+    const [gotMatchingFileInfo, setGotMatchingFileInfo] = useState(false);
+
+    // Try to get file info from a Libgen result that we suspect is the same as this one
+    if (isLibgenEnabled && !gotMatchingFileInfo) {
+        if (result.source === 'GetComics' && result.match) {
+            const libgenMatch = items.find(
+                (item) =>
+                    item.match &&
+                    item.source === 'Libgen+' &&
+                    item.issueNumber === result.issueNumber &&
+                    filesize(item.filesize ?? 0, {
+                        base: 2,
+                        round: 0,
+                    }) ===
+                        filesize(result.filesize ?? 0, {
+                            base: 2,
+                            round: 0,
+                        }),
+            );
+
+            if (libgenMatch) {
+                setReleaser(libgenMatch.releaser ?? '');
+                setScanType(libgenMatch.scanType ?? '');
+                setResolution(libgenMatch.resolution ?? '');
+                setDpi(libgenMatch.dpi ?? '');
+                setGotMatchingFileInfo(true);
+            }
+        }
+    }
 
     const [
         grabRelease,
