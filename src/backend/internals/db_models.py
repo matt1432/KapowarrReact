@@ -214,6 +214,7 @@ class FilesDB:
             "scan_type",
             "resolution",
             "dpi",
+            "size",
         )
 
         for key, value in data.items():

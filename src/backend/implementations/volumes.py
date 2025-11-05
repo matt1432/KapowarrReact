@@ -5,6 +5,7 @@ from collections.abc import Mapping, Sequence
 from datetime import datetime, timedelta
 from functools import lru_cache
 from io import BytesIO
+from os import stat
 from os.path import dirname, exists, isdir, relpath
 from re import IGNORECASE, compile
 from time import time
@@ -1564,6 +1565,12 @@ def scan_files(
         FilesDB.delete_unmatched_files()
 
     commit()
+
+    for file_id, _issue_id in bindings:
+        file_data = FilesDB.fetch(file_id=file_id)[0]
+        new_size = stat(file_data["filepath"]).st_size
+        if new_size != file_data["size"]:
+            FilesDB.update(file_id, { "size": new_size })
 
     if settings.delete_empty_folders:
         delete_empty_child_folders(volume_data.folder, skip_hidden_folders=True)
