@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useGetThumbnailURLsMutation } from 'Store/Api/Issues';
@@ -115,6 +115,13 @@ export default function IssueFileRow({
         }
     }, [getThumbnails, issueId, path]);
 
+    const canEditPages = useMemo(
+        () =>
+            path?.toLowerCase().endsWith('.cbr') ||
+            path?.toLowerCase().endsWith('.cbz'),
+        [path],
+    );
+
     return (
         <TableRow>
             {columns.map(({ name, isVisible }) => {
@@ -158,9 +165,14 @@ export default function IssueFileRow({
                             />
 
                             <IconButton
-                                title={translate('EditPages')}
+                                title={
+                                    canEditPages
+                                        ? translate('EditPages')
+                                        : translate('CantEditPages')
+                                }
                                 name={icons.EDIT_PAGES}
                                 onPress={handleEditPagesPress}
+                                isDisabled={!canEditPages}
                             />
 
                             <IconButton
