@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useAddDownloadMutation } from 'Store/Api/Command';
@@ -105,15 +105,33 @@ export default function InteractiveSearchRow({
         }),
     });
 
-    const [issueNumber, setIssueNumber] = useState(
-        Array.isArray(result.issueNumber)
-            ? `${result.issueNumber[0]},${result.issueNumber[1]}`
-            : (result.issueNumber?.toString() ?? ''),
+    const initialIssueNumber = useMemo(
+        () =>
+            Array.isArray(result.issueNumber)
+                ? `${result.issueNumber[0]},${result.issueNumber[1]}`
+                : (result.issueNumber?.toString() ?? ''),
+        [result.issueNumber],
     );
-    const [releaser, setReleaser] = useState(result.releaser ?? '');
-    const [scanType, setScanType] = useState(result.scanType ?? '');
-    const [resolution, setResolution] = useState(result.resolution ?? '');
-    const [dpi, setDpi] = useState(result.dpi ?? '');
+
+    const initialReleaser = useMemo(
+        () => result.releaser ?? '',
+        [result.releaser],
+    );
+    const initialScanType = useMemo(
+        () => result.scanType ?? '',
+        [result.scanType],
+    );
+    const initialResolution = useMemo(
+        () => result.resolution ?? '',
+        [result.resolution],
+    );
+    const initialDpi = useMemo(() => result.dpi ?? '', [result.dpi]);
+
+    const [issueNumber, setIssueNumber] = useState(initialIssueNumber);
+    const [releaser, setReleaser] = useState(initialReleaser);
+    const [scanType, setScanType] = useState(initialScanType);
+    const [resolution, setResolution] = useState(initialResolution);
+    const [dpi, setDpi] = useState(initialDpi);
 
     const [
         grabRelease,
@@ -263,6 +281,10 @@ export default function InteractiveSearchRow({
                                 name="issueNumber"
                                 value={issueNumber}
                                 onChange={handleIssueNumberChange}
+                                hasWarning={
+                                    JSON.stringify(issueNumber) !==
+                                    JSON.stringify(initialIssueNumber)
+                                }
                             />
                         </TableRowCell>
                     );
@@ -301,6 +323,7 @@ export default function InteractiveSearchRow({
                                 name="releaser"
                                 value={releaser}
                                 onChange={handleReleaserChange}
+                                hasWarning={releaser !== initialReleaser}
                             />
                         </TableRowCell>
                     );
@@ -313,6 +336,7 @@ export default function InteractiveSearchRow({
                                 name="scanType"
                                 value={scanType}
                                 onChange={handleScanTypeChange}
+                                hasWarning={scanType !== initialScanType}
                             />
                         </TableRowCell>
                     );
@@ -325,6 +349,7 @@ export default function InteractiveSearchRow({
                                 name="resolution"
                                 value={resolution}
                                 onChange={handleResolutionChange}
+                                hasWarning={resolution !== initialResolution}
                             />
                         </TableRowCell>
                     );
@@ -337,6 +362,7 @@ export default function InteractiveSearchRow({
                                 name="dpi"
                                 value={dpi}
                                 onChange={handleDpiChange}
+                                hasWarning={dpi !== initialDpi}
                             />
                         </TableRowCell>
                     );
