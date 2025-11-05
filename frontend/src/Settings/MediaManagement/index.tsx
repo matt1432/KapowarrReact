@@ -3,7 +3,7 @@
 // Misc
 import { inputTypes } from 'Helpers/Props';
 
-import translate, { type TranslateKey } from 'Utilities/String/translate';
+import translate from 'Utilities/String/translate';
 
 // Hooks
 import useEditSettings from 'Settings/useEditSettings';
@@ -24,7 +24,12 @@ import FormatPreferenceInput from './FormatPreferenceInput';
 import RootFolders from './RootFolders';
 
 // Types
+import type { TranslateKey } from 'Utilities/String/translate';
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
+import FormInputButton from 'Components/Form/FormInputButton';
+import FormInputHelpText from 'Components/Form/FormInputHelpText';
+import { useCallback } from 'react';
+import { useEmptyThumbnailsFolderMutation } from 'Store/Api/Settings';
 
 // IMPLEMENTATIONS
 
@@ -49,6 +54,11 @@ export default function MediaManagement() {
         handleInputChange,
         changes,
     } = useEditSettings();
+
+    const [emptyThumbnailsFolder] = useEmptyThumbnailsFolderMutation();
+    const onEmptyThumbnailsFolderPress = useCallback(() => {
+        emptyThumbnailsFolder();
+    }, [emptyThumbnailsFolder]);
 
     return (
         <PageContent title={translate('MediaManagementSettings')}>
@@ -242,6 +252,31 @@ export default function MediaManagement() {
                                 onChange={handleInputChange}
                                 value={changes.removeAds}
                             />
+                        </FormGroup>
+                    </FieldSet>
+
+                    <FieldSet legend={translate('EditPages')}>
+                        <FormGroup>
+                            <FormLabel>
+                                {translate('ThumbnailsFolderEmpty')}
+                            </FormLabel>
+                            <div>
+                                <FormInputButton
+                                    style={{
+                                        borderLeft: 'currentColor',
+                                        borderTopLeftRadius: '4px',
+                                        borderBottomLeftRadius: '4px',
+                                    }}
+                                    onPress={onEmptyThumbnailsFolderPress}
+                                >
+                                    {translate('Reset')}
+                                </FormInputButton>
+                                <FormInputHelpText
+                                    text={translate(
+                                        'ThumbnailsFolderEmptyHelpText',
+                                    )}
+                                />
+                            </div>
                         </FormGroup>
                     </FieldSet>
 

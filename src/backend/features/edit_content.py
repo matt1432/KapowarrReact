@@ -1,4 +1,5 @@
 from io import BytesIO
+from os import listdir
 from os.path import basename, dirname, exists, join
 from zipfile import ZipFile
 
@@ -12,6 +13,7 @@ from backend.base.files import (
     generate_archive_folder,
     list_files,
 )
+from backend.base.logging import LOGGER
 from backend.implementations.ad_removal import get_files_prefix
 from backend.implementations.converters import CBRtoCBZ, CBZtoCBR
 from backend.implementations.volumes import Volume
@@ -47,21 +49,34 @@ def _extract_files(file: str) -> list[str]:
     return resulting_files
 
 
+# Place the thumbnails at the same place as the Kapowarr db
+def _get_main_thumbnails_folder() -> str:
+    return join(
+        dirname(DBConnection.file) or folder_path(*Constants.DB_FOLDER),
+        Constants.THUMBNAILS_FOLDER_NAME,
+    )
+
+
 def _get_thumbnails_folder(
     issue_id: int,
     file_path: str,
 ) -> str:
-    # Place the thumbnails at the same place as the Kapowarr db
     volume_id = FilesDB.volume_of_file(file_path)
     file_id = FilesDB.fetch(filepath=file_path)[0]["id"]
 
     return join(
-        dirname(DBConnection.file) or folder_path(*Constants.DB_FOLDER),
-        Constants.THUMBNAILS_FOLDER_NAME,
+        _get_main_thumbnails_folder(),
         str(volume_id),
         str(issue_id),
         str(file_id),
     )
+
+
+def delete_thumbnails() -> None:
+    for _folder in listdir(_get_main_thumbnails_folder()):
+        folder = join(_get_main_thumbnails_folder(), _folder)
+        LOGGER.info(f"Deleting {folder}")
+        delete_file_folder(folder)
 
 
 def _generate_thumbnail(file_path: str, folder: str) -> str:

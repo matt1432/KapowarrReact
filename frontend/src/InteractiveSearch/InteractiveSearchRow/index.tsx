@@ -14,6 +14,8 @@ import { getErrorMessage } from 'Utilities/Object/error';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 
+import { filesize } from 'filesize';
+
 // General Components
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import Icon from 'Components/Icon';
@@ -33,7 +35,6 @@ import type { InputChanged } from 'typings/Inputs';
 import type { InteractiveSearchPayload } from 'typings/Search';
 import type { InteractiveSearchColumnName } from 'InteractiveSearch/columns';
 import type { SearchResultItem } from 'InteractiveSearch';
-import { filesize } from 'filesize';
 
 interface InteractiveSearchRowProps {
     columns: Column<InteractiveSearchColumnName>[];

@@ -36,6 +36,7 @@ from backend.features.download_queue import (
     get_download_history_total_records,
 )
 from backend.features.edit_content import (
+    delete_thumbnails,
     get_issue_page_thumbnail,
     get_issue_page_thumbnails,
     update_issue_pages,
@@ -945,6 +946,15 @@ def api_issue_thumbnail() -> tuple[Response, int]:
     thumbnail = get_issue_page_thumbnail(filepath)
 
     return send_file(thumbnail, mimetype="image/jpeg"), 200
+
+
+@api.route("/thumbnails", methods=["DELETE"])
+@error_handler
+@auth
+def api_delete_thumbnails() -> ApiReturn:
+    delete_thumbnails()
+
+    return return_api({})
 
 
 @api.route("/issues/<int:id>", methods=["GET", "PUT"])

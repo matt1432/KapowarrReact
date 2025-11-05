@@ -83,11 +83,22 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
         }),
+
+        emptyThumbnailsFolder: build.mutation<void, void>({
+            query: () => ({
+                method: 'DELETE',
+                url: 'thumbnails',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+        }),
     }),
 });
 
 export const {
     useEmptyDownloadFolderMutation,
+    useEmptyThumbnailsFolderMutation,
     useGetAvailableFormatsQuery,
     useGetSettingsQuery,
     useLazyGetSettingsQuery,

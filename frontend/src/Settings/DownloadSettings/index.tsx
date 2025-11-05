@@ -26,9 +26,11 @@ import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import SettingsToolbar from 'Settings/SettingsToolbar';
 
+// Specific Components
+import ServicePreferenceInput from './ServicePreferenceInput';
+
 // Types
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
-import ServicePreferenceInput from './ServicePreferenceInput';
 import type { SeedingHandling } from 'Helpers/Props/seedingHandlingValues';
 
 // IMPLEMENTATIONS
