@@ -13,11 +13,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1762048891,
-        "narHash": "sha256-D/ZfCViAac1hwj7VCRjsCdLETFsta97TTpmHVjCIXLs=",
+        "lastModified": 1762462935,
+        "narHash": "sha256-DeqDfAYTltNLfBb9dUKlid5onFJp64ebi4agvWczJZc=",
         "owner": "matt1432",
         "repo": "LibgenComics",
-        "rev": "4ae50dff37d28f0d4f990472581e8abb617c05c1",
+        "rev": "1d43b3d75600e9dc38dbbe077645f558e9af7eec",
         "type": "github"
       },
       "original": {
@@ -73,11 +73,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1762366246,
-        "narHash": "sha256-3xc/f/ZNb5ma9Fc9knIzEwygXotA+0BZFQ5V5XovSOQ=",
+        "lastModified": 1762410071,
+        "narHash": "sha256-aF5fvoZeoXNPxT0bejFUBXeUjXfHLSL7g+mjR/p5TEg=",
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "rev": "a82c779ca992190109e431d7d680860e6723e048",
+        "rev": "97a30861b13c3731a84e09405414398fbf3e109f",
         "type": "github"
       },
       "original": {

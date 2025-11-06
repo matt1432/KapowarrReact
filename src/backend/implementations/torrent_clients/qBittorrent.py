@@ -133,21 +133,29 @@ class qBittorrent(BaseExternalClient):
                 file_found = False
 
                 for _ in range(5):
-                    for file in self.ssn.torrents_files(torrent_hash=t_hash).data:
+                    for file in self.ssn.torrents_files(
+                        torrent_hash=t_hash
+                    ).data:
                         if file and file.name != filename:
                             self.ssn.torrents_file_priority(
-                                torrent_hash=t_hash, file_ids=file.id, priority=0
+                                torrent_hash=t_hash,
+                                file_ids=file.id,
+                                priority=0,
                             )
                         elif file:
                             file_found = True
                             self.ssn.torrents_file_priority(
-                                torrent_hash=t_hash, file_ids=file.id, priority=1
+                                torrent_hash=t_hash,
+                                file_ids=file.id,
+                                priority=1,
                             )
                     if file_found:
                         break
 
                 if not file_found:
-                    LOGGER.info(f"Couldn't select file of torrent download {download_link}")
+                    LOGGER.info(
+                        f"Couldn't select file of torrent download {download_link}"
+                    )
                     raise ClientNotWorking(
                         BrokenClientReason.FAILED_PROCESSING_RESPONSE
                     )

@@ -252,31 +252,24 @@ class SearchLibgenPlus:
                 else None
             )
 
+            issue_number = (
+                int(self.issue_number)
+                if isinstance(self.issue_number, float)
+                and self.issue_number.is_integer()
+                else self.issue_number
+            )
+
             file_results: list[
                 ResultFile
             ] = await LibgenSearch().search_comicvine_id(
                 api_key=settings.comicvine_api_key,
                 id=self.comicvine_id,
-                issue_number=int(self.issue_number)
-                if isinstance(self.issue_number, float)
-                and self.issue_number.is_integer()
-                else self.issue_number,
+                issue_number=issue_number,
                 libgen_series_id=series_ids,
                 libgen_site_url=Constants.LIBGEN_SITE_URL,
             )
 
-            if len(file_results) > 0:
-                issue = file_results[0].issue
-
-                if issue is not None:
-                    new_libgen_series_id = issue.series.id
-
-                    if not volume_data.libgen_series_id:
-                        self.volume.update(
-                            {
-                                "libgen_series_id": str(new_libgen_series_id),
-                            }
-                        )
+            resulting_libgen_series_ids: list[str] = []
 
             for file_result in file_results:
                 issue = file_result.issue
@@ -297,6 +290,13 @@ class SearchLibgenPlus:
                     # we want to filter out scanned books
                     if (file_result.scan_type or "") != "digital":
                         continue
+
+                if issue is not None:
+                    try:
+                        if isinstance(issue.series.id, int):
+                            resulting_libgen_series_ids.append(str(issue.series.id))
+                    except Exception:
+                        pass
 
                 efd = extract_filename_data(filename)
 
@@ -327,6 +327,18 @@ class SearchLibgenPlus:
                         else None,
                         md5=file_result.get("md5"),
                     )
+                )
+
+            if (
+                not volume_data.libgen_series_id
+                and len(resulting_libgen_series_ids) != 0
+            ):
+                self.volume.update(
+                    {
+                        "libgen_series_id": ",".join(
+                            resulting_libgen_series_ids
+                        ),
+                    }
                 )
 
         return results

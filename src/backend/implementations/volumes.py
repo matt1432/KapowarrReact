@@ -1570,7 +1570,7 @@ def scan_files(
         file_data = FilesDB.fetch(file_id=file_id)[0]
         new_size = stat(file_data["filepath"]).st_size
         if new_size != file_data["size"]:
-            FilesDB.update(file_id, { "size": new_size })
+            FilesDB.update(file_id, {"size": new_size})
 
     if settings.delete_empty_folders:
         delete_empty_child_folders(volume_data.folder, skip_hidden_folders=True)
