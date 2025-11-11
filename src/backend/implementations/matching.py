@@ -46,6 +46,26 @@ def parse_covered_issues(
     return covered_issues
 
 
+def parse_volume_number(
+    volume_number_str: str | None,
+) -> tuple[int, int] | int | None:
+    volume_number: tuple[int, int] | int | None
+
+    if volume_number_str is None:
+        volume_number = None
+
+    elif "," in volume_number_str:
+        volume_number = (
+            int(volume_number_str.split(",")[0]),
+            int(volume_number_str.split(",")[1]),
+        )
+
+    else:
+        volume_number = int(volume_number_str)
+
+    return volume_number
+
+
 def _match_title(
     title1: str, title2: str, allow_contains: bool = False
 ) -> bool:

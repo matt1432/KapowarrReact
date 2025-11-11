@@ -294,7 +294,9 @@ class SearchLibgenPlus:
                 if issue is not None:
                     try:
                         if isinstance(issue.series.id, int):
-                            resulting_libgen_series_ids.append(str(issue.series.id))
+                            resulting_libgen_series_ids.append(
+                                str(issue.series.id)
+                            )
                     except Exception:
                         pass
 

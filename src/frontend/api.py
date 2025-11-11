@@ -70,7 +70,10 @@ from backend.implementations.conversion import (
 )
 from backend.implementations.credentials import Credentials
 from backend.implementations.external_clients import ExternalClients
-from backend.implementations.matching import parse_covered_issues
+from backend.implementations.matching import (
+    parse_covered_issues,
+    parse_volume_number,
+)
 from backend.implementations.naming import (
     generate_volume_folder_name,
     preview_mass_rename,
@@ -141,7 +144,9 @@ def extract_key(
             return SearchResultData(
                 series=request.values.get("series") or "",
                 year=parse_int("year"),
-                volume_number=parse_int("volume_number"),
+                volume_number=parse_volume_number(
+                    request.values.get("volume_number")
+                ),
                 special_version=request.values.get("special_version"),
                 issue_number=parse_covered_issues(
                     request.values.get("issue_number")
