@@ -180,7 +180,6 @@ class SearchLibgenPlus:
     ):
         self.volume = volume
         self.comicvine_id = self.volume.get_data().comicvine_id
-        self.volume_number = self.volume.get_data().volume_number
         self.issue_number = issue_number
 
     async def search(
@@ -217,7 +216,7 @@ class SearchLibgenPlus:
                     SearchResultData(
                         series=volume_data.title,
                         year=volume_data.year,
-                        volume_number=self.volume_number,
+                        volume_number=efd["volume_number"],
                         special_version=efd["special_version"],
                         issue_number=efd["issue_number"],
                         annual=efd["annual"],
@@ -308,7 +307,7 @@ class SearchLibgenPlus:
                         if issue
                         else efd["series"],
                         year=issue.year if issue else efd["year"],
-                        volume_number=self.volume_number,
+                        volume_number=efd["volume_number"],
                         special_version=efd["special_version"],
                         issue_number=efd["issue_number"],
                         annual=efd["annual"],
@@ -482,6 +481,12 @@ def manual_search(
         for result in [*search_results, *libgen_results]:
             if not Settings().sv.auto_search_torrents:
                 result["comics_id"] = None
+
+            if (
+                volume_data.special_version == SpecialVersion.VOLUME_AS_ISSUE
+                and result["issue_number"] is None
+            ):
+                result["issue_number"] = result["volume_number"]
 
             match_data = check_search_result_match(
                 result,
