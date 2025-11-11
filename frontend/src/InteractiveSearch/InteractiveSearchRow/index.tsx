@@ -491,7 +491,7 @@ export default function InteractiveSearchRow({
                                         true,
                                     )}
                                     isSpinning={isGrabbingTorrent}
-                                    isDisabled={!result.comicsId}
+                                    isDisabled={result.source !== 'Libgen+'}
                                     onPress={onGrabTorrentPressWrapper}
                                 />
                             ) : null}
