@@ -166,6 +166,7 @@ def extract_key(
                 extension=request.values.get("extension"),
                 comics_id=parse_int("comics_id"),
                 md5=request.values.get("md5") or request.values.get("md_5"),
+                web_sub_title=request.values.get("web_sub_title"),
             )
 
         except (ValueError, TypeError):

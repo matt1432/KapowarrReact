@@ -236,6 +236,7 @@ class SearchLibgenPlus:
                         if file_result.get("comics_id") is not None
                         else None,
                         md5=file_result.get("md5"),
+                        web_sub_title=None,
                     )
                 )
 
@@ -327,6 +328,7 @@ class SearchLibgenPlus:
                         if file_result.get("comics_id") is not None
                         else None,
                         md5=file_result.get("md5"),
+                        web_sub_title=None,
                     )
                 )
 
@@ -361,7 +363,6 @@ async def search_multiple_queries(*queries: str) -> list[SearchResultData]:
         responses = await gather(*searches)
 
     search_results: list[SearchResultData] = []
-    processed_links = set()
     for response in responses:
         for results in response:
             # Don't add if the link is already in the results
@@ -372,13 +373,11 @@ async def search_multiple_queries(*queries: str) -> list[SearchResultData]:
 
             if isinstance(results, dict):
                 search_results.append(cast(SearchResultData, results))
-                processed_links.add(results["link"])
 
             elif isinstance(results, Generator):
                 for result in results:
                     if result:
                         search_results.append(result)
-                        processed_links.add(result["link"])
 
             else:
                 LOGGER.warning(f"Search result was of unknown type: {results}")

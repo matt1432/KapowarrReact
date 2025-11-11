@@ -30,6 +30,9 @@ export interface RawSearchResult {
     extension: string | null;
     comics_id: number | null;
     md5: string | null;
+
+    // GetComics stuff
+    web_sub_title: string | null;
 }
 
 export type SearchResult = CamelCasedProperties<RawSearchResult>;

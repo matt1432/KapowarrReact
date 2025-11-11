@@ -554,7 +554,7 @@ class DownloadHandler(metaclass=Singleton):
 
             try:
                 downloads = await gcp.create_downloads(
-                    result, volume_id, issue_id, force_match
+                    volume_id, result, issue_id, force_match
                 )
 
             except EnqueuingDownloadFailure as e:

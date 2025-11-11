@@ -2,6 +2,7 @@
 Getting downloads from a GC page
 """
 
+import re
 from asyncio import gather
 from functools import reduce
 from hashlib import sha1
@@ -707,7 +708,7 @@ async def _test_paths(
     web_link: str,
     web_title: str | None,
     volume_id: int,
-    edits: SearchResultData,
+    edits: SearchResultData | None = None,
     issue_id: int | None = None,
     forced_match: bool = False,
 ) -> list[Download]:
@@ -773,20 +774,25 @@ async def _test_paths(
                     download_link=download.download_link,
                     volume_id=download.volume_id,
                     covered_issues=edits["issue_number"]
-                    or download.covered_issues,
+                    if edits is not None
+                    else download.covered_issues,
                     source_type=download.source_type,
                     source_name=download.source_name,
                     web_link=download.web_link,
                     web_title=download.web_title,
                     web_sub_title=download.web_sub_title,
-                    releaser=edits["releaser"] if "releaser" in edits else None,
+                    releaser=edits["releaser"]
+                    if edits is not None and "releaser" in edits
+                    else None,
                     scan_type=edits["scan_type"]
-                    if "scan_type" in edits
+                    if edits is not None and "scan_type" in edits
                     else None,
                     resolution=edits["resolution"]
-                    if "resolution" in edits
+                    if edits is not None and "resolution" in edits
                     else None,
-                    dpi=edits["dpi"] if "dpi" in edits else None,
+                    dpi=edits["dpi"]
+                    if edits is not None and "dpi" in edits
+                    else None,
                     forced_match=forced_match,
                 )
             )
@@ -824,7 +830,8 @@ def from_filesize(filesize: str) -> int | None:
 
 # region Searching
 async def search_getcomics(
-    session: AsyncSession, query: str
+    session: AsyncSession,
+    query: str,
 ) -> list[SearchResultData]:
     """Give the search results from GC for the query.
 
@@ -876,6 +883,71 @@ async def search_getcomics(
                 fix_year=True,
             )
 
+            has_multiple_articles = False
+
+            if isinstance(efd["volume_number"], tuple):
+                gcp = GetComicsPage(article[0])
+                await gcp.load_data()
+
+                if len(gcp.download_groups) > 1:
+                    has_multiple_articles = True
+
+                    # Has separate download groups so we show them as individual search results
+                    for group in gcp.download_groups:
+                        filesize: int | None = None
+                        display_title = group["web_sub_title"]
+
+                        match = re.search(
+                            r"\(([^()]*)\)\s*:?$", group["web_sub_title"]
+                        )
+                        if match is not None:
+                            display_title = group["web_sub_title"][
+                                : match.start(1) - 1
+                            ]
+                            filesize_str = match.group(1)
+
+                            if filesize_str is not None:
+                                filesize = from_filesize(filesize_str)
+
+                        efd = extract_filename_data(
+                            display_title,
+                            assume_volume_number=False,
+                            fix_year=True,
+                        )
+
+                        formatted_results.append(
+                            SearchResultData(
+                                series=efd["series"],
+                                year=efd["year"],
+                                volume_number=efd["volume_number"],
+                                special_version=efd["special_version"],
+                                issue_number=efd["issue_number"],
+                                annual=efd["annual"],
+                                is_metadata_file=efd["is_metadata_file"],
+                                is_image_file=efd["is_image_file"],
+                                link=article[0],
+                                display_title=display_title,
+                                source=Constants.GC_SOURCE_TERM,
+                                filesize=filesize,
+                                pages=None,
+                                releaser=None,
+                                scan_type=None,
+                                resolution=None,
+                                dpi=None,
+                                extension=None,
+                                comics_id=None,
+                                md5=None,
+                                web_sub_title=group["web_sub_title"],
+                            )
+                        )
+
+            if has_multiple_articles:
+                continue
+
+            filesize = (
+                from_filesize(article[2]) if article[2] is not None else None
+            )
+
             formatted_results.append(
                 SearchResultData(
                     series=efd["series"],
@@ -889,10 +961,7 @@ async def search_getcomics(
                     link=article[0],
                     display_title=article[1],
                     source=Constants.GC_SOURCE_TERM,
-                    # TODO:
-                    filesize=from_filesize(article[2])
-                    if article[2] is not None
-                    else None,
+                    filesize=filesize,
                     pages=None,
                     releaser=None,
                     scan_type=None,
@@ -901,6 +970,7 @@ async def search_getcomics(
                     extension=None,
                     comics_id=None,
                     md5=None,
+                    web_sub_title=None,
                 )
             )
 
@@ -948,8 +1018,8 @@ class GetComicsPage:
 
     async def create_downloads(
         self,
-        edits: SearchResultData,
         volume_id: int,
+        edits: SearchResultData | None = None,
         issue_id: int | None = None,
         force_match: bool = False,
     ) -> list[Download]:
@@ -976,6 +1046,13 @@ class GetComicsPage:
             List[Download]: The list of downloads coming from the GC page, for
             the volume.
         """
+        if edits is not None and edits["web_sub_title"] is not None:
+            self.download_groups = [
+                group
+                for group in self.download_groups
+                if group["web_sub_title"] == edits["web_sub_title"]
+            ]
+
         link_paths = _create_link_paths(
             self.download_groups, volume_id, force_match
         )

@@ -663,6 +663,7 @@ class SearchResultData(FilenameData):
     extension: str | None
     comics_id: int | None
     md5: str | None
+    web_sub_title: str | None
 
 
 class SearchResultMatchData(TypedDict):
