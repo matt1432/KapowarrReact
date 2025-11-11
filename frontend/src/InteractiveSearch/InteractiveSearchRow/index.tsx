@@ -143,20 +143,28 @@ export default function InteractiveSearchRow({
     // Try to get file info from a Libgen result that we suspect is the same as this one
     if (isLibgenEnabled && !gotMatchingFileInfo) {
         if (result.source === 'GetComics' && result.match) {
-            const libgenMatch = items.find(
-                (item) =>
-                    item.match &&
-                    item.source === 'Libgen+' &&
-                    item.issueNumber === result.issueNumber &&
+            const resultSize = Number(
+                filesize(result.filesize ?? 0, {
+                    base: 2,
+                    round: 0,
+                }).replace(/ .*/, ''),
+            );
+
+            const libgenMatch = items.find((item) => {
+                const itemSize = Number(
                     filesize(item.filesize ?? 0, {
                         base: 2,
                         round: 0,
-                    }) ===
-                        filesize(result.filesize ?? 0, {
-                            base: 2,
-                            round: 0,
-                        }),
-            );
+                    }).replace(/ .*/, ''),
+                );
+
+                return (
+                    item.match &&
+                    item.source === 'Libgen+' &&
+                    item.issueNumber === result.issueNumber &&
+                    Math.abs(itemSize - resultSize) < 2
+                );
+            });
 
             if (libgenMatch) {
                 setReleaser(libgenMatch.releaser ?? '');
