@@ -478,9 +478,6 @@ def manual_search(
         results: list[MatchedSearchResultData] = []
 
         for result in [*search_results, *libgen_results]:
-            if not Settings().sv.auto_search_torrents:
-                result["comics_id"] = None
-
             if (
                 volume_data.special_version == SpecialVersion.VOLUME_AS_ISSUE
                 and result["issue_number"] is None
@@ -586,6 +583,9 @@ def auto_search(
     chosen_downloads: list[MatchedSearchResultData] = []
     searchable_issue_numbers = {i[1] for i in searchable_issues}
     for result in search_results:
+        if not Settings().sv.auto_search_torrents:
+            result["comics_id"] = None
+
         # Determine what issues the result covers
         if result["issue_number"] is not None:
             # Normal issue, VAS with issue number,
