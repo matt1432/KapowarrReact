@@ -68,12 +68,12 @@ def get_python_version() -> str:
 
 
 # region Helpers
-def get_subclasses(
-    *classes: type[Any],
+def get_subclasses[T](
+    *classes: type[T],
     include_self: bool = False,
     recursive: bool = True,
     only_leafs: bool = False,
-) -> list[type[Any]]:
+) -> list[type[T]]:
     """Get subclasses of the given classes.
 
     Args:

@@ -1,6 +1,4 @@
 from asyncio import gather, run
-from collections.abc import Generator
-from typing import cast
 
 from libgencomics import LibgenSearch, ResultFile
 
@@ -12,6 +10,7 @@ from backend.base.definitions import (
     SearchResultMatchData,
     SearchSource,
     SpecialVersion,
+    VolumeData,
 )
 from backend.base.file_extraction import extract_filename_data
 from backend.base.helpers import (
@@ -167,187 +166,177 @@ def _rank_search_result(
 
 class SearchGetComics(SearchSource):
     async def search(self, session: AsyncSession) -> list[SearchResultData]:
+        if not Settings().sv.enable_getcomics:
+            return []
         return await search_getcomics(session, self.query)
 
 
-class SearchLibgenPlus:
-    was_file_search = False
-
-    def __init__(
+class SearchLibgenPlus(SearchSource):
+    def get_file_result(
         self,
-        volume: Volume,
-        issue_number: float | tuple[float, float] | None = None,
-    ):
-        self.volume = volume
-        self.comicvine_id = self.volume.get_data().comicvine_id
-        self.issue_number = issue_number
+        libgen_file_url: str,
+        volume_data: VolumeData,
+    ) -> list[SearchResultData]:
+        results: list[SearchResultData] = []
+
+        file_id = int(libgen_file_url.split("file.php?id=")[-1])
+        file_result = ResultFile(
+            id=file_id, libgen_site_url=Constants.LIBGEN_SITE_URL
+        )
+
+        filename = file_result.filename
+
+        if filename:
+            efd = extract_filename_data(filename)
+
+            results.append(
+                SearchResultData(
+                    series=volume_data.title,
+                    year=volume_data.year,
+                    volume_number=efd["volume_number"],
+                    special_version=efd["special_version"],
+                    issue_number=efd["issue_number"],
+                    annual=efd["annual"],
+                    is_image_file=efd["is_image_file"],
+                    is_metadata_file=efd["is_metadata_file"],
+                    link=f"{Constants.LIBGEN_SITE_URL}/file.php?md5={file_result.get('md5')}",
+                    display_title=filename,
+                    source="Libgen+",
+                    filesize=file_result.filesize,
+                    pages=file_result.pages or 0,
+                    releaser=file_result.releaser or "",
+                    scan_type=file_result.scan_type or "",
+                    resolution=file_result.resolution or "",
+                    dpi=file_result.dpi or "",
+                    extension=file_result.extension or "",
+                    comics_id=int(file_result.get("comics_id"))
+                    if file_result.get("comics_id") is not None
+                    else None,
+                    md5=file_result.get("md5"),
+                    web_sub_title=None,
+                )
+            )
+        return results
 
     async def search(
-        self, libgen_file_url: str | None = None
-    ) -> list[SearchResultData]:
-        return await self.__search(libgen_file_url)
-
-    async def __search(
-        self, libgen_file_url: str | None = None
+        self,
+        session: AsyncSession,
     ) -> list[SearchResultData]:
         results: list[SearchResultData] = []
 
         settings = Settings().sv
 
+        if not settings.enable_libgen:
+            return results
+
         volume_data = self.volume.get_data()
 
-        if (
-            libgen_file_url is not None
-            and libgen_file_url.count("file.php?id=") != 0
-        ):
-            self.was_file_search = True
+        libgen_series_id: str | None = None
 
-            file_id = int(libgen_file_url.split("file.php?id=")[-1])
-            file_result = ResultFile(
-                id=file_id, libgen_site_url=Constants.LIBGEN_SITE_URL
-            )
+        if volume_data.libgen_series_id is not None:
+            libgen_series_id = volume_data.libgen_series_id
+
+        series_ids = (
+            list(map(int, libgen_series_id.split(",")))
+            if libgen_series_id is not None and libgen_series_id != ""
+            else None
+        )
+
+        issue_number = (
+            int(self.issue_number)
+            if isinstance(self.issue_number, float)
+            and self.issue_number.is_integer()
+            else self.issue_number
+        )
+
+        file_results: list[
+            ResultFile
+        ] = await LibgenSearch().search_comicvine_id(
+            query=self.query,
+            api_key=settings.comicvine_api_key,
+            id=self.volume.get_data().comicvine_id,
+            issue_number=issue_number,
+            libgen_series_id=series_ids,
+            libgen_site_url=Constants.LIBGEN_SITE_URL,
+        )
+
+        resulting_libgen_series_ids: list[str] = []
+
+        for file_result in file_results:
+            issue = file_result.issue
 
             filename = file_result.filename
 
-            if filename:
-                efd = extract_filename_data(filename)
+            if not filename:
+                continue
 
-                results.append(
-                    SearchResultData(
-                        series=volume_data.title,
-                        year=volume_data.year,
-                        volume_number=efd["volume_number"],
-                        special_version=efd["special_version"],
-                        issue_number=efd["issue_number"],
-                        annual=efd["annual"],
-                        is_image_file=efd["is_image_file"],
-                        is_metadata_file=efd["is_metadata_file"],
-                        link=f"{Constants.LIBGEN_SITE_URL}/file.php?md5={file_result.get('md5')}",
-                        display_title=filename,
-                        source="Libgen+",
-                        filesize=file_result.filesize,
-                        pages=file_result.pages or 0,
-                        releaser=file_result.releaser or "",
-                        scan_type=file_result.scan_type or "",
-                        resolution=file_result.resolution or "",
-                        dpi=file_result.dpi or "",
-                        extension=file_result.extension or "",
-                        comics_id=int(file_result.get("comics_id"))
-                        if file_result.get("comics_id") is not None
-                        else None,
-                        md5=file_result.get("md5"),
-                        web_sub_title=None,
-                    )
-                )
-
-        else:
-            libgen_series_id: str | None = None
-
-            if volume_data.libgen_series_id is not None:
-                libgen_series_id = volume_data.libgen_series_id
-
-            series_ids = (
-                list(map(int, libgen_series_id.split(",")))
-                if libgen_series_id is not None and libgen_series_id != ""
-                else None
-            )
-
-            issue_number = (
-                int(self.issue_number)
-                if isinstance(self.issue_number, float)
-                and self.issue_number.is_integer()
-                else self.issue_number
-            )
-
-            file_results: list[
-                ResultFile
-            ] = await LibgenSearch().search_comicvine_id(
-                api_key=settings.comicvine_api_key,
-                id=self.comicvine_id,
-                issue_number=issue_number,
-                libgen_series_id=series_ids,
-                libgen_site_url=Constants.LIBGEN_SITE_URL,
-            )
-
-            resulting_libgen_series_ids: list[str] = []
-
-            for file_result in file_results:
-                issue = file_result.issue
-
-                filename = file_result.filename
-
-                if not filename:
+            if not settings.include_cover_only_files:
+                # we want to filter out cover only files
+                if (
+                    file_result.get("scan_content") or ""
+                ) == "cover only" or file_result.pages == 1:
                     continue
 
-                if not settings.include_cover_only_files:
-                    # we want to filter out cover only files
-                    if (
-                        file_result.get("scan_content") or ""
-                    ) == "cover only" or file_result.pages == 1:
-                        continue
+            if not settings.include_scanned_books:
+                # we want to filter out scanned books
+                if (file_result.scan_type or "") != "digital":
+                    continue
 
-                if not settings.include_scanned_books:
-                    # we want to filter out scanned books
-                    if (file_result.scan_type or "") != "digital":
-                        continue
+            if issue is not None:
+                try:
+                    if isinstance(issue.series.id, int):
+                        resulting_libgen_series_ids.append(str(issue.series.id))
+                except Exception:
+                    pass
 
-                if issue is not None:
-                    try:
-                        if isinstance(issue.series.id, int):
-                            resulting_libgen_series_ids.append(
-                                str(issue.series.id)
-                            )
-                    except Exception:
-                        pass
+            efd = extract_filename_data(filename)
 
-                efd = extract_filename_data(filename)
-
-                results.append(
-                    SearchResultData(
-                        series=issue.series.title or ""
-                        if issue
-                        else efd["series"],
-                        year=issue.year if issue else efd["year"],
-                        volume_number=efd["volume_number"],
-                        special_version=efd["special_version"],
-                        issue_number=efd["issue_number"],
-                        annual=efd["annual"],
-                        is_image_file=efd["is_image_file"],
-                        is_metadata_file=efd["is_metadata_file"],
-                        link=f"{Constants.LIBGEN_SITE_URL}/file.php?md5={file_result.get('md5')}",
-                        display_title=filename,
-                        source="Libgen+",
-                        filesize=file_result.filesize,
-                        pages=file_result.pages or 0,
-                        releaser=file_result.releaser or "",
-                        scan_type=file_result.scan_type or "",
-                        resolution=file_result.resolution or "",
-                        dpi=file_result.dpi or "",
-                        extension=file_result.extension or "",
-                        comics_id=int(file_result.get("comics_id"))
-                        if file_result.get("comics_id") is not None
-                        else None,
-                        md5=file_result.get("md5"),
-                        web_sub_title=None,
-                    )
+            results.append(
+                SearchResultData(
+                    series=issue.series.title or "" if issue else efd["series"],
+                    year=issue.year if issue else efd["year"],
+                    volume_number=efd["volume_number"],
+                    special_version=efd["special_version"],
+                    issue_number=efd["issue_number"],
+                    annual=efd["annual"],
+                    is_image_file=efd["is_image_file"],
+                    is_metadata_file=efd["is_metadata_file"],
+                    link=f"{Constants.LIBGEN_SITE_URL}/file.php?md5={file_result.get('md5')}",
+                    display_title=filename,
+                    source="Libgen+",
+                    filesize=file_result.filesize,
+                    pages=file_result.pages or 0,
+                    releaser=file_result.releaser or "",
+                    scan_type=file_result.scan_type or "",
+                    resolution=file_result.resolution or "",
+                    dpi=file_result.dpi or "",
+                    extension=file_result.extension or "",
+                    comics_id=int(file_result.get("comics_id"))
+                    if file_result.get("comics_id") is not None
+                    else None,
+                    md5=file_result.get("md5"),
+                    web_sub_title=None,
                 )
+            )
 
-            if (
-                not volume_data.libgen_series_id
-                and len(resulting_libgen_series_ids) != 0
-            ):
-                self.volume.update(
-                    {
-                        "libgen_series_id": ",".join(
-                            resulting_libgen_series_ids
-                        ),
-                    }
-                )
+        if (
+            not volume_data.libgen_series_id
+            and len(resulting_libgen_series_ids) != 0
+        ):
+            self.volume.update(
+                {
+                    "libgen_series_id": ",".join(resulting_libgen_series_ids),
+                }
+            )
 
         return results
 
 
-async def search_multiple_queries(*queries: str) -> list[SearchResultData]:
+async def search_multiple_queries(
+    *queries: str,
+    volume: Volume,
+    issue_number: float | None,
+) -> list[SearchResultData]:
     """Do a manual search for multiple queries asynchronously.
 
     Returns:
@@ -356,31 +345,21 @@ async def search_multiple_queries(*queries: str) -> list[SearchResultData]:
     """
     async with AsyncSession() as session:
         searches = [
-            Source(query).search(session)
+            Source(
+                query=query,
+                volume=volume,
+                issue_number=issue_number,
+            ).search(session)
             for Source in get_subclasses(SearchSource)
             for query in queries
         ]
         responses = await gather(*searches)
 
+    # There might be duplicates because of similar queries
+    # but they will be filtered out in the frontend
     search_results: list[SearchResultData] = []
     for response in responses:
-        for results in response:
-            # Don't add if the link is already in the results
-            # Avoids duplicates, as multiple formats can return the same result
-
-            if not results:
-                continue
-
-            if isinstance(results, dict):
-                search_results.append(cast(SearchResultData, results))
-
-            elif isinstance(results, Generator):
-                for result in results:
-                    if result:
-                        search_results.append(result)
-
-            else:
-                LOGGER.warning(f"Search result was of unknown type: {results}")
+        search_results += response
 
     return search_results
 
@@ -388,7 +367,7 @@ async def search_multiple_queries(*queries: str) -> list[SearchResultData]:
 def manual_search(
     volume_id: int,
     issue_id: int | None = None,
-    libgen_series_id: str | None = None,
+    libgen_file_url: str | None = None,
 ) -> list[MatchedSearchResultData]:
     """Do a manual search for a volume or issue.
 
@@ -445,19 +424,25 @@ def manual_search(
         if volume_data.year is None:
             formats = tuple(f.replace("({year})", "").strip() for f in formats)
 
-        libgen_results = []
-        was_file_search = False
-        if Settings().sv.enable_libgen:
-            libgen_search = SearchLibgenPlus(
-                volume,
-                calculated_issue_number,
-            )
-            libgen_results = run(libgen_search.search(libgen_series_id))
-            was_file_search = libgen_search.was_file_search
-
         search_title = title.replace(":", "")
-        search_results = []
-        if Settings().sv.enable_getcomics and not was_file_search:
+        search_results: list[SearchResultData] = []
+
+        if (
+            Settings().sv.enable_libgen
+            and libgen_file_url is not None
+            and libgen_file_url.count("file.php?id=") != 0
+        ):
+            libgen_search = SearchLibgenPlus(
+                query=search_title,
+                volume=volume,
+                issue_number=calculated_issue_number,
+            )
+            search_results = libgen_search.get_file_result(
+                libgen_file_url=libgen_file_url,
+                volume_data=volume_data,
+            )
+
+        else:
             search_results = run(
                 search_multiple_queries(
                     *(
@@ -468,16 +453,18 @@ def manual_search(
                             issue_number=issue_number,
                         )
                         for format in formats
-                    )
+                    ),
+                    volume=volume,
+                    issue_number=calculated_issue_number,
                 )
             )
 
-        if not search_results and not libgen_results:
+        if not search_results:
             continue
 
         results: list[MatchedSearchResultData] = []
 
-        for result in [*search_results, *libgen_results]:
+        for result in search_results:
             if (
                 volume_data.special_version == SpecialVersion.VOLUME_AS_ISSUE
                 and result["issue_number"] is None

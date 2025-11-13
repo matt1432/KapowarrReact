@@ -22,6 +22,7 @@ import requests
 
 if TYPE_CHECKING:
     from backend.base.helpers import AsyncSession
+    from backend.implementations.volumes import Volume
 
 
 # region Constants
@@ -921,7 +922,6 @@ class MassEditorAction(ABC):
         self.volume_ids = volume_ids
         return
 
-    @abstractmethod
     def run(self, **kwargs: Any) -> None:
         """Run the mass editor action."""
         ...
@@ -949,16 +949,23 @@ class FileConverter(ABC):
 
 
 class SearchSource(ABC):
-    def __init__(self, query: str) -> None:
+    def __init__(
+        self,
+        *,
+        query: str,
+        volume: Volume,
+        issue_number: float | tuple[float, float] | None,
+    ) -> None:
         """Prepare the search source.
 
         Args:
             query (str): The query to search for.
         """
         self.query = query
+        self.volume = volume
+        self.issue_number = issue_number
         return
 
-    @abstractmethod
     async def search(self, session: AsyncSession) -> list[SearchResultData]:
         """Search for the query.
 
