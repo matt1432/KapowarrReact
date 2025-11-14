@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from asyncio import run
+import re
+from asyncio import gather, run, sleep
 from collections.abc import Mapping, Sequence
 from datetime import datetime, timedelta
 from functools import lru_cache
@@ -10,6 +11,9 @@ from os.path import dirname, exists, isdir, relpath
 from re import IGNORECASE, compile
 from time import time
 from typing import Any, assert_never
+
+from aiohttp import ClientConnectorError
+from bs4 import BeautifulSoup
 
 from backend.base.custom_exceptions import (
     InvalidKey,
@@ -34,6 +38,7 @@ from backend.base.definitions import (
     MonitorScheme,
     SpecialVersion,
     VolumeData,
+    VolumeMetadata,
 )
 from backend.base.file_extraction import extract_filename_data
 from backend.base.files import (
@@ -47,6 +52,7 @@ from backend.base.files import (
     rename_file,
 )
 from backend.base.helpers import (
+    AsyncSession,
     PortablePool,
     extract_year_from_date,
     filtered_iter,
@@ -1585,6 +1591,37 @@ def scan_files(
     return
 
 
+async def _get_cv_page(session: AsyncSession, site_url: str):
+    req = await session.get(site_url)
+    return await req.text()
+
+
+async def _scrape_cv_volumes(
+    volume_datas: list[VolumeMetadata],
+) -> list[tuple[int, int]]:
+    try:
+        async with AsyncSession() as session:
+            requests = await gather(
+                *[_get_cv_page(session, vd["site_url"]) for vd in volume_datas]
+            )
+    except ClientConnectorError as e:
+        LOGGER.info(e)
+        await sleep(Constants.CV_BRAKE_TIME)
+        return await _scrape_cv_volumes(volume_datas)
+
+    results = []
+
+    for index, req in enumerate(requests):
+        soup = BeautifulSoup(req, "html.parser")
+        header = soup.select_one("h2.header-border")
+        if header is not None:
+            match = re.search(r"\d+", header.get_text())
+            if match:
+                issue_count = int(match.group())
+                results.append((index, issue_count))
+    return results
+
+
 def refresh_and_scan(
     volume_id: int | None = None,
     update_websocket: bool = False,
@@ -1652,17 +1689,30 @@ def refresh_and_scan(
         cv.fetch_volumes(tuple(cv_to_id_fetch.keys()))
     )
 
+    # scrape website to compare issue count and delete from cache if different
+    removed_from_cache = False
+    for index, issue_count in run(_scrape_cv_volumes(volume_datas)):
+        vd = volume_datas[index]
+        if vd["issue_count"] != issue_count:
+            removed_from_cache = True
+            cv.remove_from_cache("issues", vd["comicvine_id"])
+
+    if removed_from_cache:
+        volume_datas = filtered_volume_datas = run(
+            cv.fetch_volumes(tuple(cv_to_id_fetch.keys()))
+        )
+
     if not volume_id and allow_skipping:
         cv_id_to_issue_count: dict[int, int] = dict(
             cursor.execute(
                 """
-            SELECT v.comicvine_id, COUNT(i.id)
-            FROM volumes v
-            LEFT JOIN issues i
-            ON v.id = i.volume_id
-            WHERE v.last_cv_fetch <= ?
-            GROUP BY i.volume_id;
-            """,
+                SELECT v.comicvine_id, COUNT(i.id)
+                FROM volumes v
+                LEFT JOIN issues i
+                ON v.id = i.volume_id
+                WHERE v.last_cv_fetch <= ?
+                GROUP BY i.volume_id;
+                """,
                 (one_day_ago.timestamp(),),
             )
         )

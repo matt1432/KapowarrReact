@@ -184,10 +184,24 @@ class ComicVine:
             Constants.CV_CACHE_NAME,
         )
 
-        self.ssn = Comicvine(
-            api_key=api_key, cache=SQLiteCache(path=Path(cache_file_location))
-        )
+        self.cache = SQLiteCache(path=Path(cache_file_location))
+        self.ssn = Comicvine(api_key=api_key, cache=self.cache)
         return
+
+    def remove_from_cache(self, endpoint: str, cv_id: int) -> None:
+        _cv_id = str(cv_id)
+        with self.cache.connection as conn:
+            cache_keys = conn.execute(
+                "SELECT query FROM queries;",
+            ).fetchall()
+
+            for _key in cache_keys:
+                key: str = _key["query"]
+                if (
+                    key.startswith(Constants.CV_API_URL + "/" + endpoint)
+                    and key.count(_cv_id) != 0
+                ):
+                    self.cache.delete(key)
 
     async def __call_request(
         self, session: AsyncSession, url: str
@@ -228,26 +242,26 @@ class ComicVine:
         description = _clean_description(volume_data.description or "")
         site_url = str(volume_data.site_url)
 
-        result: VolumeMetadata = {
-            "comicvine_id": volume_data.id,
-            "title": title,
-            "year": volume_data.start_year,
-            "volume_number": 1,
-            "cover_link": str(volume_data.image.small_url),
-            "cover": None,
-            "description": description,
-            "site_url": site_url,
-            "aliases": [
+        result = VolumeMetadata(
+            comicvine_id=volume_data.id,
+            title=title,
+            year=volume_data.start_year,
+            volume_number=1,
+            cover_link=str(volume_data.image.small_url),
+            cover=None,
+            description=description,
+            site_url=site_url,
+            aliases=[
                 a.strip()
                 for a in (volume_data.aliases or "").split("\r\n")
                 if a
             ],
-            "publisher": publisher,
-            "issue_count": volume_data.issue_count,
-            "translated": False,
-            "already_added": None,  # Only used when searching
-            "issues": None,  # Only used for certain fetches
-            "folder_name": generate_volume_folder_name(
+            publisher=publisher,
+            issue_count=volume_data.issue_count,
+            translated=False,
+            already_added=None,  # Only used when searching
+            issues=None,  # Only used for certain fetches
+            folder_name=generate_volume_folder_name(
                 VolumeData(
                     id=-1,
                     comicvine_id=volume_data.id,
@@ -269,7 +283,7 @@ class ComicVine:
                     last_cv_fetch=0,
                 )
             ),
-        }
+        )
 
         if translation_regex.match(result["description"] or "") is not None:
             result["translated"] = True
@@ -297,23 +311,21 @@ class ComicVine:
         """
         cin = force_range(extract_issue_number(issue_data.number or "0"))[0]
 
-        result: IssueMetadata = {
-            "comicvine_id": issue_data.id,
-            "volume_id": issue_data.volume.id,
-            "issue_number": (issue_data.number or "0")
-            .replace("/", "-")
-            .strip(),
-            "calculated_issue_number": cin if cin is not None else 0.0,
-            "title": normalise_string(issue_data.name or "") or None,
-            "date": (
+        result = IssueMetadata(
+            comicvine_id=issue_data.id,
+            volume_id=issue_data.volume.id,
+            issue_number=(issue_data.number or "0").replace("/", "-").strip(),
+            calculated_issue_number=cin if cin is not None else 0.0,
+            title=normalise_string(issue_data.name or "") or None,
+            date=(
                 issue_data.cover_date
                 if self.date_type == DateType.COVER_DATE
                 else issue_data.store_date
             ),
-            "description": _clean_description(
+            description=_clean_description(
                 issue_data.description or "", short=True
             ),
-        }
+        )
         return result
 
     def __format_search_output(
