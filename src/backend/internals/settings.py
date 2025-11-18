@@ -159,7 +159,7 @@ class SettingsValues(PublicSettingsValues):
     """All settings including privates"""
 
     database_version: int = DatabaseMigrationHandler.latest_db_version()
-    added_kapowarr_react_columns: bool = False
+    added_kapowarr_react_columns: int = 0
 
     auth_salt: bytes = token_bytes()
 

@@ -7,6 +7,52 @@ from backend.base.logging import LOGGER
 from backend.internals.db import get_db, iter_commit
 
 
+# region Fork
+def migrate_react() -> None:
+    from backend.internals.settings import Settings
+
+    s = Settings().get_settings().todict()
+
+    if "added_kapowarr_react_columns" not in s or not s["added_kapowarr_react_columns"]:
+        Settings().update({ "added_kapowarr_react_columns": 0 })
+    elif isinstance(s["added_kapowarr_react_columns"], bool) and s["added_kapowarr_react_columns"]:
+        Settings().update({ "added_kapowarr_react_columns": 1 })
+
+    s = Settings().get_settings().todict()
+
+    if s["added_kapowarr_react_columns"] == 0:
+        get_db().executescript("""
+            BEGIN TRANSACTION;
+            PRAGMA defer_foreign_keys = ON;
+
+            ALTER TABLE volumes ADD COLUMN
+                libgen_series_id VARCHAR(255);
+
+            ALTER TABLE files ADD COLUMN
+                releaser VARCHAR(255);
+            ALTER TABLE files ADD COLUMN
+                scan_type VARCHAR(255);
+            ALTER TABLE files ADD COLUMN
+                resolution VARCHAR(255);
+            ALTER TABLE files ADD COLUMN
+                dpi VARCHAR(255);
+
+            ALTER TABLE download_queue ADD COLUMN
+                releaser VARCHAR(255);
+            ALTER TABLE download_queue ADD COLUMN
+                scan_type VARCHAR(255);
+            ALTER TABLE download_queue ADD COLUMN
+                resolution VARCHAR(255);
+            ALTER TABLE download_queue ADD COLUMN
+                dpi VARCHAR(255);
+
+            ALTER TABLE download_queue ADD COLUMN
+                external_id VARCHAR(255);
+
+            COMMIT;
+        """)
+        Settings().update({ "added_kapowarr_react_columns": 1 })
+
 # region Handler
 class DatabaseMigrationHandler:
     """Handles the registration of all migrators and running them if needed.
@@ -67,6 +113,8 @@ class DatabaseMigrationHandler:
             return
 
         if current_db_version == newest_version:
+            migrate_react()
+            s.clear_cache()
             return
 
         LOGGER.info("Migrating database to newer version...")
@@ -82,6 +130,8 @@ class DatabaseMigrationHandler:
 
             cls.handlers[start_version]()
             s.update({"database_version": start_version + 1})
+
+        migrate_react()
 
         get_db().execute("VACUUM;")
         s.clear_cache()
