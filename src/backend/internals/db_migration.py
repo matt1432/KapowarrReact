@@ -20,7 +20,7 @@ def migrate_react() -> None:
 
     s = Settings().get_settings().todict()
 
-    if s["added_kapowarr_react_columns"] == 0:
+    if s["added_kapowarr_react_columns"] < 1:
         get_db().executescript("""
             BEGIN TRANSACTION;
             PRAGMA defer_foreign_keys = ON;
@@ -52,6 +52,7 @@ def migrate_react() -> None:
             COMMIT;
         """)
         Settings().update({ "added_kapowarr_react_columns": 1 })
+        s = Settings().get_settings().todict()
 
 # region Handler
 class DatabaseMigrationHandler:

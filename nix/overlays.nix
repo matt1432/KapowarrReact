@@ -40,7 +40,7 @@ in {
     ...
   }: let
     inherit (lib) attrValues makeBinPath;
-    inherit (builtins) fromTOML readFile;
+    inherit (builtins) readFile;
 
     pyproject = fromTOML (readFile "${self}/pyproject.toml");
 
