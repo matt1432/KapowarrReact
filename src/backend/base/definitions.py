@@ -35,7 +35,7 @@ while not FETCHED_CONSTANTS:
                 "https://raw.githubusercontent.com/matt1432/KapowarrReact/refs/heads/main/constants.json"
             ).text
         )
-    except Exception:
+    except (requests.exceptions.RequestException, json.JSONDecodeError):
         pass
 
 
