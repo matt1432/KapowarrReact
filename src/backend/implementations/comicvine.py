@@ -266,6 +266,7 @@ class ComicVine:
                     id=-1,
                     comicvine_id=volume_data.id,
                     libgen_series_id=None,
+                    marvel_id=None,
                     title=title,
                     alt_title=None,
                     year=volume_data.start_year or 0,

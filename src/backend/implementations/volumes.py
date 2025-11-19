@@ -321,7 +321,7 @@ class Volume:
             .execute(
                 """
             SELECT
-                id, comicvine_id, libgen_series_id,
+                id, comicvine_id, libgen_series_id, marvel_id,
                 title, alt_title,
                 year, publisher, volume_number,
                 description, site_url,
@@ -357,7 +357,7 @@ class Volume:
             .execute(
                 """
             SELECT
-                v.id, comicvine_id, libgen_series_id,
+                v.id, comicvine_id, libgen_series_id, marvel_id,
                 title, year, publisher,
                 volume_number,
                 special_version, special_version_locked,
@@ -615,6 +615,7 @@ class Volume:
                 "special_version",
                 "special_version_locked",
                 "libgen_series_id",
+                "marvel_id",
             )
         else:
             allowed_keys = (*VolumeData.__annotations__, "cover")
