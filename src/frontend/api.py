@@ -769,9 +769,8 @@ def api_volumes_search() -> ApiReturn | None:
         vd = VolumeData(
             id=0,
             comicvine_id=data["comicvine_id"],
-            libgen_series_id=None
-            if "libgen_series_id" not in data
-            else data["libgen_series_id"],
+            libgen_series_id=data.get("libgen_series_id", None),
+            marvel_id=data.get("marvel_id", None),
             title=data["title"],
             alt_title=data["title"],
             year=data["year"],

@@ -826,6 +826,7 @@ class VolumeData:
     id: int
     comicvine_id: int
     libgen_series_id: str | None
+    marvel_id: int | None
     title: str
     alt_title: str | None
     year: int

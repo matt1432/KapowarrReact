@@ -42,6 +42,7 @@ export interface UpdateVolumeParams {
     rootFolder?: number;
     volumeFolder?: string;
     libgenSeriesId?: string | null;
+    marvelId?: number | null;
     volumeId: number;
     calledFrom?: string;
 }

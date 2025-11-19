@@ -13,10 +13,16 @@ def migrate_react() -> None:
 
     s = Settings().get_settings().todict()
 
-    if "added_kapowarr_react_columns" not in s or not s["added_kapowarr_react_columns"]:
-        Settings().update({ "added_kapowarr_react_columns": 0 })
-    elif isinstance(s["added_kapowarr_react_columns"], bool) and s["added_kapowarr_react_columns"]:
-        Settings().update({ "added_kapowarr_react_columns": 1 })
+    if (
+        "added_kapowarr_react_columns" not in s
+        or not s["added_kapowarr_react_columns"]
+    ):
+        Settings().update({"added_kapowarr_react_columns": 0})
+    elif (
+        isinstance(s["added_kapowarr_react_columns"], bool)
+        and s["added_kapowarr_react_columns"]
+    ):
+        Settings().update({"added_kapowarr_react_columns": 1})
 
     s = Settings().get_settings().todict()
 
@@ -51,8 +57,22 @@ def migrate_react() -> None:
 
             COMMIT;
         """)
-        Settings().update({ "added_kapowarr_react_columns": 1 })
+        Settings().update({"added_kapowarr_react_columns": 1})
         s = Settings().get_settings().todict()
+
+    if s["added_kapowarr_react_columns"] < 2:
+        get_db().executescript("""
+            BEGIN TRANSACTION;
+            PRAGMA defer_foreign_keys = ON;
+
+            ALTER TABLE volumes ADD COLUMN
+                marvel_id INTEGER;
+
+            COMMIT;
+        """)
+        Settings().update({"added_kapowarr_react_columns": 2})
+        s = Settings().get_settings().todict()
+
 
 # region Handler
 class DatabaseMigrationHandler:

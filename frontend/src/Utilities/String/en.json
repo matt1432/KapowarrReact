@@ -1268,6 +1268,8 @@
     "Mapping": "Mapping",
     "MarkAsFailed": "Mark as Failed",
     "MarkAsFailedConfirmation": "Are you sure you want to mark '{sourceTitle}' as failed?",
+    "MarvelID": "Marvel Series ID",
+    "MarvelIDHelpText": "The numeric part of this series' url on https://www.marvel.com/comics",
     "MassSearchCancelWarning": "This cannot be cancelled once started without restarting {appName} or disabling all of your indexers.",
     "Match": "Match",
     "MatchedToIssues": "Matched to Issues",

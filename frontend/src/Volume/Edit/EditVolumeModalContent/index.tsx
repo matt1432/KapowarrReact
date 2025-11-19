@@ -64,6 +64,7 @@ export default function EditVolumeModalContent({
     const {
         title,
         libgenSeriesId: initialLibgenSeriesId,
+        marvelId: initialMarvelId,
         monitored: initialMonitored,
         specialVersion: initialSpecialVersion,
         volumeFolder: initialVolumeFolder,
@@ -86,6 +87,7 @@ export default function EditVolumeModalContent({
     const [libgenSeriesId, setLibgenSeriesId] = useState(
         initialLibgenSeriesId ?? '',
     );
+    const [marvelId, setMarvelId] = useState(initialMarvelId);
     const [volumeFolder, setVolumeFolder] = useState(initialVolumeFolder);
 
     const isPathChanging = useMemo(
@@ -96,7 +98,9 @@ export default function EditVolumeModalContent({
     const [prevVolume, setPrevVolume] = useState(volume);
     if (volume !== prevVolume) {
         setPrevVolume(volume);
+
         setLibgenSeriesId(initialLibgenSeriesId ?? '');
+        setMarvelId(initialMarvelId);
         setMonitored(initialMonitored);
         setSpecialVersion(initialSpecialVersion ?? '');
         setVolumeFolder(initialVolumeFolder);
@@ -117,6 +121,9 @@ export default function EditVolumeModalContent({
                     break;
                 case 'libgenSeriesId':
                     setLibgenSeriesId(value as string);
+                    break;
+                case 'marvelId':
+                    setMarvelId(value as number | null);
                     break;
                 case 'volumeFolder':
                     setVolumeFolder(
@@ -173,6 +180,7 @@ export default function EditVolumeModalContent({
             specialVersionLocked: true,
             volumeFolder,
             libgenSeriesId,
+            marvelId,
         });
 
         if (!updateError) {
@@ -181,6 +189,7 @@ export default function EditVolumeModalContent({
     }, [
         libgenSeriesIdHasError,
         libgenSeriesId,
+        marvelId,
         monitored,
         rootFolderId,
         specialVersion,
@@ -247,6 +256,18 @@ export default function EditVolumeModalContent({
                             helpText={translate('LibgenSeriesIDHelpText')}
                             onChange={handleInputChange}
                             hasError={libgenSeriesIdHasError}
+                        />
+                    </FormGroup>
+
+                    <FormGroup size={sizes.MEDIUM}>
+                        <FormLabel>{translate('MarvelID')}</FormLabel>
+
+                        <FormInputGroup
+                            type={inputTypes.NUMBER}
+                            name="marvelId"
+                            value={marvelId}
+                            helpText={translate('MarvelIDHelpText')}
+                            onChange={handleInputChange}
                         />
                     </FormGroup>
 
