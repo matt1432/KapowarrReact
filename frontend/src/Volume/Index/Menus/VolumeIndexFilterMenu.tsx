@@ -38,19 +38,43 @@ export default function VolumeIndexFilterMenu({
                 </FilterMenuItem>
 
                 <FilterMenuItem
+                    name="monitored"
+                    filterKey={filterKey}
+                    onPress={onFilterSelect}
+                >
+                    {translate('MonitoredOnly')}
+                </FilterMenuItem>
+
+                <FilterMenuItem
+                    name="unmonitored"
+                    filterKey={filterKey}
+                    onPress={onFilterSelect}
+                >
+                    {translate('UnmonitoredOnly')}
+                </FilterMenuItem>
+
+                <FilterMenuItem
+                    name="continuing"
+                    filterKey={filterKey}
+                    onPress={onFilterSelect}
+                >
+                    {translate('ContinuingOnly')}
+                </FilterMenuItem>
+
+                <FilterMenuItem
+                    name="ended"
+                    filterKey={filterKey}
+                    onPress={onFilterSelect}
+                >
+                    {translate('EndedOnly')}
+                </FilterMenuItem>
+
+                <FilterMenuItem
                     name="wanted"
                     filterKey={filterKey}
                     onPress={onFilterSelect}
                 >
                     {translate('Wanted')}
-                </FilterMenuItem>
-
-                <FilterMenuItem
-                    name="monitored"
-                    filterKey={filterKey}
-                    onPress={onFilterSelect}
-                >
-                    {translate('Monitored')}
                 </FilterMenuItem>
             </MenuContent>
         </FilterMenu>

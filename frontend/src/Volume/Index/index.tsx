@@ -70,7 +70,13 @@ import styles from './index.module.css';
 import type { VolumeIndexColumnName } from './columns';
 
 export type IndexView = 'posters' | 'table';
-export type IndexFilter = '' | 'wanted' | 'monitored';
+export type IndexFilter =
+    | ''
+    | 'monitored'
+    | 'unmonitored'
+    | 'continuing'
+    | 'ended'
+    | 'wanted';
 
 interface VolumeIndexProps {
     initialScrollTop?: number;
@@ -120,17 +126,43 @@ const useIndexVolumes = () => {
         },
     });
 
+    // TODO: implement new ones
     const items = useMemo(() => {
-        if (filterKey === 'monitored') {
-            return sortedItems.filter((item) => item.monitored);
+        switch (filterKey) {
+            case 'monitored':
+                return sortedItems.filter((item) => item.monitored);
+
+            case 'unmonitored':
+                return sortedItems.filter((item) => !item.monitored);
+
+            // TODO: improve logic for continuing and ended
+            case 'continuing':
+                return sortedItems.filter(({ marvelIssueCount, issueCount }) =>
+                    Boolean(
+                        marvelIssueCount === 0
+                            ? 0
+                            : marvelIssueCount - issueCount,
+                    ),
+                );
+
+            case 'ended':
+                return sortedItems.filter(
+                    ({ marvelIssueCount, issueCount }) =>
+                        !(marvelIssueCount === 0
+                            ? 0
+                            : marvelIssueCount - issueCount),
+                );
+
+            case 'wanted':
+                return sortedItems.filter(
+                    (item) =>
+                        item.issuesDownloadedMonitored <
+                        item.issueCountMonitored,
+                );
+
+            default:
+                return sortedItems;
         }
-        if (filterKey === 'wanted') {
-            return sortedItems.filter(
-                (item) =>
-                    item.issuesDownloadedMonitored < item.issueCountMonitored,
-            );
-        }
-        return sortedItems;
     }, [filterKey, sortedItems]);
 
     return {
