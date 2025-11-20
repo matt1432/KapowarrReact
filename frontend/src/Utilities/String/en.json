@@ -759,7 +759,7 @@
     "IssueFileRenamedTooltip": "Issue file renamed",
     "IssueFilesLoadError": "Unable to load issue files",
     "IssueGrabbedTooltip": "Issue grabbed from {indexer} and sent to {downloadClient}",
-    "IssueHasNotAired": "Issue has not aired",
+    "IssueHasNotAired": "Issue has not been published",
     "IssueHistoryLoadError": "Unable to load issue history",
     "IssueImported": "Issue Imported",
     "IssueImportedTooltip": "Issue downloaded successfully and picked up from download client",

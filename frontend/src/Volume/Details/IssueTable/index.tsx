@@ -38,6 +38,7 @@ export interface IssueRowData extends IssueData {
     relativePath: string | undefined;
     size: string;
     releaseGroup: string | undefined;
+    isMarvelIssue: boolean;
 
     // Columns
     status: never;
@@ -58,32 +59,71 @@ function useIssuesSelector(volumeId: number) {
 
                 return {
                     volumeMonitored: Boolean(data?.monitored),
-                    issues: (data?.issues ?? []).map((issue) => {
-                        const issueFile = issue.files?.find(
-                            (file) => !file.isImageFile && !file.isMetadataFile,
-                        );
+                    issues: (data?.issues ?? [])
+                        .map((issue) => {
+                            const issueFile = issue.files?.find(
+                                (file) =>
+                                    !file.isImageFile && !file.isMetadataFile,
+                            );
 
-                        return {
-                            ...issue,
-                            issue,
-                            issueFile,
-                            path: issueFile?.filepath,
-                            relativePath:
-                                volumeFolder &&
-                                issueFile?.filepath
-                                    ?.replace(volumeFolder, '')
-                                    ?.slice(1),
-                            size: formatBytes(
-                                issue.files.reduce(
-                                    (acc, issue) => (acc += issue.size),
-                                    0,
+                            return {
+                                ...issue,
+                                issue,
+                                issueFile,
+                                path: issueFile?.filepath,
+                                relativePath:
+                                    volumeFolder &&
+                                    issueFile?.filepath
+                                        ?.replace(volumeFolder, '')
+                                        ?.slice(1),
+                                size: formatBytes(
+                                    issue.files.reduce(
+                                        (acc, issue) => (acc += issue.size),
+                                        0,
+                                    ),
                                 ),
-                            ),
-                            releaseGroup:
-                                issue?.files.find((f) => f.releaser)
-                                    ?.releaser ?? '',
-                        } as IssueRowData;
-                    }),
+                                releaseGroup:
+                                    issue?.files.find((f) => f.releaser)
+                                        ?.releaser ?? '',
+                                isMarvelIssue: false,
+                            } as IssueRowData;
+                        })
+                        .concat(
+                            (data?.marvelIssues ?? []).map((marvelIssue) => {
+                                const issue = {
+                                    ...marvelIssue,
+                                    volumeId,
+                                    issueNumber: String(
+                                        marvelIssue.issueNumber,
+                                    ),
+                                    calculatedIssueNumber:
+                                        marvelIssue.issueNumber,
+                                    monitored: false,
+                                    comicvineId: 0,
+                                    files: [],
+                                };
+                                return {
+                                    ...issue,
+                                    issue,
+                                    issueFile: undefined,
+                                    path: undefined,
+                                    relativePath: undefined,
+                                    size: formatBytes(0),
+                                    releaseGroup: '',
+                                    isMarvelIssue: true,
+                                } as unknown as IssueRowData;
+                            }),
+                        )
+                        .filter(
+                            (issue, _, arr) =>
+                                !issue.isMarvelIssue ||
+                                !arr.find(
+                                    (iss) =>
+                                        iss.calculatedIssueNumber ===
+                                            issue.calculatedIssueNumber &&
+                                        !iss.isMarvelIssue,
+                                ),
+                        ),
                 };
             },
         },
