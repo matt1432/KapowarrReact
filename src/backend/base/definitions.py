@@ -707,6 +707,16 @@ class IssueMetadata(TypedDict):
     description: str
 
 
+class MarvelIssueMetadata(TypedDict):
+    id: int
+    marvel_id: int
+    title: str
+    link: str
+    date: str | None
+    description: str
+    issue_number: float | None
+
+
 class CVFileMapping(TypedDict):
     id: int
     filepath: str

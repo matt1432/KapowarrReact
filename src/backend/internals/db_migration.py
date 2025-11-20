@@ -11,6 +11,24 @@ from backend.internals.db import get_db, iter_commit
 def migrate_react() -> None:
     from backend.internals.settings import Settings
 
+    get_db().executescript("""
+        CREATE TABLE IF NOT EXISTS marvel_issues(
+            id INTEGER PRIMARY KEY,
+            marvel_id INTEGER NOT NULL UNIQUE,
+            volume_id INTEGER NOT NULL,
+
+            title VARCHAR(255),
+            link VARCHAR(255),
+
+            date VARCHAR(10),
+            description TEXT,
+            issue_number FLOAT(20),
+
+            FOREIGN KEY (volume_id) REFERENCES volumes(id)
+                ON DELETE CASCADE
+        );
+    """)
+
     s = Settings().get_settings().todict()
 
     if (

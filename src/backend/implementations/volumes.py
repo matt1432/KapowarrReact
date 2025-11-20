@@ -35,6 +35,7 @@ from backend.base.definitions import (
     IssueFileData,
     LibraryFilter,
     LibrarySorting,
+    MarvelIssueMetadata,
     MonitorScheme,
     SpecialVersion,
     VolumeData,
@@ -62,6 +63,7 @@ from backend.base.helpers import (
 )
 from backend.base.logging import LOGGER
 from backend.implementations.comicvine import ComicVine
+from backend.implementations.marvel_meta import get_marvel_issues
 from backend.implementations.matching import _match_title, file_importing_filter
 from backend.implementations.root_folders import RootFolders
 from backend.internals.db import commit, get_db
@@ -406,6 +408,8 @@ class Volume:
         volume_info["issues"] = [i.todict() for i in self.get_issues()]
         volume_info["general_files"] = self.get_general_files()
 
+        volume_info["marvel_issues"] = self.get_marvel_issues()
+
         return volume_info
 
     @property
@@ -450,6 +454,30 @@ class Volume:
         )
 
         return extract_year_from_date(last_issue_date)
+
+    def get_marvel_issues(self) -> list[MarvelIssueMetadata]:
+        if self.vd.marvel_id is None:
+            return []
+
+        cursor = get_db()
+        marvel_issues = cursor.execute(
+            """
+            SELECT
+                id,
+                marvel_id,
+                volume_id,
+                title,
+                link,
+                date,
+                description,
+                issue_number
+            FROM marvel_issues
+            WHERE volume_id = ?
+            ORDER BY date, issue_number
+            """,
+            (self.id,),
+        ).fetchalldict()
+        return [MarvelIssueMetadata(**mi) for mi in marvel_issues]
 
     def get_issue(self, issue_id: int) -> Issue:
         return Issue(issue_id)
@@ -923,6 +951,11 @@ class Library:
                     FROM issues
                     WHERE volume_id = volumes.id
                 ),
+                vol_marvel_issues AS (
+                    SELECT id
+                    FROM marvel_issues
+                    WHERE volume_id = volumes.id
+                ),
                 issues_to_files AS (
                     SELECT issue_id, monitored, f.id, size
                     FROM issues i
@@ -944,6 +977,9 @@ class Library:
                 (
                     SELECT COUNT(id) FROM vol_issues
                 ) AS issue_count,
+                (
+                    SELECT COUNT(id) FROM vol_marvel_issues
+                ) AS marvel_issue_count,
                 (
                     SELECT COUNT(id) FROM vol_issues WHERE monitored = 1
                 ) AS issue_count_monitored,
@@ -1652,7 +1688,7 @@ def refresh_and_scan(
     if volume_id:
         cursor.execute(
             """
-            SELECT comicvine_id, id, last_cv_fetch
+            SELECT comicvine_id, id, last_cv_fetch, marvel_id, special_version
             FROM volumes
             WHERE id = ?
             LIMIT 1;
@@ -1662,7 +1698,7 @@ def refresh_and_scan(
 
     elif not allow_skipping:
         cursor.execute("""
-            SELECT comicvine_id, id, last_cv_fetch
+            SELECT comicvine_id, id, last_cv_fetch, marvel_id, special_version
             FROM volumes
             ORDER BY last_cv_fetch ASC;
             """)
@@ -1670,7 +1706,7 @@ def refresh_and_scan(
     else:
         cursor.execute(
             """
-            SELECT comicvine_id, id, last_cv_fetch
+            SELECT comicvine_id, id, last_cv_fetch, marvel_id, special_version
             FROM volumes
             WHERE last_cv_fetch <= ?
             ORDER BY last_cv_fetch ASC;
@@ -1678,9 +1714,17 @@ def refresh_and_scan(
             (one_day_ago.timestamp(),),
         )
 
-    cv_to_id_fetch: dict[int, tuple[int, int]] = {
-        e["comicvine_id"]: (e["id"], e["last_cv_fetch"]) for e in cursor
-    }
+    cv_to_id_fetch: dict[int, tuple[int, int]] = {}
+    cv_to_marvel_id_fetch: dict[int, tuple[int | None, SpecialVersion]] = {}
+
+    for e in cursor:
+        cv_to_id_fetch[e["comicvine_id"]] = (e["id"], e["last_cv_fetch"])
+
+        cv_to_marvel_id_fetch[e["comicvine_id"]] = (
+            e["marvel_id"],
+            SpecialVersion(e["special_version"]),
+        )
+
     if not cv_to_id_fetch:
         return
 
@@ -1769,6 +1813,53 @@ def refresh_and_scan(
                 "cover": vd["cover"],
             }
             for vd in volume_datas
+        ),
+    )
+
+    # Update Marvel Issues
+    cursor.executemany(
+        """
+        INSERT INTO marvel_issues(
+            marvel_id,
+            volume_id,
+            title,
+            link,
+            date,
+            description,
+            issue_number
+        ) VALUES (
+            :marvel_id,
+            :volume_id,
+            :title,
+            :link,
+            :date,
+            :description,
+            :issue_number
+        )
+        ON CONFLICT(marvel_id) DO
+        UPDATE
+        SET
+            title = :title,
+            link = :link,
+            date = :date,
+            description = :description,
+            issue_number = :issue_number;
+        """,
+        (
+            {
+                "marvel_id": mi["marvel_id"],
+                "volume_id": cv_to_id_fetch[vd["comicvine_id"]][0],
+                "title": mi["title"],
+                "link": mi["link"],
+                "date": str(mi["date"]) if mi["date"] is not None else None,
+                "description": mi["description"],
+                "issue_number": mi["issue_number"],
+            }
+            for vd in volume_datas
+            for mi in get_marvel_issues(
+                cv_to_marvel_id_fetch[vd["comicvine_id"]][0],
+                cv_to_marvel_id_fetch[vd["comicvine_id"]][1],
+            )
         ),
     )
 
