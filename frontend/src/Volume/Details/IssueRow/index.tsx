@@ -38,6 +38,7 @@ export default function IssueRow({
     id,
     issue,
     issueFile,
+    isMarvelIssue,
     volumeId,
     volumeMonitored,
     monitored,
@@ -70,12 +71,14 @@ export default function IssueRow({
                 if (name === 'monitored') {
                     return (
                         <TableRowCell key={name} className={styles.monitored}>
-                            <MonitorToggleButton
-                                monitored={monitored}
-                                isDisabled={!volumeMonitored}
-                                isSaving={isSaving}
-                                onPress={handleMonitorIssuePress}
-                            />
+                            {isMarvelIssue ? null : (
+                                <MonitorToggleButton
+                                    monitored={monitored}
+                                    isDisabled={!volumeMonitored}
+                                    isSaving={isSaving}
+                                    onPress={handleMonitorIssuePress}
+                                />
+                            )}
                         </TableRowCell>
                     );
                 }
@@ -83,12 +86,16 @@ export default function IssueRow({
                 if (name === 'issueNumber') {
                     return (
                         <TableRowCell key={name} className={styles.issueNumber}>
-                            <IssueTitleLink
-                                issueId={id}
-                                volumeId={volumeId}
-                                issueTitle={issueNumber}
-                                showOpenVolumeButton={false}
-                            />
+                            {isMarvelIssue ? (
+                                issueNumber
+                            ) : (
+                                <IssueTitleLink
+                                    issueId={id}
+                                    volumeId={volumeId}
+                                    issueTitle={issueNumber}
+                                    showOpenVolumeButton={false}
+                                />
+                            )}
                         </TableRowCell>
                     );
                 }
@@ -96,12 +103,16 @@ export default function IssueRow({
                 if (name === 'title') {
                     return (
                         <TableRowCell key={name} className={styles.title}>
-                            <IssueTitleLink
-                                issueId={id}
-                                volumeId={volumeId}
-                                issueTitle={title ?? ''}
-                                showOpenVolumeButton={false}
-                            />
+                            {isMarvelIssue ? (
+                                (title ?? '')
+                            ) : (
+                                <IssueTitleLink
+                                    issueId={id}
+                                    volumeId={volumeId}
+                                    issueTitle={title ?? ''}
+                                    showOpenVolumeButton={false}
+                                />
+                            )}
                         </TableRowCell>
                     );
                 }
@@ -138,13 +149,19 @@ export default function IssueRow({
                 if (name === 'status') {
                     return (
                         <TableRowCell key={name} className={styles.status}>
-                            <IssueStatus issue={issue!} issueFile={issueFile} />
+                            <IssueStatus
+                                issue={issue!}
+                                issueFile={issueFile}
+                                isMarvelIssue={isMarvelIssue}
+                            />
                         </TableRowCell>
                     );
                 }
 
                 if (name === 'actions') {
-                    return (
+                    return isMarvelIssue ? (
+                        <TableRowCell></TableRowCell>
+                    ) : (
                         <IssueSearchCell
                             key={name}
                             issueId={id}

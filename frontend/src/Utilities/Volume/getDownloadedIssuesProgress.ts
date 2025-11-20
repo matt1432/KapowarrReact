@@ -29,7 +29,15 @@ export function getDownloadedIssuesProgress({
     queue,
     volume,
 }: GetDownloadedIssuesProgressParams): GetDownloadedIssuesProgressReturn {
-    const { issuesDownloadedMonitored, issueCountMonitored } = volume;
+    const {
+        issuesDownloadedMonitored,
+        issueCountMonitored,
+        issueCount,
+        marvelIssueCount,
+    } = volume;
+
+    const extraMarvelIssueCount =
+        marvelIssueCount === 0 ? 0 : marvelIssueCount - issueCount;
 
     const newDownloads =
         queue.length -
@@ -47,6 +55,7 @@ export function getDownloadedIssuesProgress({
         volume.monitored,
         progress,
         queue.length > 0,
+        extraMarvelIssueCount,
     );
 
     return {

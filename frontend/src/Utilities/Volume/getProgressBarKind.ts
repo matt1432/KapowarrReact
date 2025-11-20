@@ -4,13 +4,14 @@ function getProgressBarKind(
     monitored: boolean,
     progress: number,
     isDownloading: boolean,
+    marvelIssueCount = 0,
 ) {
     if (isDownloading) {
         return kinds.PURPLE;
     }
 
     if (progress === 100) {
-        return kinds.SUCCESS;
+        return marvelIssueCount ? kinds.PRIMARY : kinds.SUCCESS;
     }
 
     if (monitored) {

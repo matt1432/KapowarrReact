@@ -1,15 +1,29 @@
-import type { CamelCasedProperties } from 'type-fest';
+import type { CamelCasedPropertiesDeep } from 'type-fest';
 
 import type { GeneralFileData, Issue, RawIssue } from 'Issue/Issue';
 import type { SpecialVersion } from 'Helpers/Props/specialVersions';
 
 export type MonitoringScheme = 'all' | 'missing' | 'none' | 'noChange';
 
+interface RawMarvelIssue {
+    id: number;
+    marvel_id: number;
+    title: string;
+    link: string;
+    // cover: string | null;
+    date: string | null;
+    description: string;
+    issue_number: number | null;
+}
+
+export type MarvelIssue = CamelCasedPropertiesDeep<RawMarvelIssue>;
+
 export type RawVolume = {
     id: number;
     comicvine_id: number;
     libgen_series_id: string | null;
     marvel_id: number | null;
+    marvel_issues: RawMarvelIssue[];
     title: string;
     alt_title: string | null;
     year: number;
@@ -33,7 +47,7 @@ export type RawVolume = {
     general_files: GeneralFileData[];
 };
 
-export type Volume = Omit<CamelCasedProperties<RawVolume>, 'issues'> & {
+export type Volume = Omit<CamelCasedPropertiesDeep<RawVolume>, 'issues'> & {
     issues: Issue[];
 };
 
@@ -53,12 +67,13 @@ export type RawVolumePublicInfo = Pick<
     | 'volume_number'
     | 'year'
 > & {
+    marvel_issue_count: number;
     issue_count_monitored: number;
     issue_file_count: number;
     issues_downloaded_monitored: number;
 };
 
-export type VolumePublicInfo = CamelCasedProperties<RawVolumePublicInfo>;
+export type VolumePublicInfo = CamelCasedPropertiesDeep<RawVolumePublicInfo>;
 
 export interface RawVolumeStatistics {
     downloaded_issues: number;
@@ -70,4 +85,4 @@ export interface RawVolumeStatistics {
     volumes: number;
 }
 
-export type VolumeStatistics = CamelCasedProperties<RawVolumeStatistics>;
+export type VolumeStatistics = CamelCasedPropertiesDeep<RawVolumeStatistics>;

@@ -21,15 +21,31 @@ import type { Issue, IssueFileData } from 'Issue/Issue';
 interface IssueStatusProps {
     issue: Issue;
     issueFile?: IssueFileData;
+    isMarvelIssue?: boolean;
 }
 
 // IMPLEMENTATIONS
 
-export default function IssueStatus({ issue, issueFile }: IssueStatusProps) {
+export default function IssueStatus({
+    issue,
+    issueFile,
+    isMarvelIssue = false,
+}: IssueStatusProps) {
     const { queue } = useFetchQueueDetails({
         volumeId: issue.volumeId,
         issueId: issue.id,
     });
+
+    if (isMarvelIssue) {
+        return (
+            <div className={styles.center}>
+                <Icon
+                    name={icons.NOT_AIRED}
+                    title={translate('IssueHasNotAired')}
+                />
+            </div>
+        );
+    }
 
     const hasIssueFile = Boolean(issueFile);
     const isQueued = queue.length !== 0;
