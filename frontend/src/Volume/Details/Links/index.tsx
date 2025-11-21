@@ -13,11 +13,11 @@ import styles from './index.module.css';
 // Types
 import type { Volume } from 'Volume/Volume';
 
-type LinksProps = Pick<Volume, 'siteUrl'>;
+type LinksProps = Pick<Volume, 'siteUrl' | 'marvelId'>;
 
 // IMPLEMENTATIONS
 
-export default function Links({ siteUrl }: LinksProps) {
+export default function Links({ marvelId, siteUrl }: LinksProps) {
     return (
         <div className={styles.links}>
             <Link className={styles.link} to={siteUrl}>
@@ -29,6 +29,21 @@ export default function Links({ siteUrl }: LinksProps) {
                     ComicVine
                 </Label>
             </Link>
+
+            {marvelId ? (
+                <Link
+                    className={styles.link}
+                    to={`https://www.marvel.com/comics/series/${marvelId}`}
+                >
+                    <Label
+                        className={styles.linkLabel}
+                        kind={kinds.INFO}
+                        size={sizes.LARGE}
+                    >
+                        Marvel.com
+                    </Label>
+                </Link>
+            ) : null}
         </div>
     );
 }

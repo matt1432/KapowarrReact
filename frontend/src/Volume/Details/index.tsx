@@ -284,6 +284,7 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
         monitored,
         publisher,
         siteUrl,
+        marvelId,
         description,
         totalSize,
     } = volume;
@@ -569,7 +570,12 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                                             </div>
                                         </Label>
                                     }
-                                    tooltip={<Links siteUrl={siteUrl} />}
+                                    tooltip={
+                                        <Links
+                                            siteUrl={siteUrl}
+                                            marvelId={marvelId}
+                                        />
+                                    }
                                     kind={kinds.INVERSE}
                                     position={tooltipPositions.BOTTOM}
                                 />
