@@ -1,11 +1,14 @@
 // IMPORTS
 
 // Redux
+import { useRootSelector } from 'Store/createAppStore';
+
 import { useFetchQueueDetails } from 'Store/Api/Queue';
 
 // Misc
 import { icons, kinds, sizes } from 'Helpers/Props';
 
+import getRelativeDate from 'Utilities/Date/getRelativeDate';
 import translate from 'Utilities/String/translate';
 
 // General Components
@@ -31,6 +34,10 @@ export default function IssueStatus({
     issueFile,
     isMarvelIssue = false,
 }: IssueStatusProps) {
+    const { showRelativeDates, shortDateFormat, timeFormat } = useRootSelector(
+        (state) => state.uiSettings,
+    );
+
     const { queue } = useFetchQueueDetails({
         volumeId: issue.volumeId,
         issueId: issue.id,
@@ -41,7 +48,19 @@ export default function IssueStatus({
             <div className={styles.center}>
                 <Icon
                     name={icons.NOT_AIRED}
-                    title={translate('IssueHasNotAired')}
+                    title={translate('IssueHasNotAired', {
+                        date: issue.date
+                            ? `(${getRelativeDate({
+                                  date: issue.date,
+                                  shortDateFormat,
+                                  showRelativeDates,
+                                  timeFormat,
+                                  includeSeconds: false,
+                                  includeTime: false,
+                                  timeForToday: true,
+                              })})`
+                            : '',
+                    })}
                 />
             </div>
         );
