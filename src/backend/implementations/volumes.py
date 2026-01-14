@@ -716,6 +716,8 @@ class Volume:
             return value
         if key in ("marvel_id"):
             return int(value) if isinstance(value, str) else value
+        if key == "special_version" and value is None:
+            return SpecialVersion.NORMAL
 
         key_data = VolumeData.__dataclass_fields__[key]
         key_type = key_data.type
