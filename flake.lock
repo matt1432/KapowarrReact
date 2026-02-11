@@ -5,6 +5,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
+        "simyan-src": "simyan-src",
         "systems": [
           "systems"
         ],
@@ -13,11 +14,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1765209357,
-        "narHash": "sha256-3NpR89AqytzTXw4WH9Qwdx7YYsP+BkXpW5XrA08SUJY=",
+        "lastModified": 1770772866,
+        "narHash": "sha256-vlYds5gVv+OBw+0MyXFcnYicVhBKjtAeM189yPYyCVE=",
         "owner": "matt1432",
         "repo": "LibgenComics",
-        "rev": "84c8e80f878084f5d4c5f4ce8c5443a04d756194",
+        "rev": "3bf09c4f76411ef5ea74c6be0b30915206b13c06",
         "type": "github"
       },
       "original": {
@@ -28,10 +29,10 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1767379071,
-        "narHash": "sha256-EgE0pxsrW9jp9YFMkHL9JMXxcqi/OoumPJYwf+Okucw=",
+        "lastModified": 1770562336,
+        "narHash": "sha256-ub1gpAONMFsT/GU2hV6ZWJjur8rJ6kKxdm9IlCT0j84=",
         "ref": "nixos-unstable",
-        "rev": "fb7944c166a3b630f177938e478f0378e64ce108",
+        "rev": "d6c71932130818840fc8fe9509cf50be8c64634f",
         "shallow": true,
         "type": "git",
         "url": "https://github.com/NixOS/nixpkgs"
@@ -49,6 +50,22 @@
         "nixpkgs": "nixpkgs",
         "systems": "systems",
         "treefmt-nix": "treefmt-nix"
+      }
+    },
+    "simyan-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1765829217,
+        "narHash": "sha256-Vx0aZ6gwJ0xRPh8rDYFKDbbMG94V5yAbFklKCYzbz4E=",
+        "owner": "Metron-Project",
+        "repo": "Simyan",
+        "rev": "eba1471fe239b5a6cbf8118da00fbd36ef55b256",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Metron-Project",
+        "repo": "Simyan",
+        "type": "github"
       }
     },
     "systems": {
@@ -73,11 +90,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1767468822,
-        "narHash": "sha256-MpffQxHxmjVKMiQd0Tg2IM/bSjjdQAM+NDcX6yxj7rE=",
+        "lastModified": 1770228511,
+        "narHash": "sha256-wQ6NJSuFqAEmIg2VMnLdCnUc0b7vslUohqqGGD+Fyxk=",
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "rev": "d56486eb9493ad9c4777c65932618e9c2d0468fc",
+        "rev": "337a4fe074be1042a35086f15481d763b8ddc0e7",
         "type": "github"
       },
       "original": {
