@@ -183,7 +183,7 @@ class ComicVine:
 
     def remove_from_cache(self, endpoint: str, cv_id: int) -> None:
         _cv_id = str(cv_id)
-        with self.cache.connection as conn:
+        with self.cache._connect() as conn:
             cache_keys = conn.execute(
                 "SELECT query FROM queries;",
             ).fetchall()
