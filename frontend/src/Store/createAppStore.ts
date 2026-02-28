@@ -14,6 +14,10 @@ import createReducers, { slices } from './createReducers';
 
 // IMPLEMENTATIONS
 
+const rememberedKeys = Object.entries(slices)
+    .filter(([, slice]) => 'sliceVersion' in slice.getInitialState())
+    .map(([sliceName]) => sliceName);
+
 export const store = configureStore({
     reducer: createReducers(),
 
@@ -22,19 +26,10 @@ export const store = configureStore({
 
     enhancers: (getDefaultEnhancers) =>
         getDefaultEnhancers().concat(
-            rememberEnhancer(
-                window.localStorage,
-                Object.entries(slices)
-                    .filter(
-                        ([, slice]) =>
-                            'sliceVersion' in slice.getInitialState(),
-                    )
-                    .map(([sliceName]) => sliceName),
-                {
-                    prefix: 'kapowarr_',
-                    persistDebounce: 300,
-                },
-            ),
+            rememberEnhancer(window.localStorage, rememberedKeys, {
+                prefix: 'kapowarr_',
+                persistDebounce: 300,
+            }),
         ),
 });
 
