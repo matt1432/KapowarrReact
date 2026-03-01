@@ -14,11 +14,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770772866,
-        "narHash": "sha256-vlYds5gVv+OBw+0MyXFcnYicVhBKjtAeM189yPYyCVE=",
+        "lastModified": 1772339464,
+        "narHash": "sha256-6qjpUdYzY/YPXQM7rkZRy7B6IKZ4tUvpW+wMMXBHMN0=",
         "owner": "matt1432",
         "repo": "LibgenComics",
-        "rev": "3bf09c4f76411ef5ea74c6be0b30915206b13c06",
+        "rev": "f50fa2d7c016ce0e6b2f7b743843a8799f28e624",
         "type": "github"
       },
       "original": {
@@ -29,10 +29,10 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1771848320,
-        "narHash": "sha256-0MAd+0mun3K/Ns8JATeHT1sX28faLII5hVLq0L3BdZU=",
+        "lastModified": 1772198003,
+        "narHash": "sha256-I45esRSssFtJ8p/gLHUZ1OUaaTaVLluNkABkk6arQwE=",
         "ref": "nixos-unstable",
-        "rev": "2fc6539b481e1d2569f25f8799236694180c0993",
+        "rev": "dd9b079222d43e1943b6ebd802f04fd959dc8e61",
         "shallow": true,
         "type": "git",
         "url": "https://github.com/NixOS/nixpkgs"
