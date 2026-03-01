@@ -121,6 +121,12 @@ class Constants:
     CV_BRAKE_TIME = 10.0  # seconds
     "Average amount of seconds between requests to the CV API"
 
+    ANNAS_ARCHIVE_SITE_URL = FETCHED_CONSTANTS["annas_archive_site_url"]
+    """
+    The site URL of Anna's Archive. It is fetched from the latest commit of this
+    project's github repository to ensure users always have a working URL
+    """
+
     LIBGEN_SITE_URL = FETCHED_CONSTANTS["libgen_site_url"]
     """
     The site URL of Libgen+. It is fetched from the latest commit of this
