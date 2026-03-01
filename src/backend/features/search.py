@@ -5,6 +5,7 @@ from libgencomics import LibgenException, LibgenSearch, ResultFile
 from backend.base.definitions import (
     QUERY_FORMATS,
     Constants,
+    DownloadSource,
     MatchedSearchResultData,
     SearchResultData,
     SearchResultMatchData,
@@ -215,6 +216,11 @@ class SearchLibgenPlus(SearchSource):
                     else None,
                     md5=file_result.get("md5"),
                     web_sub_title=None,
+                    download_sources=[
+                        DownloadSource.LIBGENPLUS.value,
+                        DownloadSource.LIBGENPLUS_TORRENT.value,
+                    ],
+                    selected_source=None,
                 )
             )
         return results
@@ -327,6 +333,11 @@ class SearchLibgenPlus(SearchSource):
                     else None,
                     md5=file_result.get("md5"),
                     web_sub_title=None,
+                    download_sources=[
+                        DownloadSource.LIBGENPLUS.value,
+                        DownloadSource.LIBGENPLUS_TORRENT.value,
+                    ],
+                    selected_source=None,
                 )
             )
 

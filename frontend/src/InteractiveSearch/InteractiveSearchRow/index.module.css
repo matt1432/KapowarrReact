@@ -86,6 +86,11 @@
     }
 }
 
+.selectedSourceButton {
+    composes: button from 'Components/Link/Button/index.module.css';
+    border: none;
+}
+
 .interactiveIcon {
     position: absolute;
     top: 4px;

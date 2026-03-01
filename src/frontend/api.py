@@ -141,7 +141,7 @@ def extract_key(
                 return None if val is None else bool(val)
 
             return SearchResultData(
-                series=request.values.get("series") or "",
+                series=request.values.get("series", ""),
                 year=parse_int("year"),
                 volume_number=parse_volume_number(
                     request.values.get("volume_number")
@@ -153,9 +153,9 @@ def extract_key(
                 annual=parse_bool("annual") or False,
                 is_metadata_file=parse_bool("is_metadata_file") or False,
                 is_image_file=parse_bool("is_image_file") or False,
-                link=request.values.get("link") or "",
-                display_title=request.values.get("display_title") or "",
-                source=request.values.get("source") or "",
+                link=request.values.get("link", ""),
+                display_title=request.values.get("display_title", ""),
+                source=request.values.get("source", ""),
                 filesize=parse_int("filesize"),
                 pages=parse_int("pages"),
                 releaser=request.values.get("releaser"),
@@ -166,6 +166,9 @@ def extract_key(
                 comics_id=parse_int("comics_id"),
                 md5=request.values.get("md5") or request.values.get("md_5"),
                 web_sub_title=request.values.get("web_sub_title"),
+                # Only used for the frontend
+                download_sources=[],
+                selected_source=request.values.get("selected_source", None),
             )
 
         except (ValueError, TypeError):

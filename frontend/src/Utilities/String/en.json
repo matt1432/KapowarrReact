@@ -1968,6 +1968,7 @@
     "SelectGroup": "Select for Group",
     "SelectAll": "Select All",
     "SelectDownloadClientModalTitle": "{modalTitle} - Select Download Client",
+    "SelectDownloadSource": "Select download source",
     "SelectDropdown": "Select...",
     "SelectIssues": "Select Issue(s)",
     "SelectIssuesModalTitle": "{modalTitle} - Select Issue(s)",

@@ -15,6 +15,7 @@ import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 
 import { filesize } from 'filesize';
+import classNames from 'classnames';
 
 // General Components
 import ConfirmModal from 'Components/Modal/ConfirmModal';
@@ -35,6 +36,11 @@ import type { InputChanged } from 'typings/Inputs';
 import type { InteractiveSearchPayload } from 'typings/Search';
 import type { InteractiveSearchColumnName } from 'InteractiveSearch/columns';
 import type { SearchResultItem } from 'InteractiveSearch';
+import type { DownloadSource } from 'Helpers/Props/downloadSources';
+import Menu from 'Components/Menu/Menu';
+import IconButton from 'Components/Link/IconButton';
+import MenuContent from 'Components/Menu/MenuContent';
+import SelectedMenuItem from 'Components/Menu/SelectedMenuItem';
 
 interface InteractiveSearchRowProps {
     columns: Column<InteractiveSearchColumnName>[];
@@ -49,7 +55,6 @@ function getDownloadIcon(
     isGrabbing: boolean,
     isGrabbed: boolean,
     isError: boolean,
-    isTorrent = false,
 ) {
     if (isGrabbing) {
         return icons.SPINNER;
@@ -61,7 +66,7 @@ function getDownloadIcon(
         return icons.DOWNLOADING;
     }
 
-    return isTorrent ? icons.TORRENT : icons.DOWNLOAD;
+    return icons.DOWNLOAD;
 }
 
 function getDownloadKind(isGrabbed: boolean, isError: boolean) {
@@ -81,7 +86,6 @@ function getDownloadTooltip(
     isGrabbed: boolean,
     isError: boolean,
     errorMessage?: string,
-    isTorrent = false,
 ) {
     if (isGrabbing) {
         return '';
@@ -93,9 +97,7 @@ function getDownloadTooltip(
         return errorMessage;
     }
 
-    return isTorrent
-        ? translate('AddTorrentToDownloadQueue')
-        : translate('AddToDownloadQueue');
+    return translate('AddToDownloadQueue');
 }
 
 export default function InteractiveSearchRow({
@@ -137,6 +139,9 @@ export default function InteractiveSearchRow({
     const [scanType, setScanType] = useState(initialScanType);
     const [resolution, setResolution] = useState(initialResolution);
     const [dpi, setDpi] = useState(initialDpi);
+    const [selectedSource, setSelectedSource] = useState<DownloadSource | null>(
+        null,
+    );
 
     const [gotMatchingFileInfo, setGotMatchingFileInfo] = useState(false);
 
@@ -186,20 +191,9 @@ export default function InteractiveSearchRow({
         },
     ] = useAddDownloadMutation();
 
-    const [
-        grabTorrentRelease,
-        {
-            isLoading: isGrabbingTorrent,
-            isSuccess: isTorrentGrabbed,
-            isError: isTorrentError,
-            error: grabTorrentError,
-        },
-    ] = useAddDownloadMutation();
-
     const onGrabPress = useCallback(
-        (forceMatch = false, isTorrent = false) => {
-            const grab = isTorrent ? grabTorrentRelease : grabRelease;
-            grab({
+        (forceMatch = false) => {
+            grabRelease({
                 ...searchPayload,
                 result: {
                     ...result,
@@ -213,14 +207,13 @@ export default function InteractiveSearchRow({
                     scanType,
                     resolution,
                     dpi,
-                    comicsId: isTorrent ? result.comicsId : null,
+                    selectedSource,
                 },
                 forceMatch,
             });
         },
         [
             grabRelease,
-            grabTorrentRelease,
             result,
             searchPayload,
             issueNumber,
@@ -228,6 +221,7 @@ export default function InteractiveSearchRow({
             scanType,
             resolution,
             dpi,
+            selectedSource,
         ],
     );
 
@@ -245,10 +239,6 @@ export default function InteractiveSearchRow({
 
         setIsConfirmGrabModalOpen(true);
     }, [issueNumber, onGrabPress, result.matchRejections]);
-
-    const onGrabTorrentPressWrapper = useCallback(() => {
-        onGrabPress(false, true);
-    }, [onGrabPress]);
 
     const onOverridePress = useCallback(() => {
         onGrabPress(true);
@@ -295,6 +285,13 @@ export default function InteractiveSearchRow({
     const handleDpiChange = useCallback(
         ({ value }: InputChanged<'dpi', string>) => {
             setDpi(value);
+        },
+        [],
+    );
+
+    const handleSelectedSourceChange = useCallback(
+        ({ value }: InputChanged<string, DownloadSource | null>) => {
+            setSelectedSource(value);
         },
         [],
     );
@@ -454,6 +451,37 @@ export default function InteractiveSearchRow({
                 if (name === 'actions') {
                     return (
                         <TableRowCell key={name} className={styles[name]}>
+                            <Menu
+                                className={classNames(
+                                    styles.selectedSourceButton,
+                                    styles.manualDownloadContent,
+                                )}
+                            >
+                                <IconButton
+                                    name={icons.TORRENT}
+                                    title={translate('SelectDownloadSource')}
+                                />
+                                <MenuContent>
+                                    <SelectedMenuItem
+                                        isSelected={selectedSource === null}
+                                        onPress={handleSelectedSourceChange}
+                                    >
+                                        Auto
+                                    </SelectedMenuItem>
+
+                                    {result.downloadSources.map((source) => (
+                                        <SelectedMenuItem
+                                            isSelected={
+                                                source === selectedSource
+                                            }
+                                            onPress={handleSelectedSourceChange}
+                                        >
+                                            {source}
+                                        </SelectedMenuItem>
+                                    ))}
+                                </MenuContent>
+                            </Menu>
+
                             <SpinnerIconButton
                                 name={getDownloadIcon(
                                     isGrabbing,
@@ -470,31 +498,6 @@ export default function InteractiveSearchRow({
                                 isSpinning={isGrabbing}
                                 onPress={onGrabPressWrapper}
                             />
-
-                            {isLibgenEnabled ? (
-                                <SpinnerIconButton
-                                    name={getDownloadIcon(
-                                        isGrabbingTorrent,
-                                        isTorrentGrabbed,
-                                        isTorrentError,
-                                        true,
-                                    )}
-                                    kind={getDownloadKind(
-                                        isTorrentGrabbed,
-                                        isTorrentError,
-                                    )}
-                                    title={getDownloadTooltip(
-                                        isGrabbingTorrent,
-                                        isTorrentGrabbed,
-                                        isTorrentError,
-                                        getErrorMessage(grabTorrentError),
-                                        true,
-                                    )}
-                                    isSpinning={isGrabbingTorrent}
-                                    isDisabled={result.source !== 'Libgen+'}
-                                    onPress={onGrabTorrentPressWrapper}
-                                />
-                            ) : null}
 
                             <Link
                                 className={styles.manualDownloadContent}

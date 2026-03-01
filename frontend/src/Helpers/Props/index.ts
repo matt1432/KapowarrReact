@@ -1,6 +1,7 @@
 import align from './align';
 import commandNames from './commandNames';
 import downloadStates from './downloadStates';
+import downloadSources from './downloadSources';
 import downloadTypes from './downloadTypes';
 import icons from './icons';
 import inputTypes from './inputTypes';
@@ -21,6 +22,7 @@ export {
     align,
     commandNames,
     downloadStates,
+    downloadSources,
     downloadTypes,
     icons,
     inputTypes,

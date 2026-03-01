@@ -769,6 +769,15 @@ async def _test_paths(
 
         for download in list(_downloads):
             dl_class = download.__class__
+
+            if edits is not None:
+                selected_source = edits.get("selected_source", None)
+                if (
+                    selected_source is not None
+                    and selected_source != download.source_type.value
+                ):
+                    continue
+
             downloads.append(
                 dl_class(
                     download_link=download.download_link,
@@ -944,6 +953,11 @@ async def search_getcomics(
                                 comics_id=None,
                                 md5=None,
                                 web_sub_title=group["web_sub_title"],
+                                download_sources=[
+                                    s.value
+                                    for s in GCDownloadSource._member_map_.values()
+                                ],
+                                selected_source=None,
                             )
                         )
 
@@ -977,6 +991,10 @@ async def search_getcomics(
                     comics_id=None,
                     md5=None,
                     web_sub_title=None,
+                    download_sources=[
+                        s.value for s in GCDownloadSource._member_map_.values()
+                    ],
+                    selected_source=None,
                 )
             )
 

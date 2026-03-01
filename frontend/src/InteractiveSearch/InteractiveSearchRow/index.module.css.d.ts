@@ -17,6 +17,7 @@ interface CssExports {
     interactiveIcon: string;
     manualDownloadContent: string;
     rejected: string;
+    selectedSourceButton: string;
 }
 export const cssExports: CssExports;
 export default cssExports;

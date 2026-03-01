@@ -589,6 +589,8 @@ class DownloadSource(BaseEnum):
     GETCOMICS_TORRENT = "GetComics (torrent)"
     "A torrent magnet link directly on the webpage"
     LIBGENPLUS = "Libgen+"
+    LIBGENPLUS_TORRENT = "Libgen+ (torrent)"
+    ANNAS_ARCHIVE = "Anna's Archive"
 
 
 QUERY_FORMATS: dict[str, tuple[str, ...]] = {
@@ -673,6 +675,8 @@ class SearchResultData(FilenameData):
     comics_id: int | None
     md5: str | None
     web_sub_title: str | None
+    download_sources: list[str]
+    selected_source: str | None
 
 
 class SearchResultMatchData(TypedDict):

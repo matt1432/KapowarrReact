@@ -483,8 +483,12 @@ class DownloadHandler(metaclass=Singleton):
         link_type = self.__determine_link_type(link)
         downloads: list[Download] = []
 
-        if link_type == "lg" and not isinstance(result, str):
-            if "comics_id" in result and result["comics_id"]:
+        if link_type == "lg":
+            if (
+                result["comics_id"] is not None
+                and result["selected_source"]
+                == DownloadSource.LIBGENPLUS_TORRENT.value
+            ):
                 torrent_name = str(int(int(result["comics_id"]) / 1000) * 1000)
                 torrent_link = f"{Constants.LIBGEN_SITE_URL}/torrents/comics/c_{torrent_name}.torrent"
 
@@ -492,9 +496,7 @@ class DownloadHandler(metaclass=Singleton):
                     TorrentDownload(
                         download_link=torrent_link,
                         volume_id=volume_id,
-                        covered_issues=result["issue_number"]
-                        if "issue_number" in result
-                        else None,
+                        covered_issues=result.get("issue_number", None),
                         source_type=DownloadSource.LIBGENPLUS,
                         source_name="Libgen+",
                         web_link=link,
@@ -504,22 +506,15 @@ class DownloadHandler(metaclass=Singleton):
                         external_client=None,
                         external_id=None,
                         filename=f"{torrent_name}/{result['md5']}.{result['extension']}",
-                        releaser=result["releaser"]
-                        if "releaser" in result
-                        else None,
-                        scan_type=result["scan_type"]
-                        if "scan_type" in result
-                        else None,
-                        resolution=result["resolution"]
-                        if "resolution" in result
-                        else None,
-                        dpi=result["dpi"] if "dpi" in result else None,
-                        extension=result["extension"]
-                        if "extension" in result
-                        else None,
+                        releaser=result.get("releaser", None),
+                        scan_type=result.get("scan_type", None),
+                        resolution=result.get("resolution", None),
+                        dpi=result.get("dpi", None),
+                        extension=result.get("extension", None),
                     )
                 )
 
+                # TODO: handle anna's archive selected_source
             else:
                 download_link = link.replace("file.php", "get.php")
 
@@ -527,27 +522,17 @@ class DownloadHandler(metaclass=Singleton):
                     DirectDownload(
                         download_link=download_link,
                         volume_id=volume_id,
-                        covered_issues=result["issue_number"]
-                        if "issue_number" in result
-                        else None,
+                        covered_issues=result.get("issue_number", None),
                         source_type=DownloadSource.LIBGENPLUS,
                         source_name="Libgen+",
                         web_link=link,
                         web_title=None,
                         web_sub_title=None,
-                        releaser=result["releaser"]
-                        if "releaser" in result
-                        else None,
-                        scan_type=result["scan_type"]
-                        if "scan_type" in result
-                        else None,
-                        resolution=result["resolution"]
-                        if "resolution" in result
-                        else None,
-                        dpi=result["dpi"] if "dpi" in result else None,
-                        extension=result["extension"]
-                        if "extension" in result
-                        else None,
+                        releaser=result.get("releaser", None),
+                        scan_type=result.get("scan_type", None),
+                        resolution=result.get("resolution", None),
+                        dpi=result.get("dpi", None),
+                        extension=result.get("extension", None),
                         forced_match=force_match,
                     )
                 )

@@ -2,6 +2,7 @@ import type { CamelCasedProperties, CamelCasedPropertiesDeep } from 'type-fest';
 
 import type { MatchRejection } from 'Helpers/Props/matchRejections';
 import type { IssueData } from 'Issue/Issue';
+import type { DownloadSource } from 'Helpers/Props/downloadSources';
 
 export interface RawSearchResult {
     series: string;
@@ -33,6 +34,9 @@ export interface RawSearchResult {
 
     // GetComics stuff
     web_sub_title: string | null;
+
+    download_sources: DownloadSource[];
+    selected_source: DownloadSource | null;
 }
 
 export type SearchResult = CamelCasedProperties<RawSearchResult>;
