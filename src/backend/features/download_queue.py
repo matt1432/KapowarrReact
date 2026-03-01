@@ -6,6 +6,8 @@ from os import listdir
 from os.path import basename, join
 from typing import TYPE_CHECKING, Any, Never, assert_never
 
+from libgencomics import get_annas_archive_download
+
 from backend.base.custom_exceptions import (
     ClientNotWorking,
     DownloadLimitReached,
@@ -470,12 +472,6 @@ class DownloadHandler(metaclass=Singleton):
         """
         link = str(result["link"])
 
-        LOGGER.info(
-            "Adding download for "
-            + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}: "
-            + f"{link}"
-        )
-
         if self.link_in_queue(link, result["web_sub_title"]):
             LOGGER.info("Download already in queue")
             return [], None
@@ -491,6 +487,12 @@ class DownloadHandler(metaclass=Singleton):
             ):
                 torrent_name = str(int(int(result["comics_id"]) / 1000) * 1000)
                 torrent_link = f"{Constants.LIBGEN_SITE_URL}/torrents/comics/c_{torrent_name}.torrent"
+
+                LOGGER.info(
+                    "Adding download for "
+                    + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}: "
+                    + f"{torrent_link}"
+                )
 
                 downloads.append(
                     TorrentDownload(
@@ -513,10 +515,56 @@ class DownloadHandler(metaclass=Singleton):
                         extension=result.get("extension", None),
                     )
                 )
-
-                # TODO: handle anna's archive selected_source
-            else:
+            elif (
+                result["selected_source"] == DownloadSource.ANNAS_ARCHIVE.value
+            ):
                 download_link = link.replace("file.php", "get.php")
+
+                LOGGER.info(
+                    "Adding download for "
+                    + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}: "
+                    + f"{download_link}"
+                )
+
+                downloads.append(
+                    DirectDownload(
+                        download_link=download_link,
+                        volume_id=volume_id,
+                        covered_issues=result.get("issue_number", None),
+                        source_type=DownloadSource.LIBGENPLUS,
+                        source_name="Libgen+",
+                        web_link=link,
+                        web_title=None,
+                        web_sub_title=None,
+                        releaser=result.get("releaser", None),
+                        scan_type=result.get("scan_type", None),
+                        resolution=result.get("resolution", None),
+                        dpi=result.get("dpi", None),
+                        extension=result.get("extension", None),
+                        forced_match=force_match,
+                    )
+                )
+            else:
+                download_link = await get_annas_archive_download(
+                    md5=result["md5"],
+                    annas_archive_site_url=Constants.ANNAS_ARCHIVE_SITE_URL,
+                    flaresolverr_url=self.settings.sv.flaresolverr_base_url
+                    + Constants.FS_API_BASE,
+                )
+                LOGGER.info(download_link)
+
+                if download_link is None:
+                    LOGGER.info(
+                        "Getting Anna's Archive download failed for "
+                        + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}"
+                    )
+                    return [], EnqueuingDownloadFailureReason.LINK_BROKEN
+
+                LOGGER.info(
+                    "Adding download for "
+                    + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}: "
+                    + f"{download_link}"
+                )
 
                 downloads.append(
                     DirectDownload(
@@ -538,6 +586,12 @@ class DownloadHandler(metaclass=Singleton):
                 )
 
         if link_type == "gc":
+            LOGGER.info(
+                "Adding download for "
+                + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}: "
+                + f"{link}"
+            )
+
             gcp = GetComicsPage(link)
 
             try:

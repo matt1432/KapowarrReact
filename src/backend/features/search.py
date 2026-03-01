@@ -191,6 +191,14 @@ class SearchLibgenPlus(SearchSource):
         if filename:
             efd = extract_filename_data(filename)
 
+            download_sources = [
+                DownloadSource.LIBGENPLUS.value,
+                DownloadSource.LIBGENPLUS_TORRENT.value,
+            ]
+
+            if Settings().sv.flaresolverr_base_url:
+                download_sources.append(DownloadSource.ANNAS_ARCHIVE.value)
+
             results.append(
                 SearchResultData(
                     series=volume_data.title,
@@ -216,10 +224,7 @@ class SearchLibgenPlus(SearchSource):
                     else None,
                     md5=file_result.get("md5"),
                     web_sub_title=None,
-                    download_sources=[
-                        DownloadSource.LIBGENPLUS.value,
-                        DownloadSource.LIBGENPLUS_TORRENT.value,
-                    ],
+                    download_sources=download_sources,
                     selected_source=None,
                 )
             )
@@ -308,6 +313,14 @@ class SearchLibgenPlus(SearchSource):
 
             efd = extract_filename_data(filename)
 
+            download_sources = [
+                DownloadSource.LIBGENPLUS.value,
+                DownloadSource.LIBGENPLUS_TORRENT.value,
+            ]
+
+            if Settings().sv.flaresolverr_base_url:
+                download_sources.append(DownloadSource.ANNAS_ARCHIVE.value)
+
             results.append(
                 SearchResultData(
                     series=issue.series.title or "" if issue else efd["series"],
@@ -333,10 +346,7 @@ class SearchLibgenPlus(SearchSource):
                     else None,
                     md5=file_result.get("md5"),
                     web_sub_title=None,
-                    download_sources=[
-                        DownloadSource.LIBGENPLUS.value,
-                        DownloadSource.LIBGENPLUS_TORRENT.value,
-                    ],
+                    download_sources=download_sources,
                     selected_source=None,
                 )
             )
