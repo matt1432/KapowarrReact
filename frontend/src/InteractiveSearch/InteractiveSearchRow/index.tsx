@@ -9,7 +9,6 @@ import { useGetSettingsQuery } from 'Store/Api/Settings';
 
 // Misc
 import { icons, kinds, tooltipPositions } from 'Helpers/Props';
-import { getErrorMessage } from 'Utilities/Object/error';
 
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
@@ -41,6 +40,7 @@ import Menu from 'Components/Menu/Menu';
 import IconButton from 'Components/Link/IconButton';
 import MenuContent from 'Components/Menu/MenuContent';
 import SelectedMenuItem from 'Components/Menu/SelectedMenuItem';
+import { getErrorMessage } from 'Utilities/Object/error';
 
 interface InteractiveSearchRowProps {
     columns: Column<InteractiveSearchColumnName>[];
@@ -181,15 +181,24 @@ export default function InteractiveSearchRow({
         }
     }
 
-    const [
-        grabRelease,
-        {
-            isLoading: isGrabbing,
-            isSuccess: isGrabbed,
-            isError,
-            error: grabError,
-        },
-    ] = useAddDownloadMutation();
+    const [grabRelease, { isGrabbing, isGrabbed, isError, errorMessage }] =
+        useAddDownloadMutation({
+            selectFromResult: ({
+                isLoading: isGrabbing,
+                isSuccess,
+                isError: _isError,
+                data,
+                error,
+            }) => {
+                const isError = _isError || (data?.failReason ?? null) !== null;
+                return {
+                    isGrabbing,
+                    isGrabbed: isSuccess && !isError,
+                    isError,
+                    errorMessage: data?.failReason ?? getErrorMessage(error),
+                };
+            },
+        });
 
     const onGrabPress = useCallback(
         (forceMatch = false) => {
@@ -493,7 +502,7 @@ export default function InteractiveSearchRow({
                                     isGrabbing,
                                     isGrabbed,
                                     isError,
-                                    getErrorMessage(grabError),
+                                    errorMessage,
                                 )}
                                 isSpinning={isGrabbing}
                                 onPress={onGrabPressWrapper}

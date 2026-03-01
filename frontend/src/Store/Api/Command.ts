@@ -62,6 +62,12 @@ export type AddDownloadParams = ManualSearchParams & {
     forceMatch?: boolean;
 };
 
+export interface RawAddDownloadResult {
+    result: object[];
+    fail_reason: string | null;
+}
+export type AddDownloadResult = CamelCasedPropertiesDeep<RawAddDownloadResult>;
+
 // IMPLEMENTATIONS
 
 const extendedApi = baseApi.injectEndpoints({
@@ -103,7 +109,7 @@ const extendedApi = baseApi.injectEndpoints({
                 camelize(response.result),
         }),
 
-        addDownload: build.mutation<void, AddDownloadParams>({
+        addDownload: build.mutation<AddDownloadResult, AddDownloadParams>({
             query: ({ issueId, volumeId, result, forceMatch = false }) => ({
                 method: 'POST',
                 url:
@@ -116,6 +122,9 @@ const extendedApi = baseApi.injectEndpoints({
                     forceMatch,
                 },
             }),
+
+            transformResponse: (response: { result: RawAddDownloadResult }) =>
+                camelize(response.result),
         }),
 
         massEdit: build.mutation<void, MassEditParams>({
