@@ -299,7 +299,7 @@ export default function InteractiveSearchRow({
     );
 
     const handleSelectedSourceChange = useCallback(
-        ({ value }: InputChanged<string, DownloadSource | null>) => {
+        (value: DownloadSource | null) => {
             setSelectedSource(value);
         },
         [],
@@ -473,7 +473,9 @@ export default function InteractiveSearchRow({
                                 <MenuContent>
                                     <SelectedMenuItem
                                         isSelected={selectedSource === null}
-                                        onPress={handleSelectedSourceChange}
+                                        onPress={() => {
+                                            handleSelectedSourceChange(null);
+                                        }}
                                     >
                                         Auto
                                     </SelectedMenuItem>
@@ -483,7 +485,11 @@ export default function InteractiveSearchRow({
                                             isSelected={
                                                 source === selectedSource
                                             }
-                                            onPress={handleSelectedSourceChange}
+                                            onPress={() => {
+                                                handleSelectedSourceChange(
+                                                    source,
+                                                );
+                                            }}
                                         >
                                             {source}
                                         </SelectedMenuItem>
