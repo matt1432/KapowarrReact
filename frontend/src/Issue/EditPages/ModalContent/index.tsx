@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useMemo, useRef, useState, type RefObject } from 'react';
+import { useCallback, useRef, useState, type RefObject } from 'react';
 
 import {
     useListRef,
@@ -282,17 +282,6 @@ export default function EditPagesModalContent({
     const [updateBookPages, { isLoading: isSaving, error: saveError }] =
         useUpdateBookPagesMutation();
 
-    const canSave = useMemo(
-        () =>
-            changes &&
-            JSON.stringify(
-                thumbnails?.toSorted((a, b) =>
-                    a.newFilename.localeCompare(b.newFilename),
-                ),
-            ) !== JSON.stringify(changes),
-        [changes, thumbnails],
-    );
-
     const handleSavePress = useCallback(() => {
         if (!changes) {
             return;
@@ -451,7 +440,6 @@ export default function EditPagesModalContent({
                     error={saveError}
                     isSpinning={isSaving}
                     onPress={handleSavePress}
-                    isDisabled={!canSave}
                 >
                     {translate('Save')}
                 </SpinnerErrorButton>
