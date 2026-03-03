@@ -221,7 +221,7 @@ def update_issue_pages(file_id: int, new_pages: list[ThumbnailData]) -> None:
                 if basename(f) == page["current_filename"]:
                     zip.write(
                         filename=join(archive_folder, f),
-                        arcname=join(page["folder_name"], page["new_filename"]),
+                        arcname=page["new_filename"],
                     )
                     break
 
