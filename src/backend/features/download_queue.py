@@ -518,7 +518,19 @@ class DownloadHandler(metaclass=Singleton):
             elif (
                 result["selected_source"] == DownloadSource.ANNAS_ARCHIVE.value
             ):
-                download_link = link.replace("file.php", "get.php")
+                download_link = await get_annas_archive_download(
+                    md5=result["md5"],
+                    annas_archive_site_url=Constants.ANNAS_ARCHIVE_SITE_URL,
+                    flaresolverr_url=self.settings.sv.flaresolverr_base_url
+                    + Constants.FS_API_BASE,
+                )
+
+                if download_link is None:
+                    LOGGER.info(
+                        "Getting Anna's Archive download failed for "
+                        + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}"
+                    )
+                    return [], EnqueuingDownloadFailureReason.LINK_BROKEN
 
                 LOGGER.info(
                     "Adding download for "
@@ -545,20 +557,7 @@ class DownloadHandler(metaclass=Singleton):
                     )
                 )
             else:
-                download_link = await get_annas_archive_download(
-                    md5=result["md5"],
-                    annas_archive_site_url=Constants.ANNAS_ARCHIVE_SITE_URL,
-                    flaresolverr_url=self.settings.sv.flaresolverr_base_url
-                    + Constants.FS_API_BASE,
-                )
-                LOGGER.info(download_link)
-
-                if download_link is None:
-                    LOGGER.info(
-                        "Getting Anna's Archive download failed for "
-                        + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}"
-                    )
-                    return [], EnqueuingDownloadFailureReason.LINK_BROKEN
+                download_link = link.replace("file.php", "get.php")
 
                 LOGGER.info(
                     "Adding download for "
