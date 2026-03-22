@@ -20,6 +20,7 @@ from backend.internals.settings import Settings
 def _main(
     start_type: StartType,
     db_folder: str | None = None,
+    td_folder: str | None = None,
     log_folder: str | None = None,
     log_file: str | None = None,
     host: str | None = None,
@@ -33,6 +34,10 @@ def _main(
 
         db_folder (str | None, optional): The folder in which the database
         will be stored or in which a database is for Kapowarr to use.
+            Defaults to None.
+
+        td_folder (Union[str, None], optional): The folder that direct downloads 
+        temporarily get downloaded to before being moved to the correct location.
             Defaults to None.
 
         log_folder (str | None, optional): The folder in which the logs
@@ -91,6 +96,12 @@ def _main(
                 s.update({"url_base": url_base})
             except InvalidKeyValue:
                 raise ValueError("Invalid url base value")
+
+        if td_folder is not None:
+            try:
+                s.update({"download_folder": td_folder})
+            except InvalidKeyValue:
+                raise ValueError("Invalid temp downloads folder value")
 
         settings = s.get_settings()
 
@@ -207,6 +218,11 @@ def main() -> None:
             help="The folder in which the logs from Kapowarr will be stored",
         )
         fs.add_argument(
+            '-t', '--TempDownloadFolder',
+            type=str,
+            help="The folder that direct downloads temporarily get downloaded to before being moved to the correct location"
+        ) 
+        fs.add_argument(
             "-f",
             "--LogFile",
             type=str,
@@ -234,6 +250,7 @@ def main() -> None:
         )
 
         db_folder: str | None = args.DatabaseFolder
+        td_folder: str | None = args.TempDownloadFolder
         log_folder: str | None = args.LogFolder
         log_file: str | None = args.LogFile
         host: str | None = None
@@ -249,6 +266,7 @@ def main() -> None:
             _main(
                 start_type=st,
                 db_folder=db_folder,
+                td_folder=td_folder,
                 log_folder=log_folder,
                 log_file=log_file,
                 host=host,
