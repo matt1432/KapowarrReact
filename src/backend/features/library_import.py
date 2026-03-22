@@ -4,6 +4,7 @@ from itertools import chain
 from os.path import abspath, basename, dirname, isfile, join, splitext
 
 from backend.base.custom_exceptions import (
+    CVRateLimitReached,
     InvalidKeyValue,
     VolumeAlreadyAdded,
 )
@@ -290,6 +291,10 @@ def import_library(
             volume_already_added = True
             volume_id = e.volume_id
 
+        except CVRateLimitReached:
+            # Hit rate limit so can't add any volumes anymore
+            break
+
         if rename_files or volume_already_added:
             # Move files not already in the volume folder into the volume folder
             # Put files in volume folder
@@ -300,8 +305,8 @@ def import_library(
                 file_changes = {
                     f: (
                         join(vf, basename(f))
-                        if not folder_is_inside_folder(vf, f) else
-                        f
+                        if not folder_is_inside_folder(vf, f)
+                        else f
                     )
                     for f in files
                 }

@@ -1226,10 +1226,14 @@ class Library:
         Returns:
             bool: The volume ID with the given CV ID, or `None` if not found.
         """
-        return get_db().execute(
-            "SELECT id FROM volumes WHERE comicvine_id = ? LIMIT 1;",
-            (comicvine_id,)
-        ).exists()
+        return (
+            get_db()
+            .execute(
+                "SELECT id FROM volumes WHERE comicvine_id = ? LIMIT 1;",
+                (comicvine_id,),
+            )
+            .exists()
+        )
 
     @classmethod
     def add(
