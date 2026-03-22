@@ -29,7 +29,10 @@ from backend.base.definitions import (
     SearchResultData,
     SpecialVersion,
 )
-from backend.base.file_extraction import extract_filename_data
+from backend.base.file_extraction import (
+    extract_filename_data,
+    refine_special_version,
+)
 from backend.base.helpers import (
     AsyncSession,
     check_overlapping_issues,
@@ -444,49 +447,13 @@ def _create_link_paths(
             continue
 
         # Group matches/contains what is desired to be downloaded
-        if volume_data.special_version == SpecialVersion.VOLUME_AS_ISSUE and (
-            group["info"]["special_version"]
-            in (SpecialVersion.TPB, SpecialVersion.OMNIBUS)
-            or isinstance(group["info"]["volume_number"], tuple)
-        ):
-            if isinstance(group["info"]["volume_number"], tuple):
-                group["info"]["issue_number"] = (
-                    float(group["info"]["volume_number"][0]),
-                    float(group["info"]["volume_number"][1]),
-                )
-
-            elif isinstance(group["info"]["volume_number"], int):
-                group["info"]["issue_number"] = float(
-                    group["info"]["volume_number"]
-                )
-
-            group["info"]["volume_number"] = volume_data.volume_number
-            group["info"]["special_version"] = (
-                SpecialVersion.VOLUME_AS_ISSUE.value
-            )
-
-        if (
-            group["info"]["special_version"] is not None
-            and group["info"]["special_version"]
-            != SpecialVersion.VOLUME_AS_ISSUE
-            and volume_data.special_version
-            in (
-                SpecialVersion.HARD_COVER,
-                SpecialVersion.ONE_SHOT,
-                SpecialVersion.OMNIBUS,
-            )
-        ):
-            group["info"]["special_version"] = volume_data.special_version.value
+        group["info"] = refine_special_version(volume_data, group["info"])
 
         if force_match:
             # Add all to the same group
             link_paths[0].append(group)
 
-        elif (
-            group["info"]["special_version"] is not None
-            and group["info"]["special_version"]
-            != SpecialVersion.VOLUME_AS_ISSUE
-        ):
+        elif group["info"]["special_version"] != SpecialVersion.NORMAL:
             link_paths.append([group])
 
         else:
@@ -494,9 +461,9 @@ def _create_link_paths(
             # a link that already covers this one
             for path in link_paths:
                 for entry in path:
-                    if entry["info"]["special_version"] not in (
-                        SpecialVersion.NORMAL,
-                        SpecialVersion.VOLUME_AS_ISSUE,
+                    if (
+                        entry["info"]["special_version"]
+                        != SpecialVersion.NORMAL
                     ):
                         break
 

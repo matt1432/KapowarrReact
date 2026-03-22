@@ -13,7 +13,10 @@ from backend.base.definitions import (
     SpecialVersion,
     VolumeData,
 )
-from backend.base.file_extraction import extract_filename_data
+from backend.base.file_extraction import (
+    extract_filename_data,
+    refine_special_version,
+)
 from backend.base.helpers import (
     AsyncSession,
     check_overlapping_issues,
@@ -565,7 +568,8 @@ def auto_search(
     """
     volume = Volume(volume_id)
     volume_data = volume.get_data()
-    special_version = volume_data.special_version
+    volume_issues = volume.get_issues(_skip_files=True)
+    volume_issues.sort(key=lambda i: i.calculated_issue_number)
     LOGGER.info(
         "Starting auto search for volume %d %s",
         volume_id,
@@ -600,9 +604,9 @@ def auto_search(
         r for r in manual_search(volume_id, issue_id) if r["match"]
     ]
 
-    if issue_id is not None or (
-        special_version.value is not None
-        and special_version != SpecialVersion.VOLUME_AS_ISSUE
+    if issue_id is not None or volume_data.special_version not in (
+        SpecialVersion.NORMAL,
+        SpecialVersion.VOLUME_AS_ISSUE,
     ):
         # We're searching for one "item", so just grab first search result.
         issue_result = search_results[:1] if search_results else []
@@ -614,50 +618,27 @@ def auto_search(
     chosen_downloads: list[MatchedSearchResultData] = []
     searchable_issue_numbers = {i[1] for i in searchable_issues}
     for result in search_results:
+        result = refine_special_version(volume_data, result)
         if not Settings().sv.auto_search_torrents:
             result["comics_id"] = None
 
         # Determine what issues the result covers
-        if result["issue_number"] is not None:
-            # Normal issue, VAS with issue number,
-            # OS/HC/Omnibus using issue 1
-            result["_issue_number"] = result["issue_number"]
-            covered_issues = volume.get_issues_in_range(
-                *force_range(result["issue_number"])
-            )
+        if result["special_version"]:
+            result["issue_number"] = 1.0
+            covered_issues = volume_issues
 
-        elif (
-            special_version == SpecialVersion.VOLUME_AS_ISSUE
-            and result["special_version"] == SpecialVersion.TPB
-        ):
-            # VAS with volume number
-            if result["volume_number"] is None:
-                continue
+        elif result["issue_number"] is not None:
+            if isinstance(result["issue_number"], tuple):
+                n_start, n_end = result["issue_number"]
 
-            if isinstance(result["volume_number"], tuple):
-                result["_issue_number"] = (
-                    float(result["volume_number"][0]),
-                    float(result["volume_number"][1]),
-                )
             else:
-                result["_issue_number"] = float(result["volume_number"])
+                n_start, n_end = force_range(result["issue_number"])
 
-            covered_issues = volume.get_issues_in_range(
-                *force_range(result["volume_number"])
-            )
-
-        elif special_version in (
-            SpecialVersion.ONE_SHOT,
-            SpecialVersion.HARD_COVER,
-            SpecialVersion.TPB,
-            SpecialVersion.OMNIBUS,
-        ) and result["special_version"] in (
-            special_version,
-            SpecialVersion.TPB,
-        ):
-            # OS/HC/Omnibus using no issue number, TPB
-            result["_issue_number"] = 1.0
-            covered_issues = volume.get_issues()
+            covered_issues = [
+                issue
+                for issue in volume_issues
+                if n_start <= issue.calculated_issue_number <= n_end
+            ]
 
         else:
             continue
@@ -672,7 +653,8 @@ def auto_search(
         # Check that any other selected download doesn't already cover the issue
         for part in chosen_downloads:
             if check_overlapping_issues(
-                part.get("_issue_number", 0.0), result["_issue_number"]
+                part["issue_number"],  # pyright: ignore
+                result["issue_number"],
             ):
                 break
         else:
@@ -685,7 +667,7 @@ def auto_search(
         i
         for i in searchable_issues
         if not any(
-            check_overlapping_issues(i[1], part.get("_issue_number", 0.0))
+            check_overlapping_issues(i[1], part["issue_number"])  # pyright: ignore
             for part in chosen_downloads
         )
     ]
