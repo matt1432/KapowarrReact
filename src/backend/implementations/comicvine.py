@@ -252,7 +252,7 @@ class ComicVine:
             already_added=None,  # Only used when searching
             issues=None,  # Only used for certain fetches
             folder_name=generate_volume_folder_name(
-                VolumeData(
+                volume_data=VolumeData(
                     id=-1,
                     comicvine_id=volume_data.id,
                     libgen_series_id=None,

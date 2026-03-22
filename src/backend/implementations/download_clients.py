@@ -292,10 +292,9 @@ class BaseDirectDownload(Download):
 
             if settings.rename_downloaded_files:
                 self._filename_body = generate_issue_name(
-                    volume_id,
-                    volume.vd.special_version,
-                    covered_issues,
-                    FileExtraInfo(
+                    volume_data=volume.get_data(),
+                    calculated_issue_number=covered_issues,
+                    file_data=FileExtraInfo(
                         releaser=releaser,
                         scan_type=scan_type,
                         resolution=resolution,
@@ -745,10 +744,9 @@ class MegaDownload(BaseDirectDownload):
 
             if settings.rename_downloaded_files:
                 self._filename_body = generate_issue_name(
-                    volume_id,
-                    volume.vd.special_version,
-                    covered_issues,
-                    FileExtraInfo(
+                    volume_data=volume.get_data(),
+                    calculated_issue_number=covered_issues,
+                    file_data=FileExtraInfo(
                         releaser=releaser,
                         scan_type=scan_type,
                         resolution=resolution,
@@ -932,10 +930,9 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         if settings.rename_downloaded_files:
             try:
                 self._filename_body = generate_issue_name(
-                    volume_id,
-                    volume.vd.special_version,
-                    covered_issues,
-                    FileExtraInfo(
+                    volume_data=volume.get_data(),
+                    calculated_issue_number=covered_issues,
+                    file_data=FileExtraInfo(
                         releaser=releaser,
                         scan_type=scan_type,
                         resolution=resolution,

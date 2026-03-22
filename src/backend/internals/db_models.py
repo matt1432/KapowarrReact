@@ -190,12 +190,10 @@ class FilesDB:
         return FilesDB.fetch(filepath=filepath)[0]["id"]
 
     @staticmethod
-    def update_filepaths(
-        old_filepaths: Iterable[str], new_filepaths: Iterable[str]
-    ) -> None:
+    def update_filepaths(old_to_new_mapping: dict[str, str]) -> None:
         get_db().executemany(
             "UPDATE files SET filepath = ? WHERE filepath = ?;",
-            ((new, old) for old, new in zip(old_filepaths, new_filepaths)),
+            ((new, old) for old, new in old_to_new_mapping.items()),
         )
         return
 

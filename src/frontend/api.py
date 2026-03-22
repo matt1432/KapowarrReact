@@ -790,7 +790,7 @@ def api_volumes_search() -> ApiReturn | None:
             last_cv_fetch=0,
         )
 
-        folder = generate_volume_folder_name(vd)
+        folder = generate_volume_folder_name(volume_data=vd)
         return return_api({"folder": folder})
 
 

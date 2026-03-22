@@ -394,6 +394,8 @@ SV_TO_SHORT_TERM = {
     SpecialVersion.TPB: "TPB",
     SpecialVersion.OMNIBUS: "Omnibus",
     SpecialVersion.COVER: "Cover",
+    SpecialVersion.VOLUME_AS_ISSUE: "",
+    SpecialVersion.NORMAL: "",
 }
 """
 A mapping from a SpecialVersion to a short string representing it.
@@ -406,6 +408,8 @@ SV_TO_FULL_TERM = {
     SpecialVersion.TPB: "TPB",
     SpecialVersion.OMNIBUS: "Omnibus",
     SpecialVersion.COVER: "Cover",
+    SpecialVersion.VOLUME_AS_ISSUE: "",
+    SpecialVersion.NORMAL: "",
 }
 """
 A mapping from a SpecialVersion to a full string representing it.
@@ -811,8 +815,7 @@ class BaseNamingKeys:
 
 
 @dataclass
-class SVNamingKeys(BaseNamingKeys):
-    special_version: str | None
+class ExtraFileInfoNamingKeys:
     releaser: str | None
     scan_type: str | None
     resolution: str | None
@@ -821,12 +824,22 @@ class SVNamingKeys(BaseNamingKeys):
 
 
 @dataclass
-class IssueNamingKeys(SVNamingKeys):
+class VolumeNamingKeys(BaseNamingKeys, ExtraFileInfoNamingKeys):
+    special_version: str | None
+
+
+@dataclass
+class TitlelessIssueNamingKeys(BaseNamingKeys, ExtraFileInfoNamingKeys):
     issue_comicvine_id: int
     issue_number: str | None
     issue_title: str | None
     issue_release_date: str | None
     issue_release_year: int | None
+
+
+@dataclass
+class IssueNamingKeys(TitlelessIssueNamingKeys):
+    issue_title: str | None
 
 
 class IssueFileData(FileData, FilenameData):
