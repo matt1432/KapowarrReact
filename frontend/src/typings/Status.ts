@@ -6,6 +6,8 @@ export interface RawAboutInfo {
     database_version: number;
     database_location: string;
     data_folder: string;
+    os: string;
+    runs64bit: boolean;
 }
 
 export type AboutInfo = CamelCasedProperties<RawAboutInfo>;

@@ -32,6 +32,8 @@ export default function AboutInfo() {
 | Database Version  | ${aboutInfo?.databaseVersion}
 | Database Location | ${aboutInfo?.databaseLocation}
 | Data Folder       | ${aboutInfo?.dataFolder}
+| OS                | ${aboutInfo?.os}
+| Can run 64bit     | ${aboutInfo?.runs64Bit ? translate('Yes') : translate('No')}
 
 `,
         [aboutInfo],
@@ -74,6 +76,20 @@ export default function AboutInfo() {
                 <DescriptionListItem
                     title={translate('DataFolder')}
                     data={aboutInfo?.dataFolder}
+                />
+
+                <DescriptionListItem
+                    title={translate('OS')}
+                    data={aboutInfo?.os}
+                />
+
+                <DescriptionListItem
+                    title={translate('Runs64Bit')}
+                    data={
+                        aboutInfo?.runs64Bit
+                            ? translate('Yes')
+                            : translate('No')
+                    }
                 />
             </DescriptionList>
         </FieldSet>

@@ -287,6 +287,13 @@ class BaseEnum(Enum):
         return id(self.value)
 
 
+class OSType(BaseEnum):
+    LINUX = "Linux"
+    WINDOWS = "Windows"
+    MACOS = "MacOS"
+    OTHER = "Unknown"
+
+
 class WebSocketEventType(BaseEnum):
     "The type of websocket event"
 

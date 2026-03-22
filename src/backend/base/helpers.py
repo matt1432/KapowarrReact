@@ -19,10 +19,10 @@ from collections.abc import (
 from functools import lru_cache
 from hashlib import pbkdf2_hmac
 from multiprocessing.pool import Pool
-from os import cpu_count, sep
+from os import cpu_count, environ, sep
 from os.path import basename, dirname
 from subprocess import run
-from sys import version_info
+from sys import maxsize, platform, version_info
 from threading import current_thread
 from typing import (
     TYPE_CHECKING,
@@ -40,7 +40,7 @@ from requests.structures import CaseInsensitiveDict
 from urllib3._version import __version__ as urllib3_version
 from yarl import URL
 
-from backend.base.definitions import Constants
+from backend.base.definitions import Constants, OSType
 from backend.base.logging import LOGGER, get_log_filepath
 
 if TYPE_CHECKING:
@@ -50,6 +50,43 @@ if TYPE_CHECKING:
 
 
 # region System
+@lru_cache(1)
+def get_os_type() -> OSType:
+    """Determine what the OS of the system is.
+
+    Returns:
+        OSType: The determined OS.
+    """
+    if platform.startswith("linux"):
+        return OSType.LINUX
+
+    elif platform.startswith("win"):
+        return OSType.WINDOWS
+
+    elif platform == "darwin":
+        return OSType.MACOS
+
+    return OSType.OTHER
+
+
+def can_run_64bit_executable() -> bool:
+    """Determine whether an external 64bit executable can be run.
+
+    Returns:
+        bool: Whether a 64bit executable can be run.
+    """
+    # Python must be 64-bit
+    if maxsize <= 2**32:
+        return False
+
+    # Windows-specific OS check
+    if get_os_type() == OSType.WINDOWS:
+        return "PROGRAMFILES(X86)" in environ
+
+    # Linux + macOS + Other
+    return True
+
+
 def current_thread_id() -> int:
     """Get the ID of the current thread.
 

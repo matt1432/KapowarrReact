@@ -29,7 +29,9 @@ from backend.base.files import (
 from backend.base.helpers import (
     CommaList,
     Singleton,
+    can_run_64bit_executable,
     force_suffix,
+    get_os_type,
     get_python_version,
     hash_password,
     normalise_base_url,
@@ -40,12 +42,22 @@ from backend.internals.db_migration import DatabaseMigrationHandler
 from backend.internals.server import SettingsUpdateEvent
 
 
+class System:
+    os_type = get_os_type()
+    "What the OS of the system is"
+
+    runs_64bit = can_run_64bit_executable()
+    "Whether an external 64bit executable can be run"
+
+
 class AboutData(TypedDict):
     version: str
     python_version: str
     database_version: int
     database_location: str
     data_folder: str
+    os: str
+    runs_64bit: bool
 
 
 @lru_cache(1)
@@ -62,6 +74,8 @@ def get_about_data() -> AboutData:
         database_version=DatabaseMigrationHandler.latest_db_version(),
         database_location=DBConnection.file,
         data_folder=folder_path(),
+        os=System.os_type.value,
+        runs_64bit=System.runs_64bit,
     )
 
 
