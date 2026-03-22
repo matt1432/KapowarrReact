@@ -34,7 +34,7 @@ from backend.implementations.matching import folder_extraction_filter
 from backend.implementations.naming import mass_rename
 from backend.implementations.volumes import Volume
 from backend.internals.db_models import FilesDB
-from backend.internals.settings import Settings
+from backend.internals.settings import Settings, System
 
 
 # region Helpers
@@ -141,10 +141,15 @@ class ProposedConversion:
 
 
 class ConvertersManager:
-    converters: dict[str, dict[str, FileConverter]] = {}
+    converters: dict[str, dict[str, tuple[FileConverter, bool]]] = {}
 
     @classmethod
-    def register_converter(cls, source_format: str, target_format: str):
+    def register_converter(
+        cls,
+        source_format: str,
+        target_format: str,
+        supports_32bit: bool = True
+    ):
         """Register a file converter.
 
         Args:
@@ -155,6 +160,9 @@ class ConvertersManager:
             target_format (str): The file type that it converts _to_. The value
                 is the extension in lowercase without the dot-prefix
                 (e.g. 'cbr').
+
+            supports_32bit (bool, optional): Whether the converter works on
+                32bit systems.
 
         Raises:
             RuntimeError: The file format is not recognised by Kapowarr, so it
@@ -190,9 +198,9 @@ class ConvertersManager:
                     "registered multiple times"
                 )
 
-            cls.converters.setdefault(source_format, {})[target_format] = (
-                converter
-            )
+            cls.converters.setdefault(
+                source_format, {}
+            )[target_format] = (converter, supports_32bit)
 
             return converter
 
@@ -206,10 +214,15 @@ class ConvertersManager:
         Returns:
             list[str]: The source formats.
         """
+        runs_64bit = System.runs_64bit
+
         return [
             source_format
             for source_format, target_format in cls.converters.items()
-            if "folder" in target_format
+            if (
+                'folder' in target_format
+                and (runs_64bit or target_format['folder'][1])
+            )
         ]
 
     @classmethod
@@ -236,6 +249,7 @@ class ConvertersManager:
                 format.
         """
         settings = Settings().get_settings()
+        runs_64bit = System.runs_64bit
         source_format = splitext(filepath)[1].lower().lstrip(".")
 
         if (
@@ -245,7 +259,7 @@ class ConvertersManager:
         ):
             # Extract issue files from archive
             return ProposedConversion(
-                filepath, cls.converters[source_format]["folder"], "folder"
+                filepath, cls.converters[source_format]["folder"][0], "folder"
             )
 
         for potential_format in settings.format_preference:
@@ -253,11 +267,17 @@ class ConvertersManager:
                 # File already is most desired, possible, format
                 return None
 
-            if potential_format in cls.converters[source_format]:
+            if (
+                potential_format in cls.converters[source_format]
+                and (
+                    runs_64bit
+                    or cls.converters[source_format][potential_format][1]
+                )
+            ):
                 # Found format to convert to
                 return ProposedConversion(
                     filepath,
-                    cls.converters[source_format][potential_format],
+                    cls.converters[source_format][potential_format][0],
                     potential_format,
                 )
 
@@ -273,7 +293,7 @@ def zip_to_cbz(file: str) -> list[str]:
     return [target]
 
 
-@ConvertersManager.register_converter("zip", "rar")
+@ConvertersManager.register_converter("zip", "rar", supports_32bit=False)
 def zip_to_rar(file: str) -> list[str]:
     if not try_rar():
         return []
@@ -306,7 +326,7 @@ def zip_to_rar(file: str) -> list[str]:
     return [splitext(file)[0] + ".rar"]
 
 
-@ConvertersManager.register_converter("zip", "cbr")
+@ConvertersManager.register_converter("zip", "cbr", supports_32bit=False)
 def zip_to_cbr(file: str) -> list[str]:
     rar_file = zip_to_rar(file)[0]
     if rar_file == file:
@@ -357,12 +377,12 @@ def cbz_to_zip(file: str) -> list[str]:
     return [target]
 
 
-@ConvertersManager.register_converter("cbz", "rar")
+@ConvertersManager.register_converter("cbz", "rar", supports_32bit=False)
 def cbz_to_rar(file: str) -> list[str]:
     return zip_to_rar(file)
 
 
-@ConvertersManager.register_converter("cbz", "cbr")
+@ConvertersManager.register_converter("cbz", "cbr", supports_32bit=False)
 def cbz_to_cbr(file: str) -> list[str]:
     rar_file = zip_to_rar(file)[0]
     if rar_file == file:
@@ -385,7 +405,7 @@ def rar_to_cbr(file: str) -> list[str]:
     return [target]
 
 
-@ConvertersManager.register_converter("rar", "zip")
+@ConvertersManager.register_converter("rar", "zip", supports_32bit=False)
 def rar_to_zip(file: str) -> list[str]:
     if not try_rar():
         return []
@@ -424,7 +444,7 @@ def rar_to_zip(file: str) -> list[str]:
     return [target_file]
 
 
-@ConvertersManager.register_converter("rar", "cbz")
+@ConvertersManager.register_converter("rar", "cbz", supports_32bit=False)
 def rar_to_cbz(file: str) -> list[str]:
     zip_file = rar_to_zip(file)[0]
     if zip_file == file:
@@ -434,7 +454,7 @@ def rar_to_cbz(file: str) -> list[str]:
     return cbz_file
 
 
-@ConvertersManager.register_converter("rar", "folder")
+@ConvertersManager.register_converter("rar", "folder", supports_32bit=False)
 def rar_to_folder(file: str) -> list[str]:
     if not try_rar():
         return []
@@ -484,12 +504,12 @@ def cbr_to_rar(file: str) -> list[str]:
     return [target]
 
 
-@ConvertersManager.register_converter("cbr", "zip")
+@ConvertersManager.register_converter("cbr", "zip", supports_32bit=False)
 def cbr_to_zip(file: str) -> list[str]:
     return rar_to_zip(file)
 
 
-@ConvertersManager.register_converter("cbr", "cbz")
+@ConvertersManager.register_converter("cbr", "cbz", supports_32bit=False)
 def cbr_to_cbz(file: str) -> list[str]:
     zip_file = rar_to_zip(file)[0]
     if zip_file == file:
