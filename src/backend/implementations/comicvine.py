@@ -185,11 +185,11 @@ class ComicVine:
         _cv_id = str(cv_id)
         with self.cache._connect() as conn:
             cache_keys = conn.execute(
-                "SELECT query FROM queries;",
+                "SELECT url FROM queries;",
             ).fetchall()
 
             for _key in cache_keys:
-                key: str = _key["query"]
+                key: str = _key["url"]
                 if (
                     key.startswith(Constants.CV_API_URL + "/" + endpoint)
                     and key.count(_cv_id) != 0
