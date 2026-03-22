@@ -36,7 +36,7 @@ def _main(
         will be stored or in which a database is for Kapowarr to use.
             Defaults to None.
 
-        td_folder (Union[str, None], optional): The folder that direct downloads 
+        td_folder (Union[str, None], optional): The folder that direct downloads
         temporarily get downloaded to before being moved to the correct location.
             Defaults to None.
 
@@ -218,10 +218,11 @@ def main() -> None:
             help="The folder in which the logs from Kapowarr will be stored",
         )
         fs.add_argument(
-            '-t', '--TempDownloadFolder',
+            "-t",
+            "--TempDownloadFolder",
             type=str,
-            help="The folder that direct downloads temporarily get downloaded to before being moved to the correct location"
-        ) 
+            help="The folder that direct downloads temporarily get downloaded to before being moved to the correct location",
+        )
         fs.add_argument(
             "-f",
             "--LogFile",

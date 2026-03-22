@@ -285,7 +285,7 @@ class BaseDirectDownload(Download):
 
         self._size = int(response.headers.get("Content-Length", -1))
         self._supports_range_header = (
-            response.headers.get('Accept-Ranges') == 'bytes'
+            response.headers.get("Accept-Ranges") == "bytes"
         )
 
         self._filename_body = ""
@@ -377,7 +377,7 @@ class BaseDirectDownload(Download):
         start_time = perf_counter()
         tries_left = Constants.TOTAL_RETRIES
         is_stopped = False
-        with open(self.files[0], 'wb') as f:
+        with open(self.files[0], "wb") as f:
             while tries_left > 0:
                 tries_left -= 1
                 if not self._supports_range_header:
@@ -391,7 +391,7 @@ class BaseDirectDownload(Download):
                         ):
                             if self.state in (
                                 DownloadState.CANCELED_STATE,
-                                DownloadState.SHUTDOWN_STATE
+                                DownloadState.SHUTDOWN_STATE,
                             ):
                                 is_stopped = True
                                 break
@@ -402,16 +402,14 @@ class BaseDirectDownload(Download):
                             chunk_size = len(chunk)
                             size_downloaded += chunk_size
                             self._speed = round(
-                                chunk_size / (perf_counter() - start_time),
-                                2
+                                chunk_size / (perf_counter() - start_time), 2
                             )
                             if self.size == -1:
                                 # No file size so progress is amount downloaded
                                 self._progress = size_downloaded
                             else:
                                 self._progress = round(
-                                    size_downloaded / self.size * 100,
-                                    2
+                                    size_downloaded / self.size * 100, 2
                                 )
 
                             start_time = perf_counter()
@@ -420,7 +418,6 @@ class BaseDirectDownload(Download):
                         else:
                             # Success
                             break
-
 
                         if is_stopped:
                             # Stopping download
@@ -436,11 +433,7 @@ class BaseDirectDownload(Download):
                 # Failed to download file
                 self._state = DownloadState.FAILED_STATE
 
-        if (
-            not is_stopped
-            and self.size != -1
-            and size_downloaded != self.size
-        ):
+        if not is_stopped and self.size != -1 and size_downloaded != self.size:
             # Download completed, but downloaded size is not equal
             # to reported size of file
             self._state = DownloadState.FAILED_STATE
