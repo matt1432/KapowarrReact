@@ -114,11 +114,19 @@ def propose_library_import(
         included_folders = included_folders_str.split(",")
 
         scan_folders: set[str] = set().union(
-            *(set(glob(folder, recursive=True)) for folder in included_folders)
+            *(
+                set(
+                    f
+                    for f in glob(folder, recursive=True)
+                    if not isfile(f)  # Glob pattern could match to a file
+                )
+                for folder in included_folders
+            )
         )
 
         for f in scan_folders:
             if not any(folder_is_inside_folder(r, f) for r in root_folders):
+                # Folder is not inside a root folder
                 raise InvalidKeyValue(
                     "included_folders_str", included_folders_str
                 )
