@@ -24,6 +24,7 @@ from backend.base.files import (
     list_files,
     rename_file,
 )
+from backend.base.helpers import force_suffix
 from backend.base.logging import LOGGER
 from backend.implementations.comicvine import ComicVine
 from backend.implementations.file_matching import scan_files
@@ -259,6 +260,10 @@ def import_library(
             continue
 
         lcf = common_folder(files)
+        if not rename_files and force_suffix(lcf) == root_folder.folder:
+            # Back out. Volume folder will be equal to root folder.
+            continue
+
         volume_already_added = False
 
         try:
