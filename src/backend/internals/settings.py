@@ -18,6 +18,7 @@ from backend.base.definitions import (
     BaseEnum,
     Constants,
     DateType,
+    FileDate,
     GCDownloadSource,
     SeedingHandling,
 )
@@ -119,6 +120,7 @@ class PublicSettingsValues:
     delete_empty_folders: bool = False
 
     unmonitor_deleted_issues: bool = False
+    change_file_date: FileDate = FileDate.NONE
 
     remove_ads: bool = False
     convert: bool = False
@@ -230,7 +232,7 @@ class Settings(metaclass=Singleton):
                 db_values[key] = CommaList(db_values[key])
 
             if issubclass(key_type, BaseEnum):
-                db_values[key] = key_type[value.upper()]
+                db_values[key] = key_type(value)
 
         return SettingsValues(**db_values)
 

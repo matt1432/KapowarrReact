@@ -33,6 +33,11 @@ import { useEmptyThumbnailsFolderMutation } from 'Store/Api/Settings';
 
 // IMPLEMENTATIONS
 
+const changeFileDateOptions: EnhancedSelectInputValue<string>[] = [
+    { key: '', value: translate('NoChange') },
+    { key: 'issue_release_date', value: translate('IssueReleaseDate') },
+];
+
 const issuePaddingOptions: EnhancedSelectInputValue<number>[] = [
     { key: 4, value: '000x' },
     { key: 3, value: '00x' },
@@ -236,6 +241,18 @@ export default function MediaManagement() {
                                 )}
                                 onChange={handleInputChange}
                                 value={changes.unmonitorDeletedIssues}
+                            />
+                        </FormGroup>
+
+                        <FormGroup>
+                            <FormLabel>{translate('ChangeFileDate')}</FormLabel>
+                            <FormInputGroup
+                                type={inputTypes.SELECT}
+                                name="changeFileDate"
+                                helpText={translate('ChangeFileDateHelpText')}
+                                onChange={handleInputChange}
+                                value={changes.changeFileDate ?? ''}
+                                values={changeFileDateOptions}
                             />
                         </FormGroup>
                     </FieldSet>

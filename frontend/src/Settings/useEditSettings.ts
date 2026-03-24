@@ -42,7 +42,13 @@ export default function useEditSettings() {
 
         await saveSettings(
             filterObject(
-                changes,
+                {
+                    ...changes,
+                    changeFileDate:
+                        changes.changeFileDate === ''
+                            ? null
+                            : changes.changeFileDate,
+                },
                 ([key, value]) =>
                     key !== 'apiKey' &&
                     value !== settings?.[key as keyof typeof changes],

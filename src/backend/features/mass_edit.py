@@ -167,7 +167,7 @@ class MassEditorConvert(MassEditorAction):
                 )
             )
 
-            mass_convert(volume_id)
+            mass_convert(volume_id=volume_id)
 
         return
 

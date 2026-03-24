@@ -98,6 +98,7 @@
     "InvalidKeyValue": "The value of a key is invalid",
     "InvalidSettingModification": "The setting is not allowed to be changed this way",
     "IssueNotFound": "Issue with given ID not found",
+    "IssueReleaseDate": "Issue Release Date",
     "KeyNotFound": "A key was not found in the input that is required to be given",
     "RootFolderInUse": "A root folder with the given ID is requested to be deleted but is used by a volume",
     "RootFolderInvalid": "The root folder is a parent or child of an existing root folder, which is not allowed",

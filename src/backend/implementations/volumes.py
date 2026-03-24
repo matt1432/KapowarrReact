@@ -63,6 +63,7 @@ from backend.base.helpers import (
 from backend.base.logging import LOGGER
 from backend.implementations.comicvine import ComicVine
 from backend.implementations.file_matching import scan_files
+from backend.implementations.file_processing import mass_process_files
 from backend.implementations.marvel_meta import get_marvel_issues
 from backend.implementations.matching import match_title
 from backend.implementations.root_folders import RootFolders
@@ -890,6 +891,8 @@ class Volume:
         if Settings().sv.create_empty_volume_folders:
             create_folder(new_folder)
 
+        mass_process_files(self.id)
+
         return
 
     def change_volume_folder(
@@ -965,6 +968,8 @@ class Volume:
             # Current volume folder is not also used by another volume,
             # so we can delete it if empty.
             delete_empty_parent_folders(current_volume_folder, root_folder)
+
+        mass_process_files(self.id)
 
         return
 
@@ -1416,6 +1421,8 @@ class Library:
                 scan_files(volume_id)
 
             volume.apply_monitor_scheme(monitor_scheme)
+
+            mass_process_files(volume_id)
 
         if auto_search:
             from backend.features.tasks import AutoSearchVolume, TaskHandler

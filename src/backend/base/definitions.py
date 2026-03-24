@@ -338,6 +338,16 @@ class StartType(BaseEnum):
     "A restart because changes to the hosting settings were made"
 
 
+class FileDate(BaseEnum):
+    "What to set the date of the issue file to"
+
+    NONE = None
+    "Don't change"
+
+    ISSUE_RELEASE_DATE = "issue_release_date"
+    "Set to the date the issue was released"
+
+
 class GeneralFileType(BaseEnum):
     METADATA = "metadata"
     COVER = "cover"

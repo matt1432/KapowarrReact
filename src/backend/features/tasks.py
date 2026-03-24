@@ -229,8 +229,8 @@ class MassConvertIssue(Task):
         WebSocket().emit(TaskStatusEvent(self.message))
 
         mass_convert(
-            self._volume_id,
-            self._issue_id,
+            volume_id=self._volume_id,
+            issue_id=self._issue_id,
             filepath_filter=self.filepath_filter,
             update_websocket_progress=True,
             update_websocket_files=True,
@@ -415,7 +415,7 @@ class MassConvertVolume(Task):
         WebSocket().emit(TaskStatusEvent(self.message))
 
         mass_convert(
-            self._volume_id,
+            volume_id=self._volume_id,
             filepath_filter=self.filepath_filter,
             update_websocket_progress=True,
             update_websocket_files=True,

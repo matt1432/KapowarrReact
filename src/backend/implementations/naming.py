@@ -48,6 +48,7 @@ from backend.base.helpers import (
     force_range,
 )
 from backend.base.logging import LOGGER
+from backend.implementations.file_processing import mass_process_files
 from backend.implementations.matching import file_importing_filter, match_title
 from backend.implementations.root_folders import RootFolders
 from backend.implementations.volumes import Issue, Volume
@@ -965,6 +966,7 @@ def mass_rename(
     issue_id: int | None = None,
     filepath_filter: list[str] | None = None,
     update_websocket: bool = False,
+    process_individual_files: bool = True,
 ) -> list[str]:
     """Rename files so that they follow the naming formats.
 
@@ -972,16 +974,20 @@ def mass_rename(
         volume_id (int): The ID of the volume for which to rename.
 
         issue_id (Union[int, None], optional): The ID of the issue for which
-        to rename.
+            to rename.
             Defaults to None.
 
         filepath_filter (Union[List[str], None], optional): Only rename files
-        that are in the list.
+            that are in the list.
             Defaults to None.
 
         update_websocket (bool, optional): Send task progress updates over
-        the websocket.
+            the websocket.
             Defaults to False.
+
+        process_individual_files (bool, optional): Set the ownership,
+            permissions and date for all folders and/or files after renaming.
+            Defaults to True.
 
     Returns:
         List[str]: The new filenames, only of files that have been be renamed.
@@ -1022,6 +1028,11 @@ def mass_rename(
     if renames:
         delete_empty_child_folders(volume_data.folder, skip_hidden_folders=True)
         delete_empty_parent_folders(volume_data.folder, root_folder)
+
+        if process_individual_files:
+            mass_process_files(
+                volume_id, issue_id, filepath_filter=list(renames.values())
+            )
 
     LOGGER.info(
         "Renamed volume %d %s",
