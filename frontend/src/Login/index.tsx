@@ -26,11 +26,19 @@ import type { InputChanged } from 'typings/Inputs';
 // IMPLEMENTATIONS
 
 export default function LoginPage() {
-    const { getApiKey, isLoading, isInvalidPassword } = useApiKey();
+    const { getApiKey, isLoading, isInvalid } = useApiKey();
 
+    const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
 
-    const onInputChange = useCallback(
+    const onUsernameChange = useCallback(
+        ({ value }: InputChanged<string, string>) => {
+            setUsername(value);
+        },
+        [setUsername],
+    );
+
+    const onPasswordChange = useCallback(
         ({ value }: InputChanged<string, string>) => {
             setPassword(value);
         },
@@ -38,8 +46,8 @@ export default function LoginPage() {
     );
 
     const onPress = useCallback(() => {
-        getApiKey({ password });
-    }, [getApiKey, password]);
+        getApiKey({ username, password });
+    }, [getApiKey, username, password]);
 
     return (
         <div className={styles.center}>
@@ -56,10 +64,19 @@ export default function LoginPage() {
                     <div className={styles.formGroup}>
                         <Form>
                             <FormInputGroup
+                                type={inputTypes.TEXT}
+                                name="username"
+                                placeholder={translate('Username')}
+                                onChange={onUsernameChange}
+                                value={username}
+                                onSubmit={onPress}
+                            />
+
+                            <FormInputGroup
                                 type={inputTypes.PASSWORD}
                                 name="password"
                                 placeholder={translate('Password')}
-                                onChange={onInputChange}
+                                onChange={onPasswordChange}
                                 value={password}
                                 onSubmit={onPress}
                             />
@@ -73,9 +90,9 @@ export default function LoginPage() {
                                 {translate('Login')}
                             </SpinnerButton>
 
-                            {isInvalidPassword && (
+                            {isInvalid && (
                                 <div className={styles.loginFailed}>
-                                    {translate('IncorrectPassword')}
+                                    {translate('IncorrectCredentials')}
                                 </div>
                             )}
                         </Form>

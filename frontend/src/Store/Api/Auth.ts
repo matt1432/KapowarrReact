@@ -19,7 +19,10 @@ import snakeify from 'Utilities/Object/snakeify';
 const extendedApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         // POST
-        getApiKey: build.mutation<string, { password?: string }>({
+        getApiKey: build.mutation<
+            string,
+            { username?: string; password?: string }
+        >({
             query: (body) => ({
                 method: 'POST',
                 url: 'auth',
@@ -58,7 +61,7 @@ export const useApiKey = () => {
         }
     }, [data, dispatch, lastLogin]);
 
-    const isInvalidPassword = useMemo(() => {
+    const isInvalid = useMemo(() => {
         if (!error) {
             return false;
         }
@@ -81,7 +84,7 @@ export const useApiKey = () => {
 
     return {
         getApiKey,
-        isInvalidPassword,
+        isInvalid,
         error,
         ...getApiKeyState,
     };

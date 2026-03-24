@@ -104,6 +104,17 @@ export default function GeneralSettings() {
 
                     <FieldSet legend={translate('Security')}>
                         <FormGroup>
+                            <FormLabel>{translate('Username')}</FormLabel>
+                            <FormInputGroup
+                                type={inputTypes.TEXT}
+                                name="authUsername"
+                                helpText={translate('UsernameHelpText')}
+                                onChange={handleInputChange}
+                                value={changes.authUsername}
+                            />
+                        </FormGroup>
+
+                        <FormGroup>
                             <FormLabel>{translate('Password')}</FormLabel>
                             <FormInputGroup
                                 type={inputTypes.PASSWORD}

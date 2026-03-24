@@ -145,10 +145,7 @@ class ConvertersManager:
 
     @classmethod
     def register_converter(
-        cls,
-        source_format: str,
-        target_format: str,
-        supports_32bit: bool = True
+        cls, source_format: str, target_format: str, supports_32bit: bool = True
     ):
         """Register a file converter.
 
@@ -198,9 +195,10 @@ class ConvertersManager:
                     "registered multiple times"
                 )
 
-            cls.converters.setdefault(
-                source_format, {}
-            )[target_format] = (converter, supports_32bit)
+            cls.converters.setdefault(source_format, {})[target_format] = (
+                converter,
+                supports_32bit,
+            )
 
             return converter
 
@@ -220,8 +218,8 @@ class ConvertersManager:
             source_format
             for source_format, target_format in cls.converters.items()
             if (
-                'folder' in target_format
-                and (runs_64bit or target_format['folder'][1])
+                "folder" in target_format
+                and (runs_64bit or target_format["folder"][1])
             )
         ]
 
@@ -267,12 +265,8 @@ class ConvertersManager:
                 # File already is most desired, possible, format
                 return None
 
-            if (
-                potential_format in cls.converters[source_format]
-                and (
-                    runs_64bit
-                    or cls.converters[source_format][potential_format][1]
-                )
+            if potential_format in cls.converters[source_format] and (
+                runs_64bit or cls.converters[source_format][potential_format][1]
             ):
                 # Found format to convert to
                 return ProposedConversion(

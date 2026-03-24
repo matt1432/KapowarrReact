@@ -5,6 +5,7 @@ import type { CamelCasedProperties } from 'type-fest';
 
 export interface RawSettingsValue {
     api_key: string;
+    auth_username: string;
     auth_password: string;
     auto_search_torrents: boolean;
     comicvine_api_key: string;

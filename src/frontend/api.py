@@ -27,7 +27,7 @@ from backend.base.definitions import (
     ThumbnailData,
     VolumeData,
 )
-from backend.base.helpers import hash_password
+from backend.base.helpers import hash_credential
 from backend.base.logging import LOGGER, get_log_file_contents
 from backend.features.download_queue import (
     DownloadHandler,
@@ -96,7 +96,7 @@ def return_api(
     return {"error": error, "result": result}, code
 
 
-def error_handler(method: Callable[[Any], Any]) -> Any:
+def error_handler(method: Callable) -> Any:
     """Used as decodator. Catches the errors that can occur in the endpoint and returns the correct api error"""
 
     def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -321,13 +321,19 @@ def api_auth() -> ApiReturn:
     ip = request.environ.get("HTTP_X_FORWARDED_FOR", request.remote_addr)
 
     if settings.auth_password:
-        given_password = request.get_json().get("password") or None
-        if given_password is None:
-            LOGGER.warning(f"Login attempt failed from {ip}")
-            return return_api({}, "PasswordInvalid", 401)
+        username_correct = True
+        if settings.auth_username:
+            given_username = request.get_json().get("username") or ""
+            hashed_username = hash_credential(
+                settings.auth_salt, given_username
+            )
+            username_correct = hashed_username == settings.auth_username
 
-        hashed_attempt = hash_password(settings.auth_salt, given_password)
-        if hashed_attempt != settings.auth_password:
+        given_password = request.get_json().get("password") or ""
+        hashed_password = hash_credential(settings.auth_salt, given_password)
+        password_correct = hashed_password == settings.auth_password
+
+        if not (username_correct and password_correct):
             LOGGER.warning(f"Login attempt failed from {ip}")
             return return_api({}, "PasswordInvalid", 401)
 
