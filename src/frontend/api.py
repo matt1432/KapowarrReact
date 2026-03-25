@@ -246,7 +246,7 @@ def extract_key(
     else:
         # Default value
         if key == "sort":
-            value = "title"
+            value = LibrarySorting.TITLE
 
         elif key == "filter":
             value = None
