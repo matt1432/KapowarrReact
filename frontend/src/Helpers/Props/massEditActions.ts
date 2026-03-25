@@ -9,6 +9,9 @@ const massEditActions = {
     UNMONITOR: 'unmonitor',
     MONITOR: 'monitor',
     MONITORING_SCHEME: 'monitoring_scheme',
+    FILE_DATE: 'file_date',
+    FILE_PERMISSIONS: 'file_permissions',
+    FILE_OWNERSHIP: 'file_ownership',
 } as const;
 
 export default massEditActions;

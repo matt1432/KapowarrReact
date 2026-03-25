@@ -61,6 +61,18 @@ export default function VolumeIndexSelectFooter() {
         () => massEditorStatus.remove_ads.isRunning,
         [massEditorStatus.remove_ads.isRunning],
     );
+    const isSettingFileDate = useMemo(
+        () => massEditorStatus.file_date.isRunning,
+        [massEditorStatus.file_date.isRunning],
+    );
+    const isSettingFilePermissions = useMemo(
+        () => massEditorStatus.file_permissions.isRunning,
+        [massEditorStatus.file_permissions.isRunning],
+    );
+    const isSettingFileOwnership = useMemo(
+        () => massEditorStatus.file_ownership.isRunning,
+        [massEditorStatus.file_ownership.isRunning],
+    );
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
@@ -119,6 +131,27 @@ export default function VolumeIndexSelectFooter() {
         });
     }, [runMassEditAction, volumeIds]);
 
+    const onFileDatePress = useCallback(() => {
+        runMassEditAction({
+            action: massEditActions.FILE_DATE,
+            volumeIds,
+        });
+    }, [runMassEditAction, volumeIds]);
+
+    const onFilePermissionsPress = useCallback(() => {
+        runMassEditAction({
+            action: massEditActions.FILE_PERMISSIONS,
+            volumeIds,
+        });
+    }, [runMassEditAction, volumeIds]);
+
+    const onFileOwnershipPress = useCallback(() => {
+        runMassEditAction({
+            action: massEditActions.FILE_OWNERSHIP,
+            volumeIds,
+        });
+    }, [runMassEditAction, volumeIds]);
+
     const [wasDeleting, setWasDeleting] = useState(isDeleting);
     if (isDeleting !== wasDeleting) {
         setWasDeleting(isDeleting);
@@ -164,6 +197,30 @@ export default function VolumeIndexSelectFooter() {
                         onPress={onRemoveAdsPress}
                     >
                         {translate('RemoveAds')}
+                    </SpinnerButton>
+
+                    <SpinnerButton
+                        isSpinning={isSettingFileDate}
+                        isDisabled={!anySelected || isSettingFileDate}
+                        onPress={onFileDatePress}
+                    >
+                        {translate('FileDateButton')}
+                    </SpinnerButton>
+
+                    <SpinnerButton
+                        isSpinning={isSettingFilePermissions}
+                        isDisabled={!anySelected || isSettingFilePermissions}
+                        onPress={onFilePermissionsPress}
+                    >
+                        {translate('FilePermissionsButton')}
+                    </SpinnerButton>
+
+                    <SpinnerButton
+                        isSpinning={isSettingFileOwnership}
+                        isDisabled={!anySelected || isSettingFileOwnership}
+                        onPress={onFileOwnershipPress}
+                    >
+                        {translate('FileOwnershipButton')}
                     </SpinnerButton>
                 </div>
 

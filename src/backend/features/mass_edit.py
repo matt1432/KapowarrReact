@@ -13,6 +13,11 @@ from backend.features.download_queue import DownloadHandler
 from backend.features.search import auto_search
 from backend.implementations.ad_removal import remove_ads
 from backend.implementations.conversion import mass_convert
+from backend.implementations.file_processing import (
+    mass_set_file_date,
+    mass_set_ownership,
+    mass_set_permissions,
+)
 from backend.implementations.naming import mass_rename
 from backend.implementations.root_folders import RootFolders
 from backend.implementations.volumes import Volume, refresh_and_scan
@@ -236,6 +241,75 @@ class MassEditorRemoveAds(MassEditorAction):
 
             for file in Volume(volume_id).get_all_files():
                 remove_ads(file["filepath"])
+
+        return
+
+
+class MassEditorFileDate(MassEditorAction):
+    identifier = "file_date"
+
+    def run(self, **kwargs) -> None:
+        LOGGER.info(
+            f"Using mass editor, setting the file dates of volumes: {self.volume_ids}"
+        )
+
+        ws = WebSocket()
+        total_items = len(self.volume_ids)
+
+        for item_index, volume_id in enumerate(iter_commit(self.volume_ids)):
+            ws.emit(
+                MassEditorStatusEvent(
+                    self.identifier, item_index + 1, total_items
+                )
+            )
+
+            mass_set_file_date(volume_id)
+
+        return
+
+
+class MassEditorFilePermissions(MassEditorAction):
+    identifier = "file_permissions"
+
+    def run(self, **kwargs) -> None:
+        LOGGER.info(
+            f"Using mass editor, setting the file permissions of volumes: {self.volume_ids}"
+        )
+
+        ws = WebSocket()
+        total_items = len(self.volume_ids)
+
+        for item_index, volume_id in enumerate(iter_commit(self.volume_ids)):
+            ws.emit(
+                MassEditorStatusEvent(
+                    self.identifier, item_index + 1, total_items
+                )
+            )
+
+            mass_set_permissions(volume_id)
+
+        return
+
+
+class MassEditorFileOwnership(MassEditorAction):
+    identifier = "file_ownership"
+
+    def run(self, **kwargs) -> None:
+        LOGGER.info(
+            f"Using mass editor, setting the file ownership of volumes: {self.volume_ids}"
+        )
+
+        ws = WebSocket()
+        total_items = len(self.volume_ids)
+
+        for item_index, volume_id in enumerate(iter_commit(self.volume_ids)):
+            ws.emit(
+                MassEditorStatusEvent(
+                    self.identifier, item_index + 1, total_items
+                )
+            )
+
+            mass_set_ownership(volume_id)
 
         return
 

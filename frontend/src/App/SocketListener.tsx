@@ -55,7 +55,10 @@ const ACTION_MAP = {
     [massEditActions.UNMONITOR]: { id: 56, name: icons.UNMONITORED },
     [massEditActions.REMOVE_ADS]: { id: 57, name: icons.EDIT },
     [massEditActions.ROOT_FOLDER]: { id: 58, name: icons.ROOT_FOLDER },
-    [massEditActions.MONITORING_SCHEME]: { id: 58, name: icons.MONITORED },
+    [massEditActions.MONITORING_SCHEME]: { id: 59, name: icons.MONITORED },
+    [massEditActions.FILE_DATE]: { id: 60, name: icons.CALENDAR_O },
+    [massEditActions.FILE_PERMISSIONS]: { id: 61, name: icons.MEDIA_INFO },
+    [massEditActions.FILE_OWNERSHIP]: { id: 62, name: icons.MEDIA_INFO },
 } satisfies Record<MassEditAction, { name: IconName; id: number }>;
 
 export default function SocketListener() {

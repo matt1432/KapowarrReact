@@ -79,6 +79,13 @@
     "unmonitor": "Mass Unmonitoring",
     "monitor": "Mass Monitoring",
     "monitoring_scheme": "Mass Monitor Changes",
+    "file_date": "Mass File Creation Date Changes",
+    "file_permissions": "Mass File Permissions Changes",
+    "file_ownership": "Mass File Ownership Changes",
+
+    "FileDateButton": "Update File Date",
+    "FilePermissionsButton": "Update File Permissions",
+    "FileOwnershipButton": "Update File Ownership",
 
     "BlocklistEntryNotFound": "Blocklist entry with given ID not found",
     "ClientDownloading": "The external client is desired to be deleted but there is a download using it",
