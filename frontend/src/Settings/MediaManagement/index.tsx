@@ -255,6 +255,21 @@ export default function MediaManagement() {
                                 values={changeFileDateOptions}
                             />
                         </FormGroup>
+
+                        <FormGroup>
+                            <FormLabel>{translate('ChmodFolder')}</FormLabel>
+
+                            <FormInputGroup
+                                type={inputTypes.UMASK}
+                                name="chmodFolder"
+                                helpText={translate('ChmodFolderHelpText')}
+                                helpTextWarning={translate(
+                                    'ChmodFolderHelpTextWarning',
+                                )}
+                                onChange={handleInputChange}
+                                value={changes.chmodFolder}
+                            />
+                        </FormGroup>
                     </FieldSet>
 
                     <FieldSet legend={translate('AdRemoval')}>

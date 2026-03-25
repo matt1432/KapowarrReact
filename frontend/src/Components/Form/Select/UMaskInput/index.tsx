@@ -29,6 +29,13 @@ export interface UMaskInputProps<K extends string> {
 
 const umaskOptions: EnhancedSelectInputValue<string>[] = [
     {
+        key: '',
+        get value() {
+            return translate('Disabled');
+        },
+        hint: '',
+    },
+    {
         key: '755',
         get value() {
             return translate('Umask755Description', { octal: '755' });

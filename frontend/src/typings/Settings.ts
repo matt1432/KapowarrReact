@@ -9,6 +9,7 @@ export interface RawSettingsValue {
     auth_username: string;
     auto_search_torrents: boolean;
     change_file_date: string | null;
+    chmod_folder: string;
     comicvine_api_key: string;
     concurrent_direct_downloads: number;
     convert: boolean;
