@@ -12,6 +12,8 @@ COPY . .
 RUN pip install .
 
 RUN useradd -d /app --create-home kapowarr
+RUN mkdir -p /app/db /app/logs /app/temp_downloads
+RUN chown kapowarr /app/db /app/logs /app/temp_downloads
 
 WORKDIR /app
 
@@ -20,4 +22,4 @@ USER kapowarr
 
 EXPOSE 5656
 
-CMD [ "/usr/local/bin/kapowarr-react", "-d", "/app", "-l", "/app" ]
+CMD [ "/usr/local/bin/kapowarr-react", "--DatabaseFolder", "/app/db", "--LogFolder", "/app/logs", "-t", "/app/temp_downloads" ]
