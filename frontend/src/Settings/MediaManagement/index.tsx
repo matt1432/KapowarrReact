@@ -270,6 +270,21 @@ export default function MediaManagement() {
                                 value={changes.chmodFolder}
                             />
                         </FormGroup>
+
+                        <FormGroup>
+                            <FormLabel>{translate('ChownGroup')}</FormLabel>
+
+                            <FormInputGroup
+                                type={inputTypes.TEXT}
+                                name="chownGroup"
+                                helpText={translate('ChownGroupHelpText')}
+                                helpTextWarning={translate(
+                                    'ChownGroupHelpTextWarning',
+                                )}
+                                onChange={handleInputChange}
+                                value={changes.chownGroup}
+                            />
+                        </FormGroup>
                     </FieldSet>
 
                     <FieldSet legend={translate('AdRemoval')}>
