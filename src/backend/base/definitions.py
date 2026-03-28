@@ -791,6 +791,13 @@ class GeneralFileData(FileData):
     file_type: str
 
 
+class FileMatch(TypedDict):
+    filepath: str
+    issue_ids: list[int]
+    general_file: bool
+    forced_match: bool
+
+
 # region Dataclasses
 @dataclass
 class BlocklistEntry:

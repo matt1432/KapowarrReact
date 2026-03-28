@@ -17,6 +17,7 @@ from backend.base.definitions import (
     CredentialData,
     CredentialSource,
     DownloadSource,
+    FileMatch,
     KapowarrException,
     LibraryFilter,
     LibrarySorting,
@@ -70,6 +71,10 @@ from backend.implementations.conversion import (
 from backend.implementations.converters import ConvertersManager
 from backend.implementations.credentials import Credentials
 from backend.implementations.external_clients import ExternalClients
+from backend.implementations.file_matching import (
+    get_file_matching,
+    set_file_matching,
+)
 from backend.implementations.matching import (
     parse_covered_issues,
     parse_volume_number,
@@ -281,8 +286,6 @@ def extract_key(
 # =====================
 # Authentication function and endpoints
 # =====================
-
-
 def auth(method: Callable) -> Any:
     """Used as decorator and, if applied to route, restricts the route to authorized users only"""
 
@@ -351,8 +354,6 @@ def api_auth_check() -> ApiReturn:
 # =====================
 # Tasks
 # =====================
-
-
 @api.route("/system/about", methods=["GET"])
 @error_handler
 @auth
@@ -498,8 +499,6 @@ def api_restart() -> ApiReturn:
 # =====================
 # Settings
 # =====================
-
-
 @api.route("/settings", methods=["GET", "PUT", "DELETE"])
 @error_handler
 @auth
@@ -702,8 +701,6 @@ def api_remote_mapping(id: int) -> ApiReturn | None:
 # =====================
 # Library Import
 # =====================
-
-
 @api.route("/libraryimport", methods=["GET", "POST"])
 @error_handler
 @auth
@@ -747,8 +744,6 @@ def api_library_import() -> ApiReturn | None:
 # =====================
 # Library + Volumes
 # =====================
-
-
 @api.route("/volumes/search", methods=["GET", "POST"])
 @error_handler
 @auth
@@ -992,10 +987,49 @@ def api_issues(id: int) -> ApiReturn | None:
 
 
 # =====================
+# Manual File Match
+# =====================
+@api.route("/volumes/<int:id>/manualmatch", methods=["GET", "PUT"])
+@error_handler
+@auth
+def api_manual_match(id: int):
+    Library.get_volume(id)
+
+    if request.method == "GET":
+        result = get_file_matching(id)
+        return return_api(result)
+
+    elif request.method == "PUT":
+        file_matching_changes = request.get_json()
+        if not isinstance(file_matching_changes, list):
+            raise InvalidKeyValue("body", file_matching_changes)
+
+        entry_types = FileMatch.__annotations__
+        for entry in file_matching_changes:
+            if not isinstance(entry, dict):
+                raise InvalidKeyValue("body", file_matching_changes)
+            if not all(
+                key in entry_types
+                and (
+                    (
+                        isinstance(value, list)
+                        and all(isinstance(i_id, int) for i_id in value)
+                    )
+                    if entry_types[key] == list[int]
+                    else isinstance(value, entry_types[key])
+                )
+                for key, value in entry.items()
+            ):
+                raise InvalidKeyValue("body", file_matching_changes)
+
+        set_file_matching(id, file_matching_changes)
+
+        return return_api({})
+
+
+# =====================
 # Renaming
 # =====================
-
-
 @api.route("/volumes/<int:id>/rename", methods=["GET"])
 @error_handler
 @auth
@@ -1040,8 +1074,6 @@ def api_convert_issue(id: int) -> ApiReturn:
 # =====================
 # Manual search + Download
 # =====================
-
-
 @api.route("/volumes/<int:id>/manualsearch", methods=["GET", "POST"])
 @error_handler
 @auth
@@ -1185,8 +1217,6 @@ def api_empty_download_folder() -> ApiReturn:
 # =====================
 # Blocklist
 # =====================
-
-
 @api.route("/blocklist", methods=["GET", "POST", "DELETE"])
 @error_handler
 @auth

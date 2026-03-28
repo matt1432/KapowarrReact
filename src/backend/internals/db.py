@@ -403,6 +403,7 @@ CREATE TABLE IF NOT EXISTS files(
 CREATE TABLE IF NOT EXISTS issues_files(
     file_id INTEGER NOT NULL,
     issue_id INTEGER NOT NULL,
+    forced BOOL NOT NULL DEFAULT 0,
 
     FOREIGN KEY (file_id) REFERENCES files(id)
         ON DELETE CASCADE,
@@ -418,6 +419,7 @@ CREATE TABLE IF NOT EXISTS volume_files(
     file_id INTEGER PRIMARY KEY,
     volume_id INTEGER NOT NULL,
     file_type VARCHAR(15) NOT NULL,
+    forced BOOL NOT NULL DEFAULT 0,
 
     FOREIGN KEY (volume_id) REFERENCES volumes(id)
         ON DELETE CASCADE,
