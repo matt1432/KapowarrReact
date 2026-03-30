@@ -71,6 +71,7 @@ import styles from './index.module.css';
 
 // Types
 import type { SocketEventHandler } from 'typings/Socket';
+import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
 
 interface VolumeDetailsProps {
     volumeId: number;
@@ -186,6 +187,7 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
     const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
+    const [isManageModalOpen, setIsManageModalOpen] = useState(false);
     const [isVolumeHistoryModalOpen, setIsVolumeHistoryModalOpen] =
         useState(false);
     const [isGeneralFilesModalOpen, setIsGeneralFilesModalOpen] =
@@ -212,6 +214,14 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
 
     const handleConvertModalClose = useCallback(() => {
         setIsConvertModalOpen(false);
+    }, []);
+
+    const handleManagePress = useCallback(() => {
+        setIsManageModalOpen(true);
+    }, []);
+
+    const handleManageModalClose = useCallback(() => {
+        setIsManageModalOpen(false);
     }, []);
 
     const handleVolumeHistoryPress = useCallback(() => {
@@ -372,6 +382,12 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                         iconName={icons.CONVERT}
                         isDisabled={issueFileCount === 0}
                         onPress={handleConvertPress}
+                    />
+
+                    <PageToolbarButton
+                        label={translate('ManageIssues')}
+                        iconName={icons.MANAGE}
+                        onPress={handleManagePress}
                     />
 
                     <PageToolbarButton
@@ -638,6 +654,12 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                     isOpen={isConvertModalOpen}
                     volumeId={volumeId}
                     onModalClose={handleConvertModalClose}
+                />
+
+                <InteractiveImportModal
+                    isOpen={isManageModalOpen}
+                    volumeId={volumeId}
+                    onModalClose={handleManageModalClose}
                 />
 
                 <VolumeHistoryModal

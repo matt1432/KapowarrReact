@@ -1,4 +1,5 @@
-.cell {
+.filepath {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
-    composes: link from 'Components/Link/Link/index.module.css';
+
+    word-break: break-all;
 }

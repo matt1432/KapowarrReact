@@ -21,6 +21,10 @@ import type {
 import type { RawVolumeMetadata, VolumeMetadata } from 'AddVolume/AddVolume';
 import type { SpecialVersion } from 'Helpers/Props/specialVersions';
 import type { ProposedImport, RawProposedImport } from 'typings/Search';
+import type {
+    FileMatch,
+    RawFileMatch,
+} from 'InteractiveImport/InteractiveImport';
 
 export interface AddVolumeParams {
     comicvineId: number;
@@ -109,6 +113,18 @@ const extendedApi = baseApi.injectEndpoints({
             }),
 
             transformResponse: (response: { result: RawProposedImport[] }) =>
+                camelize(response.result),
+        }),
+
+        getFilesMatching: build.query<FileMatch[], { volumeId: number }>({
+            query: ({ volumeId }) => ({
+                url: `volumes/${volumeId}/manualmatch`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+
+            transformResponse: (response: { result: RawFileMatch[] }) =>
                 camelize(response.result),
         }),
 
@@ -208,6 +224,20 @@ const extendedApi = baseApi.injectEndpoints({
             }),
         }),
 
+        setFilesMatching: build.mutation<
+            void,
+            { volumeId: number; fileMatches: FileMatch[] }
+        >({
+            query: ({ volumeId, fileMatches }) => ({
+                method: 'PUT',
+                url: `volumes/${volumeId}/manualmatch`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+                body: snakeify(fileMatches),
+            }),
+        }),
+
         // DELETE
         deleteVolume: build.mutation<void, DeleteVolumeParams>({
             query: ({ volumeId, ...body }) => ({
@@ -225,6 +255,7 @@ const extendedApi = baseApi.injectEndpoints({
 export const {
     useAddVolumeMutation,
     useDeleteVolumeMutation,
+    useGetFilesMatchingQuery,
     useGetStatsQuery,
     useGetVolumesQuery,
     useImportLibraryMutation,
@@ -236,5 +267,6 @@ export const {
     usePreviewConvertVolumeQuery,
     usePreviewRenameVolumeQuery,
     useSearchVolumeQuery,
+    useSetFilesMatchingMutation,
     useUpdateVolumeMutation,
 } = extendedApi;

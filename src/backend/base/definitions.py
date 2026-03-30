@@ -791,7 +791,9 @@ class GeneralFileData(FileData):
     file_type: str
 
 
-class FileMatch(TypedDict):
+class FileMatch(FileExtraInfo):
+    id: int
+    file_id: int | None
     filepath: str
     issue_ids: list[int]
     general_file: bool

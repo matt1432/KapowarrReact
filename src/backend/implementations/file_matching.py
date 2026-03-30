@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from collections import Counter
 from os import stat
 from os.path import basename, isdir
@@ -94,15 +95,15 @@ def scan_files(
     manually_matched_files: dict[str, int] = dict(
         cursor.execute(
             """
-        SELECT DISTINCT f.filepath, f.id
-        FROM files f
-        INNER JOIN issues_files if
-        INNER JOIN issues i
-        ON f.id = if.file_id
-            AND if.issue_id = i.id
-        WHERE i.volume_id = ?
-            AND if.forced = ?
-        """,
+                SELECT DISTINCT f.filepath, f.id
+                FROM files f
+                INNER JOIN issues_files if
+                INNER JOIN issues i
+                ON f.id = if.file_id
+                    AND if.issue_id = i.id
+                WHERE i.volume_id = ?
+                    AND if.forced = ?
+            """,
             (volume_id, True),
         )
     )
@@ -110,13 +111,13 @@ def scan_files(
     manually_matched_general_files: dict[str, int] = dict(
         cursor.execute(
             """
-        SELECT DISTINCT f.filepath, f.id
-        FROM files f
-        INNER JOIN volume_files vf
-        ON f.id = vf.file_id
-        WHERE vf.volume_id = ?
-            AND vf.forced = ?
-        """,
+                SELECT DISTINCT f.filepath, f.id
+                FROM files f
+                INNER JOIN volume_files vf
+                ON f.id = vf.file_id
+                WHERE vf.volume_id = ?
+                    AND vf.forced = ?
+            """,
             (volume_id, True),
         )
     )
@@ -223,12 +224,12 @@ def scan_files(
     current_bindings: dict[int, int] = dict(
         cursor.execute(
             """
-        SELECT if.file_id, if.issue_id
-        FROM issues_files if
-        INNER JOIN issues i
-        ON if.issue_id = i.id
-        WHERE i.volume_id = ?;
-        """,
+                SELECT if.file_id, if.issue_id
+                FROM issues_files if
+                INNER JOIN issues i
+                ON if.issue_id = i.id
+                WHERE i.volume_id = ?;
+            """,
             (volume_id,),
         )
     )
@@ -303,14 +304,14 @@ def scan_files(
     # Add bindings for general files that aren't in current bindings
     cursor.executemany(
         """
-        INSERT INTO volume_files(
-            file_id, volume_id, file_type
-        ) VALUES (
-            ?, ?, ?
-        )
-        ON CONFLICT(file_id) DO
-        UPDATE SET
-            file_type = ?;
+            INSERT INTO volume_files(
+                file_id, volume_id, file_type
+            ) VALUES (
+                ?, ?, ?
+            )
+            ON CONFLICT(file_id) DO
+            UPDATE SET
+                file_type = ?;
         """,
         (
             (file_id, volume_id, file_type, file_type)
@@ -384,10 +385,17 @@ def get_file_matching(volume_id: int) -> list[FileMatch]:
     folder_files.sort()
     current_matches: dict[str, FileMatch] = {
         filepath: {
+            "id": int(hashlib.sha256(filepath.encode()).hexdigest()[:16], 16),
+            "file_id": None,
             "filepath": filepath,
             "issue_ids": [],
             "general_file": False,
             "forced_match": False,
+            "dpi": None,
+            "notes": None,
+            "releaser": None,
+            "resolution": None,
+            "scan_type": None,
         }
         for filepath in folder_files
     }
@@ -395,43 +403,60 @@ def get_file_matching(volume_id: int) -> list[FileMatch]:
     # Update file entries with their issue matches
     cursor.execute(
         """
-        SELECT f.filepath, if.issue_id, if.forced
-        FROM files f
-        INNER JOIN issues_files if
-        INNER JOIN issues i
-        ON f.id = if.file_id
-            AND if.issue_id = i.id
-        WHERE volume_id = ?
-        ORDER BY if.issue_id;
+            SELECT f.id, f.filepath, if.issue_id, if.forced, f.dpi, f.notes, f.releaser, f.resolution, f.scan_type
+            FROM files f
+            INNER JOIN issues_files if
+            INNER JOIN issues i
+            ON f.id = if.file_id
+                AND if.issue_id = i.id
+            WHERE volume_id = ?
+            ORDER BY if.issue_id;
         """,
         (volume_id,),
     )
 
-    for filepath, issue_id, forced in cursor:
+    for (
+        id,
+        filepath,
+        issue_id,
+        forced,
+        dpi,
+        notes,
+        releaser,
+        resolution,
+        scan_type,
+    ) in cursor:
         try:
             file_match = current_matches[filepath]
         except KeyError:
             continue
+        file_match["file_id"] = id
         file_match["issue_ids"].append(issue_id)
         file_match["forced_match"] = forced
+        file_match["scan_type"] = scan_type
+        file_match["resolution"] = resolution
+        file_match["releaser"] = releaser
+        file_match["dpi"] = dpi
+        file_match["notes"] = notes
 
     # Update file entries with their general file matches
     cursor.execute(
         """
-        SELECT f.filepath, vf.forced
-        FROM files f
-        INNER JOIN volume_files vf
-        ON f.id = vf.file_id
-        WHERE vf.volume_id = ?;
+            SELECT f.id, f.filepath, vf.forced
+            FROM files f
+            INNER JOIN volume_files vf
+            ON f.id = vf.file_id
+            WHERE vf.volume_id = ?;
         """,
         (volume_id,),
     )
 
-    for filepath, forced in cursor:
+    for id, filepath, forced in cursor:
         try:
             general_match = current_matches[filepath]
         except KeyError:
             continue
+        general_match["file_id"] = id
         general_match["general_file"] = True
         general_match["forced_match"] = forced
 
@@ -461,8 +486,19 @@ def set_file_matching(volume_id: int, matches: list[FileMatch]) -> None:
         if not folder_is_inside_folder(volume_folder, file_match["filepath"]):
             continue
 
+        file_extra_info = FileExtraInfo(
+            releaser=file_match["releaser"],
+            scan_type=file_match["scan_type"],
+            resolution=file_match["resolution"],
+            dpi=file_match["dpi"],
+            notes=file_match["notes"],
+        )
+
         # Add file to database if needed; get file ID
-        file_id = FilesDB.add_file(file_match["filepath"])
+        file_id = FilesDB.add_file(file_match["filepath"], file_info=file_extra_info)
+
+        # Update extra info if file already existed
+        FilesDB.update(file_id, file_extra_info)
 
         if not file_match["forced_match"]:
             cursor.execute(
@@ -490,9 +526,9 @@ def set_file_matching(volume_id: int, matches: list[FileMatch]) -> None:
             # Remove any issue matches that aren't in the list
             cursor.execute(
                 f"""
-                DELETE FROM issues_files
-                WHERE file_id = ?
-                    AND issue_id NOT IN ({",".join(["?"] * len(file_match["issue_ids"]))})
+                    DELETE FROM issues_files
+                    WHERE file_id = ?
+                        AND issue_id NOT IN ({",".join(["?"] * len(file_match["issue_ids"]))})
                 """,
                 (file_id, *file_match["issue_ids"]),
             )
@@ -510,13 +546,13 @@ def set_file_matching(volume_id: int, matches: list[FileMatch]) -> None:
 
                 cursor.execute(
                     """
-                    INSERT INTO volume_files(
-                        file_id, volume_id, file_type, forced
-                    ) VALUES (
-                        :file_id, :volume_id, :file_type, :forced
-                    )
-                    ON CONFLICT(file_id) DO
-                    UPDATE SET forced = :forced;
+                        INSERT INTO volume_files(
+                            file_id, volume_id, file_type, forced
+                        ) VALUES (
+                            :file_id, :volume_id, :file_type, :forced
+                        )
+                        ON CONFLICT(file_id) DO
+                        UPDATE SET forced = :forced;
                     """,
                     {
                         "file_id": file_id,
@@ -544,6 +580,11 @@ def set_file_matching(volume_id: int, matches: list[FileMatch]) -> None:
                     ),
                 )
 
-    scan_files(volume_id, update_websocket=True)
+        scan_files(
+            volume_id=volume_id,
+            filepath_filter=[file_match["filepath"]],
+            file_extra_info=file_extra_info,
+            update_websocket=True,
+        )
 
     return

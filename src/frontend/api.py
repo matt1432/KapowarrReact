@@ -17,7 +17,6 @@ from backend.base.definitions import (
     CredentialData,
     CredentialSource,
     DownloadSource,
-    FileMatch,
     KapowarrException,
     LibraryFilter,
     LibrarySorting,
@@ -1004,22 +1003,8 @@ def api_manual_match(id: int):
         if not isinstance(file_matching_changes, list):
             raise InvalidKeyValue("body", file_matching_changes)
 
-        entry_types = FileMatch.__annotations__
         for entry in file_matching_changes:
             if not isinstance(entry, dict):
-                raise InvalidKeyValue("body", file_matching_changes)
-            if not all(
-                key in entry_types
-                and (
-                    (
-                        isinstance(value, list)
-                        and all(isinstance(i_id, int) for i_id in value)
-                    )
-                    if entry_types[key] == list[int]
-                    else isinstance(value, entry_types[key])
-                )
-                for key, value in entry.items()
-            ):
                 raise InvalidKeyValue("body", file_matching_changes)
 
         set_file_matching(id, file_matching_changes)

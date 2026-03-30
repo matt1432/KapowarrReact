@@ -67,6 +67,14 @@ import taskPlanning, {
 
 import volumeIndex, { type VolumeIndexColumnName } from 'Volume/Index/columns';
 
+import selectIssue, {
+    type SelectIssueColumnName,
+} from 'InteractiveImport/Issue/SelectIssueModalContent/columns';
+
+import interactiveImport, {
+    type InteractiveImportColumnName,
+} from 'InteractiveImport/Interactive/columns';
+
 export interface ColumnNameMap {
     blocklistTable: BlocklistColumnName;
     changeMatch: ChangeMatchColumnName;
@@ -75,11 +83,13 @@ export interface ColumnNameMap {
     generalFiles: GeneralFilesColumnName;
     historyTable: HistoryColumnName;
     importProposals: ProposalColumnName;
+    interactiveImport: InteractiveImportColumnName;
     interactiveSearch: InteractiveSearchColumnName;
     issueSummary: IssueSummaryColumnName;
     issueTable: IssueColumnName;
     queueTable: QueueColumnName;
     rootFolders: RootFolderColumnName;
+    selectIssue: SelectIssueColumnName;
     taskHistory: TaskHistoryColumnName;
     taskPlanning: TaskPlanningColumnName;
     volumeIndex: VolumeIndexColumnName;
@@ -133,11 +143,13 @@ export interface TableOptionsState {
     generalFiles: TableState<'generalFiles'>;
     historyTable: TableState<'historyTable'>;
     importProposals: TableState<'importProposals'>;
+    interactiveImport: TableState<'interactiveImport'>;
     interactiveSearch: TableState<'interactiveSearch'>;
     issueSummary: TableState<'issueSummary'>;
     issueTable: TableState<'issueTable'>;
     queueTable: TableState<'queueTable'>;
     rootFolders: TableState<'rootFolders'>;
+    selectIssue: TableState<'selectIssue'>;
     taskHistory: TableState<'taskHistory'>;
     taskPlanning: TableState<'taskPlanning'>;
     volumeIndex: TableState<'volumeIndex'>;
@@ -146,7 +158,7 @@ export interface TableOptionsState {
 // IMPLEMENTATIONS
 
 const initialState = {
-    sliceVersion: 4,
+    sliceVersion: 5,
 
     blocklistTable,
     changeMatch,
@@ -155,11 +167,13 @@ const initialState = {
     generalFiles,
     historyTable,
     importProposals,
+    interactiveImport,
     interactiveSearch,
     issueSummary,
     issueTable,
     queueTable,
     rootFolders,
+    selectIssue,
     taskHistory,
     taskPlanning,
     volumeIndex,
