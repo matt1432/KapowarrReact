@@ -495,7 +495,9 @@ def set_file_matching(volume_id: int, matches: list[FileMatch]) -> None:
         )
 
         # Add file to database if needed; get file ID
-        file_id = FilesDB.add_file(file_match["filepath"], file_info=file_extra_info)
+        file_id = FilesDB.add_file(
+            file_match["filepath"], file_info=file_extra_info
+        )
 
         # Update extra info if file already existed
         FilesDB.update(file_id, file_extra_info)

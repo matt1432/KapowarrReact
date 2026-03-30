@@ -36,6 +36,7 @@ from backend.base.file_extraction import (
 from backend.base.helpers import (
     AsyncSession,
     check_overlapping_issues,
+    first_of_range,
     fix_year,
     force_range,
     get_torrent_info,
@@ -110,7 +111,11 @@ def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str, str | None]]:
         if not link_el:
             continue
 
-        link = force_range(str(link_el.get("href", "")))[0]
+        anchor = title_el.find("a")
+        if not anchor:
+            continue
+
+        link: str = first_of_range(anchor.get("href") or "")
         title = title_el.get_text(strip=True)
 
         size: str | None = None
@@ -256,7 +261,7 @@ def __extract_button_links(
                 link_title = group_link.text.strip().lower()
                 if group_link.get("href") is None:
                     continue
-                href = force_range(str(group_link.get("href", "")))[0]
+                href: str = first_of_range(group_link.get("href") or "")
                 if not href:
                     continue
 
@@ -321,7 +326,7 @@ def __extract_list_links(
             if group_link.get("href") is None:
                 continue
             link_title = group_link.text.strip().lower()
-            href = force_range(str(group_link.get("href", "")))[0]
+            href: str = first_of_range(group_link.get("href") or "")
             if not href:
                 continue
 

@@ -505,11 +505,13 @@ class MediaFireDownload(BaseDirectDownload):
         if not isinstance(button, Tag):
             raise LinkBroken(self.download_link)
 
-        if str(button["href"]).startswith("http"):
+        href: str = first_of_range(button["href"])
+        data_scrambled_url: str = first_of_range(button["data-scrambled-url"])
+        if href.startswith("http"):
             return first_of_range(button["href"])
 
-        elif button["data-scrambled-url"]:
-            return b64decode(str(button["data-scrambled-url"])).decode("utf-8")
+        elif data_scrambled_url:
+            return b64decode(data_scrambled_url).decode("utf-8")
 
         else:
             raise LinkBroken(self.download_link)

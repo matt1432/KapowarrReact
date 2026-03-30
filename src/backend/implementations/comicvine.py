@@ -46,6 +46,7 @@ from backend.base.files import folder_path
 from backend.base.helpers import (
     AsyncSession,
     batched,
+    first_of_range,
     force_range,
     normalise_string,
     to_number_cv_id,
@@ -141,11 +142,11 @@ def _clean_description(description: str, short: bool = False) -> str:
             k: v for k, v in link.attrs.items() if not k.startswith("data-")
         }
         link["target"] = "_blank"
-        link["href"] = str(link.attrs.get("href", "")).lstrip(".").lstrip("/")
-        if not str(link.attrs.get("href", "http")).startswith("http"):
-            link["href"] = (
-                Constants.CV_SITE_URL + "/" + str(link.attrs.get("href", ""))
-            )
+        href: str = first_of_range(link.attrs.get("href", ""))
+        href = href.lstrip(".").lstrip("/")
+        link["href"] = href
+        if href and not href.startswith("http"):
+            link["href"] = Constants.CV_SITE_URL + "/" + href
 
     result = str(soup)
     return result
