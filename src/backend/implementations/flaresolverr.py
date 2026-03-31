@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from asyncio import Semaphore
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any
 
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 
 
 class FlareSolverr:
+    session_semaphore = Semaphore(Constants.MAX_CONCURRENT_FS_SESSIONS)
     cookie_mapping: dict[str, dict[str, str]] = {}
     ua_mapping: dict[str, str] = {}
 
@@ -209,29 +211,30 @@ class FlareSolverr:
             return
 
         # Start session
-        session_id = (
+        async with self.session_semaphore:
+            session_id = (
+                await self.__async_api_request(
+                    self.base_url,
+                    session,
+                    {"cmd": "sessions.create", **(self.proxy_data or {})},
+                )
+            )["session"]
+
+            # Get result
+            result = (
+                await self.__async_api_request(
+                    self.base_url,
+                    session,
+                    {"cmd": "request.get", "session": session_id, "url": url},
+                )
+            )["solution"]
+
+            # Close session
             await self.__async_api_request(
                 self.base_url,
                 session,
-                {"cmd": "sessions.create", **(self.proxy_data or {})},
+                {"cmd": "sessions.destroy", "session": session_id},
             )
-        )["session"]
-
-        # Get result
-        result = (
-            await self.__async_api_request(
-                self.base_url,
-                session,
-                {"cmd": "request.get", "session": session_id, "url": url},
-            )
-        )["solution"]
-
-        # Close session
-        await self.__async_api_request(
-            self.base_url,
-            session,
-            {"cmd": "sessions.destroy", "session": session_id},
-        )
 
         self.ua_mapping[url] = result["userAgent"]
         self.cookie_mapping[url] = {
