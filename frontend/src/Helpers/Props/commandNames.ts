@@ -6,7 +6,6 @@ export const commandNames = {
     RENAME_ISSUE: 'mass_rename_issue',
     CONVERT_VOLUME: 'mass_convert',
     CONVERT_ISSUE: 'mass_convert_issue',
-    DOWNLOADED_ISSUES_SCAN: 'update_all',
     UPDATE_ALL: 'update_all',
     SEARCH_ALL: 'search_all',
 } as const;

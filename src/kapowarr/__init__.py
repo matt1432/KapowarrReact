@@ -7,15 +7,7 @@ from subprocess import Popen
 from sys import argv
 from typing import NoReturn
 
-from backend.base.custom_exceptions import InvalidKeyValue
-from backend.base.definitions import Constants, ProxyType, StartType
-from backend.base.helpers import apply_proxy, build_proxy_url
-from backend.base.logging import LOGGER, setup_logging
-from backend.features.download_queue import DownloadHandler
-from backend.features.tasks import TaskHandler
-from backend.internals.db import set_db_location, setup_db
-from backend.internals.server import Server, StartTypeHandlers
-from backend.internals.settings import Settings
+from backend.base.definitions import Constants, StartType
 
 
 def _main(
@@ -66,6 +58,16 @@ def _main(
         NoReturn: Exit code 0 means to shutdown.
         Exit code 131 or higher means to restart with possibly special reasons.
     """
+    from backend.base.custom_exceptions import InvalidKeyValue
+    from backend.base.definitions import ProxyType
+    from backend.base.helpers import apply_proxy, build_proxy_url
+    from backend.base.logging import LOGGER, setup_logging
+    from backend.features.download_queue import DownloadHandler
+    from backend.features.tasks import TaskHandler
+    from backend.internals.db import set_db_location, setup_db
+    from backend.internals.server import Server, StartTypeHandlers
+    from backend.internals.settings import Settings
+
     set_start_method("spawn")
     setup_logging(log_folder, log_file)
     LOGGER.info("Starting up Kapowarr")

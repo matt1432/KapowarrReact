@@ -788,7 +788,11 @@ class Mega(MegaABC):
             and self.__r._fp.fp is not None
             and self.__r._fp.fp.raw is not None
         ):
-            self.__r._fp.fp.raw._sock.shutdown(2)
+            try:
+                self.__r._fp.fp.raw._sock.shutdown(2)  # SHUT_RDWR
+            except OSError as e:
+                if e.errno != 9:
+                    raise
         return
 
 
@@ -996,5 +1000,9 @@ class MegaFolder(MegaABC):
             and self.__r._fp.fp is not None
             and self.__r._fp.fp.raw is not None
         ):
-            self.__r._fp.fp.raw._sock.shutdown(2)  # pyright: ignore
+            try:
+                self.__r._fp.fp.raw._sock.shutdown(2)  # SHUT_RDWR
+            except OSError as e:
+                if e.errno != 9:
+                    raise
         return
