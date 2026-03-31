@@ -115,6 +115,8 @@ class Constants:
     STATUS_FORCELIST_RETRIES = (500, 502, 503, 504)
     "The HTTP status codes for which a retry should be done"
 
+    PROXY_TEST_URL = "https://httpbin.org/ip"
+
     CV_SITE_URL = "https://comicvine.gamespot.com"
     "The site URL of ComicVine"
 
@@ -336,6 +338,16 @@ class StartType(BaseEnum):
 
     RESTART_HOSTING_CHANGES = 132
     "A restart because changes to the hosting settings were made"
+
+
+class ProxyType(BaseEnum):
+    NONE = None
+    "Proxy disabled"
+
+    HTTP = "http"
+    HTTPS = "https"
+    SOCKS5 = "socks5"
+    SOCKS5H = "socks5h"
 
 
 class FileDate(BaseEnum):

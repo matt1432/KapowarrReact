@@ -8,6 +8,7 @@ import inputTypes from './inputTypes';
 import kinds from './kinds';
 import massEditActions from './massEditActions';
 import messageTypes from './messageTypes';
+import proxyTypes from './proxyTypes';
 import scrollDirections from './scrollDirections';
 import seedingHandlingValues from './seedingHandlingValues';
 import sizes from './sizes';
@@ -29,6 +30,7 @@ export {
     kinds,
     massEditActions,
     messageTypes,
+    proxyTypes,
     scrollDirections,
     seedingHandlingValues,
     sizes,

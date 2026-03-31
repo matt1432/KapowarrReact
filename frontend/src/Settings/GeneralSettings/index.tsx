@@ -29,12 +29,36 @@ import SettingsToolbar from 'Settings/SettingsToolbar';
 
 // Types
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
+import type { ProxyType } from 'Helpers/Props/proxyTypes';
 
 // IMPLEMENTATIONS
 
 const logLevelOptions: EnhancedSelectInputValue<number>[] = [
     { key: 20, value: 'Info' },
     { key: 10, value: 'Debug' },
+];
+
+const proxyTypeOptions: EnhancedSelectInputValue<ProxyType>[] = [
+    {
+        key: '',
+        value: translate('Disabled'),
+    },
+    {
+        key: 'http',
+        value: translate('Http'),
+    },
+    {
+        key: 'https',
+        value: translate('Https'),
+    },
+    {
+        key: 'socks5',
+        value: translate('Socks5'),
+    },
+    {
+        key: 'socks5h',
+        value: translate('Socks5h'),
+    },
 ];
 
 export default function GeneralSettings() {
@@ -151,6 +175,87 @@ export default function GeneralSettings() {
                                         />
                                     </FormInputButton>,
                                 ]}
+                            />
+                        </FormGroup>
+                    </FieldSet>
+
+                    <FieldSet
+                        legend={translate('Proxy')}
+                        subLegend={translate('ProxyInfo')}
+                    >
+                        <FormGroup>
+                            <FormLabel>{translate('ProxyType')}</FormLabel>
+
+                            <FormInputGroup
+                                type={inputTypes.SELECT}
+                                name="proxyType"
+                                values={proxyTypeOptions}
+                                onChange={handleInputChange}
+                                value={changes.proxyType}
+                            />
+                        </FormGroup>
+
+                        <FormGroup>
+                            <FormLabel>{translate('Hostname')}</FormLabel>
+
+                            <FormInputGroup
+                                type={inputTypes.TEXT}
+                                name="proxyHost"
+                                onChange={handleInputChange}
+                                value={changes.proxyHost}
+                            />
+                        </FormGroup>
+
+                        <FormGroup>
+                            <FormLabel>{translate('Port')}</FormLabel>
+
+                            <FormInputGroup
+                                type={inputTypes.NUMBER}
+                                name="proxyPort"
+                                min={1}
+                                max={65535}
+                                onChange={handleNonNullInputChange}
+                                value={changes.proxyPort}
+                            />
+                        </FormGroup>
+
+                        <FormGroup>
+                            <FormLabel>{translate('Username')}</FormLabel>
+
+                            <FormInputGroup
+                                type={inputTypes.TEXT}
+                                name="proxyUsername"
+                                helpText={translate('ProxyUsernameHelpText')}
+                                onChange={handleInputChange}
+                                value={changes.proxyUsername}
+                            />
+                        </FormGroup>
+
+                        <FormGroup>
+                            <FormLabel>{translate('Password')}</FormLabel>
+
+                            <FormInputGroup
+                                type={inputTypes.PASSWORD}
+                                name="proxyPassword"
+                                helpText={translate('ProxyPasswordHelpText')}
+                                onChange={handleInputChange}
+                                value={changes.proxyPassword}
+                            />
+                        </FormGroup>
+
+                        <FormGroup>
+                            <FormLabel>
+                                {translate('IgnoredAddresses')}
+                            </FormLabel>
+
+                            <FormInputGroup
+                                type={inputTypes.TEXT}
+                                name="proxyIgnoredAddresses"
+                                helpText={translate(
+                                    'ProxyBypassFilterHelpText',
+                                )}
+                                onChange={handleInputChange}
+                                value={changes.proxyIgnoredAddresses}
                             />
                         </FormGroup>
                     </FieldSet>

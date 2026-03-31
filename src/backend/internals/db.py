@@ -25,6 +25,7 @@ from backend.base.definitions import (
     Constants,
     DateType,
     FileDate,
+    ProxyType,
     SeedingHandling,
     SpecialVersion,
 )
@@ -292,6 +293,7 @@ def setup_db_adapters_and_converters() -> None:
     register_adapter(bool, lambda b: int(b))
     register_converter("BOOL", lambda b: b == b"1")
     register_adapter(CommaList, lambda c: str(c))
+    register_adapter(ProxyType, lambda e: e.value)
     register_adapter(FileDate, lambda e: e.value)
     register_adapter(SeedingHandling, lambda e: e.value)
     register_adapter(SpecialVersion, lambda e: e.value)

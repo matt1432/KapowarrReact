@@ -1,5 +1,6 @@
 import type { DateType } from 'Helpers/Props/dateTypes';
 import type { GCDownloadSource } from 'Helpers/Props/GCDownloadSources';
+import type { ProxyType } from 'Helpers/Props/proxyTypes';
 import type { SeedingHandling } from 'Helpers/Props/seedingHandlingValues';
 import type { CamelCasedProperties } from 'type-fest';
 
@@ -36,6 +37,12 @@ export interface RawSettingsValue {
     log_level: number;
     long_special_version: boolean;
     port: number;
+    proxy_type: ProxyType;
+    proxy_host: string;
+    proxy_port: number;
+    proxy_username: string;
+    proxy_password: string;
+    proxy_ignored_addresses: string;
     remove_ads: boolean;
     rename_downloaded_files: boolean;
     replace_illegal_characters: boolean;

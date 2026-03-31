@@ -8,7 +8,8 @@ from sys import argv
 from typing import NoReturn
 
 from backend.base.custom_exceptions import InvalidKeyValue
-from backend.base.definitions import Constants, StartType
+from backend.base.definitions import Constants, ProxyType, StartType
+from backend.base.helpers import apply_proxy, build_proxy_url
 from backend.base.logging import LOGGER, setup_logging
 from backend.features.download_queue import DownloadHandler
 from backend.features.tasks import TaskHandler
@@ -104,6 +105,17 @@ def _main(
                 raise ValueError("Invalid temp downloads folder value")
 
         settings = s.get_settings()
+
+        if settings.proxy_type != ProxyType.NONE:
+            proxy_url = build_proxy_url(
+                settings.proxy_type,
+                settings.proxy_host,
+                settings.proxy_port,
+                settings.proxy_username,
+                settings.proxy_password,
+            )
+            if proxy_url:
+                apply_proxy(proxy_url, settings.proxy_ignored_addresses)
 
         download_handler = DownloadHandler()
         download_handler.load_downloads()

@@ -11,7 +11,7 @@
 > - I will still do my best to keep up to date with upstream, but if you start using
     this fork, you might not be able go back to upstream since I've changed some things
     in the database.
-> - Currently at https://github.com/Casvt/Kapowarr/commit/214a4bc0ee41b6037c8a05eb53b408092323056a
+> - Currently at https://github.com/Casvt/Kapowarr/commit/1ac3b8bc924a5c78814b7fb1200a4cdc59b8caeb
 
 Kapowarr React is a software to build and manage a comic book library, fitting in
 the *arr suite of software.
@@ -31,7 +31,7 @@ whole process is automated and can be customised in the settings.
   Mega and many other services
 - Downloaded files automatically get moved wherever you want and renamed in the
   format you desire
-- Archive files can be extracted and it's contents renamed after downloading or
+- Archive files can be extracted and its contents renamed after downloading or
   with a single click
 - The recognisable UI from the *arr suite of software
 

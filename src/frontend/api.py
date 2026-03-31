@@ -516,9 +516,22 @@ def api_settings() -> ApiReturn | None:
             and data[s] != getattr(settings.sv, s)
             for s in ("host", "port", "url_base")
         )
+        proxy_changes = any(
+            s in data and data[s] != getattr(settings.sv, s)
+            for s in (
+                "proxy_type",
+                "proxy_host",
+                "proxy_port",
+                "proxy_username",
+                "proxy_password",
+                "proxy_ignored_addresses",
+            )
+        )
 
         if hosting_changes:
             settings.backup_hosting_settings()
+        elif proxy_changes:
+            Server().restart()
 
         settings.update(data, from_public=True)
 
@@ -538,9 +551,21 @@ def api_settings() -> ApiReturn | None:
             raise InvalidKeyValue("reset_keys", reset_keys)
 
         hosting_changes = any(
-            s in reset_keys
-            and settings.get_default_value(s) != getattr(settings.sv, s)
-            for s in ("host", "port", "url_prefix")
+            s in data
+            and data[s] is not None
+            and data[s] != getattr(settings.sv, s)
+            for s in ("host", "port", "url_base")
+        )
+        proxy_changes = any(
+            s in data and data[s] != getattr(settings.sv, s)
+            for s in (
+                "proxy_type",
+                "proxy_host",
+                "proxy_port",
+                "proxy_username",
+                "proxy_password",
+                "proxy_ignored_addresses",
+            )
         )
 
         if hosting_changes:
@@ -551,6 +576,8 @@ def api_settings() -> ApiReturn | None:
 
         if hosting_changes:
             Server().restart(StartType.RESTART_HOSTING_CHANGES)
+        elif proxy_changes:
+            Server().restart()
 
         return return_api(settings.get_public_settings().todict())
 
