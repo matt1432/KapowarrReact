@@ -23,6 +23,7 @@ from backend.base.helpers import (
     extract_year_from_date,
     force_range,
     get_subclasses,
+    normalise_query_string,
 )
 from backend.base.logging import LOGGER
 from backend.implementations.comicvine import ComicVine
@@ -465,7 +466,7 @@ def manual_search(
         if volume_data.year is None:
             formats = tuple(f.replace("({year})", "").strip() for f in formats)
 
-        search_title = title.replace(":", "")
+        search_title = normalise_query_string(title).replace(":", "")
         search_titles: list[str] = [search_title]
 
         if search_title.startswith("The "):
