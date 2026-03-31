@@ -1342,7 +1342,7 @@ def api_credentials() -> ApiReturn | None:
     cred = Credentials()
 
     if request.method == "GET":
-        result_get = [c.todict() for c in cred.get_all()]
+        result_get = [c.todict(hide_password=True) for c in cred.get_all()]
         return return_api(result_get)
 
     elif request.method == "POST":
@@ -1369,7 +1369,7 @@ def api_credentials() -> ApiReturn | None:
                 api_key=data.get("api_key"),
             )
         )
-        return return_api(result.todict(), code=201)
+        return return_api(result.todict(hide_password=True), code=201)
 
 
 @api.route("/credentials/<int:id>", methods=["GET", "DELETE"])
@@ -1378,7 +1378,7 @@ def api_credentials() -> ApiReturn | None:
 def api_credential(id: int) -> ApiReturn | None:
     cred = Credentials()
     if request.method == "GET":
-        result = cred.get_one(id).todict()
+        result = cred.get_one(id).todict(hide_password=True)
         return return_api(result)
 
     elif request.method == "DELETE":
