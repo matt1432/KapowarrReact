@@ -506,15 +506,15 @@ class MediaFireDownload(BaseDirectDownload):
             raise LinkBroken(self.download_link)
 
         href: str = first_of_range(button["href"])
-        data_scrambled_url: str = first_of_range(button["data-scrambled-url"])
+
         if href.startswith("http"):
-            return first_of_range(button["href"])
+            return href
 
-        elif data_scrambled_url:
-            return b64decode(data_scrambled_url).decode("utf-8")
+        data_scrambled_url = button.get("data-scrambled-url")
+        if data_scrambled_url:
+            return b64decode(first_of_range(data_scrambled_url)).decode("utf-8")
 
-        else:
-            raise LinkBroken(self.download_link)
+        raise LinkBroken(self.download_link)
 
 
 # region MediaFire Folder
