@@ -1,8 +1,9 @@
 import { useEffect, useMemo } from 'react';
 
-import socket from 'Store/socket';
+import { useRootSelector } from 'Store/createAppStore';
 
 import { snakeCase } from 'lodash';
+
 import camelize from 'Utilities/Object/camelize';
 
 import type { CamelCase, SnakeCase } from 'type-fest';
@@ -14,6 +15,8 @@ export type Events = {
 };
 
 export default function useSocketEvents(_events: Events) {
+    const { socket } = useRootSelector((state) => state.app);
+
     const events = useMemo(
         () =>
             Object.entries(_events).map(
@@ -29,13 +32,13 @@ export default function useSocketEvents(_events: Events) {
 
     useEffect(() => {
         events.forEach(([name, handler]) => {
-            socket.on(name, handler);
+            socket()?.on(name, handler);
         });
 
         return () => {
             events.forEach(([name, handler]) => {
-                socket.off(name, handler);
+                socket()?.off(name, handler);
             });
         };
-    }, [events]);
+    }, [events, socket]);
 }

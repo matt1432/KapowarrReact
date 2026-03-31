@@ -6,6 +6,7 @@ import { useEffect, useMemo } from 'react';
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { setFormsAuth } from 'Store/Slices/Auth';
+import { setSocket } from 'Store/Slices/App';
 
 import { useLazyGetAboutInfoQuery } from 'Store/Api/Status';
 import { useLazyGetDownloadClientsQuery } from 'Store/Api/DownloadClients';
@@ -21,12 +22,24 @@ import {
 import { useLazyGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
+import { io } from 'socket.io-client';
+
 import filterObject from 'Utilities/Object/filterObject';
 
 // Types
 import type { AnyError } from 'typings/Api';
 
 // IMPLEMENTATIONS
+
+const startSocket = (apiKey: string) => () => {
+    return io({
+        path: `${window.Kapowarr.urlBase}/api/socket.io`,
+        transports: ['polling'],
+        upgrade: false,
+        closeOnBeforeunload: true,
+        auth: { api_key: apiKey },
+    });
+};
 
 export default function useAppPage() {
     const dispatch = useRootDispatch();
@@ -115,11 +128,12 @@ export default function useAppPage() {
     useEffect(() => {
         if (apiKey) {
             window.Kapowarr.apiKey = apiKey;
+            dispatch(setSocket(startSocket(apiKey)));
             triggers.forEach((trigger) => {
                 trigger();
             });
         }
-    }, [apiKey, triggers]);
+    }, [apiKey, dispatch, triggers]);
 
     return useMemo(() => {
         return {

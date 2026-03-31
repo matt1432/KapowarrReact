@@ -11,7 +11,7 @@ from os import urandom
 from threading import Thread, Timer
 from typing import TYPE_CHECKING, Any
 
-from flask import Flask
+from flask import Flask, request
 from flask.json.provider import DefaultJSONProvider
 from flask_socketio import SocketIO
 from socketio import PubSubManager
@@ -114,6 +114,25 @@ class Server(metaclass=Singleton):
             async_mode="threading",
             client_manager=MPWebSocketQueue(SimpleQueue(), write_only=False),
         )
+
+        def auth_ws(auth_payload: Any) -> bool:
+            from backend.internals.settings import Settings
+            if not (
+                isinstance(auth_payload, dict)
+                and 'api_key' in auth_payload
+                and isinstance(auth_payload['api_key'], str)
+                and auth_payload['api_key'] == Settings().sv.api_key
+            ):
+                ip = request.environ.get(
+                    'HTTP_X_FORWARDED_FOR',
+                    request.remote_addr
+                )
+                LOGGER.warning(f'Unauthorised request from {ip}')
+                return False
+
+            return True
+
+        ws.on_event("connect", auth_ws)
 
         # Add error handlers
         def bad_request(_e: Any) -> tuple[dict[str, Collection[str]], int]:

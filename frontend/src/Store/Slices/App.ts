@@ -4,6 +4,8 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 // Types
+import { Socket } from 'socket.io-client';
+
 export interface Dimensions {
     width: number;
     height: number;
@@ -28,6 +30,8 @@ export interface AppState {
     scrollPositions: {
         volumeIndex: number;
     };
+
+    socket: () => Socket | undefined;
 }
 
 // IMPLEMENTATIONS
@@ -54,6 +58,8 @@ const initialState = {
     scrollPositions: {
         volumeIndex: 0,
     },
+
+    socket: () => undefined,
 } satisfies AppState as AppState;
 
 const AppSlice = createSlice({
@@ -85,6 +91,13 @@ const AppSlice = createSlice({
         setScrollPosition(state, { payload: { name, value } }: ScrollPayload) {
             state.scrollPositions[name] = value;
         },
+
+        setSocket(state, { payload: socket }: PayloadAction<() => Socket>) {
+            if (state.socket()?.disconnected ?? true) {
+                const instance = socket();
+                state.socket = () => instance;
+            }
+        },
     },
 });
 
@@ -93,6 +106,7 @@ export const {
     setIsSidebarVisible,
     setIsHandlingBreakingChange,
     setScrollPosition,
+    setSocket,
 } = AppSlice.actions;
 
 export default AppSlice;

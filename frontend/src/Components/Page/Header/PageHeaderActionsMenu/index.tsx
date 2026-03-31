@@ -6,6 +6,7 @@ import { useCallback } from 'react';
 // Redux
 import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
 import { useRestartMutation, useShutdownMutation } from 'Store/Api/Command';
+import { setApiKey } from 'Store/Slices/Auth';
 
 // Misc
 import { align, icons, kinds } from 'Helpers/Props';
@@ -24,8 +25,6 @@ import MenuItemSeparator from 'Components/Menu/MenuItemSeparator';
 
 // CSS
 import styles from './index.module.css';
-import { setApiKey } from 'Store/Slices/Auth';
-import socket from 'Store/socket';
 
 // Types
 interface PageHeaderActionsMenuProps {
@@ -39,20 +38,21 @@ export default function PageHeaderActionsMenu({
 }: PageHeaderActionsMenuProps) {
     const dispatch = useRootDispatch();
 
+    const { socket } = useRootSelector((state) => state.app);
     const { formsAuth } = useRootSelector((state) => state.auth);
 
     const [restart] = useRestartMutation();
     const [shutdown] = useShutdownMutation();
 
     const handleRestartPress = useCallback(() => {
-        socket.disconnect();
+        socket()?.disconnect();
         restart();
-    }, [restart]);
+    }, [socket, restart]);
 
     const handleShutdownPress = useCallback(() => {
-        socket.disconnect();
+        socket()?.disconnect();
         shutdown();
-    }, [shutdown]);
+    }, [socket, shutdown]);
 
     const handleLogoutPress = useCallback(() => {
         dispatch(setApiKey(''));
