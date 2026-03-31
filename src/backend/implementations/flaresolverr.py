@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from requests import RequestException
 
-from backend.base.definitions import Constants
+from backend.base.definitions import Constants, ProxyType
 from backend.base.helpers import Session
 from backend.base.logging import LOGGER
 from backend.internals.settings import Settings
@@ -19,7 +19,20 @@ class FlareSolverr:
     ua_mapping: dict[str, str] = {}
 
     def __init__(self) -> None:
-        self.base_url = Settings().sv.flaresolverr_base_url or None
+        settings = Settings().sv
+
+        self.base_url = settings.flaresolverr_base_url or None
+
+        self.proxy_data: dict[str, Any] | None = None
+        if settings.proxy_type != ProxyType.NONE:
+            self.proxy_data = {
+                "proxy": {
+                    "url": f"{settings.proxy_type.value.rstrip('h')}://{settings.proxy_host}:{settings.proxy_port}"
+                }
+            }
+            if settings.proxy_username and settings.proxy_password:
+                self.proxy_data["proxy"]["username"] = settings.proxy_username
+                self.proxy_data["proxy"]["password"] = settings.proxy_password
         return
 
     @staticmethod
@@ -139,7 +152,9 @@ class FlareSolverr:
 
             # Start session
             session_id = self.__api_request(
-                self.base_url, session, {"cmd": "sessions.create"}
+                self.base_url,
+                session,
+                {"cmd": "sessions.create", **(self.proxy_data or {})},
             )["session"]
 
             # Get result
@@ -196,7 +211,9 @@ class FlareSolverr:
         # Start session
         session_id = (
             await self.__async_api_request(
-                self.base_url, session, {"cmd": "sessions.create"}
+                self.base_url,
+                session,
+                {"cmd": "sessions.create", **(self.proxy_data or {})},
             )
         )["session"]
 
