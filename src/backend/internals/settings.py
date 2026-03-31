@@ -11,12 +11,8 @@ from typing import Any, TypedDict
 try:
     from grp import getgrgid, getgrnam  # pyright: ignore
 except ImportError:
-
-    def getgrgid(_id: int):
-        pass
-
-    def getgrnam(_name: str):
-        pass
+    getgrgid = None
+    getgrnam = None
 
 
 from backend.base.custom_exceptions import (
@@ -537,7 +533,7 @@ class Settings(metaclass=Singleton):
             raise InvalidKeyValue(key, value)
 
         elif key == "chmod_folder":
-            if System.os_type == OSType.WINDOWS:
+            if System.os_type == OSType.WINDOWS and value:
                 raise InvalidKeyValue(key, value)
 
             if value.startswith("0"):
@@ -571,7 +567,7 @@ class Settings(metaclass=Singleton):
             if value:
                 if not (
                     System.os_type != OSType.WINDOWS
-                    and getgrgid is not None  # type: ignore
+                    and getgrgid is not None
                     and getgrnam is not None
                 ):
                     raise InvalidKeyValue(key, value)
