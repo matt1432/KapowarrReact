@@ -821,7 +821,7 @@ def get_task_planning() -> list[dict]:
                 SELECT
                     i.task_name, interval, next_run, run_at AS last_run
                 FROM task_intervals i
-                INNER JOIN (
+                LEFT JOIN (
                     SELECT
                         task_name,
                         MAX(run_at) AS run_at
