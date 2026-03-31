@@ -11,28 +11,25 @@
 > - I will still do my best to keep up to date with upstream, but if you start using
     this fork, you might not be able go back to upstream since I've changed some things
     in the database.
-> - Currently at https://github.com/Casvt/Kapowarr/commit/08ea856153c16067a0b10079abdf90e9cbf69d3d
+> - Currently at https://github.com/Casvt/Kapowarr/commit/f124733472c51c6624dbcc84ed94da530deb09ba
 
 Kapowarr React is a software to build and manage a comic book library, fitting in
 the *arr suite of software.
 
 Kapowarr React allows you to build a digital library of comics. You can add volumes,
-map them to a folder and start managing! Download, rename, move and convert
-issues of the volume (including TPB's, One Shots, Hard Covers, and more). The
-whole process is automated and can be customised in the settings.
+map them to a folder and start managing! Download, rename, move and convert issues of
+the volume (including TPBs, One Shots, Hard Covers, and more). The whole process is
+automated and can be customised in the settings.
 
 ## Features
 
-- Import your current library right into Kapowarr React
-- Get loads of metadata about the volumes and issues in your library
 - Run a "Search Monitored" to download whole volumes with one click
 - Or use "Manual Search" to decide yourself what to download
-- Support for downloading directly from Libgen+ and GetComics, or via MediaFire,
-  Mega and many other services
-- Downloaded files automatically get moved wherever you want and renamed in the
-  format you desire
-- Archive files can be extracted and its contents renamed after downloading or
-  with a single click
+- Import your existing library right into Kapowarr React
+- Support for all major operating systems
+- Download using DDL, Pixeldrain, Mega and many other services
+- Downloaded files automatically get moved wherever you want and renamed in the format you desire
+- Archive files can be extracted and their contents renamed after downloading or with a single click
 - The recognisable UI from the *arr suite of software
 
 ## Installation, support and documentation
