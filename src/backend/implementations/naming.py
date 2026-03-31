@@ -102,6 +102,14 @@ def clean_filepath(filepath: str) -> str:
 
 
 # region Name generation
+KEY_TO_UNKNOWN = {
+    "year": "Unknown Year",
+    "publisher": "Unknown Publisher",
+    "issue_release_date": "Unknown Date",
+    "issue_release_year": "Unknown Year",
+}
+
+
 def _get_base_naming_keys(volume_data: VolumeData) -> BaseNamingKeys:
     """Generate the values of the base naming keys for any type of naming.
 
@@ -129,7 +137,7 @@ def _get_base_naming_keys(volume_data: VolumeData) -> BaseNamingKeys:
         volume_number=str(volume_data.volume_number).zfill(volume_padding),
         comicvine_id=volume_data.comicvine_id,
         year=volume_data.year,
-        publisher=clean_filestring(volume_data.publisher),
+        publisher=clean_filestring(volume_data.publisher or "") or None,
     )
 
 
@@ -169,8 +177,8 @@ def get_volume_naming_keys(
         sv_mapping = SV_TO_SHORT_TERM
 
     return VolumeNamingKeys(
-        **_get_base_naming_keys(volume_data).__dict__,
-        **_get_file_info_naming_keys(file_data).__dict__,
+        **_get_base_naming_keys(volume_data).todict(),
+        **_get_file_info_naming_keys(file_data).todict(),
         special_version=sv_mapping.get(volume_data.special_version),
     )
 
@@ -227,17 +235,11 @@ def get_issue_naming_keys(
     """
     issue_padding = Settings().sv.issue_padding
 
-    if issue_data.issue_number:
-        issue_number = str(issue_data.issue_number).zfill(issue_padding)
-
-    else:
-        issue_number = None
-
     return IssueNamingKeys(
-        **_get_base_naming_keys(volume_data).__dict__,
-        **_get_file_info_naming_keys(file_data).__dict__,
+        **_get_base_naming_keys(volume_data).todict(),
+        **_get_file_info_naming_keys(file_data).todict(),
         issue_comicvine_id=issue_data.comicvine_id,
-        issue_number=issue_number,
+        issue_number=str(issue_data.issue_number).zfill(issue_padding),
         issue_release_date=issue_data.date,
         issue_release_year=extract_year_from_date(issue_data.date),
         issue_title=clean_filestring(issue_data.title or "") or None,
@@ -270,7 +272,7 @@ def _get_corresponding_formatted_naming_keys(
 def _fill_format(format: str, formatting_data: BaseNamingKeys) -> str:
     placeholders = _get_placeholders(format)
     formatted_data = _get_corresponding_formatted_naming_keys(
-        placeholders, formatting_data.__dict__
+        placeholders, formatting_data.todict()
     )
     filename = format
     for k, v in formatted_data.items():

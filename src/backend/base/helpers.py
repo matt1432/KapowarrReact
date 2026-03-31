@@ -493,6 +493,8 @@ def normalise_year(s: str) -> int | None:
 
     s = (
         s.strip()
+        .lower()
+        .replace("circa ", "")
         .replace("-", "0")
         .replace(",", "/")
         .replace("?", "")

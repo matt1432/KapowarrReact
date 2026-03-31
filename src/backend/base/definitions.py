@@ -857,6 +857,9 @@ class BaseNamingKeys:
     year: int | None
     publisher: str | None
 
+    def todict(self) -> dict[str, Any]:
+        return asdict(self)
+
 
 @dataclass
 class ExtraFileInfoNamingKeys:
@@ -865,6 +868,9 @@ class ExtraFileInfoNamingKeys:
     resolution: str | None
     dpi: str | None
     notes: str | None
+
+    def todict(self) -> dict[str, Any]:
+        return asdict(self)
 
 
 @dataclass
@@ -875,7 +881,7 @@ class VolumeNamingKeys(BaseNamingKeys, ExtraFileInfoNamingKeys):
 @dataclass
 class TitlelessIssueNamingKeys(BaseNamingKeys, ExtraFileInfoNamingKeys):
     issue_comicvine_id: int
-    issue_number: str | None
+    issue_number: str
     issue_title: str | None
     issue_release_date: str | None
     issue_release_year: int | None
@@ -899,7 +905,7 @@ class IssueData:
     calculated_issue_number: float
     title: str | None
     date: str | None
-    description: str | None
+    description: str
     monitored: bool
     files: list[IssueFileData]
 
@@ -915,8 +921,8 @@ class VolumeData:
     marvel_id: int | None
     title: str
     alt_title: str | None
-    year: int
-    publisher: str
+    year: int | None
+    publisher: str | None
     volume_number: int
     description: str
     site_url: str
