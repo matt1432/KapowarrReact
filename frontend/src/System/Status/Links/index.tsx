@@ -49,7 +49,7 @@ export default function Links() {
 
                     <ImageButton
                         asset="discord.ico"
-                        link="https://discord.gg/nMNdgG7vsE"
+                        link="https://discord.gg/5gWtW3ekgZ"
                         text={translate('Discord')}
                     />
                 </div>
