@@ -959,9 +959,9 @@ class CredentialData:
         """
         result = asdict(self)
 
-        result['source'] = self.source.value
-        if result['password'] is not None and hide_password:
-            result['password'] = Constants.CREDENTIAL_REPLACEMENT
+        result["source"] = self.source.value
+        if result["password"] is not None and hide_password:
+            result["password"] = Constants.CREDENTIAL_REPLACEMENT
 
         return result
 
