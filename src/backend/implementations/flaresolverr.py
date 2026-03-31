@@ -16,12 +16,12 @@ if TYPE_CHECKING:
 
 
 class FlareSolverr:
-    session_semaphore = Semaphore(Constants.MAX_CONCURRENT_FS_SESSIONS)
     cookie_mapping: dict[str, dict[str, str]] = {}
     ua_mapping: dict[str, str] = {}
 
     def __init__(self) -> None:
         settings = Settings().sv
+        self.session_semaphore: Semaphore | None = None
 
         self.base_url = settings.flaresolverr_base_url or None
 
@@ -209,6 +209,17 @@ class FlareSolverr:
                 "Request blocked by CloudFlare and FlareSolverr not setup"
             )
             return
+
+        # Technically this makes it a max amount of FS sessions per AsyncSession
+        # instance. Luckily, for the most intense request scenario of searching
+        # for downloads, just one session is used so that works out. We just
+        # need to refactor the FlareSolverr implementation to stand more as a
+        # separate entity from the Session and AsyncSession classes so that we
+        # can regulate session count and session instances better.
+        if self.session_semaphore is None:
+            self.session_semaphore = Semaphore(
+                Constants.MAX_CONCURRENT_FS_SESSIONS
+            )
 
         # Start session
         async with self.session_semaphore:
