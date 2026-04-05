@@ -51,4 +51,24 @@ export default defineConfig(
         },
     },
     prettierRecommended,
+    {
+        rules: {
+            curly: ['error', 'all'],
+
+            'prettier/prettier': [
+                'error',
+                {
+                    printWidth: 80,
+                    tabWidth: 4,
+                    useTabs: false,
+                    semi: true,
+                    singleQuote: true,
+                    trailingComma: 'all',
+                    bracketSameLine: false,
+                    plugins: ['prettier-plugin-brace-style'],
+                    braceStyle: 'stroustrup',
+                },
+            ],
+        },
+    },
 );
