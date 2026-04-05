@@ -9,7 +9,7 @@ buildNpmPackage {
 
   src = ./.;
 
-  npmDepsHash = "sha256-qejG1YVNzzovJfvPN5h6dx5SjQMHhyabDFlX0b+x9Y4=";
+  npmDepsHash = "sha256-F1758NiVp+GpPEcZ+2Qbdv8wRGZYRVwBHnlAipe+gg4=";
 
   installPhase = ''
     runHook preInstall
