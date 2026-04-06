@@ -58,10 +58,8 @@ export default function DeleteVolumeModalContent({
             selectFromResult: ({ data }) => ({
                 title: data?.title ?? '',
                 issueFileCount:
-                    data?.issues.reduce(
-                        (acc, v) => (acc += v.files.length),
-                        0,
-                    ) ?? 0,
+                    data?.issues.reduce((acc, v) => acc + v.files.length, 0) ??
+                    0,
                 sizeOnDisk: data?.totalSize ?? 0,
                 path: data?.folder ?? '',
             }),

@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 // Redux
-import { useRootDispatch, useRootSelector } from 'Store/createAppStore';
+import { useRootSelector } from 'Store/createAppStore';
 import { setApiKey, setLastLogin } from 'Store/Slices/Auth';
 
 import { baseApi } from './base';
@@ -31,13 +31,22 @@ const extendedApi = baseApi.injectEndpoints({
 
             transformResponse: (response: { result: { api_key: string } }) =>
                 response.result.api_key,
+
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    dispatch(setApiKey(data));
+                    dispatch(setLastLogin(Date.now() / 1000));
+                }
+                catch {
+                    /**/
+                }
+            },
         }),
     }),
 });
 
 export const useApiKey = () => {
-    const dispatch = useRootDispatch();
-
     const [isFirstPost, setIsFirstPost] = useState(true);
 
     const { apiKey, lastLogin } = useRootSelector((state) => state.auth);
@@ -54,13 +63,6 @@ export const useApiKey = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    useEffect(() => {
-        if (data) {
-            dispatch(setApiKey(data));
-            dispatch(setLastLogin(Date.now() / 1000));
-        }
-    }, [data, dispatch, lastLogin]);
-
     const isInvalid = useMemo(() => {
         if (!error) {
             return false;
@@ -68,6 +70,7 @@ export const useApiKey = () => {
 
         if (isApiError(error) && error.status === 401) {
             if (isFirstPost) {
+                // eslint-disable-next-line react-hooks/set-state-in-render
                 setIsFirstPost(false);
                 return false;
             }

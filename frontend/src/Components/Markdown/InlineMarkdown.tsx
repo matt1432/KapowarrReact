@@ -26,7 +26,7 @@ export default function InlineMarkdown({
         const linkRegex = RegExp(/\[(.+?)\]\((.+?)\)/g);
 
         let endIndex = 0;
-        let match = null;
+        let match;
 
         while ((match = linkRegex.exec(data)) !== null) {
             if (match.index > endIndex) {
@@ -48,7 +48,6 @@ export default function InlineMarkdown({
         const codeRegex = RegExp(/(?=`)`(?!`)[^`]*(?=`)`(?!`)/g);
 
         endIndex = 0;
-        match = null;
         let matchedCode = false;
 
         while ((match = codeRegex.exec(data)) !== null) {

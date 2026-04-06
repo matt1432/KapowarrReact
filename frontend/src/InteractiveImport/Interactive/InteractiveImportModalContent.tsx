@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -128,9 +128,12 @@ export default function InteractiveImportModalContent({
     );
 
     const [_items, setItems] = useState(data);
-    useEffect(() => {
+
+    const [prevData, setPrevData] = useState(data);
+    if (data !== prevData) {
+        setPrevData(data);
         setItems(data);
-    }, [data]);
+    }
 
     const [filterExistingFiles, setFilterExistingFiles] = useState(false);
 

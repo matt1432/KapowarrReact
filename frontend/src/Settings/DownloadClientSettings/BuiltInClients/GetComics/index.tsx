@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import {
@@ -32,25 +32,29 @@ import type { CheckInputChanged } from 'typings/Inputs';
 export default function GetComics() {
     const [saveSettings] = useSaveSettingsMutation();
 
-    const { enableGetcomics } = useGetSettingsQuery(undefined, {
+    const { refetch: _, ...query } = useGetSettingsQuery(undefined, {
         selectFromResult: ({ data }) => ({
             enableGetcomics: Boolean(data?.enableGetcomics),
         }),
     });
 
-    const [enable, setEnable] = useState(Boolean(enableGetcomics));
+    const [draft, setDraft] = useState<Partial<typeof query>>({});
 
-    useEffect(() => {
-        setEnable(Boolean(enableGetcomics));
-    }, [enableGetcomics]);
-
-    const handleEnableChange = useCallback(
-        ({ value }: CheckInputChanged<'enable'>) => {
-            setEnable(value);
-            saveSettings({ enableGetcomics: value });
+    const handleChange = useCallback(
+        async <K extends keyof typeof query>({
+            name,
+            value,
+        }: CheckInputChanged<K>) => {
+            setDraft((prev) => ({ ...prev, [name]: value }));
+            await saveSettings({ [name]: value });
         },
         [saveSettings],
     );
+
+    const { enableGetcomics } = {
+        ...query,
+        ...draft,
+    };
 
     return (
         <BuiltInClient title="GetComics">
@@ -88,9 +92,9 @@ export default function GetComics() {
                                 <FormLabel>{translate('Enable')}</FormLabel>
                                 <FormInputGroup
                                     type="check"
-                                    name="enable"
-                                    onChange={handleEnableChange}
-                                    value={enable}
+                                    name="enableGetcomics"
+                                    onChange={handleChange}
+                                    value={enableGetcomics}
                                 />
                             </FormGroup>
                         </FieldSet>

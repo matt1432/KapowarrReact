@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // Misc
 import { inputTypes, kinds, scrollDirections } from 'Helpers/Props';
@@ -45,9 +45,12 @@ export default function SelectStringValueModalContent({
     onModalClose,
 }: SelectStringValueModalContentProps) {
     const [value, setValue] = useState(initialValue);
-    useEffect(() => {
+
+    const [prevInitialValue, setPrevInitialValue] = useState(initialValue);
+    if (initialValue !== prevInitialValue) {
+        setPrevInitialValue(initialValue);
         setValue(initialValue);
-    }, [initialValue]);
+    }
 
     const onValueChange = useCallback(
         ({ value }: InputChanged<string, string>) => {

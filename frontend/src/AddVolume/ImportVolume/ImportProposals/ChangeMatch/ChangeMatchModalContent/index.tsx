@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -88,9 +88,11 @@ export default function ChangeMatchModalContent({
             }),
         });
 
-    useEffect(() => {
+    const [prevData, setPrevData] = useState(data);
+    if (data !== prevData) {
+        setPrevData(data);
         setShowResults(data.length !== 0);
-    }, [data]);
+    }
 
     const handleSubmit = useCallback(() => {
         if (query !== '') {

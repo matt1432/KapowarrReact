@@ -78,7 +78,7 @@ function useIssuesSelector(volumeId: number) {
                                         ?.slice(1),
                                 size: formatBytes(
                                     issue.files.reduce(
-                                        (acc, issue) => (acc += issue.size),
+                                        (acc, issue) => acc + issue.size,
                                         0,
                                     ),
                                 ),

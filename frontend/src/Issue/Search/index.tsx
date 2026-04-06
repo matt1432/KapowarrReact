@@ -51,6 +51,7 @@ export default function IssueSearch({
         startInteractiveSearch,
     );
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsInteractiveSearchOpen(startInteractiveSearch);
     }, [startInteractiveSearch]);
 
@@ -58,6 +59,7 @@ export default function IssueSearch({
         startLibgenFileSearch,
     );
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsLibgenFileSearchOpen(startLibgenFileSearch);
     }, [startLibgenFileSearch]);
 

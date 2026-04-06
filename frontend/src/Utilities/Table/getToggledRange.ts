@@ -7,8 +7,8 @@ function getToggledRange<T extends SelectStateModel>(
 ) {
     const lastToggledIndex = items.findIndex((item) => item.id === lastToggled);
     const changedIndex = items.findIndex((item) => item.id === id);
-    let lower = 0;
-    let upper = 0;
+    let lower;
+    let upper;
 
     if (lastToggledIndex > changedIndex) {
         lower = changedIndex;

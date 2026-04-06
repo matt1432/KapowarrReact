@@ -75,7 +75,7 @@ export default function BlocklistTable() {
             (width -
                 columns
                     .filter((c) => c.isVisible && typeof c.width === 'number')
-                    .reduce((acc, col) => (acc += col.width!), 0)) /
+                    .reduce((acc, col) => acc + col.width!, 0)) /
             5,
         [columns, width],
     );

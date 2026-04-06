@@ -115,10 +115,8 @@ export default function VolumeDetails({ volumeId }: VolumeDetailsProps) {
                 volume: data,
                 hasIssues: Boolean(data?.issues.length),
                 issueFileCount:
-                    data?.issues.reduce(
-                        (acc, v) => (acc += v.files.length),
-                        0,
-                    ) ?? 0,
+                    data?.issues.reduce((acc, v) => acc + v.files.length, 0) ??
+                    0,
                 hasMonitoredIssues: data?.issues.some((e) => e.monitored),
                 error,
                 isFetching,

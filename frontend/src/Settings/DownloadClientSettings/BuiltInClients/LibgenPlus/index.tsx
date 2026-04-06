@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // Redux
 import {
@@ -32,12 +32,7 @@ import type { CheckInputChanged } from 'typings/Inputs';
 export default function LibgenPlus() {
     const [saveSettings] = useSaveSettingsMutation();
 
-    const {
-        enableLibgen,
-        autoSearchTorrents,
-        includeCoverOnlyFiles,
-        includeScannedBooks,
-    } = useGetSettingsQuery(undefined, {
+    const { refetch: _, ...query } = useGetSettingsQuery(undefined, {
         selectFromResult: ({ data }) => ({
             enableLibgen: Boolean(data?.enableLibgen),
             autoSearchTorrents: Boolean(data?.autoSearchTorrents),
@@ -46,61 +41,28 @@ export default function LibgenPlus() {
         }),
     });
 
-    const [enable, setEnable] = useState(enableLibgen);
+    const [draft, setDraft] = useState<Partial<typeof query>>({});
 
-    useEffect(() => {
-        setEnable(enableLibgen);
-    }, [enableLibgen]);
-
-    const handleEnableChange = useCallback(
-        ({ value }: CheckInputChanged<'enable'>) => {
-            setEnable(value);
-            saveSettings({ enableLibgen: value });
+    const handleChange = useCallback(
+        async <K extends keyof typeof query>({
+            name,
+            value,
+        }: CheckInputChanged<K>) => {
+            setDraft((prev) => ({ ...prev, [name]: value }));
+            await saveSettings({ [name]: value });
         },
         [saveSettings],
     );
 
-    const [autoTorrents, setAutoTorrents] = useState(autoSearchTorrents);
-
-    useEffect(() => {
-        setAutoTorrents(autoSearchTorrents);
-    }, [autoSearchTorrents]);
-
-    const handleAutoTorrentsChange = useCallback(
-        ({ value }: CheckInputChanged<'autoTorrents'>) => {
-            setAutoTorrents(value);
-            saveSettings({ autoSearchTorrents: value });
-        },
-        [saveSettings],
-    );
-
-    const [coverOnly, setCoverOnly] = useState(includeCoverOnlyFiles);
-
-    useEffect(() => {
-        setCoverOnly(includeCoverOnlyFiles);
-    }, [includeCoverOnlyFiles]);
-
-    const handleCoverOnlyChange = useCallback(
-        ({ value }: CheckInputChanged<'coverOnly'>) => {
-            setCoverOnly(value);
-            saveSettings({ includeCoverOnlyFiles: value });
-        },
-        [saveSettings],
-    );
-
-    const [scanned, setScanned] = useState(includeScannedBooks);
-
-    useEffect(() => {
-        setScanned(includeScannedBooks);
-    }, [includeScannedBooks]);
-
-    const handleScannedChange = useCallback(
-        ({ value }: CheckInputChanged<'scanned'>) => {
-            setScanned(value);
-            saveSettings({ includeScannedBooks: value });
-        },
-        [saveSettings],
-    );
+    const {
+        enableLibgen,
+        autoSearchTorrents,
+        includeCoverOnlyFiles,
+        includeScannedBooks,
+    } = {
+        ...query,
+        ...draft,
+    };
 
     return (
         <BuiltInClient title="Libgen+">
@@ -124,9 +86,9 @@ export default function LibgenPlus() {
                                 <FormLabel>{translate('Enable')}</FormLabel>
                                 <FormInputGroup
                                     type="check"
-                                    name="enable"
-                                    onChange={handleEnableChange}
-                                    value={enable}
+                                    name="enableLibgen"
+                                    onChange={handleChange}
+                                    value={enableLibgen}
                                 />
                             </FormGroup>
 
@@ -136,12 +98,12 @@ export default function LibgenPlus() {
                                 </FormLabel>
                                 <FormInputGroup
                                     type="check"
-                                    name="autoTorrents"
+                                    name="autoSearchTorrents"
                                     helpText={translate(
                                         'AutoSearchTorrentsHelpText',
                                     )}
-                                    onChange={handleAutoTorrentsChange}
-                                    value={autoTorrents}
+                                    onChange={handleChange}
+                                    value={autoSearchTorrents}
                                 />
                             </FormGroup>
 
@@ -151,12 +113,12 @@ export default function LibgenPlus() {
                                 </FormLabel>
                                 <FormInputGroup
                                     type="check"
-                                    name="coverOnly"
+                                    name="includeCoverOnlyFiles"
                                     helpText={translate(
                                         'IncludeCoverOnlyFilesHelpText',
                                     )}
-                                    onChange={handleCoverOnlyChange}
-                                    value={coverOnly}
+                                    onChange={handleChange}
+                                    value={includeCoverOnlyFiles}
                                 />
                             </FormGroup>
 
@@ -166,12 +128,12 @@ export default function LibgenPlus() {
                                 </FormLabel>
                                 <FormInputGroup
                                     type="check"
-                                    name="scanned"
+                                    name="includeCoverOnlyFiles"
                                     helpText={translate(
                                         'IncludeScannedBooksHelpText',
                                     )}
-                                    onChange={handleScannedChange}
-                                    value={scanned}
+                                    onChange={handleChange}
+                                    value={includeScannedBooks}
                                 />
                             </FormGroup>
                         </FieldSet>

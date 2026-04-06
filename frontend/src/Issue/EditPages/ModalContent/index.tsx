@@ -150,7 +150,7 @@ function bumpThumbnailNumber(thumbnail: ThumbnailData): ThumbnailData {
 
     let newFilename = thumbnail.newFilename;
 
-    const numbers = parsePageNumbers(thumbnail.newFilename, prefix);
+    const numbers = parsePageNumbers(newFilename, prefix);
 
     if (typeof numbers === 'string') {
         newFilename = thumbnail.newFilename.replace(
