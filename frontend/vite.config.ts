@@ -16,21 +16,23 @@ const srcAliases = Object.fromEntries(
 export default defineConfig({
     plugins: [patchCssModules(), react()],
     build: {
+        modulePreload: false,
         minify: false,
         chunkSizeWarningLimit: 750,
-        rollupOptions: {
+        rolldownOptions: {
+            input: {
+                bootstrap: resolve('./src/bootstrap/index.tsx'),
+                react: resolve('./src/index.ts'),
+                'fuse.worker': resolve(
+                    './src/Components/Page/Header/fuse.worker.ts',
+                ),
+            },
             output: {
                 assetFileNames: (asset) => {
                     return `static/${asset.names[0].split('.').at(-1)}/[name][extname]`;
                 },
                 chunkFileNames: 'static/js/[name].js',
-                manualChunks: {
-                    bootstrap: ['src/bootstrap/index.tsx'],
-                    react: ['src/index.ts'],
-                    'fuse.worker': [
-                        'src/Components/Page/Header/fuse.worker.ts',
-                    ],
-                },
+                entryFileNames: 'static/js/[name].js',
             },
         },
     },
