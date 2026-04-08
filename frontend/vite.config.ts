@@ -13,6 +13,8 @@ const srcAliases = Object.fromEntries(
     readdirSync(resolve('./src')).map((dir) => [dir, resolve(`./src/${dir}`)]),
 );
 
+const enableProfiler = JSON.parse(process.env['PROFILER'] ?? 'false');
+
 export default defineConfig({
     plugins: [patchCssModules(), react()],
     build: {
@@ -46,6 +48,9 @@ export default defineConfig({
         alias: {
             ...srcAliases,
             '~normalize.css': 'normalize.css',
+            ...(enableProfiler
+                ? { 'react-dom/client': 'react-dom/profiling' }
+                : {}),
         },
     },
 });

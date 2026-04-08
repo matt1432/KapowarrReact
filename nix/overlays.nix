@@ -37,6 +37,8 @@ in {
     # deps
     kapowarr-web,
     rar,
+    # options
+    enableReactProfiler ? false,
     ...
   }: let
     inherit (lib) attrValues makeBinPath;
@@ -76,7 +78,7 @@ in {
           ;
       };
 
-      env.KAPOWARR_WEB = "${kapowarr-web}/share/kapowarr-web";
+      env.KAPOWARR_WEB = "${kapowarr-web.override {inherit enableReactProfiler;}}/share/kapowarr-web";
 
       preFixup = ''
         makeWrapperArgs+=(

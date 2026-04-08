@@ -1,15 +1,20 @@
 {
+  lib,
   buildNpmPackage,
   kapowarr-react,
+  # options
+  enableReactProfiler ? false,
   ...
 }:
 buildNpmPackage {
   pname = "kapowarr-web";
-  version = kapowarr-react.version;
+  inherit (kapowarr-react) version;
 
   src = ./.;
 
   npmDepsHash = "sha256-nUoFwABMWxdH7qwKSndwOERkmKCWFhWbfT4DKJvQS/U=";
+
+  env.PROFILER = lib.boolToString enableReactProfiler;
 
   installPhase = ''
     runHook preInstall
