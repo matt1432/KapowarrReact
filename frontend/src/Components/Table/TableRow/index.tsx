@@ -11,6 +11,7 @@ interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
     className?: string;
     children?: React.ReactNode;
     overlayContent?: boolean;
+    ref?: React.Ref<HTMLTableRowElement>;
 }
 
 // IMPLEMENTATIONS

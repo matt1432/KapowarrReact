@@ -9,6 +9,7 @@ import { useGetSettingsQuery } from 'Store/Api/Settings';
 
 // Misc
 import { icons, kinds, tooltipPositions } from 'Helpers/Props';
+import { getErrorMessage } from 'Utilities/Object/error';
 
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
@@ -16,10 +17,17 @@ import translate from 'Utilities/String/translate';
 import { filesize } from 'filesize';
 import classNames from 'classnames';
 
+// Hooks
+import { useHover } from '@uidotdev/usehooks';
+
 // General Components
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import Icon from 'Components/Icon';
+import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
+import Menu from 'Components/Menu/Menu';
+import MenuContent from 'Components/Menu/MenuContent';
+import SelectedMenuItem from 'Components/Menu/SelectedMenuItem';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import Popover from 'Components/Tooltip/Popover';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
@@ -36,11 +44,6 @@ import type { InteractiveSearchPayload } from 'typings/Search';
 import type { InteractiveSearchColumnName } from 'InteractiveSearch/columns';
 import type { SearchResultItem } from 'InteractiveSearch';
 import type { DownloadSource } from 'Helpers/Props/downloadSources';
-import Menu from 'Components/Menu/Menu';
-import IconButton from 'Components/Link/IconButton';
-import MenuContent from 'Components/Menu/MenuContent';
-import SelectedMenuItem from 'Components/Menu/SelectedMenuItem';
-import { getErrorMessage } from 'Utilities/Object/error';
 
 interface InteractiveSearchRowProps {
     columns: Column<InteractiveSearchColumnName>[];
@@ -208,9 +211,9 @@ export default function InteractiveSearchRow({
                     ...result,
                     issueNumber: issueNumber.includes(',')
                         ? [
-                              parseFloat(issueNumber.split(',')[0]),
-                              parseFloat(issueNumber.split(',')[1]),
-                          ]
+                            parseFloat(issueNumber.split(',')[0]),
+                            parseFloat(issueNumber.split(',')[1]),
+                        ]
                         : parseFloat(issueNumber),
                     releaser,
                     scanType,
@@ -305,8 +308,10 @@ export default function InteractiveSearchRow({
         [],
     );
 
+    const [ref, isHovered] = useHover();
+
     return (
-        <TableRow>
+        <TableRow ref={ref}>
             {columns.map(({ isVisible, name }) => {
                 if (!isVisible) {
                     return null;
@@ -470,31 +475,38 @@ export default function InteractiveSearchRow({
                                     name={icons.TORRENT}
                                     title={translate('SelectDownloadSource')}
                                 />
-                                <MenuContent>
-                                    <SelectedMenuItem
-                                        isSelected={selectedSource === null}
-                                        onPress={() => {
-                                            handleSelectedSourceChange(null);
-                                        }}
-                                    >
-                                        Auto
-                                    </SelectedMenuItem>
-
-                                    {result.downloadSources.map((source) => (
+                                {isHovered && (
+                                    <MenuContent>
                                         <SelectedMenuItem
-                                            isSelected={
-                                                source === selectedSource
-                                            }
+                                            isSelected={selectedSource === null}
                                             onPress={() => {
                                                 handleSelectedSourceChange(
-                                                    source,
+                                                    null,
                                                 );
                                             }}
                                         >
-                                            {source}
+                                            Auto
                                         </SelectedMenuItem>
-                                    ))}
-                                </MenuContent>
+
+                                        {result.downloadSources.map(
+                                            (source) => (
+                                                <SelectedMenuItem
+                                                    isSelected={
+                                                        source ===
+                                                        selectedSource
+                                                    }
+                                                    onPress={() => {
+                                                        handleSelectedSourceChange(
+                                                            source,
+                                                        );
+                                                    }}
+                                                >
+                                                    {source}
+                                                </SelectedMenuItem>
+                                            ),
+                                        )}
+                                    </MenuContent>
+                                )}
                             </Menu>
 
                             <SpinnerIconButton
