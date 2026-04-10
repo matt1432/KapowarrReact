@@ -211,9 +211,9 @@ export default function InteractiveSearchRow({
                     ...result,
                     issueNumber: issueNumber.includes(',')
                         ? [
-                            parseFloat(issueNumber.split(',')[0]),
-                            parseFloat(issueNumber.split(',')[1]),
-                        ]
+                              parseFloat(issueNumber.split(',')[0]),
+                              parseFloat(issueNumber.split(',')[1]),
+                          ]
                         : parseFloat(issueNumber),
                     releaser,
                     scanType,

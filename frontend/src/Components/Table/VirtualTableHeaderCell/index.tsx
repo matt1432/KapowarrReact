@@ -16,24 +16,26 @@ import styles from './index.module.css';
 // Types
 import type { SortDirection } from 'Helpers/Props/sortDirections';
 
-interface VirtualTableHeaderCellProps {
+interface VirtualTableHeaderCellProps<T extends string> {
     className?: string;
-    name: string;
+    name: T;
+    columnLabel?: string;
     isSortable?: boolean;
-    sortKey?: string | null;
+    sortKey?: T | null;
     sortDirection?: SortDirection | null;
-    secondarySortKey?: string | null;
+    secondarySortKey?: T | null;
     secondarySortDirection?: SortDirection | null;
     fixedSortDirection?: SortDirection;
     children?: React.ReactNode;
-    onSortPress?: (name: string, sortDirection?: SortDirection) => void;
+    onSortPress?: (name: T, sortDirection?: SortDirection) => void;
 }
 
 // IMPLEMENTATIONS
 
-export default function VirtualTableHeaderCell({
+export default function VirtualTableHeaderCell<T extends string = string>({
     className = styles.headerCell,
     name,
+    columnLabel,
     isSortable = false,
     sortKey,
     sortDirection,
@@ -43,7 +45,7 @@ export default function VirtualTableHeaderCell({
     children,
     onSortPress,
     ...otherProps
-}: VirtualTableHeaderCellProps) {
+}: VirtualTableHeaderCellProps<T>) {
     const isSorting =
         isSortable && (name === sortKey || name === secondarySortKey);
     const sortIcon =
@@ -64,6 +66,7 @@ export default function VirtualTableHeaderCell({
 
     return isSortable ? (
         <Link
+            title={columnLabel}
             component="div"
             className={className}
             onPress={handlePress}

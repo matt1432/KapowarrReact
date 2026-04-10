@@ -24,7 +24,8 @@ import styles from './index.module.css';
 // Types
 import type { ExtendableRecord } from 'typings/Misc';
 
-interface VirtualTableProps<T extends ExtendableRecord> {
+export interface VirtualTableProps<T extends ExtendableRecord> {
+    className?: string;
     Header: React.JSX.Element;
     itemCount: number;
     itemData: T;
@@ -32,7 +33,7 @@ interface VirtualTableProps<T extends ExtendableRecord> {
     listRef: RefObject<ListImperativeAPI>;
     rowHeight: number;
     Row(props: RowComponentProps<T>): React.ReactElement;
-    scrollerRef: RefObject<HTMLElement>;
+    scrollerRef: RefObject<HTMLElement | null>;
 }
 
 // IMPLEMENTATIONS
@@ -47,6 +48,7 @@ function getWindowScrollTopPosition() {
 }
 
 export default function VirtualTable<T extends ExtendableRecord>({
+    className,
     Header,
     itemCount,
     itemData,
@@ -118,7 +120,7 @@ export default function VirtualTable<T extends ExtendableRecord>({
     }, [isSmallScreen, listRef, scrollerRef]);
 
     return (
-        <div ref={measureRef}>
+        <div ref={measureRef} className={className}>
             <Scroller
                 className={styles.tableScroller}
                 scrollDirection="horizontal"
