@@ -48,6 +48,8 @@ interface UseSortProps<
 
 // IMPLEMENTATIONS
 
+const collator = new Intl.Collator(undefined, { sensitivity: 'base' });
+
 function predicatesToSorters<
     Name extends keyof ColumnNameMap,
     ColumnName extends ColumnNameMap[Name],
@@ -82,7 +84,7 @@ function predicatesToSorters<
                     return a[key] - b[key];
                 }
                 case 'string': {
-                    return a[key].localeCompare(b[key]);
+                    return collator.compare(a[key], b[key]);
                 }
                 case 'boolean': {
                     return Number(a[key]) - Number(b[key]);
@@ -140,30 +142,36 @@ export default function useSort<
         [columns, predicates],
     );
 
-    return useMemo(() => {
-        const finalItems = items.toSorted(
-            (a, b) =>
-                (sorters[sortKey]?.(sortDirection ?? sortDirections.ASCENDING)(
-                    a,
-                    b,
-                ) ||
-                    sorters[secondarySortKey]?.(
-                        secondarySortDirection ?? sortDirections.ASCENDING,
-                    )(a, b)) ??
-                0,
+    const comparator = (() => {
+        const primary = sorters[sortKey!];
+        const secondary = sorters[secondarySortKey!];
+
+        if (!primary && !secondary) {
+            return () => 0;
+        }
+
+        const primaryFn = primary?.(sortDirection ?? sortDirections.ASCENDING);
+        const secondaryFn = secondary?.(
+            secondarySortDirection ?? sortDirections.ASCENDING,
         );
+
+        return (a: T, b: T) => {
+            const res = primaryFn?.(a, b) ?? 0;
+            if (res !== 0) {
+                return res;
+            }
+            return secondaryFn?.(a, b) ?? 0;
+        };
+    })();
+
+    return useMemo(() => {
+        const sorted = items.toSorted(comparator);
+
         if (itemsRef) {
             // eslint-disable-next-line react-hooks/refs
-            itemsRef.current = finalItems;
+            itemsRef.current = sorted;
         }
-        return finalItems;
-    }, [
-        items,
-        itemsRef,
-        sorters,
-        sortKey,
-        sortDirection,
-        secondarySortKey,
-        secondarySortDirection,
-    ]);
+
+        return sorted;
+    }, [items, comparator, itemsRef]);
 }
