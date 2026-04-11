@@ -5,7 +5,6 @@ import { useCallback, useMemo, useState } from 'react';
 
 // Redux
 import { useAddDownloadMutation } from 'Store/Api/Command';
-import { useGetSettingsQuery } from 'Store/Api/Settings';
 
 // Misc
 import { icons, kinds, tooltipPositions } from 'Helpers/Props';
@@ -50,6 +49,7 @@ interface InteractiveSearchRowProps {
     result: SearchResultItem;
     items: SearchResultItem[];
     searchPayload: InteractiveSearchPayload;
+    isLibgenEnabled: boolean;
 }
 
 // IMPLEMENTATIONS
@@ -108,13 +108,8 @@ export default function InteractiveSearchRow({
     result,
     items,
     searchPayload,
+    isLibgenEnabled,
 }: InteractiveSearchRowProps) {
-    const { isLibgenEnabled } = useGetSettingsQuery(undefined, {
-        selectFromResult: ({ data }) => ({
-            isLibgenEnabled: Boolean(data?.enableLibgen),
-        }),
-    });
-
     const initialIssueNumber = useMemo(
         () =>
             Array.isArray(result.issueNumber)
@@ -179,8 +174,8 @@ export default function InteractiveSearchRow({
                 setScanType(libgenMatch.scanType ?? '');
                 setResolution(libgenMatch.resolution ?? '');
                 setDpi(libgenMatch.dpi ?? '');
-                setGotMatchingFileInfo(true);
             }
+            setGotMatchingFileInfo(true);
         }
     }
 

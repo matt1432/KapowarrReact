@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRootSelector } from 'Store/createAppStore';
 
 import { useFetchQueueDetails } from 'Store/Api/Queue';
+import { useGetSettingsQuery } from 'Store/Api/Settings';
 
 import {
     useLazyManualSearchQuery,
@@ -92,6 +93,12 @@ function InternalSearch({
         (state) => state.tableOptions.interactiveSearch,
     );
 
+    const { isLibgenEnabled } = useGetSettingsQuery(undefined, {
+        selectFromResult: ({ data }) => ({
+            isLibgenEnabled: Boolean(data?.enableLibgen),
+        }),
+    });
+
     const lastIssueNumber = useMemo(() => {
         return Math.max(
             ...items
@@ -139,6 +146,7 @@ function InternalSearch({
                             result={item}
                             items={items}
                             searchPayload={searchPayload}
+                            isLibgenEnabled={isLibgenEnabled}
                         />
                     )}
                     predicates={{
