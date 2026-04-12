@@ -14,11 +14,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1773109390,
-        "narHash": "sha256-ugCxR2nqZS5dgDxZvMa6ltRjqITw3BECHtZgaqe3wSE=",
+        "lastModified": 1775973285,
+        "narHash": "sha256-Bu1/UBg09BV1xr/8QCy5GYOoIOr9dkKs4hyTkwqHYAk=",
         "owner": "matt1432",
         "repo": "LibgenComics",
-        "rev": "7d244858b9e099864a63636b54bbb5e7bcc28d9f",
+        "rev": "0d08a0b9ae6b0eb3f866124972b7c6ee15a08433",
         "type": "github"
       },
       "original": {
@@ -55,11 +55,11 @@
     "simyan-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1772826963,
-        "narHash": "sha256-Q5Wrb/Ln4qnne/B+dU17o2b8D1v4b7w4zUQHevCjXGE=",
+        "lastModified": 1773698123,
+        "narHash": "sha256-aOoAJuIsRSWAJYXKzRLGlHSNE7+F53ldKGXBGwJxVRU=",
         "owner": "Metron-Project",
         "repo": "Simyan",
-        "rev": "786e753695ca3abdefcea3ad030b4b0130438592",
+        "rev": "0dccb1d9a63b922192b5f7fdd44e54368625fef4",
         "type": "github"
       },
       "original": {
