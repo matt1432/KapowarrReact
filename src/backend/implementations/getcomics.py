@@ -3,7 +3,7 @@ Getting downloads from a GC page
 """
 
 import re
-from asyncio import gather
+from asyncio import gather, sleep
 from functools import reduce
 from hashlib import sha1
 from re import IGNORECASE, compile
@@ -998,6 +998,9 @@ class GetComicsPage:
         async with AsyncSession() as session:
             try:
                 response = await session.get(self.link)
+                if not response.ok and response.status == 429:
+                    await sleep(5)
+                    response = await session.get(self.link)
                 if not response.ok:
                     raise ClientError
 
