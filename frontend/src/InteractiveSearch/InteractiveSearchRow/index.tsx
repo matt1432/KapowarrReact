@@ -16,9 +16,6 @@ import translate from 'Utilities/String/translate';
 import { filesize } from 'filesize';
 import classNames from 'classnames';
 
-// Hooks
-import { useHover } from '@uidotdev/usehooks';
-
 // General Components
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import Icon from 'Components/Icon';
@@ -206,8 +203,8 @@ export default function InteractiveSearchRow({
 
     const onGrabPress = useCallback(
         (forceMatch = false) => {
+            setIsGrabbing(true);
             const length = grabCallbacksRef.current.push(() => {
-                setIsGrabbing(true);
                 grabRelease({
                     ...searchPayload,
                     result: {
@@ -323,10 +320,8 @@ export default function InteractiveSearchRow({
         [],
     );
 
-    const [ref, isHovered] = useHover();
-
     return (
-        <TableRow ref={ref}>
+        <TableRow>
             {columns.map(({ isVisible, name }) => {
                 if (!isVisible) {
                     return null;
@@ -490,38 +485,31 @@ export default function InteractiveSearchRow({
                                     name={icons.TORRENT}
                                     title={translate('SelectDownloadSource')}
                                 />
-                                {isHovered && (
-                                    <MenuContent>
+                                <MenuContent>
+                                    <SelectedMenuItem
+                                        isSelected={selectedSource === null}
+                                        onPress={() => {
+                                            handleSelectedSourceChange(null);
+                                        }}
+                                    >
+                                        Auto
+                                    </SelectedMenuItem>
+
+                                    {result.downloadSources.map((source) => (
                                         <SelectedMenuItem
-                                            isSelected={selectedSource === null}
+                                            isSelected={
+                                                source === selectedSource
+                                            }
                                             onPress={() => {
                                                 handleSelectedSourceChange(
-                                                    null,
+                                                    source,
                                                 );
                                             }}
                                         >
-                                            Auto
+                                            {source}
                                         </SelectedMenuItem>
-
-                                        {result.downloadSources.map(
-                                            (source) => (
-                                                <SelectedMenuItem
-                                                    isSelected={
-                                                        source ===
-                                                        selectedSource
-                                                    }
-                                                    onPress={() => {
-                                                        handleSelectedSourceChange(
-                                                            source,
-                                                        );
-                                                    }}
-                                                >
-                                                    {source}
-                                                </SelectedMenuItem>
-                                            ),
-                                        )}
-                                    </MenuContent>
-                                )}
+                                    ))}
+                                </MenuContent>
                             </Menu>
 
                             <SpinnerIconButton
