@@ -112,29 +112,6 @@ class DownloadHandler(metaclass=Singleton):
 
         elif download.state == DownloadState.FAILED_STATE:
             PostProcessor.failed(download)
-            # Libgen downloads can fail a few times before working
-            # when their servers are struggling
-            if (
-                download.source_type == DownloadSource.LIBGENPLUS
-                and download.attempts < 15
-            ):
-                current_index = self.queue.index(download)
-                self.queue.remove(download)
-                ws.emit(RemovedFromQueueEvent(download))
-
-                LOGGER.info(
-                    f"Attempt #{download.attempts + 1} for Libgen Download with id {download.id}"
-                )
-                download.state = DownloadState.QUEUED_STATE
-                self.queue.insert(
-                    current_index,
-                    self.__prepare_downloads_for_queue(
-                        [download], forced_match=False
-                    )[0],
-                )
-
-                self._process_queue()
-                return
 
         elif download.state == DownloadState.DOWNLOADING_STATE:
             download.state = DownloadState.IMPORTING_STATE
@@ -359,7 +336,7 @@ class DownloadHandler(metaclass=Singleton):
                 download.download_thread = Server().get_db_thread(
                     target=self.__run_download,
                     args=(download,),
-                    name=f"DownloadThread-{download.id}-n{download.attempts or 0}",
+                    name=f"DownloadThread-{download.id}",
                 )
 
             if isinstance(download, TorrentDownload):

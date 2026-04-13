@@ -1256,16 +1256,6 @@ class Download(ABC):
 
     @property
     @abstractmethod
-    def attempts(self) -> int:
-        "The amount of times this download has been attempted. Used for Libgen+"
-        ...
-
-    @attempts.setter
-    @abstractmethod
-    def attempts(self, value: int) -> None: ...
-
-    @property
-    @abstractmethod
     def id(self) -> int | None: ...
 
     @id.setter
