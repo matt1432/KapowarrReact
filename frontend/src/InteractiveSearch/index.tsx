@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
@@ -111,6 +111,8 @@ function InternalSearch({
         );
     }, [items]);
 
+    const grabCallbacksRef = useRef<(() => void)[]>([]);
+
     return (
         <div>
             {isFetching ? <LoadingIndicator /> : null}
@@ -147,6 +149,7 @@ function InternalSearch({
                             items={items}
                             searchPayload={searchPayload}
                             isLibgenEnabled={isLibgenEnabled}
+                            grabCallbacksRef={grabCallbacksRef}
                         />
                     )}
                     predicates={{

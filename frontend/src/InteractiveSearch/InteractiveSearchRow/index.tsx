@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, type RefObject } from 'react';
 
 // Redux
 import { useAddDownloadMutation } from 'Store/Api/Command';
@@ -50,6 +50,7 @@ interface InteractiveSearchRowProps {
     items: SearchResultItem[];
     searchPayload: InteractiveSearchPayload;
     isLibgenEnabled: boolean;
+    grabCallbacksRef: RefObject<(() => void)[]>;
 }
 
 // IMPLEMENTATIONS
@@ -109,6 +110,7 @@ export default function InteractiveSearchRow({
     items,
     searchPayload,
     isLibgenEnabled,
+    grabCallbacksRef,
 }: InteractiveSearchRowProps) {
     const initialIssueNumber = useMemo(
         () =>
@@ -179,10 +181,10 @@ export default function InteractiveSearchRow({
         }
     }
 
-    const [grabRelease, { isGrabbing, isGrabbed, isError, errorMessage }] =
+    const [grabRelease, { isLoading, isGrabbed, isError, errorMessage }] =
         useAddDownloadMutation({
             selectFromResult: ({
-                isLoading: isGrabbing,
+                isLoading,
                 isSuccess,
                 isError: _isError,
                 data,
@@ -190,7 +192,7 @@ export default function InteractiveSearchRow({
             }) => {
                 const isError = _isError || (data?.failReason ?? null) !== null;
                 return {
-                    isGrabbing,
+                    isLoading,
                     isGrabbed: isSuccess && !isError,
                     isError,
                     errorMessage: data?.failReason ?? getErrorMessage(error),
@@ -198,28 +200,46 @@ export default function InteractiveSearchRow({
             },
         });
 
+    const [_isGrabbing, setIsGrabbing] = useState(isLoading);
+
+    const isGrabbing = _isGrabbing || isLoading;
+
     const onGrabPress = useCallback(
         (forceMatch = false) => {
-            grabRelease({
-                ...searchPayload,
-                result: {
-                    ...result,
-                    issueNumber: issueNumber.includes(',')
-                        ? [
-                              parseFloat(issueNumber.split(',')[0]),
-                              parseFloat(issueNumber.split(',')[1]),
-                          ]
-                        : parseFloat(issueNumber),
-                    releaser,
-                    scanType,
-                    resolution,
-                    dpi,
-                    selectedSource,
-                },
-                forceMatch,
+            const length = grabCallbacksRef.current.push(() => {
+                setIsGrabbing(true);
+                grabRelease({
+                    ...searchPayload,
+                    result: {
+                        ...result,
+                        issueNumber: issueNumber.includes(',')
+                            ? [
+                                  parseFloat(issueNumber.split(',')[0]),
+                                  parseFloat(issueNumber.split(',')[1]),
+                              ]
+                            : parseFloat(issueNumber),
+                        releaser,
+                        scanType,
+                        resolution,
+                        dpi,
+                        selectedSource,
+                    },
+                    forceMatch,
+                })
+                    .unwrap()
+                    .finally(() => {
+                        grabCallbacksRef.current.shift();
+                        grabCallbacksRef.current[0]?.();
+                        setIsGrabbing(false);
+                    });
             });
+
+            if (length === 1) {
+                grabCallbacksRef.current[0]?.();
+            }
         },
         [
+            grabCallbacksRef,
             grabRelease,
             result,
             searchPayload,
