@@ -415,6 +415,9 @@ class BaseDirectDownload(Download):
 
                     except RequestException:
                         # Connection error, packet loss, etc. Just try again
+                        self._speed = 0
+                        start_time = perf_counter()
+                        ws.emit(status_event)
                         pass
 
                     finally:
