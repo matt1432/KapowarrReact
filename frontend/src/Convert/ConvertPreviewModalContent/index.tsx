@@ -144,7 +144,7 @@ export default function ConvertPreviewModalContent({
         const issueIds = getSelectedIds(selectedState);
 
         executeCommand({
-            cmd: commandNames.RENAME_VOLUME,
+            cmd: commandNames.CONVERT_VOLUME,
             volumeId,
             filepathFilter: items
                 .filter(({ id }) => issueIds.includes(id))
