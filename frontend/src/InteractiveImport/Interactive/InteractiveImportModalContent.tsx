@@ -130,7 +130,7 @@ export default function InteractiveImportModalContent({
     const [_items, setItems] = useState(data);
 
     const [prevData, setPrevData] = useState(data);
-    if (data !== prevData) {
+    if (JSON.stringify(data) !== JSON.stringify(prevData)) {
         setPrevData(data);
         setItems(data);
     }

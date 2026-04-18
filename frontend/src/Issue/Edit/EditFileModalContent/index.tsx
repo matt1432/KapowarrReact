@@ -84,7 +84,7 @@ export default function EditFileModalContent({
     const [notes, setNotes] = useState(data?.notes ?? '');
 
     const [prevData, setPrevData] = useState(data);
-    if (data !== prevData) {
+    if (JSON.stringify(data) !== JSON.stringify(prevData)) {
         setPrevData(data);
 
         if (data) {

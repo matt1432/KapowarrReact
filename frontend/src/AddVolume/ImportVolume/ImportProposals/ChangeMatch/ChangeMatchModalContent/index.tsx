@@ -89,7 +89,7 @@ export default function ChangeMatchModalContent({
         });
 
     const [prevData, setPrevData] = useState(data);
-    if (data !== prevData) {
+    if (JSON.stringify(data) !== JSON.stringify(prevData)) {
         setPrevData(data);
         setShowResults(data.length !== 0);
     }

@@ -88,7 +88,7 @@ export default function History({
     const [totalRecords, setTotalRecords] = useState(data?.totalRecords ?? 0);
 
     const [prevData, setPrevData] = useState(data);
-    if (data !== prevData) {
+    if (JSON.stringify(data) !== JSON.stringify(prevData)) {
         setPrevData(data);
 
         if (data) {

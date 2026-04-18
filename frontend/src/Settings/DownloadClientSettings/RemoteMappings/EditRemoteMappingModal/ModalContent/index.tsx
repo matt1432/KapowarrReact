@@ -75,7 +75,7 @@ export default function EditRemoteMappingModalContent({
     });
 
     const [prevData, setPrevData] = useState(data);
-    if (data !== prevData) {
+    if (JSON.stringify(data) !== JSON.stringify(prevData)) {
         setPrevData(data);
         setChanges({
             id: id ?? 0,
