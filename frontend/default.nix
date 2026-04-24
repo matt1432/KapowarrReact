@@ -12,7 +12,7 @@ buildNpmPackage {
 
   src = ./.;
 
-  npmDepsHash = "sha256-yKdVhgp0kdEllK4Y4QgsYZhT2Z5WoyKhAznycd96tnc=";
+  npmDepsHash = "sha256-4i7m9j76cFe93DH3gYtlZddX59asWpHMLtBdi3ZJy9E=";
 
   env.PROFILER = lib.boolToString enableReactProfiler;
 
