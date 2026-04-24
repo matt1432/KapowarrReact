@@ -75,6 +75,7 @@ in {
           libgencomics # from overrides
           qbittorrent-api
           pillow
+          pytest
           ;
       };
 

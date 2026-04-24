@@ -30,6 +30,9 @@ dependencies = [
   "websocket-client ~= 1.9.0",
   "qbittorrent-api"
 ]
+optional-dependencies = [
+  "pytest ~= 8.3.5",
+]
 
 [project.scripts]
 kapowarr-react = "kapowarr:main"

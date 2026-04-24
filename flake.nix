@@ -74,7 +74,10 @@
 
     devShells = perSystem (pkgs: {
       default = pkgs.mkShell {
-        packages = [(pyEnv pkgs)];
+        packages = [
+          (pyEnv pkgs)
+          (pkgs.writeScriptBin "runTests" ''exec python -m pytest tests/'')
+        ];
       };
     });
   };
