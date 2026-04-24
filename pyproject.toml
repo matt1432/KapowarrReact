@@ -30,7 +30,9 @@ dependencies = [
   "websocket-client ~= 1.9.0",
   "qbittorrent-api"
 ]
-optional-dependencies = [
+
+[optional-dependencies]
+dev = [
   "pytest ~= 8.3.5",
 ]
 
