@@ -220,7 +220,7 @@ def __extract_button_links(
         extracted_title = group.get_text("\x00")
         title = extracted_title.partition("\x00")[0]
         processed_title = extract_filename_data(
-            title, assume_volume_number=False, fix_year=True
+            filepath=title, assume_volume_number=False, fix_year=True
         )
 
         if processed_title["special_version"] == "cover":
@@ -308,7 +308,7 @@ def __extract_list_links(
         # Process data about group
         title: str = group.get_text("\x00").partition("\x00")[0]
         processed_title = extract_filename_data(
-            title, assume_volume_number=False, fix_year=True
+            filepath=title, assume_volume_number=False, fix_year=True
         )
 
         if processed_title["special_version"] == "cover":
@@ -863,7 +863,7 @@ async def search_getcomics(
     for soup in (first_soup, *other_soups):
         for article in _get_articles(soup):
             efd = extract_filename_data(
-                article[1],
+                filepath=article[1],
                 assume_volume_number=False,
                 fix_year=True,
             )
@@ -897,7 +897,7 @@ async def search_getcomics(
                                 filesize = from_filesize(filesize_str)
 
                         efd = extract_filename_data(
-                            display_title,
+                            filepath=display_title,
                             assume_volume_number=False,
                             fix_year=True,
                         )
@@ -930,6 +930,7 @@ async def search_getcomics(
                                     for s in GCDownloadSource._member_map_.values()
                                 ],
                                 selected_source=None,
+                                notes=None,
                             )
                         )
 
@@ -967,6 +968,7 @@ async def search_getcomics(
                         s.value for s in GCDownloadSource._member_map_.values()
                     ],
                     selected_source=None,
+                    notes=None,
                 )
             )
 

@@ -83,7 +83,7 @@ def parse_marvel_issue(
         if title_el is not None:
             title = title_el.get_text()
 
-            efd = extract_filename_data(title)
+            efd = extract_filename_data(filepath=title)
             issue_number = efd["issue_number"]
 
             if special_version == SpecialVersion.VOLUME_AS_ISSUE:

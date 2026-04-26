@@ -141,7 +141,7 @@ def scan_files(
             )
             continue
 
-        file_data = extract_filename_data(file)
+        file_data = extract_filename_data(filepath=file, vd=volume_data)
 
         # Check if file matches volume
         if not file_importing_filter(
@@ -159,7 +159,7 @@ def scan_files(
             if file not in current_issue_files:
                 current_issue_files[file] = FilesDB.add_file(
                     file,
-                    file_extra_info,
+                    file_extra_info or file_data,
                 )
 
             new_general_bindings[current_issue_files[file]] = (
@@ -174,7 +174,7 @@ def scan_files(
             if file not in current_issue_files:
                 current_issue_files[file] = FilesDB.add_file(
                     file,
-                    file_extra_info,
+                    file_extra_info or file_data,
                 )
 
             new_general_bindings[current_issue_files[file]] = (
@@ -190,7 +190,7 @@ def scan_files(
             if file not in current_issue_files:
                 current_issue_files[file] = FilesDB.add_file(
                     file,
-                    file_extra_info,
+                    file_extra_info or file_data,
                 )
 
             new_issue_bindings.add(
@@ -214,7 +214,7 @@ def scan_files(
                 if file not in current_issue_files:
                     current_issue_files[file] = FilesDB.add_file(
                         file,
-                        file_extra_info,
+                        file_extra_info or file_data,
                     )
 
                 for issue in matching_issues:

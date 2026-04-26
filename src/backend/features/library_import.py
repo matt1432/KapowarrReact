@@ -182,7 +182,7 @@ def propose_library_import(
             # File directly in root folder is not allowed
             continue
 
-        file_data = extract_filename_data(f, prefer_folder_year=True)
+        file_data = extract_filename_data(filepath=f, prefer_folder_year=True)
 
         if (
             f.endswith(FileConstants.IMAGE_EXTENSIONS)

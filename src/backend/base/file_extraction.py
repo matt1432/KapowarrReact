@@ -10,6 +10,7 @@ from re import IGNORECASE, Pattern, compile
 from backend.base.definitions import (
     CharConstants,
     FileConstants,
+    FileExtraInfo,
     FilenameData,
     SpecialVersion,
     VolumeData,
@@ -375,10 +376,12 @@ def _find_issue_numbers(
 
 
 def extract_filename_data(
+    *,
     filepath: str,
     assume_volume_number: bool = True,
     prefer_folder_year: bool = False,
     fix_year: bool = False,
+    vd: VolumeData | None = None,
 ) -> FilenameData:
     """Extract comic data from a string and generalise it. The string can be a
     filepath, filename, search result title, etc.
@@ -676,6 +679,18 @@ def extract_filename_data(
     if fix_year and year is not None:
         year = fix_broken_year(year)
 
+    from backend.implementations.naming import determine_format
+
+    format, _ = (
+        determine_format(
+            volume_data=vd,
+            calculated_issue_number=calculated_issue_number,
+            file_data=None,
+        )
+        if vd is not None and calculated_issue_number is not None
+        else (None, None)
+    )
+
     file_data = FilenameData(
         series=series,
         year=year,
@@ -685,6 +700,7 @@ def extract_filename_data(
         annual=annual,
         is_image_file=is_image_file,
         is_metadata_file=is_metadata_file,
+        **extract_file_extra_info(filepath=filepath, format=format),
     )
 
     LOGGER.debug(f"Extracting filename data: {file_data}")
@@ -740,3 +756,59 @@ def refine_special_version[FilenameDataOrSubclass: FilenameData](
         file_data["special_version"] = volume_data.special_version.value
 
     return file_data
+
+
+def extract_file_extra_info(
+    *,
+    filepath: str,
+    format: str | None = None,
+) -> FileExtraInfo:
+    from backend.implementations.naming import get_placeholders
+
+    result = FileExtraInfo(
+        releaser=None,
+        scan_type=None,
+        resolution=None,
+        dpi=None,
+        notes=None,
+    )
+
+    if format is None:
+        return result
+
+    file_extra_info_keys = list(FileExtraInfo.__annotations__.keys())
+    filename_data_keys = list(FilenameData.__annotations__.keys())
+
+    placeholders = get_placeholders(format)
+    suffix_prefix: list[tuple[str, str, str]] = []
+
+    for placeholder in placeholders:
+        for key in filename_data_keys:
+            if placeholder.count(key) != 0:
+                prefix, suffix = placeholder.split(key, 1)
+                suffix_prefix.append((key, prefix, suffix))
+                continue
+
+    filepath, _ = splitext(basename(filepath))
+    filepath = " " + filepath
+
+    for key, prefix, suffix in suffix_prefix:
+        if prefix == "":
+            continue
+
+        split_filepath = filepath.split(prefix)
+        if len(split_filepath) <= 1:
+            continue
+
+        beginning = split_filepath[1]
+        result_value = beginning.split(suffix)[0] if suffix != "" else beginning
+
+        split_filepath = filepath.split(result_value + suffix)
+
+        if key in file_extra_info_keys:
+            result[key] = result_value
+
+        if len(split_filepath) > 1:
+            filepath = split_filepath[1]
+
+    return result

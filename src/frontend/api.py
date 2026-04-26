@@ -170,6 +170,7 @@ def extract_key(
                 comics_id=parse_int("comics_id"),
                 md5=request.values.get("md5") or request.values.get("md_5"),
                 web_sub_title=request.values.get("web_sub_title"),
+                notes=request.values.get("notes", None),
                 # Only used for the frontend
                 download_sources=[],
                 selected_source=request.values.get("selected_source", None),

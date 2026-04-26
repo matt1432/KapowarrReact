@@ -193,7 +193,7 @@ class SearchLibgenPlus(SearchSource):
         filename = file_result.filename
 
         if filename:
-            efd = extract_filename_data(filename)
+            efd = extract_filename_data(filepath=filename)
 
             download_sources = [
                 DownloadSource.LIBGENPLUS.value,
@@ -230,6 +230,7 @@ class SearchLibgenPlus(SearchSource):
                     web_sub_title=None,
                     download_sources=download_sources,
                     selected_source=None,
+                    notes=None,
                 )
             )
         return results
@@ -315,7 +316,7 @@ class SearchLibgenPlus(SearchSource):
                 except Exception:
                     pass
 
-            efd = extract_filename_data(filename)
+            efd = extract_filename_data(filepath=filename)
 
             download_sources = [
                 DownloadSource.LIBGENPLUS.value,
@@ -352,6 +353,7 @@ class SearchLibgenPlus(SearchSource):
                     web_sub_title=None,
                     download_sources=download_sources,
                     selected_source=None,
+                    notes=None,
                 )
             )
 

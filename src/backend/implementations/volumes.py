@@ -200,7 +200,9 @@ class Issue:
             IssueFileData(
                 {
                     **file,
-                    **extract_filename_data(file["filepath"]),
+                    **extract_filename_data(
+                        filepath=file["filepath"],
+                    ),
                 }
             )
             for file in final_files
@@ -596,7 +598,9 @@ class Volume:
                 IssueFileData(
                     {
                         **file,
-                        **extract_filename_data(file["filepath"]),
+                        **extract_filename_data(
+                            filepath=file["filepath"],
+                        ),
                     }
                 )
                 for file in final_files

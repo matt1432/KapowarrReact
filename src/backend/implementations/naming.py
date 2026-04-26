@@ -246,7 +246,7 @@ def get_issue_naming_keys(
     )
 
 
-def _get_placeholders(format: str) -> list[str]:
+def get_placeholders(format: str) -> list[str]:
     return findall(r"\{([^}]*)\}", format)
 
 
@@ -270,7 +270,7 @@ def _get_corresponding_formatted_naming_keys(
 
 
 def _fill_format(format: str, formatting_data: BaseNamingKeys) -> str:
-    placeholders = _get_placeholders(format)
+    placeholders = get_placeholders(format)
     formatted_data = _get_corresponding_formatted_naming_keys(
         placeholders, formatting_data.todict()
     )
@@ -327,7 +327,7 @@ def generate_volume_folder_path(
     return clean_filepath(abspath(join(root_folder, vf)))
 
 
-def _determine_format(
+def determine_format(
     *,
     volume_data: VolumeData,
     calculated_issue_number: float | tuple[float, float] | None,
@@ -437,7 +437,7 @@ def generate_issue_name(
     """
     sv = Settings().sv
 
-    naming_format, formatting_data = _determine_format(
+    naming_format, formatting_data = determine_format(
         volume_data=volume_data,
         calculated_issue_number=calculated_issue_number,
         is_volume_cover=is_volume_cover,
@@ -478,7 +478,7 @@ def generate_issue_name(
             resulting_name = titleless_name
 
     elif (
-        extract_filename_data(resulting_name)["issue_number"]
+        extract_filename_data(filepath=resulting_name)["issue_number"]
         != calculated_issue_number
     ):
         # When applying the EFD algorithm to the generated filename, we don't
@@ -489,7 +489,7 @@ def generate_issue_name(
         # without the title and see if that fixes it. If so, use it. If not,
         # then give up and just use the original name.
         titleless_name = _fill_format(sv.file_naming_empty, formatting_data)
-        efd_check = extract_filename_data(titleless_name)
+        efd_check = extract_filename_data(filepath=titleless_name)
         if efd_check["issue_number"] == calculated_issue_number:
             resulting_name = titleless_name
 
@@ -560,7 +560,7 @@ def check_format(format: str, type: str) -> bool:
     sorted_naming_keys = sorted(
         naming_keys.__dataclass_fields__, key=lambda item: len(item)
     )
-    placeholders = _get_placeholders(format)
+    placeholders = get_placeholders(format)
     checked = 0
 
     for placeholder in placeholders:
@@ -728,7 +728,7 @@ def check_mock_filename(
                     mock_issue.date
                 )
             }
-            efd = extract_filename_data(resulting_name)
+            efd = extract_filename_data(filepath=resulting_name)
             if not (
                 file_importing_filter(
                     efd, mock_volume, [mock_issue], number_to_year

@@ -65,8 +65,9 @@ def extract_files_from_folder(source_folder: str, volume_id: int) -> list[str]:
         # extracted series name is correct, if series name is extracted from
         # foldername.
         efd = extract_filename_data(
-            file.replace(Constants.ARCHIVE_EXTRACT_FOLDER + "_", ""),
+            filepath=file.replace(Constants.ARCHIVE_EXTRACT_FOLDER + "_", ""),
             assume_volume_number=False,
+            vd=volume_data,
         )
 
         if folder_extraction_filter(efd, volume_data, volume_issues, end_year):

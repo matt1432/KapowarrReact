@@ -688,7 +688,7 @@ class FileExtraInfo(TypedDict):
     notes: str | None
 
 
-class FilenameData(TypedDict):
+class FilenameData(FileExtraInfo):
     series: str
     year: int | None
     volume_number: int | tuple[int, int] | None
@@ -712,10 +712,6 @@ class SearchResultData(FilenameData):
     source: str
     filesize: int | None
     pages: int | None
-    releaser: str | None
-    scan_type: str | None
-    resolution: str | None
-    dpi: str | None
     extension: str | None
     comics_id: int | None
     md5: str | None
