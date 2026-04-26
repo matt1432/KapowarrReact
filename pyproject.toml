@@ -29,7 +29,7 @@ dependencies = [
   "flask-socketio ~= 5.6.0",
   "libgencomics @ git+https://github.com/matt1432/LibgenComics.git@v1.3.4",
   "Pillow",
-  "requests ~= 2.32.3",
+  "requests ~= 2.33.1",
   "simyan",
   "waitress ~= 3.0.2",
   "websocket-client ~= 1.9.0",
