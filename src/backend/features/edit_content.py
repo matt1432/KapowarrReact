@@ -1,6 +1,6 @@
 from io import BytesIO
 from os import listdir
-from os.path import basename, dirname, exists, join
+from os.path import dirname, exists, join, splitext
 from zipfile import ZipFile
 
 from PIL import Image
@@ -104,13 +104,19 @@ def delete_thumbnails() -> None:
         delete_file_folder(folder)
 
 
-def _generate_thumbnail(file_path: str, folder: str) -> str:
+def _generate_thumbnail(
+    file_path: str,
+    folder: str,
+    archive_folder: str,
+) -> str:
     """From the page of a book, create a thumbnail that is 600 pixels high
 
     Args:
         file_path (str): the path to the page image file
 
         folder (str): the folder in which we will place the thumbnail
+
+        archive_folder (str): the folder where the pages were extracted
 
     Returns:
         str: the path of the resulting thumbnail
@@ -129,10 +135,9 @@ def _generate_thumbnail(file_path: str, folder: str) -> str:
             Image.Resampling.LANCZOS,
         )
 
-    new_filename = join(
-        folder,
-        basename(file_path),
-    )
+    new_filename = file_path.replace(archive_folder, folder)
+    create_folder(dirname(new_filename))
+
     try:
         img.save(new_filename, optimize=True)
     except OSError:
@@ -143,14 +148,14 @@ def _generate_thumbnail(file_path: str, folder: str) -> str:
 
 
 def _generate_page_thumbnails(
-    issue_id: int,
+    thumbnails_folder: str,
     file_path: str,
 ) -> list[str]:
     """Generates a thumbnail of every page inside a book and returns
     a list of their corresponding file names
 
     Args:
-        issue_id (int): the ID of the file's corresponding issue
+        thumbnails_folder (str): the path of the file's thumbnails
 
         file_path (str): the path of the given file
 
@@ -159,35 +164,40 @@ def _generate_page_thumbnails(
     """
     volume_id = FilesDB.volume_of_file(file_path)
 
-    # TODO: use splitext
-    extension = file_path.split(".")[-1]
+    extension = splitext(file_path)[1].lower()
 
-    if not volume_id or extension not in ("cbr", "cbz"):
+    if not volume_id or extension not in (".cbr", ".cbz"):
         return []
 
     original_pages = _extract_files(file_path)
 
-    thumbnails_folder = _get_thumbnails_folder(issue_id, file_path)
     delete_file_folder(thumbnails_folder)
 
     create_folder(thumbnails_folder)
+
+    volume_folder = Volume(volume_id).vd.folder
+    archive_folder = generate_archive_folder(volume_folder, file_path)
 
     new_pages: list[str] = []
 
     for page in original_pages:
         if page.endswith(FileConstants.IMAGE_EXTENSIONS):
-            new_pages.append(_generate_thumbnail(page, thumbnails_folder))
+            new_pages.append(_generate_thumbnail(page, thumbnails_folder, archive_folder))
 
-    volume_folder = Volume(volume_id).vd.folder
-    delete_file_folder(generate_archive_folder(volume_folder, file_path))
+    delete_file_folder(archive_folder)
 
     return new_pages
 
 
-def _get_thumbnails_data(thumbnails: list[str]) -> list[ThumbnailData]:
+def _get_thumbnails_data(
+    thumbnails_folder: str,
+    thumbnails: list[str],
+) -> list[ThumbnailData]:
     """Add additional data to each thumbnail path for the frontend
 
     Args:
+        thumbnails_folder (str): the path of the file's thumbnails
+
         thumbnails (list[str]): list of paths of the thumbnails
 
     Returns:
@@ -198,10 +208,9 @@ def _get_thumbnails_data(thumbnails: list[str]) -> list[ThumbnailData]:
 
     thumbnails_data: list[ThumbnailData] = []
 
-    # FIXME: use _get_thumbnails_folder instead of doing basename
-    filenames = [basename(thumbnail) for thumbnail in thumbnails]
+    filenames = [thumbnail.replace(thumbnails_folder, "")[1:] for thumbnail in thumbnails]
     prefix = get_files_prefix(filenames)
-    folder_name = dirname(thumbnails[0]) if len(thumbnails) != 0 else ""
+    folder_name = dirname(filenames[0])
 
     for thumbnail, filename in zip(thumbnails, filenames):
         thumbnails_data.append(
@@ -235,19 +244,17 @@ def get_issue_page_thumbnails(
     Returns:
         list[ThumbnailData]: the data of each thumbnail
     """
-    if refresh:
-        return _get_thumbnails_data(
-            _generate_page_thumbnails(issue_id, file_path)
-        )
-
     thumbnails_folder = _get_thumbnails_folder(issue_id, file_path)
 
-    if exists(thumbnails_folder):
-        return _get_thumbnails_data(list_files(thumbnails_folder))
-    else:
+    if refresh or not exists(thumbnails_folder):
         return _get_thumbnails_data(
-            _generate_page_thumbnails(issue_id, file_path)
+            thumbnails_folder,
+            _generate_page_thumbnails(thumbnails_folder, file_path),
         )
+
+    return _get_thumbnails_data(
+        thumbnails_folder, list_files(thumbnails_folder)
+    )
 
 
 def get_issue_page_thumbnail(page: str) -> BytesIO:
@@ -298,7 +305,7 @@ def update_issue_pages(file_id: int, new_pages: list[ThumbnailData]) -> None:
                 zip.write(filename=join(archive_folder, f), arcname=f)
 
             for page in new_pages:
-                if basename(f) == page["current_filename"]:
+                if f == page["current_filename"]:
                     zip.write(
                         filename=join(archive_folder, f),
                         arcname=page["new_filename"],
