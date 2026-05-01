@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from asyncio import gather, run
+from asyncio import gather, run, sleep
 from collections.abc import Iterable
 from os import listdir
 from os.path import basename, join
@@ -72,6 +72,8 @@ download_type_to_class: dict[str, type[Download]] = {
 
 class DownloadHandler(metaclass=Singleton):
     queue: list[Download] = []
+
+    has_annas_running = False
 
     def __init__(self) -> None:
         """Setup the download handler"""
@@ -217,10 +219,13 @@ class DownloadHandler(metaclass=Singleton):
         """
         active_downloads = 0
         max_downloads = self.settings.sv.concurrent_direct_downloads
+        has_annas_running = False
         for download in self.queue:
             if not isinstance(download, ExternalDownload):
                 if download.state == DownloadState.DOWNLOADING_STATE:
                     active_downloads += 1
+                    if download.source_type == DownloadSource.ANNAS_ARCHIVE:
+                        has_annas_running = True
 
                 elif (
                     download.state == DownloadState.QUEUED_STATE
@@ -229,9 +234,13 @@ class DownloadHandler(metaclass=Singleton):
                     if download.download_thread is not None:
                         download.download_thread.start()
                     active_downloads += 1
+                    if download.source_type == DownloadSource.ANNAS_ARCHIVE:
+                        has_annas_running = True
 
                 if active_downloads >= max_downloads:
                     break
+
+        self.has_annas_running = has_annas_running
 
         return
 
@@ -419,6 +428,50 @@ class DownloadHandler(metaclass=Singleton):
         """
         return any(d.volume_id == volume_id for d in self.queue)
 
+    async def _run_annas_dl(
+        self, link, volume_id, issue_id, result, force_match
+    ) -> tuple[list[Download], EnqueuingDownloadFailureReason | None]:
+        download_link = await get_annas_archive_download(
+            md5=result["md5"],
+            annas_archive_site_url=Constants.ANNAS_ARCHIVE_SITE_URL,
+            flaresolverr_url=self.settings.sv.flaresolverr_base_url
+            + Constants.FS_API_BASE,
+        )
+
+        if download_link is None:
+            LOGGER.info(
+                "Getting Anna's Archive download failed for "
+                + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}"
+            )
+            return [], EnqueuingDownloadFailureReason.LINK_BROKEN
+
+        LOGGER.info(
+            "Adding download for "
+            + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}: "
+            + f"{download_link}"
+        )
+
+        downloads: list[Download] = [
+            DirectDownload(
+                download_link=download_link,
+                volume_id=volume_id,
+                covered_issues=result.get("issue_number", None),
+                source_type=DownloadSource.ANNAS_ARCHIVE,
+                source_name="Anna's Archive",
+                web_link=link,
+                web_title=None,
+                web_sub_title=None,
+                releaser=result.get("releaser", None),
+                scan_type=result.get("scan_type", None),
+                resolution=result.get("resolution", None),
+                dpi=result.get("dpi", None),
+                extension=result.get("extension", None),
+                forced_match=force_match,
+            )
+        ]
+
+        return downloads, None
+
     async def add(
         self,
         result: SearchResultData,
@@ -495,44 +548,20 @@ class DownloadHandler(metaclass=Singleton):
             elif (
                 result["selected_source"] == DownloadSource.ANNAS_ARCHIVE.value
             ):
-                download_link = await get_annas_archive_download(
-                    md5=result["md5"],
-                    annas_archive_site_url=Constants.ANNAS_ARCHIVE_SITE_URL,
-                    flaresolverr_url=self.settings.sv.flaresolverr_base_url
-                    + Constants.FS_API_BASE,
-                )
-
-                if download_link is None:
-                    LOGGER.info(
-                        "Getting Anna's Archive download failed for "
-                        + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}"
+                while True:
+                    if self.has_annas_running:
+                        await sleep(5)
+                        continue
+                    results, err = await self._run_annas_dl(
+                        link, volume_id, issue_id, result, force_match
                     )
-                    return [], EnqueuingDownloadFailureReason.LINK_BROKEN
 
-                LOGGER.info(
-                    "Adding download for "
-                    + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}: "
-                    + f"{download_link}"
-                )
+                    if err is None:
+                        downloads += results
+                    else:
+                        return [], err
 
-                downloads.append(
-                    DirectDownload(
-                        download_link=download_link,
-                        volume_id=volume_id,
-                        covered_issues=result.get("issue_number", None),
-                        source_type=DownloadSource.LIBGENPLUS,
-                        source_name="Libgen+",
-                        web_link=link,
-                        web_title=None,
-                        web_sub_title=None,
-                        releaser=result.get("releaser", None),
-                        scan_type=result.get("scan_type", None),
-                        resolution=result.get("resolution", None),
-                        dpi=result.get("dpi", None),
-                        extension=result.get("extension", None),
-                        forced_match=force_match,
-                    )
-                )
+                    break
             else:
                 download_link = link.replace("file.php", "get.php")
 

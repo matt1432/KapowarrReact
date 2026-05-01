@@ -182,7 +182,9 @@ def _generate_page_thumbnails(
 
     for page in original_pages:
         if page.endswith(FileConstants.IMAGE_EXTENSIONS):
-            new_pages.append(_generate_thumbnail(page, thumbnails_folder, archive_folder))
+            new_pages.append(
+                _generate_thumbnail(page, thumbnails_folder, archive_folder)
+            )
 
     delete_file_folder(archive_folder)
 
@@ -208,7 +210,9 @@ def _get_thumbnails_data(
 
     thumbnails_data: list[ThumbnailData] = []
 
-    filenames = [thumbnail.replace(thumbnails_folder, "")[1:] for thumbnail in thumbnails]
+    filenames = [
+        thumbnail.replace(thumbnails_folder, "")[1:] for thumbnail in thumbnails
+    ]
     prefix = get_files_prefix(filenames)
     folder_name = dirname(filenames[0])
 
