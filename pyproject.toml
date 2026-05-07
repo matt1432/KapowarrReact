@@ -30,7 +30,7 @@ dependencies = [
   "libgencomics @ git+https://github.com/matt1432/LibgenComics.git@v1.3.4",
   "Pillow",
   "requests ~= 2.33.1",
-  "simyan ~= 1.6.0",
+  "simyan ~= 2.0.0",
   "waitress ~= 3.0.2",
   "websocket-client ~= 1.9.0",
   "qbittorrent-api"
