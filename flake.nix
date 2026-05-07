@@ -41,14 +41,13 @@
     libgencomics,
     ...
   }: let
+    inherit (nixpkgs) lib;
+
     perSystem = attrs:
-      nixpkgs.lib.genAttrs (import systems) (system:
+      lib.genAttrs (import systems) (system:
         attrs (import nixpkgs {
           inherit system;
-          overlays = [
-            libgencomics.overlays.default
-            self.overlays.default
-          ];
+          overlays = [self.overlays.default];
           config.allowUnfreePredicate = pkg: builtins.elem pkg.pname ["rar"];
         }));
 
@@ -60,7 +59,10 @@
       default = self.nixosModules.kapowarr-react;
     };
 
-    overlays.default = import ./nix/overlays.nix self;
+    overlays.default = lib.composeManyExtensions [
+      libgencomics.overlays.default
+      (import ./nix/overlays.nix self)
+    ];
 
     packages = perSystem (pkgs: {
       inherit (pkgs) kapowarr-web kapowarr-react;

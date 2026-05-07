@@ -1,32 +1,23 @@
 self: final: _prev: let
-  pyPkgs = final.python3Packages.override (o: {
-    overrides = pyFinal: pyPrev:
-      (o.overrides pyFinal pyPrev)
-      // {
-        bencoding = pyFinal.callPackage ({
-          # nix build inputs
-          buildPythonPackage,
-          fetchPypi,
-          # python deps
-          setuptools,
-          ...
-        }: let
-          pname = "bencoding";
-          version = "0.2.6";
-        in
-          buildPythonPackage {
-            inherit pname version;
+  bencoding = final.callPackage ({
+    python3Packages,
+    fetchPypi,
+    ...
+  }: let
+    pname = "bencoding";
+    version = "0.2.6";
+  in
+    python3Packages.buildPythonPackage {
+      inherit pname version;
 
-            pyproject = true;
-            build-system = [setuptools];
+      pyproject = true;
+      build-system = with python3Packages; [setuptools];
 
-            src = fetchPypi {
-              inherit pname version;
-              hash = "sha256-Q8zjHUhj4p1rxhFVHU6fJlK+KZXp1eFbRtg4PxgNREA=";
-            };
-          }) {};
+      src = fetchPypi {
+        inherit pname version;
+        hash = "sha256-Q8zjHUhj4p1rxhFVHU6fJlK+KZXp1eFbRtg4PxgNREA=";
       };
-  });
+    }) {};
 in {
   kapowarr-web = final.callPackage "${self}/frontend" {};
 
@@ -37,6 +28,9 @@ in {
     # deps
     kapowarr-web,
     rar,
+    # libgencomics deps
+    simyan,
+    libgencomics,
     # options
     enableReactProfiler ? false,
     ...
@@ -61,18 +55,21 @@ in {
 
       dependencies = attrValues {
         inherit
+          bencoding
+          simyan # from overrides
+          libgencomics # from overrides
+          ;
+
+        inherit
           (python3Packages)
           requests
           beautifulsoup4
           flask
           waitress
           cryptography
-          bencoding # from overrides
           aiohttp
           flask-socketio
           websocket-client
-          simyan # from overrides
-          libgencomics # from overrides
           qbittorrent-api
           pillow
           pytest
@@ -97,5 +94,5 @@ in {
           fitting in the *arr suite of software.
         '';
       };
-    }) {python3Packages = pyPkgs;};
+    }) {};
 }
