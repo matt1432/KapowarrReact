@@ -348,7 +348,7 @@ class IssueNotFound(KapowarrException):
 class TaskNotFound(KapowarrException):
     "Task with given ID or name not found"
 
-    def __init__(self, id_or_name: int | str) -> None:
+    def __init__(self, id_or_name: int | str | None) -> None:
         self.task_id = None
         self.task_name = None
         if isinstance(id_or_name, int):
