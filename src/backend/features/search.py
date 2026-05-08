@@ -235,29 +235,115 @@ class SearchLibgenPlus(SearchSource):
             )
         return results
 
+    def _parse_result(
+        self,
+        file_result: ResultFile,
+    ) -> tuple[SearchResultData | None, set[str]]:
+        resulting_libgen_series_ids: set[str] = set()
+        settings = Settings().sv
+
+        issue = file_result.issue
+        filename = file_result.filename
+
+        if not filename:
+            return None, resulting_libgen_series_ids
+
+        if not settings.include_cover_only_files:
+            # we want to filter out cover only files
+            if (
+                file_result.get("scan_content") or ""
+            ) == "cover only" or file_result.pages == 1:
+                return None, resulting_libgen_series_ids
+
+        if not settings.include_scanned_books:
+            # we want to filter out physically scanned books
+            if (file_result.scan_type or "") != "digital":
+                return None, resulting_libgen_series_ids
+
+        if issue is not None:
+            try:
+                if isinstance(issue.series.id, int):
+                    resulting_libgen_series_ids.add(str(issue.series.id))
+            except Exception:
+                pass
+
+        efd = extract_filename_data(filepath=filename)
+
+        download_sources = [
+            DownloadSource.LIBGENPLUS.value,
+            DownloadSource.LIBGENPLUS_TORRENT.value,
+        ]
+
+        if settings.flaresolverr_base_url:
+            download_sources.append(DownloadSource.ANNAS_ARCHIVE.value)
+
+        return SearchResultData(
+            series=issue.series.title or "" if issue else efd["series"],
+            year=issue.year if issue else efd["year"],
+            volume_number=efd["volume_number"],
+            special_version=efd["special_version"],
+            issue_number=efd["issue_number"],
+            annual=efd["annual"],
+            is_image_file=efd["is_image_file"],
+            is_metadata_file=efd["is_metadata_file"],
+            link=f"{Constants.LIBGEN_SITE_URL}/file.php?md5={file_result.get('md5')}",
+            display_title=filename,
+            source="Libgen+",
+            filesize=file_result.filesize,
+            pages=file_result.pages or 0,
+            releaser=file_result.releaser or "",
+            scan_type=file_result.scan_type or "",
+            resolution=file_result.resolution or "",
+            dpi=file_result.dpi or "",
+            extension=file_result.extension or "",
+            comics_id=int(file_result.get("comics_id"))
+            if file_result.get("comics_id") is not None
+            else None,
+            md5=file_result.get("md5"),
+            web_sub_title=None,
+            download_sources=download_sources,
+            selected_source=None,
+            notes=None,
+        ), resulting_libgen_series_ids
+
+    async def _fetch_results(
+        self,
+        issue_number: int | float | tuple[float, float] | None,
+        series_ids: list[int] | None,
+    ) -> list[ResultFile]:
+        file_results: list[ResultFile] = []
+        settings = Settings().sv
+
+        flaresolverr_url = (
+            settings.flaresolverr_base_url + Constants.FS_API_BASE
+            if settings.flaresolverr_base_url != ""
+            else None
+        )
+
+        try:
+            file_results = await LibgenSearch().search_comicvine_id(
+                query=self.query,
+                api_key=settings.comicvine_api_key,
+                id=self.volume.get_data().comicvine_id,
+                issue_number=issue_number,
+                libgen_series_id=series_ids,
+                libgen_site_url=Constants.LIBGEN_SITE_URL,
+                flaresolverr_url=flaresolverr_url,
+                cv_cache=ComicVine().cache,
+            )
+        except LibgenException as e:
+            LOGGER.info(e)
+
+        return file_results
+
     async def search(
         self,
         session: AsyncSession,
     ) -> list[SearchResultData]:
         results: list[SearchResultData] = []
 
-        settings = Settings().sv
-
-        if not settings.enable_libgen:
+        if not Settings().sv.enable_libgen:
             return results
-
-        volume_data = self.volume.get_data()
-
-        libgen_series_id: str | None = None
-
-        if volume_data.libgen_series_id is not None:
-            libgen_series_id = volume_data.libgen_series_id
-
-        series_ids = (
-            list(map(int, libgen_series_id.split(",")))
-            if libgen_series_id is not None and libgen_series_id != ""
-            else None
-        )
 
         issue_number = (
             int(self.issue_number)
@@ -266,99 +352,19 @@ class SearchLibgenPlus(SearchSource):
             else self.issue_number
         )
 
-        file_results: list[ResultFile] = []
-
-        try:
-            flaresolverr_url = (
-                settings.flaresolverr_base_url + Constants.FS_API_BASE
-                if settings.flaresolverr_base_url != ""
-                else None
-            )
-            file_results = await LibgenSearch().search_comicvine_id(
-                query=self.query,
-                api_key=settings.comicvine_api_key,
-                id=self.volume.get_data().comicvine_id,
-                issue_number=issue_number,
-                libgen_series_id=series_ids if self.is_last else None,
-                libgen_site_url=Constants.LIBGEN_SITE_URL,
-                flaresolverr_url=flaresolverr_url,
-                cv_cache=ComicVine().cache,
-            )
-        except LibgenException as e:
-            LOGGER.info(e)
+        file_results = await self._fetch_results(issue_number, None)
 
         resulting_libgen_series_ids: set[str] = set()
 
         for file_result in file_results:
-            issue = file_result.issue
+            parsed_result, new_series_ids = self._parse_result(file_result)
+            resulting_libgen_series_ids.update(new_series_ids)
 
-            filename = file_result.filename
-
-            if not filename:
-                continue
-
-            if not settings.include_cover_only_files:
-                # we want to filter out cover only files
-                if (
-                    file_result.get("scan_content") or ""
-                ) == "cover only" or file_result.pages == 1:
-                    continue
-
-            if not settings.include_scanned_books:
-                # we want to filter out physically scanned books
-                if (file_result.scan_type or "") != "digital":
-                    continue
-
-            if issue is not None:
-                try:
-                    if isinstance(issue.series.id, int):
-                        resulting_libgen_series_ids.add(str(issue.series.id))
-                except Exception:
-                    pass
-
-            efd = extract_filename_data(filepath=filename)
-
-            download_sources = [
-                DownloadSource.LIBGENPLUS.value,
-                DownloadSource.LIBGENPLUS_TORRENT.value,
-            ]
-
-            if Settings().sv.flaresolverr_base_url:
-                download_sources.append(DownloadSource.ANNAS_ARCHIVE.value)
-
-            results.append(
-                SearchResultData(
-                    series=issue.series.title or "" if issue else efd["series"],
-                    year=issue.year if issue else efd["year"],
-                    volume_number=efd["volume_number"],
-                    special_version=efd["special_version"],
-                    issue_number=efd["issue_number"],
-                    annual=efd["annual"],
-                    is_image_file=efd["is_image_file"],
-                    is_metadata_file=efd["is_metadata_file"],
-                    link=f"{Constants.LIBGEN_SITE_URL}/file.php?md5={file_result.get('md5')}",
-                    display_title=filename,
-                    source="Libgen+",
-                    filesize=file_result.filesize,
-                    pages=file_result.pages or 0,
-                    releaser=file_result.releaser or "",
-                    scan_type=file_result.scan_type or "",
-                    resolution=file_result.resolution or "",
-                    dpi=file_result.dpi or "",
-                    extension=file_result.extension or "",
-                    comics_id=int(file_result.get("comics_id"))
-                    if file_result.get("comics_id") is not None
-                    else None,
-                    md5=file_result.get("md5"),
-                    web_sub_title=None,
-                    download_sources=download_sources,
-                    selected_source=None,
-                    notes=None,
-                )
-            )
+            if parsed_result is not None:
+                results.append(parsed_result)
 
         if (
-            not volume_data.libgen_series_id
+            not self.volume.vd.libgen_series_id
             and len(resulting_libgen_series_ids) != 0
         ):
             self.volume.update(
@@ -366,6 +372,26 @@ class SearchLibgenPlus(SearchSource):
                     "libgen_series_id": ",".join(resulting_libgen_series_ids),
                 }
             )
+
+        if self.is_last:
+            libgen_series_id: str | None = None
+            volume_data = self.volume.vd
+
+            if volume_data.libgen_series_id is not None:
+                libgen_series_id = volume_data.libgen_series_id
+
+            series_ids = (
+                list(map(int, libgen_series_id.split(",")))
+                if libgen_series_id is not None and libgen_series_id != ""
+                else None
+            )
+            file_results = await self._fetch_results(issue_number, series_ids)
+
+            for file_result in file_results:
+                parsed_result, _ = self._parse_result(file_result)
+
+                if parsed_result is not None:
+                    results.append(parsed_result)
 
         return results
 
