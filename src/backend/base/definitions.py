@@ -1053,6 +1053,7 @@ class SearchSource(ABC):
         query: str,
         volume: Volume,
         issue_number: float | tuple[float, float] | None,
+        is_last: bool = False,
     ) -> None:
         """Prepare the search source.
 
@@ -1062,6 +1063,7 @@ class SearchSource(ABC):
         self.query = query
         self.volume = volume
         self.issue_number = issue_number
+        self.is_last = is_last
         return
 
     async def search(self, session: AsyncSession) -> list[SearchResultData]:

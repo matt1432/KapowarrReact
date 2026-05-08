@@ -279,7 +279,7 @@ class SearchLibgenPlus(SearchSource):
                 api_key=settings.comicvine_api_key,
                 id=self.volume.get_data().comicvine_id,
                 issue_number=issue_number,
-                libgen_series_id=series_ids,
+                libgen_series_id=series_ids if self.is_last else None,
                 libgen_site_url=Constants.LIBGEN_SITE_URL,
                 flaresolverr_url=flaresolverr_url,
                 cv_cache=ComicVine().cache,
@@ -382,16 +382,19 @@ async def search_multiple_queries(
         duplicates removed.
     """
     async with AsyncSession() as session:
-        searches = [
-            Source(
-                query=query,
-                volume=volume,
-                issue_number=issue_number,
-            ).search(session)
-            for Source in get_subclasses(SearchSource)
-            for query in queries
-        ]
-        responses = await gather(*searches)
+        responses = []
+        for i, query in enumerate(queries):
+            LOGGER.debug(f"Searching for {query}")
+            searches = [
+                Source(
+                    query=query,
+                    volume=volume,
+                    issue_number=issue_number,
+                    is_last=i == len(queries) - 1,
+                ).search(session)
+                for Source in get_subclasses(SearchSource)
+            ]
+            responses += await gather(*searches)
 
     search_results: list[SearchResultData] = []
     processed_links = set()
