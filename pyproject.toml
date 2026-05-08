@@ -27,7 +27,7 @@ dependencies = [
   "cryptography ~= 46.0.1",
   "flask ~= 3.1",
   "flask-socketio ~= 5.6.0",
-  "libgencomics @ git+https://github.com/matt1432/LibgenComics.git@v1.3.4",
+  "libgencomics @ git+https://github.com/matt1432/LibgenComics.git@v1.3.5",
   "Pillow",
   "requests ~= 2.33.1",
   "simyan ~= 2.0.0",
