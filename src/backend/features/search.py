@@ -373,25 +373,26 @@ class SearchLibgenPlus(SearchSource):
                 }
             )
 
-        if self.is_last:
-            libgen_series_id: str | None = None
-            volume_data = self.volume.vd
+        volume_data = self.volume.vd
 
-            if volume_data.libgen_series_id is not None:
-                libgen_series_id = volume_data.libgen_series_id
+        if self.is_last and volume_data.libgen_series_id is not None:
+            libgen_series_id: str = volume_data.libgen_series_id
 
             series_ids = (
                 list(map(int, libgen_series_id.split(",")))
                 if libgen_series_id is not None and libgen_series_id != ""
                 else None
             )
-            file_results = await self._fetch_results(issue_number, series_ids)
+            if series_ids is not None and len(series_ids) != 0:
+                file_results = await self._fetch_results(
+                    issue_number, series_ids
+                )
 
-            for file_result in file_results:
-                parsed_result, _ = self._parse_result(file_result)
+                for file_result in file_results:
+                    parsed_result, _ = self._parse_result(file_result)
 
-                if parsed_result is not None:
-                    results.append(parsed_result)
+                    if parsed_result is not None:
+                        results.append(parsed_result)
 
         return results
 
