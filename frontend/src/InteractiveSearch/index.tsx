@@ -256,12 +256,25 @@ function useQueueInfo({ searchPayload }: InteractiveSearchProps): number[] {
     const { queue } = useFetchQueueDetails({
         volumeId: 'volumeId' in searchPayload ? searchPayload.volumeId : -1,
     });
+    const [ids, setIds] = useState<number[]>([]);
+
+    useEffect(() => {
+        const newIds = [
+            ...new Set(
+                queue.map((item) => item.issueId).filter((id) => id !== null),
+            ),
+        ];
+        const timeoutId = setTimeout(() => {
+            setIds(newIds);
+        }, 100);
+        return () => clearTimeout(timeoutId);
+    }, [queue]);
 
     if (!('volumeId' in searchPayload)) {
         return [];
     }
 
-    return queue.map((item) => item.issueId).filter((id) => id !== null);
+    return ids;
 }
 
 export default function InteractiveSearch({

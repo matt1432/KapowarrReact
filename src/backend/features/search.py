@@ -410,7 +410,7 @@ async def search_multiple_queries(
     async with AsyncSession() as session:
         responses = []
         for i, query in enumerate(queries):
-            LOGGER.debug(f"Searching for {query}")
+            LOGGER.info(f"Searching for {query}")
             searches = [
                 Source(
                     query=query,
