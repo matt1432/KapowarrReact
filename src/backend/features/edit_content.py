@@ -214,12 +214,11 @@ def _get_thumbnails_data(
         thumbnail.replace(thumbnails_folder, "")[1:] for thumbnail in thumbnails
     ]
     prefix = get_files_prefix(filenames)
-    folder_name = dirname(filenames[0])
 
     for thumbnail, filename in zip(thumbnails, filenames):
         thumbnails_data.append(
             ThumbnailData(
-                folder_name=folder_name,
+                folder_name=thumbnails_folder,
                 full_path=thumbnail,
                 prefix=prefix,
                 current_filename=filename,
