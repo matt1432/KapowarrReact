@@ -72,7 +72,7 @@ const extendedApi = baseApi.injectEndpoints({
             transformResponse: (response: { result: RawThumbnailData[] }) =>
                 response.result.map(({ full_path, ...rest }) =>
                     camelize({
-                        src: `${window.Kapowarr.urlBase}/api/thumbnail?api_key=${window.Kapowarr.apiKey}&filepath=${full_path.replaceAll('&', '%26')}`,
+                        src: `${window.Kapowarr.urlBase}/api/thumbnail?api_key=${window.Kapowarr.apiKey}&filepath=${encodeURIComponent(full_path)}`,
                         full_path,
                         ...rest,
                     }),
