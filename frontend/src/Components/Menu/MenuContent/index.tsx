@@ -1,45 +1,58 @@
 // IMPORTS
 
 // React
-import React, { type CSSProperties, type LegacyRef, useId } from 'react';
+import React, { type CSSProperties, type RefObject, useId } from 'react';
 
 // General Components
-import Scroller from 'Components/Scroller/Scroller';
+import Scroller, { type ScrollerProps } from 'Components/Scroller/Scroller';
+
+// Misc
+import classNames from 'classnames';
 
 // CSS
 import styles from './index.module.css';
 
 // Types
 interface MenuContentProps {
-    forwardedRef?: LegacyRef<HTMLDivElement> | undefined;
+    ref?: RefObject<HTMLDivElement> | undefined;
     className?: string;
     id?: string;
     children: React.ReactNode;
     style?: CSSProperties;
     isOpen?: boolean;
+    scrollerProps?: ScrollerProps;
 }
 
 // IMPLEMENTATIONS
 
 export default function MenuContent({
-    forwardedRef,
+    ref,
     className = styles.menuContent,
     id,
     children,
     style,
     isOpen,
+    scrollerProps = {},
 }: MenuContentProps) {
     const generatedId = useId();
 
     return (
         <div
-            ref={forwardedRef}
+            ref={ref}
             id={id ?? generatedId}
             className={className}
             style={style}
         >
             {isOpen ? (
-                <Scroller className={styles.scroller}>{children}</Scroller>
+                <Scroller
+                    {...scrollerProps}
+                    className={classNames(
+                        styles.scroller,
+                        scrollerProps.className,
+                    )}
+                >
+                    {children}
+                </Scroller>
             ) : null}
         </div>
     );

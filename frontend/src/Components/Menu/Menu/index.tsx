@@ -169,7 +169,7 @@ export default function Menu({
                     {React.cloneElement(childrenArray[1] as ReactElement, {
                         // @ts-expect-error https://react.dev/reference/react/cloneElement#overriding-props-of-an-element
                         // eslint-disable-next-line react-hooks/refs
-                        forwardedRef: refs.setFloating,
+                        ref: refs.setFloating,
                         style: {
                             maxHeight,
                             ...floatingStyles,

@@ -29,7 +29,7 @@ export interface OnScroll {
     scrollTop: number;
 }
 
-interface ScrollerProps {
+export interface ScrollerProps {
     className?: string;
     scrollDirection?: ScrollDirection;
     autoFocus?: boolean;

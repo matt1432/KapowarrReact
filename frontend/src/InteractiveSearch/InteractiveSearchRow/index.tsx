@@ -496,7 +496,11 @@ export default function InteractiveSearchRow({
                                     name={icons.TORRENT}
                                     title={translate('SelectDownloadSource')}
                                 />
-                                <MenuContent>
+                                <MenuContent
+                                    scrollerProps={{
+                                        style: { overflow: 'unset' },
+                                    }}
+                                >
                                     <SelectedMenuItem
                                         isSelected={selectedSource === null}
                                         onPress={() => {
