@@ -16,6 +16,9 @@ import translate from 'Utilities/String/translate';
 import { filesize } from 'filesize';
 import classNames from 'classnames';
 
+// Hooks
+import { useInView } from 'react-intersection-observer';
+
 // General Components
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import Icon from 'Components/Icon';
@@ -109,6 +112,7 @@ export default function InteractiveSearchRow({
     isLibgenEnabled,
     grabCallbacksRef,
 }: InteractiveSearchRowProps) {
+    const { ref, inView } = useInView();
     const initialIssueNumber = useMemo(
         () =>
             Array.isArray(result.issueNumber)
@@ -320,9 +324,16 @@ export default function InteractiveSearchRow({
         [],
     );
 
+    const finalColumns = inView ? columns : [];
+
     return (
-        <TableRow>
-            {columns.map(({ isVisible, name }) => {
+        <TableRow
+            ref={ref}
+            // When out of view, we want rows to stay the same out.
+            // 59.7px is the calculated height of a rendered row
+            style={{ height: '59.7px' }}
+        >
+            {finalColumns.map(({ isVisible, name }) => {
                 if (!isVisible) {
                     return null;
                 }

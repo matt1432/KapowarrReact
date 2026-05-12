@@ -20,13 +20,14 @@
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
     word-break: break-all;
-    min-width: 100px;
+    min-width: 100%;
 }
 
 .filesize {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
     white-space: nowrap;
+    min-width: 85px;
 }
 
 .pages {
@@ -50,7 +51,7 @@
 .resolution {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
-    min-width: 115px;
+    min-width: 125px;
 }
 
 .dpi {
