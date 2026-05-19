@@ -153,16 +153,10 @@ def _rank_search_result(
     else:
         # Search was for volume
         if isinstance(result["issue_number"], tuple):
-            rating.append(
-                int(
-                    1.0
-                    / (
-                        result["issue_number"][1]
-                        - result["issue_number"][0]
-                        + 1
-                    )
-                )
+            issue_num = (
+                result["issue_number"][1] - result["issue_number"][0] + 1
             )
+            rating.append(int(1.0 / issue_num) if issue_num != 0 else 0)
 
         elif isinstance(result["issue_number"], float):
             rating.append(1)
