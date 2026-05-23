@@ -41,6 +41,7 @@
     libgencomics,
     ...
   }: let
+    inherit (builtins) elem attrValues;
     inherit (nixpkgs) lib;
 
     perSystem = attrs:
@@ -48,7 +49,7 @@
         attrs (import nixpkgs {
           inherit system;
           overlays = [self.overlays.default];
-          config.allowUnfreePredicate = pkg: builtins.elem pkg.pname ["rar"];
+          config.allowUnfreePredicate = pkg: elem pkg.pname ["rar"];
         }));
 
     pyEnv = pkgs:
@@ -79,6 +80,35 @@
         packages = [
           (pyEnv pkgs)
           (pkgs.writeScriptBin "runTests" ''exec python -m pytest tests/'')
+        ];
+      };
+
+      frontend = pkgs.mkShell {
+        packages = [
+          pkgs.nodejs_latest
+          pkgs.typescript
+
+          (pkgs.writeShellApplication {
+            name = "bumpNpmDeps";
+            runtimeInputs = attrValues {
+              inherit
+                (pkgs)
+                prefetch-npm-deps
+                nodejs_latest
+                ;
+            };
+            text = ''
+              # this command might fail but still updates the main lockfile
+              npm update --package-lock-only --legacy-peer-deps || true
+
+              hash="$(prefetch-npm-deps ./package-lock.json)"
+              echo "$hash"
+
+              if [[ -f ./default.nix ]]; then
+                  sed -i "s#npmDepsHash = .*#npmDepsHash = \"$hash\";#" ./default.nix
+              fi
+            '';
+          })
         ];
       };
     });
