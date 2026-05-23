@@ -692,6 +692,7 @@ class DownloadHandler(metaclass=Singleton):
                         download_link=download["download_link"],
                         volume_id=download["volume_id"],
                         covered_issues=covered_issues,
+                        # FIXME: doesn't work when it's Anna's?
                         source_type=DownloadSource(download["source_type"]),
                         source_name=download["source_name"],
                         web_link=download["web_link"],
