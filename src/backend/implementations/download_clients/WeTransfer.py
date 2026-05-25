@@ -3,6 +3,7 @@ from __future__ import annotations
 from backend.base.custom_exceptions import (
     LinkBroken,
 )
+from backend.implementations.download_client_manager import DownloadClients
 from backend.implementations.download_clients.base import BaseDirectDownload
 
 WETRANSFER_API_LINK = (
@@ -10,11 +11,8 @@ WETRANSFER_API_LINK = (
 )
 
 
+@DownloadClients.register_client("wt")
 class WeTransferDownload(BaseDirectDownload):
-    "For downloading a file or folder from WeTransfer"
-
-    identifier: str = "wt"
-
     def _convert_to_pure_link(self) -> str:
         transfer_id, security_hash = self.download_link.split("/")[-2:]
         r = self._ssn.post(
