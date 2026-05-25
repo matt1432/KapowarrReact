@@ -1,7 +1,11 @@
 from collections.abc import Mapping, Sequence
+from functools import lru_cache
+from importlib import import_module
+from os.path import basename, dirname, splitext
 from sqlite3 import IntegrityError
 from typing import Any
 
+import backend.implementations.torrent_clients as tc
 from backend.base.custom_exceptions import (
     ClientNotWorking,
     CredentialInvalid,
@@ -15,7 +19,8 @@ from backend.base.definitions import (
     DownloadType,
     ExternalDownloadClient,
 )
-from backend.base.helpers import normalise_base_url
+from backend.base.files import list_files
+from backend.base.helpers import get_subclasses, normalise_base_url
 from backend.internals.db import get_db
 
 
@@ -172,19 +177,23 @@ class BaseExternalClient(ExternalDownloadClient):
 # =====================
 class ExternalClients:
     @staticmethod
+    @lru_cache(1)
     def get_client_types() -> dict[str, type[ExternalDownloadClient]]:
         """Get a mapping of the client type strings to their class.
 
         Returns:
             Dict[str, Type[ExternalDownloadClient]]: The mapping.
         """
-
-        from backend.implementations.torrent_clients import external_clients
+        for file in list_files(dirname(tc.__file__ or "")):
+            if file.endswith(".py") and not file.endswith("__init__.py"):
+                module_name = splitext(basename(file))[0]
+                import_module(f"{tc.__name__}.{module_name}")
 
         return {
             client.client_type: client
             for client in sorted(
-                external_clients, key=lambda c: c.client_type.lower()
+                get_subclasses(BaseExternalClient),
+                key=lambda c: c.client_type.lower(),
             )
         }
 
