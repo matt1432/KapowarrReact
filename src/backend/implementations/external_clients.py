@@ -5,6 +5,7 @@ The manager of external download clients and their base class
 from collections.abc import Mapping
 from importlib import import_module
 from os.path import basename, dirname, splitext
+from re import IGNORECASE, compile
 from sqlite3 import IntegrityError
 from typing import Any, cast
 
@@ -29,6 +30,7 @@ from backend.base.logging import LOGGER
 from backend.internals.db import get_db
 
 ECF = ExternalClientField
+filename_magnet_link = compile(r'(?<=&dn=).*?(?=&)', IGNORECASE)
 
 
 # region Base External Client

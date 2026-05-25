@@ -1,4 +1,3 @@
-from re import IGNORECASE, compile
 from time import time
 from typing import Any
 
@@ -17,10 +16,9 @@ from backend.base.logging import LOGGER
 from backend.implementations.external_clients import (
     BaseExternalClient,
     ExternalClients,
+    filename_magnet_link,
 )
 from backend.internals.settings import Settings
-
-filename_magnet_link = compile(r"(?<=&dn=).*?(?=&)", IGNORECASE)
 
 
 @ExternalClients.register_client(
