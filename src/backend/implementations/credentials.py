@@ -1,8 +1,8 @@
-from typing import Any, assert_never
+from collections.abc import Callable
+from typing import Any
 
 from backend.base.custom_exceptions import (
     CredentialNotFound,
-    DownloadLimitReached,
 )
 from backend.base.definitions import CredentialData, CredentialSource
 from backend.base.logging import LOGGER
@@ -14,32 +14,48 @@ class Credentials:
     """
     Store auth tokens as to avoid logging in while already having a cleared
     token. Maps from credential source to user identifier (something like user
-    ID, email or username) to a tuple of the token and it's expiration time.
+    ID, email or username) to a tuple of the token and its expiration time.
     """
 
-    def get_all(self) -> list[CredentialData]:
+    validators: dict[
+        CredentialSource,
+        Callable[[CredentialData], CredentialData]
+    ] = {}
+    "The validators may raise ClientNotWorking or CredentialInvalid"
+
+    @classmethod
+    def register_validator(cls, source: CredentialSource):
+        def wrapper(
+            validator: Callable[[CredentialData], CredentialData]
+        ) -> Callable[[CredentialData], CredentialData]:
+            cls.validators[source] = validator
+            return validator
+        return wrapper
+
+    @classmethod
+    def get_all(cls) -> list[CredentialData]:
         """Get all credentials.
 
         Returns:
             List[CredentialData]: The list of credentials.
         """
         return [
-            CredentialData(
-                **{**dict(c), "source": CredentialSource[c["source"].upper()]}
-            )
-            for c in get_db()
-            .execute("""
+            CredentialData(**{
+                **cred,
+                'source': CredentialSource[cred["source"].upper()]
+            })
+            for cred in get_db().execute("""
                 SELECT
                     id, source,
                     username, email,
                     password, api_key
                 FROM credentials;
-            """)
-            .fetchall()
+            """).fetchalldict()
         ]
 
-    def get_one(self, id: int) -> CredentialData:
-        """Get a credential based on it's id.
+    @classmethod
+    def get_one(cls, credential_id: int) -> CredentialData:
+        """Get a credential based on its ID.
 
         Args:
             id (int): The ID of the credential to get.
@@ -48,33 +64,27 @@ class Credentials:
             CredentialNotFound: The ID doesn't map to any credential.
 
         Returns:
-            CredentialData: The credential info
+            CredentialData: The credential info.
         """
-        result = (
-            get_db()
-            .execute(
-                """
-                    SELECT
-                        id, source,
-                        username, email,
-                        password, api_key
-                    FROM credentials
-                    WHERE id = ?
-                    LIMIT 1;
-                """,
-                (id,),
-            )
-            .fetchone()
-        )
+        result = get_db().execute("""
+            SELECT
+@@ -60,21 +74,19 @@ def get_one(self, id: int) -> CredentialData:
+            WHERE id = ?
+            LIMIT 1;
+            """,
+            (credential_id,)
+        ).fetchonedict()
 
         if result is None:
-            raise CredentialNotFound(id)
+            raise CredentialNotFound(credential_id)
 
-        return CredentialData(
-            **{**dict(result), "source": CredentialSource(result["source"])}
-        )
+        return CredentialData(**{
+            **result,
+            'source': CredentialSource(result["source"])
+        })
 
-    def get_from_source(self, source: CredentialSource) -> list[CredentialData]:
+    @classmethod
+    def get_from_source(cls, source: CredentialSource) -> list[CredentialData]:
         """Get credentials for the given source.
 
         Args:
@@ -83,73 +93,39 @@ class Credentials:
         Returns:
             List[CredentialData]: The credentials for the given source.
         """
-        return [c for c in self.get_all() if c.source == source]
+        return [c for c in cls.get_all() if c.source == source]
 
-    def add(self, credential_data: CredentialData) -> CredentialData:
+    @classmethod
+    def add(cls, credential_data: CredentialData) -> CredentialData:
         """Add a credential.
 
         Args:
             credential_data (CredentialData): The data of the credential to
-            store.
+                store.
 
         Raises:
             ClientNotWorking: Can't connect to service.
             CredentialInvalid: The credential data is invalid.
 
         Returns:
-            CredentialData: The credential info
+            CredentialData: The credential info.
         """
-        LOGGER.info(f"Adding credential for {credential_data.source.value}")
+        LOGGER.info(f'Adding credential for {credential_data.source.value}')
 
-        # Check if it works
-        if credential_data.source == CredentialSource.MEGA:
-            from backend.implementations.direct_clients.mega import (
-                MegaAccount,
-                MegaAPIClient,
-            )
+        source = credential_data.source
+        credential_data = cls.validators[source](credential_data)
 
-            MegaAccount(
-                MegaAPIClient(),
-                credential_data.email or "",
-                credential_data.password or "",
-            )
+        credential_id = get_db().execute("""
+            INSERT INTO credentials(source, username, email, password, api_key)
+            VALUES (:source, :username, :email, :password, :api_key);
+            """,
+            credential_data.todict()
+        ).lastrowid
 
-            credential_data.api_key = None
-            credential_data.username = None
+        return cls.get_one(credential_id)
 
-        elif credential_data.source == CredentialSource.PIXELDRAIN:
-            from backend.implementations.download_clients import (
-                PixelDrainDownload,
-            )
-
-            try:
-                PixelDrainDownload.login(credential_data.api_key or "")
-
-            except DownloadLimitReached:
-                pass
-
-            credential_data.email = None
-            credential_data.username = None
-            credential_data.password = None
-
-        else:
-            assert_never(credential_data.source)
-
-        id = (
-            get_db()
-            .execute(
-                """
-                    INSERT INTO credentials(source, username, email, password, api_key)
-                    VALUES (:source, :username, :email, :password, :api_key);
-                """,
-                credential_data.todict(),
-            )
-            .lastrowid
-        )
-
-        return self.get_one(id)
-
-    def delete(self, cred_id: int) -> None:
+    @classmethod
+    def delete(cls, cred_id: int) -> None:
         """Delete a credential.
 
         Args:
@@ -160,11 +136,11 @@ class Credentials:
         """
         LOGGER.info(f"Deleting credential: {cred_id}")
 
-        source = self.get_one(cred_id).source
+        source = cls.get_one(cred_id).source
 
         get_db().execute("DELETE FROM credentials WHERE id = ?", (cred_id,))
 
-        if source in self.auth_tokens:
-            del self.auth_tokens[source]
+        if source in cls.auth_tokens:
+            del cls.auth_tokens[source]
 
         return

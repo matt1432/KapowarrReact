@@ -27,6 +27,7 @@ from backend.base.custom_exceptions import (
 from backend.base.definitions import (
     BrokenClientReason,
     Constants,
+    CredentialData,
     CredentialSource,
     Download,
     DownloadSource,
@@ -564,6 +565,23 @@ class WeTransferDownload(BaseDirectDownload):
 
 
 # region PixelDrain
+@Credentials.register_validator(CredentialSource.PIXELDRAIN)
+def pd_login_validator(credential_data: CredentialData) -> CredentialData:
+    try:
+        PixelDrainDownload.login(
+            credential_data.api_key or ''
+        )
+
+    except DownloadLimitReached:
+        # Limit reached but credential working
+        pass
+
+    credential_data.email = None
+    credential_data.username = None
+    credential_data.password = None
+    return credential_data
+
+
 class PixelDrainDownload(BaseDirectDownload):
     "For downloading a file from PixelDrain"
 
