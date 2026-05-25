@@ -17,8 +17,10 @@ import type {
 } from 'typings/DownloadClient';
 
 import type { Nullable } from 'typings/Misc';
+import type { DownloadType } from 'Helpers/Props/downloadTypes';
 
 interface TestParams {
+    downloadType: DownloadType;
     clientType: string;
     baseUrl: string;
     username: Nullable<string>;
@@ -63,8 +65,9 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
 
-            transformResponse: (response: { result: DownloadClientOptions }) =>
-                response.result,
+            transformResponse: (response: {
+                result: Record<2, DownloadClientOptions>;
+            }) => response.result[2],
         }),
 
         getCredentials: build.query<CredentialData[], void>({

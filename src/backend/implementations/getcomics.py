@@ -24,6 +24,7 @@ from backend.base.definitions import (
     Constants,
     Download,
     DownloadGroup,
+    DownloadType,
     EnqueuingDownloadFailureReason,
     GCDownloadSource,
     SearchResultData,
@@ -354,7 +355,9 @@ def _get_download_groups(soup: BeautifulSoup) -> list[DownloadGroup]:
     """
     LOGGER.debug("Extracting download groups")
 
-    torrent_client_available = bool(ExternalClients.get_clients())
+    torrent_client_available = bool(
+        ExternalClients.clients[DownloadType.TORRENT]
+    )
 
     body = soup.select_one("section.post-contents")
     if not body:

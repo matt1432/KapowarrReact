@@ -17,6 +17,7 @@ from backend.base.definitions import (
     CredentialData,
     CredentialSource,
     DownloadSource,
+    DownloadType,
     KapowarrException,
     LibraryFilter,
     LibrarySorting,
@@ -1425,6 +1426,7 @@ def api_external_clients() -> ApiReturn | None:
         data = {
             k: json_data.get(k)
             for k in (
+                "download_type",
                 "client_type",
                 "title",
                 "base_url",
@@ -1433,7 +1435,15 @@ def api_external_clients() -> ApiReturn | None:
                 "api_token",
             )
         }
-        result = ExternalClients.add(**data).get_client_data()
+
+        if not isinstance(data["download_type"], int):
+            raise InvalidKeyValue("download_type", data["download_type"])
+        try:
+            data["download_type"] = DownloadType(data["download_type"])
+        except ValueError:
+            raise InvalidKeyValue("download_type", data["download_type"])
+
+        result = ExternalClients.add(**data).get_client_data()  # pyright: ignore
         return return_api(result, code=201)
 
 
@@ -1442,8 +1452,11 @@ def api_external_clients() -> ApiReturn | None:
 @auth
 def api_external_clients_keys() -> ApiReturn:
     result = {
-        k: [rt.value for rt in v.required_tokens]
-        for k, v in ExternalClients.clients.items()
+        dt.value: {
+            ct: [rt.value for rt in client.required_tokens]
+            for ct, client in v.items()
+        }
+        for dt, v in ExternalClients.clients.items()
     }
     return return_api(result)
 
@@ -1456,6 +1469,7 @@ def api_external_clients_test() -> ApiReturn:
     data = {
         k: data.get(k)
         for k in (
+            "download_type",
             "client_type",
             "base_url",
             "username",
@@ -1463,6 +1477,14 @@ def api_external_clients_test() -> ApiReturn:
             "api_token",
         )
     }
+
+    if not isinstance(data["download_type"], int):
+        raise InvalidKeyValue("download_type", data["download_type"])
+    try:
+        data["download_type"] = DownloadType(data["download_type"])
+    except ValueError:
+        raise InvalidKeyValue("download_type", data["download_type"])
+
     result = ExternalClients.test(**data)
     return return_api(result)
 

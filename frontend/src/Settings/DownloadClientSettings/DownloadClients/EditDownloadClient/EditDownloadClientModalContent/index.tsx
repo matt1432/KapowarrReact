@@ -144,7 +144,12 @@ export default function EditDownloadClientModalContent({
     );
 
     const handleTestPress = useCallback(async () => {
+        if (!client) {
+            return { data: undefined };
+        }
+
         return await testDownloadClient({
+            downloadType: client.downloadType,
             clientType,
             ...pickProps(
                 changes,
@@ -154,7 +159,7 @@ export default function EditDownloadClientModalContent({
                 'apiToken',
             ),
         });
-    }, [changes, clientType, testDownloadClient]);
+    }, [changes, client, clientType, testDownloadClient]);
 
     const handleSavePress = useCallback(async () => {
         setIsSaving(true);
