@@ -170,7 +170,7 @@ class Constants:
     when a challenge is presented
     """
 
-    TORRENT_UPDATE_INTERVAL = 5  # seconds
+    TORRENT_UPDATE_INTERVAL = 30  # seconds
     "The interval in seconds between status updates from external clients"
 
     TORRENT_TAG = "kapowarr"
