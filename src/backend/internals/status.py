@@ -1,10 +1,14 @@
 from time import time
+from typing import TypeVar
 
 from backend.base.definitions import StatusData, StatusHandler, StatusType
 from backend.base.helpers import Singleton
 from backend.base.logging import LOGGER
 from backend.internals.db import get_db
 from backend.internals.server import Server, StatusCountEvent, WebSocket
+
+# region Manager
+StatusHandlerType = TypeVar("StatusHandlerType", bound=StatusHandler)
 
 
 class StatusHandlers(metaclass=Singleton):
@@ -22,9 +26,20 @@ class StatusHandlers(metaclass=Singleton):
 
         Args:
             status_type (StatusType): The status type that the handler is for.
+
+        Raises:
+            RuntimeError: A status handler with the given status type is
+                already registered.
         """
 
-        def wrapper(handler_class: type[StatusHandler]) -> type[StatusHandler]:
+        def wrapper(
+            handler_class: type[StatusHandlerType],
+        ) -> type[StatusHandlerType]:
+            if status_type in cls.handlers:
+                raise RuntimeError(
+                    f"Status handler with status type {status_type.value} "
+                    "registered multiple times"
+                )
             cls.handlers[status_type] = handler_class(status_type)
             return handler_class
 
@@ -222,7 +237,7 @@ class StatusHandlers(metaclass=Singleton):
         return
 
 
-# region Status Handling
+# region Handlers
 @StatusHandlers.register_handler(StatusType.CV_RATE_LIMIT)
 class CVRateLimitStatus(StatusHandler):
     """Status handler for ComicVine API rate limit.
