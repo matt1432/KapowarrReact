@@ -15,6 +15,7 @@ from backend.base.definitions import (
     Constants,
     CredentialData,
     CredentialSource,
+    DownloadClientIdentifier,
     DownloadSource,
 )
 from backend.base.helpers import Session
@@ -27,7 +28,7 @@ if TYPE_CHECKING:
     from requests import Response
 
 
-@DownloadClients.register_client("pd")
+@DownloadClients.register_client(DownloadClientIdentifier.PIXELDRAIN)
 class PixelDrainDownload(BaseDirectDownload):
     @staticmethod
     def login(api_key: str) -> None:
@@ -113,7 +114,7 @@ class PixelDrainDownload(BaseDirectDownload):
         return self._ssn.get(self.pure_link, headers=headers, stream=True)
 
 
-@DownloadClients.register_client("pd_folder")
+@DownloadClients.register_client(DownloadClientIdentifier.PIXELDRAIN_FOLDER)
 class PixelDrainFolderDownload(PixelDrainDownload):
     def _convert_to_pure_link(self) -> str:
         self._api_key = None

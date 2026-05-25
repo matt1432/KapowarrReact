@@ -13,6 +13,7 @@ from backend.base.custom_exceptions import (
     LinkBroken,
 )
 from backend.base.definitions import (
+    DownloadClientIdentifier,
     DownloadSource,
     DownloadState,
     DownloadType,
@@ -33,7 +34,7 @@ from backend.internals.db import get_db
 from backend.internals.settings import Settings
 
 
-@DownloadClients.register_client("torrent")
+@DownloadClients.register_client(DownloadClientIdentifier.TORRENT)
 class TorrentDownload(ExternalDownload, BaseDirectDownload):
     @property
     def external_client(self) -> ExternalDownloadClient:

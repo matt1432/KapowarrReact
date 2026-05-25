@@ -29,6 +29,7 @@ from backend.base.definitions import (
     Constants,
     CredentialData,
     CredentialSource,
+    DownloadClientIdentifier,
     DownloadSource,
     DownloadState,
     FileExtraInfo,
@@ -1039,7 +1040,7 @@ class MegaFolder(MegaABC):
 
 
 # region File Client
-@DownloadClients.register_client("mega")
+@DownloadClients.register_client(DownloadClientIdentifier.MEGA)
 class MegaDownload(BaseDirectDownload):
     _mega_class: type[MegaABC] = Mega
 
@@ -1196,6 +1197,6 @@ class MegaDownload(BaseDirectDownload):
 
 
 # region Folder Client
-@DownloadClients.register_client("mega_folder")
+@DownloadClients.register_client(DownloadClientIdentifier.MEGA_FOLDER)
 class MegaFolderDownload(MegaDownload):
     _mega_class = MegaFolder

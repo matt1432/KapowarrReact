@@ -426,7 +426,7 @@ class BaseDirectDownload(Download):
             "pure_link": self._pure_link,
             "source_type": self._source_type.value,
             "source_name": self._source_name,
-            "type": self.identifier,
+            "type": self.identifier.value,
             "file": self._files[0],
             "title": self._title,
             "download_folder": self._download_folder,

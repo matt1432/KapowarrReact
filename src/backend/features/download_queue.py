@@ -22,6 +22,7 @@ from backend.base.definitions import (
     BlocklistReason,
     Constants,
     Download,
+    DownloadClientIdentifier,
     DownloadSource,
     DownloadState,
     EnqueuingDownloadFailureReason,
@@ -314,7 +315,7 @@ class DownloadHandler(metaclass=Singleton):
                     """,
                     {
                         "volume_id": download.volume_id,
-                        "client_type": download.identifier,
+                        "client_type": download.identifier.value,
                         "external_client_id": external_client_id,
                         "external_id": download.external_id
                         if isinstance(download, ExternalDownload)
@@ -678,7 +679,7 @@ class DownloadHandler(metaclass=Singleton):
 
             try:
                 dl_subclass = DownloadClients.get_client(
-                    download["client_type"]
+                    DownloadClientIdentifier(download["client_type"])
                 )
                 dl_instance: Download | ExternalDownload
 

@@ -590,6 +590,20 @@ class GCDownloadSource(BaseEnum):
     "A torrent magnet link directly on the webpage"
 
 
+class DownloadClientIdentifier(BaseEnum):
+    "The database identifiers for the download clients"
+
+    DIRECT = "direct"
+    MEDIAFIRE = "mf"
+    MEDIAFIRE_FOLDER = "mf_folder"
+    MEGA = "mega"
+    MEGA_FOLDER = "mega_folder"
+    PIXELDRAIN = "pd"
+    PIXELDRAIN_FOLDER = "pd_folder"
+    TORRENT = "torrent"
+    WETRANSFER = "wt"
+
+
 class DownloadState(BaseEnum):
     QUEUED_STATE = "queued"
     PAUSED_STATE = "paused"
@@ -1395,8 +1409,8 @@ class ExternalDownloadClient(ABC):
 
 
 class Download(ABC):
-    identifier: str
-    "An identifier for the specific download implementation (e.g. 'mf_folder')"
+    identifier: DownloadClientIdentifier
+    "An identifier for the specific download implementation"
 
     @property
     @abstractmethod
