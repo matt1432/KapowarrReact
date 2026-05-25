@@ -74,7 +74,7 @@ def _main(
     setup_logging(log_folder, log_file)
     LOGGER.info("Starting up Kapowarr")
 
-    ExternalClients._import_clients()
+    ExternalClients.trigger_client_registration()
 
     set_db_location(db_folder)
 
@@ -140,6 +140,7 @@ def _main(
     finally:
         download_handler.stop_handle()
         task_handler.stop_handle()
+        ExternalClients.disconnect_clients()
 
         if restart_type is not None:
             LOGGER.info("Restarting Kapowarr")

@@ -25,6 +25,7 @@ from backend.base.definitions import (
 )
 from backend.base.files import list_files
 from backend.base.helpers import normalise_base_url
+from backend.base.logging import LOGGER
 from backend.internals.db import get_db
 
 ECF = ExternalClientField
@@ -201,6 +202,7 @@ class ExternalClients:
     clients: dict[DownloadType, dict[str, type[ExternalDownloadClient]]] = {
         dt: {} for dt in DownloadType
     }
+    instances: dict[int, ExternalDownloadClient] = {}
 
     @classmethod
     def register_client(
@@ -239,7 +241,7 @@ class ExternalClients:
         return wrapper
 
     @staticmethod
-    def _import_clients() -> None:
+    def trigger_client_registration() -> None:
         """Import the implementations of the external download clients in the
         sub-folders, automatically making them register themselves.
         """
@@ -249,6 +251,19 @@ class ExternalClients:
             if file.endswith(".py") and not file.endswith("__init__.py"):
                 module_name = splitext(basename(file))[0]
                 import_module(f"{tc.__name__}.{module_name}")
+        return
+
+    @classmethod
+    def disconnect_clients(cls) -> None:
+        """Run the shutdown handler of all connected clients."""
+        LOGGER.debug("Disconnecting external clients")
+        for client in cls.instances.values():
+            try:
+                client.on_shutdown()
+            except ClientNotWorking:
+                # It's okay if we can't communicate,
+                # as we're shutting down anyway
+                pass
         return
 
     @classmethod
@@ -486,6 +501,9 @@ class ExternalClients:
         Returns:
             ExternalDownloadClient: The client.
         """
+        if client_id in cls.instances:
+            return cls.instances[client_id]
+
         client_types = (
             get_db()
             .execute(
@@ -503,9 +521,10 @@ class ExternalClients:
         if not client_types:
             raise ExternalClientNotFound(client_id)
 
-        return cls.clients[DownloadType(client_types[0])][client_types[1]](
-            client_id
-        )
+        cls.instances[client_id] = cls.clients[DownloadType(client_types[0])][
+            client_types[1]
+        ](client_id)
+        return cls.instances[client_id]
 
     @classmethod
     def get_least_used_client(

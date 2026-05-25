@@ -1,19 +1,18 @@
 from re import IGNORECASE, compile
 from time import time
+from typing import Any
 
-import requests
-from qbittorrentapi import Client
+from requests.exceptions import RequestException
 
-from backend.base.custom_exceptions import ClientNotWorking
+from backend.base.custom_exceptions import ClientNotWorking, CredentialInvalid
 from backend.base.definitions import (
     BrokenClientReason,
     Constants,
     DownloadState,
     DownloadType,
 )
-from backend.base.definitions import (
-    ExternalClientField as ECF,
-)
+from backend.base.definitions import ExternalClientField as ECF
+from backend.base.helpers import Session
 from backend.base.logging import LOGGER
 from backend.implementations.external_clients import (
     BaseExternalClient,
@@ -33,8 +32,6 @@ class qBittorrent(BaseExternalClient):
     state_mapping = {
         "queuedDL": DownloadState.QUEUED_STATE,
         "pausedDL": DownloadState.PAUSED_STATE,
-        "stoppedDL": DownloadState.PAUSED_STATE,
-        "stalledDL": DownloadState.DOWNLOADING_STATE,
         "checkingDL": DownloadState.DOWNLOADING_STATE,
         "metaDL": DownloadState.DOWNLOADING_STATE,
         "checkingResumeData": DownloadState.DOWNLOADING_STATE,
@@ -52,20 +49,28 @@ class qBittorrent(BaseExternalClient):
     def __init__(self, client_id: int) -> None:
         super().__init__(client_id)
 
-        self.ssn: Client | None = None
-        self.torrent_hashes: dict[str, int | None] = {}
+        self.ssn = self._login(self.base_url, self.username, self.password)
+        self.login_timeout: int = self.ssn.get(
+            f"{self.base_url}/api/v2/app/preferences"
+        ).json()["web_ui_session_timeout"]
+        self.last_api_call = round(time())
+        self.last_update: float = 0.0
+
+        self.statuses: dict[str, dict[str, Any] | None] = {}
+        self.fail_timestamps: dict[str, int | None] = {}
         self.settings = Settings()
         return
 
     @staticmethod
     def _login(
         base_url: str, username: str | None, password: str | None
-    ) -> Client:
+    ) -> Session:
         """Login into qBittorrent client.
+
         Args:
             base_url (str): Base URL of instance.
-            username (Union[str, None]): Username to access client, if set.
-            password (Union[str, None]): Password to access client, if set.
+            username (str | None): Username to access client, if set.
+            password (str | None): Password to access client, if set.
 
         Raises:
             ClientNotWorking: Can't connect to client.
@@ -74,150 +79,197 @@ class qBittorrent(BaseExternalClient):
         Returns:
             Session: Request session that is logged in.
         """
-        try:
-            ssn = Client(host=base_url, username=username, password=password)
-            ssn.auth_log_in()
+        ssn = Session()
 
-        except Exception:
+        if username or password:
+            params = {"username": username or "", "password": password or ""}
+
+            try:
+                auth_request = ssn.post(
+                    f"{base_url}/api/v2/auth/login", data=params
+                )
+
+            except RequestException:
+                LOGGER.exception("Can't connect to qBittorrent instance: ")
+                raise ClientNotWorking(BrokenClientReason.CONNECTION_ERROR)
+
+            if auth_request.status_code == 404:
+                LOGGER.error(
+                    f"Can't connect or version too low of qBittorrent instance: {auth_request.text}"
+                )
+                # Should be at least v4.1
+                raise ClientNotWorking(BrokenClientReason.VERSION_NOT_SUPPORTED)
+
+            if not auth_request.ok:
+                LOGGER.error(
+                    f"Not connected to qBittorrent instance: {auth_request.text}"
+                )
+                raise ClientNotWorking(BrokenClientReason.NOT_CLIENT_INSTANCE)
+
+            auth_success = auth_request.headers.get("set-cookie") is not None
+
+            if not auth_success:
+                LOGGER.error(
+                    f"Failed to authenticate for qBittorrent instance: {auth_request.text}"
+                )
+                raise CredentialInvalid
+
+            return ssn
+
+        try:
+            version_request = ssn.get(f"{base_url}/api/v2/app/version")
+
+        except RequestException:
             LOGGER.exception("Can't connect to qBittorrent instance: ")
             raise ClientNotWorking(BrokenClientReason.CONNECTION_ERROR)
 
+        if version_request.status_code == 404:
+            LOGGER.error(
+                f"Can't connect or version too low of qBittorrent instance: {version_request.text}"
+            )
+            raise ClientNotWorking(BrokenClientReason.VERSION_NOT_SUPPORTED)
+
+        if version_request.status_code in (401, 403):
+            LOGGER.error(
+                f"Authentication required for qBittorrent instance: {version_request.text}"
+            )
+            raise CredentialInvalid
+
+        if not version_request.ok:
+            LOGGER.error(
+                f"Not connected to qBittorrent instance: {version_request.text}"
+            )
+            raise ClientNotWorking(BrokenClientReason.NOT_CLIENT_INSTANCE)
+
         return ssn
+
+    def _ensure_login(self) -> None:
+        if self.last_api_call + self.login_timeout < time():
+            self.ssn = self._login(
+                self._base_url, self._username, self._password
+            )
+            self.last_api_call = round(time())
+        return
+
+    def _update_statuses(self) -> None:
+        self._ensure_login()
+
+        try:
+            torrents: dict[str, dict[str, Any]] = {
+                torrent["hash"]: torrent
+                for torrent in self.ssn.get(
+                    f"{self.base_url}/api/v2/torrents/info",
+                    params={"hashes": "|".join(self.statuses)},
+                ).json()
+            }
+            self.last_api_call = round(time())
+
+        except RequestException:
+            LOGGER.exception("Can't connect to qBittorrent instance: ")
+            raise ClientNotWorking(BrokenClientReason.CONNECTION_ERROR)
+
+        for t_hash in self.statuses:
+            if t_hash not in torrents:
+                self.statuses[t_hash] = None
+                continue
+
+            torrent = torrents[t_hash]
+
+            state = self.state_mapping.get(
+                torrent["state"], DownloadState.IMPORTING_STATE
+            )
+            if torrent["state"] in ("metaDL", "stalledDL", "checkingDL"):
+                # Torrent is failing
+                if self.fail_timestamps[t_hash] is None:
+                    self.fail_timestamps[t_hash] = round(time())
+                    state = DownloadState.DOWNLOADING_STATE
+
+                else:
+                    timeout = self.settings.sv.failing_download_timeout
+                    if timeout and (
+                        time() - (self.fail_timestamps[t_hash] or 0) > timeout
+                    ):
+                        state = DownloadState.FAILED_STATE
+            else:
+                self.fail_timestamps[t_hash] = None
+
+            self.statuses[t_hash] = {
+                "size": torrent["total_size"],
+                "progress": round(torrent["progress"] * 100, 2),
+                "speed": torrent["dlspeed"],
+                "state": state,
+            }
+
+        self.last_update = time()
+        return
 
     def add_download(
         self,
         download_link: str,
         target_folder: str,
         download_name: str | None,
+        # TODO: implement libgen torrent download with qbit
         filename: str | None = None,
     ) -> str:
+        self._ensure_login()
+
         if download_name is not None:
             download_link = filename_magnet_link.sub(
                 download_name, download_link
             )
 
-        if not self.ssn:
-            self.ssn = self._login(self.base_url, self.username, self.password)
-
-        if download_link.startswith("magnet"):
-            self.ssn.torrents_add(
-                urls=download_link,
-                save_path=target_folder,
-                category=Constants.TORRENT_TAG,
-            )
-            t_hash = download_link.split("urn:btih:")[1].split("&")[0]
-        else:
-            is_stopped = filename is not None
-            list_before = self.ssn.torrents_info().data
-
-            self.ssn.torrents_add(
-                torrent_files=requests.get(download_link).content,
-                save_path=target_folder,
-                category=Constants.TORRENT_TAG,
-                is_stopped=is_stopped,
-                rename=filename,
-            )
-
-            t_hash = None
-
-            while t_hash is None:
-                list_after = self.ssn.torrents_info().data
-                new_torrent_list = [
-                    item for item in list_after if item not in list_before
-                ]
-                if new_torrent_list:
-                    new_torrent = new_torrent_list[0]
-                    t_hash = new_torrent.hash
-
-            if is_stopped:
-                file_found = False
-
-                for _ in range(5):
-                    for file in self.ssn.torrents_files(
-                        torrent_hash=t_hash
-                    ).data:
-                        if file and file.name != filename:
-                            self.ssn.torrents_file_priority(
-                                torrent_hash=t_hash,
-                                file_ids=file.id,
-                                priority=0,
-                            )
-                        elif file:
-                            file_found = True
-                            self.ssn.torrents_file_priority(
-                                torrent_hash=t_hash,
-                                file_ids=file.id,
-                                priority=1,
-                            )
-                    if file_found:
-                        break
-
-                if not file_found:
-                    LOGGER.info(
-                        f"Couldn't select file of torrent download {download_link}"
-                    )
-                    raise ClientNotWorking(
-                        BrokenClientReason.FAILED_PROCESSING_RESPONSE
-                    )
-
-                self.ssn.torrents_resume(torrent_hashes=t_hash)
-
-        if t_hash is None:
-            raise ClientNotWorking(
-                BrokenClientReason.FAILED_PROCESSING_RESPONSE
-            )
-
-        self.torrent_hashes[t_hash] = None
-        return t_hash
-
-    def get_download(self, download_id: str) -> dict | None:
-        if not self.ssn:
-            self.ssn = self._login(self.base_url, self.username, self.password)
-
-        r = self.ssn.torrents_info(torrent_hashes=download_id).data
-        if not r:
-            if download_id in self.torrent_hashes:
-                return None
-            else:
-                return {}
-
-        result = r[0]
-
-        state = self.state_mapping.get(
-            result.state, DownloadState.IMPORTING_STATE
-        )
-
-        if result.state in ("metaDL", "stalledDL", "checkingDL"):
-            # Torrent is failing
-            if self.torrent_hashes[download_id] is None:
-                self.torrent_hashes[download_id] = round(time())
-                state = DownloadState.DOWNLOADING_STATE
-
-            else:
-                timeout = self.settings.sv.failing_download_timeout
-                if timeout and (
-                    time() - (self.torrent_hashes[download_id] or 0) > timeout
-                ):
-                    state = DownloadState.FAILED_STATE
-        else:
-            self.torrent_hashes[download_id] = None
-
-        return {
-            "size": result.size,
-            "progress": round(result.progress * 100, 2),
-            "speed": result.info["dlspeed"],
-            "state": state,
+        files = {
+            "urls": (None, download_link),
+            "savepath": (None, target_folder),
+            "category": (None, Constants.TORRENT_TAG),
         }
 
+        try:
+            self.ssn.post(f"{self.base_url}/api/v2/torrents/add", files=files)
+            self.last_api_call = round(time())
+
+        except RequestException:
+            LOGGER.exception("Can't connect to qBittorrent instance: ")
+            raise ClientNotWorking(BrokenClientReason.CONNECTION_ERROR)
+
+        t_hash = download_link.split("urn:btih:")[1].split("&")[0].lower()
+        self.statuses[t_hash] = None
+        self.fail_timestamps[t_hash] = None
+        self._update_statuses()
+        return t_hash
+
+    def get_download(self, download_id: str) -> dict[str, Any] | None:
+        if self.last_update + Constants.TORRENT_UPDATE_INTERVAL < time():
+            self._update_statuses()
+
+        return self.statuses[download_id]
+
     def delete_download(self, download_id: str, delete_files: bool) -> None:
-        if not self.ssn:
-            self.ssn = self._login(self.base_url, self.username, self.password)
+        self._ensure_login()
 
-        self.ssn.torrents_delete(
-            torrent_hashes=download_id, delete_files=delete_files
-        )
+        try:
+            self.ssn.post(
+                f"{self.base_url}/api/v2/torrents/delete",
+                data={"hashes": download_id, "deleteFiles": delete_files},
+            )
+            self.last_api_call = round(time())
 
-        del self.torrent_hashes[download_id]
+        except RequestException:
+            LOGGER.exception("Can't connect to qBittorrent instance: ")
+            raise ClientNotWorking(BrokenClientReason.CONNECTION_ERROR)
+
+        del self.statuses[download_id]
+        del self.fail_timestamps[download_id]
+        return
+
+    def on_shutdown(self) -> None:
+        if self.last_api_call + self.login_timeout > round(time()):
+            try:
+                self.ssn.post(f"{self._base_url}/api/v2/auth/logout")
+
+            except RequestException:
+                LOGGER.exception("Can't connect to qBittorrent instance: ")
+                raise ClientNotWorking(BrokenClientReason.CONNECTION_ERROR)
         return
 
     @classmethod
@@ -229,5 +281,4 @@ class qBittorrent(BaseExternalClient):
         api_token: str | None = None,
     ) -> None:
         cls._login(base_url, username, password)
-
         return
