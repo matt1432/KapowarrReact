@@ -562,7 +562,7 @@ class EnqueuingDownloadFailureReason(BaseEnum):
 class DownloadType(BaseEnum):
     "The download protocol (download type)"
 
-    DIRECT = 1
+    DDL = 1
     TORRENT = 2
 
 
@@ -585,7 +585,7 @@ class GCDownloadSource(BaseEnum):
     WETRANSFER = "WeTransfer"
     PIXELDRAIN = "Pixeldrain"
     GETCOMICS = "GetComics"
-    "A direct download link straight from their own servers"
+    "A DDL link straight from their own servers"
     GETCOMICS_TORRENT = "GetComics (torrent)"
     "A torrent magnet link directly on the webpage"
 
@@ -593,7 +593,7 @@ class GCDownloadSource(BaseEnum):
 class DownloadClientIdentifier(BaseEnum):
     "The database identifiers for the download clients"
 
-    DIRECT = "direct"
+    DDL = "direct"
     MEDIAFIRE = "mf"
     MEDIAFIRE_FOLDER = "mf_folder"
     MEGA = "mega"
@@ -673,7 +673,7 @@ class DownloadSource(BaseEnum):
     WETRANSFER = "WeTransfer"
     PIXELDRAIN = "Pixeldrain"
     GETCOMICS = "GetComics"
-    "A direct download link straight from their own servers"
+    "A DDL link straight from their own servers"
     GETCOMICS_TORRENT = "GetComics (torrent)"
     "A torrent magnet link directly on the webpage"
     LIBGENPLUS = "Libgen+"
@@ -1577,7 +1577,7 @@ class Download(ABC):
 
         Args:
             download_link (str): The link to the download.
-                Could be direct download link, mega link, magnet link, etc.
+                Could be DDL link, mega link, magnet link, etc.
 
             volume_id (int): The ID of the volume that the download is for.
 
@@ -1708,7 +1708,7 @@ class ExternalDownload(Download):
 
         Args:
             download_link (str): The link to the download.
-                Could be direct download link, mega link, magnet link, etc.
+                Could be DDL link, mega link, magnet link, etc.
 
             volume_id (int): The ID of the volume that the download is for.
 
