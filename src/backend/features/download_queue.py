@@ -40,7 +40,7 @@ from backend.features.post_processing import (
 )
 from backend.implementations.blocklist import add_to_blocklist
 from backend.implementations.download_client_manager import DownloadClients
-from backend.implementations.download_clients.Direct import DirectDownload
+from backend.implementations.download_clients.DDL import DDLDownload
 from backend.implementations.download_clients.Mega import MegaDownload
 from backend.implementations.download_clients.Torrent import TorrentDownload
 from backend.implementations.external_client_manager import ExternalClients
@@ -446,7 +446,7 @@ class DownloadHandler(metaclass=Singleton):
         )
 
         downloads: list[Download] = [
-            DirectDownload(
+            DDLDownload(
                 download_link=download_link,
                 volume_id=volume_id,
                 covered_issues=result.get("issue_number", None),
@@ -566,7 +566,7 @@ class DownloadHandler(metaclass=Singleton):
                 )
 
                 downloads.append(
-                    DirectDownload(
+                    DDLDownload(
                         download_link=download_link,
                         volume_id=volume_id,
                         covered_issues=result.get("issue_number", None),
