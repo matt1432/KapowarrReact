@@ -1,15 +1,6 @@
-"""
-General-purpose status tracking framework.
-Status type implementations register via decorator and are persisted
-to the database across restarts.
-"""
-
-from collections.abc import Callable
-from threading import Timer
 from time import time
-from typing import Any
 
-from backend.base.definitions import StatusHandler, StatusType
+from backend.base.definitions import StatusData, StatusHandler, StatusType
 from backend.base.helpers import Singleton
 from backend.base.logging import LOGGER
 from backend.internals.db import get_db
@@ -17,20 +8,10 @@ from backend.internals.server import Server, StatusCountEvent, WebSocket
 
 
 class StatusHandlers(metaclass=Singleton):
-    """Registry and manager for status type handlers.
-    Modeled after StartTypeHandlers in server.py.
-
-    Handlers register via the class-level register_handler() decorator
-    at import time. All other methods are instance methods accessed via
-    StatusHandlers().
-    """
-
     handlers: dict[StatusType, StatusHandler] = {}
 
     @classmethod
-    def register_handler(
-        cls, status_type: StatusType
-    ) -> Callable[[type[StatusHandler]], type[StatusHandler]]:
+    def register_handler(cls, status_type: StatusType):
         """Register a handler for a status type.
 
         ```
@@ -40,12 +21,11 @@ class StatusHandlers(metaclass=Singleton):
         ```
 
         Args:
-            status_type (StatusType): The status type that the handler
-                is for.
+            status_type (StatusType): The status type that the handler is for.
         """
 
         def wrapper(handler_class: type[StatusHandler]) -> type[StatusHandler]:
-            cls.handlers[status_type] = handler_class()
+            cls.handlers[status_type] = handler_class(status_type)
             return handler_class
 
         return wrapper
@@ -55,8 +35,8 @@ class StatusHandlers(metaclass=Singleton):
 
         Args:
             status_type (StatusType): The type of status issue.
-            subtype (str): The subtype identifier
-                (e.g. "search_volumes" for CV rate limit).
+            subtype (str): The subtype of the status issue. E.g. the endpoint
+                that is rate limited, or the indexer that is unreachable.
         """
         handler = self.handlers[status_type]
         timestamp = int(time())
@@ -67,17 +47,23 @@ class StatusHandlers(metaclass=Singleton):
         if was_active:
             # Update timestamp in DB but keep existing expires_at
             get_db().execute(
-                "UPDATE status SET timestamp = ? "
-                "WHERE status_type = ? AND subtype = ?;",
+                """
+                UPDATE status
+                SET timestamp = ?
+                WHERE status_type = ?
+                    AND subtype = ?;
+                """,
                 (timestamp, status_type.value, subtype),
             )
         else:
             # New subtype: get expiry from handler's subtypes
             expires_at = self._get_expires_at(handler, subtype, timestamp)
             get_db().execute(
-                "INSERT OR REPLACE INTO status "
-                "(status_type, subtype, timestamp, expires_at) "
-                "VALUES (?, ?, ?, ?);",
+                """
+                INSERT OR REPLACE INTO status(
+                    status_type, subtype, timestamp, expires_at
+                ) VALUES (?, ?, ?, ?);
+                """,
                 (status_type.value, subtype, timestamp, expires_at),
             )
 
@@ -107,7 +93,11 @@ class StatusHandlers(metaclass=Singleton):
 
         if subtype is not None:
             get_db().execute(
-                "DELETE FROM status WHERE status_type = ? AND subtype = ?;",
+                """
+                DELETE FROM status
+                WHERE status_type = ?
+                    AND subtype = ?;
+                """,
                 (status_type.value, subtype),
             )
         else:
@@ -121,7 +111,7 @@ class StatusHandlers(metaclass=Singleton):
 
     def clear_all(self) -> None:
         """Clear all status issues."""
-        for _status_type, handler in self.handlers.items():
+        for handler in self.handlers.values():
             if handler.problem_reported():
                 handler.clear()
 
@@ -130,7 +120,9 @@ class StatusHandlers(metaclass=Singleton):
         return
 
     def problem_reported(
-        self, status_type: StatusType, subtype: str | None = None
+        self,
+        status_type: StatusType,
+        subtype: str | None = None,
     ) -> bool:
         """Check if a problem is reported for a status type.
 
@@ -146,20 +138,17 @@ class StatusHandlers(metaclass=Singleton):
         handler = self.handlers[status_type]
         return handler.problem_reported(subtype)
 
-    def get_all(self) -> list[dict[str, Any]]:
-        """Get all active statuses with display data from handlers.
+    def get_all(self) -> list[StatusData]:
+        """Get all reported problems, to display.
 
         Returns:
-            List[Dict[str, Any]]: A list of status entries with display
-                data provided by each handler.
+            List[StatusData]: A list of status entries that have been reported.
         """
-        result: list[dict[str, Any]] = []
-        for status_type, handler in self.handlers.items():
-            if handler.problem_reported():
-                display = handler.get_display()
-                display["type"] = status_type.value
-                result.append(display)
-        return result
+        return [
+            handler.get_display()
+            for handler in self.handlers.values()
+            if handler.problem_reported()
+        ]
 
     def get_count(self) -> int:
         """Get the total number of active status types.
@@ -180,12 +169,12 @@ class StatusHandlers(metaclass=Singleton):
         now = int(time())
         cursor = get_db()
 
-        rows = cursor.execute(
+        status_entries = cursor.execute(
             "SELECT status_type, subtype, timestamp, expires_at FROM status;"
         ).fetchall()
 
-        for row in rows:
-            raw_type, subtype, timestamp, expires_at = row
+        for status_entry in status_entries:
+            raw_type, subtype, timestamp, expires_at = status_entry
             status_type = StatusType(raw_type)
             handler = self.handlers[status_type]
 
@@ -214,7 +203,7 @@ class StatusHandlers(metaclass=Singleton):
         subtype: str,
         timestamp: int,
     ) -> int | None:
-        """Get the expiry timestamp from the handler.
+        """Get the expiry timestamp for a subtype of a status type.
 
         Args:
             handler (StatusHandler): The handler.
@@ -233,44 +222,29 @@ class StatusHandlers(metaclass=Singleton):
         return
 
 
-# region Status Handler Implementations
+# region Status Handling
 @StatusHandlers.register_handler(StatusType.CV_RATE_LIMIT)
-class CVRateLimitHandler(StatusHandler):
-    """Handler for ComicVine API rate limit status.
+class CVRateLimitStatus(StatusHandler):
+    """Status handler for ComicVine API rate limit.
 
-    ComicVine uses a rolling 200-request-per-resource-per-hour window,
+    ComicVine uses a rolling 200 request-per-resource-per-hour window,
     but the API provides no headers or fields indicating remaining
     requests or reset timing. Entries expire after one hour from the
     first rejection. The timer does not reset on subsequent rejections.
     """
 
-    description = "ComicVine rate limit"
     EXPIRY_SECONDS = 3600
 
-    def __init__(self) -> None:
-        self._subtypes: dict[str, int] = {}
-        self._timers: dict[str, Timer] = {}
-        return
-
     def get_expiry(self, subtype: str, timestamp: int) -> int:
-        """Get the expiry timestamp for a subtype.
-
-        Args:
-            subtype (str): The subtype.
-            timestamp (int): The report timestamp.
-
-        Returns:
-            int: The absolute expiry timestamp.
-        """
         return timestamp + self.EXPIRY_SECONDS
 
     def report(self, subtype: str, timestamp: int) -> None:
-        if subtype in self._subtypes:
-            self._subtypes[subtype] = timestamp
-            return
+        already_reported = subtype in self._subtypes
 
         self._subtypes[subtype] = timestamp
-        self._schedule_timer(subtype, self.EXPIRY_SECONDS)
+        if not already_reported:
+            self._schedule_timer(subtype, self.EXPIRY_SECONDS)
+
         return
 
     def restore(
@@ -279,13 +253,6 @@ class CVRateLimitHandler(StatusHandler):
         timestamp: int,
         remaining: int | None,
     ) -> None:
-        """Restore a subtype from database on startup.
-
-        Args:
-            subtype (str): The subtype.
-            timestamp (int): The stored timestamp.
-            remaining (Union[int, None]): Seconds until expiry, or None.
-        """
         self._subtypes[subtype] = timestamp
         if remaining is not None:
             self._schedule_timer(subtype, remaining)
@@ -297,25 +264,19 @@ class CVRateLimitHandler(StatusHandler):
             self._cancel_timer(subtype)
         else:
             self._subtypes.clear()
-            for key in list(self._timers):
-                self._cancel_timer(key)
+            for t in list(self._timers):
+                self._cancel_timer(t)
         return
 
-    def problem_reported(
-        self,
-        subtype: str | None = None,
-    ) -> bool:
+    def problem_reported(self, subtype: str | None = None) -> bool:
         if subtype is not None:
             return subtype in self._subtypes
         return len(self._subtypes) > 0
 
-    def get_subtypes(self) -> dict[str, int]:
-        return self._subtypes.copy()
-
-    def get_display(self) -> dict[str, Any]:
+    def get_display(self) -> StatusData:
         return {
-            "description": self.description,
-            "subtypes": list(self._subtypes.keys()),
+            "type": self.status_type.value,
+            "display_subtypes": list(self._subtypes),
         }
 
     def _schedule_timer(self, subtype: str, seconds: int) -> None:
@@ -331,7 +292,7 @@ class CVRateLimitHandler(StatusHandler):
         timer = Server().get_db_timer_thread(
             interval=seconds,
             target=self._on_expiry,
-            name=f"StatusExpiry.{StatusType.CV_RATE_LIMIT.value}.{subtype}",
+            name=f"StatusExpiry.{self.status_type.value}.{subtype}",
             args=(subtype,),
         )
         timer.daemon = True

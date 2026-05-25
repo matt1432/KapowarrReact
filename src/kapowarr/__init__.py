@@ -300,9 +300,9 @@ def main() -> None:
                     "The value for -d/--DatabaseFolder is not a folder"
                 )
 
-            elif e.args[0] == 'Invalid temp downloads folder value':
+            elif e.args[0] == "Invalid temp downloads folder value":
                 parser.error(
-                    'The value for -t/--TempDownloadFolder is not a folder'
+                    "The value for -t/--TempDownloadFolder is not a folder"
                 )
 
             elif e.args[0] == "Logging folder is not a folder":
