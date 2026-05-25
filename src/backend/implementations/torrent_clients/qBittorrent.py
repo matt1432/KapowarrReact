@@ -1,4 +1,3 @@
-from collections.abc import Sequence
 from re import IGNORECASE, compile
 from time import time
 
@@ -13,23 +12,21 @@ from backend.base.definitions import (
     DownloadType,
 )
 from backend.base.logging import LOGGER
-from backend.implementations.external_clients import BaseExternalClient
+from backend.implementations.external_clients import (
+    BaseExternalClient,
+    ExternalClients,
+)
 from backend.internals.settings import Settings
 
 filename_magnet_link = compile(r"(?<=&dn=).*?(?=&)", IGNORECASE)
 
 
+@ExternalClients.register_client(
+    DownloadType.TORRENT,
+    "qBittorrent",
+    ("title", "base_url", "username", "password"),
+)
 class qBittorrent(BaseExternalClient):
-    client_type = "qBittorrent"
-    download_type = DownloadType.TORRENT
-
-    required_tokens: Sequence[str] = (
-        "title",
-        "base_url",
-        "username",
-        "password",
-    )
-
     state_mapping = {
         "queuedDL": DownloadState.QUEUED_STATE,
         "pausedDL": DownloadState.PAUSED_STATE,
@@ -220,13 +217,14 @@ class qBittorrent(BaseExternalClient):
         del self.torrent_hashes[download_id]
         return
 
-    @staticmethod
+    @classmethod
     def test(
+        cls,
         base_url: str,
         username: str | None = None,
         password: str | None = None,
         api_token: str | None = None,
     ) -> None:
-        qBittorrent._login(base_url, username, password)
+        cls._login(base_url, username, password)
 
         return

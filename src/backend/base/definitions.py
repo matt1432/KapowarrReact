@@ -1209,6 +1209,8 @@ class ExternalDownloadClient(ABC):
     (mostly whether it's username + password or api_token)
     """
 
+    torrent_hashes: dict[str, int | None] = {}
+
     @property
     @abstractmethod
     def id(self) -> int: ...
@@ -1334,9 +1336,10 @@ class ExternalDownloadClient(ABC):
         """
         ...
 
-    @staticmethod
+    @classmethod
     @abstractmethod
     def test(
+        cls,
         base_url: str,
         username: str | None,
         password: str | None,
