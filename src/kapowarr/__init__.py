@@ -8,7 +8,6 @@ from sys import argv
 from typing import NoReturn
 
 from backend.base.definitions import Constants, StartType
-from backend.implementations.download_client_manager import DownloadClients
 
 
 def _main(
@@ -65,7 +64,8 @@ def _main(
     from backend.base.logging import LOGGER, setup_logging
     from backend.features.download_queue import DownloadHandler
     from backend.features.tasks import TaskHandler
-    from backend.implementations.external_clients import ExternalClients
+    from backend.implementations.download_client_manager import DownloadClients
+    from backend.implementations.external_client_manager import ExternalClients
     from backend.internals.db import set_db_location, setup_db
     from backend.internals.server import Server, StartTypeHandlers
     from backend.internals.settings import Settings

@@ -43,7 +43,7 @@ from backend.implementations.download_client_manager import DownloadClients
 from backend.implementations.download_clients.Direct import DirectDownload
 from backend.implementations.download_clients.Mega import MegaDownload
 from backend.implementations.download_clients.Torrent import TorrentDownload
-from backend.implementations.external_clients import ExternalClients
+from backend.implementations.external_client_manager import ExternalClients
 from backend.implementations.getcomics import GetComicsPage
 from backend.implementations.matching import parse_covered_issues
 from backend.implementations.volumes import Issue

@@ -25,10 +25,12 @@ from backend.base.helpers import Session, get_torrent_info
 from backend.base.logging import LOGGER
 from backend.implementations.download_client_manager import DownloadClients
 from backend.implementations.download_clients.base import BaseDirectDownload
-from backend.implementations.external_clients import ExternalClients
+from backend.implementations.external_client_manager import ExternalClients
+from backend.implementations.external_clients.torrent.qBittorrent import (
+    qBittorrent,
+)
 from backend.implementations.naming import generate_issue_name
 from backend.implementations.remote_mapping import RemoteMappings
-from backend.implementations.torrent_clients.qBittorrent import qBittorrent
 from backend.implementations.volumes import Volume
 from backend.internals.db import get_db
 from backend.internals.settings import Settings
