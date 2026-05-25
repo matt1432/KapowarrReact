@@ -34,6 +34,7 @@ from backend.base.definitions import (
     FilenameData,
     IssueMetadata,
     SpecialVersion,
+    StatusType,
     VolumeData,
     VolumeMetadata,
 )
@@ -58,6 +59,7 @@ from backend.implementations.matching import (
 )
 from backend.internals.db import DBConnection, get_db
 from backend.internals.settings import Settings
+from backend.internals.status import StatusHandlers
 
 translation_regex = compile(
     r"^<p>\s*\w+(?<!English) publication(\.?</p>$|,\s| \(in the \w+(?<!English) language\)|, translates )|"
@@ -450,6 +452,7 @@ class ComicVine:
                 )
             return volume_info
         except (ServiceError, AuthenticationError):
+            StatusHandlers().report(StatusType.CV_RATE_LIMIT, "fetch_volume")
             raise CVRateLimitReached
 
     async def fetch_volumes(
@@ -493,7 +496,13 @@ class ComicVine:
                         )
                         for id_batch in batched(request_batch, 100)
                     ]
+                    StatusHandlers().clear(
+                        StatusType.CV_RATE_LIMIT, "fetch_issues"
+                    )
                 except (ServiceError, AuthenticationError):
+                    StatusHandlers().report(
+                        StatusType.CV_RATE_LIMIT, "fetch_issues"
+                    )
                     raise CVRateLimitReached
 
                 # Format volume responses and prep cover requests
@@ -630,11 +639,13 @@ class ComicVine:
                     resource=ComicvineResource.VOLUME,
                     max_results=50,
                 )
+            StatusHandlers().clear(StatusType.CV_RATE_LIMIT, "search_volumes")
 
         except (ServiceError, AuthenticationError, VolumeNotMatched):
             return []
 
         except CVRateLimitReached:
+            StatusHandlers().report(StatusType.CV_RATE_LIMIT, "search_volumes")
             if allow_rate_limit_reached:
                 return []
             raise

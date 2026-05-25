@@ -67,6 +67,7 @@ def _main(
     from backend.internals.db import set_db_location, setup_db
     from backend.internals.server import Server, StartTypeHandlers
     from backend.internals.settings import Settings
+    from backend.internals.status import StatusHandlers
 
     set_start_method("spawn")
     setup_logging(log_folder, log_file)
@@ -79,6 +80,7 @@ def _main(
     with SERVER.app.app_context():
         StartTypeHandlers.start_timer(start_type)
         setup_db()
+        StatusHandlers().load_from_db()
 
         s = Settings()
 

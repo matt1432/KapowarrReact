@@ -24,6 +24,7 @@ from backend.base.definitions import (
     SearchResultData,
     SpecialVersion,
     StartType,
+    StatusType,
     ThumbnailData,
     VolumeData,
 )
@@ -88,6 +89,7 @@ from backend.implementations.volumes import Library, delete_issue_file
 from backend.internals.db_models import FilesDB
 from backend.internals.server import Server, StartTypeHandlers
 from backend.internals.settings import Settings, get_about_data
+from backend.internals.status import StatusHandlers
 
 api = Blueprint("api", __name__)
 
@@ -359,6 +361,26 @@ def api_auth_check() -> ApiReturn:
 @auth
 def api_about() -> ApiReturn:
     return return_api(get_about_data())
+
+
+# =====================
+# Status Checks
+# =====================
+@api.route("/system/status/checks", methods=["GET", "DELETE"])
+@error_handler
+@auth
+def api_status_checks():
+    # TODO: implement this in the frontend https://github.com/Casvt/Kapowarr/commit/9a0292f57362f00dede650f9083f8083a8e1162d
+    if request.method == "GET":
+        return return_api(StatusHandlers().get_all())
+
+    elif request.method == "DELETE":
+        status_type = extract_key(request, "type", check_existence=False)
+        if status_type:
+            StatusHandlers().clear(StatusType(status_type))
+        else:
+            StatusHandlers().clear_all()
+        return return_api({})
 
 
 @api.route("/system/logs", methods=["GET"])

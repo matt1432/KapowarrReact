@@ -329,6 +329,16 @@ class WebSocketEventType(BaseEnum):
     DOWNLOADED_STATUS = "downloaded_status"
     "A change in what issues are marked as downloaded and which aren't"
 
+    STATUS_COUNT = "status_count"
+    "A change in the number of active status issues"
+
+
+class StatusType(BaseEnum):
+    "A type of status issue that can be reported"
+
+    CV_RATE_LIMIT = "cv_rate_limit"
+    "ComicVine API rate limit reached"
+
 
 class StartType(BaseEnum):
     "The reason for or cause of starting up"
@@ -1001,6 +1011,103 @@ class StartTypeHandler(ABC):
     def on_diffuse(self) -> None:
         """
         Called when the timer is diffused. Generally finalises changes.
+        """
+        ...
+
+
+class StatusHandler(ABC):
+    "A handler for a specific status type"
+
+    description: str
+    """A short description of what the status type represents"""
+
+    def get_expiry(
+        self,
+        subtype: str,
+        timestamp: int,
+    ) -> int | None:
+        """Get the absolute expiry timestamp for this subtype.
+        Override in handlers that auto-expire. Defaults to None
+        (no auto-expiry, persists until manually cleared).
+
+        Args:
+            subtype (str): The subtype identifier.
+            timestamp (int): When the status was reported (epoch seconds).
+
+        Returns:
+            Union[int, None]: The absolute expiry timestamp, or None.
+        """
+        return None
+
+    @abstractmethod
+    def report(self, subtype: str, timestamp: int) -> None:
+        """Report a status issue. Store the subtype and manage timers.
+
+        Args:
+            subtype (str): The subtype identifier.
+            timestamp (int): When the status was reported (epoch seconds).
+        """
+        ...
+
+    @abstractmethod
+    def clear(self, subtype: str | None = None) -> None:
+        """Clear a subtype or all subtypes. Cancel associated timers.
+
+        Args:
+            subtype (Union[str, None], optional): The subtype to clear.
+                If None, clear all subtypes. Defaults to None.
+        """
+        ...
+
+    @abstractmethod
+    def problem_reported(
+        self,
+        subtype: str | None = None,
+    ) -> bool:
+        """Check if a problem is reported for this handler.
+
+        Args:
+            subtype (Union[str, None], optional): Check a specific subtype.
+                If None, check if any subtype is active. Defaults to None.
+
+        Returns:
+            bool: Whether the problem is reported.
+        """
+        ...
+
+    @abstractmethod
+    def restore(
+        self,
+        subtype: str,
+        timestamp: int,
+        remaining: int | None,
+    ) -> None:
+        """Restore a subtype from database on startup.
+
+        Args:
+            subtype (str): The subtype identifier.
+            timestamp (int): The stored timestamp.
+            remaining (Union[int, None]): Seconds until expiry, or None
+                if the status has no auto-expiry.
+        """
+        ...
+
+    @abstractmethod
+    def get_subtypes(self) -> dict[str, int]:
+        """Get the current subtypes and their timestamps.
+
+        Returns:
+            Dict[str, int]: A mapping from subtype to timestamp.
+        """
+        ...
+
+    @abstractmethod
+    def get_display(self) -> dict[str, Any]:
+        """Return display data for the API. Subtype labels should be
+        handled in the frontend, not here.
+
+        Returns:
+            Dict[str, Any]: The formatted data.
         """
         ...
 

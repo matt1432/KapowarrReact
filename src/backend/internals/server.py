@@ -666,6 +666,25 @@ class IssueDeleteEvent(WebSocketEvent):
         }
 
 
+class StatusCountEvent(WebSocketEvent):
+    "The number of active status issues has changed"
+
+    def __init__(self, count: int) -> None:
+        """Create the event.
+
+        Args:
+            count (int): The total number of active status types.
+        """
+        self.count = count
+        return
+
+    def get_type(self) -> WebSocketEventType:
+        return WebSocketEventType.STATUS_COUNT
+
+    def get_body(self) -> dict[str, Any]:
+        return {"count": self.count}
+
+
 # region StartType Handling
 class StartTypeHandlers:
     handlers: dict[StartType, StartTypeHandler] = {}
