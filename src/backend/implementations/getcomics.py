@@ -23,6 +23,7 @@ from backend.base.definitions import (
     BlocklistReason,
     Constants,
     Download,
+    DownloadClientIdentifier,
     DownloadGroup,
     DownloadType,
     EnqueuingDownloadFailureReason,
@@ -48,23 +49,7 @@ from backend.implementations.blocklist import (
     add_to_blocklist,
     blocklist_contains,
 )
-from backend.implementations.download_clients.Direct import DirectDownload
-from backend.implementations.download_clients.MediaFire import (
-    MediaFireDownload,
-    MediaFireFolderDownload,
-)
-from backend.implementations.download_clients.Mega import (
-    MegaDownload,
-    MegaFolderDownload,
-)
-from backend.implementations.download_clients.PixelDrain import (
-    PixelDrainDownload,
-    PixelDrainFolderDownload,
-)
-from backend.implementations.download_clients.Torrent import TorrentDownload
-from backend.implementations.download_clients.WeTransfer import (
-    WeTransferDownload,
-)
+from backend.implementations.download_client_manager import DownloadClients
 from backend.implementations.external_client_manager import ExternalClients
 from backend.implementations.matching import download_group_filter
 from backend.implementations.volumes import Volume
@@ -503,7 +488,7 @@ def _create_link_paths(
 
 async def __purify_link(
     source: GCDownloadSource, link: str
-) -> tuple[str, type[Download]]:
+) -> tuple[str, DownloadClientIdentifier]:
     """Extract the link that directly leads to the download from the link
     in the GC article.
 
@@ -516,15 +501,15 @@ async def __purify_link(
         ClientError: Failed to fetch link.
 
     Returns:
-        Tuple[str, Type[Download]]: The pure link, and the download class for
-        the correct service.
+        Tuple[str, DownloadClientIdentifier]: The pure link, and the identifier
+            of the download class for the service.
     """
     LOGGER.debug(f"Purifying link: {link}")
     if source == GCDownloadSource.GETCOMICS_TORRENT and link.startswith(
         "magnet:?"
     ):
         # Direct magnet link
-        return link, TorrentDownload
+        return link, DownloadClientIdentifier.TORRENT
 
     async with AsyncSession() as session:
         r = await session.get(link)
@@ -536,10 +521,10 @@ async def __purify_link(
     if source == GCDownloadSource.MEGA:
         if "#F!" in url or "/folder/" in url:
             # Folder download
-            return url, MegaFolderDownload
+            return url, DownloadClientIdentifier.MEGA_FOLDER
 
         # Normal file download
-        return url, MegaDownload
+        return url, DownloadClientIdentifier.MEGA
 
     elif source == GCDownloadSource.MEDIAFIRE:
         if "error.php" in url:
@@ -548,25 +533,25 @@ async def __purify_link(
 
         elif "/folder/" in url:
             # Folder download
-            return url, MediaFireFolderDownload
+            return url, DownloadClientIdentifier.MEDIAFIRE_FOLDER
 
         elif mediafire_dd_regex.search(url):
             # Link on page was to pure link
-            return url, DirectDownload
+            return url, DownloadClientIdentifier.DIRECT
 
         # Normal file download
-        return url, MediaFireDownload
+        return url, DownloadClientIdentifier.MEDIAFIRE
 
     elif source == GCDownloadSource.WETRANSFER:
-        return url, WeTransferDownload
+        return url, DownloadClientIdentifier.WETRANSFER
 
     elif source == GCDownloadSource.PIXELDRAIN:
         if "/l/" in url:
             # Folder download
-            return url, PixelDrainFolderDownload
+            return url, DownloadClientIdentifier.PIXELDRAIN_FOLDER
 
         # File download
-        return url, PixelDrainDownload
+        return url, DownloadClientIdentifier.PIXELDRAIN
 
     elif (
         source == GCDownloadSource.GETCOMICS_TORRENT
@@ -578,13 +563,13 @@ async def __purify_link(
             "magnet:?xt=urn:btih:"
             + hash
             + "&tr=udp://tracker.cyberia.is:6969/announce&tr=udp://tracker.port443.xyz:6969/announce&tr=http://tracker3.itzmx.com:6961/announce&tr=udp://tracker.moeking.me:6969/announce&tr=http://vps02.net.orel.ru:80/announce&tr=http://tracker.openzim.org:80/announce&tr=udp://tracker.skynetcloud.tk:6969/announce&tr=https://1.tracker.eu.org:443/announce&tr=https://3.tracker.eu.org:443/announce&tr=http://re-tracker.uz:80/announce&tr=https://tracker.parrotsec.org:443/announce&tr=udp://explodie.org:6969/announce&tr=udp://tracker.filemail.com:6969/announce&tr=udp://tracker.nyaa.uk:6969/announce&tr=udp://retracker.netbynet.ru:2710/announce&tr=http://tracker.gbitt.info:80/announce&tr=http://tracker2.dler.org:80/announce",
-            TorrentDownload,
+            DownloadClientIdentifier.TORRENT,
         )
 
     else:
         # Link is direct download from getcomics
         # ('Main Server', 'Mirror Server', 'Link 1', 'Link 2', etc.)
-        return url, DirectDownload
+        return url, DownloadClientIdentifier.DIRECT
 
 
 async def __purify_download_group(
@@ -622,7 +607,7 @@ async def __purify_download_group(
     for source, links in group["links"].items():
         for link in iter_commit(links):
             try:
-                pure_link, DownloadClass = await __purify_link(source, link)
+                pure_link, identifier = await __purify_link(source, link)
 
             except LinkBroken:
                 # Link broken
@@ -643,7 +628,7 @@ async def __purify_download_group(
                 continue
 
             try:
-                dl_instance: Download = DownloadClass(
+                dl_instance = DownloadClients.get_client(identifier)(
                     download_link=pure_link,
                     volume_id=volume_id,
                     covered_issues=group["info"]["issue_number"],
