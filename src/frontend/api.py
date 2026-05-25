@@ -1494,13 +1494,13 @@ def api_external_clients_test() -> ApiReturn:
 @error_handler
 @auth
 def api_external_client(id: int) -> ApiReturn | None:
-    client = ExternalClients.get_client(id)
-
     if request.method == "GET":
+        client = ExternalClients.get_client(id)
         result = client.get_client_data()
         return return_api(result)
 
     elif request.method == "PUT":
+        client = ExternalClients.get_client(id)
         data: dict = request.get_json()
         data = {
             k: data.get(k)
@@ -1517,7 +1517,7 @@ def api_external_client(id: int) -> ApiReturn | None:
         return return_api(client.get_client_data())
 
     elif request.method == "DELETE":
-        client.delete_client()
+        ExternalClients.get_client(id).delete_client()
         return return_api({})
 
 
