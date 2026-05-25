@@ -15,7 +15,6 @@ from backend.base.custom_exceptions import (
     ExternalClientDownloading,
     ExternalClientNotFound,
     InvalidKeyValue,
-    KeyNotFound,
 )
 from backend.base.definitions import (
     ClientTestResult,
@@ -35,10 +34,15 @@ ECF = ExternalClientField
 class BaseExternalClient(ExternalDownloadClient):
     _title: str
     _base_url: str
+    _enabled: bool
 
     @property
     def id(self) -> int:
         return self._id
+
+    @property
+    def enabled(self) -> bool:
+        return self._enabled
 
     @property
     def title(self) -> str:
@@ -67,6 +71,7 @@ class BaseExternalClient(ExternalDownloadClient):
             .execute(
                 """
             SELECT
+                enabled,
                 download_type, client_type,
                 title, base_url,
                 username, password,
@@ -80,6 +85,7 @@ class BaseExternalClient(ExternalDownloadClient):
             .fetchone()
         )
         self._title = data["title"]
+        self._enabled = data["enabled"]
         self._base_url = data["base_url"]
         self._username = data["username"]
         self._password = data["password"]
@@ -89,6 +95,7 @@ class BaseExternalClient(ExternalDownloadClient):
     def get_client_data(self) -> ExternalDownloadClientData:
         return {
             "id": self._id,
+            "enabled": self._enabled,
             "download_type": self.download_type.value,
             "client_type": self.client_type,
             "required_tokens": [rt.value for rt in self.required_tokens],
@@ -112,16 +119,25 @@ class BaseExternalClient(ExternalDownloadClient):
 
         filtered_data: dict[str, str | None] = {}
         for key in ECF._member_map_.values():
-            if key in self.required_tokens and key.value not in data:
-                raise KeyNotFound(key.value)
-
-            if key in (ECF.TITLE, ECF.BASE_URL) and data[key.value] is None:
+            if (
+                key in (ECF.TITLE, ECF.ENABLED, ECF.BASE_URL)
+                and data[key.value] is None
+            ):
                 raise InvalidKeyValue(key.value, None)
 
             if key == ECF.BASE_URL:
+                if not isinstance(data[key.value], str):
+                    raise InvalidKeyValue(key.value, data[key.value])
                 filtered_data[key.value] = normalise_base_url(data[key.value])
 
+            elif key == ECF.ENABLED:
+                if not isinstance(data[key.value], bool):
+                    raise InvalidKeyValue(key.value, data[key.value])
+                filtered_data[key.value] = data[key.value]
+
             elif key in self.required_tokens:
+                if not isinstance(data[key.value], str):
+                    raise InvalidKeyValue(key.value, data[key.value])
                 filtered_data[key.value] = data[key.value]
 
             else:
@@ -148,6 +164,7 @@ class BaseExternalClient(ExternalDownloadClient):
             """
             UPDATE external_download_clients
             SET
+                enabled = :enabled,
                 title = :title,
                 base_url = :base_url,
                 username = :username,
@@ -157,6 +174,7 @@ class BaseExternalClient(ExternalDownloadClient):
             """,
             {**filtered_data, "id": self._id},
         )
+        self._enabled = bool(filtered_data[ECF.ENABLED.value])
         self._title = filtered_data[ECF.TITLE.value] or ""
         self._base_url = filtered_data[ECF.BASE_URL.value] or ""
         self._username = filtered_data[ECF.USERNAME.value]
@@ -308,6 +326,7 @@ class ExternalClients:
         cls,
         download_type: DownloadType,
         client_type: str | None,
+        enabled: bool | None,
         title: str | None,
         base_url: str | None,
         username: str | None,
@@ -321,6 +340,8 @@ class ExternalClients:
 
             client_type (str): The client type of the client, as supplied when
                 they registered to this class.
+
+            enabled (bool): Whether the client is enabled or not.
 
             title (str): The title to give the client.
 
@@ -346,6 +367,9 @@ class ExternalClients:
         Returns:
             ExternalDownloadClient: The new client.
         """
+        if not isinstance(enabled, bool):
+            raise InvalidKeyValue("enabled", enabled)
+
         if client_type is None:
             raise InvalidKeyValue("client_type", client_type)
 
@@ -376,6 +400,7 @@ class ExternalClients:
             "download_type": ClientClass.download_type.value,
             "client_type": client_type,
             "title": title,
+            "enabled": enabled,
             "base_url": normalise_base_url(base_url),
             "username": username,
             "password": password,
@@ -396,10 +421,12 @@ class ExternalClients:
             .execute(
                 """
                     INSERT INTO external_download_clients(
+                        enabled,
                         download_type, client_type,
                         title, base_url,
                         username, password, api_token
                     ) VALUES (
+                        :enabled,
                         :download_type, :client_type,
                         :title, :base_url,
                         :username, :password, :api_token
@@ -432,13 +459,14 @@ class ExternalClients:
                 }
                 for client in get_db()
                 .execute("""
-                SELECT
-                    id, download_type, client_type,
-                    title, base_url,
-                    username, password,
-                    api_token
-                FROM external_download_clients
-                ORDER BY title, id;
+                    SELECT
+                        id, enabled,
+                        download_type, client_type,
+                        title, base_url,
+                        username, password,
+                        api_token
+                    FROM external_download_clients
+                    ORDER BY title, id;
                 """)
                 .fetchalldict()
             ],
@@ -484,14 +512,15 @@ class ExternalClients:
         cls,
         download_type: DownloadType,
     ) -> ExternalDownloadClient:
-        """Get the least used client of a specific download type.
+        """Get the least used client of a specific download type that is enabled.
 
         Args:
             download_type (DownloadType): The download type to get the client
                 for.
 
         Raises:
-            ExternalClientNotFound: No client of the specified type was found.
+            ExternalClientNotFound: No client of the specified type was found
+                or all of them are disabled.
 
         Returns:
             ExternalDownloadClient: The least used client.
@@ -504,6 +533,7 @@ class ExternalClients:
                 INNER JOIN external_download_clients clients
                     ON queue.external_client_id = clients.id
                 WHERE clients.download_type = ?
+                    AND clients.enabled = 1
                 GROUP BY clients.id
                 ORDER BY COUNT(queue.id)
                 LIMIT 1;
@@ -519,6 +549,7 @@ class ExternalClients:
                 SELECT id
                 FROM external_download_clients
                 WHERE download_type = ?
+                    AND enabled = 1
                 LIMIT 1;
             """,
             (download_type.value,),

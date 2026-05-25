@@ -31,6 +31,7 @@ interface TestParams {
 interface EditParams {
     id?: number;
     clientType?: string;
+    enabled: boolean;
     title: string;
     baseUrl: string;
     username: Nullable<string>;

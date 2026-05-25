@@ -1429,6 +1429,7 @@ def api_external_clients() -> ApiReturn | None:
                 "download_type",
                 "client_type",
                 "title",
+                "enabled",
                 "base_url",
                 "username",
                 "password",
@@ -1503,7 +1504,14 @@ def api_external_client(id: int) -> ApiReturn | None:
         data: dict = request.get_json()
         data = {
             k: data.get(k)
-            for k in ("title", "base_url", "username", "password", "api_token")
+            for k in (
+                "title",
+                "enabled",
+                "base_url",
+                "username",
+                "password",
+                "api_token",
+            )
         }
         client.update_client(data)
         return return_api(client.get_client_data())

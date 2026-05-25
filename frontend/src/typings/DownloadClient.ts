@@ -17,6 +17,7 @@ export interface RawDownloadClient {
     id: number;
     download_type: DownloadType;
     client_type: ClientType;
+    enabled: boolean;
     title: string;
     base_url: string;
     username: Nullable<string>;

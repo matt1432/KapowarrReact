@@ -99,6 +99,7 @@ export default function EditDownloadClientModalContent({
         DownloadClient | PotentialDownloadClient
     >(
         client ?? {
+            enabled: true,
             title: '',
             clientType: '' as ClientType,
             baseUrl: '',
@@ -119,6 +120,7 @@ export default function EditDownloadClientModalContent({
             setIsSaving(false);
             setChanges(
                 client ?? {
+                    enabled: true,
                     title: '',
                     clientType: '' as ClientType,
                     baseUrl: '',
@@ -176,6 +178,7 @@ export default function EditDownloadClientModalContent({
             ...identifier,
             ...pickProps(
                 changes,
+                'enabled',
                 'title',
                 'baseUrl',
                 'username',
@@ -232,6 +235,17 @@ export default function EditDownloadClientModalContent({
                                 />
                             </FormGroup>
                         ) : null}
+
+                        <FormGroup>
+                            <FormLabel>{translate('Enabled')}</FormLabel>
+
+                            <FormInputGroup
+                                type={inputTypes.CHECK}
+                                name="enabled"
+                                onChange={handleInputChange}
+                                value={changes.enabled}
+                            />
+                        </FormGroup>
 
                         {clientOptions.includes('base_url') ? (
                             <FormGroup>
