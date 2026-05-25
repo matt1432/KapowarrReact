@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from importlib import import_module
 from os.path import basename, dirname, splitext
 from sqlite3 import IntegrityError
-from typing import Any
+from typing import Any, cast
 
 import backend.implementations.torrent_clients as tc
 from backend.base.custom_exceptions import (
@@ -22,6 +22,7 @@ from backend.base.definitions import (
     DownloadType,
     ExternalClientField,
     ExternalDownloadClient,
+    ExternalDownloadClientData,
 )
 from backend.base.files import list_files
 from backend.base.helpers import normalise_base_url
@@ -85,11 +86,12 @@ class BaseExternalClient(ExternalDownloadClient):
         self._api_token = data["api_token"]
         return
 
-    def get_client_data(self) -> dict[str, Any]:
+    def get_client_data(self) -> ExternalDownloadClientData:
         return {
             "id": self._id,
             "download_type": self.download_type.value,
             "client_type": self.client_type,
+            'required_tokens': [rt.value for rt in self.required_tokens],
             "title": self._title,
             "base_url": self._base_url,
             "username": self._username,
@@ -389,15 +391,21 @@ class ExternalClients:
         return cls.get_client(client_id)
 
     @classmethod
-    def get_clients(cls) -> list[dict[str, Any]]:
+    def get_clients(cls) -> list[ExternalDownloadClientData]:
         """Get a list of all external clients.
 
         Returns:
-            List[Dict[str, Any]]: The list with all external clients.
+            List[ExternalDownloadClientData]: The list with all external clients.
         """
-        result = (
-            get_db()
-            .execute("""
+        result = cast(list[ExternalDownloadClientData], [
+            {
+                **client,
+                "required_tokens": [
+                    rt.value
+                    for rt in cls.clients[client["client_type"]].required_tokens
+                ]
+            }
+            for client in get_db().execute("""
                 SELECT
                     id, download_type, client_type,
                     title, base_url,
@@ -405,9 +413,9 @@ class ExternalClients:
                     api_token
                 FROM external_download_clients
                 ORDER BY title, id;
-            """)
-            .fetchalldict()
-        )
+                """
+            ).fetchalldict()
+        ])
         return result
 
     @classmethod
