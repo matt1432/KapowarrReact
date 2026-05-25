@@ -8,6 +8,7 @@ from sys import argv
 from typing import NoReturn
 
 from backend.base.definitions import Constants, StartType
+from backend.implementations.download_client_manager import DownloadClients
 
 
 def _main(
@@ -75,6 +76,7 @@ def _main(
     LOGGER.info("Starting up Kapowarr")
 
     ExternalClients.trigger_client_registration()
+    DownloadClients.trigger_client_registration()
 
     set_db_location(db_folder)
 

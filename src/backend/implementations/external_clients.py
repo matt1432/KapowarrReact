@@ -30,7 +30,7 @@ from backend.base.logging import LOGGER
 from backend.internals.db import get_db
 
 ECF = ExternalClientField
-filename_magnet_link = compile(r'(?<=&dn=).*?(?=&)', IGNORECASE)
+filename_magnet_link = compile(r"(?<=&dn=).*?(?=&)", IGNORECASE)
 
 
 # region Base External Client

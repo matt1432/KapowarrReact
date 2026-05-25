@@ -30,7 +30,7 @@ from backend.base.definitions import (
     SeedingHandling,
 )
 from backend.base.files import create_folder, delete_file_folder
-from backend.base.helpers import CommaList, Singleton, get_subclasses
+from backend.base.helpers import CommaList, Singleton
 from backend.base.logging import LOGGER
 from backend.features.post_processing import (
     PostProcessor,
@@ -38,12 +38,10 @@ from backend.features.post_processing import (
     PostProcessorTorrentsCopy,
 )
 from backend.implementations.blocklist import add_to_blocklist
-from backend.implementations.download_clients import (
-    BaseDirectDownload,
-    DirectDownload,
-    MegaDownload,
-    TorrentDownload,
-)
+from backend.implementations.download_client_manager import DownloadClients
+from backend.implementations.download_clients.Direct import DirectDownload
+from backend.implementations.download_clients.Mega import MegaDownload
+from backend.implementations.download_clients.Torrent import TorrentDownload
 from backend.implementations.external_clients import ExternalClients
 from backend.implementations.getcomics import GetComicsPage
 from backend.implementations.matching import parse_covered_issues
@@ -65,11 +63,6 @@ if TYPE_CHECKING:
 # =====================
 # Download handling
 # =====================
-download_type_to_class: dict[str, type[Download]] = {
-    c.identifier: c for c in get_subclasses(BaseDirectDownload)
-}
-
-
 class DownloadHandler(metaclass=Singleton):
     queue: list[Download] = []
 
@@ -684,7 +677,9 @@ class DownloadHandler(metaclass=Singleton):
             covered_issues = parse_covered_issues(download["covered_issues"])
 
             try:
-                dl_subclass = download_type_to_class[download["client_type"]]
+                dl_subclass = DownloadClients.get_client(
+                    download["client_type"]
+                )
                 dl_instance: Download | ExternalDownload
 
                 if issubclass(dl_subclass, ExternalDownload):

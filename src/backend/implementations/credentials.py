@@ -18,18 +18,18 @@ class Credentials:
     """
 
     validators: dict[
-        CredentialSource,
-        Callable[[CredentialData], CredentialData]
+        CredentialSource, Callable[[CredentialData], CredentialData]
     ] = {}
     "The validators may raise ClientNotWorking or CredentialInvalid"
 
     @classmethod
     def register_validator(cls, source: CredentialSource):
         def wrapper(
-            validator: Callable[[CredentialData], CredentialData]
+            validator: Callable[[CredentialData], CredentialData],
         ) -> Callable[[CredentialData], CredentialData]:
             cls.validators[source] = validator
             return validator
+
         return wrapper
 
     @classmethod
@@ -40,17 +40,18 @@ class Credentials:
             List[CredentialData]: The list of credentials.
         """
         return [
-            CredentialData(**{
-                **cred,
-                'source': CredentialSource[cred["source"].upper()]
-            })
-            for cred in get_db().execute("""
+            CredentialData(
+                **{**cred, "source": CredentialSource[cred["source"].upper()]}
+            )
+            for cred in get_db()
+            .execute("""
                 SELECT
                     id, source,
                     username, email,
                     password, api_key
                 FROM credentials;
-            """).fetchalldict()
+            """)
+            .fetchalldict()
         ]
 
     @classmethod
@@ -66,22 +67,26 @@ class Credentials:
         Returns:
             CredentialData: The credential info.
         """
-        result = get_db().execute("""
+        result = (
+            get_db()
+            .execute(
+                """
             SELECT
 @@ -60,21 +74,19 @@ def get_one(self, id: int) -> CredentialData:
             WHERE id = ?
             LIMIT 1;
             """,
-            (credential_id,)
-        ).fetchonedict()
+                (credential_id,),
+            )
+            .fetchonedict()
+        )
 
         if result is None:
             raise CredentialNotFound(credential_id)
 
-        return CredentialData(**{
-            **result,
-            'source': CredentialSource(result["source"])
-        })
+        return CredentialData(
+            **{**result, "source": CredentialSource(result["source"])}
+        )
 
     @classmethod
     def get_from_source(cls, source: CredentialSource) -> list[CredentialData]:
@@ -110,17 +115,22 @@ class Credentials:
         Returns:
             CredentialData: The credential info.
         """
-        LOGGER.info(f'Adding credential for {credential_data.source.value}')
+        LOGGER.info(f"Adding credential for {credential_data.source.value}")
 
         source = credential_data.source
         credential_data = cls.validators[source](credential_data)
 
-        credential_id = get_db().execute("""
+        credential_id = (
+            get_db()
+            .execute(
+                """
             INSERT INTO credentials(source, username, email, password, api_key)
             VALUES (:source, :username, :email, :password, :api_key);
             """,
-            credential_data.todict()
-        ).lastrowid
+                credential_data.todict(),
+            )
+            .lastrowid
+        )
 
         return cls.get_one(credential_id)
 
