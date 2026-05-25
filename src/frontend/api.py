@@ -1441,7 +1441,10 @@ def api_external_clients() -> ApiReturn | None:
 @error_handler
 @auth
 def api_external_clients_keys() -> ApiReturn:
-    result = {k: v.required_tokens for k, v in ExternalClients.clients.items()}
+    result = {
+        k: [rt.value for rt in v.required_tokens]
+        for k, v in ExternalClients.clients.items()
+    }
     return return_api(result)
 
 

@@ -2,7 +2,7 @@
 The manager of external download clients and their base class
 """
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from importlib import import_module
 from os.path import basename, dirname, splitext
 from sqlite3 import IntegrityError
@@ -20,19 +20,20 @@ from backend.base.custom_exceptions import (
 from backend.base.definitions import (
     ClientTestResult,
     DownloadType,
+    ExternalClientField,
     ExternalDownloadClient,
 )
 from backend.base.files import list_files
 from backend.base.helpers import normalise_base_url
 from backend.internals.db import get_db
 
+ECF = ExternalClientField
+
 
 # region Base External Client
 class BaseExternalClient(ExternalDownloadClient):
     _title: str
     _base_url: str
-
-    required_tokens: Sequence[str] = ("title", "base_url")
 
     @property
     def id(self) -> int:
@@ -108,35 +109,37 @@ class BaseExternalClient(ExternalDownloadClient):
             raise ExternalClientDownloading(self.id)
 
         filtered_data: dict[str, str | None] = {}
-        for key in ("title", "base_url", "username", "password", "api_token"):
-            if key in self.required_tokens and key not in data:
-                raise KeyNotFound(key)
+        for key in ECF._member_map_.values():
+            if key in self.required_tokens and key.value not in data:
+                raise KeyNotFound(key.value)
 
-            if key in ("title", "base_url") and data[key] is None:
-                raise InvalidKeyValue(key, None)
+            if key in (ECF.TITLE, ECF.BASE_URL) and data[key.value] is None:
+                raise InvalidKeyValue(key.value, None)
 
-            if key == "base_url":
-                filtered_data[key] = normalise_base_url(data[key])
+            if key == ECF.BASE_URL:
+                filtered_data[key.value] = normalise_base_url(data[key.value])
 
             elif key in self.required_tokens:
-                filtered_data[key] = data[key]
+                filtered_data[key.value] = data[key.value]
 
             else:
-                filtered_data[key] = None
+                filtered_data[key.value] = None
 
         if (
-            filtered_data["username"] is not None
-            and filtered_data["password"] is None
+            filtered_data[ECF.USERNAME.value] is not None
+            and filtered_data[ECF.PASSWORD.value] is None
         ):
             # Username given but not password
-            raise InvalidKeyValue("password", filtered_data["password"])
+            raise InvalidKeyValue(
+                ECF.PASSWORD.value, filtered_data[ECF.PASSWORD.value]
+            )
 
         # Raises exception on fail
         self.test(
-            filtered_data["base_url"] or "",
-            filtered_data["username"],
-            filtered_data["password"],
-            filtered_data["api_token"],
+            filtered_data[ECF.BASE_URL.value] or "",
+            filtered_data[ECF.USERNAME.value],
+            filtered_data[ECF.PASSWORD.value],
+            filtered_data[ECF.API_TOKEN.value],
         )
 
         cursor.execute(
@@ -152,11 +155,11 @@ class BaseExternalClient(ExternalDownloadClient):
             """,
             {**filtered_data, "id": self._id},
         )
-        self._title = filtered_data["title"] or ""
-        self._base_url = filtered_data["base_url"] or ""
-        self._username = filtered_data["username"]
-        self._password = filtered_data["password"]
-        self._api_token = filtered_data["api_token"]
+        self._title = filtered_data[ECF.TITLE.value] or ""
+        self._base_url = filtered_data[ECF.BASE_URL.value] or ""
+        self._username = filtered_data[ECF.USERNAME.value]
+        self._password = filtered_data[ECF.PASSWORD.value]
+        self._api_token = filtered_data[ECF.API_TOKEN.value]
 
         return
 
@@ -182,7 +185,7 @@ class ExternalClients:
         cls,
         download_type: DownloadType,
         client_type: str,
-        required_tokens: Sequence[str],
+        required_tokens: tuple[ExternalClientField, ...],
     ):
         """Register an external download client.
 
@@ -198,8 +201,10 @@ class ExternalClients:
         Args:
             download_type (DownloadType): The protocol that the client handles.
             client_type (str): The product name of the client (e.g. 'qBittorrent').
-            required_tokens (Sequence[str]): The fields that the client needs.
+            required_tokens (Tuple[ExternalClientField, ...]): The fields that
+                the client needs.
         """
+
         def wrapper(
             client_class: type[ExternalDownloadClient],
         ) -> type[ExternalDownloadClient]:
@@ -353,19 +358,15 @@ class ExternalClients:
             "password": password,
             "api_token": api_token,
         }
-        data = {
-            k: (
-                v
-                if k
-                in (
-                    *ClientClass.required_tokens,
-                    "download_type",
-                    "client_type",
-                )
-                else None
-            )
-            for k, v in data.items()
-        }
+
+        allowed_keys = [rt.value for rt in ClientClass.required_tokens]
+        data = {k: v if k in allowed_keys else None for k, v in data.items()}
+        data.update(
+            {
+                "download_type": ClientClass.download_type.value,
+                "client_type": client_type,
+            }
+        )
 
         client_id = (
             get_db()

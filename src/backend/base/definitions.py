@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass
 from datetime import date
 from enum import Enum
@@ -564,6 +564,16 @@ class DownloadType(BaseEnum):
 
     DIRECT = 1
     TORRENT = 2
+
+
+class ExternalClientField(BaseEnum):
+    "A field for which the external client possibly requires a value to work"
+
+    TITLE = "title"
+    BASE_URL = "base_url"
+    USERNAME = "username"
+    PASSWORD = "password"
+    API_TOKEN = "api_token"
 
 
 class GCDownloadSource(BaseEnum):
@@ -1203,7 +1213,7 @@ class ExternalDownloadClient(ABC):
     download_type: DownloadType
     "The protocol it uses to download (e.g. a torrent)"
 
-    required_tokens: Sequence[str]
+    required_tokens: tuple[ExternalClientField, ...]
     """
     The keys the client needs or could need for operation
     (mostly whether it's username + password or api_token)

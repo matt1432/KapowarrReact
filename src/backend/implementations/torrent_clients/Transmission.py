@@ -11,6 +11,9 @@ from backend.base.definitions import (
     DownloadState,
     DownloadType,
 )
+from backend.base.definitions import (
+    ExternalClientField as ECF,
+)
 from backend.base.helpers import Session
 from backend.base.logging import LOGGER
 from backend.implementations.external_clients import (
@@ -25,7 +28,7 @@ filename_magnet_link = compile(r"(?<=&dn=).*?(?=&)", IGNORECASE)
 @ExternalClients.register_client(
     DownloadType.TORRENT,
     "Transmission",
-    ("title", "base_url", "username", "password"),
+    (ECF.TITLE, ECF.BASE_URL, ECF.USERNAME, ECF.PASSWORD),
 )
 class Transmission(BaseExternalClient):
     state_mapping = {
