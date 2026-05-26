@@ -750,7 +750,10 @@ async def _test_paths(
                 ):
                     continue
             else:
-                edits = cast(SearchResultData, {"covered_issues": download.covered_issues})
+                edits = cast(
+                    SearchResultData,
+                    {"covered_issues": download.covered_issues},
+                )
 
             downloads.append(
                 dl_class(

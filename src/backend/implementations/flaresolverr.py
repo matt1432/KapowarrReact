@@ -4,6 +4,7 @@ from asyncio import Semaphore
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any
 
+from aiohttp import ClientTimeout
 from requests import RequestException
 
 from backend.base.definitions import Constants, ProxyType
@@ -45,6 +46,7 @@ class FlareSolverr:
             base_url + Constants.FS_API_BASE,
             json=data,
             headers={"Content-Type": "application/json"},
+            timeout=Constants.REQUEST_TIMEOUT + Constants.FS_RESOLVE_TIMEOUT,
         ).json()
 
     @staticmethod
@@ -56,6 +58,9 @@ class FlareSolverr:
                 base_url + Constants.FS_API_BASE,
                 json=data,
                 headers={"Content-Type": "application/json"},
+                timeout=ClientTimeout(
+                    Constants.REQUEST_TIMEOUT + Constants.FS_RESOLVE_TIMEOUT
+                ),
             )
         ).json()
 
@@ -163,7 +168,12 @@ class FlareSolverr:
             result = self.__api_request(
                 self.base_url,
                 session,
-                {"cmd": "request.get", "session": session_id, "url": url},
+                {
+                    "cmd": "request.get",
+                    "session": session_id,
+                    "url": url,
+                    "maxTimeout": Constants.FS_RESOLVE_TIMEOUT * 1000,
+                },
             )["solution"]
 
             # Close session
@@ -173,10 +183,15 @@ class FlareSolverr:
                 {"cmd": "sessions.destroy", "session": session_id},
             )
 
-            self.ua_mapping[url] = result["userAgent"]
-            self.cookie_mapping[url] = {
-                cookie["name"]: cookie["value"] for cookie in result["cookies"]
-            }
+        if result["response"] is None:
+            # FlareSolverr responded, but content of
+            # returned webpage is empty.
+            return
+
+        self.ua_mapping[url] = result["userAgent"]
+        self.cookie_mapping[url] = {
+            cookie["name"]: cookie["value"] for cookie in result["cookies"]
+        }
 
         return result
 
@@ -236,7 +251,12 @@ class FlareSolverr:
                 await self.__async_api_request(
                     self.base_url,
                     session,
-                    {"cmd": "request.get", "session": session_id, "url": url},
+                    {
+                        "cmd": "request.get",
+                        "session": session_id,
+                        "url": url,
+                        "maxTimeout": Constants.FS_RESOLVE_TIMEOUT * 1000,
+                    },
                 )
             )["solution"]
 
@@ -246,6 +266,11 @@ class FlareSolverr:
                 session,
                 {"cmd": "sessions.destroy", "session": session_id},
             )
+
+        if result["response"] is None:
+            # FlareSolverr responded, but content of
+            # returned webpage is empty.
+            return
 
         self.ua_mapping[url] = result["userAgent"]
         self.cookie_mapping[url] = {

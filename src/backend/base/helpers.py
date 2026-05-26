@@ -518,11 +518,11 @@ def normalise_year(s: str) -> int | None:
 
 
 SCALE_SIZES = {
-    'b': 1,
-    'kb': 1000,
-    'mb': 1000000,
-    'gb': 1000000000,
-    'tb': 1000000000000
+    "b": 1,
+    "kb": 1000,
+    "mb": 1000000,
+    "gb": 1000000000,
+    "tb": 1000000000000,
 }
 
 
@@ -537,7 +537,7 @@ def normalise_size(s: str) -> int:
     """
     # We remove the i from 'GiB' as it's not
     # agreed upon which one means what anyway
-    s = s.lower().replace('i', '').strip()
+    s = s.lower().replace("i", "").strip()
     for unit, size in SCALE_SIZES.items():
         if not s.endswith(unit):
             continue
