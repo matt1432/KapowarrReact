@@ -185,7 +185,9 @@ export default function VolumeIndexSelectFooter() {
 
                     <SpinnerButton
                         isSpinning={isConverting}
-                        isDisabled={!anySelected || isConverting}
+                        // FIXME: only works in volume details page
+                        // isDisabled={!anySelected || isConverting}
+                        isDisabled
                         onPress={onConvertPress}
                     >
                         {translate('ConvertFiles')}
@@ -193,7 +195,9 @@ export default function VolumeIndexSelectFooter() {
 
                     <SpinnerButton
                         isSpinning={isRemovingAds}
-                        isDisabled={!anySelected || isRemovingAds}
+                        // FIXME: only works in volume details page
+                        // isDisabled={!anySelected || isRemovingAds}
+                        isDisabled
                         onPress={onRemoveAdsPress}
                     >
                         {translate('RemoveAds')}
