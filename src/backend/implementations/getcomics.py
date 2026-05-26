@@ -7,6 +7,7 @@ from asyncio import gather, sleep
 from functools import reduce
 from hashlib import sha1
 from re import IGNORECASE, compile
+from typing import cast
 
 from aiohttp import ClientError
 from bencoding import bencode
@@ -42,6 +43,7 @@ from backend.base.helpers import (
     fix_year,
     force_range,
     get_torrent_info,
+    normalise_size,
     normalise_year,
 )
 from backend.base.logging import LOGGER
@@ -82,7 +84,7 @@ def _get_page_count(soup: BeautifulSoup) -> int:
     )
 
 
-def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str, str | None]]:
+def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str, int]]:
     """From a GC search result page, extract article (single search result)
     data.
 
@@ -90,10 +92,10 @@ def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str, str | None]]:
         soup (BeautifulSoup): The soup of the GC search result page.
 
     Returns:
-        List[Tuple[str, str]]: The data of the articles. First string of the
-        tuple is the link, second string is the title, third is the size.
+        List[Tuple[str, str, int]]: The data of the articles. First string is
+            the link, second string is the title, the integer is the byte size.
     """
-    result: list[tuple[str, str, str | None]] = []
+    result: list[tuple[str, str, int]] = []
 
     for article in soup.select("article.post"):
         title_el = article.select_one("h1.post-title")
@@ -111,13 +113,16 @@ def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str, str | None]]:
         link: str = first_of_range(anchor.get("href") or "")
         title = title_el.get_text(strip=True)
 
-        size: str | None = None
-        size_el = article.select_one('p[style*="text-align: center;"]')
-        if not size_el:
-            continue
-
-        split_size = size_el.get_text().split("Size : ")
-        size = split_size[1] if len(split_size) == 2 else None
+        size_container = title_el.next_sibling
+        if not isinstance(size_container, Tag):
+            size = 0
+        else:
+            size_p = next(size_container.children, None)
+            if not size_p:
+                size = 0
+            else:
+                size_text = size_p.get_text().split("Size : ")[1]
+                size = normalise_size(size_text)
 
         result.append((link, title, size))
 
@@ -744,31 +749,23 @@ async def _test_paths(
                     and selected_source != download.source_type.value
                 ):
                     continue
+            else:
+                edits = cast(SearchResultData, {"covered_issues": download.covered_issues})
 
             downloads.append(
                 dl_class(
                     download_link=download.download_link,
                     volume_id=download.volume_id,
-                    covered_issues=edits["issue_number"]
-                    if edits is not None
-                    else download.covered_issues,
+                    covered_issues=edits.get("issue_number", None),
                     source_type=download.source_type,
                     source_name=download.source_name,
                     web_link=download.web_link,
                     web_title=download.web_title,
                     web_sub_title=download.web_sub_title,
-                    releaser=edits["releaser"]
-                    if edits is not None and "releaser" in edits
-                    else None,
-                    scan_type=edits["scan_type"]
-                    if edits is not None and "scan_type" in edits
-                    else None,
-                    resolution=edits["resolution"]
-                    if edits is not None and "resolution" in edits
-                    else None,
-                    dpi=edits["dpi"]
-                    if edits is not None and "dpi" in edits
-                    else None,
+                    releaser=edits.get("releaser", None),
+                    scan_type=edits.get("scan_type", None),
+                    resolution=edits.get("resolution", None),
+                    dpi=edits.get("dpi", None),
                     forced_match=forced_match,
                 )
             )
@@ -932,10 +929,6 @@ async def search_getcomics(
             if has_multiple_articles:
                 continue
 
-            filesize = (
-                from_filesize(article[2]) if article[2] is not None else None
-            )
-
             formatted_results.append(
                 SearchResultData(
                     series=efd["series"],
@@ -949,7 +942,7 @@ async def search_getcomics(
                     link=article[0],
                     display_title=article[1],
                     source=Constants.GC_SOURCE_TERM,
-                    filesize=filesize,
+                    filesize=article[2],
                     pages=None,
                     releaser=None,
                     scan_type=None,
