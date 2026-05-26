@@ -834,6 +834,7 @@ class CVFileMapping(TypedDict):
 
 class DownloadGroup(TypedDict):
     web_sub_title: str
+    size: int
     info: FilenameData
     links: dict[GCDownloadSource, list[str]]
 

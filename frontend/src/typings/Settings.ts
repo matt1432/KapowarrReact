@@ -9,6 +9,7 @@ export interface RawSettingsValue {
     auth_password: string;
     auth_username: string;
     auto_search_torrents: boolean;
+    avoid_large_gc_downloads: boolean;
     change_file_date: string | null;
     chmod_folder: string;
     chown_group: string;

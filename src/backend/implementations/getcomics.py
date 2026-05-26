@@ -61,6 +61,7 @@ from backend.internals.settings import Settings
 mediafire_dd_regex = compile(
     r"https?://download\d+\.mediafire\.com/", IGNORECASE
 )
+size_regex = compile(r"\d+(?:\.\d+)?\s*(?:B|Ki?B|Mi?B|Gi?B|Ti?B)", IGNORECASE)
 MAX_PAGE_DEPTH = 10
 
 
@@ -236,8 +237,15 @@ def __extract_button_links(
             if year:
                 processed_title["year"] = fix_year(year)
 
+        size = 0
+        if "Size :\x00" in extracted_title:
+            size = normalise_size(
+                extracted_title.split("Size :\x00")[1].strip()
+            )
+
         result: DownloadGroup = {
             "web_sub_title": title,
+            "size": size,
             "info": processed_title,
             "links": {},
         }
@@ -312,8 +320,14 @@ def __extract_list_links(
         if processed_title["special_version"] == "cover":
             continue
 
+        size = 0
+        size_result = size_regex.search(title)
+        if size_result:
+            size = normalise_size(size_result.group(0))
+
         result: DownloadGroup = {
             "web_sub_title": title,
+            "size": size,
             "info": processed_title,
             "links": {},
         }
@@ -363,13 +377,23 @@ def _get_download_groups(soup: BeautifulSoup) -> list[DownloadGroup]:
     download_groups = __extract_button_links(body, torrent_client_available)
     download_groups.extend(__extract_list_links(body, torrent_client_available))
 
-    service_preference = Settings().sv.service_preference
+    settings = Settings().sv
+    service_preference = settings.service_preference
+    avoid_gc_preference = service_preference.copy()
+    avoid_gc_preference.remove(GCDownloadSource.GETCOMICS)
+    avoid_gc_preference.append(GCDownloadSource.GETCOMICS)
+
     for group in download_groups:
         group["links"] = {
             k: v
             for k, v in sorted(
                 group["links"].items(),
-                key=lambda k: service_preference.index(k[0].value),
+                key=lambda k: (
+                    avoid_gc_preference.index(k[0].value)
+                    if settings.avoid_large_gc_downloads
+                    and group["size"] >= 400000000
+                    else service_preference.index(k[0].value)
+                ),
             )
         }
 
@@ -788,22 +812,6 @@ async def _test_paths(
         )
 
 
-def from_filesize(filesize: str) -> int | None:
-    suffixes = tuple("BKMGTP")
-    split_filesize = filesize.split(" ")
-
-    try:
-        num = float(split_filesize[0])
-        suffix = split_filesize[1][0]
-
-        for _n in range(suffixes.index(suffix)):
-            num *= 1024
-
-        return int(num)
-    except Exception:
-        return None
-
-
 # region Searching
 async def _search_page(session: AsyncSession, url: str, query: str):
     return await session.get_text(
@@ -876,7 +884,6 @@ async def search_getcomics(
 
                     # Has separate download groups so we show them as individual search results
                     for group in gcp.download_groups:
-                        filesize: int | None = None
                         display_title = group["web_sub_title"]
 
                         match = re.search(
@@ -886,10 +893,6 @@ async def search_getcomics(
                             display_title = group["web_sub_title"][
                                 : match.start(1) - 1
                             ]
-                            filesize_str = match.group(1)
-
-                            if filesize_str is not None:
-                                filesize = from_filesize(filesize_str)
 
                         efd = extract_filename_data(
                             filepath=display_title,
@@ -910,7 +913,7 @@ async def search_getcomics(
                                 link=article[0],
                                 display_title=display_title,
                                 source=Constants.GC_SOURCE_TERM,
-                                filesize=filesize,
+                                filesize=group["size"],
                                 pages=None,
                                 releaser=None,
                                 scan_type=None,

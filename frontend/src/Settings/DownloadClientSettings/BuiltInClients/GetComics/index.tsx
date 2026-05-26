@@ -35,6 +35,7 @@ export default function GetComics() {
     const { refetch: _, ...query } = useGetSettingsQuery(undefined, {
         selectFromResult: ({ data }) => ({
             enableGetcomics: Boolean(data?.enableGetcomics),
+            avoidLargeGetcomicsDL: Boolean(data?.avoidLargeGcDownloads),
         }),
     });
 
@@ -51,7 +52,7 @@ export default function GetComics() {
         [saveSettings],
     );
 
-    const { enableGetcomics } = {
+    const { enableGetcomics, avoidLargeGetcomicsDL } = {
         ...query,
         ...draft,
     };
@@ -95,6 +96,18 @@ export default function GetComics() {
                                     name="enableGetcomics"
                                     onChange={handleChange}
                                     value={enableGetcomics}
+                                />
+                            </FormGroup>
+
+                            <FormGroup>
+                                <FormLabel>
+                                    {translate('AvoidLargeGetComicsDownloads')}
+                                </FormLabel>
+                                <FormInputGroup
+                                    type="check"
+                                    name="avoidLargeGetcomicsDL"
+                                    onChange={handleChange}
+                                    value={avoidLargeGetcomicsDL}
                                 />
                             </FormGroup>
                         </FieldSet>
