@@ -1625,7 +1625,13 @@ def refresh_and_scan(
     removed_from_cache = False
     for index, issue_count in run(_scrape_cv_volumes(volume_datas)):
         vd = volume_datas[index]
-        if vd["issue_count"] != issue_count:
+        if (
+            vd["issue_count"] != issue_count
+            or len(
+                Volume(cv_to_id_fetch[vd["comicvine_id"]][0]).get_issues(True)
+            )
+            != issue_count
+        ):
             removed_from_cache = True
             cv.remove_from_cache("issues", vd["comicvine_id"])
 
