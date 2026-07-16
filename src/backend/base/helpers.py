@@ -37,10 +37,11 @@ from bencoding import bdecode
 from multidict import CIMultiDict, CIMultiDictProxy
 from requests import RequestException
 from requests import Session as RSession
-from requests.adapters import HTTPAdapter, Retry
+from requests.adapters import HTTPAdapter
 from requests.exceptions import ConnectionError
 from requests.structures import CaseInsensitiveDict
 from urllib3._version import __version__ as urllib3_version
+from urllib3.util.retry import Retry
 from yarl import URL
 
 from backend.base.custom_exceptions import ClientNotWorking, CredentialInvalid

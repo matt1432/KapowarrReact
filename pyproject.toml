@@ -21,15 +21,15 @@ readme = "README.md"
 license-files = ["LICENSE"]
 requires-python = ">= 3.13"
 dependencies = [
-  "aiohttp ~= 3.13.2",
+  "aiohttp ~= 3.14.1",
   "beautifulsoup4 ~= 4.14.3",
   "bencoding ~= 0.2.6",
-  "cryptography ~= 48.0.0",
+  "cryptography ~= 49.0.0",
   "flask ~= 3.1",
   "flask-socketio ~= 5.6.0",
   "libgencomics @ git+https://github.com/matt1432/LibgenComics.git@v1.3.5",
   "Pillow",
-  "requests ~= 2.33.1",
+  "requests ~= 2.34.2",
   "simyan ~= 2.0.0",
   "waitress ~= 3.0.2",
   "websocket-client ~= 1.9.0",

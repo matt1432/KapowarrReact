@@ -14,11 +14,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1778252255,
-        "narHash": "sha256-4E2ghhqu+cIHHl6dlRz2GCLt2wsV3xJsUQ312aDEzHw=",
+        "lastModified": 1784214550,
+        "narHash": "sha256-7dNzYzPRT0xWPdMa9VpRzsvgmN/83Gtjom+0bp625Io=",
         "owner": "matt1432",
         "repo": "LibgenComics",
-        "rev": "80eaf6151edadde10c5d4959bb15feb226b09ae0",
+        "rev": "228eec75273a404399f81e0c2710d8fac9edbeef",
         "type": "github"
       },
       "original": {
@@ -29,10 +29,10 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1779357205,
-        "narHash": "sha256-cCO8aTqss5x9Ky8GWkpY0Hy5fyTZEbtifSUV8QjSzic=",
+        "lastModified": 1784120854,
+        "narHash": "sha256-KesHgItiZPgGX740axSiQLcIQ8D24MDqNpkKYWIek8k=",
         "ref": "nixos-unstable",
-        "rev": "f83fc3c307e74bc5fd5adb7eb6b8b13ffd2a36e1",
+        "rev": "753cc8a3a87467296ddd1fa93f0cc3e81120ee46",
         "shallow": true,
         "type": "git",
         "url": "https://github.com/NixOS/nixpkgs"
@@ -65,6 +65,7 @@
       "original": {
         "owner": "Metron-Project",
         "repo": "Simyan",
+        "rev": "716f538b3dde18d9c88799b9bf2c566c4168fb96",
         "type": "github"
       }
     },
@@ -90,11 +91,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1775636079,
-        "narHash": "sha256-pc20NRoMdiar8oPQceQT47UUZMBTiMdUuWrYu2obUP0=",
+        "lastModified": 1780220602,
+        "narHash": "sha256-eynAfOmbmxJnkp7YewvCEbShNnnYJ9gLLqkzsYtBPeM=",
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "rev": "790751ff7fd3801feeaf96d7dc416a8d581265ba",
+        "rev": "db947814a175b7ca6ded66e21383d938df01c227",
         "type": "github"
       },
       "original": {
