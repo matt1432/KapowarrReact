@@ -23,7 +23,7 @@ import requests
 if TYPE_CHECKING:
     from threading import Timer
 
-    from backend.base.helpers import CommaList
+    from backend.base.helpers import CommaList, DateFormatter
 
 
 # region Types
@@ -1019,7 +1019,7 @@ class TitlelessIssueNamingKeys(BaseNamingKeys, ExtraFileInfoNamingKeys):
     issue_comicvine_id: int
     issue_number: str
     issue_title: str | None
-    issue_release_date: str | None
+    issue_release_date: DateFormatter | None
     issue_release_year: int | None
 
 

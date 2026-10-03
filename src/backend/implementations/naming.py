@@ -7,7 +7,7 @@ from __future__ import annotations
 from os.path import abspath, basename, isdir, isfile, join, splitext
 from re import compile, findall
 from sys import platform
-from typing import TypedDict
+from typing import Any, TypedDict
 
 from backend.base.custom_exceptions import InvalidKeyValue, IssueNotFound
 from backend.base.definitions import (
@@ -43,6 +43,7 @@ from backend.base.files import (
     rename_file,
 )
 from backend.base.helpers import (
+    DateFormatter,
     extract_year_from_date,
     filtered_iter,
     force_range,
@@ -235,12 +236,17 @@ def get_issue_naming_keys(
     """
     issue_padding = Settings().sv.issue_padding
 
+    if issue_data.date is not None:
+        issue_release_date = DateFormatter(issue_data.date)
+    else:
+        issue_release_date = None
+
     return IssueNamingKeys(
         **_get_base_naming_keys(volume_data).todict(),
         **_get_file_info_naming_keys(file_data).todict(),
         issue_comicvine_id=issue_data.comicvine_id,
         issue_number=str(issue_data.issue_number).zfill(issue_padding),
-        issue_release_date=issue_data.date,
+        issue_release_date=issue_release_date,
         issue_release_year=extract_year_from_date(issue_data.date),
         issue_title=clean_filestring(issue_data.title or "") or None,
     )
@@ -252,7 +258,7 @@ def get_placeholders(format: str) -> list[str]:
 
 def _get_corresponding_formatted_naming_keys(
     placeholders: list[str],
-    formatting_data: dict[str, str],
+    formatting_data: dict[str, Any],
 ) -> dict[str, str]:
     sorted_formatting_data = sorted(
         formatting_data.items(), key=lambda item: len(item[0])
@@ -261,10 +267,20 @@ def _get_corresponding_formatted_naming_keys(
 
     for placeholder in placeholders:
         for k, v in sorted_formatting_data:
-            if placeholder.count(k) != 0:
-                formatted[placeholder] = (
-                    placeholder.replace(k, str(v)) if v is not None else ""
-                )
+            if placeholder.count(k) == 0:
+                continue
+
+            if v is None:
+                formatted[placeholder] = ""
+
+            elif placeholder.count(k + ":") != 0:
+                # Format spec is given (e.g. `{issue_release_date:%Y}`), which
+                # runs until the end of the placeholder
+                before, format_spec = placeholder.split(k + ":", 1)
+                formatted[placeholder] = before + format(v, format_spec)
+
+            else:
+                formatted[placeholder] = placeholder.replace(k, str(v))
 
     return formatted
 
