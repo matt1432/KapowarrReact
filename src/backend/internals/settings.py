@@ -400,7 +400,7 @@ class Settings(metaclass=Singleton):
         restore_settings = {
             "host": s.backup_host,
             "port": s.backup_port,
-            "url_prefix": s.backup_url_base,
+            "url_base": s.backup_url_base,
         }
         self.update(restore_settings)
         return
