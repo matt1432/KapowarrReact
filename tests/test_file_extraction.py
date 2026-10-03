@@ -44,6 +44,46 @@ class TestExtractVolumeNumber:
 
 
 class TestExtractFilenameData:
+    def test_book_in_series_title(self):
+        cases = {
+            "StarHenge Book 2 - A Kiss for Atticus Volume 1 (2026)/#1 - StarHenge Book 2 - A Kiss for Atticus (2026) Volume 1.cbr": (
+                "StarHenge Book 2 A Kiss for Atticus",
+                2026,
+                1.0,
+            ),
+            "StarHenge Book 2 - A Kiss for Atticus Volume 1 (2026)/StarHenge Book 2 - A Kiss for Atticus (2026) 1-2": (
+                "StarHenge Book 2 A Kiss for Atticus",
+                2026,
+                (1.0, 2.0),
+            ),
+            "StarHenge Book 2 - A Kiss for Atticus #1 (2026)": (
+                "StarHenge Book 2 A Kiss for Atticus",
+                2026,
+                1.0,
+            ),
+            "Hellblazer Book 3 #7 (2020)": ("Hellblazer Book 3", 2020, 7.0),
+            "Preacher Book 3 (2010)/Preacher Book 3 #12.cbz": (
+                "Preacher Book 3",
+                2010,
+                12.0,
+            ),
+            "Saga Book 2 - Something #5 (2024)": (
+                "Saga Book 2 Something",
+                2024,
+                5.0,
+            ),
+            "Series Book 3 (2020)": ("Series", 2020, 3.0),
+            "Series Books 1-5 (2020)": ("Series", 2020, (1.0, 5.0)),
+            "Series Book 3 of 5 (2020)": ("Series", 2020, 3.0),
+            "Notebook 5 (2020)": ("Notebook", 2020, 5.0),
+        }
+
+        for filepath, (series, year, issue_number) in cases.items():
+            result = extract_filename_data(filepath=filepath)
+            assert result["series"] == series, filepath
+            assert result["year"] == year, filepath
+            assert result["issue_number"] == issue_number, filepath
+
     def test_basic_issue(self):
         result = extract_filename_data(
             filepath="Batman Issue 1.cbr",

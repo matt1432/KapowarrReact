@@ -53,7 +53,7 @@ volume_regex = compile(volume_regex_snippet, IGNORECASE)
 volume_folder_regex = compile(volume_regex_snippet + r"|^(\d+)$", IGNORECASE)
 issue_regex = compile(r"\(_(\-?" + issue_regex_snippet + r")\)", IGNORECASE)
 issue_regex_2 = compile(
-    r"(?:(?<!\()(?:(?<![a-z])c(?!2c)|\bissues?|\bbooks?)(?!\))|\bno)(?:\.?[\s\-_]?|\s\-\s)(?:#\s*)?(\-?"
+    r"(?:(?<!\()(?:(?<![a-z])c(?!2c)|\bissues?)(?!\))|\bno)(?:\.?[\s\-_]?|\s\-\s)(?:#\s*)?(\-?"
     + issue_regex_snippet
     + r"(?:(?:\-|\s\-\s|\.\-\.)\-?"
     + issue_regex_snippet
@@ -61,7 +61,7 @@ issue_regex_2 = compile(
     IGNORECASE,
 )
 issue_regex_3 = compile(
-    r"(?:annuals?[\s\._])?(?<!part[\s\._])("
+    r"(?:(?:annual|book)s?[\s\._])?(?<!part[\s\._])("
     + issue_regex_snippet
     + r")[\s\-\._]?\(?[\s\-\._]?of[\s\-\._]?"
     + issue_regex_snippet
@@ -69,7 +69,7 @@ issue_regex_3 = compile(
     IGNORECASE,
 )
 issue_regex_4 = compile(
-    r"(?<!--)(?:annuals?[\s\._])?(?<!pages\s)(?:#\s*)?(\-?"
+    r"(?<!--)(?:(?:annuals?|\bbooks?)[\s\._])?(?<!pages\s)(?:#\s*)?(\-?"
     + issue_regex_snippet
     + r"(?:\-|\s\-\s|\.\-\.)"
     + issue_regex_snippet
@@ -91,7 +91,7 @@ issue_regex_6 = compile(
     IGNORECASE,
 )
 issue_regex_7 = compile(
-    r"(?:part[\s\._]|annuals?[\s\._]|(?<=[\s\._])|^)(\-?"
+    r"(?:part[\s\._]|annuals?[\s\._]|\bbooks?[\s\._]|(?<=[\s\._])|^)(\-?"
     + issue_regex_snippet
     + r")(?![\s\-\._]covers?)(?![\s\-\._]of[\s\-\._]\d+[\s\-\._]covers?)(?=\s|\.|_|\(|$)",
     IGNORECASE,
