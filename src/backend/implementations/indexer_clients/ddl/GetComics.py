@@ -1,10 +1,10 @@
 import re
-from asyncio import run, sleep, to_thread
+from asyncio import sleep, to_thread
 from datetime import datetime
 from typing import Any
 
-from aiohttp import ClientError
 from bs4 import BeautifulSoup, Tag
+from requests import RequestException
 
 from backend.base.custom_exceptions import (
     ClientNotWorking,
@@ -22,7 +22,12 @@ from backend.base.definitions import (
     IndexerClientField as ICF,
 )
 from backend.base.file_extraction import extract_filename_data
-from backend.base.helpers import AsyncSession, first_of_range, normalise_size
+from backend.base.helpers import (
+    AsyncSession,
+    Session,
+    first_of_range,
+    normalise_size,
+)
 from backend.implementations.indexer_client_manager import (
     BaseIndexerClient,
     IndexerClients,
@@ -308,10 +313,10 @@ class GetComicsIndexer(BaseIndexerClient):
         return
 
     @classmethod
-    async def __test(cls, url: str) -> None:
-        async with AsyncSession() as session:
+    def test(cls, url: str, **extra_fields: Any) -> None:
+        with Session() as session:
             try:
-                html = await session.get_text(url)
+                html = session.get(url).text
                 is_getcomics = "GetComics" in html
 
                 if not is_getcomics:
@@ -319,12 +324,7 @@ class GetComicsIndexer(BaseIndexerClient):
                         BrokenClientReason.NOT_CLIENT_INSTANCE
                     )
 
-            except ClientError:
+            except RequestException:
                 raise ClientNotWorking(BrokenClientReason.CONNECTION_ERROR)
 
-        return
-
-    @classmethod
-    def test(cls, url: str, **extra_fields: Any) -> None:
-        run(cls.__test(url))
         return
