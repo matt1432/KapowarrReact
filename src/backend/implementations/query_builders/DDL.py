@@ -6,7 +6,6 @@ from backend.base.definitions import (
     SearchQuery,
     SpecialVersion,
 )
-from backend.base.helpers import normalise_query_string
 from backend.implementations.query_builder_manager import QueryBuilders
 
 TPB_FORMATS = (
@@ -61,9 +60,7 @@ class DDLQueryBuilder(QueryBuilder):
             query = query.replace("({year})", "").strip()
 
         result = query.format(
-            title=normalise_query_string(
-                query_keys.titles[self.alias_index]
-            ).replace(":", ""),
+            title=query_keys.titles[self.alias_index],
             year=query_keys.year,
             volume_number=query_keys.volume_number,
             issue_number=query_keys.issue_number,

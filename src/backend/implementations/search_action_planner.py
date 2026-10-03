@@ -6,7 +6,6 @@ from backend.base.definitions import (
     SpecialVersion,
     VolumeData,
 )
-from backend.base.helpers import normalise_query_string
 
 
 class SearchActionPlanner:
@@ -56,9 +55,8 @@ class SearchActionPlanner:
             self.titles.append(self.volume_data.alt_title)
 
         # Also try the title without the leading "The"
-        normalised_title = normalise_query_string(self.volume_data.title)
-        if normalised_title.startswith("The "):
-            self.titles.append(normalised_title[4:])
+        if self.volume_data.title.startswith("The "):
+            self.titles.append(self.volume_data.title[4:])
 
         self.stats: SearchIterationStats | None = None
 

@@ -18,7 +18,7 @@ from backend.base.definitions import (
     VolumeMetadata,
 )
 from backend.base.file_extraction import special_version_regex
-from backend.base.helpers import force_range, normalise_query_string
+from backend.base.helpers import force_range, fully_normalise_string
 from backend.implementations.blocklist import blocklist_contains
 
 if TYPE_CHECKING:
@@ -88,11 +88,11 @@ def match_title(title1: str, title2: str, allow_contains: bool = False) -> bool:
         bool: Whether the titles match.
     """
     clean_reference_title = clean_title_regex.sub(
-        "", normalise_query_string(title1).lower()
+        "", fully_normalise_string(title1).lower()
     ).replace(" ", "")
 
     clean_title = clean_title_regex.sub(
-        "", normalise_query_string(title2).lower()
+        "", fully_normalise_string(title2).lower()
     ).replace(" ", "")
 
     if allow_contains:
