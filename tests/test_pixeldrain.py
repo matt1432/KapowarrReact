@@ -63,6 +63,22 @@ class TestPixeldrainLogin:
             PixelDrainDownload.login("some-api-key")
 
     @patch(SESSION_PATH)
+    def test_paid_account_no_custom_cap_plan_cap_enforced(
+        self, session_cls: MagicMock
+    ):
+        """
+        `0` at the account level falls back to the plan cap — and that
+        fallback cap must actually be enforced, not treated as unlimited.
+        """
+        _mock_response(
+            session_cls,
+            _paid_account_response(account_cap=0, used=2_000, plan_cap=1_000),
+        )
+
+        with patch(STATUS_PATH), pytest.raises(DownloadServiceRateLimitReached):
+            PixelDrainDownload.login("some-api-key")
+
+    @patch(SESSION_PATH)
     def test_paid_account_unlimited_cap(self, session_cls: MagicMock):
         """`-1` at the account level still means unlimited, unchanged."""
         _mock_response(
