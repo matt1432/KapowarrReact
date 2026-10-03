@@ -2172,6 +2172,7 @@
     "Status": "Status",
     "StatusCheckCfChallengeWithNoFs": "CloudFlare challenge encountered and FlareSolverr is not set up",
     "StatusCheckCvRateLimit": "ComicVine rate limit reached",
+    "StatusCheckDownloadServiceRateLimit": "Download service rate limit reached",
     "StatusCheckRootFolderAlmostFull": "Root folder is almost full",
     "StatusCheckRootFolderFull": "Root folder is full",
     "StatusCheckSubtypeFetchIssues": "Fetching issue metadata",

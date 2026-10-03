@@ -18,6 +18,10 @@ const statusCheckDescriptions: Record<StatusCheckType, StatusCheckDescription> =
                 fetch_issues: 'StatusCheckSubtypeFetchIssues',
             },
         },
+        download_service_rate_limit: {
+            description: 'StatusCheckDownloadServiceRateLimit',
+            subtypes: {},
+        },
         root_folder_almost_full: {
             description: 'StatusCheckRootFolderAlmostFull',
             subtypes: {},
