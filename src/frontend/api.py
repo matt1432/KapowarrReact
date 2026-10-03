@@ -286,9 +286,7 @@ def extract_key(
     return value
 
 
-# =====================
-# Authentication function and endpoints
-# =====================
+# region Authentication
 def auth(method: Callable) -> Any:
     """Used as decorator and, if applied to route, restricts the route to authorized users only"""
 
@@ -354,9 +352,7 @@ def api_auth_check() -> ApiReturn:
     return return_api({})
 
 
-# =====================
-# Tasks
-# =====================
+# region System
 @api.route("/system/about", methods=["GET"])
 @error_handler
 @auth
@@ -364,9 +360,6 @@ def api_about() -> ApiReturn:
     return return_api(get_about_data())
 
 
-# =====================
-# Status Checks
-# =====================
 @api.route("/system/status", methods=["GET", "DELETE"])
 @error_handler
 @auth
@@ -519,9 +512,7 @@ def api_restart() -> ApiReturn:
     return return_api({})
 
 
-# =====================
-# Settings
-# =====================
+# region Settings
 @api.route("/settings", methods=["GET", "PUT", "DELETE"])
 @error_handler
 @auth
@@ -748,9 +739,7 @@ def api_remote_mapping(id: int) -> ApiReturn | None:
         return return_api({})
 
 
-# =====================
-# Library Import
-# =====================
+# region Library Import
 @api.route("/libraryimport", methods=["GET", "POST"])
 @error_handler
 @auth
@@ -791,9 +780,7 @@ def api_library_import() -> ApiReturn | None:
         return return_api({}, code=201)
 
 
-# =====================
-# Library + Volumes
-# =====================
+# region Library + Volumes
 @api.route("/volumes/search", methods=["GET", "POST"])
 @error_handler
 @auth
@@ -1036,9 +1023,7 @@ def api_issues(id: int) -> ApiReturn | None:
         return return_api(result)
 
 
-# =====================
-# Manual File Match
-# =====================
+# region Manual File Match
 @api.route("/volumes/<int:id>/manualmatch", methods=["GET", "PUT"])
 @error_handler
 @auth
@@ -1063,9 +1048,7 @@ def api_manual_match(id: int):
         return return_api({})
 
 
-# =====================
-# Renaming
-# =====================
+# region Renaming
 @api.route("/volumes/<int:id>/rename", methods=["GET"])
 @error_handler
 @auth
@@ -1084,9 +1067,7 @@ def api_rename_issue(id: int) -> ApiReturn:
     return return_api(result)
 
 
-# =====================
-# File Conversion
-# =====================
+# region File Conversion
 
 
 @api.route("/volumes/<int:id>/convert", methods=["GET"])
@@ -1107,9 +1088,7 @@ def api_convert_issue(id: int) -> ApiReturn:
     return return_api(result)
 
 
-# =====================
-# Manual search + Download
-# =====================
+# region Search + Download
 @api.route("/volumes/<int:id>/manualsearch", methods=["GET", "POST"])
 @error_handler
 @auth
@@ -1250,9 +1229,7 @@ def api_empty_download_folder() -> ApiReturn:
     return return_api({})
 
 
-# =====================
-# Blocklist
-# =====================
+# region Blocklist
 @api.route("/blocklist", methods=["GET", "POST", "DELETE"])
 @error_handler
 @auth
@@ -1362,9 +1339,7 @@ def api_blocklist_entry(id: int) -> ApiReturn | None:
         return return_api({})
 
 
-# =====================
-# Credentials
-# =====================
+# region Credentials
 @api.route("/credentials", methods=["GET", "POST"])
 @error_handler
 @auth
@@ -1416,9 +1391,7 @@ def api_credential(id: int) -> ApiReturn | None:
         return return_api({})
 
 
-# =====================
-# Torrent Clients
-# =====================
+# region External Clients
 @api.route("/externalclients", methods=["GET", "POST"])
 @error_handler
 @auth
@@ -1527,9 +1500,7 @@ def api_external_client(id: int) -> ApiReturn | None:
         return return_api({})
 
 
-# =====================
-# Mass Editor
-# =====================
+# region Mass Editor
 @api.route("/masseditor", methods=["POST"])
 @error_handler
 @auth
@@ -1559,9 +1530,7 @@ def api_mass_editor() -> ApiReturn:
     return return_api({})
 
 
-# =====================
-# Files
-# =====================
+# region Files
 @api.route("/files/<int:f_id>", methods=["GET", "POST", "PUT", "DELETE"])
 @error_handler
 @auth
