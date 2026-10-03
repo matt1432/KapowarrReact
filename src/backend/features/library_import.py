@@ -4,9 +4,10 @@ from itertools import chain
 from os.path import abspath, basename, dirname, isfile, join, splitext
 
 from backend.base.custom_exceptions import (
-    CVRateLimitReached,
     InvalidKeyValue,
+    MetadataSourceRateLimitReached,
     VolumeAlreadyAdded,
+    VolumeNotMatched,
 )
 from backend.base.definitions import (
     CVFileMapping,
@@ -103,6 +104,7 @@ def propose_library_import(
     Raises:
         InvalidKeyValue: The file filter matches to folders outside
             the root folders.
+        InvalidKeyValue: The API key of the metadata source is invalid.
 
     Returns:
         List[dict]: The list of files and their matches.
@@ -288,7 +290,7 @@ def import_library(
             #    is already in their library.
             # 2. The files matched to the wrong volume, and the wrong volume
             #    happens to already be in the library.
-            # The propability of bullet 1 happening is quite low, so moving the
+            # The propability of bullet 2 happening is quite low, so moving the
             # files into the volume folder is worth more to users of bullet 1
             # than it is a bad thing for the users that experience bullet 2. So
             # solution is to move the file to the volume folder of the match,
@@ -296,7 +298,11 @@ def import_library(
             volume_already_added = True
             volume_id = e.volume_id
 
-        except CVRateLimitReached:
+        except VolumeNotMatched:
+            # CV ID not found; skip this import
+            continue
+
+        except MetadataSourceRateLimitReached:
             # Hit rate limit so can't add any volumes anymore
             break
 

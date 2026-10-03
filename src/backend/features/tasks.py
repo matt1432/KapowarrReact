@@ -12,7 +12,7 @@ from typing import Any
 from flask import Flask
 
 from backend.base.custom_exceptions import (
-    InvalidComicVineApiKey,
+    InvalidKeyValue,
     TaskNotDeletable,
     TaskNotFound,
 )
@@ -317,7 +317,8 @@ class RefreshAndScanVolume(Task):
 
         try:
             refresh_and_scan(self._volume_id, update_websocket=True)
-        except InvalidComicVineApiKey:
+        except InvalidKeyValue:
+            # API key invalid
             pass
 
         return
@@ -467,7 +468,8 @@ class UpdateAll(Task):
             refresh_and_scan(
                 update_websocket=True, allow_skipping=self.allow_skipping
             )
-        except InvalidComicVineApiKey:
+        except InvalidKeyValue:
+            # API key invalid
             pass
 
         return

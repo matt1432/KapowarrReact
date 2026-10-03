@@ -19,6 +19,12 @@ export function getErrorMessage(
     fallbackErrorMessage = 'Unknown error',
 ) {
     if (isApiError(error)) {
+        if (
+            error.data.error === 'InvalidKeyValue' &&
+            error.data.result.key === 'comicvine_api_key'
+        ) {
+            return translate('InvalidComicVineApiKey');
+        }
         return translate(error.data.error);
     }
     if (isNonApiError(error)) {

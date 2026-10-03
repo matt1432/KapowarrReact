@@ -95,7 +95,7 @@
     "ClientDownloading": "The external client is desired to be deleted but there is a download using it",
     "CredentialInvalid": "A credential is incorrect (can't login with it)",
     "CredentialNotFound": "Credential with given ID not found",
-    "CVRateLimitReached": "ComicVine API rate limit reached",
+    "MetadataSourceRateLimitReached": "Metadata source API rate limit reached",
     "DownloadLogs": "Download Logs",
     "DownloadQueueEntryNotFound": "A download in the download queue with given ID not found",
     "ExternalClientNotFound": "External client with given ID not found",
