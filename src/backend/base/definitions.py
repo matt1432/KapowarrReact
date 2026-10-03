@@ -770,6 +770,7 @@ class IndexerClientData(TypedDict):
 class SearchQuery(TypedDict):
     query: str
     page: int
+    total_available_variations: int
     volume_id: int
     "Used by indexers that search based on metadata (e.g. Libgen+)"
     calculated_issue_number: float | None
@@ -1081,6 +1082,7 @@ class SearchIterationStats:
     new_match_count: int
     next_page_available: bool
     remaining_wanted_issues: list[int]
+    total_available_variations: int
 
 
 # region Abstract Classes
@@ -1383,6 +1385,7 @@ class QueryBuilder(ABC):
 
         elif search_action == SearchAction.SEARCH_ISSUE:
             self.page = 1
+            self.query_variation_index = 0
 
         elif search_action == SearchAction.FETCH_NEXT_PAGE:
             self.page += 1

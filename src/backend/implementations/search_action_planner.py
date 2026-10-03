@@ -8,8 +8,6 @@ from backend.base.definitions import (
 )
 from backend.base.helpers import normalise_query_string
 
-MAX_VARIATIONS = 4
-
 
 class SearchActionPlanner:
     """
@@ -39,6 +37,7 @@ class SearchActionPlanner:
         self.wanted_issues = wanted_issues
 
         self.using_alt_title = False
+        self.max_variations = 1
         self.variation = 1
         self.sequential_failed_variations = 0
         self.sequential_failed_issue_searches = 0
@@ -73,6 +72,7 @@ class SearchActionPlanner:
         """
         self.stats = stats
         self.wanted_issues = stats.remaining_wanted_issues
+        self.max_variations = stats.total_available_variations
         if stats.matched_count:
             self.found_a_match = True
 
@@ -131,10 +131,10 @@ class SearchActionPlanner:
 
         # No matches or no more pages left. Next variation.
 
-        if self.variation == MAX_VARIATIONS:
+        if self.variation == self.max_variations:
             # No variations left
             if (
-                self.sequential_failed_variations == MAX_VARIATIONS
+                self.sequential_failed_variations == self.max_variations
                 and not self.using_alt_title
                 and len(self.titles) > 1
             ):
