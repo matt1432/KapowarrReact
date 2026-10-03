@@ -18,6 +18,14 @@ const statusCheckDescriptions: Record<StatusCheckType, StatusCheckDescription> =
                 fetch_issues: 'StatusCheckSubtypeFetchIssues',
             },
         },
+        root_folder_almost_full: {
+            description: 'StatusCheckRootFolderAlmostFull',
+            subtypes: {},
+        },
+        root_folder_full: {
+            description: 'StatusCheckRootFolderFull',
+            subtypes: {},
+        },
     };
 
 export default function getStatusCheckMessage({

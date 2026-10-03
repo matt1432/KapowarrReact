@@ -2171,6 +2171,8 @@
     "StartupDirectory": "Startup Directory",
     "Status": "Status",
     "StatusCheckCvRateLimit": "ComicVine rate limit reached",
+    "StatusCheckRootFolderAlmostFull": "Root folder is almost full",
+    "StatusCheckRootFolderFull": "Root folder is full",
     "StatusCheckSubtypeFetchIssues": "Fetching issue metadata",
     "StatusCheckSubtypeFetchVolume": "Fetching volume metadata",
     "StatusCheckSubtypeSearchVolumes": "Searching volumes",
