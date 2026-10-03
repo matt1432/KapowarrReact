@@ -1,5 +1,7 @@
 from asyncio import run
+from collections.abc import Mapping
 from datetime import datetime
+from typing import Any
 
 from aiohttp import ClientError
 from libgencomics import LibgenException, LibgenSearch, ResultFile
@@ -59,6 +61,11 @@ class LibgenPlusIndexer(BaseIndexerClient):
 
         self.series_searched: set[tuple[int, float | None]] = set()
 
+        return
+
+    def update_indexer(self, data: Mapping[str, Any]) -> None:
+        super().update_indexer(data)
+        self._url = Constants.LIBGEN_SITE_URL
         return
 
     def _parse_result(

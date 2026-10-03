@@ -763,8 +763,8 @@ class IndexerClientData(TypedDict):
     required_tokens: list[str]
     title: str
     url: str
-    gc_service_preference: CommaList
-    gc_avoid_large_downloads: bool
+    gc_service_preference: CommaList | None
+    gc_avoid_large_downloads: bool | None
 
 
 class SearchQuery(TypedDict):
