@@ -1600,6 +1600,60 @@ class ExternalDownloadClient(ABC):
         return f"<{self.__class__.__name__}(id={self.id}; title={self.title}); {id(self)}>"
 
 
+class DownloadPrepper(ABC):
+    "Converts a download link to a download instance"
+
+    client_type: str
+    "The name of the indexer client (e.g. 'GetComics')"
+
+    download_type: DownloadType
+    "The protocol it uses to download (e.g. a torrent)"
+
+    @property
+    @abstractmethod
+    def web_title(self) -> str | None: ...
+
+    @abstractmethod
+    def __init__(
+        self,
+        result: SearchResultData,
+        volume_id: int,
+        issue_id: int | None = None,
+        force_match: bool = False,
+    ) -> None:
+        """Set up the prepper.
+
+        Args:
+            result (SearchResultData): The search result to download. Contains
+                the link to download from and the ID of the indexer that the
+                link came from, but also user edits like the selected source.
+
+            volume_id (int): The ID of the volume for which the download is
+                intended.
+
+            issue_id (Union[int, None], optional): The ID of the issue for which
+                the download is intended.
+                Defaults to None.
+
+            force_match (bool, optional): On sources where downloads are
+                filtered, don't and instead download everything.
+                Defaults to False.
+        """
+        ...
+
+    @abstractmethod
+    def get_downloads(self) -> list[Download]:
+        """Process the link and turn it into one or more downloads.
+
+        Raises:
+            EnqueuingDownloadFailure: Failed to process link.
+
+        Returns:
+            List[Download]: The list of downloads.
+        """
+        ...
+
+
 class Download(ABC):
     identifier: DownloadClientIdentifier
     "An identifier for the specific download implementation"

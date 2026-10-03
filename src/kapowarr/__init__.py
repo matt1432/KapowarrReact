@@ -65,6 +65,9 @@ def _main(
     from backend.features.download_queue import DownloadHandler
     from backend.features.tasks import TaskHandler
     from backend.implementations.download_client_manager import DownloadClients
+    from backend.implementations.download_prepper_manager import (
+        DownloadPreppers,
+    )
     from backend.implementations.external_client_manager import ExternalClients
     from backend.implementations.indexer_client_manager import IndexerClients
     from backend.implementations.query_builder_manager import QueryBuilders
@@ -78,6 +81,7 @@ def _main(
     LOGGER.info("Starting up Kapowarr")
 
     ExternalClients.trigger_client_registration()
+    DownloadPreppers.trigger_prepper_registration()
     DownloadClients.trigger_client_registration()
     IndexerClients.trigger_client_registration()
     QueryBuilders.trigger_builder_registration()

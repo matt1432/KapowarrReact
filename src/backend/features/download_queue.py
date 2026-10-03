@@ -1,13 +1,10 @@
 from __future__ import annotations
 
 import time
-from asyncio import run, sleep
 from collections.abc import Iterable
 from os import listdir
 from os.path import basename, join
 from typing import TYPE_CHECKING, Any, Never, assert_never
-
-from libgencomics import get_annas_archive_download
 
 from backend.base.custom_exceptions import (
     ClientNotWorking,
@@ -41,11 +38,11 @@ from backend.features.post_processing import (
 )
 from backend.implementations.blocklist import add_to_blocklist
 from backend.implementations.download_client_manager import DownloadClients
-from backend.implementations.download_clients.DDL import DDLDownload
 from backend.implementations.download_clients.Mega import MegaDownload
 from backend.implementations.download_clients.Torrent import TorrentDownload
+from backend.implementations.download_prepper_manager import DownloadPreppers
 from backend.implementations.external_client_manager import ExternalClients
-from backend.implementations.getcomics import GetComicsPage
+from backend.implementations.indexer_client_manager import IndexerClients
 from backend.implementations.matching import parse_covered_issues
 from backend.implementations.volumes import Issue
 from backend.internals.db import get_db, iter_commit
@@ -62,9 +59,6 @@ if TYPE_CHECKING:
     from threading import Thread
 
 
-# =====================
-# Download handling
-# =====================
 class DownloadHandler(metaclass=Singleton):
     queue: list[Download] = []
 
@@ -390,21 +384,6 @@ class DownloadHandler(metaclass=Singleton):
         raise DownloadQueueEntryNotFound(download_id)
 
     # region Adding
-    def __determine_link_type(self, link: str) -> str | None:
-        """Determine the service type of the link (e.g. getcomics, torrent, etc.).
-
-        Args:
-            link (str): The link to check.
-
-        Returns:
-            Union[str, None]: The service type of the link or `None` if unknown.
-        """
-        if link.startswith("https://getcomics.org"):
-            return "gc"
-        if link.startswith(Constants.LIBGEN_SITE_URL):
-            return "lg"
-        return None
-
     def link_in_queue(self, link: str, web_sub_title: str | None) -> bool:
         """Check if a link is already in the queue.
 
@@ -431,219 +410,84 @@ class DownloadHandler(metaclass=Singleton):
         """
         return any(d.volume_id == volume_id for d in self.queue)
 
-    async def _run_annas_dl(
-        self, link, volume_id, issue_id, result, force_match
-    ) -> tuple[list[Download], EnqueuingDownloadFailureReason | None]:
-        download_link = await get_annas_archive_download(
-            md5=result["md5"],
-            annas_archive_site_url=Constants.ANNAS_ARCHIVE_SITE_URL,
-            flaresolverr_url=self.settings.sv.flaresolverr_base_url
-            + Constants.FS_API_BASE,
-        )
-
-        if download_link is None:
-            LOGGER.info(
-                "Getting Anna's Archive download failed for "
-                + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}"
-            )
-            return [], EnqueuingDownloadFailureReason.LINK_BROKEN
-
-        LOGGER.info(
-            "Adding download for "
-            + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}: "
-            + f"{download_link}"
-        )
-
-        downloads: list[Download] = [
-            DDLDownload(
-                download_link=download_link,
-                volume_id=volume_id,
-                covered_issues=result.get("issue_number", None),
-                download_service=DownloadService.ANNAS_ARCHIVE,
-                source_name="Anna's Archive",
-                web_link=link,
-                web_title=None,
-                web_sub_title=None,
-                releaser=result.get("releaser", None),
-                scan_type=result.get("scan_type", None),
-                resolution=result.get("resolution", None),
-                dpi=result.get("dpi", None),
-                extension=result.get("extension", None),
-                forced_match=force_match,
-            )
-        ]
-
-        return downloads, None
-
-    async def add(
+    def add(
         self,
         result: SearchResultData,
         volume_id: int,
         issue_id: int | None = None,
         force_match: bool = False,
-    ) -> tuple[list[dict], EnqueuingDownloadFailureReason | None]:
+    ) -> list[dict[str, Any]]:
         """Add a download to the queue.
 
         Args:
-            link (str): A getcomics link to download from.
+            result (SearchResultData): The search result to download. Contains
+                the link to download from and the ID of the indexer that the
+                link came from.
 
-            volume_id (int): The id of the volume for which the download is
-            intended.
+            volume_id (int): The ID of the volume for which the download is
+                intended.
 
-            issue_id (Union[int, None], optional): The id of the issue for which
-            the download is intended.
+            issue_id (Union[int, None], optional): The ID of the issue for which
+                the download is intended.
                 Defaults to None.
 
             force_match (bool, optional): On sources where downloads are
-            filtered, skip this and instead download everything.
+                filtered, don't and instead download everything.
                 Defaults to False.
 
+        Raises:
+            EnqueuingDownloadFailure: Failed to add download to queue.
+
         Returns:
-            Tuple[List[dict], Union[FailReason, None]]:
-            Queue entries that were added from the link and reason for failing
-            if no entries were added.
+            List[Dict[str, Any]]: Queue entries that were added from the link.
         """
         link = str(result["link"])
 
+        LOGGER.info(
+            "Adding download for "
+            + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}: "
+            + f"{link}"
+        )
+
         if self.link_in_queue(link, result["web_sub_title"]):
             LOGGER.info("Download already in queue")
-            return [], None
+            return []
 
-        link_type = self.__determine_link_type(link)
-        downloads: list[Download] = []
+        indexer = IndexerClients.get_client(result["indexer_id"])
+        PrepperClass = DownloadPreppers.get_prepper(
+            indexer.download_type, indexer.client_type
+        )
+        prepper = PrepperClass(result, volume_id, issue_id, force_match)
 
-        if link_type == "lg":
-            if (
-                result["comics_id"] is not None
-                and result["selected_source"]
-                == DownloadService.LIBGENPLUS_TORRENT.value
-            ):
-                torrent_name = str(int(int(result["comics_id"]) / 1000) * 1000)
-                torrent_link = f"{Constants.LIBGEN_SITE_URL}/torrents/comics/c_{torrent_name}.torrent"
+        try:
+            downloads = prepper.get_downloads()
 
-                LOGGER.info(
-                    "Adding download for "
-                    + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}: "
-                    + f"{torrent_link}"
+        except EnqueuingDownloadFailure as e:
+            if e.reason == EnqueuingDownloadFailureReason.WEBPAGE_BROKEN:
+                add_to_blocklist(
+                    web_link=link,
+                    web_title=prepper.web_title,
+                    web_sub_title=None,
+                    download_link=None,
+                    download_service=None,
+                    volume_id=volume_id,
+                    issue_id=issue_id,
+                    reason=BlocklistReason.LINK_BROKEN,
                 )
 
-                downloads.append(
-                    TorrentDownload(
-                        download_link=torrent_link,
-                        volume_id=volume_id,
-                        covered_issues=result.get("issue_number", None),
-                        download_service=DownloadService.LIBGENPLUS,
-                        source_name="Libgen+",
-                        web_link=link,
-                        web_title=None,
-                        web_sub_title=None,
-                        forced_match=force_match,
-                        external_client=None,
-                        external_id=None,
-                        filename=f"{torrent_name}/{result['md5']}.{result['extension']}",
-                        releaser=result.get("releaser", None),
-                        scan_type=result.get("scan_type", None),
-                        resolution=result.get("resolution", None),
-                        dpi=result.get("dpi", None),
-                        extension=result.get("extension", None),
-                    )
-                )
-            elif (
-                result["selected_source"] == DownloadService.ANNAS_ARCHIVE.value
-            ):
-                while True:
-                    if self.has_annas_running:
-                        await sleep(5)
-                        continue
-                    results, err = await self._run_annas_dl(
-                        link, volume_id, issue_id, result, force_match
-                    )
-
-                    if err is None:
-                        downloads += results
-                    else:
-                        return [], err
-
-                    break
-            else:
-                download_link = link.replace("file.php", "get.php")
-
-                LOGGER.info(
-                    "Adding download for "
-                    + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}: "
-                    + f"{download_link}"
+            elif e.reason == EnqueuingDownloadFailureReason.NO_WORKING_LINKS:
+                add_to_blocklist(
+                    web_link=link,
+                    web_title=prepper.web_title,
+                    web_sub_title=None,
+                    download_link=None,
+                    download_service=None,
+                    volume_id=volume_id,
+                    issue_id=issue_id,
+                    reason=BlocklistReason.NO_WORKING_LINKS,
                 )
 
-                downloads.append(
-                    DDLDownload(
-                        download_link=download_link,
-                        volume_id=volume_id,
-                        covered_issues=result.get("issue_number", None),
-                        download_service=DownloadService.LIBGENPLUS,
-                        source_name="Libgen+",
-                        web_link=link,
-                        web_title=None,
-                        web_sub_title=None,
-                        releaser=result.get("releaser", None),
-                        scan_type=result.get("scan_type", None),
-                        resolution=result.get("resolution", None),
-                        dpi=result.get("dpi", None),
-                        extension=result.get("extension", None),
-                        forced_match=force_match,
-                    )
-                )
-
-        if link_type == "gc":
-            LOGGER.info(
-                "Adding download for "
-                + f"volume {volume_id}{f' issue {issue_id}' if issue_id else ''}: "
-                + f"{link}"
-            )
-
-            gcp = GetComicsPage(link)
-
-            try:
-                await gcp.load_data(result["indexer_id"])
-
-            except EnqueuingDownloadFailure as e:
-                if e.reason != EnqueuingDownloadFailureReason.LINK_RATE_LIMITED:
-                    add_to_blocklist(
-                        web_link=link,
-                        web_title=None,
-                        web_sub_title=None,
-                        download_link=None,
-                        download_service=None,
-                        volume_id=volume_id,
-                        issue_id=issue_id,
-                        reason=BlocklistReason.LINK_BROKEN,
-                    )
-                LOGGER.warning(
-                    f'Unable to extract download links from source; fail_reason="{e.reason.value}"'
-                )
-                return [], e.reason
-
-            try:
-                downloads = await gcp.create_downloads(
-                    volume_id, result, issue_id, force_match
-                )
-
-            except EnqueuingDownloadFailure as e:
-                if e.reason == EnqueuingDownloadFailureReason.NO_WORKING_LINKS:
-                    add_to_blocklist(
-                        web_link=link,
-                        web_title=gcp.title,
-                        web_sub_title=None,
-                        download_link=None,
-                        download_service=None,
-                        volume_id=volume_id,
-                        issue_id=issue_id,
-                        reason=BlocklistReason.NO_WORKING_LINKS,
-                    )
-
-                LOGGER.warning(
-                    f'Unable to extract download links from source; fail_reason="{e.reason.value}"'
-                )
-                return [], e.reason
+            raise e
 
         dl_result = self.__prepare_downloads_for_queue(
             downloads, forced_match=force_match
@@ -651,13 +495,17 @@ class DownloadHandler(metaclass=Singleton):
         self.queue += dl_result
 
         self._process_queue()
-        return [r.as_dict() for r in dl_result], None
+        return [r.as_dict() for r in dl_result]
 
     def add_multiple(
         self, add_args: Iterable[tuple[SearchResultData, int, int | None, bool]]
     ) -> None:
         for entry in add_args:
-            run(self.add(*entry))
+            try:
+                self.add(*entry)
+            except EnqueuingDownloadFailure:
+                pass
+
             time.sleep(1.0)
         return
 

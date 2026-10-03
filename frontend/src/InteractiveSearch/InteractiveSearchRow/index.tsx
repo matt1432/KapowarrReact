@@ -12,7 +12,6 @@ import { getErrorMessage } from 'Utilities/Object/error';
 
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
-import { translateEnqueueFailureReason } from 'Utilities/String/translateReason';
 
 import { filesize } from 'filesize';
 import classNames from 'classnames';
@@ -185,23 +184,12 @@ export default function InteractiveSearchRow({
 
     const [grabRelease, { isLoading, isGrabbed, isError, errorMessage }] =
         useAddDownloadMutation({
-            selectFromResult: ({
+            selectFromResult: ({ isLoading, isSuccess, isError, error }) => ({
                 isLoading,
-                isSuccess,
-                isError: _isError,
-                data,
-                error,
-            }) => {
-                const isError = _isError || (data?.failReason ?? null) !== null;
-                return {
-                    isLoading,
-                    isGrabbed: isSuccess && !isError,
-                    isError,
-                    errorMessage: data?.failReason
-                        ? translateEnqueueFailureReason(data.failReason)
-                        : getErrorMessage(error),
-                };
-            },
+                isGrabbed: isSuccess && !isError,
+                isError,
+                errorMessage: getErrorMessage(error),
+            }),
         });
 
     const [_isGrabbing, setIsGrabbing] = useState(isLoading);

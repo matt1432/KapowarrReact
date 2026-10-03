@@ -1,11 +1,14 @@
 import re
-from asyncio import run, sleep
+from asyncio import run, sleep, to_thread
 from datetime import datetime
 
 from aiohttp import ClientError
 from bs4 import BeautifulSoup, Tag
 
-from backend.base.custom_exceptions import ClientNotWorking
+from backend.base.custom_exceptions import (
+    ClientNotWorking,
+    EnqueuingDownloadFailure,
+)
 from backend.base.definitions import (
     BrokenClientReason,
     DownloadType,
@@ -171,7 +174,10 @@ class GetComicsIndexer(BaseIndexerClient):
         Returns:
             List[SearchResultData]: The search results.
         """
-        from backend.implementations.getcomics import GetComicsPage
+        from backend.implementations.download_preppers.ddl.GetComics import (
+            fetch_page,
+            get_download_groups,
+        )
 
         efd = extract_filename_data(
             filepath=title,
@@ -182,14 +188,17 @@ class GetComicsIndexer(BaseIndexerClient):
         if isinstance(efd["volume_number"], tuple) or isinstance(
             efd["issue_number"], tuple
         ):
-            gcp = GetComicsPage(link)
-            await gcp.load_data(self._id)
+            try:
+                soup = await to_thread(fetch_page, link)
+                download_groups = get_download_groups(soup, self._id)
+            except EnqueuingDownloadFailure:
+                download_groups = []
 
-            if len(gcp.download_groups) > 1:
+            if len(download_groups) > 1:
                 # Has separate download groups so we show them as
                 # individual search results
                 results: list[SearchResultData] = []
-                for group in gcp.download_groups:
+                for group in download_groups:
                     display_title = group["web_sub_title"]
 
                     match = re.search(

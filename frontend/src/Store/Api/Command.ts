@@ -62,10 +62,7 @@ export type AddDownloadParams = ManualSearchParams & {
     forceMatch?: boolean;
 };
 
-export interface RawAddDownloadResult {
-    result: object[];
-    fail_reason: string | null;
-}
+export type RawAddDownloadResult = object[];
 export type AddDownloadResult = CamelCasedPropertiesDeep<RawAddDownloadResult>;
 
 // IMPLEMENTATIONS

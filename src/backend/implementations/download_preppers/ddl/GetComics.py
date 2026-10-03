@@ -1,16 +1,13 @@
-"""
-Getting downloads from a GC page
-"""
-
-from asyncio import gather, sleep
+import time
+from asyncio import gather, run
 from functools import reduce
 from hashlib import sha1
 from re import IGNORECASE, compile
-from typing import cast
 
 from aiohttp import ClientError
 from bencoding import bencode
 from bs4 import BeautifulSoup, Tag
+from requests import RequestException
 
 from backend.base.custom_exceptions import (
     DownloadLinkBroken,
@@ -24,6 +21,7 @@ from backend.base.definitions import (
     Download,
     DownloadClientIdentifier,
     DownloadGroup,
+    DownloadPrepper,
     DownloadService,
     DownloadType,
     EnqueuingDownloadFailureReason,
@@ -37,6 +35,7 @@ from backend.base.file_extraction import (
 )
 from backend.base.helpers import (
     AsyncSession,
+    Session,
     check_overlapping_issues,
     first_of_range,
     fix_year,
@@ -51,6 +50,7 @@ from backend.implementations.blocklist import (
     blocklist_contains,
 )
 from backend.implementations.download_client_manager import DownloadClients
+from backend.implementations.download_prepper_manager import DownloadPreppers
 from backend.implementations.external_client_manager import ExternalClients
 from backend.implementations.indexer_client_manager import IndexerClients
 from backend.implementations.matching import download_group_filter
@@ -79,7 +79,7 @@ def _get_title(soup: BeautifulSoup) -> str | None:
     return title_el.text
 
 
-def __check_download_link(
+def _check_download_link(
     link_text: str, link: str, torrent_client_available: bool
 ) -> GCDownloadService | None:
     """Check if download link is supported and allowed.
@@ -123,11 +123,11 @@ def __check_download_link(
     return None
 
 
-def __link_filter_1(e: Tag) -> bool:
+def _link_filter_1(e: Tag) -> bool:
     return e.name == "p" and "Language" in e.text and e.find("p") is None
 
 
-def __extract_button_links(
+def _extract_button_links(
     body: Tag, torrent_client_available: bool
 ) -> list[DownloadGroup]:
     """Extract download groups that are a list of big buttons.
@@ -143,7 +143,7 @@ def __extract_button_links(
 
     for group in [
         group
-        for group in body.find_all(__link_filter_1)
+        for group in body.find_all(_link_filter_1)
         if isinstance(group, Tag)
     ]:
         if not group.next_sibling:
@@ -205,7 +205,7 @@ def __extract_button_links(
                 if not href:
                     continue
 
-                match = __check_download_link(
+                match = _check_download_link(
                     link_title, href, torrent_client_available
                 )
                 if match:
@@ -218,7 +218,7 @@ def __extract_button_links(
     return download_groups
 
 
-def __link_filter_2(e: Tag) -> bool:
+def _link_filter_2(e: Tag) -> bool:
     return (
         e.name == "li"
         and e.parent is not None
@@ -227,7 +227,7 @@ def __link_filter_2(e: Tag) -> bool:
     )
 
 
-def __extract_list_links(
+def _extract_list_links(
     body: Tag, torrent_client_available: bool
 ) -> list[DownloadGroup]:
     """Extract download groups that are in an unsorted list.
@@ -242,7 +242,7 @@ def __extract_list_links(
     download_groups: list[DownloadGroup] = []
     for group in [
         group
-        for group in body.find_all(__link_filter_2)
+        for group in body.find_all(_link_filter_2)
         if isinstance(group, Tag)
     ]:
         # Process data about group
@@ -276,7 +276,7 @@ def __extract_list_links(
             if not href:
                 continue
 
-            match = __check_download_link(
+            match = _check_download_link(
                 link_title, href, torrent_client_available
             )
             if match:
@@ -289,7 +289,7 @@ def __extract_list_links(
     return download_groups
 
 
-def _get_download_groups(
+def get_download_groups(
     soup: BeautifulSoup, indexer_id: int
 ) -> list[DownloadGroup]:
     """From a GC article, extract the download groups.
@@ -311,8 +311,8 @@ def _get_download_groups(
     if not body:
         return []
 
-    download_groups = __extract_button_links(body, torrent_client_available)
-    download_groups.extend(__extract_list_links(body, torrent_client_available))
+    download_groups = _extract_button_links(body, torrent_client_available)
+    download_groups.extend(_extract_list_links(body, torrent_client_available))
 
     indexer_data = IndexerClients.get_client(indexer_id).get_indexer_data()
     service_preference = indexer_data["gc_service_preference"] or []
@@ -340,7 +340,7 @@ def _get_download_groups(
 
 
 # region Group Handling
-def __sort_link_paths(p: list[DownloadGroup]) -> tuple[float, int]:
+def _sort_link_paths(p: list[DownloadGroup]) -> tuple[float, int]:
     """Sort the link paths. SV's are sorted highest, then from largest range to
     least, then from least downloads to most for equal range.
 
@@ -372,96 +372,7 @@ def __sort_link_paths(p: list[DownloadGroup]) -> tuple[float, int]:
     return (1 / issues_covered, len(p))
 
 
-def _create_link_paths(
-    download_groups: list[DownloadGroup],
-    volume_id: int,
-    force_match: bool = False,
-) -> list[list[DownloadGroup]]:
-    """
-    Based on the download groups, find different "paths" to download
-    the most amount of content without overlapping. E.g. on the same page, there
-    might be a download for `TPB + Extra's`, `TPB`, `Issue A-B` and for
-    `Issue C-D`. A path would be created for `TPB + Extra's`. A second path
-    would be created for `TPB` and a third path for `Issue A-B` + `Issue C-D`.
-    Paths 2 and on are basically backup options for if path 1 doesn't work, to
-    still get the most content out of the page.
-
-    Args:
-        download_groups (List[DownloadGroup]): The download groups.
-
-        volume_id (int): The id of the volume.
-
-        force_match (bool, optional): Don't filter the download groups for
-        the volume, but instead just download all content from the page.
-            Defaults to False.
-
-    Returns:
-        List[List[DownloadGroup]]: The list contains all paths. Each path is
-        a list of download groups that don't overlap.
-    """
-    LOGGER.debug("Creating link paths")
-
-    # Get info of volume
-    volume = Volume(volume_id)
-    volume_data = volume.get_data()
-    ending_year = volume.get_ending_year()
-    volume_issues = volume.get_issues()
-
-    link_paths: list[list[DownloadGroup]] = []
-    if force_match:
-        link_paths.append([])
-
-    for group in download_groups:
-        if not (
-            force_match
-            or download_group_filter(
-                group["info"], volume_data, ending_year, volume_issues
-            )
-        ):
-            continue
-
-        # Group matches/contains what is desired to be downloaded
-        group["info"] = refine_special_version(volume_data, group["info"])
-
-        if force_match:
-            # Add all to the same group
-            link_paths[0].append(group)
-
-        elif group["info"]["special_version"] != SpecialVersion.NORMAL:
-            link_paths.append([group])
-
-        else:
-            # Find path with ranges and single issues that doesn't have
-            # a link that already covers this one
-            for path in link_paths:
-                for entry in path:
-                    if (
-                        entry["info"]["special_version"]
-                        != SpecialVersion.NORMAL
-                    ):
-                        break
-
-                    elif check_overlapping_issues(
-                        entry["info"]["issue_number"] or 0,
-                        group["info"]["issue_number"] or 0,
-                    ):
-                        break
-
-                else:
-                    # No conflicts found so add to path
-                    path.append(group)
-                    break
-            else:
-                # Conflict in all paths found so start a new one
-                link_paths.append([group])
-
-    link_paths.sort(key=__sort_link_paths)
-
-    LOGGER.debug(f"Link paths: {link_paths}")
-    return link_paths
-
-
-async def __purify_link(
+async def _purify_link(
     download_service: GCDownloadService, link: str
 ) -> tuple[str, DownloadClientIdentifier]:
     """Extract the link that directly leads to the download from the link
@@ -554,325 +465,325 @@ async def __purify_link(
         return url, DownloadClientIdentifier.DDL
 
 
-async def __purify_download_group(
-    group: DownloadGroup,
-    volume_id: int,
-    issue_id: int | None,
-    web_link: str,
-    web_title: str | None,
-    forced_match: bool = False,
-) -> tuple[Download | None, bool]:
-    """Turn a download group into a working link and client for the link.
+# region Fetching
+def fetch_page(link: str) -> BeautifulSoup:
+    """Fetch a GC article.
 
     Args:
-        group (DownloadGroup): The download group to convert.
-
-        volume_id (int): The ID of the volume that the download group is for.
-
-        issue_id (Union[int, None]): The ID of the issue that the download group
-        is for.
-
-        web_link (str): The link to the web page.
-
-        web_title (Union[str, None]): The title of the GC article.
-
-        forced_match (bool, optional): Don't rename the downloaded files,
-        even if the setting for it is enabled.
-            Defaults to False.
-
-    Returns:
-        Tuple[Union[Download, None], bool]: If successful, the download and
-        `False`. If unsuccessful, `None` and whether it failed because the
-        limit of a service was reached.
-    """
-    limit_reached = False
-    for service, links in group["links"].items():
-        for link in iter_commit(links):
-            try:
-                pure_link, identifier = await __purify_link(service, link)
-
-            except DownloadLinkBroken:
-                # Link broken
-                add_to_blocklist(
-                    web_link=web_link,
-                    web_title=web_title,
-                    web_sub_title=group["web_sub_title"],
-                    download_link=link,
-                    download_service=service,
-                    volume_id=volume_id,
-                    issue_id=issue_id,
-                    reason=BlocklistReason.LINK_BROKEN,
-                )
-                continue
-
-            except ClientError:
-                # Link blocked by CF and FS not setup
-                continue
-
-            except DownloadServiceRateLimitReached:
-                # Link is rate limited so just go to the next one
-                continue
-
-            try:
-                dl_instance = DownloadClients.get_client(identifier)(
-                    download_link=pure_link,
-                    volume_id=volume_id,
-                    covered_issues=group["info"]["issue_number"],
-                    download_service=service,
-                    source_name=service.value,
-                    web_link=web_link,
-                    web_title=web_title,
-                    web_sub_title=group["web_sub_title"],
-                    forced_match=forced_match,
-                )
-
-            except DownloadLinkBroken:
-                # DL limit reached, link broken
-                add_to_blocklist(
-                    web_link=web_link,
-                    web_title=web_title,
-                    web_sub_title=group["web_sub_title"],
-                    download_link=pure_link,
-                    download_service=service,
-                    volume_id=volume_id,
-                    issue_id=issue_id,
-                    reason=BlocklistReason.LINK_BROKEN,
-                )
-
-            except IssueNotFound:
-                # The group refers to issues that don't exist in the
-                # volume, and download is not forced.
-                return None, False
-
-            except DownloadServiceRateLimitReached:
-                # Link works but the download limit for the service is
-                # reached
-                limit_reached = True
-
-            else:
-                return dl_instance, limit_reached
-
-    return None, limit_reached
-
-
-async def _test_paths(
-    link_paths: list[list[DownloadGroup]],
-    web_link: str,
-    web_title: str | None,
-    volume_id: int,
-    edits: SearchResultData | None = None,
-    issue_id: int | None = None,
-    forced_match: bool = False,
-) -> list[Download]:
-    """Test the links of the paths and determine, based on which links work,
-    which path to go for.
-
-    Args:
-        link_paths (List[List[DownloadGroup]]): The link paths.
-
-        web_link (str): The link to the GC article.
-
-        web_title (Union[str, None]): The title of the GC article.
-
-        volume_id (int): The ID of the volume that the download is for.
-
-        issue_id (Union[int, None], optional): The ID of the issue that the
-            download is for.
-            Defaults to None.
-
-        forced_match (bool, optional): Don't rename the downloaded files,
-            even if the setting for it is enabled.
-            Defaults to False.
+        link (str): The link to the article.
 
     Raises:
-        EnqueuingDownloadFailure: Failed to extract downloads because no links
-            were working or they're all rate limited.
+        EnqueuingDownloadFailure: Failed to fetch the webpage.
 
     Returns:
-        List[Download]: A list of downloads.
+        BeautifulSoup: The soup of the article.
     """
-    _downloads: tuple[(Download | None), ...] = tuple()
-    limit_reached: tuple[bool, ...] = tuple()
+    LOGGER.debug(f"Extracting download links from {link}")
 
-    for path in link_paths:
-        _downloads, limit_reached = zip(
-            *(
-                await gather(
-                    *(
-                        __purify_download_group(
-                            group,
-                            volume_id,
-                            issue_id,
-                            web_link,
-                            web_title,
-                            forced_match,
-                        )
-                        for group in path
+    with Session() as session:
+        try:
+            response = session.get(link)
+            if response.status_code == 429:
+                time.sleep(5)
+                response = session.get(link)
+
+            if response.status_code == 429:
+                raise EnqueuingDownloadFailure(
+                    EnqueuingDownloadFailureReason.LINK_RATE_LIMITED
+                )
+
+            if not response.ok:
+                raise RequestException
+
+            return BeautifulSoup(response.text, "html.parser")
+
+        except RequestException:
+            raise EnqueuingDownloadFailure(
+                EnqueuingDownloadFailureReason.WEBPAGE_BROKEN
+            )
+
+
+# region Prepper
+@DownloadPreppers.register_prepper(DownloadType.DDL, "GetComics")
+class GetComicsPrepper(DownloadPrepper):
+    @property
+    def web_title(self) -> str | None:
+        return self._web_title
+
+    def __init__(
+        self,
+        result: SearchResultData,
+        volume_id: int,
+        issue_id: int | None = None,
+        force_match: bool = False,
+    ) -> None:
+        self.result = result
+        self.link = result["link"]
+        self.indexer_id = result["indexer_id"]
+        self.volume_id = volume_id
+        self.issue_id = issue_id
+        self.force_match = force_match
+
+        self._web_title = None
+        return
+
+    def __create_link_paths(
+        self, download_groups: list[DownloadGroup]
+    ) -> list[list[DownloadGroup]]:
+        """
+        Based on the download groups, find different "paths" to download
+        the most amount of content without overlapping. E.g. on the same page, there
+        might be a download for `TPB + Extra's`, `TPB`, `Issue A-B` and for
+        `Issue C-D`. A path would be created for `TPB + Extra's`. A second path
+        would be created for `TPB` and a third path for `Issue A-B` + `Issue C-D`.
+        Paths 2 and on are basically backup options for if path 1 doesn't work, to
+        still get the most content out of the page.
+
+        Args:
+            download_groups (List[DownloadGroup]): The download groups.
+
+        Returns:
+            List[List[DownloadGroup]]: The list contains all paths. Each path is
+                a list of download groups that don't overlap.
+        """
+        LOGGER.debug("Creating link paths")
+
+        # Get info of volume
+        volume = Volume(self.volume_id)
+        volume_data = volume.get_data()
+        ending_year = volume.get_ending_year()
+        volume_issues = volume.get_issues()
+
+        link_paths: list[list[DownloadGroup]] = []
+        if self.force_match:
+            link_paths.append([])
+
+        for group in download_groups:
+            if not (
+                self.force_match
+                or download_group_filter(
+                    group["info"], volume_data, ending_year, volume_issues
+                )
+            ):
+                continue
+
+            # Group matches/contains what is desired to be downloaded
+            group["info"] = refine_special_version(volume_data, group["info"])
+
+            if self.force_match:
+                # Add all to the same group
+                link_paths[0].append(group)
+
+            elif group["info"]["special_version"] != SpecialVersion.NORMAL:
+                link_paths.append([group])
+
+            else:
+                # Find path with ranges and single issues that doesn't have
+                # a link that already covers this one
+                for path in link_paths:
+                    for entry in path:
+                        if (
+                            entry["info"]["special_version"]
+                            != SpecialVersion.NORMAL
+                        ):
+                            break
+
+                        elif check_overlapping_issues(
+                            entry["info"]["issue_number"] or 0,
+                            group["info"]["issue_number"] or 0,
+                        ):
+                            break
+
+                    else:
+                        # No conflicts found so add to path
+                        path.append(group)
+                        break
+                else:
+                    # Conflict in all paths found so start a new one
+                    link_paths.append([group])
+
+        link_paths.sort(key=_sort_link_paths)
+
+        LOGGER.debug(f"Link paths: {link_paths}")
+        return link_paths
+
+    async def __purify_download_group(
+        self, group: DownloadGroup
+    ) -> tuple[Download | None, bool]:
+        """Turn a download group into a working link and client for the link.
+
+        Args:
+            group (DownloadGroup): The download group to convert.
+
+        Returns:
+            Tuple[Union[Download, None], bool]: If successful, the download and
+                `False`. If unsuccessful, `None` and whether it failed because
+                the rate limit of a service was reached.
+        """
+        limit_reached = False
+        for service, links in group["links"].items():
+            for link in iter_commit(links):
+                try:
+                    pure_link, identifier = await _purify_link(service, link)
+
+                except DownloadLinkBroken:
+                    # Link broken
+                    add_to_blocklist(
+                        web_link=self.link,
+                        web_title=self._web_title,
+                        web_sub_title=group["web_sub_title"],
+                        download_link=link,
+                        download_service=service,
+                        volume_id=self.volume_id,
+                        issue_id=self.issue_id,
+                        reason=BlocklistReason.LINK_BROKEN,
+                    )
+                    continue
+
+                except ClientError:
+                    # Link blocked by CF and FS not setup
+                    continue
+
+                except DownloadServiceRateLimitReached:
+                    # Link is rate limited so just go to the next one
+                    continue
+
+                try:
+                    dl_instance = DownloadClients.get_client(identifier)(
+                        download_link=pure_link,
+                        volume_id=self.volume_id,
+                        covered_issues=group["info"]["issue_number"],
+                        download_service=service,
+                        source_name=service.value,
+                        web_link=self.link,
+                        web_title=self._web_title,
+                        web_sub_title=group["web_sub_title"],
+                        forced_match=self.force_match,
+                    )
+
+                except DownloadLinkBroken:
+                    # Link broken
+                    add_to_blocklist(
+                        web_link=self.link,
+                        web_title=self._web_title,
+                        web_sub_title=group["web_sub_title"],
+                        download_link=pure_link,
+                        download_service=service,
+                        volume_id=self.volume_id,
+                        issue_id=self.issue_id,
+                        reason=BlocklistReason.LINK_BROKEN,
+                    )
+
+                except IssueNotFound:
+                    # The group refers to issues that don't exist in the
+                    # volume, and download is not forced.
+                    return None, False
+
+                except DownloadServiceRateLimitReached:
+                    # Link works but the download limit for the service is
+                    # reached
+                    limit_reached = True
+
+                else:
+                    return dl_instance, limit_reached
+
+        return None, limit_reached
+
+    async def __test_paths(
+        self, link_paths: list[list[DownloadGroup]]
+    ) -> list[Download]:
+        """Test the links of the paths and determine, based on which links work,
+        which path to go for.
+
+        Args:
+            link_paths (List[List[DownloadGroup]]): The link paths.
+
+        Raises:
+            EnqueuingDownloadFailure: Failed to extract downloads because no links
+                were working or they're all rate limited.
+
+        Returns:
+            List[Download]: A list of downloads.
+        """
+        _downloads: tuple[(Download | None), ...] = tuple()
+        limit_reached: tuple[bool, ...] = tuple()
+
+        for path in link_paths:
+            _downloads, limit_reached = zip(
+                *(
+                    await gather(
+                        *(self.__purify_download_group(group) for group in path)
                     )
                 )
             )
-        )
-        _downloads = tuple(d for d in _downloads if d is not None)
+            _downloads = tuple(d for d in _downloads if d is not None)
 
-        if not _downloads:
-            continue
+            if not _downloads:
+                continue
 
-        downloads: list[Download] = []
+            downloads: list[Download] = []
 
-        for download in list(_downloads):
-            dl_class = download.__class__
+            for download in list(_downloads):
+                dl_class = download.__class__
 
-            if edits is not None:
-                selected_source = edits.get("selected_source", None)
+                selected_source = self.result.get("selected_source", None)
                 if (
                     selected_source is not None
                     and selected_source != download.download_service.value
                 ):
                     continue
-            else:
-                edits = cast(
-                    SearchResultData,
-                    {"covered_issues": download.covered_issues},
+
+                downloads.append(
+                    dl_class(
+                        download_link=download.download_link,
+                        volume_id=download.volume_id,
+                        covered_issues=self.result.get("issue_number", None),
+                        download_service=download.download_service,
+                        source_name=download.source_name,
+                        web_link=download.web_link,
+                        web_title=download.web_title,
+                        web_sub_title=download.web_sub_title,
+                        releaser=self.result.get("releaser", None),
+                        scan_type=self.result.get("scan_type", None),
+                        resolution=self.result.get("resolution", None),
+                        dpi=self.result.get("dpi", None),
+                        forced_match=self.force_match,
+                    )
                 )
 
-            downloads.append(
-                dl_class(
-                    download_link=download.download_link,
-                    volume_id=download.volume_id,
-                    covered_issues=edits.get("issue_number", None),
-                    download_service=download.download_service,
-                    source_name=download.source_name,
-                    web_link=download.web_link,
-                    web_title=download.web_title,
-                    web_sub_title=download.web_sub_title,
-                    releaser=edits.get("releaser", None),
-                    scan_type=edits.get("scan_type", None),
-                    resolution=edits.get("resolution", None),
-                    dpi=edits.get("dpi", None),
-                    forced_match=forced_match,
-                )
+            LOGGER.debug(f"Chosen links: {downloads}")
+
+            return downloads
+
+        # Nothing worked
+        if limit_reached is not None and any(limit_reached):
+            raise EnqueuingDownloadFailure(
+                EnqueuingDownloadFailureReason.ONLY_RATE_LIMITED_LINKS
+            )
+        else:
+            raise EnqueuingDownloadFailure(
+                EnqueuingDownloadFailureReason.NO_WORKING_LINKS
             )
 
-        LOGGER.debug(f"Chosen links: {downloads}")
+    def get_downloads(self) -> list[Download]:
+        soup = fetch_page(self.link)
+        self._web_title = _get_title(soup)
 
-        return downloads
+        download_groups = get_download_groups(soup, self.indexer_id)
 
-    # Nothing worked
-    if limit_reached is not None and any(limit_reached):
-        raise EnqueuingDownloadFailure(
-            EnqueuingDownloadFailureReason.ONLY_RATE_LIMITED_LINKS
-        )
-    else:
-        raise EnqueuingDownloadFailure(
-            EnqueuingDownloadFailureReason.NO_WORKING_LINKS
-        )
-
-
-# region Processing
-class GetComicsPage:
-    def __init__(self, link: str) -> None:
-        """Process a GC article.
-
-        Args:
-            link (str): The link to the article.
-        """
-        self.link = link
-        self.title: str | None = None
-        self.download_groups: list[DownloadGroup] = []
-        return
-
-    async def load_data(self, indexer_id: int) -> None:
-        """Scrape and process the data of the page, in prepration of creating
-        downloads from the page.
-
-        Args:
-            indexer_id (int): The ID that the GC indexer has.
-
-        Raises:
-            EnqueuingDownloadFailure: Failed to fetch the webpage.
-        """
-        LOGGER.debug(f"Extracting download links from {self.link}")
-
-        async with AsyncSession() as session:
-            try:
-                response = await session.get(self.link)
-                if not response.ok and response.status == 429:
-                    await sleep(5)
-                    response = await session.get(self.link)
-
-                if response.status == 429:
-                    raise EnqueuingDownloadFailure(
-                        EnqueuingDownloadFailureReason.LINK_RATE_LIMITED
-                    )
-
-                if not response.ok:
-                    raise ClientError
-
-                soup = BeautifulSoup(await response.text(), "html.parser")
-
-            except ClientError:
-                raise EnqueuingDownloadFailure(
-                    EnqueuingDownloadFailureReason.WEBPAGE_BROKEN
-                )
-
-        self.title = _get_title(soup)
-        self.download_groups = _get_download_groups(soup, indexer_id)
-        return
-
-    async def create_downloads(
-        self,
-        volume_id: int,
-        edits: SearchResultData | None = None,
-        issue_id: int | None = None,
-        force_match: bool = False,
-    ) -> list[Download]:
-        """Create downloads from the links on the page for a certain volume
-        (and issue if given).
-
-        Args:
-            volume_id (int): The volume's ID for which to (possibly) filter and
-            create the downloads.
-
-            issue_id (Union[int, None], optional): The ID of the issue for which
-            the download is intended.
-                Defaults to None.
-
-            force_match (bool, optional): Don't filter the download groups for
-            the volume, but instead just download all content from the page.
-                Defaults to False.
-
-        Raises:
-            EnqueuingDownloadFailure: Failed to extract working, matching,
-                supported downloads from the webpage.
-
-        Returns:
-            List[Download]: The list of downloads coming from the GC page, for
-            the volume.
-        """
-        if edits is not None and edits["web_sub_title"] is not None:
-            self.download_groups = [
+        if self.result["web_sub_title"] is not None:
+            download_groups = [
                 group
-                for group in self.download_groups
-                if group["web_sub_title"] == edits["web_sub_title"]
+                for group in download_groups
+                if group["web_sub_title"] == self.result["web_sub_title"]
             ]
 
-        link_paths = _create_link_paths(
-            self.download_groups, volume_id, force_match
-        )
-
+        link_paths = self.__create_link_paths(download_groups)
         if not link_paths:
             raise EnqueuingDownloadFailure(
                 EnqueuingDownloadFailureReason.NO_MATCHES
             )
 
-        result = await _test_paths(
-            link_paths,
-            web_link=self.link,
-            web_title=self.title,
-            volume_id=volume_id,
-            issue_id=issue_id,
-            edits=edits,
-            forced_match=force_match,
-        )
+        working_downloads = run(self.__test_paths(link_paths))
 
-        return result
+        return working_downloads

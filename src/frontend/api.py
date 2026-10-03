@@ -1212,14 +1212,8 @@ def api_volume_download(id: int) -> ApiReturn:
     Library.get_volume(id)
     result_key: SearchResultData = extract_key(request, "result")
     force_match: bool = extract_key(request, "force_match")
-    result = run(DownloadHandler().add(result_key, id, force_match=force_match))
-    return return_api(
-        {
-            "result": (result or (None,))[0],
-            "fail_reason": result[1].value if result[1] else result[1],
-        },
-        code=201,
-    )
+    result = DownloadHandler().add(result_key, id, force_match=force_match)
+    return return_api(result, code=201)
 
 
 @api.route("/issues/<int:id>/manualsearch", methods=["GET", "POST"])
@@ -1244,18 +1238,10 @@ def api_issue_download(id: int) -> ApiReturn:
     volume_id = Library.get_issue(id).get_data().volume_id
     result_key: SearchResultData = extract_key(request, "result")
     force_match: bool = extract_key(request, "force_match")
-    result = run(
-        DownloadHandler().add(
-            result_key, volume_id, id, force_match=force_match
-        )
+    result = DownloadHandler().add(
+        result_key, volume_id, id, force_match=force_match
     )
-    return return_api(
-        {
-            "result": result[0],
-            "fail_reason": result[1].value if result[1] else result[1],
-        },
-        code=201,
-    )
+    return return_api(result, code=201)
 
 
 @api.route("/activity/queue", methods=["GET", "DELETE"])
