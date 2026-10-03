@@ -1227,6 +1227,48 @@ class WebSocketEvent(ABC):
         ...
 
 
+class Task(ABC):
+    action: str
+
+    stop: bool
+    message: str
+    display_title: str
+    category: str
+
+    _called_from: str
+
+    @property
+    def called_from(self) -> str:
+        """
+        Only used in the frontend. It allows the client to know what
+        originally called this task.
+        """
+        return self._called_from or ""
+
+    @property
+    @abstractmethod
+    def volume_id(self) -> int | None: ...
+
+    @property
+    @abstractmethod
+    def issue_id(self) -> int | None: ...
+
+    @abstractmethod
+    def __init__(self, **kwargs: Any) -> None: ...
+
+    @abstractmethod
+    def run(self) -> None | list[tuple[SearchResultData, int, int | None]]:
+        """Run the task
+
+        Returns:
+            Union[None, List[Tuple[SearchResultData, int, Union[int, None]]]]:
+            Either `None` if the task has no result or
+            `List[Tuple[SearchResultData, int, Union[int, None]]]` if the task returns
+            search results.
+        """
+        ...
+
+
 class IndexerClient(ABC):
     client_type: str
     "The name of the indexer client (e.g. 'Torznab')"

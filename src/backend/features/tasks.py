@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from time import sleep, time
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
 from backend.base.custom_exceptions import (
     InvalidKeyValue,
     TaskNotDeletable,
     TaskNotFound,
 )
-from backend.base.definitions import SearchResultData
+from backend.base.definitions import SearchResultData, Task
 from backend.base.helpers import Singleton
 from backend.base.logging import LOGGER
 from backend.features.download_queue import DownloadHandler
@@ -28,48 +27,6 @@ from backend.internals.server import (
 
 if TYPE_CHECKING:
     from threading import Timer
-
-
-class Task(ABC):
-    action: str
-
-    stop: bool
-    message: str
-    display_title: str
-    category: str
-
-    _called_from: str
-
-    @property
-    def called_from(self) -> str:
-        """
-        Only used in the frontend. It allows the client to know what
-        originally called this task.
-        """
-        return self._called_from or ""
-
-    @property
-    @abstractmethod
-    def volume_id(self) -> int | None: ...
-
-    @property
-    @abstractmethod
-    def issue_id(self) -> int | None: ...
-
-    @abstractmethod
-    def __init__(self, **kwargs: Any) -> None: ...
-
-    @abstractmethod
-    def run(self) -> None | list[tuple[SearchResultData, int, int | None]]:
-        """Run the task
-
-        Returns:
-            Union[None, List[Tuple[SearchResultData, int, Union[int, None]]]]:
-            Either `None` if the task has no result or
-            `List[Tuple[SearchResultData, int, Union[int, None]]]` if the task returns
-            search results.
-        """
-        ...
 
 
 # region Task Handler
