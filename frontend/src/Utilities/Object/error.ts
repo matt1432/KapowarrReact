@@ -1,4 +1,8 @@
 import translate from 'Utilities/String/translate';
+import {
+    translateBrokenClientReason,
+    translateEnqueueFailureReason,
+} from 'Utilities/String/translateReason';
 
 import type { ApiError, NonApiError, FetchError } from 'typings/Api';
 
@@ -24,6 +28,18 @@ export function getErrorMessage(
             error.data.result.key === 'comicvine_api_key'
         ) {
             return translate('InvalidComicVineApiKey');
+        }
+        if (
+            error.data.error === 'ClientNotWorking' &&
+            typeof error.data.result.reason === 'string'
+        ) {
+            return translateBrokenClientReason(error.data.result.reason);
+        }
+        if (
+            error.data.error === 'EnqueuingDownloadFailure' &&
+            typeof error.data.result.reason === 'string'
+        ) {
+            return translateEnqueueFailureReason(error.data.result.reason);
         }
         return translate(error.data.error);
     }

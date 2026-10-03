@@ -12,6 +12,7 @@ import { getErrorMessage } from 'Utilities/Object/error';
 
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
+import { translateEnqueueFailureReason } from 'Utilities/String/translateReason';
 
 import { filesize } from 'filesize';
 import classNames from 'classnames';
@@ -196,7 +197,9 @@ export default function InteractiveSearchRow({
                     isLoading,
                     isGrabbed: isSuccess && !isError,
                     isError,
-                    errorMessage: data?.failReason ?? getErrorMessage(error),
+                    errorMessage: data?.failReason
+                        ? translateEnqueueFailureReason(data.failReason)
+                        : getErrorMessage(error),
                 };
             },
         });

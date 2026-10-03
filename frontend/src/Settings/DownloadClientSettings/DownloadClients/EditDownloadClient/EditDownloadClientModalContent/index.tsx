@@ -17,6 +17,7 @@ import { getErrorMessage } from 'Utilities/Object/error';
 
 import pickProps from 'Utilities/Object/pickProps';
 import translate from 'Utilities/String/translate';
+import { translateBrokenClientReason } from 'Utilities/String/translateReason';
 
 // General Components
 import Alert from 'Components/Alert';
@@ -314,7 +315,14 @@ export default function EditDownloadClientModalContent({
 
                 <SpinnerErrorButton
                     isSpinning={isTesting}
-                    error={description ? { message: description } : undefined}
+                    error={
+                        description
+                            ? {
+                                  message:
+                                      translateBrokenClientReason(description),
+                              }
+                            : undefined
+                    }
                     onPress={handleTestPress}
                 >
                     {translate('Test')}

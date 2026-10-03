@@ -11,6 +11,7 @@ import { useDeleteBlocklistItemMutation } from 'Store/Api/Queue';
 import { icons } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
+import { translateBlocklistReason } from 'Utilities/String/translateReason';
 
 import classNames from 'classnames';
 
@@ -198,7 +199,7 @@ export default function BlocklistRow({
                             )}
                             style={{ maxWidth: columnWidth }}
                         >
-                            {reason}
+                            {translateBlocklistReason(reason)}
                         </TableRowCell>
                     );
                 }

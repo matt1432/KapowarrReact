@@ -17,6 +17,7 @@ import GCDownloadSources from 'Helpers/Props/GCDownloadSources';
 import { getErrorMessage } from 'Utilities/Object/error';
 
 import translate from 'Utilities/String/translate';
+import { translateBrokenClientReason } from 'Utilities/String/translateReason';
 
 // General Components
 import Alert from 'Components/Alert';
@@ -348,7 +349,14 @@ export default function EditIndexerModalContent({
 
                 <SpinnerErrorButton
                     isSpinning={isTesting}
-                    error={description ? { message: description } : undefined}
+                    error={
+                        description
+                            ? {
+                                  message:
+                                      translateBrokenClientReason(description),
+                              }
+                            : undefined
+                    }
                     onPress={handleTestPress}
                 >
                     {translate('Test')}

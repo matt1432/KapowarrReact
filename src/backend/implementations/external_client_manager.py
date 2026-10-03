@@ -344,14 +344,14 @@ class ExternalClients:
 
         except ClientNotWorking as e:
             return ClientTestResult(
-                {"success": False, "description": e.reason_text}
+                {"success": False, "description": e.reason.value}
             )
 
         except CredentialInvalid:
             return ClientTestResult(
                 {
                     "success": False,
-                    "description": "Failed to login with the given credentials",
+                    "description": "invalid_credentials",
                 }
             )
 
