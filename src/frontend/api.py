@@ -367,7 +367,7 @@ def api_about() -> ApiReturn:
 # =====================
 # Status Checks
 # =====================
-@api.route("/system/status/checks", methods=["GET", "DELETE"])
+@api.route("/system/status", methods=["GET", "DELETE"])
 @error_handler
 @auth
 def api_status_checks():
