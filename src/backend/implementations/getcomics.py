@@ -346,6 +346,9 @@ def __sort_link_paths(p: list[DownloadGroup]) -> tuple[float, int]:
     Returns:
         Tuple[float, int]: The rating (lower is better).
     """
+    if not p:
+        return (float("inf"), 1)
+
     if p[0]["info"]["special_version"]:
         return (0.0, 0)
 
@@ -357,6 +360,10 @@ def __sort_link_paths(p: list[DownloadGroup]) -> tuple[float, int]:
         for entry in p
         if entry["info"]["issue_number"] is not None
     )
+
+    if not issues_covered:
+        # No entries have issue numbers
+        return (float("inf"), 1)
 
     return (1 / issues_covered, len(p))
 
