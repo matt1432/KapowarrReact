@@ -2,7 +2,7 @@
 
 // React
 import { type ReactElement, useCallback, useEffect, useRef } from 'react';
-import { useBlocker } from 'react-router-dom';
+import { useBlocker } from 'react-router';
 
 // Misc
 import { icons } from 'Helpers/Props';
@@ -21,7 +21,7 @@ import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import PendingChangesModal from './PendingChangesModal';
 
 // Types
-import type { BlockerFunction } from 'react-router-dom';
+import type { BlockerFunction } from 'react-router';
 import type { PageToolbarButtonProps } from 'Components/Page/Toolbar/PageToolbarButton';
 
 interface SettingsToolbarProps {

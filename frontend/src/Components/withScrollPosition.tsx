@@ -2,7 +2,7 @@
 
 // React
 import React from 'react';
-import { useNavigationType } from 'react-router-dom';
+import { useNavigationType } from 'react-router';
 
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
