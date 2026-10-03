@@ -997,6 +997,12 @@ class GetComicsPage:
                 if not response.ok and response.status == 429:
                     await sleep(5)
                     response = await session.get(self.link)
+
+                if response.status == 429:
+                    raise EnqueuingDownloadFailure(
+                        EnqueuingDownloadFailureReason.LINK_RATE_LIMITED
+                    )
+
                 if not response.ok:
                     raise ClientError
 
