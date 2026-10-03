@@ -83,6 +83,7 @@ def _validate_indexer_data(
         elif key == ICF.GC_AVOID_LARGE_DOWNLOADS and value is not None:
             if not isinstance(value, bool):
                 raise InvalidKeyValue(key.value, value)
+            filtered_data[key.value] = value
 
         else:
             if not isinstance(value, str):
