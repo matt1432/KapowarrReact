@@ -740,7 +740,8 @@ class DownloadHandler(metaclass=Singleton):
     def empty_download_folder(self) -> None:
         """
         Empty the download folder of files that aren't being downloaded.
-        Handy in the case that a crash left half-downloaded files behind in the folder.
+        Handy in the case that a crash left half-downloaded files behind in the
+        folder.
         """
         LOGGER.info("Emptying the download folder")
         folder = self.settings.sv.download_folder
