@@ -61,8 +61,10 @@ def _validate_indexer_data(
             filtered_data[key.value] = value
 
         elif key == ICF.GC_SERVICE_PREFERENCE and value is not None:
-            if not isinstance(value, CommaList):
+            if not isinstance(value, list):
                 raise InvalidKeyValue(key.value, value)
+
+            value = CommaList(value)
 
             available = [
                 s.value for s in GCDownloadService._member_map_.values()
