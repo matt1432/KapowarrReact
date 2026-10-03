@@ -211,12 +211,12 @@ def import_db(new_db_file: str, copy_hosting_settings: bool) -> None:
         "SELECT 1 FROM task_intervals WHERE task_name = 'backup_db';"
     ).exists()
     if has_backup_task:
-        last_run = cursor_current.execute(
-            "SELECT last_run FROM task_intervals WHERE task_name = 'backup_db';"
+        next_run = cursor_current.execute(
+            "SELECT next_run FROM task_intervals WHERE task_name = 'backup_db';"
         ).exists()
         cursor_new.execute(
-            "UPDATE task_intervals SET last_run = ? WHERE task_name = 'backup_db';",
-            (last_run,),
+            "UPDATE task_intervals SET next_run = ? WHERE task_name = 'backup_db';",
+            (next_run,),
         )
 
     cursor_new.connection.commit()
