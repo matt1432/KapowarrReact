@@ -20,6 +20,7 @@ from backend.base.definitions import (
     DownloadType,
     ExternalDownload,
     ExternalDownloadClient,
+    FileConstants,
     FileExtraInfo,
 )
 from backend.base.helpers import get_torrent_info
@@ -164,7 +165,10 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
                     raise e
 
         if not self._filename_body:
-            self._filename_body = splitext(torrent_name)[0]
+            if torrent_name.endswith(FileConstants.SCANNABLE_EXTENSIONS):
+                self._filename_body = splitext(torrent_name)[0]
+            else:
+                self._filename_body = torrent_name
 
         self._title = basename(self._filename_body)
         self._files = [join(self._download_folder, torrent_name)]
