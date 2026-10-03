@@ -5,7 +5,7 @@ from libgencomics import LibgenException, LibgenSearch, ResultFile
 from backend.base.definitions import (
     QUERY_FORMATS,
     Constants,
-    DownloadSource,
+    DownloadService,
     MatchedSearchResultData,
     SearchResultData,
     SearchResultMatchData,
@@ -190,12 +190,12 @@ class SearchLibgenPlus(SearchSource):
             efd = extract_filename_data(filepath=filename)
 
             download_sources = [
-                DownloadSource.LIBGENPLUS.value,
-                DownloadSource.LIBGENPLUS_TORRENT.value,
+                DownloadService.LIBGENPLUS.value,
+                DownloadService.LIBGENPLUS_TORRENT.value,
             ]
 
             if Settings().sv.flaresolverr_base_url:
-                download_sources.append(DownloadSource.ANNAS_ARCHIVE.value)
+                download_sources.append(DownloadService.ANNAS_ARCHIVE.value)
 
             results.append(
                 SearchResultData(
@@ -264,12 +264,12 @@ class SearchLibgenPlus(SearchSource):
         efd = extract_filename_data(filepath=filename)
 
         download_sources = [
-            DownloadSource.LIBGENPLUS.value,
-            DownloadSource.LIBGENPLUS_TORRENT.value,
+            DownloadService.LIBGENPLUS.value,
+            DownloadService.LIBGENPLUS_TORRENT.value,
         ]
 
         if settings.flaresolverr_base_url:
-            download_sources.append(DownloadSource.ANNAS_ARCHIVE.value)
+            download_sources.append(DownloadService.ANNAS_ARCHIVE.value)
 
         return SearchResultData(
             series=issue.series.title or "" if issue else efd["series"],

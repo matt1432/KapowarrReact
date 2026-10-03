@@ -14,13 +14,13 @@ from bencoding import bencode
 from bs4 import BeautifulSoup, Tag
 
 from backend.base.custom_exceptions import (
-    DownloadLimitReached,
     DownloadLinkBroken,
+    DownloadServiceRateLimitReached,
     EnqueuingDownloadFailure,
     IssueNotFound,
 )
 from backend.base.definitions import (
-    GC_DOWNLOAD_SOURCE_TERMS,
+    GC_DOWNLOAD_SERVICE_TERMS,
     BlocklistReason,
     Constants,
     Download,
@@ -28,7 +28,7 @@ from backend.base.definitions import (
     DownloadGroup,
     DownloadType,
     EnqueuingDownloadFailureReason,
-    GCDownloadSource,
+    GCDownloadService,
     SearchResultData,
     SpecialVersion,
 )
@@ -147,7 +147,7 @@ def _get_title(soup: BeautifulSoup) -> str | None:
 
 def __check_download_link(
     link_text: str, link: str, torrent_client_available: bool
-) -> GCDownloadSource | None:
+) -> GCDownloadService | None:
     """Check if download link is supported and allowed.
 
     Args:
@@ -156,7 +156,7 @@ def __check_download_link(
         torrent_client_available (bool): Whether a torrent client is available.
 
     Returns:
-        Union[GCDownloadSource, None]: Either the GC service that the button
+        Union[GCDownloadService, None]: Either the GC service that the button
         is for or `None` if it's not allowed/unknown.
     """
     LOGGER.debug(f"Checking download link: {link}, {link_text}")
@@ -174,17 +174,17 @@ def __check_download_link(
     if link.startswith(("https://sh.st/", "https://torrentgalaxy.to/")):
         return None
 
-    # Check if link is from supported source
-    for source, versions in GC_DOWNLOAD_SOURCE_TERMS.items():
+    # Check if link is from supported service
+    for service, versions in GC_DOWNLOAD_SERVICE_TERMS.items():
         if any(s in link_text for s in versions):
             LOGGER.debug(
-                f"Checking download link: {link_text} maps to {source.value}"
+                f"Checking download link: {link_text} maps to {service.value}"
             )
 
-            if "torrent" in source.value and not torrent_client_available:
+            if "torrent" in service.value and not torrent_client_available:
                 return None
 
-            return source
+            return service
 
     return None
 
@@ -380,8 +380,8 @@ def _get_download_groups(soup: BeautifulSoup) -> list[DownloadGroup]:
     settings = Settings().sv
     service_preference = settings.service_preference
     avoid_gc_preference = service_preference.copy()
-    avoid_gc_preference.remove(GCDownloadSource.GETCOMICS)
-    avoid_gc_preference.append(GCDownloadSource.GETCOMICS)
+    avoid_gc_preference.remove(GCDownloadService.GETCOMICS)
+    avoid_gc_preference.append(GCDownloadService.GETCOMICS)
 
     for group in download_groups:
         group["links"] = {
@@ -517,13 +517,13 @@ def _create_link_paths(
 
 
 async def __purify_link(
-    source: GCDownloadSource, link: str
+    download_service: GCDownloadService, link: str
 ) -> tuple[str, DownloadClientIdentifier]:
     """Extract the link that directly leads to the download from the link
     in the GC article.
 
     Args:
-        source (GCDownloadSource): The service that the link is of.
+        download_service (GCDownloadService): The service that the link is of.
         link (str): The link in the GC article.
 
     Raises:
@@ -535,8 +535,9 @@ async def __purify_link(
             of the download class for the service.
     """
     LOGGER.debug(f"Purifying link: {link}")
-    if source == GCDownloadSource.GETCOMICS_TORRENT and link.startswith(
-        "magnet:?"
+    if (
+        download_service == GCDownloadService.GETCOMICS_TORRENT
+        and link.startswith("magnet:?")
     ):
         # Direct magnet link
         return link, DownloadClientIdentifier.TORRENT
@@ -548,7 +549,7 @@ async def __purify_link(
     url = str(r.real_url)
     content_type = r.headers.getone("Content-Type", "")
 
-    if source == GCDownloadSource.MEGA:
+    if download_service == GCDownloadService.MEGA:
         if "#F!" in url or "/folder/" in url:
             # Folder download
             return url, DownloadClientIdentifier.MEGA_FOLDER
@@ -556,7 +557,7 @@ async def __purify_link(
         # Normal file download
         return url, DownloadClientIdentifier.MEGA
 
-    elif source == GCDownloadSource.MEDIAFIRE:
+    elif download_service == GCDownloadService.MEDIAFIRE:
         if "error.php" in url:
             # Link is broken
             raise DownloadLinkBroken(link)
@@ -572,10 +573,10 @@ async def __purify_link(
         # Normal file download
         return url, DownloadClientIdentifier.MEDIAFIRE
 
-    elif source == GCDownloadSource.WETRANSFER:
+    elif download_service == GCDownloadService.WETRANSFER:
         return url, DownloadClientIdentifier.WETRANSFER
 
-    elif source == GCDownloadSource.PIXELDRAIN:
+    elif download_service == GCDownloadService.PIXELDRAIN:
         if "/l/" in url:
             # Folder download
             return url, DownloadClientIdentifier.PIXELDRAIN_FOLDER
@@ -584,7 +585,7 @@ async def __purify_link(
         return url, DownloadClientIdentifier.PIXELDRAIN
 
     elif (
-        source == GCDownloadSource.GETCOMICS_TORRENT
+        download_service == GCDownloadService.GETCOMICS_TORRENT
         and content_type == "application/x-bittorrent"
     ):
         # Link is to torrent file
@@ -634,10 +635,10 @@ async def __purify_download_group(
         limit of a service was reached.
     """
     limit_reached = False
-    for source, links in group["links"].items():
+    for service, links in group["links"].items():
         for link in iter_commit(links):
             try:
-                pure_link, identifier = await __purify_link(source, link)
+                pure_link, identifier = await __purify_link(service, link)
 
             except DownloadLinkBroken:
                 # Link broken
@@ -646,7 +647,7 @@ async def __purify_download_group(
                     web_title=web_title,
                     web_sub_title=group["web_sub_title"],
                     download_link=link,
-                    source=source,
+                    download_service=service,
                     volume_id=volume_id,
                     issue_id=issue_id,
                     reason=BlocklistReason.LINK_BROKEN,
@@ -662,8 +663,8 @@ async def __purify_download_group(
                     download_link=pure_link,
                     volume_id=volume_id,
                     covered_issues=group["info"]["issue_number"],
-                    source_type=source,
-                    source_name=source.value,
+                    download_service=service,
+                    source_name=service.value,
                     web_link=web_link,
                     web_title=web_title,
                     web_sub_title=group["web_sub_title"],
@@ -677,7 +678,7 @@ async def __purify_download_group(
                     web_title=web_title,
                     web_sub_title=group["web_sub_title"],
                     download_link=pure_link,
-                    source=source,
+                    download_service=service,
                     volume_id=volume_id,
                     issue_id=issue_id,
                     reason=BlocklistReason.LINK_BROKEN,
@@ -688,7 +689,7 @@ async def __purify_download_group(
                 # volume, and download is not forced.
                 return None, False
 
-            except DownloadLimitReached:
+            except DownloadServiceRateLimitReached:
                 # Link works but the download limit for the service is
                 # reached
                 limit_reached = True
@@ -770,7 +771,7 @@ async def _test_paths(
                 selected_source = edits.get("selected_source", None)
                 if (
                     selected_source is not None
-                    and selected_source != download.source_type.value
+                    and selected_source != download.download_service.value
                 ):
                     continue
             else:
@@ -784,7 +785,7 @@ async def _test_paths(
                     download_link=download.download_link,
                     volume_id=download.volume_id,
                     covered_issues=edits.get("issue_number", None),
-                    source_type=download.source_type,
+                    download_service=download.download_service,
                     source_name=download.source_name,
                     web_link=download.web_link,
                     web_title=download.web_title,
@@ -925,7 +926,7 @@ async def search_getcomics(
                                 web_sub_title=group["web_sub_title"],
                                 download_sources=[
                                     s.value
-                                    for s in GCDownloadSource._member_map_.values()
+                                    for s in GCDownloadService._member_map_.values()
                                 ],
                                 selected_source=None,
                                 notes=None,
@@ -959,7 +960,7 @@ async def search_getcomics(
                     md5=None,
                     web_sub_title=None,
                     download_sources=[
-                        s.value for s in GCDownloadSource._member_map_.values()
+                        s.value for s in GCDownloadService._member_map_.values()
                     ],
                     selected_source=None,
                     notes=None,

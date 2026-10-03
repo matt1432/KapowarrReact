@@ -28,7 +28,7 @@ from backend.base.definitions import (
     Constants,
     DateType,
     FileDate,
-    GCDownloadSource,
+    GCDownloadService,
     OSType,
     ProxyType,
     SeedingHandling,
@@ -153,7 +153,7 @@ class PublicSettingsValues:
 
     service_preference: CommaList = field(
         default_factory=lambda: CommaList(
-            s.value for s in GCDownloadSource._member_map_.values()
+            s.value for s in GCDownloadService._member_map_.values()
         )
     )
     avoid_large_gc_downloads: bool = False
@@ -594,7 +594,7 @@ class Settings(metaclass=Singleton):
 
         elif key == "service_preference":
             available = [
-                s.value for s in GCDownloadSource._member_map_.values()
+                s.value for s in GCDownloadService._member_map_.values()
             ]
 
             for entry in value:

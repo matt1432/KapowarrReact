@@ -1998,7 +1998,7 @@
     "SelectVolume": "Select Volume",
     "SendAnonymousUsageData": "Send Anonymous Usage Data",
     "ServicePreference": "Service Preference",
-    "ServicePreferenceInfo": "The preference for the services to download from when using GetComics as the source",
+    "ServicePreferenceInfo": "The preference for services to download from when using GetComics as the source",
     "Volume": "Volume",
     "Volumes": "Volumes",
     "VolumeAndIssueInformationIsProvidedByTheTVDB": "Volume and issue information is provided by TheTVDB.com. [Please consider supporting them]({url}) .",

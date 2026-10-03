@@ -11,7 +11,7 @@ export interface RawQueueItem {
     web_sub_title: string | null;
     download_link: string;
     pure_link: string;
-    source_type: string;
+    download_service: string;
     source_name: string;
     type: string;
     file: string;
@@ -49,7 +49,7 @@ export interface RawBlocklistItem {
     web_sub_title: string | null;
 
     download_link: string | null;
-    source: string | null;
+    download_service: string | null;
 
     reason: string;
     added_at: number;

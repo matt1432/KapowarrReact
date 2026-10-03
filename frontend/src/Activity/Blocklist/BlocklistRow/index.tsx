@@ -43,7 +43,7 @@ export default function BlocklistRow({
     columns,
     columnWidth,
     id,
-    source,
+    downloadService,
     volumeId,
     issueId,
     downloadLink,
@@ -93,7 +93,7 @@ export default function BlocklistRow({
                 if (name === 'source') {
                     return (
                         <TableRowCell key={name} className={styles[name]}>
-                            {source}
+                            {downloadService}
                         </TableRowCell>
                     );
                 }

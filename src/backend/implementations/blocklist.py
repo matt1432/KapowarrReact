@@ -5,8 +5,8 @@ from backend.base.definitions import (
     BlocklistEntry,
     BlocklistReason,
     BlocklistReasonID,
-    DownloadSource,
-    GCDownloadSource,
+    DownloadService,
+    GCDownloadService,
 )
 from backend.base.logging import LOGGER
 from backend.internals.db import get_db
@@ -32,7 +32,7 @@ def get_blocklist(offset: int = 0) -> list[BlocklistEntry]:
                 SELECT
                     id, volume_id, issue_id,
                     web_link, web_title, web_sub_title,
-                    download_link, source,
+                    download_link, source AS download_service,
                     reason, added_at
                 FROM blocklist
                 ORDER BY id DESC
@@ -91,7 +91,7 @@ def get_blocklist_entry(id: int) -> BlocklistEntry:
                 SELECT
                     id, volume_id, issue_id,
                     web_link, web_title, web_sub_title,
-                    download_link, source,
+                    download_link, source AS download_service,
                     reason, added_at
                 FROM blocklist
                 WHERE id = ?
@@ -146,7 +146,7 @@ def add_to_blocklist(
     web_title: str | None,
     web_sub_title: str | None,
     download_link: str | None,
-    source: DownloadSource | GCDownloadSource | None,
+    download_service: DownloadService | GCDownloadService | None,
     volume_id: int,
     issue_id: int | None,
     reason: BlocklistReason,
@@ -164,8 +164,8 @@ def add_to_blocklist(
         download_link (str): The link to block. Give `None` to block the whole
         GC page (`web_link`).
 
-        source (Union[DownloadSource, GCDownloadSource, None]): The source of
-        the download.
+        download_service (Union[DownloadService, GCDownloadService, None]): The
+        service of the download.
 
         volume_id (int): The ID of the volume for which this link is
         blocklisted.
@@ -198,7 +198,9 @@ def add_to_blocklist(
     )
 
     reason_id = BlocklistReasonID[reason.name].value
-    source_value = source.value if source is not None else None
+    service_value = (
+        download_service.value if download_service is not None else None
+    )
     id = (
         get_db()
         .execute(
@@ -223,7 +225,7 @@ def add_to_blocklist(
                 "web_title": web_title,
                 "web_sub_title": web_sub_title,
                 "download_link": download_link,
-                "source": source_value,
+                "source": service_value,
                 "reason": reason_id,
                 "added_at": round(time()),
             },

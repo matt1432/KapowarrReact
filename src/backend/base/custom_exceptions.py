@@ -7,7 +7,7 @@ from typing import Any
 from backend.base.definitions import (
     ApiResponse,
     BrokenClientReason,
-    DownloadSource,
+    DownloadService,
     EnqueuingDownloadFailureReason,
     KapowarrException,
 )
@@ -424,14 +424,14 @@ class EnqueuingDownloadFailure(KapowarrException):
         }
 
 
-class DownloadLimitReached(KapowarrException):
-    "The download limit of the source is reached"
+class DownloadServiceRateLimitReached(KapowarrException):
+    "The rate limit of the download service is reached"
 
-    def __init__(self, source: DownloadSource) -> None:
-        self.source = source
-        self.source_text = source.value
+    def __init__(self, service: DownloadService) -> None:
+        self.service = service
+        self.service_text = service.value
         LOGGER.warning(
-            f"Download source {self.source_text} has reached its download limit"
+            f"Download service {self.service_text} has reached its download limit"
         )
         return
 
@@ -440,7 +440,7 @@ class DownloadLimitReached(KapowarrException):
         return {
             "code": 509,
             "error": self.__class__.__name__,
-            "result": {"source": self.source.value},
+            "result": {"service": self.service.value},
         }
 
 

@@ -10,14 +10,14 @@ from urllib.parse import unquote_plus
 from requests import RequestException
 
 from backend.base.custom_exceptions import (
-    DownloadLimitReached,
     DownloadLinkBroken,
+    DownloadServiceRateLimitReached,
     IssueNotFound,
 )
 from backend.base.definitions import (
     Constants,
     Download,
-    DownloadSource,
+    DownloadService,
     DownloadState,
     FileExtraInfo,
 )
@@ -88,8 +88,8 @@ class BaseDirectDownload(Download):
         return self._pure_link
 
     @property
-    def source_type(self) -> DownloadSource:
-        return self._source_type
+    def download_service(self) -> DownloadService:
+        return self._download_service
 
     @property
     def source_name(self) -> str:
@@ -174,7 +174,7 @@ class BaseDirectDownload(Download):
         download_link: str,
         volume_id: int,
         covered_issues: float | tuple[float, float] | None,
-        source_type: DownloadSource,
+        download_service: DownloadService,
         source_name: str,
         web_link: str | None,
         web_title: str | None,
@@ -196,7 +196,7 @@ class BaseDirectDownload(Download):
         self._volume_id = volume_id
         self._issue_id = None
         self._covered_issues = covered_issues
-        self._source_type = source_type
+        self._download_service = download_service
         self._source_name = source_name
         self._web_link = web_link
         self._web_title = web_title
@@ -234,7 +234,9 @@ class BaseDirectDownload(Download):
                 and e.response.status_code == 403
             ):
                 # Pixeldrain rate limit because of hotlinking
-                raise DownloadLimitReached(DownloadSource.PIXELDRAIN)
+                raise DownloadServiceRateLimitReached(
+                    DownloadService.PIXELDRAIN
+                )
 
             raise DownloadLinkBroken(download_link)
 
@@ -424,7 +426,7 @@ class BaseDirectDownload(Download):
             "web_sub_title": self._web_sub_title,
             "download_link": self._download_link,
             "pure_link": self._pure_link,
-            "source_type": self._source_type.value,
+            "download_service": self._download_service.value,
             "source_name": self._source_name,
             "type": self.identifier.value,
             "file": self._files[0],

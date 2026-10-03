@@ -14,7 +14,7 @@ from backend.base.custom_exceptions import (
 )
 from backend.base.definitions import (
     DownloadClientIdentifier,
-    DownloadSource,
+    DownloadService,
     DownloadState,
     DownloadType,
     ExternalDownload,
@@ -65,7 +65,7 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         download_link: str,
         volume_id: int,
         covered_issues: float | tuple[float, float] | None,
-        source_type: DownloadSource,
+        download_service: DownloadService,
         source_name: str,
         web_link: str | None,
         web_title: str | None,
@@ -90,7 +90,7 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         self._volume_id = volume_id
         self._issue_id = None
         self._covered_issues = covered_issues
-        self._source_type = source_type
+        self._download_service = download_service
         self._source_name = source_name
         self._web_link = web_link
         self._web_title = web_title

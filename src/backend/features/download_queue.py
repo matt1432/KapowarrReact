@@ -10,10 +10,10 @@ from libgencomics import get_annas_archive_download
 
 from backend.base.custom_exceptions import (
     ClientNotWorking,
-    DownloadLimitReached,
     DownloadLinkBroken,
     DownloadQueueEntryNotFound,
     DownloadQueueEntryUnmovable,
+    DownloadServiceRateLimitReached,
     EnqueuingDownloadFailure,
     InvalidKeyValue,
     IssueNotFound,
@@ -23,7 +23,7 @@ from backend.base.definitions import (
     Constants,
     Download,
     DownloadClientIdentifier,
-    DownloadSource,
+    DownloadService,
     DownloadState,
     EnqueuingDownloadFailureReason,
     ExternalDownload,
@@ -93,9 +93,9 @@ class DownloadHandler(metaclass=Singleton):
         try:
             download.run()
 
-        except DownloadLimitReached as e:
+        except DownloadServiceRateLimitReached as e:
             download.stop(DownloadState.FAILED_STATE)
-            if e.source == DownloadSource.MEGA and download.id is not None:
+            if e.service == DownloadService.MEGA and download.id is not None:
                 self._remove_mega(exclude_id=download.id)
 
         ws.emit(status_event)
@@ -218,7 +218,10 @@ class DownloadHandler(metaclass=Singleton):
             if not isinstance(download, ExternalDownload):
                 if download.state == DownloadState.DOWNLOADING_STATE:
                     active_downloads += 1
-                    if download.source_type == DownloadSource.ANNAS_ARCHIVE:
+                    if (
+                        download.download_service
+                        == DownloadService.ANNAS_ARCHIVE
+                    ):
                         has_annas_running = True
 
                 elif (
@@ -228,7 +231,10 @@ class DownloadHandler(metaclass=Singleton):
                     if download.download_thread is not None:
                         download.download_thread.start()
                     active_downloads += 1
-                    if download.source_type == DownloadSource.ANNAS_ARCHIVE:
+                    if (
+                        download.download_service
+                        == DownloadService.ANNAS_ARCHIVE
+                    ):
                         has_annas_running = True
 
                 if active_downloads >= max_downloads:
@@ -324,7 +330,7 @@ class DownloadHandler(metaclass=Singleton):
                         "download_link": download.download_link,
                         "covered_issues": covered_issues,
                         "force_original_name": forced_match,
-                        "source_type": download.source_type.value,
+                        "source_type": download.download_service.value,
                         "source_name": download.source_name,
                         "web_link": download.web_link,
                         "web_title": download.web_title,
@@ -452,7 +458,7 @@ class DownloadHandler(metaclass=Singleton):
                 download_link=download_link,
                 volume_id=volume_id,
                 covered_issues=result.get("issue_number", None),
-                source_type=DownloadSource.ANNAS_ARCHIVE,
+                download_service=DownloadService.ANNAS_ARCHIVE,
                 source_name="Anna's Archive",
                 web_link=link,
                 web_title=None,
@@ -509,7 +515,7 @@ class DownloadHandler(metaclass=Singleton):
             if (
                 result["comics_id"] is not None
                 and result["selected_source"]
-                == DownloadSource.LIBGENPLUS_TORRENT.value
+                == DownloadService.LIBGENPLUS_TORRENT.value
             ):
                 torrent_name = str(int(int(result["comics_id"]) / 1000) * 1000)
                 torrent_link = f"{Constants.LIBGEN_SITE_URL}/torrents/comics/c_{torrent_name}.torrent"
@@ -525,7 +531,7 @@ class DownloadHandler(metaclass=Singleton):
                         download_link=torrent_link,
                         volume_id=volume_id,
                         covered_issues=result.get("issue_number", None),
-                        source_type=DownloadSource.LIBGENPLUS,
+                        download_service=DownloadService.LIBGENPLUS,
                         source_name="Libgen+",
                         web_link=link,
                         web_title=None,
@@ -542,7 +548,7 @@ class DownloadHandler(metaclass=Singleton):
                     )
                 )
             elif (
-                result["selected_source"] == DownloadSource.ANNAS_ARCHIVE.value
+                result["selected_source"] == DownloadService.ANNAS_ARCHIVE.value
             ):
                 while True:
                     if self.has_annas_running:
@@ -572,7 +578,7 @@ class DownloadHandler(metaclass=Singleton):
                         download_link=download_link,
                         volume_id=volume_id,
                         covered_issues=result.get("issue_number", None),
-                        source_type=DownloadSource.LIBGENPLUS,
+                        download_service=DownloadService.LIBGENPLUS,
                         source_name="Libgen+",
                         web_link=link,
                         web_title=None,
@@ -605,7 +611,7 @@ class DownloadHandler(metaclass=Singleton):
                         web_title=None,
                         web_sub_title=None,
                         download_link=None,
-                        source=None,
+                        download_service=None,
                         volume_id=volume_id,
                         issue_id=issue_id,
                         reason=BlocklistReason.LINK_BROKEN,
@@ -627,7 +633,7 @@ class DownloadHandler(metaclass=Singleton):
                         web_title=gcp.title,
                         web_sub_title=None,
                         download_link=None,
-                        source=None,
+                        download_service=None,
                         volume_id=volume_id,
                         issue_id=issue_id,
                         reason=BlocklistReason.NO_WORKING_LINKS,
@@ -692,7 +698,9 @@ class DownloadHandler(metaclass=Singleton):
                         volume_id=download["volume_id"],
                         covered_issues=covered_issues,
                         # FIXME: doesn't work when it's Anna's?
-                        source_type=DownloadSource(download["source_type"]),
+                        download_service=DownloadService(
+                            download["source_type"]
+                        ),
                         source_name=download["source_name"],
                         web_link=download["web_link"],
                         web_title=download["web_title"],
@@ -712,7 +720,9 @@ class DownloadHandler(metaclass=Singleton):
                         download_link=download["download_link"],
                         volume_id=download["volume_id"],
                         covered_issues=covered_issues,
-                        source_type=DownloadSource(download["source_type"]),
+                        download_service=DownloadService(
+                            download["source_type"]
+                        ),
                         source_name=download["source_name"],
                         web_link=download["web_link"],
                         web_title=download["web_title"],
@@ -739,7 +749,7 @@ class DownloadHandler(metaclass=Singleton):
                     web_title=download["web_title"],
                     web_sub_title=download["web_sub_title"],
                     download_link=download["download_link"],
-                    source=DownloadSource(download["source"]),
+                    download_service=DownloadService(download["source_type"]),
                     volume_id=download["volume_id"],
                     issue_id=issue_id,
                     reason=BlocklistReason.LINK_BROKEN,
@@ -750,7 +760,11 @@ class DownloadHandler(metaclass=Singleton):
                 )
                 continue
 
-            except (DownloadLimitReached, IssueNotFound, ClientNotWorking):
+            except (
+                DownloadServiceRateLimitReached,
+                IssueNotFound,
+                ClientNotWorking,
+            ):
                 cursor.execute(
                     "DELETE FROM download_queue WHERE id = ?;",
                     (download["id"],),
@@ -827,7 +841,7 @@ class DownloadHandler(metaclass=Singleton):
                 web_title=download.web_title,
                 web_sub_title=download.web_sub_title,
                 download_link=download.download_link,
-                source=download.source_type,
+                download_service=download.download_service,
                 volume_id=download.volume_id,
                 issue_id=download.issue_id,
                 reason=BlocklistReason.ADDED_BY_USER,

@@ -583,8 +583,8 @@ class ExternalClientField(BaseEnum):
     API_TOKEN = "api_token"
 
 
-class GCDownloadSource(BaseEnum):
-    "Download sources offered on a GetComics webpage"
+class GCDownloadService(BaseEnum):
+    "Download services/protocols offered on a GetComics webpage"
 
     MEGA = "Mega"
     MEDIAFIRE = "MediaFire"
@@ -625,22 +625,22 @@ class DownloadState(BaseEnum):
     "Download was stopped because Kapowarr is shutting down"
 
 
-GC_DOWNLOAD_SOURCE_TERMS = {
-    GCDownloadSource.MEGA: ("mega", "mega link"),
-    GCDownloadSource.MEDIAFIRE: ("mediafire", "mediafire link"),
-    GCDownloadSource.WETRANSFER: (
+GC_DOWNLOAD_SERVICE_TERMS = {
+    GCDownloadService.MEGA: ("mega", "mega link"),
+    GCDownloadService.MEDIAFIRE: ("mediafire", "mediafire link"),
+    GCDownloadService.WETRANSFER: (
         "wetransfer",
         "we transfer",
         "wetransfer link",
         "we transfer link",
     ),
-    GCDownloadSource.PIXELDRAIN: (
+    GCDownloadService.PIXELDRAIN: (
         "pixeldrain",
         "pixel drain",
         "pixeldrain link",
         "pixel drain link",
     ),
-    GCDownloadSource.GETCOMICS: (
+    GCDownloadService.GETCOMICS: (
         "getcomics",
         "download now",
         "main download",
@@ -652,7 +652,7 @@ GC_DOWNLOAD_SOURCE_TERMS = {
         "link 1",
         "link 2",
     ),
-    GCDownloadSource.GETCOMICS_TORRENT: (
+    GCDownloadService.GETCOMICS_TORRENT: (
         "getcomics (torrent)",
         "torrent",
         "torrent link",
@@ -661,18 +661,18 @@ GC_DOWNLOAD_SOURCE_TERMS = {
     ),
 }
 """
-GCDownloadSource to strings that can be found in the button text for the
+GCDownloadService to strings that can be found in the button text for the
 service on the GC page
 """
 
 
-# Future proofing. In the future, there'll be sources like 'torrent' and
-# 'usenet'. In part of the code, we want access to all download sources,
+# Future proofing. In the future, there'll be services like 'torrent' and
+# 'usenet'. In part of the code, we want access to all download services,
 # and in the other part we only want the GC services. So in preparation
-# of the torrent and usenet sources coming, we're already making the
+# of the torrent and usenet services coming, we're already making the
 # distinction here.
-class DownloadSource(BaseEnum):
-    "All possible download sources"
+class DownloadService(BaseEnum):
+    "All possible download services/protocols"
 
     MEGA = "Mega"
     MEDIAFIRE = "MediaFire"
@@ -839,7 +839,7 @@ class DownloadGroup(TypedDict):
     web_sub_title: str
     size: int
     info: FilenameData
-    links: dict[GCDownloadSource, list[str]]
+    links: dict[GCDownloadService, list[str]]
 
 
 class ExternalDownloadClientData(TypedDict):
@@ -897,7 +897,7 @@ class BlocklistEntry:
     web_sub_title: str | None
 
     download_link: str | None
-    source: str | None
+    download_service: str | None
 
     reason: BlocklistReason
     added_at: int
@@ -1471,13 +1471,13 @@ class Download(ABC):
 
     @property
     @abstractmethod
-    def source_type(self) -> DownloadSource: ...
+    def download_service(self) -> DownloadService: ...
 
     @property
     @abstractmethod
     def source_name(self) -> str:
         """
-        The display name of the source. E.g. `source_type` is torrent,
+        The display name of the source. E.g. `download_service` is torrent,
         so `source_name` is indexer name.
         """
         ...
@@ -1569,7 +1569,7 @@ class Download(ABC):
         download_link: str,
         volume_id: int,
         covered_issues: float | tuple[float, float] | None,
-        source_type: DownloadSource | GCDownloadSource,
+        download_service: DownloadService | GCDownloadService,
         source_name: str,
         web_link: str | None,
         web_title: str | None,
@@ -1592,7 +1592,7 @@ class Download(ABC):
             The calculated issue number (range) that the download covers,
             or None if download is for special version.
 
-            source_type (DownloadSource): The source type of the download.
+            download_service (DownloadService): The service type of the download.
 
             source_name (str): The display name of the source.
             E.g. indexer name.
@@ -1617,7 +1617,7 @@ class Download(ABC):
 
             DownloadLinkBroken: The link doesn't work.
 
-            DownloadLimitReached: Can't download because the limit of the service
+            DownloadServiceRateLimitReached: Can't download because the limit of the service
                 is reached.
         """
         ...
@@ -1630,8 +1630,8 @@ class Download(ABC):
         Raises:
             DownloadLinkBroken: The link doesn't work.
 
-            DownloadLimitReached: At the source that is downloaded from,
-            we've reached a rate limit.
+            DownloadServiceRateLimitReached: Can't download because the limit of the service
+                is reached.
         """
         ...
 
@@ -1698,7 +1698,7 @@ class ExternalDownload(Download):
         download_link: str,
         volume_id: int,
         covered_issues: float | tuple[float, float] | None,
-        source_type: DownloadSource,
+        download_service: DownloadService,
         source_name: str,
         web_link: str | None,
         web_title: str | None,
@@ -1723,7 +1723,7 @@ class ExternalDownload(Download):
             The calculated issue number (range) that the download covers,
             or None if download is for special version.
 
-            source_type (DownloadSource): The source type of the download.
+            download_service (DownloadService): The service type of the download.
 
             source_name (str): The display name of the source.
             E.g. indexer name.
@@ -1752,7 +1752,7 @@ class ExternalDownload(Download):
 
             DownloadLinkBroken: The link doesn't work.
 
-            DownloadLimitReached: Can't download because the limit of the service
+            DownloadServiceRateLimitReached: Can't download because the limit of the service
                 is reached.
         """
         ...
@@ -1769,8 +1769,8 @@ class ExternalDownload(Download):
 
             DownloadLinkBroken: The link doesn't work.
 
-            DownloadLimitReached: At the source that is downloaded from,
-                we've reached a rate limit.
+            DownloadServiceRateLimitReached: Can't download because the limit of the service
+                is reached.
         """
         ...
 
