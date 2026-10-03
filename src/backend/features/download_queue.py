@@ -11,8 +11,8 @@ from libgencomics import get_annas_archive_download
 from backend.base.custom_exceptions import (
     ClientNotWorking,
     DownloadLimitReached,
-    DownloadNotFound,
-    DownloadUnmovable,
+    DownloadQueueEntryNotFound,
+    DownloadQueueEntryUnmovable,
     EnqueuingDownloadFailure,
     InvalidKeyValue,
     IssueNotFound,
@@ -247,13 +247,14 @@ class DownloadHandler(metaclass=Singleton):
             index (int): The new index of the download.
 
         Raises:
-            DownloadNotFound: The ID doesn't map to any download in the queue.
+            DownloadQueueEntryNotFound: The ID doesn't map to any download in
+                the queue.
             DownloadUnmovable: The download is not allowed to be moved.
             InvalidKeyValue: The index is out of bounds.
         """
         download = self.get_one(download_id)
         if download.state != DownloadState.QUEUED_STATE:
-            raise DownloadUnmovable(download_id)
+            raise DownloadQueueEntryUnmovable(download_id)
 
         if index < 0 or index >= len(self.queue):
             raise InvalidKeyValue("index", index)
@@ -370,7 +371,8 @@ class DownloadHandler(metaclass=Singleton):
             download_id (int): The ID of the download to fetch.
 
         Raises:
-            DownloadNotFound: The ID doesn't map to any download in the queue.
+            DownloadQueueEntryNotFound: The ID doesn't map to any download in
+                the queue.
 
         Returns:
             Download: The queue entry.
@@ -378,7 +380,7 @@ class DownloadHandler(metaclass=Singleton):
         for entry in self.queue:
             if entry.id == download_id:
                 return entry
-        raise DownloadNotFound(download_id)
+        raise DownloadQueueEntryNotFound(download_id)
 
     # region Adding
     def __determine_link_type(self, link: str) -> str | None:
@@ -786,7 +788,8 @@ class DownloadHandler(metaclass=Singleton):
                 Defaults to False.
 
         Raises:
-            DownloadNotFound: The ID doesn't map to any download in the queue.
+            DownloadQueueEntryNotFound: The ID doesn't map to any download in
+                the queue.
         """
         LOGGER.info(
             f"Removing download with id {download_id}{' and adding to blocklist' if blocklist else ''}"

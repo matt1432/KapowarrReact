@@ -97,7 +97,7 @@
     "CredentialNotFound": "Credential with given ID not found",
     "CVRateLimitReached": "ComicVine API rate limit reached",
     "DownloadLogs": "Download Logs",
-    "DownloadNotFound": "Download with given ID not found",
+    "DownloadQueueEntryNotFound": "A download in the download queue with given ID not found",
     "ExternalClientNotFound": "External client with given ID not found",
     "ExternalClientNotWorking": "External client is not working",
     "ExternalWebsites": "External Websites",
