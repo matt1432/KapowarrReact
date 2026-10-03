@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from asyncio import gather, run, sleep
+import time
+from asyncio import run, sleep
 from collections.abc import Iterable
 from os import listdir
 from os.path import basename, join
@@ -655,10 +656,9 @@ class DownloadHandler(metaclass=Singleton):
     def add_multiple(
         self, add_args: Iterable[tuple[SearchResultData, int, int | None, bool]]
     ) -> None:
-        async def add_wrapper() -> None:
-            await gather(*(self.add(*entry) for entry in add_args))
-
-        run(add_wrapper())
+        for entry in add_args:
+            run(self.add(*entry))
+            time.sleep(1.0)
         return
 
     def __load_downloads(self) -> None:
