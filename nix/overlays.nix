@@ -68,6 +68,7 @@ in {
           waitress
           cryptography
           aiohttp
+          cron-converter
           flask-socketio
           websocket-client
           qbittorrent-api

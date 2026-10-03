@@ -15,6 +15,7 @@ from collections.abc import (
     Mapping,
     Sequence,
 )
+from datetime import datetime
 from functools import lru_cache
 from hashlib import pbkdf2_hmac
 from multiprocessing.pool import Pool
@@ -33,6 +34,7 @@ from urllib.parse import quote_plus, unquote
 
 from aiohttp import ClientError, ClientSession, ClientTimeout
 from bencoding import bdecode
+from cron_converter import Cron
 from multidict import CIMultiDict, CIMultiDictProxy
 from requests import RequestException
 from requests import Session as RSession
@@ -223,6 +225,20 @@ def get_torrent_info(torrent: bytes) -> dict[bytes, Any]:
         dict[bytes, Any]: The info.
     """
     return bdecode(torrent)[b"info"]  # pyright: ignore
+
+
+def get_schedules_next_run(cron_schedule: str) -> int:
+    """Return the next run timestamp from a cron schedule string.
+
+    Args:
+        cron_schedule (str): The cron schedule.
+
+    Returns:
+        int: The epoch timestamp of the next run.
+    """
+    return round(
+        Cron(cron_schedule).schedule(datetime.now()).next().timestamp()
+    )
 
 
 # region Sequences

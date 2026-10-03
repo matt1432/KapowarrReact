@@ -10,7 +10,7 @@ from backend.base.custom_exceptions import (
     TaskNotFound,
 )
 from backend.base.definitions import QueuedTaskData, SearchResultData, Task
-from backend.base.helpers import Singleton
+from backend.base.helpers import Singleton, get_schedules_next_run
 from backend.base.logging import LOGGER
 from backend.features.download_queue import DownloadHandler
 from backend.features.search import auto_search
@@ -31,6 +31,14 @@ if TYPE_CHECKING:
 
 
 # region Task Handler
+TASK_INTERVALS = {
+    # Note: If there are tasks that should be run at the same time,
+    #   but per se after each other, put them in that order in the dict.
+    "update_all": "0 * * * *",  # every hour at minute 0
+    "search_all": "0 0 * * *",  # every day at midnight
+}
+
+
 TaskType = TypeVar("TaskType", bound=Task)
 
 
@@ -193,7 +201,7 @@ class TaskHandler(metaclass=Singleton):
 
         cursor = get_db()
         interval_tasks = cursor.execute(
-            "SELECT task_name, interval, next_run FROM task_intervals;"
+            "SELECT task_name, schedule, next_run FROM task_intervals;"
         ).fetchall()
         LOGGER.debug(f"Task intervals: {list(map(dict, interval_tasks))}")
         for task in interval_tasks:
@@ -206,8 +214,8 @@ class TaskHandler(metaclass=Singleton):
                     inst = TaskClass()
                 self.add(inst)
 
-                # Update next_run
-                next_run = round(current_time + task["interval"])
+                # Update next_run from cron schedule
+                next_run = get_schedules_next_run(task["schedule"])
                 cursor.execute(
                     "UPDATE task_intervals SET next_run = ? WHERE task_name = ?;",
                     (next_run, task["task_name"]),
@@ -234,6 +242,38 @@ class TaskHandler(metaclass=Singleton):
             name="TaskIntervalThread",
         )
         self.task_interval_waiter.start()
+        return
+
+    def update_task_schedule(self, task_identifier: str, schedule: str) -> None:
+        """Update the cron schedule for a background task.
+
+        Args:
+            task_identifier (str): The identifier of the task to change it for.
+            schedule (str): The cron schedule to set.
+
+        Raises:
+            TaskNotFound: No task found with the given identifier.
+            InvalidKeyValue: Invalid cron schedule.
+        """
+        # Validate task exists
+        self.get_task_class(task_identifier)
+
+        # Validate schedule string
+        try:
+            next_run = get_schedules_next_run(schedule)
+        except ValueError:
+            raise InvalidKeyValue("schedule", schedule)
+
+        get_db().execute(
+            """
+            UPDATE task_intervals
+            SET schedule = ?, next_run = ?
+            WHERE task_name = ?;
+            """,
+            (schedule, next_run, task_identifier),
+        )
+
+        self.handle_intervals()
         return
 
     def stop_handle(self) -> None:
@@ -333,7 +373,7 @@ class TaskHandler(metaclass=Singleton):
         return
 
     def get_task_planning(self) -> list[dict[str, Any]]:
-        """Get the planning of each interval task (interval, next run and last run).
+        """Get the planning of each interval task (schdule, next run and last run).
 
         Returns:
             List[Dict[str, Any]]: List of interval tasks and their planning.
@@ -343,7 +383,7 @@ class TaskHandler(metaclass=Singleton):
             .execute(
                 """
             SELECT
-                i.task_name, interval, next_run, run_at AS last_run
+                i.task_name, schedule, next_run, run_at AS last_run
             FROM task_intervals i
             LEFT JOIN (
                 SELECT
@@ -362,6 +402,21 @@ class TaskHandler(metaclass=Singleton):
             t["display_name"] = self.tasks[t["task_name"]].display_title
 
         return tasks
+
+
+def insert_task_intervals() -> None:
+    "Fill the database table for task intervals"
+    get_db().executemany(
+        """
+        INSERT OR IGNORE INTO task_intervals
+        VALUES (?, ?, ?);
+        """,
+        (
+            (task_name, schedule, get_schedules_next_run(schedule))
+            for task_name, schedule in TASK_INTERVALS.items()
+        ),
+    )
+    return
 
 
 # region History
