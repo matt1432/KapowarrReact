@@ -11,7 +11,9 @@ import snakeify from 'Utilities/Object/snakeify';
 import type { CommandName } from 'Helpers/Props/commandNames';
 import type {
     AboutInfo,
+    DatabaseBackup,
     RawAboutInfo,
+    RawDatabaseBackup,
     RawStatusCheck,
     StatusCheck,
     StatusCheckType,
@@ -52,6 +54,18 @@ const extendedApi = baseApi.injectEndpoints({
                 camelize(response.result),
         }),
 
+        getBackups: build.query<DatabaseBackup[], void>({
+            query: () => ({
+                url: 'system/database/backups',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+
+            transformResponse: (response: { result: RawDatabaseBackup[] }) =>
+                camelize(response.result),
+        }),
+
         getTaskPlanning: build.query<TaskPlanning[], void>({
             query: () => ({
                 url: 'system/tasks/planning',
@@ -74,6 +88,44 @@ const extendedApi = baseApi.injectEndpoints({
 
             transformResponse: (response: { result: RawTaskHistory[] }) =>
                 camelize(response.result),
+        }),
+
+        // POST
+        importBackup: build.mutation<
+            void,
+            { index: number; copyHostingSettings: boolean }
+        >({
+            query: ({ index, ...body }) => ({
+                method: 'POST',
+                url: `system/database/backups/${index}`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+                body: snakeify(body),
+            }),
+        }),
+
+        uploadDatabase: build.mutation<
+            void,
+            { file: File; copyHostingSettings: boolean }
+        >({
+            query: ({ file, copyHostingSettings }) => {
+                const body = new FormData();
+                body.append('file', file);
+                body.append(
+                    'copy_hosting_settings',
+                    copyHostingSettings ? 'true' : 'false',
+                );
+
+                return {
+                    method: 'POST',
+                    url: 'system/database',
+                    params: {
+                        apiKey: window.Kapowarr.apiKey,
+                    },
+                    body,
+                };
+            },
         }),
 
         // PUT
@@ -119,6 +171,9 @@ export const {
     useClearStatusCheckMutation,
     useClearTaskHistoryMutation,
     useGetAboutInfoQuery,
+    useGetBackupsQuery,
+    useImportBackupMutation,
+    useUploadDatabaseMutation,
     useGetStatusChecksQuery,
     useGetTaskHistoryQuery,
     useGetTaskPlanningQuery,

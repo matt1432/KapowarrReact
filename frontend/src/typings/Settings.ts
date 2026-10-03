@@ -16,6 +16,8 @@ export interface RawSettingsValue {
     convert: boolean;
     create_empty_volume_folders: boolean;
     date_type: DateType;
+    db_backup_amount: number;
+    db_backup_folder: string;
     delete_completed_downloads: boolean;
     delete_empty_folders: boolean;
     download_folder: string;

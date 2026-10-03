@@ -290,6 +290,30 @@ export default function GeneralSettings() {
                         </FormGroup>
                     </FieldSet>
 
+                    <FieldSet legend={translate('DatabaseBackups')}>
+                        <FormGroup>
+                            <FormLabel>{translate('BackupFolder')}</FormLabel>
+                            <FormInputGroup
+                                type={inputTypes.TEXT}
+                                name="dbBackupFolder"
+                                onChange={handleInputChange}
+                                value={changes.dbBackupFolder}
+                            />
+                        </FormGroup>
+
+                        <FormGroup>
+                            <FormLabel>{translate('BackupCount')}</FormLabel>
+                            <FormInputGroup
+                                type={inputTypes.NUMBER}
+                                name="dbBackupAmount"
+                                helpText={translate('BackupCountHelpText')}
+                                min={0}
+                                onChange={handleNonNullInputChange}
+                                value={changes.dbBackupAmount}
+                            />
+                        </FormGroup>
+                    </FieldSet>
+
                     <FieldSet legend={translate('Logging')}>
                         <FormGroup>
                             <FormLabel>{translate('LogLevel')}</FormLabel>

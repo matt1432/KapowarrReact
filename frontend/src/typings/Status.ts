@@ -12,6 +12,15 @@ export interface RawAboutInfo {
 
 export type AboutInfo = CamelCasedProperties<RawAboutInfo>;
 
+export interface RawDatabaseBackup {
+    index: number;
+    creation_date: number;
+    filepath: string;
+    filename: string;
+}
+
+export type DatabaseBackup = CamelCasedProperties<RawDatabaseBackup>;
+
 export type StatusCheckType =
     | 'cv_rate_limit'
     | 'download_service_rate_limit'

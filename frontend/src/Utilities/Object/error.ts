@@ -2,6 +2,7 @@ import translate from 'Utilities/String/translate';
 import {
     translateBrokenClientReason,
     translateEnqueueFailureReason,
+    translateInvalidDatabaseReason,
 } from 'Utilities/String/translateReason';
 
 import type { ApiError, NonApiError, FetchError } from 'typings/Api';
@@ -34,6 +35,12 @@ export function getErrorMessage(
             typeof error.data.result.reason === 'string'
         ) {
             return translateBrokenClientReason(error.data.result.reason);
+        }
+        if (
+            error.data.error === 'InvalidDatabaseFile' &&
+            typeof error.data.result.reason === 'string'
+        ) {
+            return translateInvalidDatabaseReason(error.data.result.reason);
         }
         if (
             error.data.error === 'EnqueuingDownloadFailure' &&

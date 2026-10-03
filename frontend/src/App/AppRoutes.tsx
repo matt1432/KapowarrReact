@@ -24,6 +24,7 @@ import UISettings from 'Settings/UISettings';
 
 import Status from 'System/Status';
 import Tasks from 'System/Tasks';
+import Backups from 'System/Backups';
 
 import NotFound from 'Components/NotFound';
 
@@ -72,6 +73,7 @@ export default function AppRoutes() {
             <Route path="/system/status" element={<Status />} />
 
             <Route path="/system/tasks" element={<Tasks />} />
+            <Route path="/system/backups" element={<Backups />} />
 
             {/*Not Found*/}
             <Route path="*" element={<NotFound />} />

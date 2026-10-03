@@ -26,6 +26,11 @@ const enqueueFailureReasons: Record<string, TranslateKey> = {
     link_rate_limited: 'EnqueueFailureReasonLinkRateLimited',
 };
 
+const invalidDatabaseReasons: Record<string, TranslateKey> = {
+    not_kapowarr_db: 'InvalidDatabaseReasonNotKapowarrDb',
+    version_not_supported: 'InvalidDatabaseReasonVersionNotSupported',
+};
+
 function translateWith(map: Record<string, TranslateKey>, reason: string) {
     return reason in map ? translate(map[reason]) : reason;
 }
@@ -40,4 +45,8 @@ export function translateBrokenClientReason(reason: string) {
 
 export function translateEnqueueFailureReason(reason: string) {
     return translateWith(enqueueFailureReasons, reason);
+}
+
+export function translateInvalidDatabaseReason(reason: string) {
+    return translateWith(invalidDatabaseReasons, reason);
 }

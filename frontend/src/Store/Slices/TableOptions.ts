@@ -57,6 +57,8 @@ import interactiveSearch, {
     type InteractiveSearchColumnName,
 } from 'InteractiveSearch/columns';
 
+import backupsTable, { type BackupsColumnName } from 'System/Backups/columns';
+
 import statusChecks, {
     type StatusChecksColumnName,
 } from 'System/Status/Health/columns';
@@ -80,6 +82,7 @@ import interactiveImport, {
 } from 'InteractiveImport/Interactive/columns';
 
 export interface ColumnNameMap {
+    backupsTable: BackupsColumnName;
     blocklistTable: BlocklistColumnName;
     changeMatch: ChangeMatchColumnName;
     credentialTable: CredentialColumnName;
@@ -141,6 +144,7 @@ export type TableState<
 export interface TableOptionsState {
     sliceVersion: number;
 
+    backupsTable: TableState<'backupsTable'>;
     blocklistTable: TableState<'blocklistTable'>;
     changeMatch: TableState<'changeMatch'>;
     credentialTable: TableState<'credentialTable'>;
@@ -164,8 +168,9 @@ export interface TableOptionsState {
 // IMPLEMENTATIONS
 
 const initialState = {
-    sliceVersion: 8,
+    sliceVersion: 9,
 
+    backupsTable,
     blocklistTable,
     changeMatch,
     credentialTable,

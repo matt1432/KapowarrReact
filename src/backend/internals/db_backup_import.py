@@ -4,7 +4,7 @@ from datetime import datetime
 from os import remove
 from os.path import basename, dirname, exists, join
 from re import compile
-from sqlite3 import OperationalError
+from sqlite3 import DatabaseError, OperationalError
 
 from backend.base.custom_exceptions import (
     DatabaseFileNotFound,
@@ -179,7 +179,9 @@ def import_db(new_db_file: str, copy_hosting_settings: bool) -> None:
             ).exists()
             if not isinstance(database_version, int):
                 raise OperationalError
-        except OperationalError:
+        except DatabaseError:
+            # Also catches OperationalError, and covers files that aren't
+            # SQLite databases at all
             raise InvalidDatabaseFile(
                 new_db_file, InvalidDatabaseReason.NOT_KAPOWARR_DB
             )
