@@ -32,7 +32,7 @@ def get_blocklist(offset: int = 0) -> list[BlocklistEntry]:
                 SELECT
                     id, volume_id, issue_id,
                     web_link, web_title, web_sub_title,
-                    download_link, source AS download_service,
+                    download_link, download_service,
                     reason, added_at
                 FROM blocklist
                 ORDER BY id DESC
@@ -91,7 +91,7 @@ def get_blocklist_entry(id: int) -> BlocklistEntry:
                 SELECT
                     id, volume_id, issue_id,
                     web_link, web_title, web_sub_title,
-                    download_link, source AS download_service,
+                    download_link, download_service,
                     reason, added_at
                 FROM blocklist
                 WHERE id = ?
@@ -208,13 +208,13 @@ def add_to_blocklist(
                 INSERT INTO blocklist(
                     volume_id, issue_id,
                     web_link, web_title, web_sub_title,
-                    download_link, source,
+                    download_link, download_service,
                     reason, added_at
                 )
                 VALUES (
                     :volume_id, :issue_id,
                     :web_link, :web_title, :web_sub_title,
-                    :download_link, :source,
+                    :download_link, :download_service,
                     :reason, :added_at
                 );
             """,
@@ -225,7 +225,7 @@ def add_to_blocklist(
                 "web_title": web_title,
                 "web_sub_title": web_sub_title,
                 "download_link": download_link,
-                "source": service_value,
+                "download_service": service_value,
                 "reason": reason_id,
                 "added_at": round(time()),
             },
