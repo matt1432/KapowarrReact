@@ -186,8 +186,18 @@ export default function EditIndexerModalContent({
             downloadType,
             clientType,
             url: changes.url,
+            gcServicePreference: requiredTokens.includes(
+                'gc_service_preference',
+            )
+                ? changes.gcServicePreference
+                : null,
+            gcAvoidLargeDownloads: requiredTokens.includes(
+                'gc_avoid_large_downloads',
+            )
+                ? changes.gcAvoidLargeDownloads
+                : null,
         });
-    }, [changes.url, clientType, downloadType, testIndexer]);
+    }, [changes, clientType, downloadType, requiredTokens, testIndexer]);
 
     const handleSavePress = useCallback(async () => {
         setIsSaving(true);

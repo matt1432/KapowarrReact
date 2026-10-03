@@ -23,6 +23,8 @@ interface TestParams {
     downloadType: DownloadType;
     clientType: IndexerClientType;
     url: string;
+    gcServicePreference?: Nullable<GCDownloadSource[]>;
+    gcAvoidLargeDownloads?: Nullable<boolean>;
 }
 
 interface EditParams {

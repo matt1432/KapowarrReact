@@ -1,6 +1,7 @@
 import re
 from asyncio import run, sleep, to_thread
 from datetime import datetime
+from typing import Any
 
 from aiohttp import ClientError
 from bs4 import BeautifulSoup, Tag
@@ -324,6 +325,6 @@ class GetComicsIndexer(BaseIndexerClient):
         return
 
     @classmethod
-    def test(cls, url: str) -> None:
+    def test(cls, url: str, **extra_fields: Any) -> None:
         run(cls.__test(url))
         return

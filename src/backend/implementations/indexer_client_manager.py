@@ -33,17 +33,24 @@ ICF = IndexerClientField
 
 
 def _validate_indexer_data(
-    data: Mapping[str, Any], required_tokens: tuple[IndexerClientField, ...]
+    data: Mapping[str, Any],
+    required_tokens: tuple[IndexerClientField, ...],
+    enforce_existence: bool = True,
 ) -> dict[str, Any]:
-    filtered_data: dict[str, Any] = {}
-    for key in ICF._member_map_.values():
-        if key not in required_tokens:
-            # The value for the column in the database
-            filtered_data[key.value] = "" if key == ICF.URL else None
-            continue
-
+    filtered_data: dict[str, Any] = {
+        # The values for the database columns of the fields that the indexer
+        # doesn't use (e.g. Libgen+ doesn't use a URL or the GC fields)
+        key.value: "" if key == ICF.URL else None
+        for key in ICF._member_map_.values()
+        if key not in required_tokens
+    }
+    for key in required_tokens:
         if key.value not in data:
-            raise KeyNotFound(key.value)
+            if enforce_existence:
+                raise KeyNotFound(key.value)
+            else:
+                filtered_data[key.value] = None
+                continue
 
         value = data[key.value]
 
@@ -159,7 +166,7 @@ class BaseIndexerClient(IndexerClient):
         filtered_data = _validate_indexer_data(data, self.required_tokens)
 
         # Raises exception on fail
-        self.test(filtered_data[ICF.URL.value])
+        self.test(**filtered_data)
 
         get_db().execute(
             """
@@ -281,7 +288,11 @@ class IndexerClients:
 
     @classmethod
     def test(
-        cls, download_type: DownloadType, client_type: str, url: str
+        cls,
+        download_type: DownloadType,
+        client_type: str,
+        url: str,
+        **extra_fields: Any,
     ) -> ClientTestResult:
         """Test whether an indexer client is supported, working and available.
 
@@ -293,6 +304,9 @@ class IndexerClients:
                 they registered to this class.
 
             url (str): The url on which the indexer is available.
+
+            extra_fields (kwargs, optional): Extra fields and their values,
+                possibly used by the indexer during testing.
 
         Raises:
             InvalidKeyValue: One of the parameters has an invalid argument.
@@ -306,10 +320,18 @@ class IndexerClients:
             raise InvalidKeyValue("download_type", download_type)
 
         try:
-            type_clients[client_type].test(normalise_base_url(url))
-
+            ClientClass = type_clients[client_type]
         except KeyError:
             raise InvalidKeyValue("client_type", client_type)
+
+        filtered_data = _validate_indexer_data(
+            {"url": url, **extra_fields},
+            ClientClass.required_tokens,
+            enforce_existence=False,
+        )
+
+        try:
+            ClientClass.test(**filtered_data)
 
         except ClientNotWorking as e:
             return ClientTestResult(
@@ -410,7 +432,7 @@ class IndexerClients:
         )
 
         # Raises exception on fail
-        ClientClass.test(filtered_data["url"])
+        ClientClass.test(**filtered_data)
 
         filtered_data.update(
             {

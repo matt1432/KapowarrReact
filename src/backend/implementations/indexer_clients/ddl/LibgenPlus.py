@@ -310,6 +310,6 @@ class LibgenPlusIndexer(BaseIndexerClient):
         return
 
     @classmethod
-    def test(cls, url: str) -> None:
+    def test(cls, url: str, **extra_fields: Any) -> None:
         run(cls.__test())
         return

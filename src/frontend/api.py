@@ -28,6 +28,7 @@ from backend.base.definitions import (
     CredentialSource,
     DownloadService,
     DownloadType,
+    IndexerClientField,
     InvalidDatabaseReason,
     KapowarrException,
     LibraryFilter,
@@ -872,11 +873,7 @@ def api_indexers():
             for k in (
                 "download_type",
                 "client_type",
-                "enabled",
-                "title",
-                "url",
-                "gc_service_preference",
-                "gc_avoid_large_downloads",
+                *IndexerClientField._value2member_map_,
             )
         }
 
@@ -913,7 +910,22 @@ def api_indexers_options():
 @auth
 def api_indexers_test():
     data: dict = request.get_json()
-    data = {k: data.get(k) for k in ("download_type", "client_type", "url")}
+    data = {
+        k: data[k]
+        for k in (
+            "download_type",
+            "client_type",
+            *IndexerClientField._value2member_map_,
+        )
+        if k in data
+    }
+
+    if "download_type" not in data:
+        raise KeyNotFound("download_type")
+    if "client_type" not in data:
+        raise KeyNotFound("client_type")
+    if "url" not in data:
+        raise KeyNotFound("url")
 
     if not isinstance(data["download_type"], int):
         raise InvalidKeyValue("download_type", data["download_type"])
@@ -938,16 +950,7 @@ def api_indexer(id: int):
     elif request.method == "PUT":
         client = IndexerClients.get_client(id)
         data: dict = request.get_json()
-        data = {
-            k: data.get(k)
-            for k in (
-                "enabled",
-                "title",
-                "url",
-                "gc_service_preference",
-                "gc_avoid_large_downloads",
-            )
-        }
+        data = {k: data.get(k) for k in IndexerClientField._value2member_map_}
         client.update_indexer(data)
         return return_api(client.get_indexer_data())
 
