@@ -10,7 +10,7 @@ from backend.base.custom_exceptions import (
 from backend.base.definitions import MonitorScheme
 from backend.base.logging import LOGGER
 from backend.features.download_queue import DownloadHandler
-from backend.features.search import auto_search
+from backend.features.search_full import auto_search
 from backend.implementations.ad_removal import remove_ads
 from backend.implementations.conversion import mass_convert
 from backend.implementations.file_processing import (

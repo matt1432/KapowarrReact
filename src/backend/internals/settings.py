@@ -6,6 +6,7 @@ from logging import INFO
 from os import urandom
 from os.path import abspath, dirname, isdir, join, sep
 from secrets import token_bytes
+from time import time
 from typing import Any, TypedDict
 
 try:
@@ -201,6 +202,8 @@ class SettingsValues(PublicSettingsValues):
     added_kapowarr_react_columns: int = 0
 
     auth_salt: bytes = token_bytes()
+
+    last_rss_sync: int = round(time()) - 86400
 
     backup_host: str = "0.0.0.0"
     backup_port: int = 5656

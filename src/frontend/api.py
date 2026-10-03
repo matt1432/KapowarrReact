@@ -60,7 +60,7 @@ from backend.features.library_import import (
     propose_library_import,
 )
 from backend.features.mass_edit import MassEditorActionManager
-from backend.features.search import manual_search
+from backend.features.search_full import manual_search
 from backend.features.tasks import (
     TaskHandler,
     delete_task_history,

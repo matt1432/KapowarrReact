@@ -3,6 +3,7 @@ from typing import TypedDict
 
 from backend.base.definitions import (
     IndexerClient,
+    IssueData,
     MatchedSearchResultData,
     QueryBuilder,
     QueryResult,
@@ -485,6 +486,69 @@ def manual_search(
     return results
 
 
+def choose_downloads[SearchResultDataType: SearchResultData](
+    search_results: list[SearchResultDataType],
+    open_issues: list[tuple[int, float]],
+    volume_issues: list[IssueData],
+) -> list[SearchResultDataType]:
+    """Find a combination of non-overlapping search results that download
+    the most issues that aren't downloaded already.
+
+    Args:
+        search_results (List[SearchResultDataType]): The list of search results
+            that match to the volume.
+        open_issues (List[Tuple[int, float]]): The list of issues that aren't
+            downloaded already (issue id, calculated issue number).
+        volume_issues (List[IssueData]): All issues that the volume has, ordered
+            based on the calculated issue numbers.
+
+    Returns:
+        List[SearchResultDataType]: The selected search results to download.
+    """
+    chosen_downloads: list[SearchResultDataType] = []
+    searchable_issue_numbers = {i[1] for i in open_issues}
+
+    for search_result in search_results:
+        # Determine what issues the result covers
+        if search_result["special_version"]:
+            search_result["issue_number"] = 1.0
+            covered_issues = volume_issues
+
+        elif search_result["issue_number"] is not None:
+            if isinstance(search_result["issue_number"], tuple):
+                n_start, n_end = search_result["issue_number"]
+            else:
+                n_start, n_end = force_range(search_result["issue_number"])
+
+            covered_issues = [
+                issue
+                for issue in volume_issues
+                if n_start <= issue.calculated_issue_number <= n_end
+            ]
+
+        else:
+            continue
+
+        if any(
+            i.calculated_issue_number not in searchable_issue_numbers
+            for i in covered_issues
+        ):
+            # Part or all of what the result covers is already downloaded
+            continue
+
+        # Check that any other selected download doesn't already cover the issue
+        for part in chosen_downloads:
+            if check_overlapping_issues(
+                part["issue_number"],  # pyright: ignore
+                search_result["issue_number"],
+            ):
+                break
+        else:
+            chosen_downloads.append(search_result)
+
+    return chosen_downloads
+
+
 def auto_search(
     volume_id: int, issue_id: int | None = None
 ) -> list[MatchedSearchResultData]:
@@ -550,50 +614,13 @@ def auto_search(
 
     # We're searching for a volume, so we might download multiple search results.
     # Find a combination of search results that download the most issues.
-    chosen_downloads: list[MatchedSearchResultData] = []
-    searchable_issue_numbers = {i[1] for i in searchable_issues}
-    for result in search_results:
-        result = refine_special_version(volume_data, result)
-        if not Settings().sv.auto_search_torrents:
+    if not Settings().sv.auto_search_torrents:
+        for result in search_results:
             result["comics_id"] = None
 
-        # Determine what issues the result covers
-        if result["special_version"]:
-            result["issue_number"] = 1.0
-            covered_issues = volume_issues
-
-        elif result["issue_number"] is not None:
-            if isinstance(result["issue_number"], tuple):
-                n_start, n_end = result["issue_number"]
-
-            else:
-                n_start, n_end = force_range(result["issue_number"])
-
-            covered_issues = [
-                issue
-                for issue in volume_issues
-                if n_start <= issue.calculated_issue_number <= n_end
-            ]
-
-        else:
-            continue
-
-        if any(
-            i.calculated_issue_number not in searchable_issue_numbers
-            for i in covered_issues
-        ):
-            # Part or all of what the result covers is already downloaded
-            continue
-
-        # Check that any other selected download doesn't already cover the issue
-        for part in chosen_downloads:
-            if check_overlapping_issues(
-                part["issue_number"],  # pyright: ignore
-                result["issue_number"],
-            ):
-                break
-        else:
-            chosen_downloads.append(result)
+    chosen_downloads = choose_downloads(
+        search_results, searchable_issues, volume_issues
+    )
 
     LOGGER.debug("Auto search results: %s", chosen_downloads)
     return chosen_downloads

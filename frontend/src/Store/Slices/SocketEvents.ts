@@ -38,7 +38,6 @@ export interface SocketEventsState {
             }
         >
     >;
-    isSearchAllRunning: boolean;
     isUpdateAllRunning: boolean;
 }
 
@@ -61,7 +60,6 @@ const initialState = {
         Object.values(socketEvents).map((key) => [key, []]),
     ) as unknown as SocketEventsState['callbacks'],
     volumesStatus: {},
-    isSearchAllRunning: false,
     isUpdateAllRunning: false,
 } satisfies SocketEventsState as SocketEventsState;
 
@@ -75,13 +73,6 @@ const SocketEventsSlice = createSlice({
             if (!state.wasConnected && value) {
                 state.wasConnected = true;
             }
-        },
-
-        setIsSearchAllRunning: (
-            state,
-            { payload: value }: PayloadAction<boolean>,
-        ) => {
-            state.isSearchAllRunning = value;
         },
 
         setIsUpdateAllRunning: (
@@ -203,7 +194,6 @@ export const {
     editVolumeStatus,
     setIsConnected,
     setIsUpdateAllRunning,
-    setIsSearchAllRunning,
 } = SocketEventsSlice.actions;
 
 export const { getIssueStatus, getVolumeStatus } = SocketEventsSlice.selectors;

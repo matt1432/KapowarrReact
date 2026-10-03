@@ -11,7 +11,6 @@ import {
     editIssueStatus,
     editVolumeStatus,
     setIsConnected,
-    setIsSearchAllRunning,
     setIsUpdateAllRunning,
     setMassEditorState,
 } from 'Store/Slices/SocketEvents';
@@ -306,11 +305,6 @@ export default function SocketListener() {
                     break;
                 }
 
-                case commandNames.SEARCH_ALL: {
-                    dispatch(setIsSearchAllRunning(true));
-                    break;
-                }
-
                 case commandNames.UPDATE_ALL: {
                     dispatch(setIsUpdateAllRunning(true));
                     break;
@@ -434,13 +428,6 @@ export default function SocketListener() {
                             await refreshVolumeEndpoints(data.volumeId);
                         }
                     }
-                    break;
-                }
-
-                case commandNames.SEARCH_ALL: {
-                    await getAllVolumes();
-                    await getStats();
-                    dispatch(setIsSearchAllRunning(false));
                     break;
                 }
 
