@@ -19,7 +19,8 @@ export interface RawSearchResult {
 
     link: string;
     display_title: string;
-    source: 'GetComics' | 'Libgen+';
+    indexer_id: number;
+    indexer_title: string;
     filesize: number | null;
     pages: number | null;
 

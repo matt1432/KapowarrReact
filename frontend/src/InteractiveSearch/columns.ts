@@ -12,7 +12,7 @@ export type InteractiveSearchColumnName =
     | 'scanType'
     | 'resolution'
     | 'dpi'
-    | 'source'
+    | 'indexerTitle'
     | 'matchRejections'
     | 'actions';
 
@@ -84,7 +84,7 @@ export default {
             isVisible: true,
         },
         {
-            name: 'source',
+            name: 'indexerTitle',
             isModifiable: false,
             isSortable: true,
             isVisible: true,

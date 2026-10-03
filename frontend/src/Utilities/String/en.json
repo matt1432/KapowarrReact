@@ -8,6 +8,7 @@
     "totalSpace": "Total Space",
 
     "sourceKey": "Source",
+    "indexerTitleKey": "Indexer",
     "volumeIdKey": "Volume",
     "issueIdKey": "Issue",
     "downloadLinkKey": "Download Link",

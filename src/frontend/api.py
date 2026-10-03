@@ -163,7 +163,8 @@ def extract_key(
                 is_image_file=parse_bool("is_image_file") or False,
                 link=request.values.get("link", ""),
                 display_title=request.values.get("display_title", ""),
-                source=request.values.get("source", ""),
+                indexer_id=int(request.values["indexer_id"]),
+                indexer_title=request.values.get("indexer_title", ""),
                 filesize=parse_int("filesize"),
                 pages=parse_int("pages"),
                 releaser=request.values.get("releaser"),
@@ -180,7 +181,7 @@ def extract_key(
                 selected_source=request.values.get("selected_source", None),
             )
 
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, KeyError):
             raise InvalidKeyValue(key)
 
     value: Any = request.values.get(key)

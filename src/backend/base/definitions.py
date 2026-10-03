@@ -781,7 +781,8 @@ class SearchQuery(TypedDict):
 class SearchResultData(FilenameData):
     link: str
     display_title: str
-    source: str
+    indexer_id: int
+    indexer_title: str
     filesize: int | None
     pages: int | None
     extension: str | None

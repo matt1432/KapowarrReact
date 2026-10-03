@@ -137,7 +137,8 @@ class GetComicsIndexer(BaseIndexerClient):
             is_image_file=efd["is_image_file"],
             link=link,
             display_title=display_title,
-            source=self._title,
+            indexer_id=self._id,
+            indexer_title=self._title,
             filesize=size,
             pages=None,
             releaser=None,
@@ -182,7 +183,7 @@ class GetComicsIndexer(BaseIndexerClient):
             efd["issue_number"], tuple
         ):
             gcp = GetComicsPage(link)
-            await gcp.load_data()
+            await gcp.load_data(self._id)
 
             if len(gcp.download_groups) > 1:
                 # Has separate download groups so we show them as

@@ -60,7 +60,7 @@
     min-width: 105px;
 }
 
-.source {
+.indexerTitle {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
     min-width: 90px;

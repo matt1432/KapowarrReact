@@ -603,7 +603,7 @@ class DownloadHandler(metaclass=Singleton):
             gcp = GetComicsPage(link)
 
             try:
-                await gcp.load_data()
+                await gcp.load_data(result["indexer_id"])
 
             except EnqueuingDownloadFailure as e:
                 if e.reason != EnqueuingDownloadFailureReason.LINK_RATE_LIMITED:

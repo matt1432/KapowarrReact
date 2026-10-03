@@ -149,7 +149,7 @@ export default function InteractiveSearchRow({
 
     // Try to get file info from a Libgen result that we suspect is the same as this one
     if (isLibgenEnabled && !gotMatchingFileInfo) {
-        if (result.source === 'GetComics' && result.match) {
+        if (result.downloadSources.includes('GetComics') && result.match) {
             const resultSize = Number(
                 filesize(result.filesize ?? 0, {
                     base: 2,
@@ -167,7 +167,7 @@ export default function InteractiveSearchRow({
 
                 return (
                     item.match &&
-                    item.source === 'Libgen+' &&
+                    item.downloadSources.includes('Libgen+') &&
                     item.issueNumber === result.issueNumber &&
                     Math.abs(itemSize - resultSize) < 2
                 );
@@ -446,10 +446,10 @@ export default function InteractiveSearchRow({
                     );
                 }
 
-                if (name === 'source') {
+                if (name === 'indexerTitle') {
                     return (
                         <TableRowCell key={name} className={styles[name]}>
-                            {result.source}
+                            {result.indexerTitle}
                         </TableRowCell>
                     );
                 }
