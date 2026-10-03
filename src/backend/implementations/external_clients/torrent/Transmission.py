@@ -1,3 +1,4 @@
+from random import randint
 from time import time
 from typing import Any
 
@@ -59,8 +60,7 @@ class Transmission(BaseExternalClient):
         ssn: Session,
         base_url: str,
         method: str,
-        arguments: dict[str, Any],
-        for_login: bool = False,
+        params: dict[str, Any],
     ) -> Response:
         """Make an API (RPC) request to a Transmission instance.
 
@@ -68,12 +68,7 @@ class Transmission(BaseExternalClient):
             ssn (Session): The session to make the request with.
             base_url (str): Base URL of instance.
             method (str): The RPC method to execute.
-            arguments (dict[str, Any]): Any arguments to the method.
-            for_login (bool, optional): When receiving a request to use a (new)
-                session ID, do so but don't retry the original request afterwards.
-                Needed when we want the original authentication request returned
-                when logging in.
-                Defaults to False.
+            params (dict[str, Any]): Any arguments to the method.
 
         Raises:
             ClientNotWorking: Can't connect to client or client returned
@@ -85,7 +80,12 @@ class Transmission(BaseExternalClient):
         try:
             response = ssn.post(
                 f"{base_url}/transmission/rpc",
-                json={"method": method, "arguments": arguments},
+                json={
+                    "jsonrpc": "2.0",
+                    "method": method,
+                    "params": params,
+                    "id": randint(1, 1_000_000),
+                },
             )
 
         except RequestException:
@@ -101,11 +101,9 @@ class Transmission(BaseExternalClient):
                 )
 
             ssn.headers.update({"X-Transmission-Session-Id": sid})
-            if not for_login:
-                # Now that the Session ID is refreshed, try request again
-                response = cls.__api_request(
-                    ssn, base_url, method, arguments, for_login
-                )
+
+            # Now that the Session ID is refreshed, try request again
+            response = cls.__api_request(ssn, base_url, method, params)
 
         return response
 
@@ -136,50 +134,57 @@ class Transmission(BaseExternalClient):
             ssn.auth = (username, password)
 
         auth_request = cls.__api_request(
-            ssn, base_url, method="session-get", arguments={}, for_login=True
+            ssn,
+            base_url,
+            method="session_get",
+            params={"fields": ["rpc_version_semver"]},
         )
 
-        if auth_request.status_code == 409:
-            # Success
-            return ssn
-
-        elif auth_request.ok:
-            # Already logged in
-            return ssn
-
-        elif auth_request.status_code in (401, 403):
+        if auth_request.status_code in (401, 403):
             LOGGER.error(
                 f"Failed to authenticate for Transmission instance: {auth_request.text}"
             )
             raise CredentialInvalid
 
-        else:
+        elif not auth_request.ok:
             LOGGER.error(
                 f"Not connected to Transmission instance: {auth_request.text}"
             )
             raise ClientNotWorking(BrokenClientReason.NOT_CLIENT_INSTANCE)
 
+        rpc_version_semver = tuple(
+            int(i)
+            for i in auth_request.json()["result"]["rpc_version_semver"].split(
+                "."
+            )
+        )
+        if rpc_version_semver < (6, 0, 0):
+            # Should be at least v4.1.0 (rpc_version_semver 6.0.0)
+            raise ClientNotWorking(BrokenClientReason.VERSION_NOT_SUPPORTED)
+
+        return ssn
+
     def _update_statuses(self) -> None:
         fields = [
-            "hashString",
-            "totalSize",
-            "percentDone",
-            "rateDownload",
+            "hash_string",
+            "total_size",
+            "percent_done",
+            "rate_download",
             "status",
             "error",
-            "errorString",
-            "peersGettingFromUs",
+            "error_string",
+            "peers_getting_from_us",
         ]
 
         torrents: dict[str, dict[str, Any]] = {
-            torrent["hashString"]: torrent
+            torrent["hash_string"]: torrent
             for torrent in self.__api_request(
                 self.ssn,
                 self._base_url,
-                method="torrent-get",
-                arguments={"ids": list(self.statuses), "fields": fields},
+                method="torrent_get",
+                params={"ids": list(self.statuses), "fields": fields},
             )
-            .json()["arguments"]
+            .json()["result"]
             .get("torrents", [])
         }
 
@@ -190,7 +195,7 @@ class Transmission(BaseExternalClient):
             torrent = torrents[t_hash]
 
             status = torrent.get("status", 0)
-            dlspeed = torrent.get("rateDownload", 0)
+            dlspeed = torrent.get("rate_download", 0)
 
             if torrent.get("error", 0):
                 state = DownloadState.FAILED_STATE
@@ -223,8 +228,8 @@ class Transmission(BaseExternalClient):
                 self.fail_timestamps[t_hash] = None
 
             self.statuses[t_hash] = {
-                "size": int(torrent.get("totalSize", 0)),
-                "progress": round(torrent["percentDone"] * 100.0, 2),
+                "size": int(torrent.get("total_size", 0)),
+                "progress": round(torrent["percent_done"] * 100.0, 2),
                 "speed": dlspeed,
                 "state": state,
             }
@@ -245,21 +250,19 @@ class Transmission(BaseExternalClient):
                 download_name, download_link
             )
 
-        args = {
-            "filename": download_link,
-            "paused": False,
-            "download-dir": target_folder,
-        }
-
         result = self.__api_request(
             self.ssn,
             self._base_url,
-            method="torrent-add",
-            arguments=args,
-        ).json()["arguments"]
+            method="torrent_add",
+            params={
+                "filename": download_link,
+                "paused": False,
+                "download_dir": target_folder,
+            },
+        ).json()["result"]
 
-        added = result.get("torrent-added") or result.get("torrent-duplicate")
-        t_hash = added.get("hashString")
+        added = result.get("torrent_added") or result.get("torrent_duplicate")
+        t_hash = added.get("hash_string")
         self.statuses[t_hash] = None
         self.fail_timestamps[t_hash] = None
         self._update_statuses()
@@ -278,8 +281,8 @@ class Transmission(BaseExternalClient):
         self.__api_request(
             self.ssn,
             self._base_url,
-            method="torrent-remove",
-            arguments={"ids": [download_id], "delete-local-data": delete_files},
+            method="torrent_remove",
+            params={"ids": [download_id], "delete_local_data": delete_files},
         )
 
         del self.statuses[download_id]
@@ -288,7 +291,7 @@ class Transmission(BaseExternalClient):
 
     def on_shutdown(self) -> None:
         self.__api_request(
-            self.ssn, self._base_url, method="session-close", arguments={}
+            self.ssn, self._base_url, method="session_close", params={}
         )
         return
 
