@@ -18,6 +18,31 @@ self: final: _prev: let
         hash = "sha256-Q8zjHUhj4p1rxhFVHU6fJlK+KZXp1eFbRtg4PxgNREA=";
       };
     }) {};
+
+  magnet2torrent = final.callPackage ({
+    python3Packages,
+    fetchPypi,
+    ...
+  }: let
+    pname = "magnet2torrent";
+    version = "1.2.1";
+  in
+    python3Packages.buildPythonPackage {
+      inherit pname version;
+
+      pyproject = true;
+      build-system = with python3Packages; [setuptools];
+
+      dependencies = with python3Packages; [
+        aiohttp
+        expiringdict
+      ];
+
+      src = fetchPypi {
+        inherit pname version;
+        hash = "sha256-S6U9ME8dsz0z/iJ67ls09uZA/S0xmf8Ow9jMBQze1jE=";
+      };
+    }) {};
 in {
   kapowarr-web = final.callPackage "${self}/frontend" {};
 
@@ -56,6 +81,7 @@ in {
       dependencies = attrValues {
         inherit
           bencoding
+          magnet2torrent
           simyan # from overrides
           libgencomics # from overrides
           ;

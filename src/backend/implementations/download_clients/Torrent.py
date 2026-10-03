@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from asyncio import run
 from os.path import basename, join, splitext
 from threading import Event
 from typing import Any
 
 import requests
-from requests import RequestException
+from magnet2torrent import FailedToFetchException, Magnet2Torrent
 
 from backend.base.custom_exceptions import (
     ClientNotWorking,
@@ -21,7 +22,7 @@ from backend.base.definitions import (
     ExternalDownloadClient,
     FileExtraInfo,
 )
-from backend.base.helpers import Session, get_torrent_info
+from backend.base.helpers import get_torrent_info
 from backend.base.logging import LOGGER
 from backend.implementations.download_client_manager import DownloadClients
 from backend.implementations.download_clients.base import BaseDirectDownload
@@ -133,22 +134,11 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         # Find name of torrent as that becomes folder that media is
         # downloaded in
         if download_link.startswith("magnet"):
-            try:
-                response = Session().post(
-                    "https://magnet2torrent.com/upload/",
-                    data={"magnet": download_link},
-                )
-                response.raise_for_status()
-                if (
-                    response.headers.get("Content-Type")
-                    != "application/x-bittorrent"
-                ):
-                    raise RequestException
-
-            except RequestException:
+            magnet_torrent_name = run(self._fetch_torrent_name())
+            if not magnet_torrent_name:
                 raise DownloadLinkBroken(self.download_link)
 
-            torrent_name = get_torrent_info(response.content)[b"name"].decode()
+            torrent_name = magnet_torrent_name
         else:
             torrent_name = get_torrent_info(
                 requests.get(download_link).content
@@ -179,6 +169,21 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         self._title = basename(self._filename_body)
         self._files = [join(self._download_folder, torrent_name)]
         return
+
+    async def _fetch_torrent_name(self) -> str | None:
+        """Get the torrent name that will be used as the folder/file name from
+        the magnet link.
+
+        Returns:
+            str | None: The torrent name, or None if it failed to get it.
+        """
+        m2t = Magnet2Torrent(self._download_link, use_additional_trackers=True)
+        try:
+            raw_data = (await m2t.retrieve_torrent())[1]
+        except FailedToFetchException:
+            return None
+
+        return get_torrent_info(raw_data)[b"name"].decode()
 
     def run(self) -> None:
         if not self.external_id:
