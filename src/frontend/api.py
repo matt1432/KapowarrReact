@@ -365,7 +365,6 @@ def api_about() -> ApiReturn:
 @error_handler
 @auth
 def api_status_checks():
-    # TODO: implement this in the frontend https://github.com/Casvt/Kapowarr/commit/9a0292f57362f00dede650f9083f8083a8e1162d
     if request.method == "GET":
         return return_api(StatusHandlers().get_all())
 

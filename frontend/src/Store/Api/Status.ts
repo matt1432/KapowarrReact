@@ -7,7 +7,13 @@ import { baseApi } from './base';
 import camelize from 'Utilities/Object/camelize';
 
 // Types
-import type { AboutInfo, RawAboutInfo } from 'typings/Status';
+import type {
+    AboutInfo,
+    RawAboutInfo,
+    RawStatusCheck,
+    StatusCheck,
+    StatusCheckType,
+} from 'typings/Status';
 import type {
     RawTaskHistory,
     RawTaskPlanning,
@@ -29,6 +35,18 @@ const extendedApi = baseApi.injectEndpoints({
             }),
 
             transformResponse: (response: { result: RawAboutInfo }) =>
+                camelize(response.result),
+        }),
+
+        getStatusChecks: build.query<StatusCheck[], void>({
+            query: () => ({
+                url: 'system/status',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+
+            transformResponse: (response: { result: RawStatusCheck[] }) =>
                 camelize(response.result),
         }),
 
@@ -57,6 +75,17 @@ const extendedApi = baseApi.injectEndpoints({
         }),
 
         // DELETE
+        clearStatusCheck: build.mutation<void, { type?: StatusCheckType }>({
+            query: ({ type }) => ({
+                method: 'DELETE',
+                url: 'system/status',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                    type,
+                },
+            }),
+        }),
+
         clearTaskHistory: build.mutation<void, void>({
             query: () => ({
                 method: 'DELETE',
@@ -70,8 +99,10 @@ const extendedApi = baseApi.injectEndpoints({
 });
 
 export const {
+    useClearStatusCheckMutation,
     useClearTaskHistoryMutation,
     useGetAboutInfoQuery,
+    useGetStatusChecksQuery,
     useGetTaskHistoryQuery,
     useGetTaskPlanningQuery,
     useLazyGetAboutInfoQuery,

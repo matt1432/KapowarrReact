@@ -57,6 +57,10 @@ import interactiveSearch, {
     type InteractiveSearchColumnName,
 } from 'InteractiveSearch/columns';
 
+import statusChecks, {
+    type StatusChecksColumnName,
+} from 'System/Status/Health/columns';
+
 import taskHistory, {
     type TaskHistoryColumnName,
 } from 'System/Tasks/History/columns';
@@ -90,6 +94,7 @@ export interface ColumnNameMap {
     queueTable: QueueColumnName;
     rootFolders: RootFolderColumnName;
     selectIssue: SelectIssueColumnName;
+    statusChecks: StatusChecksColumnName;
     taskHistory: TaskHistoryColumnName;
     taskPlanning: TaskPlanningColumnName;
     volumeIndex: VolumeIndexColumnName;
@@ -150,6 +155,7 @@ export interface TableOptionsState {
     queueTable: TableState<'queueTable'>;
     rootFolders: TableState<'rootFolders'>;
     selectIssue: TableState<'selectIssue'>;
+    statusChecks: TableState<'statusChecks'>;
     taskHistory: TableState<'taskHistory'>;
     taskPlanning: TableState<'taskPlanning'>;
     volumeIndex: TableState<'volumeIndex'>;
@@ -158,7 +164,7 @@ export interface TableOptionsState {
 // IMPLEMENTATIONS
 
 const initialState = {
-    sliceVersion: 5,
+    sliceVersion: 6,
 
     blocklistTable,
     changeMatch,
@@ -174,6 +180,7 @@ const initialState = {
     queueTable,
     rootFolders,
     selectIssue,
+    statusChecks,
     taskHistory,
     taskPlanning,
     volumeIndex,

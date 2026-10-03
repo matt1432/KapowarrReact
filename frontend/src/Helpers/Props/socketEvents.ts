@@ -14,6 +14,7 @@ const socketEvents = {
     VOLUME_DELETED: 'volume_deleted',
     MASS_EDITOR_STATUS: 'mass_editor_status',
     DOWNLOADED_STATUS: 'downloaded_status',
+    STATUS_COUNT: 'status_count',
 } as const;
 
 export default socketEvents;

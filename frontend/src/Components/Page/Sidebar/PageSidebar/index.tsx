@@ -30,6 +30,7 @@ import Scroller from 'Components/Scroller/Scroller';
 import Messages from '../Messages/Messages';
 import PageSidebarItem from '../PageSidebarItem';
 import QueueStatus from 'Activity/Queue/Status';
+import HealthStatus from 'System/Status/Health/HealthStatus';
 
 // CSS
 import dimensions from 'Styles/Variables/dimensions';
@@ -148,6 +149,7 @@ const LINKS: SidebarItem[] = [
             {
                 title: () => translate('Status'),
                 to: '/system/status',
+                statusComponent: HealthStatus,
             },
             {
                 title: () => translate('Tasks'),

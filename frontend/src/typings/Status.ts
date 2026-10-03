@@ -11,3 +11,12 @@ export interface RawAboutInfo {
 }
 
 export type AboutInfo = CamelCasedProperties<RawAboutInfo>;
+
+export type StatusCheckType = 'cv_rate_limit';
+
+export interface RawStatusCheck {
+    type: StatusCheckType;
+    display_subtypes: string[];
+}
+
+export type StatusCheck = CamelCasedProperties<RawStatusCheck>;

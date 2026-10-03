@@ -75,6 +75,7 @@ interface SpecificEventHandlers {
     volume_deleted: (data: VolumeDeletedData) => void;
     mass_editor_status: (data: MassEditorData) => void;
     downloaded_status: (data: DownloadedStatusData) => void;
+    status_count: (data: { count: number }) => void;
 }
 
 export type SocketEventHandler<T extends SocketEvent> =

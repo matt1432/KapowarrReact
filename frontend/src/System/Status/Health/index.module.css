@@ -1,0 +1,11 @@
+.message {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    width: 100%;
+}
+
+.actions {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    min-width: 50px;
+}

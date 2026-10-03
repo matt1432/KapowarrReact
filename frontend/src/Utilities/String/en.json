@@ -57,6 +57,8 @@
     "lastRunKey": "Last Execution",
     "nextRunKey": "Last Execution",
 
+    "messageKey": "Message",
+
     "monitoredKey": "Monitored",
     "relativePathKey": "Relative Path",
 
@@ -2168,6 +2170,11 @@
     "Started": "Started",
     "StartupDirectory": "Startup Directory",
     "Status": "Status",
+    "StatusCheckCvRateLimit": "ComicVine rate limit reached",
+    "StatusCheckSubtypeFetchIssues": "Fetching issue metadata",
+    "StatusCheckSubtypeFetchVolume": "Fetching volume metadata",
+    "StatusCheckSubtypeSearchVolumes": "Searching volumes",
+    "StatusChecksLoadError": "Unable to load status checks",
     "StopSelecting": "Stop Selecting",
     "Style": "Style",
     "SubtitleLanguages": "Subtitle Languages",
