@@ -21,7 +21,8 @@ import TableRow from 'Components/Table/TableRow';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 
 // Specific Components
-import TaskButton from './TaskButton';
+import schedulePresets from './schedulePresets';
+import TaskActions from './TaskActions';
 
 // CSS
 import styles from './index.module.css';
@@ -59,12 +60,17 @@ export default function TaskScheduled() {
                                     );
                                 }
 
-                                if (name === 'interval') {
+                                if (name === 'schedule') {
                                     return (
                                         <TableRowCell
                                             key={name}
                                             className={styles[name]}
-                                        >{`${Math.round(item.interval / 3600)} hours`}</TableRowCell>
+                                        >
+                                            {schedulePresets.find(
+                                                ({ key }) =>
+                                                    key === item.schedule,
+                                            )?.value ?? item.schedule}
+                                        </TableRowCell>
                                     );
                                 }
 
@@ -92,7 +98,12 @@ export default function TaskScheduled() {
 
                                 if (name === 'actions') {
                                     return (
-                                        <TaskButton taskName={item.taskName} />
+                                        <TaskActions
+                                            key={name}
+                                            taskName={item.taskName}
+                                            schedule={item.schedule}
+                                            onScheduleChange={refetch}
+                                        />
                                     );
                                 }
                             })}

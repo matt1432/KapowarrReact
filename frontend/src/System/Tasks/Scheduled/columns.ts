@@ -1,11 +1,7 @@
 import type { TableState } from 'Store/Slices/TableOptions';
 
 export type TaskPlanningColumnName =
-    | 'displayName'
-    | 'interval'
-    | 'lastRun'
-    | 'nextRun'
-    | 'actions';
+    'displayName' | 'schedule' | 'lastRun' | 'nextRun' | 'actions';
 
 export default {
     sortKey: null,
@@ -22,7 +18,7 @@ export default {
             isVisible: true,
         },
         {
-            name: 'interval',
+            name: 'schedule',
             isModifiable: false,
             isSortable: false,
             isVisible: true,

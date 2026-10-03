@@ -24,7 +24,7 @@ export type TaskHistory = CamelCasedProperties<RawTaskHistory>;
 export interface RawTaskPlanning {
     task_name: CommandName;
     display_name: string;
-    interval: number;
+    schedule: string;
     next_run: number;
     last_run: number;
 }

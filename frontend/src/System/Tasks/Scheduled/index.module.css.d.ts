@@ -2,9 +2,9 @@
 // Please do not change this file!
 interface CssExports {
     displayName: string;
-    interval: string;
     lastRun: string;
     nextRun: string;
+    schedule: string;
 }
 export const cssExports: CssExports;
 export default cssExports;

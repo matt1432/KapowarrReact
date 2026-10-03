@@ -4,7 +4,7 @@
     width: 70%;
 }
 
-.interval {
+.schedule {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 
     min-width: 180px;

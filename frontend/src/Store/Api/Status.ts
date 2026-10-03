@@ -5,8 +5,10 @@ import { baseApi } from './base';
 
 // Misc
 import camelize from 'Utilities/Object/camelize';
+import snakeify from 'Utilities/Object/snakeify';
 
 // Types
+import type { CommandName } from 'Helpers/Props/commandNames';
 import type {
     AboutInfo,
     RawAboutInfo,
@@ -74,6 +76,21 @@ const extendedApi = baseApi.injectEndpoints({
                 camelize(response.result),
         }),
 
+        // PUT
+        updateTaskSchedule: build.mutation<
+            void,
+            { taskName: CommandName; schedule: string }
+        >({
+            query: (body) => ({
+                method: 'PUT',
+                url: 'system/tasks/planning',
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+                body: snakeify(body),
+            }),
+        }),
+
         // DELETE
         clearStatusCheck: build.mutation<void, { type?: StatusCheckType }>({
             query: ({ type }) => ({
@@ -108,4 +125,5 @@ export const {
     useLazyGetAboutInfoQuery,
     useLazyGetTaskHistoryQuery,
     useLazyGetTaskPlanningQuery,
+    useUpdateTaskScheduleMutation,
 } = extendedApi;

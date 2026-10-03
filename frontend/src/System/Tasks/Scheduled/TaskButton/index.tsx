@@ -15,7 +15,6 @@ import translate from 'Utilities/String/translate';
 
 // General Components
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
-import TableRowCell from 'Components/Table/Cells/TableRowCell';
 
 // Types
 import type { CommandName } from 'Helpers/Props/commandNames';
@@ -45,13 +44,11 @@ export default function TaskButton({ taskName }: TaskButtonProps) {
     }, [executeCommand, taskName]);
 
     return (
-        <TableRowCell key={taskName}>
-            <SpinnerIconButton
-                name={icons.PLAY}
-                title={translate('RunTask', { taskName: taskName })}
-                isSpinning={isRunning}
-                onPress={runTask}
-            />
-        </TableRowCell>
+        <SpinnerIconButton
+            name={icons.PLAY}
+            title={translate('RunTask', { taskName: taskName })}
+            isSpinning={isRunning}
+            onPress={runTask}
+        />
     );
 }
