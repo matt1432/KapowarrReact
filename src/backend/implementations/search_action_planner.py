@@ -6,6 +6,7 @@ from backend.base.definitions import (
     SpecialVersion,
     VolumeData,
 )
+from backend.base.helpers import extract_year_from_date
 
 
 class SearchActionPlanner:
@@ -191,10 +192,12 @@ class SearchActionPlanner:
             QueryKeys: The resulting keys to be used by the query builder.
         """
         issue_number = None
+        issue_year = None
         calculated_issue_number = None
         if self.current_issue is not None:
             issue = self.issue_data[self.current_issue]
             issue_number = issue.issue_number
+            issue_year = extract_year_from_date(issue.date)
             if self.volume_data.special_version in (
                 SpecialVersion.NORMAL,
                 SpecialVersion.VOLUME_AS_ISSUE,
@@ -207,6 +210,7 @@ class SearchActionPlanner:
             volume_number=self.volume_data.volume_number,
             special_version=self.volume_data.special_version,
             issue_number=issue_number,
+            issue_year=issue_year,
             volume_id=self.volume_data.id,
             calculated_issue_number=calculated_issue_number,
         )

@@ -1118,6 +1118,7 @@ class QueryKeys:
     volume_number: int
     special_version: SpecialVersion
     issue_number: str | None
+    issue_year: int | None
     volume_id: int
     "Used by indexers that search based on metadata (e.g. Libgen+)"
     calculated_issue_number: float | None
