@@ -1401,3 +1401,11 @@ def _migrate_add_gc_indexer() -> None:
     )
 
     return
+
+
+@DatabaseMigrationHandler.register_handler(48)
+def _migrate_fix_avoid_large_downloads() -> None:
+    # Upstream resets gc_avoid_large_downloads here because its previous
+    # migration took over a setting that didn't exist in their release. This
+    # fork did have the setting, so the value taken over is valid and kept.
+    return
