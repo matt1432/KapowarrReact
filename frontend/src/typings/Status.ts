@@ -13,7 +13,10 @@ export interface RawAboutInfo {
 export type AboutInfo = CamelCasedProperties<RawAboutInfo>;
 
 export type StatusCheckType =
-    'cv_rate_limit' | 'root_folder_almost_full' | 'root_folder_full';
+    | 'cv_rate_limit'
+    | 'root_folder_almost_full'
+    | 'root_folder_full'
+    | 'cf_challenge_with_no_fs';
 
 export interface RawStatusCheck {
     type: StatusCheckType;

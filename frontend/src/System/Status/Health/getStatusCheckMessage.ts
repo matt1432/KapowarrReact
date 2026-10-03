@@ -26,6 +26,10 @@ const statusCheckDescriptions: Record<StatusCheckType, StatusCheckDescription> =
             description: 'StatusCheckRootFolderFull',
             subtypes: {},
         },
+        cf_challenge_with_no_fs: {
+            description: 'StatusCheckCfChallengeWithNoFs',
+            subtypes: {},
+        },
     };
 
 export default function getStatusCheckMessage({
@@ -37,6 +41,11 @@ export default function getStatusCheckMessage({
         return type;
     }
 
+    const description = translate(statusCheckDescription.description);
+    if (displaySubtypes.length === 0) {
+        return description;
+    }
+
     const subtypes = displaySubtypes
         .map((subtype) =>
             subtype in statusCheckDescription.subtypes
@@ -45,5 +54,5 @@ export default function getStatusCheckMessage({
         )
         .join(', ');
 
-    return `${translate(statusCheckDescription.description)}: ${subtypes}`;
+    return `${description}: ${subtypes}`;
 }

@@ -31,6 +31,7 @@ from backend.base.definitions import (
     OSType,
     ProxyType,
     SeedingHandling,
+    StatusType,
 )
 from backend.base.files import (
     are_folders_colliding,
@@ -584,6 +585,7 @@ class Settings(metaclass=Singleton):
 
         elif key == "flaresolverr_base_url":
             from backend.implementations.flaresolverr import FlareSolverr
+            from backend.internals.status import StatusHandlers
 
             converted_value = value
             if converted_value:
@@ -593,6 +595,9 @@ class Settings(metaclass=Singleton):
                 converted_value
             ):
                 raise InvalidKeyValue(key, value)
+
+            if converted_value:
+                StatusHandlers().clear(StatusType.CF_CHALLENGE_WITH_NO_FS, "")
 
         else:
             from backend.implementations.naming import (
