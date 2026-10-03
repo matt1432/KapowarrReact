@@ -24,6 +24,7 @@ from backend.base.definitions import (
     Download,
     DownloadClientIdentifier,
     DownloadGroup,
+    DownloadService,
     DownloadType,
     EnqueuingDownloadFailureReason,
     GCDownloadService,
@@ -469,6 +470,7 @@ async def __purify_link(
 
     Raises:
         DownloadLinkBroken: Link is invalid, not supported or broken.
+        DownloadServiceRateLimitReached: We're rate limited by the service.
         ClientError: Failed to fetch link.
 
     Returns:
@@ -485,8 +487,13 @@ async def __purify_link(
 
     async with AsyncSession() as session:
         r = await session.get(link)
+
+    if r.status == 429 and download_service == GCDownloadService.GETCOMICS:
+        raise DownloadServiceRateLimitReached(DownloadService.GETCOMICS)
+
     if not r.ok:
         raise DownloadLinkBroken(link)
+
     url = str(r.real_url)
     content_type = r.headers.getone("Content-Type", "")
 
@@ -596,7 +603,11 @@ async def __purify_download_group(
                 continue
 
             except ClientError:
-                # Page blocked by CF and FS not setup
+                # Link blocked by CF and FS not setup
+                continue
+
+            except DownloadServiceRateLimitReached:
+                # Link is rate limited so just go to the next one
                 continue
 
             try:
