@@ -898,6 +898,12 @@ class FileMatch(FileExtraInfo):
     forced_match: bool
 
 
+class QueuedTaskData(TypedDict):
+    id: int
+    task: Task
+    thread: Thread
+
+
 # region Dataclasses
 @dataclass
 class BlocklistEntry:
@@ -1233,7 +1239,6 @@ class Task(ABC):
     stop: bool
     message: str
     display_title: str
-    category: str
 
     _called_from: str
 
@@ -1262,9 +1267,9 @@ class Task(ABC):
 
         Returns:
             Union[None, List[Tuple[SearchResultData, int, Union[int, None]]]]:
-            Either `None` if the task has no result or
-            `List[Tuple[SearchResultData, int, Union[int, None]]]` if the task returns
-            search results.
+                Either `None` if the task has no result or
+                `List[Tuple[SearchResultData, int, Union[int, None]]]` if the task
+                returns search results.
         """
         ...
 

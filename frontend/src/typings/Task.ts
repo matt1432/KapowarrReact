@@ -6,7 +6,6 @@ export interface RawTask {
     message: string;
     action: CommandName;
     display_title: string;
-    category: string;
     volume_id: number | null;
     issue_id: number | null;
     called_from: string;

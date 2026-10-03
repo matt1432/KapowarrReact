@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from time import sleep, time
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from backend.base.custom_exceptions import (
     InvalidKeyValue,
     TaskNotDeletable,
     TaskNotFound,
 )
-from backend.base.definitions import SearchResultData, Task
+from backend.base.definitions import QueuedTaskData, SearchResultData, Task
 from backend.base.helpers import Singleton
 from backend.base.logging import LOGGER
 from backend.features.download_queue import DownloadHandler
@@ -36,11 +37,26 @@ TaskType = TypeVar("TaskType", bound=Task)
 class TaskHandler(metaclass=Singleton):
     tasks: dict[str, type[Task]] = {}
 
-    queue: list[dict] = []
+    queue: list[QueuedTaskData] = []
     task_interval_waiter: Timer | None = None
 
     @classmethod
     def register_task(cls, identifier: str):
+        """Register a task.
+
+        ```
+        @TaskHandler.register_task("my_task")
+        class MyTask(Task):
+            ...
+        ```
+
+        Args:
+            identifier (str): The string identifier for the task.
+
+        Raises:
+            RuntimeError: A task for the given identifier is already registered.
+        """
+
         def wrapper(action: type[TaskType]) -> type[TaskType]:
             if identifier in cls.tasks:
                 raise RuntimeError(
@@ -54,16 +70,27 @@ class TaskHandler(metaclass=Singleton):
 
     @classmethod
     def get_task_class(cls, identifier: str) -> type[Task]:
+        """Get a task implementation based on its identifier.
+
+        Args:
+            identifier (str): The identifer of the class.
+
+        Raises:
+            TaskNotFound: No task implementation found with the given identifier.
+
+        Returns:
+            Type[Task]: The task implementation.
+        """
         try:
             return cls.tasks[identifier]
         except KeyError:
             raise TaskNotFound(identifier)
 
     def __run_task(self, task: Task) -> None:
-        """Run a task
+        """Run a task.
 
         Args:
-            task (Task): The task to run
+            task (Task): The task to run.
         """
         LOGGER.debug(f"Running task {task.display_title}")
 
@@ -79,7 +106,7 @@ class TaskHandler(metaclass=Singleton):
             )
 
             if not task.stop:
-                if task.category == "download" and result:
+                if isinstance(task, DownloadTask) and result:
                     DownloadHandler().add_multiple(
                         (link, volume_id, issue_id, False)
                         for link, volume_id, issue_id in result
@@ -111,26 +138,25 @@ class TaskHandler(metaclass=Singleton):
             return
 
         first_entry = self.queue[0]
-        if first_entry["status"] != "running":
-            first_entry["status"] = "running"
+        if not first_entry["thread"].is_alive():
             first_entry["thread"].start()
+
         return
 
     def add(self, task: Task) -> int:
-        """Add a task to the queue
+        """Add a task to the queue.
 
         Args:
-            task (Task): The task to add to the queue
+            task (Task): The task to add to the queue.
 
         Returns:
-            int: The id of the entry in the queue
+            int: The ID of the entry in the queue.
         """
         LOGGER.debug(f"Adding task to queue: {task.display_title}")
         id = self.queue[-1]["id"] + 1 if self.queue else 1
-        task_data = {
-            "task": task,
+        task_data: QueuedTaskData = {
             "id": id,
-            "status": "queued",
+            "task": task,
             "thread": Server().get_db_thread(
                 target=self.__run_task, name=f"TaskThread-{id}", args=(task,)
             ),
@@ -155,7 +181,7 @@ class TaskHandler(metaclass=Singleton):
             t
             for t in TaskHandler.queue
             if (
-                isinstance(t["task"], UpdateAll | SearchAll)
+                isinstance(t["task"], LibraryTask)
                 or t["task"].volume_id == volume_id
             )
         )
@@ -223,60 +249,58 @@ class TaskHandler(metaclass=Singleton):
 
         return
 
-    def __format_entry(self, task: dict) -> dict:
-        """Format a queue entry for API response
+    def __format_entry(self, task: QueuedTaskData) -> dict[str, Any]:
+        """Format a queue entry for API response.
 
         Args:
-            t (dict): The queue entry
+            task (QueuedTaskData): The queue entry.
 
         Returns:
-            dict: The formatted queue entry
+            Dict[str, Any]: The formatted queue entry.
         """
         return {
             "id": task["id"],
             "action": task["task"].action,
             "display_title": task["task"].display_title,
-            "status": task["status"],
+            "running": task["thread"].is_alive(),
             "message": task["task"].message,
             "volume_id": task["task"].volume_id,
             "issue_id": task["task"].issue_id,
         }
 
-    def get_all(self) -> list[dict]:
-        """Get all tasks in the queue
+    def get_all(self) -> list[dict[str, Any]]:
+        """Get all tasks in the queue.
 
         Returns:
-            List[dict]: A list with all tasks in the queue.
-                Formatted using `self.__format_entry()`.
+            List[Dict[str, Any]]: A list with all tasks in the queue.
         """
         return [self.__format_entry(t) for t in self.queue]
 
-    def get_one(self, task_id: int) -> dict:
-        """Get one task from the queue based on it's id
+    def get_one(self, task_id: int) -> dict[str, Any]:
+        """Get one task from the queue based on its ID.
 
         Args:
-            task_id (int): The id of the task to get from the queue
+            task_id (int): The ID of the task to get from the queue.
 
         Raises:
-            TaskNotFound: The id doesn't match with any task in the queue
+            TaskNotFound: The ID doesn't match with any task in the queue.
 
         Returns:
-            dict: The info of the task in the queue.
-                Formatted using `self.__format_entry()`.
+            Dict[str, Any]: The info of the task in the queue.
         """
         return self.__format_entry(self.__get_raw_entry(task_id))
 
-    def __get_raw_entry(self, task_id: int) -> dict:
-        """Get the raw entry from the queue based on it's id
+    def __get_raw_entry(self, task_id: int) -> QueuedTaskData:
+        """Get the raw entry from the queue based on its ID.
 
         Args:
-            task_id (int): The id of the task to get from the queue
+            task_id (int): The ID of the task to get from the queue.
 
         Raises:
-            TaskNotFound: The id doesn't match with any task in the queue
+            TaskNotFound: The ID doesn't match with any task in the queue.
 
         Returns:
-            dict: The raw entry of the task in the queue.
+            QueuedTaskData: The raw entry of the task in the queue.
         """
         for entry in self.queue:
             if entry["id"] == task_id:
@@ -284,14 +308,14 @@ class TaskHandler(metaclass=Singleton):
         raise TaskNotFound(task_id)
 
     def remove(self, task_id: int) -> None:
-        """Remove a task from the queue
+        """Remove a task from the queue.
 
         Args:
-            task_id (int): The id of the task to delete from the queue
+            task_id (int): The ID of the task to delete from the queue.
 
         Raises:
-            TaskNotDeletable: The task is not allowed to be deleted from the queue
-            TaskNotFound: The id doesn't map to any task in the queue
+            TaskNotDeletable: The task is not allowed to be deleted from the queue.
+            TaskNotFound: The id doesn't map to any task in the queue.
         """
         # Get task and check if id exists
         # Raises TaskNotFound if the id isn't found
@@ -304,15 +328,15 @@ class TaskHandler(metaclass=Singleton):
         task["task"].stop = True
         task["thread"].join()
         self.queue.remove(task)
-        LOGGER.info(f"Removed task: {task['task'].display_name} ({task_id})")
+        LOGGER.info(f"Removed task: {task['task'].display_title} ({task_id})")
         WebSocket().emit(TaskEndedEvent(task["task"]))
         return
 
-    def get_task_planning(self) -> list[dict]:
-        """Get the planning of each interval task (interval, next run and last run)
+    def get_task_planning(self) -> list[dict[str, Any]]:
+        """Get the planning of each interval task (interval, next run and last run).
 
         Returns:
-            List[dict]: List of interval tasks and their planning
+            List[Dict[str, Any]]: List of interval tasks and their planning.
         """
         tasks = (
             get_db()
@@ -345,9 +369,8 @@ def get_task_history(offset: int = 0) -> list[dict]:
     """Get the task history in blocks of 50.
 
     Args:
-        offset (int, optional): The offset of the list.
-            The higher the number, the deeper into history you go.
-
+        offset (int, optional): The offset of the list. The higher the number,
+            the deeper into history you go.
             Defaults to 0.
 
     Returns:
@@ -378,15 +401,31 @@ def delete_task_history() -> None:
     return
 
 
+# region Task types
+class LibraryTask(Task):
+    """
+    Tasks that inherit from this class signify that they don't work
+    on one specific volume or issue
+    """
+
+
+class DownloadTask(Task):
+    """
+    Tasks that inherit from this class signify that they return downloads
+    """
+
+    @abstractmethod
+    def run(self) -> list[tuple[SearchResultData, int, int | None]]: ...
+
+
 # region Issue tasks
 @TaskHandler.register_task("auto_search_issue")
-class AutoSearchIssue(Task):
+class AutoSearchIssue(DownloadTask):
     "Do an automatic search for an issue"
 
     stop = False
     message = ""
     display_title = "Auto Search"
-    category = "download"
 
     @property
     def volume_id(self) -> int:
@@ -399,11 +438,11 @@ class AutoSearchIssue(Task):
     def __init__(
         self, volume_id: int, issue_id: int, called_from: str = ""
     ) -> None:
-        """Create the task
+        """Create the task.
 
         Args:
-            volume_id (int): The id of the volume in which the issue is
-            issue_id (int): The id of the issue to search for
+            volume_id (int): The ID of the volume in which the issue is.
+            issue_id (int): The ID of the issue to search for.
         """
         self._volume_id = volume_id
         self._issue_id = issue_id
@@ -419,11 +458,10 @@ class AutoSearchIssue(Task):
 
         # Get search results and download them
         results = auto_search(self._volume_id, self._issue_id)
-        if results:
-            return [
-                (result, self._volume_id, self._issue_id) for result in results
-            ]
-        return []
+        downloads: list[tuple[SearchResultData, int, int | None]] = [
+            (result, self._volume_id, self._issue_id) for result in results
+        ]
+        return downloads
 
 
 @TaskHandler.register_task("mass_rename_issue")
@@ -433,7 +471,6 @@ class MassRenameIssue(Task):
     stop = False
     message = ""
     display_title = "Mass Rename"
-    category = ""
 
     @property
     def volume_id(self) -> int:
@@ -450,13 +487,13 @@ class MassRenameIssue(Task):
         filepath_filter: list[str] = [],
         called_from: str = "",
     ) -> None:
-        """Create the task
+        """Create the task.
 
         Args:
             volume_id (int): The ID of the volume for which to perform the task.
             issue_id (int): The ID of the issue for which to perform the task.
             filepath_filter (List[str], optional): Only rename files in this
-            list.
+                list.
                 Defaults to [].
         """
         self._volume_id = volume_id
@@ -489,7 +526,6 @@ class MassConvertIssue(Task):
     stop = False
     message = ""
     display_title = "Mass Convert"
-    category = ""
 
     @property
     def volume_id(self) -> int:
@@ -506,13 +542,13 @@ class MassConvertIssue(Task):
         filepath_filter: list[str] = [],
         called_from: str = "",
     ) -> None:
-        """Create the task
+        """Create the task.
 
         Args:
             volume_id (int): The ID of the volume for which to perform the task.
             issue_id (int): The ID of the issue for which to perform the task.
             filepath_filter (List[str], optional): Only rename files in this
-            list.
+                list.
                 Defaults to [].
         """
         self._volume_id = volume_id
@@ -541,13 +577,12 @@ class MassConvertIssue(Task):
 
 # region Volume tasks
 @TaskHandler.register_task("auto_search")
-class AutoSearchVolume(Task):
+class AutoSearchVolume(DownloadTask):
     "Do an automatic search for a volume"
 
     stop = False
     message = ""
     display_title = "Auto Search"
-    category = "download"
 
     @property
     def volume_id(self) -> int:
@@ -558,7 +593,7 @@ class AutoSearchVolume(Task):
         return None
 
     def __init__(self, volume_id: int, called_from: str = "") -> None:
-        """Create the task
+        """Create the task.
 
         Args:
             volume_id (int): The id of the volume to search for
@@ -574,9 +609,10 @@ class AutoSearchVolume(Task):
 
         # Get search results and download them
         results = auto_search(self._volume_id)
-        if results:
-            return [(result, self._volume_id, None) for result in results]
-        return []
+        downloads: list[tuple[SearchResultData, int, int | None]] = [
+            (result, self._volume_id, None) for result in results
+        ]
+        return downloads
 
 
 @TaskHandler.register_task("refresh_and_scan")
@@ -586,7 +622,6 @@ class RefreshAndScanVolume(Task):
     stop = False
     message = ""
     display_title = "Refresh And Scan"
-    category = ""
 
     @property
     def volume_id(self) -> int:
@@ -597,7 +632,7 @@ class RefreshAndScanVolume(Task):
         return None
 
     def __init__(self, volume_id: int, called_from: str = "") -> None:
-        """Create the task
+        """Create the task.
 
         Args:
             volume_id (int): The id of the volume for which to perform the task
@@ -627,7 +662,6 @@ class MassRenameVolume(Task):
     stop = False
     message = ""
     display_title = "Mass Rename"
-    category = ""
 
     @property
     def volume_id(self) -> int:
@@ -643,12 +677,12 @@ class MassRenameVolume(Task):
         filepath_filter: list[str] = [],
         called_from: str = "",
     ) -> None:
-        """Create the task
+        """Create the task.
 
         Args:
             volume_id (int): The ID of the volume for which to perform the task.
             filepath_filter (List[str], optional): Only rename files in this
-            list.
+                list.
                 Defaults to [].
         """
         self._volume_id = volume_id
@@ -677,7 +711,6 @@ class MassConvertVolume(Task):
     stop = False
     message = ""
     display_title = "Mass Convert"
-    category = ""
 
     @property
     def volume_id(self) -> int:
@@ -693,12 +726,12 @@ class MassConvertVolume(Task):
         filepath_filter: list[str] = [],
         called_from: str = "",
     ) -> None:
-        """Create the task
+        """Create the task.
 
         Args:
             volume_id (int): The ID of the volume for which to perform the task.
             filepath_filter (List[str], optional): Only convert files in this
-            list.
+                list.
                 Defaults to [].
         """
         self._volume_id = volume_id
@@ -723,13 +756,12 @@ class MassConvertVolume(Task):
 
 # region Library tasks
 @TaskHandler.register_task("update_all")
-class UpdateAll(Task):
+class UpdateAll(LibraryTask):
     "Trigger a refresh and scan for each volume in the library"
 
     stop = False
     message = ""
     display_title = "Update All"
-    category = ""
 
     @property
     def volume_id(self) -> None:
@@ -742,10 +774,11 @@ class UpdateAll(Task):
     def __init__(
         self, allow_skipping: bool = False, called_from: str = ""
     ) -> None:
-        """Create the task
+        """Create the task.
 
         Args:
-            allow_skipping (bool, optional): Skip volumes that have been updated in the last 24 hours.
+            allow_skipping (bool, optional): Skip volumes that have been updated
+                in the last 24 hours.
                 Defaults to False.
         """
         self.allow_skipping = allow_skipping
@@ -768,13 +801,12 @@ class UpdateAll(Task):
 
 
 @TaskHandler.register_task("search_all")
-class SearchAll(Task):
+class SearchAll(LibraryTask, DownloadTask):
     "Trigger an automatic search for each volume in the library"
 
     stop = False
     message = ""
     display_title = "Search All"
-    category = "download"
 
     @property
     def volume_id(self) -> None:
