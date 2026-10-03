@@ -15,6 +15,7 @@ from flask import Flask, request
 from flask.json.provider import DefaultJSONProvider
 from flask_socketio import SocketIO
 from socketio import PubSubManager
+from socketio import Server as SocketIOServer
 from waitress.server import create_server
 from waitress.task import ThreadedTaskDispatcher as TTD
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
@@ -191,7 +192,13 @@ class Server(metaclass=Singleton):
             threads=Constants.HOSTING_THREADS,
         )
 
+        ws = WebSocket()
+
         LOGGER.info(f"Kapowarr running on http://{host}:{port}{self.url_base}")
+        # Start WebSocket thread (don't lazily start)
+        ws.server.manager_initialized = True
+        ws.server.manager.initialize()
+        # Start Waitress
         self.server.run()
 
         return self.__start_type
@@ -336,7 +343,7 @@ class MPWebSocketQueue(PubSubManager):
 # region Websocket
 class WebSocket(SocketIO, metaclass=Singleton):
     server_options: dict
-    server: Any
+    server: SocketIOServer
 
     @property
     def client_manager(self) -> MPWebSocketQueue:
