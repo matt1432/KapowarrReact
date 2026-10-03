@@ -9,7 +9,7 @@ import json
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass
-from datetime import date
+from datetime import date, datetime
 from enum import Enum
 from threading import Event, Thread
 from typing import (
@@ -23,8 +23,7 @@ import requests
 if TYPE_CHECKING:
     from threading import Timer
 
-    from backend.base.helpers import AsyncSession
-    from backend.implementations.volumes import Volume
+    from backend.base.helpers import CommaList
 
 
 # region Types
@@ -145,12 +144,6 @@ class Constants:
     The site URL of Libgen+. It is fetched from the latest commit of this
     project's github repository to ensure users always have a working URL
     """
-
-    GC_SITE_URL = "https://getcomics.org"
-    "The site URL of GetComics"
-
-    GC_SOURCE_TERM = "GetComics"
-    "The name used for GetComics as a download source"
 
     MEGA_API_URL = "https://eu.api.mega.co.nz/cs"
     "The base URL of the Mega API"
@@ -572,6 +565,29 @@ class DownloadType(BaseEnum):
     TORRENT = 2
 
 
+class IndexerClientField(BaseEnum):
+    "A field that the indexer client requires"
+
+    TITLE = "title"
+    ENABLED = "enabled"
+    URL = "url"
+
+    # GC
+    GC_SERVICE_PREFERENCE = "gc_service_preference"
+    GC_AVOID_LARGE_DOWNLOADS = "gc_avoid_large_downloads"
+
+
+class SearchAction(BaseEnum):
+    "The next course of action during a search with an indexer"
+
+    SEARCH_VOLUME = 1
+    SEARCH_ISSUE = 2
+    FETCH_NEXT_PAGE = 3
+    NEXT_QUERY_VARIATION = 4
+    NEXT_TITLE_ALIAS = 5
+    STOP = 6
+
+
 class ExternalClientField(BaseEnum):
     "A field for which the external client possibly requires a value to work"
 
@@ -687,33 +703,6 @@ class DownloadService(BaseEnum):
     ANNAS_ARCHIVE = "Anna's Archive"
 
 
-QUERY_FORMATS: dict[str, tuple[str, ...]] = {
-    "TPB": (
-        "{title} Vol. {volume_number} ({year}) TPB",
-        "{title} ({year}) TPB",
-        "{title} Vol. {volume_number} TPB",
-        "{title} Vol. {volume_number}",
-        "{title}",
-    ),
-    "VAI": ("{title} ({year})", "{title}"),
-    "Volume": (
-        "{title} Vol. {volume_number} ({year})",
-        "{title} ({year})",
-        "{title} Vol. {volume_number}",
-        "{title}",
-    ),
-    "Issue": (
-        "{title} #{issue_number} ({year})",
-        "{title} Vol. {volume_number} #{issue_number}",
-        "{title} #{issue_number}",
-        "{title}",
-    ),
-}
-"""
-Volume SV to query formats used when searching
-"""
-
-
 # region TypedDicts
 class ApiResponse(TypedDict):
     result: Any
@@ -764,6 +753,27 @@ class RemoteMappingData(TypedDict):
     external_download_client_id: int
     remote_path: str
     local_path: str
+
+
+class IndexerClientData(TypedDict):
+    id: int
+    enabled: bool
+    download_type: int
+    client_type: str
+    required_tokens: list[str]
+    title: str
+    url: str
+    gc_service_preference: CommaList
+    gc_avoid_large_downloads: bool
+
+
+class SearchQuery(TypedDict):
+    query: str
+    page: int
+    volume_id: int
+    "Used by indexers that search based on metadata (e.g. Libgen+)"
+    calculated_issue_number: float | None
+    "Used by indexers that search based on metadata (e.g. Libgen+)"
 
 
 class SearchResultData(FilenameData):
@@ -1045,6 +1055,34 @@ class CredentialData:
         return result
 
 
+@dataclass
+class QueryKeys:
+    titles: list[str]
+    year: int | None
+    volume_number: int
+    special_version: SpecialVersion
+    issue_number: str | None
+    volume_id: int
+    "Used by indexers that search based on metadata (e.g. Libgen+)"
+    calculated_issue_number: float | None
+    "Used by indexers that search based on metadata (e.g. Libgen+)"
+
+
+@dataclass
+class QueryResult:
+    results: list[SearchResultData]
+    next_page_available: bool
+
+
+@dataclass
+class SearchIterationStats:
+    result_count: int
+    matched_count: int
+    new_match_count: int
+    next_page_available: bool
+    remaining_wanted_issues: list[int]
+
+
 # region Abstract Classes
 class KapowarrException(Exception, ABC):
     "An exception specific to Kapowarr"
@@ -1206,39 +1244,177 @@ class MassEditorAction(ABC):
         return f"<{self.__class__.__name__}(action={self.identifier}; ids={self.volume_ids}); {id(self)}>"
 
 
-class SearchSource(ABC):
-    def __init__(
-        self,
-        *,
-        query: str,
-        volume: Volume,
-        issue_number: float | tuple[float, float] | None,
-        is_last: bool = False,
-    ) -> None:
-        """Prepare the search source.
+class IndexerClient(ABC):
+    client_type: str
+    "The name of the indexer client (e.g. 'Torznab')"
+
+    download_type: DownloadType
+    "The protocol it supplies downloads for (e.g. torrents)"
+
+    required_tokens: tuple[IndexerClientField, ...]
+    "The keys the client needs or could need for operation"
+
+    allow_multiple_instances: bool
+    """
+    Allow this client to be added multiple times. For something like Torznab,
+    you want that. For something like GC, you don't want to allow that.
+    """
+
+    @property
+    @abstractmethod
+    def id(self) -> int: ...
+
+    @property
+    @abstractmethod
+    def title(self) -> str: ...
+
+    @abstractmethod
+    def __init__(self, indexer_id: int) -> None:
+        """Start the indexer.
 
         Args:
-            query (str): The query to search for.
+            indexer_id (int): The ID of the indexer.
         """
-        self.query = query
-        self.volume = volume
-        self.issue_number = issue_number
-        self.is_last = is_last
-        return
+        ...
 
-    async def search(self, session: AsyncSession) -> list[SearchResultData]:
-        """Search for the query.
+    @abstractmethod
+    def get_indexer_data(self) -> IndexerClientData:
+        """Get info about the indexer.
+
+        Returns:
+            IndexerClientData: The info about the indexer.
+        """
+        ...
+
+    @abstractmethod
+    def update_indexer(self, data: Mapping[str, Any]) -> None:
+        """Edit the indexer.
 
         Args:
-            session (AsyncSession): The session to use for the search.
+            data (Mapping[str, Any]): The keys and their new values for
+                the indexer settings.
+
+        Raises:
+            ClientNotWorking: Can't connect to client.
+            CredentialInvalid: Credentials are invalid.
+            KeyNotFound: A required key was not found.
+            InvalidKeyValue: One of the parameters has an invalid argument.
+        """
+        ...
+
+    @abstractmethod
+    def delete_indexer(self) -> None:
+        """Delete the indexer"""
+        ...
+
+    @abstractmethod
+    async def search(self, query: SearchQuery) -> QueryResult:
+        """Perform a search at the indexer.
+
+        Args:
+            query (SearchQuery): The query to use.
+
+        Returns:
+            QueryResult: The search results.
+        """
+        ...
+
+    @abstractmethod
+    async def discover(self, last_check: datetime) -> list[SearchResultData]:
+        """Get a list of all new releases at the indexer since a certain datetime.
+
+        Args:
+            last_check (datetime): Get the releases starting from, but not
+                including, this datetime.
 
         Returns:
             List[SearchResultData]: The search results.
         """
         ...
 
+    @abstractmethod
+    async def shutdown(self) -> None:
+        """Shutdown the connection to the indexer. Run after search is complete."""
+        ...
+
+    @classmethod
+    @abstractmethod
+    def test(cls, url: str) -> None:
+        """Check if an indexer is working.
+
+        Args:
+            url (str): The url on which the indexer is available.
+
+        Raises:
+            ClientNotWorking: Can't connect to client.
+            CredentialInvalid: Credentials are invalid.
+
+        Returns:
+            None: Test was successful
+        """
+        ...
+
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}(query={self.query}); {id(self)}>"
+        return f"<{self.__class__.__name__}(id={self.id}; title={self.title}); {id(self)}>"
+
+
+class QueryBuilder(ABC):
+    download_type: DownloadType
+    "The protocol the indexers supply downloads for (e.g. torrents)"
+
+    def __init__(self) -> None:
+        self.page = 1
+        self.query_variation_index = 0
+        self.alias_index = 0
+        self.originally_volume_search = False
+        return
+
+    def _update_state(self, search_action: SearchAction) -> None:
+        """Update the core state of the builder, like the page number and
+        various indices.
+
+        Args:
+            search_action (SearchAction): The next action, to act on.
+        """
+        if search_action == SearchAction.SEARCH_VOLUME:
+            self.page = 1
+            self.query_variation_index = 0
+            self.originally_volume_search = True
+
+        elif search_action == SearchAction.SEARCH_ISSUE:
+            self.page = 1
+
+        elif search_action == SearchAction.FETCH_NEXT_PAGE:
+            self.page += 1
+
+        elif search_action == SearchAction.NEXT_QUERY_VARIATION:
+            self.page = 1
+            self.query_variation_index += 1
+
+        elif search_action == SearchAction.NEXT_TITLE_ALIAS:
+            self.page = 1
+            self.alias_index += 1
+            self.query_variation_index = 0
+
+        return
+
+    @abstractmethod
+    def next_query(
+        self, search_action: SearchAction, query_keys: QueryKeys
+    ) -> SearchQuery:
+        """Based on the next action and accompanying metadata of what is being
+        searched of, build a query string for the indexer to use.
+
+        Args:
+            search_action (SearchAction): The next search action that will be
+                performed, based on which a query should be built.
+            query_keys (QueryKeys): The metadata values to fill the fields in
+                the query with.
+
+        Returns:
+            SearchQuery: The resulting query string and which page to fetch.
+        """
+        ...
 
 
 class ExternalDownloadClient(ABC):
@@ -1259,6 +1435,10 @@ class ExternalDownloadClient(ABC):
     @property
     @abstractmethod
     def id(self) -> int: ...
+
+    @property
+    @abstractmethod
+    def enabled(self) -> bool: ...
 
     @property
     @abstractmethod

@@ -34,7 +34,6 @@ export default function LibgenPlus() {
 
     const { refetch: _, ...query } = useGetSettingsQuery(undefined, {
         selectFromResult: ({ data }) => ({
-            enableLibgen: Boolean(data?.enableLibgen),
             autoSearchTorrents: Boolean(data?.autoSearchTorrents),
             includeCoverOnlyFiles: Boolean(data?.includeCoverOnlyFiles),
             includeScannedBooks: Boolean(data?.includeScannedBooks),
@@ -54,12 +53,7 @@ export default function LibgenPlus() {
         [saveSettings],
     );
 
-    const {
-        enableLibgen,
-        autoSearchTorrents,
-        includeCoverOnlyFiles,
-        includeScannedBooks,
-    } = {
+    const { autoSearchTorrents, includeCoverOnlyFiles, includeScannedBooks } = {
         ...query,
         ...draft,
     };
@@ -82,16 +76,6 @@ export default function LibgenPlus() {
                         </p>
 
                         <FieldSet legend={translate('Settings')}>
-                            <FormGroup>
-                                <FormLabel>{translate('Enable')}</FormLabel>
-                                <FormInputGroup
-                                    type="check"
-                                    name="enableLibgen"
-                                    onChange={handleChange}
-                                    value={enableLibgen}
-                                />
-                            </FormGroup>
-
                             <FormGroup>
                                 <FormLabel>
                                     {translate('AutoSearchTorrents')}

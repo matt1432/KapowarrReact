@@ -1,435 +1,429 @@
 from asyncio import gather, run
-
-from libgencomics import LibgenException, LibgenSearch, ResultFile
+from typing import TypedDict
 
 from backend.base.definitions import (
-    QUERY_FORMATS,
-    Constants,
-    DownloadService,
+    IndexerClient,
     MatchedSearchResultData,
+    QueryBuilder,
+    QueryResult,
+    SearchAction,
+    SearchIterationStats,
     SearchResultData,
-    SearchResultMatchData,
-    SearchSource,
     SpecialVersion,
-    VolumeData,
 )
-from backend.base.file_extraction import (
-    extract_filename_data,
-    refine_special_version,
-)
+from backend.base.file_extraction import refine_special_version
 from backend.base.helpers import (
-    AsyncSession,
     check_overlapping_issues,
     extract_year_from_date,
     force_range,
-    get_subclasses,
-    normalise_query_string,
 )
 from backend.base.logging import LOGGER
-from backend.implementations.comicvine import ComicVine
-from backend.implementations.getcomics import search_getcomics
+from backend.implementations.indexer_client_manager import IndexerClients
 from backend.implementations.matching import check_search_result_match
+from backend.implementations.query_builder_manager import QueryBuilders
+from backend.implementations.search_action_planner import SearchActionPlanner
 from backend.implementations.volumes import Volume
 from backend.internals.settings import Settings
 
 
-def _rank_search_result(
-    result: SearchResultData,
-    match_data: SearchResultMatchData,
-    title: str,
-    volume_number: int,
-    year: tuple[int | None, int | None] = (None, None),
-    calculated_issue_number: float | None = None,
-) -> list[int]:
-    """Give a search result a rank, based on which you can sort.
+class IndexerTeam(TypedDict):
+    indexer: IndexerClient
+    query_builder: QueryBuilder
+    search_action_planner: SearchActionPlanner
+
+
+def _result_id(result: SearchResultData) -> str:
+    """Get an identifier of a search result to detect duplicates with. A GC
+    page can be split up in multiple search results, so the sub title is
+    included.
 
     Args:
-        result (MatchedSearchResultData): A search result.
-
-        title (str): Title of volume.
-
-        volume_number (int): The volume number of the volume.
-
-        year (Tuple[Union[int, None], Union[int, None]], optional): The year of
-        the volume and the year of the issue if searching for an issue and
-        release date is known.
-            Defaults to (None, None).
-
-        calculated_issue_number (Union[float, None], optional): The
-        calculated_issue_number of the issue.
-            Defaults to None.
+        result (SearchResultData): The search result.
 
     Returns:
-        List[int]: A list of numbers which determines the ranking of the result.
+        str: The identifier.
     """
-    rating: list[int] = []
-
-    # Prefer matches (False == 0 == higher rank)
-    rating.append(int(not match_data["match"]))
-
-    # The more words in the search term that are present in
-    # the search results' title, the higher ranked it gets
-    split_title = title.split(" ")
-    rating.append(
-        len(
-            [
-                word
-                for word in result["series"].split(" ")
-                if word not in split_title
-            ]
-        )
-    )
-
-    # Prefer volume number or year matches, even better if both match
-    vy_score = 3
-    if (
-        result["volume_number"] is not None
-        and result["volume_number"] == volume_number
-    ):
-        vy_score -= 1
-
-    if (
-        year[1] is not None
-        and result["year"] is not None
-        and year[1] == result["year"]
-    ):
-        # issue year direct match
-        vy_score -= 2
-
-    elif (
-        year[0] is not None
-        and year[1] is not None
-        and result["year"] is not None
-        and year[0] - 1 <= result["year"] <= year[1] + 1
-    ):
-        # fuzzy match between start year and issue year
-        vy_score -= 1
-
-    rating.append(vy_score)
-
-    # Sort on issue number fitting
-    if calculated_issue_number is not None:
-        # Search was for issue
-        if (
-            isinstance(result["issue_number"], float)
-            and calculated_issue_number == result["issue_number"]
-        ):
-            # Issue number is direct match
-            rating.append(0)
-
-        elif isinstance(result["issue_number"], tuple):
-            if (
-                result["issue_number"][0]
-                <= calculated_issue_number
-                <= result["issue_number"][1]
-            ):
-                # Issue number falls between range
-                rating.append(
-                    int(
-                        1
-                        - (
-                            1
-                            / (
-                                result["issue_number"][1]
-                                - result["issue_number"][0]
-                                + 1
-                            )
-                        )
-                    )
-                )
-
-            else:
-                # Issue number falls outside so release is not useful
-                rating.append(3)
-
-        elif result["special_version"] is not None:
-            # Issue number not found but is special version
-            rating.append(2)
-
-        else:
-            # No issue number found and not special version
-            rating.append(3)
-
-    else:
-        # Search was for volume
-        if isinstance(result["issue_number"], tuple):
-            issue_num = (
-                result["issue_number"][1] - result["issue_number"][0] + 1
-            )
-            rating.append(int(1.0 / issue_num) if issue_num != 0 else 0)
-
-        elif isinstance(result["issue_number"], float):
-            rating.append(1)
-
-    return rating
+    return f"{result['link']}-{result['web_sub_title'] or ''}"
 
 
-class SearchGetComics(SearchSource):
-    async def search(self, session: AsyncSession) -> list[SearchResultData]:
-        if not Settings().sv.enable_getcomics:
-            return []
-        return await search_getcomics(session, self.query)
+class SearchCoordinator:
+    """
+    The Search Coordinator handles searching for downloads from start to
+    finish, across all indexers. Initialise a coordinator per volume/issue
+    search.
+    """
 
+    def __init__(self, volume_id: int, wanted_issues: list[int]) -> None:
+        """Initalise the coordinator.
 
-class SearchLibgenPlus(SearchSource):
-    def get_file_result(
-        self,
-        libgen_file_url: str,
-        volume_data: VolumeData,
-    ) -> list[SearchResultData]:
-        results: list[SearchResultData] = []
+        Args:
+            volume_id (int): The ID of the volume to search for.
+            wanted_issues (List[int]): The IDs of the issues to search for.
+        """
+        volume = Volume(volume_id, check_existence=False)
+        self.volume_data = volume.get_data()
+        self.issue_data = volume.get_issues()
+        self.number_to_year: dict[float, int | None] = {
+            i.calculated_issue_number: extract_year_from_date(i.date)
+            for i in self.issue_data
+        }
 
-        file_id = int(libgen_file_url.split("file.php?id=")[-1])
-        file_result = ResultFile(
-            id=file_id, libgen_site_url=Constants.LIBGEN_SITE_URL
-        )
+        self.wanted_issues = wanted_issues
+        self.found_results: list[MatchedSearchResultData] = []
+        self.found_links: set[str] = set()
+        self.is_issue_search = len(self.wanted_issues) == 1
 
-        filename = file_result.filename
+        self.indexers: list[IndexerTeam] = []
+        for client in IndexerClients.get_all_clients():
+            if not client.get_indexer_data()["enabled"]:
+                continue
 
-        if filename:
-            efd = extract_filename_data(filepath=filename)
-
-            download_sources = [
-                DownloadService.LIBGENPLUS.value,
-                DownloadService.LIBGENPLUS_TORRENT.value,
-            ]
-
-            if Settings().sv.flaresolverr_base_url:
-                download_sources.append(DownloadService.ANNAS_ARCHIVE.value)
-
-            results.append(
-                SearchResultData(
-                    series=volume_data.title,
-                    year=volume_data.year,
-                    volume_number=efd["volume_number"],
-                    special_version=efd["special_version"],
-                    issue_number=efd["issue_number"],
-                    annual=efd["annual"],
-                    is_image_file=efd["is_image_file"],
-                    is_metadata_file=efd["is_metadata_file"],
-                    link=f"{Constants.LIBGEN_SITE_URL}/file.php?md5={file_result.get('md5')}",
-                    display_title=filename,
-                    source="Libgen+",
-                    filesize=file_result.filesize,
-                    pages=file_result.pages or 0,
-                    releaser=file_result.releaser or "",
-                    scan_type=file_result.scan_type or "",
-                    resolution=file_result.resolution or "",
-                    dpi=file_result.dpi or "",
-                    extension=file_result.extension or "",
-                    comics_id=int(file_result.get("comics_id"))
-                    if file_result.get("comics_id") is not None
-                    else None,
-                    md5=file_result.get("md5"),
-                    web_sub_title=None,
-                    download_sources=download_sources,
-                    selected_source=None,
-                    notes=None,
-                )
-            )
-        return results
-
-    def _parse_result(
-        self,
-        file_result: ResultFile,
-    ) -> tuple[SearchResultData | None, set[str]]:
-        resulting_libgen_series_ids: set[str] = set()
-        settings = Settings().sv
-
-        issue = file_result.issue
-        filename = file_result.filename
-
-        if not filename:
-            return None, resulting_libgen_series_ids
-
-        if not settings.include_cover_only_files:
-            # we want to filter out cover only files
-            if (
-                file_result.get("scan_content") or ""
-            ) == "cover only" or file_result.pages == 1:
-                return None, resulting_libgen_series_ids
-
-        if not settings.include_scanned_books:
-            # we want to filter out physically scanned books
-            if (file_result.scan_type or "") != "digital":
-                return None, resulting_libgen_series_ids
-
-        if issue is not None:
-            try:
-                if isinstance(issue.series.id, int):
-                    resulting_libgen_series_ids.add(str(issue.series.id))
-            except Exception:
-                pass
-
-        efd = extract_filename_data(filepath=filename)
-
-        download_sources = [
-            DownloadService.LIBGENPLUS.value,
-            DownloadService.LIBGENPLUS_TORRENT.value,
-        ]
-
-        if settings.flaresolverr_base_url:
-            download_sources.append(DownloadService.ANNAS_ARCHIVE.value)
-
-        return SearchResultData(
-            series=issue.series.title or "" if issue else efd["series"],
-            year=issue.year if issue else efd["year"],
-            volume_number=efd["volume_number"],
-            special_version=efd["special_version"],
-            issue_number=efd["issue_number"],
-            annual=efd["annual"],
-            is_image_file=efd["is_image_file"],
-            is_metadata_file=efd["is_metadata_file"],
-            link=f"{Constants.LIBGEN_SITE_URL}/file.php?md5={file_result.get('md5')}",
-            display_title=filename,
-            source="Libgen+",
-            filesize=file_result.filesize,
-            pages=file_result.pages or 0,
-            releaser=file_result.releaser or "",
-            scan_type=file_result.scan_type or "",
-            resolution=file_result.resolution or "",
-            dpi=file_result.dpi or "",
-            extension=file_result.extension or "",
-            comics_id=int(file_result.get("comics_id"))
-            if file_result.get("comics_id") is not None
-            else None,
-            md5=file_result.get("md5"),
-            web_sub_title=None,
-            download_sources=download_sources,
-            selected_source=None,
-            notes=None,
-        ), resulting_libgen_series_ids
-
-    async def _fetch_results(
-        self,
-        issue_number: int | float | tuple[float, float] | None,
-        series_ids: list[int] | None,
-    ) -> list[ResultFile]:
-        file_results: list[ResultFile] = []
-        settings = Settings().sv
-
-        flaresolverr_url = (
-            settings.flaresolverr_base_url + Constants.FS_API_BASE
-            if settings.flaresolverr_base_url != ""
-            else None
-        )
-
-        try:
-            file_results = await LibgenSearch().search_comicvine_id(
-                query=self.query,
-                api_key=settings.comicvine_api_key,
-                id=self.volume.get_data().comicvine_id,
-                issue_number=issue_number,
-                libgen_series_id=series_ids,
-                libgen_site_url=Constants.LIBGEN_SITE_URL,
-                flaresolverr_url=flaresolverr_url,
-                cv_cache=ComicVine().cache,
-            )
-        except LibgenException as e:
-            LOGGER.info(e)
-
-        return file_results
-
-    async def search(
-        self,
-        session: AsyncSession,
-    ) -> list[SearchResultData]:
-        results: list[SearchResultData] = []
-
-        if not Settings().sv.enable_libgen:
-            return results
-
-        issue_number = (
-            int(self.issue_number)
-            if isinstance(self.issue_number, float)
-            and self.issue_number.is_integer()
-            else self.issue_number
-        )
-
-        file_results = await self._fetch_results(issue_number, None)
-
-        resulting_libgen_series_ids: set[str] = set()
-
-        for file_result in file_results:
-            parsed_result, new_series_ids = self._parse_result(file_result)
-            resulting_libgen_series_ids.update(new_series_ids)
-
-            if parsed_result is not None:
-                results.append(parsed_result)
-
-        if (
-            not self.volume.vd.libgen_series_id
-            and len(resulting_libgen_series_ids) != 0
-        ):
-            self.volume.update(
+            self.indexers.append(
                 {
-                    "libgen_series_id": ",".join(resulting_libgen_series_ids),
+                    "indexer": client,
+                    "query_builder": QueryBuilders.get_builder(
+                        client.download_type
+                    )(),
+                    "search_action_planner": SearchActionPlanner(
+                        self.volume_data, self.issue_data, wanted_issues
+                    ),
                 }
             )
 
-        volume_data = self.volume.vd
+        return
 
-        if self.is_last and volume_data.libgen_series_id is not None:
-            libgen_series_id: str = volume_data.libgen_series_id
+    def _rank_search_result(
+        self,
+        result: MatchedSearchResultData,
+        issue_year: int | None = None,
+        calculated_issue_number: float | None = None,
+    ) -> list[int]:
+        """Give a search result a rank, to sort it on.
 
-            series_ids = (
-                list(map(int, libgen_series_id.split(",")))
-                if libgen_series_id is not None and libgen_series_id != ""
-                else None
+        Args:
+            result (MatchedSearchResultData): A search result.
+
+            issue_year (Union[int, None]], optional): The year of the issue,
+                if searching for an issue and release date is known.
+                Defaults to None.
+
+            calculated_issue_number (Union[float, None], optional): The
+                calculated_issue_number of the issue.
+                Defaults to None.
+
+        Returns:
+            List[int]: A list of numbers which determines the ranking of the result.
+        """
+        title = self.volume_data.title
+        volume_number = self.volume_data.volume_number
+        year = self.volume_data.year
+
+        rating: list[int] = []
+
+        # Prefer matches (False == 0 == higher rank)
+        rating.append(int(not result["match"]))
+
+        # The more words in the search term that are present in
+        # the search results' title, the higher ranked it gets
+        split_title = title.split(" ")
+        rating.append(
+            len(
+                [
+                    word
+                    for word in result["series"].split(" ")
+                    if word not in split_title
+                ]
             )
-            if series_ids is not None and len(series_ids) != 0:
-                file_results = await self._fetch_results(
-                    issue_number, series_ids
+        )
+
+        # Prefer volume number or year matches, even better if both match
+        vy_score = 3
+        if (
+            result["volume_number"] is not None
+            and result["volume_number"] == volume_number
+        ):
+            vy_score -= 1
+
+        if (
+            issue_year is not None
+            and result["year"] is not None
+            and issue_year == result["year"]
+        ):
+            # issue year direct match
+            vy_score -= 2
+
+        elif (
+            year is not None
+            and issue_year is not None
+            and result["year"] is not None
+            and year - 1 <= result["year"] <= issue_year + 1
+        ):
+            # fuzzy match between start year and issue year
+            vy_score -= 1
+
+        rating.append(vy_score)
+
+        # Sort on issue number fitting
+        if calculated_issue_number is not None:
+            # Search was for issue
+            if (
+                isinstance(result["issue_number"], float)
+                and calculated_issue_number == result["issue_number"]
+            ):
+                # Issue number is direct match
+                rating.append(0)
+
+            elif isinstance(result["issue_number"], tuple):
+                if (
+                    result["issue_number"][0]
+                    <= calculated_issue_number
+                    <= result["issue_number"][1]
+                ):
+                    # Issue number falls between range
+                    rating.append(
+                        int(
+                            1
+                            - (
+                                1
+                                / (
+                                    result["issue_number"][1]
+                                    - result["issue_number"][0]
+                                    + 1
+                                )
+                            )
+                        )
+                    )
+
+                else:
+                    # Issue number falls outside so release is not useful
+                    rating.append(3)
+
+            elif result["special_version"] is not None:
+                # Issue number not found but is special version
+                rating.append(2)
+
+            else:
+                # No issue number found and not special version
+                rating.append(3)
+
+        else:
+            # Search was for volume
+            if isinstance(result["issue_number"], tuple):
+                issue_num = (
+                    result["issue_number"][1] - result["issue_number"][0] + 1
+                )
+                rating.append(int(1.0 / issue_num) if issue_num != 0 else 0)
+
+            elif isinstance(result["issue_number"], float):
+                rating.append(1)
+                rating.append(int(result["issue_number"]))
+
+        return rating
+
+    async def _run_iteration(self) -> list[QueryResult]:
+        """Run one iteration of the searching loop for all indexers.
+
+        Returns:
+            List[QueryResult]: The search results from the iteration.
+        """
+        actions = [
+            team["search_action_planner"].next_action()
+            for team in self.indexers
+        ]
+
+        # Remove indexers that should stop
+        for idx, (action, _) in list(enumerate(actions)):
+            if action == SearchAction.STOP:
+                del actions[idx]
+                await self.indexers[idx]["indexer"].shutdown()
+                del self.indexers[idx]
+
+        queries = [
+            team["query_builder"].next_query(action, query_keys)
+            for (action, query_keys), team in zip(actions, self.indexers)
+        ]
+
+        result = await gather(
+            *(
+                team["indexer"].search(query)
+                for query, team in zip(queries, self.indexers)
+            )
+        )
+
+        return result
+
+    async def search(self) -> list[MatchedSearchResultData]:
+        """Perform the search.
+
+        Returns:
+            List[MatchedSearchResultData]: All search results.
+        """
+        calculated_issue_number = None
+        issue_year = None
+        if self.is_issue_search and self.indexers:
+            issue_data = self.indexers[0]["search_action_planner"].issue_data[
+                self.wanted_issues[0]
+            ]
+            calculated_issue_number = issue_data.calculated_issue_number
+            issue_year = extract_year_from_date(issue_data.date)
+
+        while self.indexers and self.wanted_issues:
+            all_results = await self._run_iteration()
+
+            for indexer_results, team in zip(all_results, self.indexers):
+                stats = SearchIterationStats(
+                    result_count=len(indexer_results.results),
+                    matched_count=0,
+                    new_match_count=0,
+                    next_page_available=indexer_results.next_page_available,
+                    remaining_wanted_issues=self.wanted_issues,
                 )
 
-                for file_result in file_results:
-                    parsed_result, _ = self._parse_result(file_result)
+                for indexer_result in indexer_results.results:
+                    indexer_result = refine_special_version(
+                        self.volume_data, indexer_result
+                    )
 
-                    if parsed_result is not None:
-                        results.append(parsed_result)
+                    if (
+                        self.volume_data.special_version
+                        == SpecialVersion.VOLUME_AS_ISSUE
+                        and indexer_result["issue_number"] is None
+                    ):
+                        indexer_result["issue_number"] = indexer_result[
+                            "volume_number"
+                        ]
 
-        return results
+                    result_id = _result_id(indexer_result)
+                    is_duplicate = result_id in self.found_links
+
+                    match_result = check_search_result_match(
+                        indexer_result,
+                        self.volume_data,
+                        self.issue_data,
+                        self.number_to_year,
+                        calculated_issue_number,
+                    )
+                    if match_result["match"]:
+                        stats.matched_count += 1
+
+                        if is_duplicate:
+                            pass
+
+                        elif indexer_result["special_version"]:
+                            self.wanted_issues.clear()
+                            stats.new_match_count += 1
+
+                        elif indexer_result["issue_number"] is not None:
+                            n_start, n_end = force_range(
+                                indexer_result["issue_number"]
+                            )
+                            newly_covered_issue = False
+                            for issue in self.issue_data:
+                                if (
+                                    n_start
+                                    <= issue.calculated_issue_number
+                                    <= n_end
+                                ):
+                                    try:
+                                        self.wanted_issues.remove(issue.id)
+                                        newly_covered_issue = True
+                                    except ValueError:
+                                        pass
+
+                            if newly_covered_issue:
+                                stats.new_match_count += 1
+
+                    if not is_duplicate:
+                        self.found_links.add(result_id)
+                        self.found_results.append(
+                            {**indexer_result, **match_result}
+                        )
+
+                team["search_action_planner"].process_stats(stats)
+
+        await gather(
+            *(indexer["indexer"].shutdown() for indexer in self.indexers)
+        )
+
+        for result in self.found_results:
+            result["rank"] = self._rank_search_result(
+                result, issue_year, calculated_issue_number
+            )
+        self.found_results.sort(key=lambda r: r.get("rank", []))
+        return self.found_results
 
 
-async def search_multiple_queries(
-    *queries: str,
-    volume: Volume,
-    issue_number: float | None,
-) -> list[SearchResultData]:
-    """Do a manual search for multiple queries asynchronously.
+def _search_libgen_file(
+    volume_id: int,
+    issue_id: int | None,
+    libgen_file_url: str,
+) -> list[MatchedSearchResultData]:
+    """Get the search result of a specific Libgen+ file.
+
+    Args:
+        volume_id (int): The ID of the volume that the file is for.
+        issue_id (Union[int, None]): The ID of the issue that the file is for,
+            if any.
+        libgen_file_url (str): The URL to the file on Libgen+.
 
     Returns:
-        List[SearchResultData]: The search results for all queries together,
-        duplicates removed.
+        List[MatchedSearchResultData]: The search result of the file, or an
+            empty list if the file wasn't found or Libgen+ is disabled.
     """
-    async with AsyncSession() as session:
-        responses = []
-        for i, query in enumerate(queries):
-            LOGGER.info(f"Searching for {query}")
-            searches = [
-                Source(
-                    query=query,
-                    volume=volume,
-                    issue_number=issue_number,
-                    is_last=i == len(queries) - 1,
-                ).search(session)
-                for Source in get_subclasses(SearchSource)
-            ]
-            responses += await gather(*searches)
+    from backend.implementations.indexer_clients.ddl.LibgenPlus import (
+        LibgenPlusIndexer,
+    )
 
-    search_results: list[SearchResultData] = []
-    processed_links = set()
-    for response in responses:
-        for result in response:
-            result_id = f"{result['link']}-{result['web_sub_title'] or ''}"
+    indexer = next(
+        (
+            client
+            for client in IndexerClients.get_all_clients()
+            if isinstance(client, LibgenPlusIndexer)
+            and client.get_indexer_data()["enabled"]
+        ),
+        None,
+    )
+    if indexer is None:
+        return []
 
-            # Don't add if the link is already in the results
-            # Avoids duplicates, as multiple formats can return the same result
-            if result_id not in processed_links:
-                search_results.append(result)
-                processed_links.add(result_id)
+    volume = Volume(volume_id)
+    volume_data = volume.get_data()
+    volume_issues = volume.get_issues()
+    number_to_year: dict[float, int | None] = {
+        i.calculated_issue_number: extract_year_from_date(i.date)
+        for i in volume_issues
+    }
+    calculated_issue_number: float | None = None
+    if issue_id and volume_data.special_version in (
+        SpecialVersion.NORMAL,
+        SpecialVersion.VOLUME_AS_ISSUE,
+    ):
+        calculated_issue_number = (
+            volume.get_issue(issue_id).get_data().calculated_issue_number
+        )
 
-    return search_results
+    results: list[MatchedSearchResultData] = []
+    for result in indexer.get_file_result(libgen_file_url, volume_data):
+        if (
+            volume_data.special_version == SpecialVersion.VOLUME_AS_ISSUE
+            and result["issue_number"] is None
+        ):
+            result["issue_number"] = result["volume_number"]
+
+        results.append(
+            {
+                **result,
+                **check_search_result_match(
+                    result,
+                    volume_data,
+                    volume_issues,
+                    number_to_year,
+                    calculated_issue_number,
+                ),
+            }
+        )
+
+    return results
 
 
 def manual_search(
@@ -441,8 +435,11 @@ def manual_search(
 
     Args:
         volume_id (int): The id of the volume to search for.
-        issue_id (Union[int, None], optional): The id of the issue to search for,
-        in the case that you want to search for an issue instead of a volume.
+        issue_id (Union[int, None], optional): The ID of the issue to search for,
+            in the case that you want to search for an issue instead of a volume.
+            Defaults to None.
+        libgen_file_url (Union[str, None], optional): Instead of searching,
+            get the search result of this Libgen+ file.
             Defaults to None.
 
     Returns:
@@ -450,133 +447,35 @@ def manual_search(
     """
     volume = Volume(volume_id)
     volume_data = volume.get_data()
-    volume_issues = volume.get_issues()
-    number_to_year: dict[float, int | None] = {
-        i.calculated_issue_number: extract_year_from_date(i.date)
-        for i in volume_issues
-    }
-    issue_number: str | None = None
-    calculated_issue_number: float | None = None
 
-    if issue_id and volume_data.special_version in (
-        SpecialVersion.NORMAL,
-        SpecialVersion.VOLUME_AS_ISSUE,
-    ):
-        issue_data = volume.get_issue(issue_id).get_data()
-        issue_number = issue_data.issue_number
-        calculated_issue_number = issue_data.calculated_issue_number
+    if issue_id:
+        wanted_issues = [issue_id]
+        issue_number = volume.get_issue(issue_id).get_data().issue_number
+    else:
+        wanted_issues = [
+            issue.id for issue in volume.get_issues(_skip_files=True)
+        ]
+        issue_number = None
 
     LOGGER.info(
         "Starting manual search: %s (%d) %s",
         volume_data.title,
         volume_data.year,
-        f"#{calculated_issue_number}" if calculated_issue_number else "",
+        f"#{issue_number}" if issue_number else "",
     )
 
-    for title in (volume_data.title, volume_data.alt_title):
-        if not title:
-            continue
+    if (
+        libgen_file_url is not None
+        and libgen_file_url.count("file.php?id=") != 0
+    ):
+        results = _search_libgen_file(volume_id, issue_id, libgen_file_url)
 
-        if volume_data.special_version == SpecialVersion.TPB:
-            formats = QUERY_FORMATS["TPB"]
+    else:
+        coordinator = SearchCoordinator(volume_id, wanted_issues)
+        results = run(coordinator.search())
 
-        elif volume_data.special_version == SpecialVersion.VOLUME_AS_ISSUE:
-            formats = QUERY_FORMATS["VAI"]
-
-        elif issue_number is None:
-            formats = QUERY_FORMATS["Volume"]
-
-        else:
-            formats = QUERY_FORMATS["Issue"]
-
-        if volume_data.year is None:
-            formats = tuple(f.replace("({year})", "").strip() for f in formats)
-
-        search_title = normalise_query_string(title).replace(":", "")
-        search_titles: list[str] = [search_title]
-
-        if search_title.startswith("The "):
-            search_titles.append(search_title[4:])
-
-        search_results: list[SearchResultData] = []
-
-        if (
-            Settings().sv.enable_libgen
-            and libgen_file_url is not None
-            and libgen_file_url.count("file.php?id=") != 0
-        ):
-            libgen_search = SearchLibgenPlus(
-                query=search_title,
-                volume=volume,
-                issue_number=calculated_issue_number,
-            )
-            search_results = libgen_search.get_file_result(
-                libgen_file_url=libgen_file_url,
-                volume_data=volume_data,
-            )
-
-        else:
-            search_results = run(
-                search_multiple_queries(
-                    *(
-                        format.format(
-                            title=stitle,
-                            volume_number=volume_data.volume_number,
-                            year=volume_data.year,
-                            issue_number=issue_number,
-                        )
-                        for format in formats
-                        for stitle in search_titles
-                    ),
-                    volume=volume,
-                    issue_number=calculated_issue_number,
-                )
-            )
-
-        if not search_results:
-            continue
-
-        results: list[MatchedSearchResultData] = []
-
-        for result in search_results:
-            if (
-                volume_data.special_version == SpecialVersion.VOLUME_AS_ISSUE
-                and result["issue_number"] is None
-            ):
-                result["issue_number"] = result["volume_number"]
-
-            match_data = check_search_result_match(
-                result,
-                volume_data,
-                volume_issues,
-                number_to_year,
-                calculated_issue_number,
-            )
-            results.append(
-                {
-                    **result,
-                    **match_data,
-                    "rank": _rank_search_result(
-                        result,
-                        match_data,
-                        search_title,
-                        volume_data.volume_number,
-                        (
-                            volume_data.year,
-                            number_to_year.get(calculated_issue_number or 0),
-                        ),
-                        calculated_issue_number,
-                    ),
-                }
-            )
-
-        # Sort results; put best result at top
-        results.sort(key=lambda r: r["rank"] if "rank" in r else [])
-
-        LOGGER.debug("Manual search results: %s", results)
-        return results
-
-    return []
+    LOGGER.debug("Manual search results: %s", results)
+    return results
 
 
 def auto_search(
@@ -586,8 +485,8 @@ def auto_search(
 
     Args:
         volume_id (int): The ID of the volume to search for.
-        issue_id (Union[int, None], optional): The id of the issue to search for,
-        in the case that you want to search for an issue instead of a volume.
+        issue_id (Union[int, None], optional): The ID of the issue to search for,
+            in the case that you want to search for an issue instead of a volume.
             Defaults to None.
 
     Returns:
@@ -597,6 +496,7 @@ def auto_search(
     volume_data = volume.get_data()
     volume_issues = volume.get_issues(_skip_files=True)
     volume_issues.sort(key=lambda i: i.calculated_issue_number)
+
     LOGGER.info(
         "Starting auto search for volume %d %s",
         volume_id,
@@ -627,9 +527,10 @@ def auto_search(
         LOGGER.debug(f"Auto search results: {issue_result}")
         return issue_result
 
-    search_results = [
-        r for r in manual_search(volume_id, issue_id) if r["match"]
-    ]
+    coordinator = SearchCoordinator(
+        volume_id, [i[0] for i in searchable_issues]
+    )
+    search_results = [r for r in run(coordinator.search()) if r["match"]]
 
     if issue_id is not None or volume_data.special_version not in (
         SpecialVersion.NORMAL,
@@ -686,21 +587,6 @@ def auto_search(
                 break
         else:
             chosen_downloads.append(result)
-
-    # Find issues that have still not been covered. Might've been that the
-    # download for the issue simply did not pop up on volume search, but will
-    # when searching for the individual issue.
-    missing_issues = [
-        i
-        for i in searchable_issues
-        if not any(
-            check_overlapping_issues(i[1], part["issue_number"])  # pyright: ignore
-            for part in chosen_downloads
-        )
-    ]
-
-    for missing_issue in missing_issues:
-        chosen_downloads.extend(auto_search(volume_id, missing_issue[0]))
 
     LOGGER.debug("Auto search results: %s", chosen_downloads)
     return chosen_downloads

@@ -26,9 +26,6 @@ import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import SettingsToolbar from 'Settings/SettingsToolbar';
 
-// Specific Components
-import ServicePreferenceInput from './ServicePreferenceInput';
-
 // Types
 import type { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectInput';
 import type { SeedingHandling } from 'Helpers/Props/seedingHandlingValues';
@@ -163,18 +160,6 @@ export default function MediaManagement() {
                                 )}
                                 onChange={handleInputChange}
                                 value={changes.deleteCompletedDownloads}
-                            />
-                        </FormGroup>
-                    </FieldSet>
-
-                    <FieldSet
-                        legend={translate('ServicePreference')}
-                        subLegend={translate('ServicePreferenceInfo')}
-                    >
-                        <FormGroup>
-                            <ServicePreferenceInput
-                                value={changes.servicePreference}
-                                onChange={handleInputChange}
                             />
                         </FormGroup>
                     </FieldSet>

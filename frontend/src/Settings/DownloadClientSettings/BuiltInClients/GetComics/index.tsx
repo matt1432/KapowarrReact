@@ -1,62 +1,19 @@
 // IMPORTS
 
-// React
-import { useCallback, useState } from 'react';
-
-// Redux
-import {
-    useGetSettingsQuery,
-    useSaveSettingsMutation,
-} from 'Store/Api/Settings';
-
 // Misc
 import translate from 'Utilities/String/translate';
 
 // General Components
 import Button from 'Components/Link/Button';
-import FieldSet from 'Components/FieldSet';
-import FormGroup from 'Components/Form/FormGroup';
-import FormInputGroup from 'Components/Form/FormInputGroup';
-import FormLabel from 'Components/Form/FormLabel';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalFooter from 'Components/Modal/ModalFooter';
 
 // Specific Components
 import BuiltInClient from '../BuiltInClient';
 
-// Types
-import type { CheckInputChanged } from 'typings/Inputs';
-
 // IMPLEMENTATIONS
 
 export default function GetComics() {
-    const [saveSettings] = useSaveSettingsMutation();
-
-    const { refetch: _, ...query } = useGetSettingsQuery(undefined, {
-        selectFromResult: ({ data }) => ({
-            enableGetcomics: Boolean(data?.enableGetcomics),
-            avoidLargeGetcomicsDL: Boolean(data?.avoidLargeGcDownloads),
-        }),
-    });
-
-    const [draft, setDraft] = useState<Partial<typeof query>>({});
-
-    const handleChange = useCallback(
-        async <K extends keyof typeof query>({
-            name,
-            value,
-        }: CheckInputChanged<K>) => {
-            setDraft((prev) => ({ ...prev, [name]: value }));
-            await saveSettings({ [name]: value });
-        },
-        [saveSettings],
-    );
-
-    const { enableGetcomics, avoidLargeGetcomicsDL } = {
-        ...query,
-        ...draft,
-    };
-
     return (
         <BuiltInClient title="GetComics">
             {(onModalClose) => (
@@ -87,30 +44,6 @@ export default function GetComics() {
                             Preferring external services in the service
                             preference list is advised in order to avoid this.
                         </p>
-
-                        <FieldSet legend={translate('Settings')}>
-                            <FormGroup>
-                                <FormLabel>{translate('Enable')}</FormLabel>
-                                <FormInputGroup
-                                    type="check"
-                                    name="enableGetcomics"
-                                    onChange={handleChange}
-                                    value={enableGetcomics}
-                                />
-                            </FormGroup>
-
-                            <FormGroup>
-                                <FormLabel>
-                                    {translate('AvoidLargeGetComicsDownloads')}
-                                </FormLabel>
-                                <FormInputGroup
-                                    type="check"
-                                    name="avoidLargeGetcomicsDL"
-                                    onChange={handleChange}
-                                    value={avoidLargeGetcomicsDL}
-                                />
-                            </FormGroup>
-                        </FieldSet>
                     </ModalBody>
 
                     <ModalFooter>

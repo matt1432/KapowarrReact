@@ -398,7 +398,7 @@ class DownloadHandler(metaclass=Singleton):
         Returns:
             Union[str, None]: The service type of the link or `None` if unknown.
         """
-        if link.startswith(Constants.GC_SITE_URL):
+        if link.startswith("https://getcomics.org"):
             return "gc"
         if link.startswith(Constants.LIBGEN_SITE_URL):
             return "lg"

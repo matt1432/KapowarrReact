@@ -1,5 +1,4 @@
 import type { DateType } from 'Helpers/Props/dateTypes';
-import type { GCDownloadSource } from 'Helpers/Props/GCDownloadSources';
 import type { ProxyType } from 'Helpers/Props/proxyTypes';
 import type { SeedingHandling } from 'Helpers/Props/seedingHandlingValues';
 import type { CamelCasedProperties } from 'type-fest';
@@ -9,7 +8,6 @@ export interface RawSettingsValue {
     auth_password: string;
     auth_username: string;
     auto_search_torrents: boolean;
-    avoid_large_gc_downloads: boolean;
     change_file_date: string | null;
     chmod_folder: string;
     chown_group: string;
@@ -21,8 +19,6 @@ export interface RawSettingsValue {
     delete_completed_downloads: boolean;
     delete_empty_folders: boolean;
     download_folder: string;
-    enable_getcomics: boolean;
-    enable_libgen: boolean;
     extract_issue_ranges: boolean;
     failing_download_timeout: number;
     file_naming: string;
@@ -48,7 +44,6 @@ export interface RawSettingsValue {
     rename_downloaded_files: boolean;
     replace_illegal_characters: boolean;
     seeding_handling: SeedingHandling;
-    service_preference: GCDownloadSource[];
     unmonitor_deleted_issues: boolean;
     url_base: string;
     volume_folder_naming: string;

@@ -28,7 +28,6 @@ from backend.base.definitions import (
     Constants,
     DateType,
     FileDate,
-    GCDownloadService,
     OSType,
     ProxyType,
     SeedingHandling,
@@ -151,12 +150,6 @@ class PublicSettingsValues:
     extract_issue_ranges: bool = False
     format_preference: CommaList = field(default_factory=lambda: CommaList(""))
 
-    service_preference: CommaList = field(
-        default_factory=lambda: CommaList(
-            s.value for s in GCDownloadService._member_map_.values()
-        )
-    )
-    avoid_large_gc_downloads: bool = False
     download_folder: str = folder_path("temp_downloads")
     concurrent_direct_downloads: int = 1
     failing_download_timeout: int = 0
@@ -165,9 +158,6 @@ class PublicSettingsValues:
 
     date_type: DateType = DateType.COVER_DATE
 
-    enable_getcomics: bool = True
-
-    enable_libgen: bool = True
     auto_search_torrents: bool = False
     include_cover_only_files: bool = False
     include_scanned_books: bool = False
@@ -588,21 +578,6 @@ class Settings(metaclass=Singleton):
             available = ConvertersManager.get_available_formats()
             for entry in value:
                 if entry not in available:
-                    raise InvalidKeyValue(key, value)
-
-            converted_value = value
-
-        elif key == "service_preference":
-            available = [
-                s.value for s in GCDownloadService._member_map_.values()
-            ]
-
-            for entry in value:
-                if entry not in available:
-                    raise InvalidKeyValue(key, value)
-
-            for entry in available:
-                if entry not in value:
                     raise InvalidKeyValue(key, value)
 
             converted_value = value

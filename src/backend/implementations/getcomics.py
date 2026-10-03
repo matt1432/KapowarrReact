@@ -2,7 +2,6 @@
 Getting downloads from a GC page
 """
 
-import re
 from asyncio import gather, sleep
 from functools import reduce
 from hashlib import sha1
@@ -22,7 +21,6 @@ from backend.base.custom_exceptions import (
 from backend.base.definitions import (
     GC_DOWNLOAD_SERVICE_TERMS,
     BlocklistReason,
-    Constants,
     Download,
     DownloadClientIdentifier,
     DownloadGroup,
@@ -53,83 +51,18 @@ from backend.implementations.blocklist import (
 )
 from backend.implementations.download_client_manager import DownloadClients
 from backend.implementations.external_client_manager import ExternalClients
+from backend.implementations.indexer_client_manager import IndexerClients
 from backend.implementations.matching import download_group_filter
 from backend.implementations.volumes import Volume
 from backend.internals.db import iter_commit
-from backend.internals.settings import Settings
 
 mediafire_dd_regex = compile(
     r"https?://download\d+\.mediafire\.com/", IGNORECASE
 )
 size_regex = compile(r"\d+(?:\.\d+)?\s*(?:B|Ki?B|Mi?B|Gi?B|Ti?B)", IGNORECASE)
-MAX_PAGE_DEPTH = 10
 
 
 # region Scraping
-def _get_page_count(soup: BeautifulSoup) -> int:
-    """From a search result page, extract the total page count.
-
-    Args:
-        soup (BeautifulSoup): The soup of the search result page.
-
-    Returns:
-        int: The number of pages. E.g. `10` means 10 pages of search results.
-    """
-    page_links = soup.find_all(["a", "span"], {"class": "page-numbers"})
-
-    if not page_links:
-        return 1
-
-    return int(
-        page_links[-1].get_text(strip=True).replace(",", "").replace(".", "")
-    )
-
-
-def _get_articles(soup: BeautifulSoup) -> list[tuple[str, str, int]]:
-    """From a GC search result page, extract article (single search result)
-    data.
-
-    Args:
-        soup (BeautifulSoup): The soup of the GC search result page.
-
-    Returns:
-        List[Tuple[str, str, int]]: The data of the articles. First string is
-            the link, second string is the title, the integer is the byte size.
-    """
-    result: list[tuple[str, str, int]] = []
-
-    for article in soup.select("article.post"):
-        title_el = article.select_one("h1.post-title")
-        if not title_el:
-            continue
-
-        link_el = title_el.select_one("a")
-        if not link_el:
-            continue
-
-        anchor = title_el.find("a")
-        if not anchor:
-            continue
-
-        link: str = first_of_range(anchor.get("href") or "")
-        title = title_el.get_text(strip=True)
-
-        size_container = title_el.next_sibling
-        if not isinstance(size_container, Tag):
-            size = 0
-        else:
-            size_p = next(size_container.children, None)
-            if not size_p:
-                size = 0
-            else:
-                size_text = size_p.get_text().split("Size : ")[1]
-                size = normalise_size(size_text)
-
-        result.append((link, title, size))
-
-    return result
-
-
 def _get_title(soup: BeautifulSoup) -> str | None:
     """From a GC article, extract the title of the article.
 
@@ -377,8 +310,9 @@ def _get_download_groups(soup: BeautifulSoup) -> list[DownloadGroup]:
     download_groups = __extract_button_links(body, torrent_client_available)
     download_groups.extend(__extract_list_links(body, torrent_client_available))
 
-    settings = Settings().sv
-    service_preference = settings.service_preference
+    indexer_data = IndexerClients.get_client(1).get_indexer_data()
+    service_preference = indexer_data["gc_service_preference"]
+
     avoid_gc_preference = service_preference.copy()
     avoid_gc_preference.remove(GCDownloadService.GETCOMICS)
     avoid_gc_preference.append(GCDownloadService.GETCOMICS)
@@ -390,7 +324,7 @@ def _get_download_groups(soup: BeautifulSoup) -> list[DownloadGroup]:
                 group["links"].items(),
                 key=lambda k: (
                     avoid_gc_preference.index(k[0].value)
-                    if settings.avoid_large_gc_downloads
+                    if indexer_data["gc_avoid_large_downloads"]
                     and group["size"] >= 400000000
                     else service_preference.index(k[0].value)
                 ),
@@ -811,163 +745,6 @@ async def _test_paths(
         raise EnqueuingDownloadFailure(
             EnqueuingDownloadFailureReason.NO_WORKING_LINKS
         )
-
-
-# region Searching
-async def _search_page(session: AsyncSession, url: str, query: str):
-    return await session.get_text(
-        url,
-        params={"s": query},
-        quiet_fail=True,
-    )
-
-
-async def search_getcomics(
-    session: AsyncSession,
-    query: str,
-) -> list[SearchResultData]:
-    """Give the search results from GC for the query.
-
-    Args:
-        session (AsyncSession): The session to make the requests with.
-        query (str): The query to use.
-
-    Returns:
-        List[SearchResultData]: The search results.
-    """
-    # Fetch first page and determine max pages
-    first_page = await session.get_text(
-        Constants.GC_SITE_URL, params={"s": query}, quiet_fail=True
-    )
-    if not first_page:
-        return []
-
-    first_soup = BeautifulSoup(first_page, "html.parser")
-    max_page = min(_get_page_count(first_soup), MAX_PAGE_DEPTH)
-
-    # Fetch pages beyond first concurrently
-    other_tasks = [
-        _search_page(session, f"{Constants.GC_SITE_URL}/page/{page}", query)
-        for page in range(2, max_page + 1)
-    ]
-
-    if Settings().sv.flaresolverr_base_url:
-        # FlareSolverr available, run at full speed
-        other_htmls = await gather(*other_tasks)
-    else:
-        # FlareSolverr not available, run at sequencial speed
-        other_htmls = [await task for task in other_tasks]
-
-    other_soups = [
-        BeautifulSoup(html, "html.parser") for html in other_htmls if html
-    ]
-
-    # Process the search results on each page
-    formatted_results: list[SearchResultData] = []
-    for soup in (first_soup, *other_soups):
-        for article in _get_articles(soup):
-            efd = extract_filename_data(
-                filepath=article[1],
-                assume_volume_number=False,
-                fix_year=True,
-            )
-
-            has_multiple_articles = False
-
-            if isinstance(efd["volume_number"], tuple) or isinstance(
-                efd["issue_number"], tuple
-            ):
-                gcp = GetComicsPage(article[0])
-                await gcp.load_data()
-
-                if len(gcp.download_groups) > 1:
-                    has_multiple_articles = True
-
-                    # Has separate download groups so we show them as individual search results
-                    for group in gcp.download_groups:
-                        display_title = group["web_sub_title"]
-
-                        match = re.search(
-                            r"\(([^()]*)\)\s*:?$", group["web_sub_title"]
-                        )
-                        if match is not None:
-                            display_title = group["web_sub_title"][
-                                : match.start(1) - 1
-                            ]
-
-                        efd = extract_filename_data(
-                            filepath=display_title,
-                            assume_volume_number=False,
-                            fix_year=True,
-                        )
-
-                        formatted_results.append(
-                            SearchResultData(
-                                series=efd["series"],
-                                year=efd["year"],
-                                volume_number=efd["volume_number"],
-                                special_version=efd["special_version"],
-                                issue_number=efd["issue_number"],
-                                annual=efd["annual"],
-                                is_metadata_file=efd["is_metadata_file"],
-                                is_image_file=efd["is_image_file"],
-                                link=article[0],
-                                display_title=display_title,
-                                source=Constants.GC_SOURCE_TERM,
-                                filesize=group["size"],
-                                pages=None,
-                                releaser=None,
-                                scan_type=None,
-                                resolution=None,
-                                dpi=None,
-                                extension=None,
-                                comics_id=None,
-                                md5=None,
-                                web_sub_title=group["web_sub_title"],
-                                download_sources=[
-                                    s.value
-                                    for s in GCDownloadService._member_map_.values()
-                                ],
-                                selected_source=None,
-                                notes=None,
-                            )
-                        )
-
-            if has_multiple_articles:
-                continue
-
-            formatted_results.append(
-                SearchResultData(
-                    series=efd["series"],
-                    year=efd["year"],
-                    volume_number=efd["volume_number"],
-                    special_version=efd["special_version"],
-                    issue_number=efd["issue_number"],
-                    annual=efd["annual"],
-                    is_metadata_file=efd["is_metadata_file"],
-                    is_image_file=efd["is_image_file"],
-                    link=article[0],
-                    display_title=article[1],
-                    source=Constants.GC_SOURCE_TERM,
-                    filesize=article[2],
-                    pages=None,
-                    releaser=None,
-                    scan_type=None,
-                    resolution=None,
-                    dpi=None,
-                    extension=None,
-                    comics_id=None,
-                    md5=None,
-                    web_sub_title=None,
-                    download_sources=[
-                        s.value for s in GCDownloadService._member_map_.values()
-                    ],
-                    selected_source=None,
-                    notes=None,
-                )
-            )
-
-    return formatted_results
 
 
 # region Processing
