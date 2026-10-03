@@ -11,7 +11,7 @@
 > - I will still do my best to keep up to date with upstream, but if you start using
     this fork, you might not be able go back to upstream since I've changed some things
     in the database.
-> - Currently at https://github.com/Casvt/Kapowarr/commit/426f752330b9970306655b97bd384777ac8a2176
+> - Currently at https://github.com/Casvt/Kapowarr/commit/bde9da7af58aa04dd24376502deb48542743b0e0
 
 Kapowarr React is a software to build and manage a comic book library, fitting in
 the *arr suite of software.
