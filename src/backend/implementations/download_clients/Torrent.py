@@ -113,7 +113,6 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         self._dpi = dpi
         self._extension = extension
 
-        self._original_files: list[str] = []
         if external_client:
             self._external_client = external_client
             if external_id and isinstance(self._external_client, qBittorrent):

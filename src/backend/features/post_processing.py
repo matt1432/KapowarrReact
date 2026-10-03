@@ -1,10 +1,5 @@
-"""
-The post-download processing (a.k.a. post-processing or PP) of downloads.
-"""
-
 from __future__ import annotations
 
-from collections.abc import Callable
 from os.path import basename, dirname, exists, isfile, join, splitext
 from time import time
 from typing import TYPE_CHECKING
@@ -25,7 +20,6 @@ from backend.implementations.ad_removal import remove_ads
 from backend.implementations.blocklist import add_to_blocklist
 from backend.implementations.conversion import mass_convert
 from backend.implementations.converters import extract_files_from_folder
-from backend.implementations.download_clients.Torrent import TorrentDownload
 from backend.implementations.file_matching import scan_files
 from backend.implementations.file_processing import mass_process_files
 from backend.implementations.naming import mass_rename
@@ -38,26 +32,24 @@ if TYPE_CHECKING:
     from backend.base.definitions import Download
 
 
-# region General
-def reset_file_link(download: TorrentDownload) -> None:
-    "Set download.files back to original folder from the copied folder"
-    download.files = download._original_files
-    return
+class PostProcessingContext:
+    def __init__(self, download: Download) -> None:
+        self.download = download
+        self.original_files = download.files
+        return
 
+    # region Ctx Database
+    def remove_from_queue(self) -> None:
+        "Delete the download from the queue in the database"
+        get_db().execute(
+            "DELETE FROM download_queue WHERE id = ?", (self.download.id,)
+        ).connection.commit()
+        return
 
-# region Database
-def remove_from_queue(download: Download) -> None:
-    "Delete the download from the queue in the database"
-    get_db().execute(
-        "DELETE FROM download_queue WHERE id = ?", (download.id,)
-    ).connection.commit()
-    return
-
-
-def add_to_history(download: Download) -> None:
-    "Add the download to history in the database"
-    get_db().execute(
-        """
+    def add_to_history(self) -> None:
+        "Add the download to history in the database"
+        get_db().execute(
+            """
             INSERT INTO download_history(
                 web_link, web_title, web_sub_title,
                 file_title,
@@ -69,356 +61,339 @@ def add_to_history(download: Download) -> None:
                 :volume_id, :issue_id,
                 :source, :downloaded_at, :success
             );
-        """,
-        {
-            "web_link": download.web_link,
-            "web_title": download.web_title,
-            "web_sub_title": download.web_sub_title,
-            "file_title": download.title,
-            "volume_id": download.volume_id,
-            "issue_id": download.issue_id,
-            "source": download.source_name,
-            "downloaded_at": round(time()),
-            "success": download.state != DownloadState.FAILED_STATE,
-        },
-    )
-    return
-
-
-def add_file_to_database(download: Download) -> None:
-    "Register files in database and match to a volume/issue"
-    scan_files(
-        download.volume_id,
-        file_extra_info=download.get_file_extra_info(),
-        filepath_filter=download.files,
-        update_websocket=True,
-    )
-    return
-
-
-# region Blocklist
-def add_dl_to_blocklist(download: Download) -> None:
-    "Add the download to the blocklist in the database"
-    add_to_blocklist(
-        download.web_link,
-        download.web_title,
-        download.web_sub_title,
-        download.download_link,
-        download.download_service,
-        download.volume_id,
-        download.issue_id,
-        BlocklistReason.LINK_BROKEN,
-    )
-    return
-
-
-# region Moving
-def move_to_dest(download: Download) -> None:
-    "Move file/fold from download folder to final destination"
-    if not exists(download.files[0]):
-        return
-
-    folder = Volume(download.volume_id).vd.folder
-    extension = splitext(download.files[0])[1].lower()
-    if extension not in FileConstants.SCANNABLE_EXTENSIONS:
-        extension = ""
-
-    file_dest = join(folder, download.filename_body + extension)
-    LOGGER.debug(
-        f"Moving download to final destination: {download}, Dest: {file_dest}"
-    )
-
-    # If it takes very long to delete/move the file/folder (because of its size),
-    # the DB is left locked for a long period leading to timeouts.
-    commit()
-
-    if exists(file_dest):
-        LOGGER.warning(
-            f"The file/folder {file_dest} already exists; replacing with downloaded file"
+            """,
+            {
+                "web_link": self.download.web_link,
+                "web_title": self.download.web_title,
+                "web_sub_title": self.download.web_sub_title,
+                "file_title": self.download.title,
+                "volume_id": self.download.volume_id,
+                "issue_id": self.download.issue_id,
+                "source": self.download.source_name,
+                "downloaded_at": round(time()),
+                "success": self.download.state != DownloadState.FAILED_STATE,
+            },
         )
-        delete_file_folder(file_dest)
-
-    rename_file(download.files[0], file_dest)
-    download.files = [file_dest]
-    return
-
-
-def move_torrent_to_dest(download: TorrentDownload) -> None:
-    """
-    Move folder downloaded using torrent from download folder to
-    final destination, extract files, scan them, rename them.
-    """
-    if not exists(download.files[0]):
         return
 
-    # Is a Libgen torrent file
-    if download.filename is not None:
-        download.files = [
-            join(
-                download.files[0],
-                basename(download.filename),
-                download.filename,
-            )
-        ]
-        move_to_dest(download)
-    else:
-        move_to_dest(download)
-
-        download.files = extract_files_from_folder(
-            download.files[0], download.volume_id
+    def add_file_to_database(self) -> None:
+        "Register files in database and match to a volume/issue"
+        scan_files(
+            self.download.volume_id,
+            file_extra_info=self.download.get_file_extra_info(),
+            filepath_filter=self.download.files,
+            update_websocket=True,
         )
-
-    if not download.files:
         return
 
-    scan_files(
-        download.volume_id,
-        file_extra_info=download.get_file_extra_info(),
-        filepath_filter=download.files,
-        update_websocket=True,
-    )
-
-    rename_files = Settings().sv.rename_downloaded_files
-    if rename_files:
-        download.files = mass_rename(
-            download.volume_id,
-            filepath_filter=download.files,
-            process_individual_files=False,
+    # region Ctx Blocklist
+    def add_dl_to_blocklist(self) -> None:
+        "Add the download to the blocklist in the database"
+        add_to_blocklist(
+            self.download.web_link,
+            self.download.web_title,
+            self.download.web_sub_title,
+            self.download.download_link,
+            self.download.download_service,
+            self.download.volume_id,
+            self.download.issue_id,
+            BlocklistReason.LINK_BROKEN,
         )
-
-    return
-
-
-def copy_file_torrent(download: TorrentDownload) -> None:
-    """
-    Copy downloaded files to dest. Change download.file to copy.
-    Change back using `PPA.reset_file_link()`.
-    """
-    download._original_files = download.files
-    if not exists(download.files[0]):
         return
 
-    folder = Volume(download.volume_id).vd.folder
+    # region Ctx Moving
+    def move_to_dest(self) -> None:
+        "Move file/fold from download folder to final destination"
+        if not exists(self.download.files[0]):
+            return
 
-    file_dest = join(folder, basename(download.files[0]))
-    if download.filename is None:
+        folder = Volume(self.download.volume_id).vd.folder
+        extension = splitext(self.download.files[0])[1].lower()
+        if extension not in FileConstants.SCANNABLE_EXTENSIONS:
+            extension = ""
+
+        file_dest = join(folder, self.download.filename_body + extension)
         LOGGER.debug(
-            f"Copying download to final destination: {download}, Dest: {file_dest}"
+            f"Moving download to final destination: {self.download}, Dest: {file_dest}"
         )
 
-    # If it takes very long to delete/copy the folder (because of its size),
-    # the DB is left locked for a long period leading to timeouts.
-    commit()
+        # If it takes very long to delete/move the file/folder (because of its size),
+        # the DB is left locked for a long period leading to timeouts.
+        commit()
 
-    # Is a Libgen torrent file
-    if download.filename is not None:
-        file_dest = join(
-            dirname(download.files[0]), f"{basename(download.files[0])}-copy"
-        )
-        if exists(file_dest):
-            delete_file_folder(file_dest)
-
-        copy_directory(download.files[0], file_dest)
-
-        download.files = [
-            join(file_dest, basename(download.filename), download.filename)
-        ]
-        move_to_dest(download)
-        delete_file_folder(file_dest)
-    else:
         if exists(file_dest):
             LOGGER.warning(
                 f"The file/folder {file_dest} already exists; replacing with downloaded file"
             )
             delete_file_folder(file_dest)
 
-        copy_directory(download.files[0], file_dest)
-
-        download.files = extract_files_from_folder(
-            file_dest, download.volume_id
-        )
-
-    if not download.files:
+        rename_file(self.download.files[0], file_dest)
+        self.download.files = [file_dest]
         return
 
-    scan_files(
-        download.volume_id,
-        file_extra_info=download.get_file_extra_info(),
-        filepath_filter=download.files,
-        update_websocket=True,
-    )
+    def move_torrent_to_dest(self) -> None:
+        """
+        Move folder downloaded using torrent from download folder to
+        final destination, extract files, scan them, rename them.
+        """
+        # Only set for Libgen torrent files
+        filename: str | None = getattr(self.download, "filename", None)
 
-    rename_files = Settings().sv.rename_downloaded_files
-    if rename_files:
-        download.files = mass_rename(
-            download.volume_id,
-            filepath_filter=download.files,
-            process_individual_files=False,
+        if not exists(self.download.files[0]):
+            return
+
+        # Is a Libgen torrent file
+        if filename is not None:
+            self.download.files = [
+                join(
+                    self.download.files[0],
+                    basename(filename),
+                    filename,
+                )
+            ]
+            self.move_to_dest()
+        else:
+            self.move_to_dest()
+
+            self.download.files = extract_files_from_folder(
+                self.download.files[0], self.download.volume_id
+            )
+
+        if not self.download.files:
+            return
+
+        scan_files(
+            self.download.volume_id,
+            file_extra_info=self.download.get_file_extra_info(),
+            filepath_filter=self.download.files,
+            update_websocket=True,
         )
 
-    return
+        rename_files = Settings().sv.rename_downloaded_files
+        if rename_files:
+            self.download.files = mass_rename(
+                self.download.volume_id,
+                filepath_filter=self.download.files,
+                process_individual_files=False,
+            )
 
+        return
 
-# region Extras
-def delete_file(download: Download) -> None:
-    "Delete file from download folder"
-    for f in download.files:
-        delete_file_folder(f)
-    return
+    def copy_file_torrent(self) -> None:
+        "Copy downloaded files to dest. Change download.file to copy."
+        # Only set for Libgen torrent files
+        filename: str | None = getattr(self.download, "filename", None)
 
+        if not exists(self.download.files[0]):
+            return
 
-def rename_with_proper_extension(download: Download) -> None:
-    """
-    Rename a file with the proper extension based on mimetype. Rescan files
-    in case a rename is done.
-    """
-    renamed_files: dict[str, str] = {}
-    for idx, file in enumerate(download.files):
-        if not isfile(file):
-            continue
+        folder = Volume(self.download.volume_id).vd.folder
 
-        new_file = set_detected_extension(file)
-        if new_file != file:
-            rename_file(file, new_file)
-            download.files[idx] = new_file
-            renamed_files[file] = new_file
+        file_dest = join(folder, basename(self.download.files[0]))
+        if filename is None:
+            LOGGER.debug(
+                f"Copying download to final destination: {self.download}, Dest: {file_dest}"
+            )
 
-    if renamed_files:
-        FilesDB.update_filepaths(renamed_files)
+        # If it takes very long to delete/copy the folder (because of its size),
+        # the DB is left locked for a long period leading to timeouts.
         commit()
 
-    return
+        # Is a Libgen torrent file
+        if filename is not None:
+            file_dest = join(
+                dirname(self.download.files[0]),
+                f"{basename(self.download.files[0])}-copy",
+            )
+            if exists(file_dest):
+                delete_file_folder(file_dest)
 
+            copy_directory(self.download.files[0], file_dest)
 
-def convert_file(download: Download) -> None:
-    "Convert a file into a different format based on settings"
-    if not Settings().sv.convert:
+            self.download.files = [
+                join(
+                    file_dest,
+                    basename(filename),
+                    filename,
+                )
+            ]
+            self.move_to_dest()
+            delete_file_folder(file_dest)
+        else:
+            if exists(file_dest):
+                LOGGER.warning(
+                    f"The file/folder {file_dest} already exists; replacing with downloaded file"
+                )
+                delete_file_folder(file_dest)
+
+            copy_directory(self.download.files[0], file_dest)
+
+            self.download.files = extract_files_from_folder(
+                file_dest, self.download.volume_id
+            )
+
+        if not self.download.files:
+            return
+
+        scan_files(
+            self.download.volume_id,
+            file_extra_info=self.download.get_file_extra_info(),
+            filepath_filter=self.download.files,
+            update_websocket=True,
+        )
+
+        rename_files = Settings().sv.rename_downloaded_files
+        if rename_files:
+            self.download.files = mass_rename(
+                self.download.volume_id,
+                filepath_filter=self.download.files,
+                process_individual_files=False,
+            )
+
         return
 
-    download.files += mass_convert(
-        volume_id=download.volume_id,
-        issue_id=download.issue_id,
-        filepath_filter=download.files,
-        file_extra_info=download.get_file_extra_info(),
-        update_websocket_progress=True,
-        update_websocket_files=True,
-        process_individual_files=False,
-    )
-    return
-
-
-def set_file_properties(download: Download) -> None:
-    "Process the file to set ownership, permissions and file date"
-
-    mass_process_files(download.volume_id, download.issue_id)
-    return
-
-
-def remove_ads_from_files(download: Download) -> None:
-    "Remove most last page ads from files downloaded"
-    if not Settings().sv.remove_ads:
+    # region Ctx Extras
+    def delete_file(self) -> None:
+        "Delete file from download folder"
+        for f in self.download.files:
+            delete_file_folder(f)
         return
 
-    for f in download.files:
-        if exists(f):
-            remove_ads(f)
-    return
+    def rename_with_proper_extension(self) -> None:
+        """
+        Rename a file with the proper extension based on mimetype. Rescan files
+        in case a rename is done.
+        """
+        renamed_files: dict[str, str] = {}
+        for idx, file in enumerate(self.download.files):
+            if not isfile(file):
+                continue
+
+            new_file = set_detected_extension(file)
+            if new_file != file:
+                rename_file(file, new_file)
+                self.download.files[idx] = new_file
+                renamed_files[file] = new_file
+
+        if renamed_files:
+            FilesDB.update_filepaths(renamed_files)
+            commit()
+
+        return
+
+    def convert_file(self) -> None:
+        "Convert a file into a different format based on settings"
+        if not Settings().sv.convert:
+            return
+
+        self.download.files += mass_convert(
+            volume_id=self.download.volume_id,
+            issue_id=self.download.issue_id,
+            filepath_filter=self.download.files,
+            file_extra_info=self.download.get_file_extra_info(),
+            update_websocket_progress=True,
+            update_websocket_files=True,
+            process_individual_files=False,
+        )
+        return
+
+    def set_file_properties(self) -> None:
+        "Process the file to set ownership, permissions and file date"
+        mass_process_files(self.download.volume_id, self.download.issue_id)
+        return
+
+    def remove_ads_from_files(self) -> None:
+        "Remove most last page ads from files downloaded"
+        if not Settings().sv.remove_ads:
+            return
+
+        for f in self.download.files:
+            if exists(f):
+                remove_ads(f)
+        return
 
 
 # region Post-Processors
 class PostProcessor:
-    actions_success = [
-        remove_from_queue,
-        add_to_history,
-        move_to_dest,
-        rename_with_proper_extension,
-        add_file_to_database,
-        convert_file,
-        set_file_properties,
-        remove_ads_from_files,
-    ]
-
-    actions_seeding: list[Callable] = []
-
-    actions_canceled = [delete_file, remove_from_queue]
-
-    actions_shutdown = [delete_file]
-
-    actions_failed = [remove_from_queue, add_to_history, delete_file]
-
-    actions_perm_failed = [
-        remove_from_queue,
-        add_to_history,
-        add_dl_to_blocklist,
-        delete_file,
-    ]
-
-    @staticmethod
-    def _run_actions(actions: list, download: Download) -> None:
-        for action in actions:
-            action(download)
+    def __init__(self, download: Download) -> None:
+        self.download = download
+        self.ctx = PostProcessingContext(download)
         return
 
-    @classmethod
-    def success(cls, download: Download) -> None:
-        LOGGER.info(f"Postprocessing of successful download: {download.id}")
-        cls._run_actions(cls.actions_success, download)
-        return
-
-    @classmethod
-    def seeding(cls, download: Download) -> None:
-        LOGGER.info(f"Postprocessing of seeding download: {download.id}")
-        cls._run_actions(cls.actions_seeding, download)
-        return
-
-    @classmethod
-    def canceled(cls, download: Download) -> None:
-        LOGGER.info(f"Postprocessing of canceled download: {download.id}")
-        cls._run_actions(cls.actions_canceled, download)
-        return
-
-    @classmethod
-    def shutdown(cls, download: Download) -> None:
-        LOGGER.info(f"Postprocessing of shut down download: {download.id}")
-        cls._run_actions(cls.actions_shutdown, download)
-        return
-
-    @classmethod
-    def failed(cls, download: Download) -> None:
-        LOGGER.info(f"Postprocessing of failed download: {download.id}")
-        cls._run_actions(cls.actions_failed, download)
-        return
-
-    @classmethod
-    def perm_failed(cls, download: Download) -> None:
+    def success(self) -> None:
         LOGGER.info(
-            f"Postprocessing of permanently failed download: {download.id}"
+            f"Postprocessing of successful download: {self.download.id}"
         )
-        cls._run_actions(cls.actions_perm_failed, download)
+        self.ctx.remove_from_queue()
+        self.ctx.add_to_history()
+        self.ctx.move_to_dest()
+        self.ctx.rename_with_proper_extension()
+        self.ctx.add_file_to_database()
+        self.ctx.convert_file()
+        self.ctx.set_file_properties()
+        self.ctx.remove_ads_from_files()
+        return
+
+    def seeding(self) -> None:
+        return
+
+    def canceled(self) -> None:
+        LOGGER.info(f"Postprocessing of canceled download: {self.download.id}")
+        self.ctx.delete_file()
+        self.ctx.remove_from_queue()
+        return
+
+    def shutdown(self) -> None:
+        LOGGER.info(f"Postprocessing of shut down download: {self.download.id}")
+        self.ctx.delete_file()
+        return
+
+    def failed(self) -> None:
+        LOGGER.info(f"Postprocessing of failed download: {self.download.id}")
+        self.ctx.remove_from_queue()
+        self.ctx.add_to_history()
+        self.ctx.delete_file()
+        return
+
+    def perm_failed(self) -> None:
+        LOGGER.info(
+            f"Postprocessing of permanently failed download: {self.download.id}"
+        )
+        self.ctx.remove_from_queue()
+        self.ctx.add_to_history()
+        self.ctx.add_dl_to_blocklist()
+        self.ctx.delete_file()
         return
 
 
 class PostProcessorTorrentsComplete(PostProcessor):
-    actions_success = [
-        remove_from_queue,
-        add_to_history,
-        move_torrent_to_dest,
-        convert_file,
-        set_file_properties,
-        remove_ads_from_files,
-    ]
+    def success(self) -> None:
+        LOGGER.info(
+            f"Postprocessing of successful download: {self.download.id}"
+        )
+        self.ctx.remove_from_queue()
+        self.ctx.add_to_history()
+        self.ctx.move_torrent_to_dest()
+        self.ctx.convert_file()
+        self.ctx.set_file_properties()
+        self.ctx.remove_ads_from_files()
+        return
 
 
 class PostProcessorTorrentsCopy(PostProcessor):
-    actions_success = [
-        remove_from_queue,
-        delete_file,
-    ]
+    def success(self) -> None:
+        LOGGER.info(
+            f"Postprocessing of successful download: {self.download.id}"
+        )
+        self.ctx.remove_from_queue()
+        self.ctx.delete_file()
+        return
 
-    actions_seeding = [
-        add_to_history,
-        copy_file_torrent,
-        convert_file,
-        set_file_properties,
-        reset_file_link,
-    ]
+    def seeding(self) -> None:
+        LOGGER.info(f"Postprocessing of seeding download: {self.download.id}")
+        self.ctx.add_to_history()
+        self.ctx.copy_file_torrent()
+        self.ctx.convert_file()
+        self.ctx.set_file_properties()
+        self.download.files = self.ctx.original_files
+        return

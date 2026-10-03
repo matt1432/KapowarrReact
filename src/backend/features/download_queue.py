@@ -92,15 +92,16 @@ class DownloadHandler(metaclass=Singleton):
                 self._remove_all_of_service(e.service, exclude_id=download.id)
 
         ws.emit(status_event)
+        pp = PostProcessor(download)
         if download.state == DownloadState.SHUTDOWN_STATE:
-            PostProcessor.shutdown(download)
+            pp.shutdown()
             return
 
         elif download.state == DownloadState.CANCELED_STATE:
-            PostProcessor.canceled(download)
+            pp.canceled()
 
         elif download.state == DownloadState.FAILED_STATE:
-            PostProcessor.failed(download)
+            pp.failed()
 
         elif download.state == DownloadState.DOWNLOADING_STATE:
             download.state = DownloadState.IMPORTING_STATE
@@ -109,7 +110,7 @@ class DownloadHandler(metaclass=Singleton):
             # While this download is post-processing, start the next one.
             self._process_queue()
 
-            PostProcessor.success(download)
+            pp.success()
 
         self.queue.remove(download)
         ws.emit(RemovedFromQueueEvent(download))
@@ -126,10 +127,7 @@ class DownloadHandler(metaclass=Singleton):
         """
         download.run()
 
-        PostProcessorExternal: (
-            type[PostProcessorTorrentsComplete]
-            | type[PostProcessorTorrentsCopy]
-        )
+        pp: PostProcessorTorrentsComplete | PostProcessorTorrentsCopy
 
         ws = WebSocket()
         status_event = QueueStatusEvent(download)
@@ -138,10 +136,10 @@ class DownloadHandler(metaclass=Singleton):
         )
 
         if seeding_handling == SeedingHandling.COMPLETE:
-            PostProcessorExternal = PostProcessorTorrentsComplete
+            pp = PostProcessorTorrentsComplete(download)
 
         elif seeding_handling == SeedingHandling.COPY:
-            PostProcessorExternal = PostProcessorTorrentsCopy
+            pp = PostProcessorTorrentsCopy(download)
 
         else:
             assert_never(seeding_handling)
@@ -156,13 +154,13 @@ class DownloadHandler(metaclass=Singleton):
 
             if download.state == DownloadState.CANCELED_STATE:
                 download.remove_from_client(delete_files=True)
-                PostProcessorExternal.canceled(download)
+                pp.canceled()
                 self.queue.remove(download)
                 break
 
             elif download.state == DownloadState.FAILED_STATE:
                 download.remove_from_client(delete_files=True)
-                PostProcessorExternal.perm_failed(download)
+                pp.perm_failed()
                 self.queue.remove(download)
                 break
 
@@ -175,12 +173,12 @@ class DownloadHandler(metaclass=Singleton):
                 and not files_copied
             ):
                 files_copied = True
-                PostProcessorExternal.seeding(download)
+                pp.seeding()
 
             elif download.state == DownloadState.IMPORTING_STATE:
                 if self.settings.sv.delete_completed_downloads:
                     download.remove_from_client(delete_files=False)
-                PostProcessorExternal.success(download)
+                pp.success()
                 self.queue.remove(download)
                 break
 
@@ -674,7 +672,7 @@ class DownloadHandler(metaclass=Singleton):
             )
         ):
             self.queue.remove(download)
-            PostProcessor.canceled(download)
+            PostProcessor(download).canceled()
             WebSocket().emit(RemovedFromQueueEvent(download))
 
         if blocklist:
