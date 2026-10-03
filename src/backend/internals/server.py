@@ -799,6 +799,25 @@ class HostingChangesHandler(StartTypeHandler):
         return
 
 
+@StartTypeHandlers.register_handler(StartType.RESTART_DB_CHANGES)
+class DatabaseChangesHandler(StartTypeHandler):
+    description = "database import"
+    timeout = Constants.DB_REVERT_TIME
+    restart_on_timeout = True
+
+    def on_timeout(self) -> None:
+        from backend.internals.db_backup_import import revert_db_import
+
+        revert_db_import(swap=True)
+        return
+
+    def on_diffuse(self) -> None:
+        from backend.internals.db_backup_import import revert_db_import
+
+        revert_db_import(swap=False)
+        return
+
+
 # region Subprocess Handling
 def setup_process(
     log_level: int,

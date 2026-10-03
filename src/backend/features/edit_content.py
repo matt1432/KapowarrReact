@@ -66,7 +66,7 @@ def _get_main_thumbnails_folder() -> str:
         str: the path
     """
     return join(
-        dirname(DBConnection.file) or folder_path(*Constants.DB_FOLDER),
+        dirname(DBConnection.default_file) or folder_path(*Constants.DB_FOLDER),
         Constants.THUMBNAILS_FOLDER_NAME,
     )
 

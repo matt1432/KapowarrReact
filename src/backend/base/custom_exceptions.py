@@ -10,6 +10,7 @@ from backend.base.definitions import (
     DownloadService,
     DownloadType,
     EnqueuingDownloadFailureReason,
+    InvalidDatabaseReason,
     KapowarrException,
 )
 from backend.base.logging import LOGGER
@@ -122,6 +123,50 @@ class FileNotFound(KapowarrException):
             "code": 404,
             "error": self.__class__.__name__,
             "result": {"file_id": self.file_id, "filepath": self.filepath},
+        }
+
+
+class InvalidDatabaseFile(KapowarrException):
+    "The uploaded database file is invalid or not supported"
+
+    def __init__(self, filepath_db: str, reason: InvalidDatabaseReason) -> None:
+        self.filepath_db = filepath_db
+        self.reason = reason
+        LOGGER.warning(
+            "The given database file is invalid: %s (reason=%s)",
+            filepath_db,
+            reason,
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {
+                "filepath_db": self.filepath_db,
+                "reason": self.reason.value,
+            },
+        }
+
+
+class DatabaseFileNotFound(KapowarrException):
+    "The index of the database backup is invalid"
+
+    def __init__(self, backup_index: int) -> None:
+        self.backup_index = backup_index
+        LOGGER.warning(
+            "The given database backup index is invalid: %d", backup_index
+        )
+        return
+
+    @property
+    def api_response(self) -> ApiResponse:
+        return {
+            "code": 400,
+            "error": self.__class__.__name__,
+            "result": {"index": self.backup_index},
         }
 
 

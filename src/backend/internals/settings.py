@@ -4,7 +4,7 @@ from functools import lru_cache
 from importlib.metadata import version
 from logging import INFO
 from os import urandom
-from os.path import abspath, isdir, join, sep
+from os.path import abspath, dirname, isdir, join, sep
 from secrets import token_bytes
 from typing import Any, TypedDict
 
@@ -86,7 +86,7 @@ def get_about_data() -> AboutData:
         version=f"v{version('KapowarrReact')}",
         python_version=get_python_version(),
         database_version=DatabaseMigrationHandler.latest_db_version(),
-        database_location=DBConnection.file,
+        database_location=DBConnection.default_file,
         data_folder=folder_path(),
         os=System.os_type.value,
         runs_64bit=System.runs_64bit,
@@ -116,6 +116,11 @@ class PublicSettingsValues:
     proxy_password: str = ""
     proxy_ignored_addresses: CommaList = field(
         default_factory=lambda: CommaList(["localhost", "127.0.0.1"])
+    )
+
+    db_backup_amount: int = 3
+    db_backup_folder: str = field(
+        default_factory=lambda: dirname(DBConnection.default_file)
     )
 
     rename_downloaded_files: bool = True
@@ -481,6 +486,18 @@ class Settings(metaclass=Singleton):
         elif key == "proxy_password":
             if value == Constants.CREDENTIAL_REPLACEMENT:
                 converted_value = self.sv.proxy_password
+
+        elif key == "db_backup_amount":
+            if value < 0:
+                raise InvalidKeyValue(key, value)
+
+        elif key == "db_backup_folder":
+            if not isdir(value):
+                raise FolderNotFound(value)
+
+            converted_value = uppercase_drive_letter(
+                force_suffix(abspath(value))
+            )
 
         elif key == "comicvine_api_key":
             from backend.implementations.comicvine import ComicVine

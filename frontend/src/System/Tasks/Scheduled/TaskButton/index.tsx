@@ -33,13 +33,15 @@ export default function TaskButton({ taskName }: TaskButtonProps) {
     const { isUpdateAllRunning, isSearchAllRunning } = useRootSelector(
         (state) => state.socketEvents,
     );
-    const isRunning = useMemo(
-        () =>
-            taskName === commandNames.SEARCH_ALL
-                ? isSearchAllRunning
-                : isUpdateAllRunning,
-        [isSearchAllRunning, isUpdateAllRunning, taskName],
-    );
+    const isRunning = useMemo(() => {
+        if (taskName === commandNames.SEARCH_ALL) {
+            return isSearchAllRunning;
+        }
+        if (taskName === commandNames.UPDATE_ALL) {
+            return isUpdateAllRunning;
+        }
+        return false;
+    }, [isSearchAllRunning, isUpdateAllRunning, taskName]);
 
     const [executeCommand] = useExecuteCommandMutation();
 

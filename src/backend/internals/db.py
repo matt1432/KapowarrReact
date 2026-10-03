@@ -113,6 +113,9 @@ class DBConnectionManager(type):
     instances: dict[int, DBConnection] = {}
 
     def __call__(cls, **kwargs: Any) -> DBConnection:
+        if kwargs.get("db_file"):
+            return super().__call__(**kwargs)
+
         thread_id = current_thread_id()
 
         if thread_id not in cls.instances or cls.instances[thread_id].closed:
@@ -131,20 +134,33 @@ class DBConnectionManager(type):
 
 
 class DBConnection(Connection, metaclass=DBConnectionManager):
-    file = ""
+    default_file = ""
 
-    def __init__(self, *, timeout: float = Constants.DB_TIMEOUT) -> None:
+    def __init__(
+        self,
+        *,
+        db_file: str | None = None,
+        timeout: float = Constants.DB_TIMEOUT,
+    ) -> None:
         """Create a connection with a database
 
         Args:
+            db_file (Union[str, None], optional): The database file to connect
+                to. If `None`, the default file will be used. If something else
+                than the default file is given, then a new connection will
+                always be returned.
+                Defaults to None.
+
             timeout (float, optional): How long to wait before giving up
                 on a command.
                 Defaults to Constants.DB_TIMEOUT.
         """
         self.closed = False
+        self.db_file = db_file or self.default_file
+
         LOGGER.debug(f"Creating connection {self}")
         super().__init__(
-            self.file, timeout=timeout, detect_types=PARSE_DECLTYPES
+            self.db_file, timeout=timeout, detect_types=PARSE_DECLTYPES
         )
         super().cursor().execute("PRAGMA foreign_keys = ON;")
         return
@@ -161,20 +177,37 @@ class DBConnection(Connection, metaclass=DBConnectionManager):
             KapowarrCursor: The database cursor.
         """
         if not hasattr(g, "cursors"):
-            g.cursors = []
+            g.cursors = {}
 
-        if not g.cursors:
+        if self.db_file not in g.cursors:
+            g.cursors[self.db_file] = []
+
+        if not g.cursors[self.db_file]:
             c = KapowarrCursor(self)
             c.row_factory = Row
-            g.cursors.append(c)
+            g.cursors[self.db_file].append(c)
 
         if not force_new:
-            return g.cursors[0]
+            return g.cursors[self.db_file][0]
         else:
             c = KapowarrCursor(self)
             c.row_factory = Row
-            g.cursors.append(c)
-            return g.cursors[-1]
+            g.cursors[self.db_file].append(c)
+            return g.cursors[self.db_file][-1]
+
+    def create_backup(self, filepath: str) -> None:
+        """Create a backup of the current database.
+
+        Args:
+            filepath (str): What the filepath of the backup will be.
+        """
+        self.execute("VACUUM INTO ?;", (filepath,))
+        return
+
+    def merge_wal_files(self) -> None:
+        "Merge the WAL files into the main database file"
+        self.execute("PRAGMA wal_checkpoint(TRUNCATE);")
+        return
 
     def close(self) -> None:
         """Close the database connection"""
@@ -213,7 +246,7 @@ def set_db_location(db_folder: str | None) -> None:
 
     create_folder(dirname(db_file_location))
 
-    DBConnection.file = db_file_location
+    DBConnection.default_file = db_file_location
 
     return
 
@@ -273,14 +306,14 @@ def close_db(_e: BaseException | None = None) -> None:
         return
 
     try:
-        cursors = g.cursors
-        db: DBConnection = cursors[0].connection
-        for c in cursors:
-            c.close()
+        for cursors in g.cursors.values():
+            db: DBConnection = cursors[0].connection
+            for c in cursors:
+                c.close()
+            db.commit()
+            if not current_thread().name.startswith("waitress-"):
+                DBConnectionManager.close_connection_of_thread()
         delattr(g, "cursors")
-        db.commit()
-        if not current_thread().name.startswith("waitress-"):
-            DBConnectionManager.close_connection_of_thread()
 
     except ProgrammingError:
         pass

@@ -8,6 +8,7 @@ export const commandNames = {
     CONVERT_ISSUE: 'mass_convert_issue',
     UPDATE_ALL: 'update_all',
     SEARCH_ALL: 'search_all',
+    BACKUP_DB: 'backup_db',
 } as const;
 
 export default commandNames;

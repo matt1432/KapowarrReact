@@ -182,7 +182,8 @@ class ComicVine:
 
         # Place the cache db at the same place as the Kapowarr db
         cache_file_location = join(
-            dirname(DBConnection.file) or folder_path(*Constants.DB_FOLDER),
+            dirname(DBConnection.default_file)
+            or folder_path(*Constants.DB_FOLDER),
             Constants.CV_CACHE_NAME,
         )
 

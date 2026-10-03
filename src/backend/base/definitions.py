@@ -66,6 +66,12 @@ class Constants:
     DB_NAME = "Kapowarr.db"
     "Name of database file itself"
 
+    DB_ORIGINAL_NAME = "Kapowarr_original.db"
+    "Name of database file when backed up because a new database is imported"
+
+    DB_UPLOAD_NAME = "Kapowarr_upload.db"
+    "Name of database file that is being imported"
+
     CV_CACHE_NAME = "cv_cache.sqlite"
     "Name of database file itself"
 
@@ -73,6 +79,12 @@ class Constants:
 
     DB_TIMEOUT = 10.0  # seconds
     "Seconds to wait on database command before timing out"
+
+    DB_REVERT_TIME = 60.0  # seconds
+    """
+    After a new database is imported, how long the user has to access the web-UI
+    before the import is reverted
+    """
 
     DB_MAX_CONCURRENT_CONNECTIONS = 32
     "Maximum allowed database connections to be open at the same time"
@@ -360,6 +372,25 @@ class StartType(BaseEnum):
 
     RESTART_HOSTING_CHANGES = 132
     "A restart because changes to the hosting settings were made"
+
+    RESTART_DB_CHANGES = 133
+    "A restart because a database import was done"
+
+
+class InvalidDatabaseReason(BaseEnum):
+    "The reason that a database file is invalid"
+
+    DOES_NOT_EXIST = "does_not_exist"
+    "Database file does not exist"
+
+    NOT_KAPOWARR_DB = "not_kapowarr_db"
+    "Uploaded database is not a Kapowarr database file"
+
+    VERSION_NOT_SUPPORTED = "version_not_supported"
+    """
+    Uploaded database is higher version than this Kapowarr installation can\
+    support
+    """
 
 
 class ProxyType(BaseEnum):
@@ -736,6 +767,13 @@ class FileExtraInfo(TypedDict):
     resolution: str | None
     dpi: str | None
     notes: str | None
+
+
+class DatabaseBackupEntry(TypedDict):
+    index: int
+    creation_date: int
+    filepath: str
+    filename: str
 
 
 class FilenameData(FileExtraInfo):
