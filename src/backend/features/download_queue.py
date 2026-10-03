@@ -11,12 +11,12 @@ from libgencomics import get_annas_archive_download
 from backend.base.custom_exceptions import (
     ClientNotWorking,
     DownloadLimitReached,
+    DownloadLinkBroken,
     DownloadQueueEntryNotFound,
     DownloadQueueEntryUnmovable,
     EnqueuingDownloadFailure,
     InvalidKeyValue,
     IssueNotFound,
-    LinkBroken,
 )
 from backend.base.definitions import (
     BlocklistReason,
@@ -725,7 +725,7 @@ class DownloadHandler(metaclass=Singleton):
                     )
                 dl_instance.id = download["id"]
 
-            except LinkBroken:
+            except DownloadLinkBroken:
                 # Link is broken
 
                 issue_id = None

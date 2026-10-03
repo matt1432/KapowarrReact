@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from bs4 import BeautifulSoup, Tag
 
 from backend.base.custom_exceptions import (
-    LinkBroken,
+    DownloadLinkBroken,
 )
 from backend.base.definitions import DownloadClientIdentifier
 from backend.base.helpers import first_of_range
@@ -36,7 +36,7 @@ class MediaFireDownload(BaseDirectDownload):
         soup = BeautifulSoup(r.text, "html.parser")
         button = soup.find("a", {"id": "downloadButton"})
         if not isinstance(button, Tag):
-            raise LinkBroken(self.download_link)
+            raise DownloadLinkBroken(self.download_link)
 
         href: str = first_of_range(button["href"])
 
@@ -47,7 +47,7 @@ class MediaFireDownload(BaseDirectDownload):
         if data_scrambled_url:
             return b64decode(first_of_range(data_scrambled_url)).decode("utf-8")
 
-        raise LinkBroken(self.download_link)
+        raise DownloadLinkBroken(self.download_link)
 
 
 @DownloadClients.register_client(DownloadClientIdentifier.MEDIAFIRE_FOLDER)

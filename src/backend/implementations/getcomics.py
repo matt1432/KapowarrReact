@@ -15,9 +15,9 @@ from bs4 import BeautifulSoup, Tag
 
 from backend.base.custom_exceptions import (
     DownloadLimitReached,
+    DownloadLinkBroken,
     EnqueuingDownloadFailure,
     IssueNotFound,
-    LinkBroken,
 )
 from backend.base.definitions import (
     GC_DOWNLOAD_SOURCE_TERMS,
@@ -527,7 +527,7 @@ async def __purify_link(
         link (str): The link in the GC article.
 
     Raises:
-        LinkBroken: Link is invalid, not supported or broken.
+        DownloadLinkBroken: Link is invalid, not supported or broken.
         ClientError: Failed to fetch link.
 
     Returns:
@@ -544,7 +544,7 @@ async def __purify_link(
     async with AsyncSession() as session:
         r = await session.get(link)
     if not r.ok:
-        raise LinkBroken(link)
+        raise DownloadLinkBroken(link)
     url = str(r.real_url)
     content_type = r.headers.getone("Content-Type", "")
 
@@ -559,7 +559,7 @@ async def __purify_link(
     elif source == GCDownloadSource.MEDIAFIRE:
         if "error.php" in url:
             # Link is broken
-            raise LinkBroken(link)
+            raise DownloadLinkBroken(link)
 
         elif "/folder/" in url:
             # Folder download
@@ -639,7 +639,7 @@ async def __purify_download_group(
             try:
                 pure_link, identifier = await __purify_link(source, link)
 
-            except LinkBroken:
+            except DownloadLinkBroken:
                 # Link broken
                 add_to_blocklist(
                     web_link=web_link,
@@ -670,7 +670,7 @@ async def __purify_download_group(
                     forced_match=forced_match,
                 )
 
-            except LinkBroken:
+            except DownloadLinkBroken:
                 # DL limit reached, link broken
                 add_to_blocklist(
                     web_link=web_link,

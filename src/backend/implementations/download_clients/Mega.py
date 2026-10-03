@@ -20,8 +20,8 @@ from backend.base.custom_exceptions import (
     ClientNotWorking,
     CredentialInvalid,
     DownloadLimitReached,
+    DownloadLinkBroken,
     IssueNotFound,
-    LinkBroken,
 )
 from backend.base.definitions import (
     BaseEnum,
@@ -658,7 +658,7 @@ class Mega(MegaABC):
                 raise JSONDecodeError("", "", -1)
 
         except (JSONDecodeError, RetryError):
-            raise LinkBroken(download_link)
+            raise DownloadLinkBroken(download_link)
 
         if res.get("tl", 0):  # tl = time left
             # Download limit reached
@@ -719,14 +719,14 @@ class Mega(MegaABC):
     def _parse_url(download_link: str) -> tuple[str, str]:
         regex_search = mega_url_regex.search(download_link)
         if not regex_search:
-            raise LinkBroken(download_link)
+            raise DownloadLinkBroken(download_link)
 
         groups = regex_search.groupdict()
         id = groups["ID1"] or groups["ID2"] or groups["ID3"]
         key = groups["K1"] or groups["K2"] or groups["K3"]
 
         if not (id and key):
-            raise LinkBroken(download_link)
+            raise DownloadLinkBroken(download_link)
 
         return id, key
 
@@ -851,7 +851,7 @@ class MegaFolder(MegaABC):
                 raise JSONDecodeError("", "", -1)
 
         except (JSONDecodeError, RetryError):
-            raise LinkBroken(download_link)
+            raise DownloadLinkBroken(download_link)
 
         self.files: list[dict[str, Any]] = []
         self.mega_filename = ""
@@ -889,14 +889,14 @@ class MegaFolder(MegaABC):
     def _parse_url(folder_link: str) -> tuple[str, str]:
         regex_search = mega_folder_regex.search(folder_link)
         if not regex_search:
-            raise LinkBroken(folder_link)
+            raise DownloadLinkBroken(folder_link)
 
         groups = regex_search.groupdict()
         id = groups["ID"]
         key = groups["KEY"]
 
         if not (id and key):
-            raise LinkBroken(folder_link)
+            raise DownloadLinkBroken(folder_link)
 
         return id, key
 
@@ -934,7 +934,7 @@ class MegaFolder(MegaABC):
                         raise JSONDecodeError("", "", -1)
 
                 except (JSONDecodeError, RetryError):
-                    raise LinkBroken(self.download_link)
+                    raise DownloadLinkBroken(self.download_link)
 
                 if res.get("tl", 0):  # tl = time left
                     # Download limit reached
