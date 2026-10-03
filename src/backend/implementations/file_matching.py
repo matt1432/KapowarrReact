@@ -141,7 +141,9 @@ def scan_files(
             )
             continue
 
-        file_data = extract_filename_data(filepath=file, vd=volume_data)
+        file_data = extract_filename_data(
+            filepath=file, assume_volume_number=False, vd=volume_data
+        )
 
         # Check if file matches volume
         if not file_importing_filter(

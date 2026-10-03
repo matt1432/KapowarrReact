@@ -728,7 +728,9 @@ def check_mock_filename(
                     mock_issue.date
                 )
             }
-            efd = extract_filename_data(filepath=resulting_name)
+            efd = extract_filename_data(
+                filepath=resulting_name, assume_volume_number=False
+            )
             if not (
                 file_importing_filter(
                     efd, mock_volume, [mock_issue], number_to_year
