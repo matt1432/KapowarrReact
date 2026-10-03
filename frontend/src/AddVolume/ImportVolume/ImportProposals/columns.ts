@@ -1,11 +1,6 @@
 import type { TableState } from 'Store/Slices/TableOptions';
 
-export type ProposalColumnName =
-    | 'selected'
-    | 'file'
-    | 'cvLink'
-    | 'issueCount'
-    | 'actions';
+export type ProposalColumnName = 'selected' | 'file' | 'cvLink' | 'actions';
 
 export default {
     sortKey: null,
@@ -23,12 +18,6 @@ export default {
         },
         {
             name: 'cvLink',
-            isSortable: false,
-            isModifiable: false,
-            isVisible: true,
-        },
-        {
-            name: 'issueCount',
             isSortable: false,
             isModifiable: false,
             isVisible: true,

@@ -58,6 +58,7 @@ export interface RawComicVineResult {
     title: string;
     issue_count: number;
     link: string;
+    year?: number | null;
 }
 export type ComicVineResult = CamelCasedProperties<RawComicVineResult>;
 

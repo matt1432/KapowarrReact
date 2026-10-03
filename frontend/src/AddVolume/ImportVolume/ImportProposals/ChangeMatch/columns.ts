@@ -2,7 +2,7 @@ import { sortDirections } from 'Helpers/Props';
 
 import type { TableState } from 'Store/Slices/TableOptions';
 
-export type ChangeMatchColumnName = 'title' | 'issueCount' | 'actions';
+export type ChangeMatchColumnName = 'title' | 'actions';
 
 export default {
     sortKey: 'title',
@@ -14,12 +14,6 @@ export default {
     columns: [
         {
             name: 'title',
-            isModifiable: true,
-            isSortable: true,
-            isVisible: true,
-        },
-        {
-            name: 'issueCount',
             isModifiable: true,
             isSortable: true,
             isVisible: true,

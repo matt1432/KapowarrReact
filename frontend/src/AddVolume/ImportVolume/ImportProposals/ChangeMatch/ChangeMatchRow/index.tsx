@@ -14,6 +14,9 @@ import Link from 'Components/Link/Link';
 import TableRow from 'Components/Table/TableRow';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 
+// Specific Components
+import buildMatchTitle from '../../buildMatchTitle';
+
 // CSS
 import styles from './index.module.css';
 
@@ -56,14 +59,13 @@ export default function ChangeMatchRow({
                 if (name === 'title') {
                     return (
                         <TableRowCell key={name}>
-                            <Link to={match.siteUrl}>{match.title}</Link>
-                        </TableRowCell>
-                    );
-                }
-                if (name === 'issueCount') {
-                    return (
-                        <TableRowCell key={name}>
-                            {match.issueCount}
+                            <Link to={match.siteUrl}>
+                                {buildMatchTitle(
+                                    match.title,
+                                    match.year,
+                                    match.issueCount,
+                                )}
+                            </Link>
                         </TableRowCell>
                     );
                 }

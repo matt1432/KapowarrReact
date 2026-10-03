@@ -20,6 +20,7 @@ import TableRowCell from 'Components/Table/Cells/TableRowCell';
 
 // Specific Components
 import ChangeMatchModal from '../ChangeMatch/ChangeMatchModal';
+import buildMatchTitle from '../buildMatchTitle';
 
 // CSS
 import styles from './index.module.css';
@@ -79,6 +80,7 @@ export default function ProposalRow({
                     title: match.title,
                     issueCount: match.issueCount,
                     link: match.siteUrl,
+                    year: match.year,
                 },
             );
             setChangeMatchModalClosed();
@@ -130,15 +132,12 @@ export default function ProposalRow({
                     return (
                         <TableRowCell key={name}>
                             <Link to={currentMatch.link}>
-                                {currentMatch.title}
+                                {buildMatchTitle(
+                                    currentMatch.title,
+                                    currentMatch.year ?? null,
+                                    currentMatch.issueCount,
+                                )}
                             </Link>
-                        </TableRowCell>
-                    );
-                }
-                if (name === 'issueCount') {
-                    return (
-                        <TableRowCell key={name}>
-                            {currentMatch.issueCount}
                         </TableRowCell>
                     );
                 }
