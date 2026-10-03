@@ -388,7 +388,7 @@ class InvalidDatabaseReason(BaseEnum):
 
     VERSION_NOT_SUPPORTED = "version_not_supported"
     """
-    Uploaded database is higher version than this Kapowarr installation can\
+    Uploaded database is higher version than this Kapowarr installation can
     support
     """
 
