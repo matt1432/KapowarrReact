@@ -648,7 +648,7 @@ class Settings(metaclass=Singleton):
             InvalidKeyValue: Value of the key is not allowed.
         """
         settings_after_update = SettingsValues(
-            **{**self.get_settings().todict(), **formatted_data}
+            **{**self.get_settings().todict(to_public=False), **formatted_data}
         )
 
         if settings_after_update.proxy_type != ProxyType.NONE:
