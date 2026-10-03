@@ -1,13 +1,9 @@
-"""
-Background tasks and their handling
-"""
-
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from threading import Thread, Timer
 from time import sleep, time
-from typing import Any
+from typing import Any, TypeVar
 
 from flask import Flask
 
@@ -17,7 +13,7 @@ from backend.base.custom_exceptions import (
     TaskNotFound,
 )
 from backend.base.definitions import SearchResultData
-from backend.base.helpers import Singleton, get_subclasses
+from backend.base.helpers import Singleton
 from backend.base.logging import LOGGER
 from backend.features.download_queue import DownloadHandler
 from backend.features.search import auto_search
@@ -34,9 +30,10 @@ from backend.internals.server import (
 
 
 class Task(ABC):
+    action: str
+
     stop: bool
     message: str
-    action: str
     display_title: str
     category: str
 
@@ -74,457 +71,12 @@ class Task(ABC):
         ...
 
 
-# =====================
-# Issue tasks
-# =====================
-
-
-class AutoSearchIssue(Task):
-    "Do an automatic search for an issue"
-
-    stop = False
-    message = ""
-    action = "auto_search_issue"
-    display_title = "Auto Search"
-    category = "download"
-
-    @property
-    def volume_id(self) -> int:
-        return self._volume_id
-
-    @property
-    def issue_id(self) -> int:
-        return self._issue_id
-
-    def __init__(
-        self, volume_id: int, issue_id: int, called_from: str = ""
-    ) -> None:
-        """Create the task
-
-        Args:
-            volume_id (int): The id of the volume in which the issue is
-            issue_id (int): The id of the issue to search for
-        """
-        self._volume_id = volume_id
-        self._issue_id = issue_id
-        self._called_from = called_from
-        return
-
-    def run(self) -> list[tuple[SearchResultData, int, int | None]]:
-        volume = Volume(self._volume_id)
-        volume_title = volume.vd.title
-        issue_number = volume.get_issue(self._issue_id).get_data().issue_number
-        self.message = f"Searching for {volume_title} #{issue_number}"
-        WebSocket().emit(TaskStatusEvent(self.message))
-
-        # Get search results and download them
-        results = auto_search(self._volume_id, self._issue_id)
-        if results:
-            return [
-                (result, self._volume_id, self._issue_id) for result in results
-            ]
-        return []
-
-
-class MassRenameIssue(Task):
-    "Trigger a mass rename for an issue"
-
-    stop = False
-    message = ""
-    action = "mass_rename_issue"
-    display_title = "Mass Rename"
-    category = ""
-
-    @property
-    def volume_id(self) -> int:
-        return self._volume_id
-
-    @property
-    def issue_id(self) -> int:
-        return self._issue_id
-
-    def __init__(
-        self,
-        volume_id: int,
-        issue_id: int,
-        filepath_filter: list[str] = [],
-        called_from: str = "",
-    ) -> None:
-        """Create the task
-
-        Args:
-            volume_id (int): The ID of the volume for which to perform the task.
-            issue_id (int): The ID of the issue for which to perform the task.
-            filepath_filter (List[str], optional): Only rename files in this
-            list.
-                Defaults to [].
-        """
-        self._volume_id = volume_id
-        self._issue_id = issue_id
-        self.filepath_filter = filepath_filter
-        self._called_from = called_from
-        return
-
-    def run(self) -> None:
-        volume = Volume(self._volume_id)
-        volume_title = volume.vd.title
-        issue_number = volume.get_issue(self._issue_id).get_data().issue_number
-        self.message = f"Renaming files for {volume_title} #{issue_number}"
-        WebSocket().emit(TaskStatusEvent(self.message))
-
-        mass_rename(
-            self._volume_id,
-            self._issue_id,
-            filepath_filter=self.filepath_filter,
-            update_websocket=True,
-        )
-
-        return
-
-
-class MassConvertIssue(Task):
-    "Trigger a mass convert for an issue"
-
-    stop = False
-    message = ""
-    action = "mass_convert_issue"
-    display_title = "Mass Convert"
-    category = ""
-
-    @property
-    def volume_id(self) -> int:
-        return self._volume_id
-
-    @property
-    def issue_id(self) -> int:
-        return self._issue_id
-
-    def __init__(
-        self,
-        volume_id: int,
-        issue_id: int,
-        filepath_filter: list[str] = [],
-        called_from: str = "",
-    ) -> None:
-        """Create the task
-
-        Args:
-            volume_id (int): The ID of the volume for which to perform the task.
-            issue_id (int): The ID of the issue for which to perform the task.
-            filepath_filter (List[str], optional): Only rename files in this
-            list.
-                Defaults to [].
-        """
-        self._volume_id = volume_id
-        self._issue_id = issue_id
-        self.filepath_filter = filepath_filter
-        self._called_from = called_from
-        return
-
-    def run(self) -> None:
-        volume = Volume(self._volume_id)
-        volume_title = volume.vd.title
-        issue_number = volume.get_issue(self._issue_id).get_data().issue_number
-        self.message = f"Converting files for {volume_title} #{issue_number}"
-        WebSocket().emit(TaskStatusEvent(self.message))
-
-        mass_convert(
-            volume_id=self._volume_id,
-            issue_id=self._issue_id,
-            filepath_filter=self.filepath_filter,
-            update_websocket_progress=True,
-            update_websocket_files=True,
-        )
-
-        return
-
-
-# =====================
-# Volume tasks
-# =====================
-
-
-class AutoSearchVolume(Task):
-    "Do an automatic search for a volume"
-
-    stop = False
-    message = ""
-    action = "auto_search"
-    display_title = "Auto Search"
-    category = "download"
-
-    @property
-    def volume_id(self) -> int:
-        return self._volume_id
-
-    @property
-    def issue_id(self) -> None:
-        return None
-
-    def __init__(self, volume_id: int, called_from: str = "") -> None:
-        """Create the task
-
-        Args:
-            volume_id (int): The id of the volume to search for
-        """
-        self._volume_id = volume_id
-        self._called_from = called_from
-        return
-
-    def run(self) -> list[tuple[SearchResultData, int, int | None]]:
-        volume_title = Volume(self._volume_id).vd.title
-        self.message = f"Searching for {volume_title}"
-        WebSocket().emit(TaskStatusEvent(self.message))
-
-        # Get search results and download them
-        results = auto_search(self._volume_id)
-        if results:
-            return [(result, self._volume_id, None) for result in results]
-        return []
-
-
-class RefreshAndScanVolume(Task):
-    "Trigger a refresh and scan for a volume"
-
-    stop = False
-    message = ""
-    action = "refresh_and_scan"
-    display_title = "Refresh And Scan"
-    category = ""
-
-    @property
-    def volume_id(self) -> int:
-        return self._volume_id
-
-    @property
-    def issue_id(self) -> None:
-        return None
-
-    def __init__(self, volume_id: int, called_from: str = "") -> None:
-        """Create the task
-
-        Args:
-            volume_id (int): The id of the volume for which to perform the task
-        """
-        self._volume_id = volume_id
-        self._called_from = called_from
-        return
-
-    def run(self) -> None:
-        volume_title = Volume(self._volume_id).vd.title
-        self.message = f"Updating info on {volume_title}"
-        WebSocket().emit(TaskStatusEvent(self.message))
-
-        try:
-            refresh_and_scan(self._volume_id, update_websocket=True)
-        except InvalidKeyValue:
-            # API key invalid
-            pass
-
-        return
-
-
-class MassRenameVolume(Task):
-    "Trigger a mass rename for a volume"
-
-    stop = False
-    message = ""
-    action = "mass_rename"
-    display_title = "Mass Rename"
-    category = ""
-
-    @property
-    def volume_id(self) -> int:
-        return self._volume_id
-
-    @property
-    def issue_id(self) -> None:
-        return None
-
-    def __init__(
-        self,
-        volume_id: int,
-        filepath_filter: list[str] = [],
-        called_from: str = "",
-    ) -> None:
-        """Create the task
-
-        Args:
-            volume_id (int): The ID of the volume for which to perform the task.
-            filepath_filter (List[str], optional): Only rename files in this
-            list.
-                Defaults to [].
-        """
-        self._volume_id = volume_id
-        self.filepath_filter = filepath_filter
-        self._called_from = called_from
-        return
-
-    def run(self) -> None:
-        volume_title = Volume(self._volume_id).vd.title
-        self.message = f"Renaming files for {volume_title}"
-        WebSocket().emit(TaskStatusEvent(self.message))
-
-        mass_rename(
-            self._volume_id,
-            filepath_filter=self.filepath_filter,
-            update_websocket=True,
-        )
-
-        return
-
-
-class MassConvertVolume(Task):
-    "Trigger a mass convert for a volume"
-
-    stop = False
-    message = ""
-    action = "mass_convert"
-    display_title = "Mass Convert"
-    category = ""
-
-    @property
-    def volume_id(self) -> int:
-        return self._volume_id
-
-    @property
-    def issue_id(self) -> None:
-        return None
-
-    def __init__(
-        self,
-        volume_id: int,
-        filepath_filter: list[str] = [],
-        called_from: str = "",
-    ) -> None:
-        """Create the task
-
-        Args:
-            volume_id (int): The ID of the volume for which to perform the task.
-            filepath_filter (List[str], optional): Only convert files in this
-            list.
-                Defaults to [].
-        """
-        self._volume_id = volume_id
-        self.filepath_filter = filepath_filter
-        self._called_from = called_from
-        return
-
-    def run(self) -> None:
-        volume_title = Volume(self._volume_id).vd.title
-        self.message = f"Converting files for {volume_title}"
-        WebSocket().emit(TaskStatusEvent(self.message))
-
-        mass_convert(
-            volume_id=self._volume_id,
-            filepath_filter=self.filepath_filter,
-            update_websocket_progress=True,
-            update_websocket_files=True,
-        )
-
-        return
-
-
-# =====================
-# Library tasks
-# =====================
-
-
-class UpdateAll(Task):
-    "Trigger a refresh and scan for each volume in the library"
-
-    stop = False
-    message = ""
-    action = "update_all"
-    display_title = "Update All"
-    category = ""
-
-    @property
-    def volume_id(self) -> None:
-        return None
-
-    @property
-    def issue_id(self) -> None:
-        return None
-
-    def __init__(
-        self, allow_skipping: bool = False, called_from: str = ""
-    ) -> None:
-        """Create the task
-
-        Args:
-            allow_skipping (bool, optional): Skip volumes that have been updated in the last 24 hours.
-                Defaults to False.
-        """
-        self.allow_skipping = allow_skipping
-        self._called_from = called_from
-        return
-
-    def run(self) -> None:
-        self.message = "Updating info on all volumes"
-        WebSocket().emit(TaskStatusEvent(self.message))
-
-        try:
-            refresh_and_scan(
-                update_websocket=True, allow_skipping=self.allow_skipping
-            )
-        except InvalidKeyValue:
-            # API key invalid
-            pass
-
-        return
-
-
-class SearchAll(Task):
-    "Trigger an automatic search for each volume in the library"
-
-    stop = False
-    message = ""
-    action = "search_all"
-    display_title = "Search All"
-    category = "download"
-
-    @property
-    def volume_id(self) -> None:
-        return None
-
-    @property
-    def issue_id(self) -> None:
-        return None
-
-    def __init__(self, called_from: str = "") -> None:
-        self._called_from = called_from
-        return
-
-    def run(self) -> list[tuple[SearchResultData, int, int | None]]:
-        cursor = get_db(force_new=True)
-        cursor.execute("SELECT id, title FROM volumes WHERE monitored = 1;")
-        downloads: list[tuple[SearchResultData, int, int | None]] = []
-        ws = WebSocket()
-        for volume_id, volume_title in cursor:
-            if self.stop:
-                break
-            self.message = f"Searching for {volume_title}"
-            ws.emit(TaskStatusEvent(self.message))
-            # Get search results and download them
-            results = auto_search(volume_id)
-            if results:
-                downloads += [(result, volume_id, None) for result in results]
-        return downloads
-
-
-# =====================
-# Task handling
-# =====================
-# Maps action attr to class for all tasks
-# Only works for classes that directly inherit from Task
-task_library: dict[str, type[Task]] = {
-    c.action: c for c in get_subclasses(Task)
-}
+# region Task Handler
+TaskType = TypeVar("TaskType", bound=Task)
 
 
 class TaskHandler(metaclass=Singleton):
-    "Note: Singleton"
+    tasks: dict[str, type[Task]] = {}
 
     queue: list[dict] = []
     task_interval_waiter: Timer | None = None
@@ -535,6 +87,26 @@ class TaskHandler(metaclass=Singleton):
         handler_context.teardown_appcontext(close_db)
         self.context = handler_context.app_context
         return
+
+    @classmethod
+    def register_task(cls, identifier: str):
+        def wrapper(action: type[TaskType]) -> type[TaskType]:
+            if identifier in cls.tasks:
+                raise RuntimeError(
+                    f"Task with {identifier=} registered multiple times"
+                )
+            action.action = identifier
+            cls.tasks[identifier] = action
+            return action
+
+        return wrapper
+
+    @classmethod
+    def get_task_class(cls, identifier: str) -> type[Task]:
+        try:
+            return cls.tasks[identifier]
+        except KeyError:
+            raise TaskNotFound(identifier)
 
     def __run_task(self, task: Task) -> None:
         """Run a task
@@ -653,11 +225,11 @@ class TaskHandler(metaclass=Singleton):
             for task in interval_tasks:
                 if task["next_run"] <= current_time:
                     # Add task to queue
-                    task_class = task_library[task["task_name"]]
-                    if task_class is UpdateAll:
-                        inst = task_class(allow_skipping=True)
+                    TaskClass = self.tasks[task["task_name"]]
+                    if TaskClass is UpdateAll:
+                        inst = TaskClass(allow_skipping=True)
                     else:
-                        inst = task_class()
+                        inst = TaskClass()
                     self.add(inst)
 
                     # Update next_run
@@ -786,7 +358,39 @@ class TaskHandler(metaclass=Singleton):
         WebSocket().emit(TaskEndedEvent(task["task"]))
         return
 
+    def get_task_planning(self) -> list[dict]:
+        """Get the planning of each interval task (interval, next run and last run)
 
+        Returns:
+            List[dict]: List of interval tasks and their planning
+        """
+        tasks = (
+            get_db()
+            .execute(
+                """
+            SELECT
+                i.task_name, interval, next_run, run_at AS last_run
+            FROM task_intervals i
+            LEFT JOIN (
+                SELECT
+                    task_name,
+                    MAX(run_at) AS run_at
+                FROM task_history
+                GROUP BY task_name
+            ) h
+            ON i.task_name = h.task_name;
+            """
+            )
+            .fetchalldict()
+        )
+
+        for t in tasks:
+            t["display_name"] = self.tasks[t["task_name"]].display_title
+
+        return tasks
+
+
+# region History
 def get_task_history(offset: int = 0) -> list[dict]:
     """Get the task history in blocks of 50.
 
@@ -803,13 +407,13 @@ def get_task_history(offset: int = 0) -> list[dict]:
         get_db()
         .execute(
             """
-                SELECT
-                    task_name, display_title, run_at
-                FROM task_history
-                ORDER BY run_at DESC
-                LIMIT 50
-                OFFSET ?;
-            """,
+        SELECT
+            task_name, display_title, run_at
+        FROM task_history
+        ORDER BY run_at DESC
+        LIMIT 50
+        OFFSET ?;
+        """,
             (offset * 50,),
         )
         .fetchalldict()
@@ -824,33 +428,428 @@ def delete_task_history() -> None:
     return
 
 
-def get_task_planning() -> list[dict]:
-    """Get the planning of each interval task (interval, next run and last run)
+# region Issue tasks
+@TaskHandler.register_task("auto_search_issue")
+class AutoSearchIssue(Task):
+    "Do an automatic search for an issue"
 
-    Returns:
-        List[dict]: List of interval tasks and their planning
-    """
-    tasks = (
-        get_db()
-        .execute(
-            """
-                SELECT
-                    i.task_name, interval, next_run, run_at AS last_run
-                FROM task_intervals i
-                LEFT JOIN (
-                    SELECT
-                        task_name,
-                        MAX(run_at) AS run_at
-                    FROM task_history
-                    GROUP BY task_name
-                ) h
-                ON i.task_name = h.task_name;
-            """
+    stop = False
+    message = ""
+    display_title = "Auto Search"
+    category = "download"
+
+    @property
+    def volume_id(self) -> int:
+        return self._volume_id
+
+    @property
+    def issue_id(self) -> int:
+        return self._issue_id
+
+    def __init__(
+        self, volume_id: int, issue_id: int, called_from: str = ""
+    ) -> None:
+        """Create the task
+
+        Args:
+            volume_id (int): The id of the volume in which the issue is
+            issue_id (int): The id of the issue to search for
+        """
+        self._volume_id = volume_id
+        self._issue_id = issue_id
+        self._called_from = called_from
+        return
+
+    def run(self) -> list[tuple[SearchResultData, int, int | None]]:
+        volume = Volume(self._volume_id)
+        volume_title = volume.vd.title
+        issue_number = volume.get_issue(self._issue_id).get_data().issue_number
+        self.message = f"Searching for {volume_title} #{issue_number}"
+        WebSocket().emit(TaskStatusEvent(self.message))
+
+        # Get search results and download them
+        results = auto_search(self._volume_id, self._issue_id)
+        if results:
+            return [
+                (result, self._volume_id, self._issue_id) for result in results
+            ]
+        return []
+
+
+@TaskHandler.register_task("mass_rename_issue")
+class MassRenameIssue(Task):
+    "Trigger a mass rename for an issue"
+
+    stop = False
+    message = ""
+    display_title = "Mass Rename"
+    category = ""
+
+    @property
+    def volume_id(self) -> int:
+        return self._volume_id
+
+    @property
+    def issue_id(self) -> int:
+        return self._issue_id
+
+    def __init__(
+        self,
+        volume_id: int,
+        issue_id: int,
+        filepath_filter: list[str] = [],
+        called_from: str = "",
+    ) -> None:
+        """Create the task
+
+        Args:
+            volume_id (int): The ID of the volume for which to perform the task.
+            issue_id (int): The ID of the issue for which to perform the task.
+            filepath_filter (List[str], optional): Only rename files in this
+            list.
+                Defaults to [].
+        """
+        self._volume_id = volume_id
+        self._issue_id = issue_id
+        self.filepath_filter = filepath_filter
+        self._called_from = called_from
+        return
+
+    def run(self) -> None:
+        volume = Volume(self._volume_id)
+        volume_title = volume.vd.title
+        issue_number = volume.get_issue(self._issue_id).get_data().issue_number
+        self.message = f"Renaming files for {volume_title} #{issue_number}"
+        WebSocket().emit(TaskStatusEvent(self.message))
+
+        mass_rename(
+            self._volume_id,
+            self._issue_id,
+            filepath_filter=self.filepath_filter,
+            update_websocket=True,
         )
-        .fetchalldict()
-    )
 
-    for t in tasks:
-        t["display_name"] = task_library[t["task_name"]].display_title
+        return
 
-    return tasks
+
+@TaskHandler.register_task("mass_convert_issue")
+class MassConvertIssue(Task):
+    "Trigger a mass convert for an issue"
+
+    stop = False
+    message = ""
+    display_title = "Mass Convert"
+    category = ""
+
+    @property
+    def volume_id(self) -> int:
+        return self._volume_id
+
+    @property
+    def issue_id(self) -> int:
+        return self._issue_id
+
+    def __init__(
+        self,
+        volume_id: int,
+        issue_id: int,
+        filepath_filter: list[str] = [],
+        called_from: str = "",
+    ) -> None:
+        """Create the task
+
+        Args:
+            volume_id (int): The ID of the volume for which to perform the task.
+            issue_id (int): The ID of the issue for which to perform the task.
+            filepath_filter (List[str], optional): Only rename files in this
+            list.
+                Defaults to [].
+        """
+        self._volume_id = volume_id
+        self._issue_id = issue_id
+        self.filepath_filter = filepath_filter
+        self._called_from = called_from
+        return
+
+    def run(self) -> None:
+        volume = Volume(self._volume_id)
+        volume_title = volume.vd.title
+        issue_number = volume.get_issue(self._issue_id).get_data().issue_number
+        self.message = f"Converting files for {volume_title} #{issue_number}"
+        WebSocket().emit(TaskStatusEvent(self.message))
+
+        mass_convert(
+            volume_id=self._volume_id,
+            issue_id=self._issue_id,
+            filepath_filter=self.filepath_filter,
+            update_websocket_progress=True,
+            update_websocket_files=True,
+        )
+
+        return
+
+
+# region Volume tasks
+@TaskHandler.register_task("auto_search")
+class AutoSearchVolume(Task):
+    "Do an automatic search for a volume"
+
+    stop = False
+    message = ""
+    display_title = "Auto Search"
+    category = "download"
+
+    @property
+    def volume_id(self) -> int:
+        return self._volume_id
+
+    @property
+    def issue_id(self) -> None:
+        return None
+
+    def __init__(self, volume_id: int, called_from: str = "") -> None:
+        """Create the task
+
+        Args:
+            volume_id (int): The id of the volume to search for
+        """
+        self._volume_id = volume_id
+        self._called_from = called_from
+        return
+
+    def run(self) -> list[tuple[SearchResultData, int, int | None]]:
+        volume_title = Volume(self._volume_id).vd.title
+        self.message = f"Searching for {volume_title}"
+        WebSocket().emit(TaskStatusEvent(self.message))
+
+        # Get search results and download them
+        results = auto_search(self._volume_id)
+        if results:
+            return [(result, self._volume_id, None) for result in results]
+        return []
+
+
+@TaskHandler.register_task("refresh_and_scan")
+class RefreshAndScanVolume(Task):
+    "Trigger a refresh and scan for a volume"
+
+    stop = False
+    message = ""
+    display_title = "Refresh And Scan"
+    category = ""
+
+    @property
+    def volume_id(self) -> int:
+        return self._volume_id
+
+    @property
+    def issue_id(self) -> None:
+        return None
+
+    def __init__(self, volume_id: int, called_from: str = "") -> None:
+        """Create the task
+
+        Args:
+            volume_id (int): The id of the volume for which to perform the task
+        """
+        self._volume_id = volume_id
+        self._called_from = called_from
+        return
+
+    def run(self) -> None:
+        volume_title = Volume(self._volume_id).vd.title
+        self.message = f"Updating info on {volume_title}"
+        WebSocket().emit(TaskStatusEvent(self.message))
+
+        try:
+            refresh_and_scan(self._volume_id, update_websocket=True)
+        except InvalidKeyValue:
+            # API key invalid
+            pass
+
+        return
+
+
+@TaskHandler.register_task("mass_rename")
+class MassRenameVolume(Task):
+    "Trigger a mass rename for a volume"
+
+    stop = False
+    message = ""
+    display_title = "Mass Rename"
+    category = ""
+
+    @property
+    def volume_id(self) -> int:
+        return self._volume_id
+
+    @property
+    def issue_id(self) -> None:
+        return None
+
+    def __init__(
+        self,
+        volume_id: int,
+        filepath_filter: list[str] = [],
+        called_from: str = "",
+    ) -> None:
+        """Create the task
+
+        Args:
+            volume_id (int): The ID of the volume for which to perform the task.
+            filepath_filter (List[str], optional): Only rename files in this
+            list.
+                Defaults to [].
+        """
+        self._volume_id = volume_id
+        self.filepath_filter = filepath_filter
+        self._called_from = called_from
+        return
+
+    def run(self) -> None:
+        volume_title = Volume(self._volume_id).vd.title
+        self.message = f"Renaming files for {volume_title}"
+        WebSocket().emit(TaskStatusEvent(self.message))
+
+        mass_rename(
+            self._volume_id,
+            filepath_filter=self.filepath_filter,
+            update_websocket=True,
+        )
+
+        return
+
+
+@TaskHandler.register_task("mass_convert")
+class MassConvertVolume(Task):
+    "Trigger a mass convert for a volume"
+
+    stop = False
+    message = ""
+    display_title = "Mass Convert"
+    category = ""
+
+    @property
+    def volume_id(self) -> int:
+        return self._volume_id
+
+    @property
+    def issue_id(self) -> None:
+        return None
+
+    def __init__(
+        self,
+        volume_id: int,
+        filepath_filter: list[str] = [],
+        called_from: str = "",
+    ) -> None:
+        """Create the task
+
+        Args:
+            volume_id (int): The ID of the volume for which to perform the task.
+            filepath_filter (List[str], optional): Only convert files in this
+            list.
+                Defaults to [].
+        """
+        self._volume_id = volume_id
+        self.filepath_filter = filepath_filter
+        self._called_from = called_from
+        return
+
+    def run(self) -> None:
+        volume_title = Volume(self._volume_id).vd.title
+        self.message = f"Converting files for {volume_title}"
+        WebSocket().emit(TaskStatusEvent(self.message))
+
+        mass_convert(
+            volume_id=self._volume_id,
+            filepath_filter=self.filepath_filter,
+            update_websocket_progress=True,
+            update_websocket_files=True,
+        )
+
+        return
+
+
+# region Library tasks
+@TaskHandler.register_task("update_all")
+class UpdateAll(Task):
+    "Trigger a refresh and scan for each volume in the library"
+
+    stop = False
+    message = ""
+    display_title = "Update All"
+    category = ""
+
+    @property
+    def volume_id(self) -> None:
+        return None
+
+    @property
+    def issue_id(self) -> None:
+        return None
+
+    def __init__(
+        self, allow_skipping: bool = False, called_from: str = ""
+    ) -> None:
+        """Create the task
+
+        Args:
+            allow_skipping (bool, optional): Skip volumes that have been updated in the last 24 hours.
+                Defaults to False.
+        """
+        self.allow_skipping = allow_skipping
+        self._called_from = called_from
+        return
+
+    def run(self) -> None:
+        self.message = "Updating info on all volumes"
+        WebSocket().emit(TaskStatusEvent(self.message))
+
+        try:
+            refresh_and_scan(
+                update_websocket=True, allow_skipping=self.allow_skipping
+            )
+        except InvalidKeyValue:
+            # API key invalid
+            pass
+
+        return
+
+
+@TaskHandler.register_task("search_all")
+class SearchAll(Task):
+    "Trigger an automatic search for each volume in the library"
+
+    stop = False
+    message = ""
+    display_title = "Search All"
+    category = "download"
+
+    @property
+    def volume_id(self) -> None:
+        return None
+
+    @property
+    def issue_id(self) -> None:
+        return None
+
+    def __init__(self, called_from: str = "") -> None:
+        self._called_from = called_from
+        return
+
+    def run(self) -> list[tuple[SearchResultData, int, int | None]]:
+        cursor = get_db(force_new=True)
+        cursor.execute("SELECT id, title FROM volumes WHERE monitored = 1;")
+        downloads: list[tuple[SearchResultData, int, int | None]] = []
+        ws = WebSocket()
+        for volume_id, volume_title in cursor:
+            if self.stop:
+                break
+            self.message = f"Searching for {volume_title}"
+            ws.emit(TaskStatusEvent(self.message))
+            # Get search results and download them
+            results = auto_search(volume_id)
+            if results:
+                downloads += [(result, volume_id, None) for result in results]
+        return downloads

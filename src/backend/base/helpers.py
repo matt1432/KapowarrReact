@@ -7,7 +7,6 @@ from __future__ import annotations
 import time
 from asyncio import sleep
 from base64 import urlsafe_b64encode
-from collections import deque
 from collections.abc import (
     Callable,
     Collection,
@@ -138,55 +137,6 @@ def get_python_version() -> str:
 
 
 # region Helpers
-def get_subclasses[T](
-    *classes: type[T],
-    include_self: bool = False,
-    recursive: bool = True,
-    only_leafs: bool = False,
-) -> list[type[T]]:
-    """Get subclasses of the given classes.
-
-    Args:
-        *classes (type): The classes to get subclasses from.
-
-        include_self (bool, optional): Whether to include the classes themselves.
-            Defaults to False.
-
-        recursive (bool, optional): Whether to get all subclasses recursively.
-            Defaults to True.
-
-        only_leafs (bool, optional): Whether or not to only return leaf classes.
-            Defaults to False.
-
-    Returns:
-        list[type]: The subclasses.
-    """
-    result: list[type[Any]] = []
-    if include_self:
-        result.extend(classes)
-
-    if not recursive:
-        result.extend(
-            subclass
-            for current in classes
-            for subclass in current.__subclasses__()
-        )
-        return result
-
-    to_do = deque(classes)
-    while to_do:
-        current = to_do.popleft()
-        subclasses = current.__subclasses__()
-        if subclasses:
-            to_do.extend(subclasses)
-            if not only_leafs and current not in classes:
-                result.append(current)
-        else:
-            result.append(current)
-
-    return result
-
-
 def check_filter[T](element: T, element_filter: Collection[T]) -> bool:
     """Check if `element` is in `element_filter`, but only if `element_filter`
     has content, otherwise return True. Useful for filtering where an empty

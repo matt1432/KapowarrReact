@@ -9,7 +9,6 @@ from flask import Blueprint, Request, Response, request, send_file
 from backend.base.custom_exceptions import (
     InvalidKeyValue,
     KeyNotFound,
-    TaskNotFound,
 )
 from backend.base.definitions import (
     BlocklistReason,
@@ -50,12 +49,9 @@ from backend.features.library_import import (
 from backend.features.mass_edit import MassEditorActionManager
 from backend.features.search import manual_search
 from backend.features.tasks import (
-    Task,
     TaskHandler,
     delete_task_history,
     get_task_history,
-    get_task_planning,
-    task_library,
 )
 from backend.implementations.blocklist import (
     add_to_blocklist,
@@ -199,11 +195,6 @@ def extract_key(
                     Library.get_issue(value)
             except (ValueError, TypeError):
                 raise InvalidKeyValue(key, value)
-
-        elif key == "cmd":
-            value = task_library.get(value)
-            if value is None:
-                raise TaskNotFound(value)
 
         elif key == "api_key":
             if not value or value != Settings().sv.api_key:
@@ -406,13 +397,11 @@ def api_tasks() -> ApiReturn | None:
         if not isinstance(data, dict):
             raise InvalidKeyValue(value=data)
 
-        task: type[Task] | None = task_library.get(data.get("cmd", ""))
-        if not task:
-            raise TaskNotFound(data.get("cmd", ""))
+        TaskClass = TaskHandler.get_task_class(data.get("cmd", ""))
 
         kwargs = {}
         kwargs["called_from"] = data.get("called_from", "")
-        if task.action in (
+        if TaskClass.action in (
             "refresh_and_scan",
             "auto_search",
             "auto_search_issue",
@@ -426,7 +415,7 @@ def api_tasks() -> ApiReturn | None:
                 raise InvalidKeyValue("volume_id", volume_id)
             kwargs["volume_id"] = volume_id
 
-        if task.action in (
+        if TaskClass.action in (
             "auto_search_issue",
             "mass_rename_issue",
             "mass_convert_issue",
@@ -436,7 +425,7 @@ def api_tasks() -> ApiReturn | None:
                 raise InvalidKeyValue("issue_id", issue_id)
             kwargs["issue_id"] = issue_id
 
-        if task.action in (
+        if TaskClass.action in (
             "mass_rename",
             "mass_rename_issue",
             "mass_convert",
@@ -449,13 +438,13 @@ def api_tasks() -> ApiReturn | None:
                 raise InvalidKeyValue("filepath_filter", filepath_filter)
             kwargs["filepath_filter"] = filepath_filter or []
 
-        if task.action == "update_all":
+        if TaskClass.action == "update_all":
             allow_skipping = data.get("allow_skipping", True)
             if not isinstance(allow_skipping, bool):
                 raise InvalidKeyValue("allow_skipping", allow_skipping)
             kwargs["allow_skipping"] = allow_skipping
 
-        task_instance = task(**kwargs)
+        task_instance = TaskClass(**kwargs)
         result = task_handler.add(task_instance)
         return return_api({"id": result}, code=201)
 
@@ -478,7 +467,7 @@ def api_task_history() -> ApiReturn | None:
 @error_handler
 @auth
 def api_task_planning() -> ApiReturn:
-    result = get_task_planning()
+    result = TaskHandler().get_task_planning()
     return return_api(result)
 
 
