@@ -7,6 +7,10 @@ import { useCallback, useMemo } from 'react';
 import { useRootSelector } from 'Store/createAppStore';
 
 import { useExecuteCommandMutation } from 'Store/Api/Command';
+import {
+    useGetTaskHistoryQuery,
+    useGetTaskPlanningQuery,
+} from 'Store/Api/Status';
 
 // Misc
 import { commandNames, icons } from 'Helpers/Props';
@@ -39,9 +43,18 @@ export default function TaskButton({ taskName }: TaskButtonProps) {
 
     const [executeCommand] = useExecuteCommandMutation();
 
-    const runTask = useCallback(() => {
-        executeCommand({ cmd: taskName });
-    }, [executeCommand, taskName]);
+    const { refetch: refetchHistory } = useGetTaskHistoryQuery(undefined, {
+        selectFromResult: () => ({}),
+    });
+    const { refetch: refetchPlanning } = useGetTaskPlanningQuery(undefined, {
+        selectFromResult: () => ({}),
+    });
+
+    const runTask = useCallback(async () => {
+        await executeCommand({ cmd: taskName });
+        refetchPlanning();
+        refetchHistory();
+    }, [executeCommand, refetchHistory, refetchPlanning, taskName]);
 
     return (
         <SpinnerIconButton
