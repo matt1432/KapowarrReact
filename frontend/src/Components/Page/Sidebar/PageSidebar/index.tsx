@@ -122,6 +122,10 @@ const LINKS: SidebarItem[] = [
                 to: '/settings/metadata',
             },
             {
+                title: () => translate('Indexers'),
+                to: '/settings/indexers',
+            },
+            {
                 title: () => translate('Download'),
                 to: '/settings/download',
             },

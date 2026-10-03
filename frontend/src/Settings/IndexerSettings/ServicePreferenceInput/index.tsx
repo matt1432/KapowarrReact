@@ -21,7 +21,7 @@ import type { InputChanged } from 'typings/Inputs';
 export interface ServicePreferenceInputProps {
     value: GCDownloadSource[];
     onChange: (
-        change: InputChanged<'servicePreference', GCDownloadSource[]>,
+        change: InputChanged<'gcServicePreference', GCDownloadSource[]>,
     ) => void;
     helpText?: string;
 }
@@ -74,7 +74,7 @@ export default function ServicePreferenceInput({
                 const items = newServices.splice(dragIndex, 1);
                 newServices.splice(dropIndex, 0, items[0]);
 
-                onChange({ name: 'servicePreference', value: newServices });
+                onChange({ name: 'gcServicePreference', value: newServices });
             }
 
             setDragIndex(null);
