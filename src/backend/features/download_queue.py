@@ -38,7 +38,6 @@ from backend.features.post_processing import (
 )
 from backend.implementations.blocklist import add_to_blocklist
 from backend.implementations.download_client_manager import DownloadClients
-from backend.implementations.download_clients.Mega import MegaDownload
 from backend.implementations.download_clients.Torrent import TorrentDownload
 from backend.implementations.download_prepper_manager import DownloadPreppers
 from backend.implementations.external_client_manager import ExternalClients
@@ -90,8 +89,8 @@ class DownloadHandler(metaclass=Singleton):
 
         except DownloadServiceRateLimitReached as e:
             download.stop(DownloadState.FAILED_STATE)
-            if e.service == DownloadService.MEGA and download.id is not None:
-                self._remove_mega(exclude_id=download.id)
+            if download.id is not None:
+                self._remove_all_of_service(e.service, exclude_id=download.id)
 
         ws.emit(status_event)
         if download.state == DownloadState.SHUTDOWN_STATE:
@@ -697,17 +696,22 @@ class DownloadHandler(metaclass=Singleton):
 
         return
 
-    def _remove_mega(self, exclude_id: int) -> None:
-        """Remove all Mega downloads from the queue except for the one with
-        the id of `exclude_id`. That one will be handled by the download itself.
+    def _remove_all_of_service(
+        self, download_service: DownloadService, exclude_id: int
+    ) -> None:
+        """Remove all downloads from the queue that are from a given download
+        download service, except for the one with the id of `exclude_id`.
+        That one will be handled by the download itself.
 
         Args:
-            exclude_id (int): The ID of the Mega download to not remove from the
-            queue.
+            download_service (DownloadService): The service of which to remove
+                all downloads in the queue.
+            exclude_id (int): The ID of the download to not remove from the
+                queue.
         """
-        for download in self.queue[::-1]:
+        for download in reversed(self.queue):
             if (
-                isinstance(download, MegaDownload)
+                download.download_service == download_service
                 and download.id is not None
                 and download.id != exclude_id
             ):
