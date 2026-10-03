@@ -727,8 +727,11 @@ class StartTypeHandlers:
 
     @staticmethod
     def _on_timeout_wrapper(
-        on_timeout: Callable[[], None], restart_on_timeout: bool
+        handler_description: str,
+        on_timeout: Callable[[], None],
+        restart_on_timeout: bool,
     ) -> None:
+        LOGGER.info("Timer for %s expired", handler_description)
         on_timeout()
         if restart_on_timeout:
             Server().restart()
@@ -753,7 +756,11 @@ class StartTypeHandlers:
             interval=handler.timeout,
             target=cls._on_timeout_wrapper,
             name=f"StartTypeHandler.{start_type.name}",
-            args=(handler.on_timeout, handler.restart_on_timeout),
+            args=(
+                handler.description,
+                handler.on_timeout,
+                handler.restart_on_timeout,
+            ),
         )
         cls.timeout_thread.start()
         LOGGER.info(
@@ -773,13 +780,15 @@ class StartTypeHandlers:
         if cls.running_handler != start_type:
             return
 
-        if not (cls.timeout_thread and cls.timeout_thread.is_alive()):
+        timeout_thread = cls.timeout_thread
+        if not (timeout_thread and timeout_thread.is_alive()):
             return
+
+        timeout_thread.cancel()
+        cls.timeout_thread = None
 
         handler = cls.handlers[start_type]
         LOGGER.info("Timer for %s diffused", handler.description)
-        cls.timeout_thread.cancel()
-        cls.timeout_thread = None
         cls.running_handler = None
         handler.on_diffuse()
         return

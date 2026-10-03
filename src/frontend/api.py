@@ -317,6 +317,7 @@ def auth(method: Callable) -> Any:
             return return_api({}, "ApiKeyInvalid", 401)
 
         StartTypeHandlers.diffuse_timer(StartType.RESTART_HOSTING_CHANGES)
+        StartTypeHandlers.diffuse_timer(StartType.RESTART_DB_CHANGES)
 
         result = method(*args, **kwargs)
 
