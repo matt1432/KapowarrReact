@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRootSelector } from 'Store/createAppStore';
 
 import { useFetchQueueDetails } from 'Store/Api/Queue';
+import { useIsLibgenEnabled } from 'Store/Api/Indexers';
 
 import {
     useLazyManualSearchQuery,
@@ -92,8 +93,7 @@ function InternalSearch({
         (state) => state.tableOptions.interactiveSearch,
     );
 
-    // Libgen+ is an indexer, its state isn't exposed by the API
-    const isLibgenEnabled = true;
+    const isLibgenEnabled = useIsLibgenEnabled();
 
     const lastIssueNumber = useMemo(() => {
         return Math.max(

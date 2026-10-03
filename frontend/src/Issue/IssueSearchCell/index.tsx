@@ -8,6 +8,7 @@ import { useRootSelector } from 'Store/createAppStore';
 import { getIssueStatus } from 'Store/Slices/SocketEvents';
 
 import { useExecuteCommandMutation } from 'Store/Api/Command';
+import { useIsLibgenEnabled } from 'Store/Api/Indexers';
 
 // Misc
 import { commandNames, icons } from 'Helpers/Props';
@@ -44,8 +45,7 @@ export default function IssueSearchCell({
     issueTitle,
     showOpenVolumeButton,
 }: IssueSearchCellProps) {
-    // Libgen+ is an indexer, its state isn't exposed by the API
-    const isLibgenEnabled = true;
+    const isLibgenEnabled = useIsLibgenEnabled();
 
     const { isSearching } = useRootSelector((state) =>
         getIssueStatus(state, volumeId, issueId),

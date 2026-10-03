@@ -76,6 +76,7 @@ from backend.implementations.file_matching import (
     get_file_matching,
     set_file_matching,
 )
+from backend.implementations.indexer_client_manager import IndexerClients
 from backend.implementations.matching import (
     parse_covered_issues,
     parse_volume_number,
@@ -736,6 +737,106 @@ def api_remote_mapping(id: int) -> ApiReturn | None:
 
     elif request.method == "DELETE":
         remote_mapping.delete()
+        return return_api({})
+
+
+# region Indexers
+@api.route("/indexers", methods=["GET", "POST"])
+@error_handler
+@auth
+def api_indexers():
+    if request.method == "GET":
+        result = IndexerClients.get_all_data()
+        return return_api(result)
+
+    elif request.method == "POST":
+        data: dict = request.get_json()
+        data = {
+            k: data.get(k)
+            for k in (
+                "download_type",
+                "client_type",
+                "enabled",
+                "title",
+                "url",
+                "gc_service_preference",
+                "gc_avoid_large_downloads",
+            )
+        }
+
+        if not isinstance(data["download_type"], int):
+            raise InvalidKeyValue("download_type", data["download_type"])
+        try:
+            data["download_type"] = DownloadType(data["download_type"])
+        except ValueError:
+            raise InvalidKeyValue("download_type", data["download_type"])
+
+        result = IndexerClients.add(**data).get_indexer_data()
+        return return_api(result, code=201)
+
+
+@api.route("/indexers/options", methods=["GET"])
+@error_handler
+@auth
+def api_indexers_options():
+    result = {
+        dt.value: {
+            ct: {
+                "required_tokens": [rt.value for rt in client.required_tokens],
+                "allow_multiple_instances": client.allow_multiple_instances,
+            }
+            for ct, client in v.items()
+        }
+        for dt, v in IndexerClients.clients.items()
+    }
+    return return_api(result)
+
+
+@api.route("/indexers/test", methods=["POST"])
+@error_handler
+@auth
+def api_indexers_test():
+    data: dict = request.get_json()
+    data = {k: data.get(k) for k in ("download_type", "client_type", "url")}
+
+    if not isinstance(data["download_type"], int):
+        raise InvalidKeyValue("download_type", data["download_type"])
+    try:
+        data["download_type"] = DownloadType(data["download_type"])
+    except ValueError:
+        raise InvalidKeyValue("download_type", data["download_type"])
+
+    result = IndexerClients.test(**data)
+    return return_api(result)
+
+
+@api.route("/indexers/<int:id>", methods=["GET", "PUT", "DELETE"])
+@error_handler
+@auth
+def api_indexer(id: int):
+    if request.method == "GET":
+        client = IndexerClients.get_client(id)
+        result = client.get_indexer_data()
+        return return_api(result)
+
+    elif request.method == "PUT":
+        client = IndexerClients.get_client(id)
+        data: dict = request.get_json()
+        data = {
+            k: data.get(k)
+            for k in (
+                "enabled",
+                "title",
+                "url",
+                "gc_service_preference",
+                "gc_avoid_large_downloads",
+            )
+        }
+        client.update_indexer(data)
+        return return_api(client.get_indexer_data())
+
+    elif request.method == "DELETE":
+        IndexerClients.get_client(id).delete_indexer()
         return return_api({})
 
 
