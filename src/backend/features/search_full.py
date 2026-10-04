@@ -235,7 +235,8 @@ class SearchCoordinator:
         ]
 
         # Remove indexers that should stop
-        for idx, (action, _) in list(enumerate(actions)):
+        # (in reverse so deleting doesn't shift the remaining indexes)
+        for idx, (action, _) in reversed(list(enumerate(actions))):
             if action == SearchAction.STOP:
                 del actions[idx]
                 await self.indexers[idx]["indexer"].shutdown()
