@@ -1182,6 +1182,24 @@ def api_volume(id: int) -> ApiReturn | None:
         return return_api({})
 
 
+@api.route("/volumes/<int:id>/cache", methods=["DELETE"])
+@error_handler
+@auth
+def api_volume_cache(id: int) -> ApiReturn:
+    cv_id = Library.get_volume(id).get_data().comicvine_id
+    ComicVine().remove_volume_from_cache(cv_id)
+    return return_api({})
+
+
+@api.route("/volumes/<int:id>/issues/cache", methods=["DELETE"])
+@error_handler
+@auth
+def api_volume_issues_cache(id: int) -> ApiReturn:
+    cv_id = Library.get_volume(id).get_data().comicvine_id
+    ComicVine().remove_volume_issues_from_cache(cv_id)
+    return return_api({})
+
+
 @api.route("/volumes/<int:id>/cover", methods=["GET"])
 @error_handler
 @auth

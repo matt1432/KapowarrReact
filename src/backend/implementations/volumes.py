@@ -1643,7 +1643,8 @@ def refresh_and_scan(
             != issue_count
         ):
             removed_from_cache = True
-            cv.remove_from_cache("issues", vd["comicvine_id"])
+            cv.remove_volume_from_cache(vd["comicvine_id"])
+            cv.remove_volume_issues_from_cache(vd["comicvine_id"])
 
     if removed_from_cache:
         volume_datas = filtered_volume_datas = run(

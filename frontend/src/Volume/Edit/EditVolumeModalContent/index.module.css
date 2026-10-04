@@ -7,3 +7,9 @@
 .labelIcon {
     margin-left: 8px;
 }
+
+.cacheButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}

@@ -4,13 +4,15 @@ Search for volumes/issues and fetch metadata for them on ComicVine
 
 from asyncio import gather, run, sleep
 from collections.abc import AsyncGenerator, Iterable, Sequence
-from datetime import date
+from datetime import UTC, date, datetime, timedelta
 from os.path import dirname, join
 from pathlib import Path
 from re import IGNORECASE, compile
 from typing import Any
+from urllib.parse import parse_qs, urlsplit
 
 from bs4 import BeautifulSoup, Tag
+from simyan.cache.schemas import CacheData
 from simyan.comicvine import (
     AuthenticationError,
     BasicIssue,
@@ -81,6 +83,8 @@ translation_regex = compile(
     + r".*reprints\.?</p>$",
     IGNORECASE,
 )
+CV_SEARCH_EXPIRY = timedelta(days=14)
+
 headers = {"h2", "h3", "h4", "h5", "h6"}
 lists = {"ul", "ol"}
 
@@ -160,6 +164,106 @@ def _clean_description(description: str, short: bool = False) -> str:
     return result
 
 
+class CVCache(SQLiteCache):
+    """ComicVine response cache. Entries never expire, except for search
+    results, and are only removed on request (or when the refresh detects
+    that the issue count of a volume changed)."""
+
+    def __init__(self, path: Path) -> None:
+        super().__init__(path=path, expiry=None)
+        return
+
+    @staticmethod
+    def __split_key(key: str) -> tuple[str, dict[str, list[str]]]:
+        split_key = urlsplit(key)
+        return split_key.path, parse_qs(split_key.query)
+
+    def select(self, url: str) -> CacheData | None:
+        if self.__split_key(url)[0].endswith("/search/"):
+            # Search results should keep showing newly added volumes
+            query = """
+            SELECT url, response, created_at
+            FROM queries
+            WHERE url = ? AND created_at > ?;
+            """
+            expiry = datetime.now(tz=UTC) - CV_SEARCH_EXPIRY
+            return self._select(query=query, params=(url, expiry.isoformat()))
+        return super().select(url)
+
+    def cleanup(self) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                DELETE FROM queries
+                WHERE url LIKE ? AND created_at < ?;
+                """,
+                (
+                    "%/search/%",
+                    (datetime.now(tz=UTC) - CV_SEARCH_EXPIRY).isoformat(),
+                ),
+            )
+        return
+
+    def remove_entries(
+        self,
+        item_path: str | None,
+        list_path: str,
+        filter_field: str,
+        cv_id: int,
+    ) -> None:
+        """Remove cached responses that contain data about a specific item.
+
+        Args:
+            item_path (str | None): The path prefix of the endpoint that
+                returns the single item (e.g. "/volume/4050-"). `cv_id` is
+                appended to it. `None` to not remove such an entry.
+
+            list_path (str): The path of the endpoint that returns a list of
+                items (e.g. "/volumes/").
+
+            filter_field (str): The field in the filter of the list endpoint
+                that `cv_id` should be matched against (e.g. "id").
+
+            cv_id (int): The CV ID to match against `filter_field`.
+        """
+        to_delete: list[str] = []
+        with self._connect() as conn:
+            rows = conn.execute("SELECT url FROM queries;").fetchall()
+
+            for row in rows:
+                key: str = row["url"]
+                path, params = self.__split_key(key)
+
+                if item_path is not None and path.endswith(
+                    f"{item_path}{cv_id}/"
+                ):
+                    to_delete.append(key)
+                    continue
+
+                if not path.endswith(list_path):
+                    continue
+
+                filter_ids: set[str] = set()
+                for filter_value in params.get("filter", []):
+                    for part in filter_value.split(","):
+                        field, _, values = part.partition(":")
+                        if field == filter_field:
+                            filter_ids.update(values.split("|"))
+
+                if str(cv_id) not in filter_ids:
+                    continue
+
+                to_delete.append(key)
+
+            conn.executemany(
+                "DELETE FROM queries WHERE url = ?;",
+                ((key,) for key in to_delete),
+            )
+
+        LOGGER.debug("Removed CV cache entries: %s", to_delete)
+        return
+
+
 class ComicVine:
     def __init__(self, comicvine_api_key: str | None = None) -> None:
         """Start interacting with ComicVine.
@@ -187,24 +291,27 @@ class ComicVine:
             Constants.CV_CACHE_NAME,
         )
 
-        self.cache = SQLiteCache(path=Path(cache_file_location))
+        self.cache = CVCache(path=Path(cache_file_location))
         self.ssn = Comicvine(api_key=api_key, cache=self.cache)
         return
 
-    def remove_from_cache(self, endpoint: str, cv_id: int) -> None:
-        _cv_id = str(cv_id)
-        with self.cache._connect() as conn:
-            cache_keys = conn.execute(
-                "SELECT url FROM queries;",
-            ).fetchall()
+    def remove_volume_from_cache(self, cv_id: int) -> None:
+        """Remove the cached responses containing the metadata of a volume.
 
-            for _key in cache_keys:
-                key: str = _key["url"]
-                if (
-                    key.startswith(Constants.CV_API_URL + "/" + endpoint)
-                    and key.count(_cv_id) != 0
-                ):
-                    self.cache.delete(key)
+        Args:
+            cv_id (int): The CV ID of the volume.
+        """
+        self.cache.remove_entries("/volume/4050-", "/volumes/", "id", cv_id)
+        return
+
+    def remove_volume_issues_from_cache(self, cv_id: int) -> None:
+        """Remove the cached responses containing the issues of a volume.
+
+        Args:
+            cv_id (int): The CV ID of the volume.
+        """
+        self.cache.remove_entries(None, "/issues/", "volume", cv_id)
+        return
 
     def __determine_volume_number(
         self, volume_data: Volume | BasicVolume

@@ -6,6 +6,8 @@ import { useCallback, useMemo, useState } from 'react';
 // Redux
 import { useGetRootFoldersQuery } from 'Store/Api/RootFolders';
 import {
+    useClearVolumeCacheMutation,
+    useClearVolumeIssuesCacheMutation,
     useSearchVolumeQuery,
     useUpdateVolumeMutation,
     type UpdateVolumeParams,
@@ -21,9 +23,11 @@ import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputButton from 'Components/Form/FormInputButton';
 import FormInputGroup from 'Components/Form/FormInputGroup';
+import FormInputHelpText from 'Components/Form/FormInputHelpText';
 import FormLabel from 'Components/Form/FormLabel';
 import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
+import SpinnerButton from 'Components/Link/SpinnerButton';
 import SpinnerErrorButton from 'Components/Link/SpinnerErrorButton';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
@@ -57,6 +61,11 @@ export default function EditVolumeModalContent({
 }: EditVolumeModalContentProps) {
     const [updateVolume, { isLoading: isSaving, error: saveError }] =
         useUpdateVolumeMutation();
+
+    const [clearVolumeCache, { isLoading: isClearingVolumeCache }] =
+        useClearVolumeCacheMutation();
+    const [clearVolumeIssuesCache, { isLoading: isClearingIssuesCache }] =
+        useClearVolumeIssuesCacheMutation();
 
     const { data: rootFolders = [] } = useGetRootFoldersQuery();
 
@@ -155,6 +164,14 @@ export default function EditVolumeModalContent({
         },
         [handleInputChange, rootFolders, volumeFolder],
     );
+
+    const handleClearVolumeCachePress = useCallback(() => {
+        clearVolumeCache({ volumeId });
+    }, [volumeId, clearVolumeCache]);
+
+    const handleClearIssuesCachePress = useCallback(() => {
+        clearVolumeIssuesCache({ volumeId });
+    }, [volumeId, clearVolumeIssuesCache]);
 
     const handleCancelPress = useCallback(() => {
         setIsConfirmMoveModalOpen(false);
@@ -290,6 +307,32 @@ export default function EditVolumeModalContent({
                             ]}
                             onChange={handleInputChange}
                         />
+                    </FormGroup>
+
+                    <FormGroup size={sizes.MEDIUM}>
+                        <FormLabel>{translate('ComicVineCache')}</FormLabel>
+
+                        <div>
+                            <div className={styles.cacheButtons}>
+                                <SpinnerButton
+                                    isSpinning={isClearingVolumeCache}
+                                    onPress={handleClearVolumeCachePress}
+                                >
+                                    {translate('ClearVolumeCache')}
+                                </SpinnerButton>
+
+                                <SpinnerButton
+                                    isSpinning={isClearingIssuesCache}
+                                    onPress={handleClearIssuesCachePress}
+                                >
+                                    {translate('ClearIssuesCache')}
+                                </SpinnerButton>
+                            </div>
+
+                            <FormInputHelpText
+                                text={translate('ComicVineCacheHelpText')}
+                            />
+                        </div>
                     </FormGroup>
                 </Form>
             </ModalBody>

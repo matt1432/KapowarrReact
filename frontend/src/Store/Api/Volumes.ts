@@ -249,11 +249,33 @@ const extendedApi = baseApi.injectEndpoints({
                 },
             }),
         }),
+
+        clearVolumeCache: build.mutation<void, { volumeId: number }>({
+            query: ({ volumeId }) => ({
+                method: 'DELETE',
+                url: `volumes/${volumeId}/cache`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+        }),
+
+        clearVolumeIssuesCache: build.mutation<void, { volumeId: number }>({
+            query: ({ volumeId }) => ({
+                method: 'DELETE',
+                url: `volumes/${volumeId}/issues/cache`,
+                params: {
+                    apiKey: window.Kapowarr.apiKey,
+                },
+            }),
+        }),
     }),
 });
 
 export const {
     useAddVolumeMutation,
+    useClearVolumeCacheMutation,
+    useClearVolumeIssuesCacheMutation,
     useDeleteVolumeMutation,
     useGetFilesMatchingQuery,
     useGetStatsQuery,
