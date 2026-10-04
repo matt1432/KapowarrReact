@@ -224,12 +224,10 @@ export default function VolumeIndexPosters({
             const padding = bodyPadding - 5;
             const finalWidth = width - padding * 2;
 
-            if (
-                !(
-                    Math.abs(size.width - finalWidth) < 20 ||
-                    size.width === finalWidth
-                )
-            ) {
+            if (!(
+                Math.abs(size.width - finalWidth) < 20 ||
+                size.width === finalWidth
+            )) {
                 setSize({
                     width: finalWidth,
                     height: window.innerHeight,

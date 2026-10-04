@@ -48,9 +48,7 @@ export type NonApiError =
 
 // Remake FetchBaseQueryError
 export type FetchError<Result extends ExtendableRecord = ExtendableRecord> =
-    | ApiError<Result>
-    | NonApiError;
+    ApiError<Result> | NonApiError;
 
 export type AnyError<Result extends ExtendableRecord = ExtendableRecord> =
-    | FetchError<Result>
-    | SerializedError;
+    FetchError<Result> | SerializedError;

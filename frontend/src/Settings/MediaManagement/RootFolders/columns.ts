@@ -1,10 +1,7 @@
 import type { TableState } from 'Store/Slices/TableOptions';
 
 export type RootFolderColumnName =
-    | 'path'
-    | 'freeSpace'
-    | 'totalSpace'
-    | 'actions';
+    'path' | 'freeSpace' | 'totalSpace' | 'actions';
 
 export default {
     sortKey: null,

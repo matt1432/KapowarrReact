@@ -1,11 +1,7 @@
 import type { TableState } from 'Store/Slices/TableOptions';
 
 export type CredentialColumnName =
-    | 'email'
-    | 'username'
-    | 'password'
-    | 'apiKey'
-    | 'actions';
+    'email' | 'username' | 'password' | 'apiKey' | 'actions';
 
 export default {
     sortKey: null,

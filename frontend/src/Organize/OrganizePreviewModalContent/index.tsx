@@ -280,12 +280,12 @@ export default function OrganizePreviewModalContent({
                                     <OrganizePreviewRow
                                         key={item.id}
                                         id={item.id}
-                                        existingPath={
-                                            item.existingPath.split('/').at(-1)!
-                                        }
-                                        newPath={
-                                            item.newPath.split('/').at(-1)!
-                                        }
+                                        existingPath={item.existingPath
+                                            .split('/')
+                                            .at(-1)!}
+                                        newPath={item.newPath
+                                            .split('/')
+                                            .at(-1)!}
                                         isSelected={selectedState[item.id]}
                                         onSelectedChange={handleSelectedChange}
                                     />

@@ -73,12 +73,7 @@ import type { VolumeIndexColumnName } from './columns';
 
 export type IndexView = 'posters' | 'table';
 export type IndexFilter =
-    | ''
-    | 'monitored'
-    | 'unmonitored'
-    | 'continuing'
-    | 'ended'
-    | 'wanted';
+    '' | 'monitored' | 'unmonitored' | 'continuing' | 'ended' | 'wanted';
 
 interface VolumeIndexProps {
     initialScrollTop?: number;

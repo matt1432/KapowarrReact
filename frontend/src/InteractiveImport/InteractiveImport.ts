@@ -1,12 +1,7 @@
 import type { CamelCasedProperties } from 'type-fest';
 
 export type SelectType =
-    | 'issueIds'
-    | 'releaser'
-    | 'scanType'
-    | 'resolution'
-    | 'dpi'
-    | 'notes';
+    'issueIds' | 'releaser' | 'scanType' | 'resolution' | 'dpi' | 'notes';
 
 export interface RawFileMatch {
     id: number;

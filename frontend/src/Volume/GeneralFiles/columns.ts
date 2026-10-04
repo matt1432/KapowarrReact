@@ -1,10 +1,7 @@
 import type { TableState } from 'Store/Slices/TableOptions';
 
 export type GeneralFilesColumnName =
-    | 'path'
-    | 'fileType'
-    | 'filesize'
-    | 'actions';
+    'path' | 'fileType' | 'filesize' | 'actions';
 
 export default {
     sortKey: null,
