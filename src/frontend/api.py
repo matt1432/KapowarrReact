@@ -34,6 +34,7 @@ from backend.base.definitions import (
     LibraryFilter,
     LibrarySorting,
     MonitorScheme,
+    PageReference,
     SearchResultData,
     SpecialVersion,
     StartType,
@@ -50,7 +51,9 @@ from backend.features.download_queue import (
     get_download_history_total_records,
 )
 from backend.features.edit_content import (
+    delete_pages,
     delete_thumbnails,
+    find_similar_pages,
     get_issue_page_thumbnail,
     get_issue_page_thumbnails,
     update_issue_pages,
@@ -84,6 +87,9 @@ from backend.implementations.external_client_manager import ExternalClients
 from backend.implementations.file_matching import (
     get_file_matching,
     set_file_matching,
+)
+from backend.implementations.image_comparison import (
+    DEFAULT_SIMILARITY_THRESHOLD,
 )
 from backend.implementations.indexer_client_manager import IndexerClients
 from backend.implementations.matching import (
@@ -1227,6 +1233,51 @@ def api_issue_thumbnail() -> tuple[Response, int]:
     thumbnail = get_issue_page_thumbnail(filepath)
 
     return send_file(thumbnail, mimetype="image/jpeg"), 200
+
+
+@api.route("/files/<int:f_id>/similar_pages", methods=["POST"])
+@error_handler
+@auth
+def api_similar_pages(f_id: int) -> ApiReturn:
+    data = request.get_json()
+    if not isinstance(data, dict):
+        raise InvalidKeyValue("body", data)
+    if "filename" not in data:
+        raise KeyNotFound("filename")
+
+    filename = data["filename"]
+    if not isinstance(filename, str):
+        raise InvalidKeyValue("filename", filename)
+
+    threshold = data.get("threshold", DEFAULT_SIMILARITY_THRESHOLD)
+    if (
+        not isinstance(threshold, (int, float))
+        or isinstance(threshold, bool)
+        or not 0 <= threshold <= 1
+    ):
+        raise InvalidKeyValue("threshold", threshold)
+
+    return return_api(find_similar_pages(f_id, filename, threshold))
+
+
+@api.route("/pages", methods=["DELETE"])
+@error_handler
+@auth
+def api_delete_pages() -> ApiReturn:
+    pages: list[PageReference] | Any = request.get_json()
+    if not (
+        isinstance(pages, list)
+        and all(
+            isinstance(p, dict)
+            and isinstance(p.get("file_id"), int)
+            and isinstance(p.get("filename"), str)
+            for p in pages
+        )
+    ):
+        raise InvalidKeyValue("body", pages)
+
+    delete_pages(pages)
+    return return_api({})
 
 
 @api.route("/thumbnails", methods=["DELETE"])

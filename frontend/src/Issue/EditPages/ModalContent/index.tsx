@@ -1,7 +1,7 @@
 // IMPORTS
 
 // React
-import { useCallback, useRef, useState, type RefObject } from 'react';
+import { useCallback, useMemo, useRef, useState, type RefObject } from 'react';
 
 import {
     useListRef,
@@ -12,7 +12,11 @@ import {
 // Redux
 import { useRootSelector } from 'Store/createAppStore';
 
-import { useGetFileQuery } from 'Store/Api/Files';
+import {
+    useDeletePagesMutation,
+    useFindSimilarPagesMutation,
+    useGetFileQuery,
+} from 'Store/Api/Files';
 import { useUpdateBookPagesMutation } from 'Store/Api/Issues';
 
 // Misc
@@ -32,11 +36,15 @@ import SpinnerErrorButton from 'Components/Link/SpinnerErrorButton';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import TextInput from 'Components/Form/TextInput';
 import VirtualTable from 'Components/Table/VirtualTable';
+import SimilarPagesModal, {
+    type SimilarPageItem,
+} from 'Components/SimilarPagesModal';
 
 // CSS
 import styles from './index.module.css';
 
 // Types
+import type { PageReference } from 'Store/Api/Files';
 import type { ThumbnailData } from 'Store/Api/Issues';
 import type { InputChanged } from 'typings/Inputs';
 
@@ -46,6 +54,7 @@ interface RowProps {
     handlePressDown: (index: number) => () => void;
     handlePressBump: (index: number) => () => void;
     handlePressDelete: (index: number) => () => void;
+    handlePressFindSimilar: (index: number) => () => void;
     handleEditFilename: (
         index: number,
     ) => (change: InputChanged<'filename', string>) => void;
@@ -180,6 +189,7 @@ function Row({
     handlePressDown,
     handlePressBump,
     handlePressDelete,
+    handlePressFindSimilar,
     handleEditFilename,
 }: RowComponentProps<RowProps>) {
     const { src, newFilename } = thumbnails[index];
@@ -225,6 +235,12 @@ function Row({
                         title="Bump this and all following pages' numbers by one"
                         onPress={handlePressBump(index)}
                         isDisabled={isLast}
+                    />
+
+                    <IconButton
+                        name={icons.CLONE}
+                        title={translate('FindSimilarPages')}
+                        onPress={handlePressFindSimilar(index)}
                     />
                 </div>
             </div>
@@ -393,6 +409,87 @@ export default function EditPagesModalContent({
         [changes],
     );
 
+    const [similarPagesReference, setSimilarPagesReference] = useState<
+        string | undefined
+    >();
+
+    const [
+        findSimilarPages,
+        {
+            data: similarPages,
+            isLoading: isFindingSimilarPages,
+            error: findSimilarPagesError,
+        },
+    ] = useFindSimilarPagesMutation();
+
+    const [
+        deletePages,
+        { isLoading: isDeletingPages, error: deletePagesError },
+    ] = useDeletePagesMutation();
+
+    const handlePressFindSimilar = useCallback(
+        (index: number) => () => {
+            if (!changes) {
+                return;
+            }
+
+            // The filename the page has inside the file, not the edited one
+            const filename = changes[index].currentFilename;
+            setSimilarPagesReference(filename);
+            findSimilarPages({ fileId, filename });
+        },
+        [changes, fileId, findSimilarPages],
+    );
+
+    const handleSimilarPagesModalClose = useCallback(() => {
+        setSimilarPagesReference(undefined);
+    }, []);
+
+    const similarPageItems = useMemo(() => {
+        const items = new Map<string, SimilarPageItem & PageReference>();
+        similarPages?.forEach(
+            ({ fileId, filename, filepath, distance, src }) => {
+                const id = JSON.stringify([fileId, filename]);
+                items.set(id, {
+                    id,
+                    fileId,
+                    filename,
+                    src,
+                    group: filepath.split('/').at(-1) ?? filepath,
+                    label: filename,
+                    distance,
+                });
+            },
+        );
+        return items;
+    }, [similarPages]);
+
+    const similarPagesList = useMemo(
+        () => (similarPages ? [...similarPageItems.values()] : undefined),
+        [similarPages, similarPageItems],
+    );
+
+    const handleDeleteSimilarPages = useCallback(
+        async (ids: string[]) => {
+            const pages = ids.map((id) => {
+                const { fileId, filename } = similarPageItems.get(id)!;
+                return { fileId, filename };
+            });
+
+            const { error } = await deletePages({ pages });
+            if (error) {
+                return;
+            }
+
+            setSimilarPagesReference(undefined);
+
+            if (pages.some((page) => page.fileId === fileId)) {
+                onRefresh();
+            }
+        },
+        [deletePages, fileId, onRefresh, similarPageItems],
+    );
+
     return (
         <ModalContent onModalClose={onModalClose}>
             <ModalHeader className={styles.modalHeaderContainer}>
@@ -421,6 +518,7 @@ export default function EditPagesModalContent({
                             handlePressDown,
                             handlePressBump,
                             handlePressDelete,
+                            handlePressFindSimilar,
                             handleEditFilename,
                         }}
                         rowHeight={700}
@@ -444,6 +542,22 @@ export default function EditPagesModalContent({
                     {translate('Save')}
                 </SpinnerErrorButton>
             </ModalFooter>
+
+            <SimilarPagesModal
+                isOpen={similarPagesReference !== undefined}
+                title={translate('SimilarPagesModalHeader', {
+                    filename: similarPagesReference ?? '',
+                })}
+                message={translate('SimilarPagesDeleteMessage')}
+                pages={similarPagesList}
+                isFetching={isFindingSimilarPages}
+                fetchError={findSimilarPagesError}
+                confirmLabel={translate('DeletePages')}
+                isConfirming={isDeletingPages}
+                confirmError={deletePagesError}
+                onConfirm={handleDeleteSimilarPages}
+                onModalClose={handleSimilarPagesModalClose}
+            />
         </ModalContent>
     );
 }

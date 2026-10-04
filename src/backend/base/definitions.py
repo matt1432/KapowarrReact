@@ -770,6 +770,19 @@ class ThumbnailData(TypedDict):
     new_filename: str
 
 
+class PageReference(TypedDict):
+    file_id: int
+    filename: str
+    "The name of the page inside the book"
+
+
+class SimilarPageData(PageReference):
+    filepath: str
+    distance: float
+    "Fraction of differing bits between the hashes, from 0.0 to 1.0"
+    preview_path: str
+
+
 class FileExtraInfo(TypedDict):
     releaser: str | None
     scan_type: str | None

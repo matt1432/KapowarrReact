@@ -1,5 +1,6 @@
 import re
 from collections import Counter
+from collections.abc import Collection
 from os.path import basename, dirname, join
 from zipfile import ZipFile, ZipInfo
 
@@ -82,6 +83,44 @@ def get_ad_filenames(file: str) -> list[str]:
         return results
 
 
+def _remove_files_from_zip(file: str, filenames: Collection[str]) -> None:
+    archive_folder = generate_archive_folder(dirname(file), file)
+
+    with ZipFile(file, "r") as zip:
+        files = zip.namelist()
+        zip.extractall(archive_folder)
+
+    with ZipFile(file, "w") as zip:
+        for f in files:
+            if f not in filenames:
+                zip.write(filename=join(archive_folder, f), arcname=f)
+
+    delete_file_folder(archive_folder)
+
+
+def remove_files_from_archive(file: str, filenames: Collection[str]) -> None:
+    """Remove files from a CBZ or CBR file.
+
+    Args:
+        file (str): The path to the archive.
+        filenames (Collection[str]): The names of the files inside the archive
+            to remove.
+    """
+    is_rar = file.endswith(".cbr")
+
+    if (not file.endswith(".cbz") and not is_rar) or not filenames:
+        return
+
+    if is_rar:
+        cbr_to_cbz(file)
+        file = file.replace(".cbr", ".cbz")
+
+    _remove_files_from_zip(file, filenames)
+
+    if is_rar:
+        cbz_to_cbr(file)
+
+
 def remove_ads(file: str) -> None:
     """
     Removes scene ads that can sometimes show up at the end of comics.
@@ -97,25 +136,11 @@ def remove_ads(file: str) -> None:
 
     ads = get_ad_filenames(file)
 
-    if len(ads) == 0:
-        if is_rar:
-            cbz_to_cbr(file)
-        return
-
-    archive_folder = generate_archive_folder(dirname(file), file)
-
-    with ZipFile(file, "r") as zip:
-        files = zip.namelist()
-        zip.extractall(archive_folder)
-
-    with ZipFile(file, "w") as zip:
-        for f in files:
-            if f not in ads:
-                zip.write(filename=join(archive_folder, f), arcname=f)
-
-    delete_file_folder(archive_folder)
+    if ads:
+        _remove_files_from_zip(file, ads)
 
     if is_rar:
         cbz_to_cbr(file)
 
-    LOGGER.info(f"Removed ads: {ads}")
+    if ads:
+        LOGGER.info(f"Removed ads: {ads}")

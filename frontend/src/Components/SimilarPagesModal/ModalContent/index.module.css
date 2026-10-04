@@ -1,0 +1,78 @@
+.group {
+    margin-top: 20px;
+
+    &:first-child {
+        margin-top: 0;
+    }
+}
+
+.groupHeader {
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--borderColor);
+    font-weight: bold;
+    word-break: break-all;
+}
+
+.pages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 200px;
+    padding: 5px;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.selected {
+    border-color: var(--dangerColor);
+}
+
+.image {
+    max-width: 100%;
+    height: 280px;
+    object-fit: contain;
+}
+
+.caption {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.label {
+    overflow: hidden;
+    flex: 1 1 auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.similarity {
+    flex: 0 0 auto;
+    margin-left: 5px;
+    color: var(--helpTextColor);
+    font-size: 12px;
+}
+
+.selectAllInputContainer {
+    margin-right: auto;
+    line-height: 30px;
+}
+
+.selectAllInput {
+    composes: input from 'Components/Form/CheckInput/index.module.css';
+
+    margin: 0;
+}
+
+.selectedCount {
+    margin-right: 10px;
+    line-height: 30px;
+}
