@@ -3,7 +3,9 @@ Search for volumes/issues and fetch metadata for them on ComicVine
 """
 
 from asyncio import gather, run, sleep
-from collections.abc import AsyncGenerator, Iterable, Sequence
+from collections.abc import AsyncGenerator, Iterable, Iterator, Sequence
+from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import UTC, date, datetime, timedelta
 from os.path import dirname, join
 from pathlib import Path
@@ -180,6 +182,22 @@ class CVRateLimiter:
         self.__velocity_limiter = Limiter(Rate(1, Duration.SECOND))
         self.__resource_limiters: dict[str, Limiter] = {}
         self.__lock = Lock()
+        self.__stop_on_limit: ContextVar[bool] = ContextVar(
+            "cv_stop_on_limit", default=False
+        )
+        return
+
+    @contextmanager
+    def stop_on_limit(self) -> Iterator[None]:
+        """Inside this context, raise `MetadataSourceRateLimitReached` when
+        the rate limit is reached, instead of waiting until requests are
+        allowed again.
+        """
+        token = self.__stop_on_limit.set(True)
+        try:
+            yield
+        finally:
+            self.__stop_on_limit.reset(token)
         return
 
     @staticmethod
@@ -208,7 +226,21 @@ class CVRateLimiter:
                 )
             resource_limiter = self.__resource_limiters[name]
 
-        if not resource_limiter.try_acquire(name, blocking=False):
+        if resource_limiter.try_acquire(name, blocking=False):
+            if StatusHandlers().problem_reported(
+                StatusType.CV_RATE_LIMIT, name
+            ):
+                self.__set_status(name, False)
+
+        elif self.__stop_on_limit.get():
+            LOGGER.warning(
+                "ComicVine rate limit reached for '%s', stopping current action",
+                name,
+            )
+            self.__set_status(name, True)
+            raise MetadataSourceRateLimitReached(name)
+
+        else:
             LOGGER.warning(
                 "ComicVine rate limit reached for '%s', waiting until requests "
                 "are allowed again",
@@ -224,6 +256,24 @@ class CVRateLimiter:
 
 
 CV_RATE_LIMITER = CVRateLimiter()
+
+
+class CVSession(Comicvine):
+    """Simyan session that turns an error response without an "error" field
+    (e.g. a 502 from CV) into a `ServiceError`, instead of simyan raising a
+    `KeyError` while building the error message."""
+
+    def _perform_get_request(
+        self, endpoint: str, params: dict[str, str] | None = None
+    ) -> dict[str, Any]:
+        try:
+            return super()._perform_get_request(
+                endpoint=endpoint, params=params
+            )
+        except KeyError as err:
+            raise ServiceError(
+                f"Unexpected error response from CV for '{endpoint}'"
+            ) from err
 
 
 class CVCache(SQLiteCache):
@@ -354,7 +404,7 @@ class ComicVine:
         )
 
         self.cache = CVCache(path=Path(cache_file_location))
-        self.ssn = Comicvine(
+        self.ssn = CVSession(
             api_key=api_key,
             cache=self.cache,
             limiter=CV_RATE_LIMITER,  # type: ignore

@@ -4,14 +4,16 @@ from typing import Any, TypeVar
 from backend.base.custom_exceptions import (
     InvalidKeyValue,
     KeyNotFound,
+    MetadataSourceRateLimitReached,
     RootFolderNotFound,
     VolumeDownloadedFor,
 )
-from backend.base.definitions import MonitorScheme
+from backend.base.definitions import MonitorScheme, StatusType
 from backend.base.logging import LOGGER
 from backend.features.download_queue import DownloadHandler
 from backend.features.search_full import auto_search
 from backend.implementations.ad_removal import remove_ads
+from backend.implementations.comicvine import CV_RATE_LIMITER
 from backend.implementations.conversion import mass_convert
 from backend.implementations.file_processing import (
     mass_set_file_date,
@@ -22,7 +24,11 @@ from backend.implementations.naming import mass_rename
 from backend.implementations.root_folders import RootFolders
 from backend.implementations.volumes import Volume, refresh_and_scan
 from backend.internals.db import iter_commit
-from backend.internals.server import MassEditorStatusEvent, WebSocket
+from backend.internals.server import (
+    MassEditorStatusEvent,
+    MassEditorStoppedEvent,
+    WebSocket,
+)
 
 ActionCallable = Callable[[list[int], str, dict[str, Any]], None]
 
@@ -59,7 +65,28 @@ class MassEditorActionManager:
         LOGGER.info(
             f"Running mass editor action '{action}' on volumes: {volume_ids}"
         )
-        action_runner(volume_ids, action, kwargs)
+        try:
+            # Stop the action when the CV rate limit is reached, instead of
+            # silently waiting (up to an hour) until requests are allowed again
+            with CV_RATE_LIMITER.stop_on_limit():
+                action_runner(volume_ids, action, kwargs)
+
+        except MetadataSourceRateLimitReached as e:
+            LOGGER.warning(
+                f"Stopped mass editor action '{action}' because the "
+                "metadata source rate limit was reached"
+            )
+            WebSocket().emit(
+                MassEditorStoppedEvent(
+                    action,
+                    {
+                        "type": StatusType.CV_RATE_LIMIT.value,
+                        "display_subtypes": (
+                            [e.subtype] if e.subtype is not None else []
+                        ),
+                    },
+                )
+            )
         return
 
 

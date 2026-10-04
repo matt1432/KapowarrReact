@@ -32,6 +32,7 @@ import {
 } from 'Helpers/Props';
 
 import translate from 'Utilities/String/translate';
+import getStatusCheckMessage from 'System/Status/Health/getStatusCheckMessage';
 
 // Hooks
 import useSocketEvents from 'Helpers/Hooks/useSocketEvents';
@@ -63,7 +64,7 @@ const ACTION_MAP = {
 export default function SocketListener() {
     const dispatch = useRootDispatch();
 
-    const { callbacks, wasConnected } = useRootSelector(
+    const { callbacks, massEditorStatus, wasConnected } = useRootSelector(
         (state) => state.socketEvents,
     );
 
@@ -122,6 +123,43 @@ export default function SocketListener() {
         SocketEventHandler<typeof socketEvents.MASS_EDITOR_STATUS>
     >(
         async (data) => {
+            if ('stopReason' in data) {
+                const { currentItem, totalItems } =
+                    massEditorStatus[data.identifier];
+
+                dispatch(
+                    setMassEditorState(data.identifier, {
+                        currentItem,
+                        totalItems,
+                        isRunning: false,
+                    }),
+                );
+
+                dispatch(
+                    showMessage({
+                        ...ACTION_MAP[data.identifier],
+                        type: 'error',
+                        hideAfter: 0,
+                        message: `${translate(data.identifier)}: ${translate(
+                            'MassEditorStopped',
+                            {
+                                currentItem,
+                                totalItems,
+                                reason: getStatusCheckMessage(data.stopReason),
+                            },
+                        )}`,
+                    }),
+                );
+
+                await getAllVolumes();
+                await getStats();
+
+                callbacks.mass_editor_status.forEach((callback) => {
+                    callback(data);
+                });
+                return;
+            }
+
             dispatch(
                 setMassEditorState(data.identifier, {
                     currentItem: data.currentItem,
@@ -157,7 +195,13 @@ export default function SocketListener() {
                 });
             }
         },
-        [callbacks.mass_editor_status, dispatch, getAllVolumes, getStats],
+        [
+            callbacks.mass_editor_status,
+            dispatch,
+            getAllVolumes,
+            getStats,
+            massEditorStatus,
+        ],
     );
 
     const handleQueueAdded = useCallback<

@@ -660,7 +660,15 @@ class ExternalClientDownloading(KapowarrException):
 class MetadataSourceRateLimitReached(KapowarrException):
     "Rate limit reached of metadata source"
 
-    def __init__(self) -> None:
+    def __init__(self, subtype: str | None = None) -> None:
+        """Create the exception.
+
+        Args:
+            subtype (str | None, optional): The subtype of the rate limit
+                status that was reported (e.g. the rate limited resource).
+                Defaults to None.
+        """
+        self.subtype = subtype
         LOGGER.warning("Reached the rate limit of metadata source")
         return
 

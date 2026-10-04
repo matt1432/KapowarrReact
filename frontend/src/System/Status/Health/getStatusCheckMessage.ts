@@ -16,6 +16,11 @@ const statusCheckDescriptions: Record<StatusCheckType, StatusCheckDescription> =
                 search_volumes: 'StatusCheckSubtypeSearchVolumes',
                 fetch_volume: 'StatusCheckSubtypeFetchVolume',
                 fetch_issues: 'StatusCheckSubtypeFetchIssues',
+                // Resources of the CV API
+                search: 'StatusCheckSubtypeSearchVolumes',
+                get_volume: 'StatusCheckSubtypeFetchVolume',
+                volumes: 'StatusCheckSubtypeFetchVolume',
+                issues: 'StatusCheckSubtypeFetchIssues',
             },
         },
         download_service_rate_limit: {

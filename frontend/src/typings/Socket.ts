@@ -9,6 +9,7 @@ import type { RawTask } from './Task';
 import type { VolumePublicInfo } from 'Volume/Volume';
 import type { Issue } from 'Issue/Issue';
 import type { SettingsValue } from './Settings';
+import type { RawStatusCheck } from './Status';
 
 type TaskData = CamelCasedPropertiesDeep<
     Pick<RawTask, 'action' | 'volume_id' | 'issue_id' | 'called_from'>
@@ -30,11 +31,17 @@ type QueueEndedData = CamelCasedPropertiesDeep<{
     id: number;
 }>;
 
-type MassEditorData = CamelCasedPropertiesDeep<{
-    identifier: MassEditAction;
-    current_item: number;
-    total_items: number;
-}>;
+type MassEditorData = CamelCasedPropertiesDeep<
+    | {
+          identifier: MassEditAction;
+          current_item: number;
+          total_items: number;
+      }
+    | {
+          identifier: MassEditAction;
+          stop_reason: RawStatusCheck;
+      }
+>;
 
 type IssueUpdatedData = CamelCasedPropertiesDeep<{
     called_from: string;

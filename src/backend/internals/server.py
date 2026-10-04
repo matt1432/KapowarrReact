@@ -24,6 +24,7 @@ from backend.base.definitions import (
     Constants,
     StartType,
     StartTypeHandler,
+    StatusData,
     WebSocketEvent,
     WebSocketEventType,
 )
@@ -546,6 +547,30 @@ class MassEditorStatusEvent(WebSocketEvent):
             "identifier": self.identifier,
             "current_item": self.current_item,
             "total_items": self.total_items,
+        }
+
+
+class MassEditorStoppedEvent(WebSocketEvent):
+    "The Mass Editor action was stopped before it finished"
+
+    def __init__(self, identifier: str, stop_reason: StatusData) -> None:
+        """Create the event.
+
+        Args:
+            identifier (str): The identifier of the job.
+            stop_reason (StatusData): The status that caused the job to stop.
+        """
+        self.identifier = identifier
+        self.stop_reason = stop_reason
+        return
+
+    def get_type(self) -> WebSocketEventType:
+        return WebSocketEventType.MASS_EDITOR_STATUS
+
+    def get_body(self) -> dict[str, Any]:
+        return {
+            "identifier": self.identifier,
+            "stop_reason": self.stop_reason,
         }
 
 
