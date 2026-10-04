@@ -149,6 +149,13 @@ class LibgenPlusIndexer(BaseIndexerClient):
             else None
         )
 
+        # libgencomics uses its own simyan session, which doesn't use the rate
+        # limiter of Kapowarr. Its only CV request is fetching the volume, so
+        # do that request here and let libgencomics get it from the cache.
+        cv = ComicVine()
+        if not cv.cache_volume(comicvine_id):
+            return file_results
+
         try:
             file_results = await LibgenSearch().search_comicvine_id(
                 query=query,
@@ -158,7 +165,7 @@ class LibgenPlusIndexer(BaseIndexerClient):
                 libgen_series_id=series_ids,
                 libgen_site_url=self._url,
                 flaresolverr_url=flaresolverr_url,
-                cv_cache=ComicVine().cache,
+                cv_cache=cv.cache,
             )
         except LibgenException as e:
             LOGGER.info(e)

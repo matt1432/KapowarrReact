@@ -8,10 +8,13 @@ from datetime import UTC, date, datetime, timedelta
 from os.path import dirname, join
 from pathlib import Path
 from re import IGNORECASE, compile
+from threading import Lock
 from typing import Any
 from urllib.parse import parse_qs, urlsplit
 
 from bs4 import BeautifulSoup, Tag
+from pydantic import TypeAdapter, ValidationError
+from pyrate_limiter import Duration, Limiter, Rate
 from simyan.cache.schemas import CacheData
 from simyan.comicvine import (
     AuthenticationError,
@@ -60,6 +63,7 @@ from backend.implementations.matching import (
     select_best_volume_result_for_file,
 )
 from backend.internals.db import DBConnection, get_db
+from backend.internals.server import Server
 from backend.internals.settings import Settings
 from backend.internals.status import StatusHandlers
 
@@ -84,6 +88,7 @@ translation_regex = compile(
     IGNORECASE,
 )
 CV_SEARCH_EXPIRY = timedelta(days=14)
+CV_RESOURCE_RATE_LIMIT = 200
 
 headers = {"h2", "h3", "h4", "h5", "h6"}
 lists = {"ul", "ol"}
@@ -162,6 +167,63 @@ def _clean_description(description: str, short: bool = False) -> str:
 
     result = str(soup)
     return result
+
+
+class CVRateLimiter:
+    """Rate limiter for the CV API, used instead of the one of simyan. CV
+    allows 200 requests per resource per hour, while simyan counts the
+    requests to all resources together. Also reports a status when the limit
+    is reached, instead of silently waiting until requests are allowed again.
+    """
+
+    def __init__(self) -> None:
+        self.__velocity_limiter = Limiter(Rate(1, Duration.SECOND))
+        self.__resource_limiters: dict[str, Limiter] = {}
+        self.__lock = Lock()
+        return
+
+    @staticmethod
+    def __set_status(resource: str, limit_reached: bool) -> None:
+        def _set_status() -> None:
+            if limit_reached:
+                StatusHandlers().report(StatusType.CV_RATE_LIMIT, resource)
+            else:
+                StatusHandlers().clear(StatusType.CV_RATE_LIMIT, resource)
+
+        # Use a separate thread (and thus DB connection) so that the DB
+        # change is committed immediately, instead of holding a write
+        # transaction open on the connection of the caller while waiting.
+        thread = Server().get_db_thread(
+            target=_set_status, name="CVRateLimitStatus"
+        )
+        thread.start()
+        thread.join()
+        return
+
+    def try_acquire(self, name: str) -> bool:
+        with self.__lock:
+            if name not in self.__resource_limiters:
+                self.__resource_limiters[name] = Limiter(
+                    Rate(CV_RESOURCE_RATE_LIMIT, Duration.HOUR)
+                )
+            resource_limiter = self.__resource_limiters[name]
+
+        if not resource_limiter.try_acquire(name, blocking=False):
+            LOGGER.warning(
+                "ComicVine rate limit reached for '%s', waiting until requests "
+                "are allowed again",
+                name,
+            )
+            self.__set_status(name, True)
+            resource_limiter.try_acquire(name)
+            self.__set_status(name, False)
+            LOGGER.info("ComicVine requests allowed again for '%s'", name)
+
+        self.__velocity_limiter.try_acquire(name)
+        return True
+
+
+CV_RATE_LIMITER = CVRateLimiter()
 
 
 class CVCache(SQLiteCache):
@@ -292,7 +354,11 @@ class ComicVine:
         )
 
         self.cache = CVCache(path=Path(cache_file_location))
-        self.ssn = Comicvine(api_key=api_key, cache=self.cache)
+        self.ssn = Comicvine(
+            api_key=api_key,
+            cache=self.cache,
+            limiter=CV_RATE_LIMITER,  # type: ignore
+        )
         return
 
     def remove_volume_from_cache(self, cv_id: int) -> None:
@@ -541,6 +607,72 @@ class ComicVine:
             yield batch
         return
 
+    def __fetch_list[T](
+        self, endpoint: str, model: type[T], filter: str
+    ) -> list[T]:
+        """Fetch all pages of a list endpoint. Unlike the list functions of
+        simyan, this stops after the last page instead of requesting pages
+        until an empty one is returned, which wastes a request per call.
+
+        Args:
+            endpoint (str): The endpoint, e.g. "/volumes".
+            model (type[T]): The model to parse the results into.
+            filter (str): The value of the filter parameter.
+
+        Raises:
+            ServiceError: The request failed or the response is invalid.
+            AuthenticationError: The API key is invalid.
+
+        Returns:
+            list[T]: The results of all pages.
+        """
+        page_size = 100
+        offset = 0
+        results: list[dict[str, Any]] = []
+        while True:
+            # Same params as simyan uses, so that the cache keys match
+            response = self.ssn._get_request(
+                endpoint=endpoint,
+                params={
+                    "filter": filter,
+                    "limit": str(page_size),
+                    "offset": str(offset),
+                },
+            )
+            page = response.get("results") or []
+            results.extend(page)
+            offset += page_size
+
+            if len(page) < page_size or offset >= response.get(
+                "number_of_total_results", 0
+            ):
+                break
+
+        try:
+            return TypeAdapter(list[model]).validate_python(results)
+        except ValidationError as err:
+            raise ServiceError(err) from err
+
+    def cache_volume(self, cv_id: int) -> bool:
+        """Fetch the volume through this session, so that the request goes
+        through the rate limiter of Kapowarr and the response gets cached.
+        Other simyan sessions using the same cache (e.g. the one of
+        libgencomics) then get the volume from the cache instead of making
+        a request themselves.
+
+        Args:
+            cv_id (int): The CV ID of the volume.
+
+        Returns:
+            bool: Whether the volume is now in the cache.
+        """
+        try:
+            self.ssn.get_volume(volume_id=cv_id)
+        except (ServiceError, AuthenticationError) as e:
+            LOGGER.info("Failed to fetch volume %s from CV: %s", cv_id, e)
+            return False
+        return True
+
     def test_key(self) -> bool:
         """Test if the API key works.
 
@@ -639,10 +771,10 @@ class ComicVine:
             ):
                 try:
                     responses = [
-                        self.ssn.list_volumes(
-                            params={
-                                "filter": f"id:{'|'.join(id_batch)}",
-                            }
+                        self.__fetch_list(
+                            "/volumes",
+                            BasicVolume,
+                            f"id:{'|'.join(id_batch)}",
                         )
                         for id_batch in batched(request_batch, 100)
                     ]
@@ -708,38 +840,14 @@ class ComicVine:
         issue_infos = []
         for id_batch in batched(formatted_cv_ids, 50):
             try:
-                results = self.ssn.list_issues(
-                    params={
-                        "filter": f"volume:{'|'.join(id_batch)}",
-                    }
+                results = self.__fetch_list(
+                    "/issues", BasicIssue, f"volume:{'|'.join(id_batch)}"
                 )
 
             except (ServiceError, AuthenticationError):
                 break
 
             issue_infos.extend([self.__format_issue_output(r) for r in results])
-
-            if len(results) > 100:
-                async for offset_batch in self.__sleep_iter(
-                    batched(range(100, len(results), 100), 10), 10
-                ):
-                    try:
-                        responses = [
-                            self.ssn.list_issues(
-                                params={
-                                    "filter": f"volume:{'|'.join(id_batch)}",
-                                    "offset": offset,
-                                }
-                            )
-                            for offset in offset_batch
-                        ]
-
-                        for batch in responses:
-                            issue_infos.extend(
-                                [self.__format_issue_output(r) for r in batch]
-                            )
-                    except (ServiceError, AuthenticationError):
-                        raise MetadataSourceRateLimitReached
 
         unique = []
         seen = set()
