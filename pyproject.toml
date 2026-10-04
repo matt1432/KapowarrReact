@@ -28,7 +28,7 @@ dependencies = [
   "cryptography ~= 50.0.0",
   "flask ~= 3.1",
   "flask-socketio ~= 5.6.0",
-  "libgencomics @ git+https://github.com/matt1432/LibgenComics.git@v1.3.5",
+  "libgencomics @ git+https://github.com/matt1432/LibgenComics.git@v1.3.6",
   "magnet2torrent ~= 1.2",
   "Pillow",
   "requests ~= 2.34.2",
