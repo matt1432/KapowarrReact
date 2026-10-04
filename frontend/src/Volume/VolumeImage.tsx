@@ -9,7 +9,7 @@ import type { Volume } from './Volume';
 import type { AddVolume } from 'AddVolume/AddVolume';
 
 export interface VolumeImageProps {
-    volume: Volume | AddVolume | { id: number };
+    volume: Volume | AddVolume | { id: number; lastCvFetch?: number };
     className?: string;
     style?: object;
     placeholder: string;
@@ -21,11 +21,21 @@ export interface VolumeImageProps {
 
 // IMPLEMENTATIONS
 
-function getUrl(volume: Volume | AddVolume | { id: number }) {
+function getUrl(volume: VolumeImageProps['volume']) {
     const { apiKey, urlBase } = window.Kapowarr;
-    return 'id' in volume
-        ? `${urlBase}/api/volumes/${volume.id}/cover?api_key=${apiKey}`
-        : volume.coverLink;
+
+    if (!('id' in volume)) {
+        return volume.coverLink;
+    }
+
+    // The cover changes when the volume is refreshed, so use the refresh time
+    // as version to let the browser cache the cover until then
+    const version =
+        'lastCvFetch' in volume && volume.lastCvFetch
+            ? `&v=${volume.lastCvFetch}`
+            : '';
+
+    return `${urlBase}/api/volumes/${volume.id}/cover?api_key=${apiKey}${version}`;
 }
 
 export default function VolumeImage({

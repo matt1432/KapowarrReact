@@ -205,12 +205,7 @@ function Row({
             }}
         >
             <div className={styles.imageContainer}>
-                <img
-                    // The image at the provided link can change over time
-                    // Update it every time we open this window
-                    src={`${src}&${new Date().getTime()}`}
-                    height={600}
-                />
+                <img src={src} height={600} />
 
                 <div className={styles.buttons}>
                     <IconButton

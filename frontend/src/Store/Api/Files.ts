@@ -71,13 +71,16 @@ const extendedApi = baseApi.injectEndpoints({
                 body,
             }),
 
-            transformResponse: (response: { result: RawSimilarPageData[] }) =>
-                response.result.map(({ preview_path, ...rest }) =>
+            transformResponse: (response: { result: RawSimilarPageData[] }) => {
+                // Previews are regenerated at the same paths on every search
+                const fetchedAt = Date.now();
+                return response.result.map(({ preview_path, ...rest }) =>
                     camelize({
-                        src: `${window.Kapowarr.urlBase}/api/thumbnail?api_key=${window.Kapowarr.apiKey}&filepath=${encodeURIComponent(preview_path)}`,
+                        src: `${window.Kapowarr.urlBase}/api/thumbnail?api_key=${window.Kapowarr.apiKey}&filepath=${encodeURIComponent(preview_path)}&t=${fetchedAt}`,
                         ...rest,
                     }),
-                ),
+                );
+            },
         }),
 
         // PUT

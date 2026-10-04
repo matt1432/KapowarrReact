@@ -381,7 +381,7 @@ class Volume:
                         special_version, special_version_locked,
                         description, site_url,
                         monitored, monitor_new_issues,
-                        v.folder, root_folder,
+                        v.folder, root_folder, last_cv_fetch,
                         rf.folder AS root_folder_path,
                         (
                             SELECT COUNT(*)
@@ -1087,7 +1087,7 @@ class Library:
                     title, year, publisher,
                     volume_number, description,
                     monitored, monitor_new_issues,
-                    folder,
+                    folder, last_cv_fetch,
                     (
                         SELECT COUNT(size) FROM (SELECT size FROM issues_to_files)
                     ) AS issue_file_count,

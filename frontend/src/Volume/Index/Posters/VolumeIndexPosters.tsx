@@ -302,7 +302,7 @@ export default function VolumeIndexPosters({
                 defaultHeight={size.height}
                 columnCount={columnCount}
                 columnWidth={columnWidth}
-                overscanCount={5}
+                overscanCount={1}
                 rowCount={Math.ceil(items.length / columnCount)}
                 rowHeight={rowHeight}
                 cellProps={{

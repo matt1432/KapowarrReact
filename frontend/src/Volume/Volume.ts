@@ -59,6 +59,7 @@ export type RawVolumePublicInfo = Pick<
     | 'folder'
     | 'issue_count'
     | 'issues_downloaded'
+    | 'last_cv_fetch'
     | 'monitor_new_issues'
     | 'monitored'
     | 'publisher'

@@ -8,7 +8,7 @@ import { useRootSelector } from 'Store/createAppStore';
 import { getVolumeStatus } from 'Store/Slices/SocketEvents';
 
 import { useExecuteCommandMutation } from 'Store/Api/Command';
-import { useGetVolumesQuery, useSearchVolumeQuery } from 'Store/Api/Volumes';
+import { useGetVolumesQuery } from 'Store/Api/Volumes';
 
 // Misc
 import { commandNames, icons } from 'Helpers/Props';
@@ -63,12 +63,6 @@ export default function VolumeIndexPoster({
             volumePublicInfo: data!.find((item) => item.id === volumeId)!,
         }),
     });
-    const { data: volume } = useSearchVolumeQuery(
-        { volumeId },
-        {
-            selectFromResult: ({ data }) => ({ data }),
-        },
-    );
 
     const {
         detailedProgressBar,
@@ -125,7 +119,7 @@ export default function VolumeIndexPoster({
         setIsDeleteVolumeModalOpen(false);
     }, [setIsDeleteVolumeModalOpen]);
 
-    if (!volume) {
+    if (!volumePublicInfo) {
         return null;
     }
 
@@ -137,7 +131,7 @@ export default function VolumeIndexPoster({
         totalSize,
         volumeNumber,
         year,
-    } = volume;
+    } = volumePublicInfo;
 
     const link = `/volumes/${volumeId}`;
 
@@ -182,7 +176,7 @@ export default function VolumeIndexPoster({
 
                 <Link className={styles.link} style={elementStyle} to={link}>
                     <VolumePoster
-                        volume={volume}
+                        volume={volumePublicInfo}
                         style={elementStyle}
                         size={250}
                         lazy

@@ -1,6 +1,7 @@
 from asyncio import run
 from collections.abc import Callable
 from datetime import datetime
+from hashlib import md5
 from io import BytesIO
 from os import remove
 from os.path import basename, dirname, join, splitext
@@ -1211,7 +1212,20 @@ def api_volume_issues_cache(id: int) -> ApiReturn:
 @auth
 def api_volume_cover(id: int) -> tuple[Response, int]:
     cover = Library.get_volume(id).get_cover()
-    return send_file(cover, mimetype="image/jpeg"), 200
+    # The cover only changes when the volume is refreshed, which also updates
+    # the version (last_cv_fetch) the frontend puts in the URL. So a versioned
+    # URL can be cached by the browser indefinitely.
+    is_versioned = bool(request.args.get("v"))
+    response = send_file(
+        cover,
+        mimetype="image/jpeg",
+        etag=md5(cover.getbuffer()).hexdigest(),
+        max_age=31_536_000 if is_versioned else None,
+    )
+    response.cache_control.private = True
+    response.cache_control.public = False
+    # Not hardcoded to 200, as it's 304 when the browser's copy is still valid
+    return response, response.status_code
 
 
 @api.route("/issues/<int:id>/thumbnails", methods=["GET"])
