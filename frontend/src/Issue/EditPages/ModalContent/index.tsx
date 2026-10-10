@@ -70,28 +70,54 @@ export interface EditPagesModalContentProps {
 
 // IMPLEMENTATIONS
 
+interface PageNumbers {
+    /** Position of the page number(s) inside the filename */
+    start: number;
+    end: number;
+    first: string;
+    /** Set when the image is a spread of multiple pages (e.g. 002-003) */
+    last?: string;
+    separator?: string;
+}
+
+const PAGE_NUMBERS_REGEX = /(\d+)(?:([-_])(\d+))?/g;
+
 function parsePageNumbers(
     filename: string,
     prefix: string,
-): string | [string, string, string] {
-    const strippedName = filename
-        .replace(prefix, '')
-        .replace(/\.[^.]*$/, '')
-        .trim();
+): PageNumbers | undefined {
+    const extensionStart = filename.lastIndexOf('.');
+    const name =
+        extensionStart === -1 ? filename : filename.slice(0, extensionStart);
 
-    const separator = strippedName.replace(/\d/g, '');
+    const matches = [...name.matchAll(PAGE_NUMBERS_REGEX)];
 
-    if (separator === '') {
-        return strippedName;
+    // The prefix is the one most pages of the book have. Pages with another
+    // prefix (e.g. pages of another issue) have their page number as the
+    // last number in their filename instead.
+    const match = name.startsWith(prefix)
+        ? matches.find((m) => m.index >= prefix.length)
+        : matches.at(-1);
+
+    if (!match) {
+        return undefined;
     }
 
-    const parsedNumbers = strippedName.split(separator);
+    return {
+        start: match.index,
+        end: match.index + match[0].length,
+        first: match[1],
+        last: match[3],
+        separator: match[2],
+    };
+}
 
-    if (parsedNumbers[1] === '') {
-        return strippedName;
-    }
-
-    return [parsedNumbers[0], parsedNumbers[1], separator];
+function replacePageNumbers(
+    filename: string,
+    numbers: PageNumbers,
+    replacement: string,
+): string {
+    return `${filename.slice(0, numbers.start)}${replacement}${filename.slice(numbers.end)}`;
 }
 
 function swapThumbnailPositions([first, secnd]: [
@@ -100,84 +126,82 @@ function swapThumbnailPositions([first, secnd]: [
 ]): [ThumbnailData, ThumbnailData] {
     const prefix = first.prefix;
 
-    let newFirstFilename = secnd.newFilename;
-    let newSecndFilename = first.newFilename;
+    // The filenames stay at their position, only the shape of the page
+    // numbers is adapted when a single page and a spread are swapped
+    let newFirstFilename = first.newFilename;
+    let newSecndFilename = secnd.newFilename;
 
     const firstNumbers = parsePageNumbers(first.newFilename, prefix);
     const secndNumbers = parsePageNumbers(secnd.newFilename, prefix);
 
-    if (typeof firstNumbers === 'string' && typeof secndNumbers !== 'string') {
-        const separator = secndNumbers[2];
-        newFirstFilename = first.newFilename.replace(
+    if (
+        firstNumbers &&
+        secndNumbers &&
+        firstNumbers.last === undefined &&
+        secndNumbers.last !== undefined
+    ) {
+        // Single page then spread: the spread takes the first position
+        newFirstFilename = replacePageNumbers(
+            first.newFilename,
             firstNumbers,
-            secndNumbers[1],
+            `${firstNumbers.first}${secndNumbers.separator}${secndNumbers.first}`,
         );
-        newSecndFilename = secnd.newFilename.replace(
-            `${secndNumbers[0]}${separator}${secndNumbers[1]}`,
-            `${firstNumbers}${separator}${secndNumbers[0]}`,
+        newSecndFilename = replacePageNumbers(
+            secnd.newFilename,
+            secndNumbers,
+            secndNumbers.last,
         );
     }
     else if (
-        typeof firstNumbers !== 'string' &&
-        typeof secndNumbers === 'string'
+        firstNumbers &&
+        secndNumbers &&
+        firstNumbers.last !== undefined &&
+        secndNumbers.last === undefined
     ) {
-        const separator = firstNumbers[2];
-        newFirstFilename = first.newFilename.replace(
-            `${firstNumbers[0]}${separator}${firstNumbers[1]}`,
-            `${firstNumbers[1]}${separator}${secndNumbers}`,
+        // Spread then single page: the single page takes the first position
+        newFirstFilename = replacePageNumbers(
+            first.newFilename,
+            firstNumbers,
+            firstNumbers.first,
         );
-        newSecndFilename = secnd.newFilename.replace(
+        newSecndFilename = replacePageNumbers(
+            secnd.newFilename,
             secndNumbers,
-            firstNumbers[0],
+            `${firstNumbers.last}${firstNumbers.separator}${secndNumbers.first}`,
         );
     }
 
     return [
         {
             ...secnd,
-            newFilename: newSecndFilename,
+            newFilename: newFirstFilename,
         },
         {
             ...first,
-            newFilename: newFirstFilename,
+            newFilename: newSecndFilename,
         },
     ];
 }
 
 function _bumpNumber(num: string): string {
-    const string_value = /(\d+)/.exec(num)?.[0];
-    if (!string_value) {
-        return '';
-    }
-    const value = parseFloat(string_value) + 1;
-    const new_string_value = `${Array.from({ length: string_value.length - value.toString().length }, () => '0').join('')}${value.toString()}`;
-    return num.replace(string_value, new_string_value);
+    return (parseInt(num, 10) + 1).toString().padStart(num.length, '0');
 }
 
 function bumpThumbnailNumber(thumbnail: ThumbnailData): ThumbnailData {
-    const prefix = thumbnail.prefix;
+    const numbers = parsePageNumbers(thumbnail.newFilename, thumbnail.prefix);
 
-    let newFilename = thumbnail.newFilename;
-
-    const numbers = parsePageNumbers(newFilename, prefix);
-
-    if (typeof numbers === 'string') {
-        newFilename = thumbnail.newFilename.replace(
-            numbers,
-            _bumpNumber(numbers),
-        );
+    if (!numbers) {
+        return thumbnail;
     }
-    else {
-        const separator = numbers[2];
-        newFilename = thumbnail.newFilename.replace(
-            `${numbers[0]}${separator}${numbers[1]}`,
-            `${_bumpNumber(numbers[0])}${separator}${_bumpNumber(numbers[1])}`,
-        );
-    }
+
+    const bumped =
+        numbers.last === undefined
+            ? _bumpNumber(numbers.first)
+            : `${_bumpNumber(numbers.first)}${numbers.separator}${_bumpNumber(numbers.last)}`;
 
     return {
         ...thumbnail,
-        newFilename,
+        newFilename: replacePageNumbers(thumbnail.newFilename, numbers, bumped),
     };
 }
 
@@ -370,10 +394,12 @@ export default function EditPagesModalContent({
 
             const newThumbnails = [...changes];
 
+            // Move the deleted page to the end, so that the following pages
+            // take its number
             for (let i = index; i !== changes.length - 1; i++) {
                 const swapped = swapThumbnailPositions([
-                    changes[i],
-                    changes[i + 1],
+                    newThumbnails[i],
+                    newThumbnails[i + 1],
                 ]);
 
                 newThumbnails[i] = swapped[0];

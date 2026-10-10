@@ -1,3 +1,4 @@
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from glob import escape, glob
 from io import BytesIO
@@ -8,7 +9,7 @@ from zipfile import ZipFile
 
 from PIL import Image
 
-from backend.base.custom_exceptions import FileNotFound
+from backend.base.custom_exceptions import FileNotFound, InvalidKeyValue
 from backend.base.definitions import (
     Constants,
     FileConstants,
@@ -313,6 +314,13 @@ def update_issue_pages(file_id: int, new_pages: list[ThumbnailData]) -> None:
     """
     if len(new_pages) == 0:
         return
+
+    # Multiple files with the same name would overwrite each other when
+    # extracting the archive
+    new_filenames = Counter(page["new_filename"] for page in new_pages)
+    duplicates = sorted(f for f, count in new_filenames.items() if count > 1)
+    if duplicates:
+        raise InvalidKeyValue("new_filename", duplicates)
 
     file = FilesDB.fetch(file_id=file_id)[0]["filepath"]
 
