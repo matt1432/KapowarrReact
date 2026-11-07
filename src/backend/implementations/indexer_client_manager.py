@@ -116,14 +116,15 @@ def _validate_indexer_data(
             if not isinstance(value, list):
                 raise InvalidKeyValue(key.value, value)
 
-            value = CommaList(value)
             for entry in value:
-                if (
+                if not (
                     isinstance(entry, str)
-                    and not entry.isdigit()
+                    and entry.isdigit()
                     or isinstance(entry, int)
                 ):
                     raise InvalidKeyValue(key.value, value)
+
+            value = CommaList(str(entry) for entry in value)
 
             filtered_data[key.value] = str(value)
 
