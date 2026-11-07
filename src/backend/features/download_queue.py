@@ -43,7 +43,7 @@ from backend.implementations.external_client_manager import ExternalClients
 from backend.implementations.indexer_client_manager import IndexerClients
 from backend.implementations.matching import parse_covered_issues
 from backend.implementations.volumes import Issue
-from backend.internals.db import get_db, iter_commit
+from backend.internals.db import commit, get_db, iter_commit
 from backend.internals.server import (
     AddedToQueueEvent,
     QueueStatusEvent,
@@ -280,9 +280,9 @@ class DownloadHandler(metaclass=Singleton):
                     external_client_id = None
 
                 if isinstance(download.covered_issues, tuple):
-                    covered_issues = CommaList(
-                        map(str, download.covered_issues)
-                    ).__str__()
+                    covered_issues = str(
+                        CommaList(map(str, download.covered_issues))
+                    )
 
                 elif isinstance(download.covered_issues, float):
                     covered_issues = str(download.covered_issues)
@@ -498,6 +498,7 @@ class DownloadHandler(metaclass=Singleton):
             except EnqueuingDownloadFailure:
                 pass
 
+            commit()
             time.sleep(1.0)
         return
 
