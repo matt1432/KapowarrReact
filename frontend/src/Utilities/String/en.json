@@ -124,7 +124,7 @@
     "KeepHostingSettingsUploadHelpText": "Keep the current hosting settings instead of using the settings in the uploaded database when importing.",
     "KeyNotFound": "A key was not found in the input that is required to be given",
     "RootFolderInUse": "A root folder with the given ID is requested to be deleted but is used by a volume",
-    "RootFolderInvalid": "The root folder is a parent or child of an existing root folder, which is not allowed",
+    "RootFolderInvalid": "The root folder is a parent or child of an existing root folder or the download folder, or is already added, which is not allowed",
     "RootFolderNotFound": "Rootfolder with given ID not found",
     "TaskForVolumeRunning": "The volume is desired to be deleted but there is a task running for it",
     "TaskNotDeletable": "The task could not be deleted because it's the first in the queue",
