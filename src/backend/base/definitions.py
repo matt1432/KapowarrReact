@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import asdict, dataclass
 from datetime import date, datetime
 from enum import Enum
@@ -1507,6 +1507,19 @@ class QueryBuilder(ABC):
         return
 
     @abstractmethod
+    def _select_queries(self, query_keys: QueryKeys) -> Sequence[str]:
+        """Determine the set of possible queries that should be used for this
+        iteration. For example, different query formats can be used based on
+        whether a search for an issue or for a volume is done.
+
+        Args:
+            query_keys (QueryKeys): The query keys that are used this iteration.
+
+        Returns:
+            Sequence[str]: The set of query formats that can be used.
+        """
+        ...
+
     def next_query(
         self, search_action: SearchAction, query_keys: QueryKeys
     ) -> SearchQuery:
@@ -1522,7 +1535,33 @@ class QueryBuilder(ABC):
         Returns:
             SearchQuery: The resulting query string and which page to fetch.
         """
-        ...
+        self._update_state(search_action)
+
+        queries = self._select_queries(query_keys)
+        query = queries[self.query_variation_index]
+
+        if query_keys.year is None:
+            query = query.replace("({year})", "").strip()
+
+        if query_keys.issue_number is None:
+            year = query_keys.year
+        else:
+            year = query_keys.issue_year or query_keys.year
+
+        result = query.format(
+            title=query_keys.titles[self.alias_index],
+            year=year,
+            volume_number=query_keys.volume_number,
+            issue_number=query_keys.issue_number,
+        )
+
+        return {
+            "query": result,
+            "page": self.page,
+            "total_available_variations": len(queries),
+            "volume_id": query_keys.volume_id,
+            "calculated_issue_number": query_keys.calculated_issue_number,
+        }
 
 
 class ExternalDownloadClient(ABC):
