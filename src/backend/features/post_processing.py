@@ -43,7 +43,7 @@ class PostProcessingContext:
         "Delete the download from the queue in the database"
         get_db().execute(
             "DELETE FROM download_queue WHERE id = ?", (self.download.id,)
-        ).connection.commit()
+        )
         return
 
     def add_to_history(self) -> None:
@@ -116,10 +116,6 @@ class PostProcessingContext:
         LOGGER.debug(
             f"Moving download to final destination: {self.download}, Dest: {file_dest}"
         )
-
-        # If it takes very long to delete/move the file/folder (because of its size),
-        # the DB is left locked for a long period leading to timeouts.
-        commit()
 
         if exists(file_dest):
             LOGGER.warning(
@@ -194,10 +190,6 @@ class PostProcessingContext:
             LOGGER.debug(
                 f"Copying download to final destination: {self.download}, Dest: {file_dest}"
             )
-
-        # If it takes very long to delete/copy the folder (because of its size),
-        # the DB is left locked for a long period leading to timeouts.
-        commit()
 
         # Is a Libgen torrent file
         if filename is not None:
@@ -277,7 +269,6 @@ class PostProcessingContext:
 
         if renamed_files:
             FilesDB.update_filepaths(renamed_files)
-            commit()
 
         return
 
@@ -326,8 +317,10 @@ class PostProcessor:
         )
         self.ctx.remove_from_queue()
         self.ctx.add_to_history()
+        commit()
         self.ctx.move_to_dest()
         self.ctx.rename_with_proper_extension()
+        commit()
         self.ctx.add_file_to_database()
         self.ctx.convert_file()
         self.ctx.set_file_properties()
@@ -352,6 +345,7 @@ class PostProcessor:
         LOGGER.info(f"Postprocessing of failed download: {self.download.id}")
         self.ctx.remove_from_queue()
         self.ctx.add_to_history()
+        commit()
         self.ctx.delete_file()
         return
 
@@ -362,6 +356,7 @@ class PostProcessor:
         self.ctx.remove_from_queue()
         self.ctx.add_to_history()
         self.ctx.add_dl_to_blocklist()
+        commit()
         self.ctx.delete_file()
         return
 
@@ -373,7 +368,9 @@ class PostProcessorTorrentsComplete(PostProcessor):
         )
         self.ctx.remove_from_queue()
         self.ctx.add_to_history()
+        commit()
         self.ctx.move_torrent_to_dest()
+        commit()
         self.ctx.convert_file()
         self.ctx.set_file_properties()
         self.ctx.remove_ads_from_files()
@@ -386,14 +383,18 @@ class PostProcessorTorrentsCopy(PostProcessor):
             f"Postprocessing of successful download: {self.download.id}"
         )
         self.ctx.remove_from_queue()
+        commit()
         self.ctx.delete_file()
         return
 
     def seeding(self) -> None:
         LOGGER.info(f"Postprocessing of seeding download: {self.download.id}")
         self.ctx.add_to_history()
+        commit()
         self.ctx.copy_file_torrent()
+        commit()
         self.ctx.convert_file()
         self.ctx.set_file_properties()
         self.download.files = self.ctx.original_files
+        commit()
         return

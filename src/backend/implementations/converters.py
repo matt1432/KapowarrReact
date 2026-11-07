@@ -33,6 +33,7 @@ from backend.implementations.file_matching import scan_files
 from backend.implementations.matching import folder_extraction_filter
 from backend.implementations.naming import mass_rename
 from backend.implementations.volumes import Volume
+from backend.internals.db import commit
 from backend.internals.db_models import FilesDB
 from backend.internals.settings import Settings, System
 
@@ -368,6 +369,7 @@ def zip_to_folder(file: str) -> list[str]:
             volume_id,
             filepath_filter=resulting_files,
         )
+        commit()
 
     delete_file_folder(file)
     delete_empty_parent_folders(dirname(file), volume_folder)
@@ -501,6 +503,7 @@ def rar_to_folder(file: str) -> list[str]:
         resulting_files = mass_rename(
             volume_id, filepath_filter=resulting_files
         )
+        commit()
 
     delete_file_folder(file)
     delete_empty_parent_folders(dirname(file), volume_folder)
