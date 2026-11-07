@@ -43,6 +43,23 @@ self: final: _prev: let
         hash = "sha256-S6U9ME8dsz0z/iJ67ls09uZA/S0xmf8Ow9jMBQze1jE=";
       };
     }) {};
+
+  # autoPatchelfHook (patchelf 0.19.2) corrupts the prebuilt rar 7.23 binaries
+  # when rewriting their RPATH, making ld.so segfault on startup. Only set the
+  # interpreter and provide libstdc++ through LD_LIBRARY_PATH instead.
+  rar-fixed = final.rar.overrideAttrs (old: {
+    dontAutoPatchelf = true;
+    nativeBuildInputs = (old.nativeBuildInputs or []) ++ [final.makeWrapper];
+    postFixup =
+      (old.postFixup or "")
+      + ''
+        for b in rar unrar; do
+          patchelf --set-interpreter ${final.stdenv.cc.bintools.dynamicLinker} $out/bin/$b
+          wrapProgram $out/bin/$b \
+            --prefix LD_LIBRARY_PATH : ${final.lib.makeLibraryPath [final.stdenv.cc.cc.lib]}
+        done
+      '';
+  });
 in {
   kapowarr-web = final.callPackage "${self}/frontend" {};
 
@@ -121,5 +138,5 @@ in {
           fitting in the *arr suite of software.
         '';
       };
-    }) {};
+    }) {rar = rar-fixed;};
 }
