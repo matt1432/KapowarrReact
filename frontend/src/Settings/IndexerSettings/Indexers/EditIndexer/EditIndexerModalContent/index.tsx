@@ -99,7 +99,7 @@ function getInitialChanges(
         gcAvoidLargeDownloads: false,
         apiPath: '/api',
         apiKey: '',
-        categories: '7000',
+        categories: '7030',
     };
 }
 
