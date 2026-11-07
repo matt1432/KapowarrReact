@@ -23,6 +23,7 @@ import { useInView } from 'react-intersection-observer';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import Icon from 'Components/Icon';
 import IconButton from 'Components/Link/IconButton';
+import Label from 'Components/Label';
 import Link from 'Components/Link/Link';
 import Menu from 'Components/Menu/Menu';
 import MenuContent from 'Components/Menu/MenuContent';
@@ -54,6 +55,18 @@ interface InteractiveSearchRowProps {
 }
 
 // IMPLEMENTATIONS
+
+function getPeersKind(seeders: number) {
+    if (seeders === 0) {
+        return kinds.DANGER;
+    }
+
+    if (seeders < 10) {
+        return kinds.WARNING;
+    }
+
+    return kinds.INFO;
+}
 
 function getDownloadIcon(
     isGrabbing: boolean,
@@ -370,6 +383,24 @@ export default function InteractiveSearchRow({
                             {result.filesize
                                 ? formatBytes(result.filesize)
                                 : ''}
+                        </TableRowCell>
+                    );
+                }
+
+                if (name === 'seeders') {
+                    return (
+                        <TableRowCell key={name} className={styles[name]}>
+                            {result.seeders !== null ? (
+                                <Label
+                                    kind={getPeersKind(result.seeders)}
+                                    title={translate('SeedersLeechers', {
+                                        seeders: result.seeders,
+                                        leechers: result.leechers ?? 0,
+                                    })}
+                                >
+                                    {`${result.seeders}/${result.leechers ?? '-'}`}
+                                </Label>
+                            ) : null}
                         </TableRowCell>
                     );
                 }

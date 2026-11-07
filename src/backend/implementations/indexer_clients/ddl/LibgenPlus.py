@@ -128,6 +128,8 @@ class LibgenPlusIndexer(BaseIndexerClient):
             web_sub_title=None,
             download_sources=_download_sources(),
             selected_source=None,
+            seeders=None,
+            leechers=None,
             notes=None,
         ), resulting_libgen_series_ids
 
@@ -288,6 +290,8 @@ class LibgenPlusIndexer(BaseIndexerClient):
                     web_sub_title=None,
                     download_sources=_download_sources(),
                     selected_source=None,
+                    seeders=None,
+                    leechers=None,
                     notes=None,
                 )
             )

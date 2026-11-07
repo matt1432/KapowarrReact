@@ -36,6 +36,10 @@ export interface RawSearchResult {
     // GetComics stuff
     web_sub_title: string | null;
 
+    // Torrent stuff
+    seeders: number | null;
+    leechers: number | null;
+
     download_sources: DownloadSource[];
     selected_source: DownloadSource | null;
 }

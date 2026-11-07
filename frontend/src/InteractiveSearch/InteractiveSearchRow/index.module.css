@@ -30,6 +30,13 @@
     min-width: 85px;
 }
 
+.seeders {
+    composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
+
+    white-space: nowrap;
+    min-width: 75px;
+}
+
 .pages {
     composes: cell from 'Components/Table/Cells/TableRowCell/index.module.css';
 

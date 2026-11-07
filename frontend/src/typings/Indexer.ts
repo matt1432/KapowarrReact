@@ -4,14 +4,17 @@ import type { DownloadType } from 'Helpers/Props/downloadTypes';
 import type { GCDownloadSource } from 'Helpers/Props/GCDownloadSources';
 import type { Nullable } from './Misc';
 
-export type IndexerClientType = 'GetComics' | 'Libgen+';
+export type IndexerClientType = 'GetComics' | 'Libgen+' | 'Torznab';
 
 export type IndexerToken =
     | 'title'
     | 'enabled'
     | 'url'
     | 'gc_service_preference'
-    | 'gc_avoid_large_downloads';
+    | 'gc_avoid_large_downloads'
+    | 'api_path'
+    | 'api_key'
+    | 'categories';
 
 export interface RawIndexer {
     id: number;
@@ -23,6 +26,9 @@ export interface RawIndexer {
     url: string;
     gc_service_preference: Nullable<GCDownloadSource[]>;
     gc_avoid_large_downloads: Nullable<boolean>;
+    api_path: Nullable<string>;
+    api_key: Nullable<string>;
+    categories: Nullable<string[]>;
 }
 
 export type Indexer = CamelCasedProperties<RawIndexer>;

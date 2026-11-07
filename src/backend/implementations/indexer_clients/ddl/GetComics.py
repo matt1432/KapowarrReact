@@ -162,6 +162,8 @@ class GetComicsIndexer(BaseIndexerClient):
                 s.value for s in GCDownloadService._member_map_.values()
             ],
             selected_source=None,
+            seeders=None,
+            leechers=None,
             notes=None,
         )
 

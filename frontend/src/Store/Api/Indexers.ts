@@ -25,6 +25,9 @@ interface TestParams {
     url: string;
     gcServicePreference?: Nullable<GCDownloadSource[]>;
     gcAvoidLargeDownloads?: Nullable<boolean>;
+    apiPath?: Nullable<string>;
+    apiKey?: Nullable<string>;
+    categories?: Nullable<string[]>;
 }
 
 interface EditParams {
@@ -36,6 +39,9 @@ interface EditParams {
     url: string;
     gcServicePreference: Nullable<GCDownloadSource[]>;
     gcAvoidLargeDownloads: Nullable<boolean>;
+    apiPath: Nullable<string>;
+    apiKey: Nullable<string>;
+    categories: Nullable<string[]>;
 }
 
 // IMPLEMENTATIONS

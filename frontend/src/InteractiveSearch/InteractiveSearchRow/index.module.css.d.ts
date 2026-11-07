@@ -17,6 +17,7 @@ interface CssExports {
     releaser: string;
     resolution: string;
     scanType: string;
+    seeders: string;
     selectedSourceButton: string;
 }
 export const cssExports: CssExports;

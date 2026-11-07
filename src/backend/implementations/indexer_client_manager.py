@@ -5,7 +5,7 @@ The manager of indexer clients and their base class
 from collections.abc import Mapping
 from importlib import import_module
 from os.path import basename, dirname, splitext
-from typing import Any, TypeVar
+from typing import Any, TypeVar, assert_never, cast
 
 import backend.implementations.indexer_clients as ic
 from backend.base.custom_exceptions import (
@@ -25,7 +25,7 @@ from backend.base.definitions import (
     IndexerClientField,
 )
 from backend.base.files import list_files
-from backend.base.helpers import CommaList, normalise_base_url
+from backend.base.helpers import CommaList, force_prefix, normalise_base_url
 from backend.base.logging import LOGGER
 from backend.internals.db import get_db
 
@@ -37,14 +37,16 @@ def _validate_indexer_data(
     required_tokens: tuple[IndexerClientField, ...],
     enforce_existence: bool = True,
 ) -> dict[str, Any]:
-    filtered_data: dict[str, Any] = {
-        # The values for the database columns of the fields that the indexer
-        # doesn't use (e.g. Libgen+ doesn't use a URL or the GC fields)
-        key.value: "" if key == ICF.URL else None
-        for key in ICF._member_map_.values()
-        if key not in required_tokens
-    }
-    for key in required_tokens:
+    filtered_data: dict[str, Any] = {}
+    for key in ICF._member_map_.values():
+        key = cast(ICF, key)
+
+        if key not in required_tokens:
+            # The values for the database columns of the fields that the
+            # indexer doesn't use (e.g. Libgen+ doesn't use a URL)
+            filtered_data[key.value] = "" if key == ICF.URL else None
+            continue
+
         if key.value not in data:
             if enforce_existence:
                 raise KeyNotFound(key.value)
@@ -52,13 +54,17 @@ def _validate_indexer_data(
                 filtered_data[key.value] = None
                 continue
 
+        # Key is required and given, but value could still by anything.
+        # Check value below.
         value = data[key.value]
 
-        if key in (ICF.TITLE, ICF.ENABLED, ICF.URL) and value is None:
-            raise InvalidKeyValue(key.value, None)
+        if key == ICF.TITLE:
+            if not isinstance(value, str) and value:
+                raise InvalidKeyValue(key.value, value)
+            filtered_data[key.value] = value
 
-        if key == ICF.URL:
-            if not isinstance(value, str):
+        elif key == ICF.URL:
+            if not isinstance(value, str) and value:
                 raise InvalidKeyValue(key.value, value)
             filtered_data[key.value] = normalise_base_url(value)
 
@@ -67,7 +73,7 @@ def _validate_indexer_data(
                 raise InvalidKeyValue(key.value, value)
             filtered_data[key.value] = value
 
-        elif key == ICF.GC_SERVICE_PREFERENCE and value is not None:
+        elif key == ICF.GC_SERVICE_PREFERENCE:
             if not isinstance(value, list):
                 raise InvalidKeyValue(key.value, value)
 
@@ -87,15 +93,42 @@ def _validate_indexer_data(
 
             filtered_data[key.value] = str(value)
 
-        elif key == ICF.GC_AVOID_LARGE_DOWNLOADS and value is not None:
+        elif key == ICF.GC_AVOID_LARGE_DOWNLOADS:
             if not isinstance(value, bool):
                 raise InvalidKeyValue(key.value, value)
             filtered_data[key.value] = value
 
-        else:
+        elif key == ICF.API_PATH:
+            if not isinstance(value, str):
+                raise InvalidKeyValue(key.value, value)
+            value = value.rstrip("/")
+            if value:
+                filtered_data[key.value] = force_prefix(value, "/")
+            else:
+                filtered_data[key.value] = value
+
+        elif key == ICF.API_KEY:
             if not isinstance(value, str):
                 raise InvalidKeyValue(key.value, value)
             filtered_data[key.value] = value
+
+        elif key == ICF.CATEGORIES:
+            if not isinstance(value, list):
+                raise InvalidKeyValue(key.value, value)
+
+            value = CommaList(value)
+            for entry in value:
+                if (
+                    isinstance(entry, str)
+                    and not entry.isdigit()
+                    or isinstance(entry, int)
+                ):
+                    raise InvalidKeyValue(key.value, value)
+
+            filtered_data[key.value] = str(value)
+
+        else:
+            assert_never(key)
 
     return filtered_data
 
@@ -110,6 +143,28 @@ class BaseIndexerClient(IndexerClient):
     def title(self) -> str:
         return self._title
 
+    def __load_instance_variables(self, data: Mapping[str, Any]) -> None:
+        self._enabled: bool = data["enabled"]
+        self._title: str = data["title"]
+        self._url: str = data["url"]
+
+        self._gc_service_preference: CommaList | None = None
+        if data["gc_service_preference"] is not None:
+            self._gc_service_preference = CommaList(
+                data["gc_service_preference"]
+            )
+        self._gc_avoid_large_downloads: bool | None = data[
+            "gc_avoid_large_downloads"
+        ]
+
+        self._api_path: str | None = data["api_path"]
+        self._api_key: str | None = data["api_key"]
+        self._categories: CommaList | None = None
+        if data["categories"] is not None:
+            self._categories = CommaList(data["categories"])
+
+        return
+
     def __init__(self, indexer_id: int) -> None:
         self._id = indexer_id
         data = (
@@ -119,7 +174,8 @@ class BaseIndexerClient(IndexerClient):
                 SELECT
                     enabled,
                     title, url,
-                    gc_service_preference, gc_avoid_large_downloads
+                    gc_service_preference, gc_avoid_large_downloads,
+                    api_path, api_key, categories
                 FROM indexer_clients
                 WHERE id = ?
                 LIMIT 1;
@@ -128,24 +184,8 @@ class BaseIndexerClient(IndexerClient):
             )
             .fetchone()
         )
-        self._enabled: bool = data["enabled"]
-        self._title: str = data["title"]
-        self._url: str = data["url"]
 
-        self._gc_service_preference: CommaList | None
-        self._gc_avoid_large_downloads: bool | None
-        if (
-            data["gc_service_preference"] is not None
-            and data["gc_avoid_large_downloads"] is not None
-        ):
-            self._gc_service_preference = CommaList(
-                data["gc_service_preference"]
-            )
-            self._gc_avoid_large_downloads = data["gc_avoid_large_downloads"]
-        else:
-            self._gc_service_preference = None
-            self._gc_avoid_large_downloads = None
-
+        self.__load_instance_variables(data)
         return
 
     def get_indexer_data(self) -> IndexerClientData:
@@ -159,6 +199,9 @@ class BaseIndexerClient(IndexerClient):
             "url": self._url,
             "gc_service_preference": self._gc_service_preference,
             "gc_avoid_large_downloads": self._gc_avoid_large_downloads,
+            "api_path": self._api_path,
+            "api_key": self._api_key,
+            "categories": self._categories,
         }
 
     def update_indexer(self, data: Mapping[str, Any]) -> None:
@@ -176,24 +219,16 @@ class BaseIndexerClient(IndexerClient):
                 title = :title,
                 url = :url,
                 gc_service_preference = :gc_service_preference,
-                gc_avoid_large_downloads = :gc_avoid_large_downloads
+                gc_avoid_large_downloads = :gc_avoid_large_downloads,
+                api_path = :api_path,
+                api_key = :api_key,
+                categories = :categories
             WHERE id = :id;
             """,
             {**filtered_data, "id": self._id},
         )
-        self._enabled = filtered_data[ICF.ENABLED.value]
-        self._title = filtered_data[ICF.TITLE.value]
-        self._url = filtered_data[ICF.URL.value]
-        if (
-            "gc_service_preference" in self.required_tokens
-            and "gc_avoid_large_downloads" in self.required_tokens
-        ):
-            self._gc_service_preference = CommaList(
-                filtered_data["gc_service_preference"]
-            )
-            self._gc_avoid_large_downloads = filtered_data[
-                "gc_avoid_large_downloads"
-            ]
+
+        self.__load_instance_variables(filtered_data)
 
         return
 
@@ -428,10 +463,6 @@ class IndexerClients:
         # Raises exception on fail
         ClientClass.test(**filtered_data)
 
-        filtered_data = {
-            key: filtered_data.get(key)
-            for key in ("download_type", "client_type", *ICF._value2member_map_)
-        }
         filtered_data.update(
             {
                 "download_type": ClientClass.download_type.value,
@@ -445,12 +476,14 @@ class IndexerClients:
                 enabled,
                 download_type, client_type,
                 title, url,
-                gc_service_preference, gc_avoid_large_downloads
+                gc_service_preference, gc_avoid_large_downloads,
+                api_path, api_key, categories
             ) VALUES (
                 :enabled,
                 :download_type, :client_type,
                 :title, :url,
-                :gc_service_preference, :gc_avoid_large_downloads
+                :gc_service_preference, :gc_avoid_large_downloads,
+                :api_path, :api_key, :categories
             );
             """,
             filtered_data,

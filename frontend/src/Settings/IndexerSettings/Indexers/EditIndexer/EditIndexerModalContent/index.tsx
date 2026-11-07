@@ -52,7 +52,12 @@ type IndexerChanges = Pick<
     | 'url'
     | 'gcServicePreference'
     | 'gcAvoidLargeDownloads'
->;
+    | 'apiPath'
+    | 'apiKey'
+> & {
+    // Comma separated list of category numbers
+    categories: string;
+};
 
 export interface EditIndexerModalContentProps {
     id?: number;
@@ -80,6 +85,9 @@ function getInitialChanges(
             url: indexer.url,
             gcServicePreference: indexer.gcServicePreference,
             gcAvoidLargeDownloads: indexer.gcAvoidLargeDownloads,
+            apiPath: indexer.apiPath,
+            apiKey: indexer.apiKey,
+            categories: (indexer.categories ?? []).join(','),
         };
     }
 
@@ -89,6 +97,9 @@ function getInitialChanges(
         url: '',
         gcServicePreference: defaultServicePreference,
         gcAvoidLargeDownloads: false,
+        apiPath: '/api',
+        apiKey: '',
+        categories: '7000',
     };
 }
 
@@ -177,15 +188,8 @@ export default function EditIndexerModalContent({
         [],
     );
 
-    const handleTestPress = useCallback(async () => {
-        if (!downloadType) {
-            return { data: undefined };
-        }
-
-        return await testIndexer({
-            downloadType,
-            clientType,
-            url: changes.url,
+    const tokenValues = useMemo(
+        () => ({
             gcServicePreference: requiredTokens.includes(
                 'gc_service_preference',
             )
@@ -196,8 +200,34 @@ export default function EditIndexerModalContent({
             )
                 ? changes.gcAvoidLargeDownloads
                 : null,
+            apiPath: requiredTokens.includes('api_path')
+                ? (changes.apiPath ?? '')
+                : null,
+            apiKey: requiredTokens.includes('api_key')
+                ? (changes.apiKey ?? '')
+                : null,
+            categories: requiredTokens.includes('categories')
+                ? changes.categories
+                      .split(',')
+                      .map((category) => category.trim())
+                      .filter(Boolean)
+                : null,
+        }),
+        [changes, requiredTokens],
+    );
+
+    const handleTestPress = useCallback(async () => {
+        if (!downloadType) {
+            return { data: undefined };
+        }
+
+        return await testIndexer({
+            downloadType,
+            clientType,
+            url: changes.url,
+            ...tokenValues,
         });
-    }, [changes, clientType, downloadType, requiredTokens, testIndexer]);
+    }, [changes.url, clientType, downloadType, testIndexer, tokenValues]);
 
     const handleSavePress = useCallback(async () => {
         setIsSaving(true);
@@ -216,16 +246,7 @@ export default function EditIndexerModalContent({
             enabled: changes.enabled,
             title: changes.title,
             url: changes.url,
-            gcServicePreference: requiredTokens.includes(
-                'gc_service_preference',
-            )
-                ? changes.gcServicePreference
-                : null,
-            gcAvoidLargeDownloads: requiredTokens.includes(
-                'gc_avoid_large_downloads',
-            )
-                ? changes.gcAvoidLargeDownloads
-                : null,
+            ...tokenValues,
         });
         setIsSaving(false);
         if (error) {
@@ -242,8 +263,8 @@ export default function EditIndexerModalContent({
         id,
         onIndexersChange,
         onModalClose,
-        requiredTokens,
         saveIndexer,
+        tokenValues,
     ]);
 
     return (
@@ -300,6 +321,56 @@ export default function EditIndexerModalContent({
                                     name="url"
                                     onChange={handleInputChange}
                                     value={changes.url}
+                                />
+                            </FormGroup>
+                        ) : null}
+
+                        {requiredTokens.includes('api_path') ? (
+                            <FormGroup>
+                                <FormLabel>
+                                    {translate('IndexerSettingsApiPath')}
+                                </FormLabel>
+
+                                <FormInputGroup
+                                    type={inputTypes.TEXT}
+                                    name="apiPath"
+                                    helpText={translate(
+                                        'IndexerSettingsApiPathHelpText',
+                                        { url: '/api' },
+                                    )}
+                                    onChange={handleInputChange}
+                                    value={changes.apiPath ?? ''}
+                                />
+                            </FormGroup>
+                        ) : null}
+
+                        {requiredTokens.includes('api_key') ? (
+                            <FormGroup>
+                                <FormLabel>{translate('ApiKey')}</FormLabel>
+
+                                <FormInputGroup
+                                    type={inputTypes.TEXT}
+                                    name="apiKey"
+                                    onChange={handleInputChange}
+                                    value={changes.apiKey ?? ''}
+                                />
+                            </FormGroup>
+                        ) : null}
+
+                        {requiredTokens.includes('categories') ? (
+                            <FormGroup>
+                                <FormLabel>
+                                    {translate('IndexerSettingsCategories')}
+                                </FormLabel>
+
+                                <FormInputGroup
+                                    type={inputTypes.TEXT}
+                                    name="categories"
+                                    helpText={translate(
+                                        'TorznabCategoriesHelpText',
+                                    )}
+                                    onChange={handleInputChange}
+                                    value={changes.categories}
                                 />
                             </FormGroup>
                         ) : null}

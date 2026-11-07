@@ -7,6 +7,7 @@ export type InteractiveSearchColumnName =
     | 'issueNumber'
     | 'displayTitle'
     | 'filesize'
+    | 'seeders'
     | 'pages'
     | 'releaser'
     | 'scanType'
@@ -49,6 +50,12 @@ export default {
         },
         {
             name: 'filesize',
+            isModifiable: false,
+            isSortable: true,
+            isVisible: true,
+        },
+        {
+            name: 'seeders',
             isModifiable: false,
             isSortable: true,
             isVisible: true,

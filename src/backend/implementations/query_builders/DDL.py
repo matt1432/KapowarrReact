@@ -8,6 +8,13 @@ from backend.base.definitions import (
 )
 from backend.implementations.query_builder_manager import QueryBuilders
 
+VOLUME_FORMATS = (
+    "{title} ({year})",
+    "{title} Vol. {volume_number} ({year})",
+    "{title} Vol. {volume_number}",
+    "{title}",
+)
+
 TPB_FORMATS = (
     "{title} Vol. {volume_number} ({year}) TPB",
     "{title} ({year}) TPB",
@@ -16,13 +23,6 @@ TPB_FORMATS = (
 )
 
 VAI_FORMATS = ("{title} ({year})", "{title}")
-
-VOLUME_FORMATS = (
-    "{title} ({year})",
-    "{title} Vol. {volume_number} ({year})",
-    "{title} Vol. {volume_number}",
-    "{title}",
-)
 
 SPECIFIC_ISSUE_FORMATS = (
     "{title} #{issue_number} ({year})",

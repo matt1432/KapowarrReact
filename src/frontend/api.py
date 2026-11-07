@@ -203,6 +203,8 @@ def extract_key(
                 # Only used for the frontend
                 download_sources=[],
                 selected_source=request.values.get("selected_source", None),
+                seeders=parse_int("seeders"),
+                leechers=parse_int("leechers"),
             )
 
         except (ValueError, TypeError, KeyError):

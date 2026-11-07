@@ -617,6 +617,14 @@ class IndexerClientField(BaseEnum):
     over 400MB.
     """
 
+    # Torrent/Usenet
+    API_PATH = "api_path"
+    "Path to the api, usually /api"
+
+    API_KEY = "api_key"
+
+    CATEGORIES = "categories"
+
 
 class SearchAction(BaseEnum):
     "The next course of action during a search with an indexer"
@@ -742,6 +750,7 @@ class DownloadService(BaseEnum):
     LIBGENPLUS = "Libgen+"
     LIBGENPLUS_TORRENT = "Libgen+ (torrent)"
     ANNAS_ARCHIVE = "Anna's Archive"
+    TORRENT = "Torrent"
 
 
 # region TypedDicts
@@ -826,6 +835,9 @@ class IndexerClientData(TypedDict):
     url: str
     gc_service_preference: CommaList | None
     gc_avoid_large_downloads: bool | None
+    api_path: str | None
+    api_key: str | None
+    categories: CommaList | None
 
 
 class SearchQuery(TypedDict):
@@ -851,6 +863,8 @@ class SearchResultData(FilenameData):
     web_sub_title: str | None
     download_sources: list[str]
     selected_source: str | None
+    seeders: int | None
+    leechers: int | None
 
 
 class SearchResultMatchData(TypedDict):

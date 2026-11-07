@@ -8,6 +8,7 @@ export const downloadSources = {
     LIBGENPLUS: 'Libgen+',
     LIBGENPLUS_TORRENT: 'Libgen+ (torrent)',
     ANNAS_ARCHIVE: "Anna's Archive",
+    TORRENT: 'Torrent',
 } as const;
 
 export default downloadSources;

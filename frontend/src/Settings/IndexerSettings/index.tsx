@@ -76,6 +76,10 @@ export default function IndexerSettings() {
                 <FieldSet legend={translate('DDL')}>
                     <Indexers downloadType={downloadTypes.DIRECT} />
                 </FieldSet>
+
+                <FieldSet legend={translate('Torrent')}>
+                    <Indexers downloadType={downloadTypes.TORRENT} />
+                </FieldSet>
             </PageContentBody>
         </PageContent>
     );

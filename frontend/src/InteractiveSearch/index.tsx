@@ -157,6 +157,9 @@ function InternalSearch({
                             weighIssueNumber(a.issueNumber, lastIssueNumber) -
                             weighIssueNumber(b.issueNumber, lastIssueNumber),
 
+                        seeders: (a, b) =>
+                            (a.seeders ?? -1) - (b.seeders ?? -1),
+
                         matchRejections: (a, b) =>
                             a.matchRejections.length - b.matchRejections.length,
                     }}
