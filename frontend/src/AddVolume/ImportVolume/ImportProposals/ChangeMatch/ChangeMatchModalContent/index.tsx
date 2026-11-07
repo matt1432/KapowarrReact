@@ -11,7 +11,7 @@ import { useLazyLookupVolumeQuery } from 'Store/Api/Volumes';
 // Misc
 import { icons, kinds } from 'Helpers/Props';
 
-import { getErrorMessage } from 'Utilities/Object/error';
+import { getMetadataErrorMessage } from 'Utilities/Object/error';
 
 import translate from 'Utilities/String/translate';
 
@@ -141,7 +141,9 @@ export default function ChangeMatchModalContent({
                 {isFetching ? <LoadingIndicator /> : null}
 
                 {!isFetching && error ? (
-                    <Alert kind={kinds.DANGER}>{getErrorMessage(error)}</Alert>
+                    <Alert kind={kinds.DANGER}>
+                        {getMetadataErrorMessage(error)}
+                    </Alert>
                 ) : null}
 
                 {!isFetching && !error && showResults ? (

@@ -3,6 +3,7 @@ import {
     translateBrokenClientReason,
     translateEnqueueFailureReason,
     translateInvalidDatabaseReason,
+    translateBrokenMetadataSourceReason,
 } from 'Utilities/String/translateReason';
 
 import type { ApiError, NonApiError, FetchError } from 'typings/Api';
@@ -25,10 +26,12 @@ export function getErrorMessage(
 ) {
     if (isApiError(error)) {
         if (
-            error.data.error === 'InvalidKeyValue' &&
-            error.data.result.key === 'comicvine_api_key'
+            error.data.error === 'MetadataSourceNotWorking' &&
+            typeof error.data.result.reason === 'string'
         ) {
-            return translate('InvalidComicVineApiKey');
+            return translateBrokenMetadataSourceReason(
+                error.data.result.reason,
+            );
         }
         if (
             error.data.error === 'ClientNotWorking' &&
@@ -54,4 +57,18 @@ export function getErrorMessage(
         return error.error;
     }
     return fallbackErrorMessage;
+}
+
+/**
+ * Same as `getErrorMessage`, but for requests that contact the metadata
+ * source, where an invalid credential is always the Comic Vine API key.
+ */
+export function getMetadataErrorMessage(
+    error: unknown,
+    fallbackErrorMessage = 'Unknown error',
+) {
+    if (isApiError(error) && error.data.error === 'CredentialInvalid') {
+        return translate('InvalidComicVineApiKey');
+    }
+    return getErrorMessage(error, fallbackErrorMessage);
 }

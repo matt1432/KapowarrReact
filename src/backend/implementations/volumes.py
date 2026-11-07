@@ -1289,10 +1289,11 @@ class Library:
         Raises:
             RootFolderNotFound: The root folder with the given ID was not found.
             VolumeAlreadyAdded: The volume already exists in the library.
-            InvalidKeyValue: The API key of the metadata source is invalid.
-            VolumeNotMatched: The ID doesn't map to any volume.
+            CredentialInvalid: The API key of the metadata source is invalid.
+            MetadataSourceDataEntryNotFound: The ID doesn't map to any volume.
             MetadataSourceRateLimitReached: The metadata source rate limit is
                 reached.
+            MetadataSourceNotWorking: Something went wrong contacting CV.
 
         Returns:
             int: The new ID of the new volume.
@@ -1578,7 +1579,8 @@ def refresh_and_scan(
             Defaults to True.
 
     Raises:
-        InvalidKeyValue: The API key of the metadata source is invalid.
+        CredentialInvalid: The API key of the metadata source is invalid.
+        MetadataSourceNotWorking: Something went wrong contacting CV.
     """
     current_time = datetime.now()
     one_day_ago = current_time - ONE_DAY

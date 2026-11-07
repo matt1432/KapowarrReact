@@ -5,9 +5,9 @@ from os.path import abspath, basename, dirname, isfile, join, splitext
 
 from backend.base.custom_exceptions import (
     InvalidKeyValue,
+    MetadataSourceDataEntryNotFound,
     MetadataSourceRateLimitReached,
     VolumeAlreadyAdded,
-    VolumeNotMatched,
 )
 from backend.base.definitions import (
     CVFileMapping,
@@ -158,7 +158,8 @@ def propose_library_import(
     Raises:
         InvalidKeyValue: The file filter matches to folders outside
             the root folders.
-        InvalidKeyValue: The API key of the metadata source is invalid.
+        CredentialInvalid: The API key of the metadata source is invalid.
+        MetadataSourceNotWorking: Something went wrong contacting CV.
 
     Returns:
         List[dict]: The list of files and their matches.
@@ -350,7 +351,7 @@ def import_library(
             volume_already_added = True
             volume_id = e.volume_id
 
-        except VolumeNotMatched:
+        except MetadataSourceDataEntryNotFound:
             # CV ID not found; skip this import
             continue
 

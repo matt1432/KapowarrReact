@@ -11,7 +11,7 @@ import {
 
 // Misc
 import { icons, kinds } from 'Helpers/Props';
-import { getErrorMessage } from 'Utilities/Object/error';
+import { getMetadataErrorMessage } from 'Utilities/Object/error';
 
 import translate from 'Utilities/String/translate';
 
@@ -117,7 +117,7 @@ export default function AddNewVolume() {
                         </div>
 
                         <Alert kind={kinds.DANGER}>
-                            {getErrorMessage(error)}
+                            {getMetadataErrorMessage(error)}
                         </Alert>
                     </div>
                 ) : null}

@@ -5,7 +5,9 @@ from time import sleep, time
 from typing import TYPE_CHECKING, Any, TypeVar
 
 from backend.base.custom_exceptions import (
+    CredentialInvalid,
     InvalidKeyValue,
+    MetadataSourceNotWorking,
     TaskNotDeletable,
     TaskNotFound,
 )
@@ -707,8 +709,7 @@ class RefreshAndScanVolume(Task):
 
         try:
             refresh_and_scan(self._volume_id, update_websocket=True)
-        except InvalidKeyValue:
-            # API key invalid
+        except (CredentialInvalid, MetadataSourceNotWorking):
             pass
 
         return
@@ -852,8 +853,7 @@ class UpdateAll(LibraryTask):
             refresh_and_scan(
                 update_websocket=True, allow_skipping=self.allow_skipping
             )
-        except InvalidKeyValue:
-            # API key invalid
+        except (CredentialInvalid, MetadataSourceNotWorking):
             pass
 
         return

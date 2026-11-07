@@ -17,6 +17,13 @@ const brokenClientReasons: Record<string, TranslateKey> = {
     invalid_credentials: 'BrokenClientReasonInvalidCredentials',
 };
 
+const brokenMetadataSourceReasons: Record<string, TranslateKey> = {
+    connection_error: 'BrokenMetadataSourceReasonConnectionError',
+    failed_processing_response:
+        'BrokenMetadataSourceReasonFailedProcessingResponse',
+    access_denied: 'BrokenMetadataSourceReasonAccessDenied',
+};
+
 const enqueueFailureReasons: Record<string, TranslateKey> = {
     webpage_broken: 'EnqueueFailureReasonWebpageBroken',
     no_matches: 'EnqueueFailureReasonNoMatches',
@@ -41,6 +48,10 @@ export function translateBlocklistReason(reason: string) {
 
 export function translateBrokenClientReason(reason: string) {
     return translateWith(brokenClientReasons, reason);
+}
+
+export function translateBrokenMetadataSourceReason(reason: string) {
+    return translateWith(brokenMetadataSourceReasons, reason);
 }
 
 export function translateEnqueueFailureReason(reason: string) {

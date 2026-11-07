@@ -7,6 +7,7 @@ from collections.abc import AsyncGenerator, Iterable, Iterator, Sequence
 from contextlib import contextmanager
 from contextvars import ContextVar
 from datetime import UTC, date, datetime, timedelta
+from json import JSONDecodeError
 from os.path import dirname, join
 from pathlib import Path
 from re import IGNORECASE, compile
@@ -29,13 +30,16 @@ from simyan.comicvine import (
     SQLiteCache,
     Volume,
 )
+from simyan.errors import RateLimitError
 
 from backend.base.custom_exceptions import (
-    InvalidKeyValue,
+    CredentialInvalid,
+    MetadataSourceDataEntryNotFound,
+    MetadataSourceNotWorking,
     MetadataSourceRateLimitReached,
-    VolumeNotMatched,
 )
 from backend.base.definitions import (
+    BrokenMetadataSourceReason,
     Constants,
     DateType,
     FilenameData,
@@ -258,10 +262,65 @@ class CVRateLimiter:
 CV_RATE_LIMITER = CVRateLimiter()
 
 
+def _convert_simyan_error(err: ServiceError) -> Exception:
+    """Convert an error raised by simyan into the matching Kapowarr exception.
+
+    Args:
+        err (ServiceError): The error raised by simyan.
+
+    Returns:
+        Exception: The Kapowarr exception to raise instead.
+    """
+    if isinstance(err, AuthenticationError):
+        return CredentialInvalid()
+
+    if isinstance(err, RateLimitError):
+        return MetadataSourceRateLimitReached()
+
+    message = str(err)
+    if message == "Resource not found" or "Object Not Found" in message:
+        return MetadataSourceDataEntryNotFound()
+
+    if isinstance(err.__cause__, JSONDecodeError):
+        if "API Key Blocked" in err.__cause__.doc:
+            return MetadataSourceNotWorking(
+                BrokenMetadataSourceReason.ACCESS_DENIED
+            )
+        return MetadataSourceNotWorking(
+            BrokenMetadataSourceReason.FAILED_PROCESSING_RESPONSE
+        )
+
+    if message.startswith("Unable to connect") or "too long" in message:
+        return MetadataSourceNotWorking(
+            BrokenMetadataSourceReason.CONNECTION_ERROR
+        )
+
+    return MetadataSourceNotWorking(
+        BrokenMetadataSourceReason.FAILED_PROCESSING_RESPONSE
+    )
+
+
 class CVSession(Comicvine):
-    """Simyan session that turns an error response without an "error" field
-    (e.g. a 502 from CV) into a `ServiceError`, instead of simyan raising a
-    `KeyError` while building the error message."""
+    """Simyan session that:
+    - turns an error response without an "error" field (e.g. a 502 from CV)
+        into a `ServiceError`, instead of simyan raising a `KeyError` while
+        building the error message.
+    - converts the errors of simyan to the matching Kapowarr exceptions.
+
+    Raises:
+        CredentialInvalid: The API key is not valid.
+        MetadataSourceRateLimitReached: The rate limit is reached.
+        MetadataSourceDataEntryNotFound: The requested entry doesn't exist.
+        MetadataSourceNotWorking: Something went wrong contacting CV.
+    """
+
+    def _get_request(
+        self, endpoint: str, params: dict[str, str] | None = None
+    ) -> dict[str, Any]:
+        try:
+            return super()._get_request(endpoint=endpoint, params=params)
+        except ServiceError as err:
+            raise _convert_simyan_error(err) from err
 
     def _perform_get_request(
         self, endpoint: str, params: dict[str, str] | None = None
@@ -386,7 +445,7 @@ class ComicVine:
                 Defaults to None.
 
         Raises:
-            InvalidKeyValue: No ComicVine API key is set in the settings
+            CredentialInvalid: No ComicVine API key is set in the settings
                 and no key is given.
         """
         settings = Settings().get_settings()
@@ -394,7 +453,7 @@ class ComicVine:
         self.date_type = settings.date_type.value
         api_key = comicvine_api_key or settings.comicvine_api_key
         if not api_key:
-            raise InvalidKeyValue("comicvine_api_key", api_key)
+            raise CredentialInvalid
 
         # Place the cache db at the same place as the Kapowarr db
         cache_file_location = join(
@@ -670,8 +729,9 @@ class ComicVine:
             filter (str): The value of the filter parameter.
 
         Raises:
-            ServiceError: The request failed or the response is invalid.
-            AuthenticationError: The API key is invalid.
+            CredentialInvalid: The API key is not valid.
+            MetadataSourceRateLimitReached: The rate limit is reached.
+            MetadataSourceNotWorking: Something went wrong contacting CV.
 
         Returns:
             list[T]: The results of all pages.
@@ -701,7 +761,9 @@ class ComicVine:
         try:
             return TypeAdapter(list[model]).validate_python(results)
         except ValidationError as err:
-            raise ServiceError(err) from err
+            raise MetadataSourceNotWorking(
+                BrokenMetadataSourceReason.FAILED_PROCESSING_RESPONSE
+            ) from err
 
     def cache_volume(self, cv_id: int) -> bool:
         """Fetch the volume through this session, so that the request goes
@@ -718,19 +780,26 @@ class ComicVine:
         """
         try:
             self.ssn.get_volume(volume_id=cv_id)
-        except (ServiceError, AuthenticationError) as e:
+        except (
+            ServiceError,
+            CredentialInvalid,
+            MetadataSourceRateLimitReached,
+            MetadataSourceDataEntryNotFound,
+            MetadataSourceNotWorking,
+        ) as e:
             LOGGER.info("Failed to fetch volume %s from CV: %s", cv_id, e)
             return False
         return True
 
-    def test_key(self) -> bool:
+    def test_key(self) -> None:
         """Test if the API key works.
 
-        Returns:
-            bool: Whether the key works.
+        Raises:
+            CredentialInvalid: The API key is not valid.
+            MetadataSourceNotWorking: Something went wrong contacting CV.
         """
 
-        async def _test_key() -> bool:
+        async def _test_key() -> None:
             try:
                 # Simply make a call to any endpoint to check. This endpoint
                 # isn't used by Kapowarr so by using it now we don't
@@ -738,10 +807,11 @@ class ComicVine:
                 # important endpoints.
                 self.ssn.get_publisher(publisher_id=31)
 
-            except (ServiceError, AuthenticationError):
-                return False
-
-            return True
+            except ServiceError:
+                # Response couldn't be parsed into the model
+                raise MetadataSourceNotWorking(
+                    BrokenMetadataSourceReason.FAILED_PROCESSING_RESPONSE
+                )
 
         return run(_test_key())
 
@@ -752,10 +822,12 @@ class ComicVine:
             cv_id (Union[str, int]): The CV ID of the volume.
 
         Raises:
+            CredentialInvalid: The API key is not valid.
             MetadataSourceRateLimitReached: The rate limit is reached.
-            InvalidKeyValue: The API key is not valid.
-            VolumeNotMatched: Couldn't convert string CV ID to number.
-            VolumeNotMatched: The ID doesn't map to any volume.
+            MetadataSourceDataEntryNotFound: Couldn't convert string CV ID to
+                number.
+            MetadataSourceDataEntryNotFound: The ID doesn't map to any volume.
+            MetadataSourceNotWorking: Something went wrong contacting CV.
 
         Returns:
             VolumeMetadata: The metadata of the volume, including issues.
@@ -763,7 +835,7 @@ class ComicVine:
         try:
             cv_id = to_number_cv_id((cv_id,))[0]
         except ValueError:
-            raise VolumeNotMatched
+            raise MetadataSourceDataEntryNotFound
 
         LOGGER.debug(f"Fetching volume data for {cv_id}")
 
@@ -783,9 +855,12 @@ class ComicVine:
                     or None
                 )
             return volume_info
-        except (ServiceError, AuthenticationError):
-            StatusHandlers().report(StatusType.CV_RATE_LIMIT, "fetch_volume")
-            raise MetadataSourceRateLimitReached
+
+        except ServiceError:
+            # Response couldn't be parsed into the model
+            raise MetadataSourceNotWorking(
+                BrokenMetadataSourceReason.FAILED_PROCESSING_RESPONSE
+            )
 
     async def fetch_volumes(
         self, cv_ids: Sequence[str | int]
@@ -796,8 +871,11 @@ class ComicVine:
             cv_ids (Sequence[Union[str, int]]): The CV IDs of the volumes.
 
         Raises:
-            InvalidKeyValue: The API key is not valid.
-            VolumeNotMatched: Couldn't convert string CV ID to number.
+            CredentialInvalid: The API key is not valid.
+            MetadataSourceRateLimitReached: The rate limit is reached.
+            MetadataSourceDataEntryNotFound: Couldn't convert string CV ID to
+                number.
+            MetadataSourceNotWorking: Something went wrong contacting CV.
 
         Returns:
             List[VolumeMetadata]: The metadata of the volumes, without issues.
@@ -807,7 +885,7 @@ class ComicVine:
         try:
             formatted_cv_ids = to_string_cv_id(cv_ids)
         except ValueError:
-            raise VolumeNotMatched
+            raise MetadataSourceDataEntryNotFound
 
         LOGGER.debug(f"Fetching volume data for {formatted_cv_ids}")
 
@@ -831,11 +909,11 @@ class ComicVine:
                     StatusHandlers().clear(
                         StatusType.CV_RATE_LIMIT, "fetch_issues"
                     )
-                except (ServiceError, AuthenticationError):
+                except MetadataSourceRateLimitReached:
                     StatusHandlers().report(
                         StatusType.CV_RATE_LIMIT, "fetch_issues"
                     )
-                    raise MetadataSourceRateLimitReached
+                    raise
 
                 # Format volume responses and prep cover requests
                 batch_volumes: list[VolumeMetadata] = [
@@ -872,8 +950,10 @@ class ComicVine:
             cv_ids (Sequence[Union[str, int]]): The CV IDs of the volumes.
 
         Raises:
-            InvalidKeyValue: The API key is not valid.
-            VolumeNotMatched: Couldn't convert string CV ID to number.
+            CredentialInvalid: The API key is not valid.
+            MetadataSourceDataEntryNotFound: Couldn't convert string CV ID to
+                number.
+            MetadataSourceNotWorking: Something went wrong contacting CV.
 
         Returns:
             List[IssueMetadata]: The metadata of all the issues inside the
@@ -883,7 +963,7 @@ class ComicVine:
         try:
             formatted_cv_ids = to_string_cv_id(cv_ids)
         except ValueError:
-            raise VolumeNotMatched
+            raise MetadataSourceDataEntryNotFound
 
         LOGGER.debug(f"Fetching issue data for volumes {formatted_cv_ids}")
 
@@ -894,7 +974,7 @@ class ComicVine:
                     "/issues", BasicIssue, f"volume:{'|'.join(id_batch)}"
                 )
 
-            except (ServiceError, AuthenticationError):
+            except MetadataSourceRateLimitReached:
                 break
 
             issue_infos.extend([self.__format_issue_output(r) for r in results])
@@ -926,7 +1006,8 @@ class ComicVine:
         Raises:
             MetadataSourceRateLimitReached: The rate limit is reached, and
                 `allow_rate_limit_reached` is `False`.
-            InvalidKeyValue: The API key is not valid.
+            CredentialInvalid: The API key is not valid.
+            MetadataSourceNotWorking: Something went wrong contacting CV.
 
         Returns:
             List[VolumeMetadata]: The search results.
@@ -951,8 +1032,14 @@ class ComicVine:
                 )
             StatusHandlers().clear(StatusType.CV_RATE_LIMIT, "search_volumes")
 
-        except (ServiceError, AuthenticationError, VolumeNotMatched):
+        except MetadataSourceDataEntryNotFound:
             return []
+
+        except ServiceError:
+            # Response couldn't be parsed into the model
+            raise MetadataSourceNotWorking(
+                BrokenMetadataSourceReason.FAILED_PROCESSING_RESPONSE
+            )
 
         except MetadataSourceRateLimitReached:
             StatusHandlers().report(StatusType.CV_RATE_LIMIT, "search_volumes")
@@ -979,7 +1066,8 @@ class ComicVine:
             only_english (bool): Only match to english volumes.
 
         Raises:
-            InvalidKeyValue: The API key is not valid.
+            CredentialInvalid: The API key is not valid.
+            MetadataSourceNotWorking: Something went wrong contacting CV.
 
         Returns:
             Dict[int, Dict[str, Any]]: A mapping from the group number to its CV

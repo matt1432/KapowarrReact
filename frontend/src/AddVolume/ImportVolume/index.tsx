@@ -9,7 +9,7 @@ import { useLazyGetImportProposalsQuery } from 'Store/Api/Volumes';
 // Misc
 import { kinds } from 'Helpers/Props';
 
-import { getErrorMessage } from 'Utilities/Object/error';
+import { getMetadataErrorMessage } from 'Utilities/Object/error';
 
 import translate from 'Utilities/String/translate';
 
@@ -69,7 +69,9 @@ export default function ImportVolume() {
                 {isFetching ? <LoadingIndicator /> : null}
 
                 {error ? (
-                    <Alert kind={kinds.DANGER}>{getErrorMessage(error)}</Alert>
+                    <Alert kind={kinds.DANGER}>
+                        {getMetadataErrorMessage(error)}
+                    </Alert>
                 ) : null}
 
                 {!onResultsPage && !isFetching ? (

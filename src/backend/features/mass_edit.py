@@ -2,8 +2,10 @@ from collections.abc import Callable
 from typing import Any, TypeVar
 
 from backend.base.custom_exceptions import (
+    CredentialInvalid,
     InvalidKeyValue,
     KeyNotFound,
+    MetadataSourceNotWorking,
     MetadataSourceRateLimitReached,
     RootFolderNotFound,
     VolumeDownloadedFor,
@@ -166,8 +168,7 @@ def mass_editor_update(
 
         try:
             refresh_and_scan(volume_id)
-        except InvalidKeyValue:
-            # API key invalid
+        except (CredentialInvalid, MetadataSourceNotWorking):
             break
 
     return
