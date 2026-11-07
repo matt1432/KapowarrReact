@@ -137,6 +137,7 @@ class TorrentDownload(ExternalDownload, BaseDirectDownload):
         if download_link.startswith("magnet"):
             magnet_torrent_name = run(self._fetch_torrent_name())
             if not magnet_torrent_name:
+                LOGGER.warning("Failed to convert magnet link to torrent file")
                 raise DownloadLinkBroken(self.download_link)
 
             torrent_name = magnet_torrent_name
